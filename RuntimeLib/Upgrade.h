@@ -1,0 +1,40 @@
+#pragma once
+
+#include "Base.h"
+#include "Constants.h"
+
+EXTERN_C_BEGIN
+
+#pragma pack(push, 1)
+
+enum {
+    RUNTIME_UPGRADE_RESULT_ERROR        = 0,
+    RUNTIME_UPGRADE_RESULT_UPGRADE_1    = 1,
+    RUNTIME_UPGRADE_RESULT_UPGRADE_2    = 2,
+    RUNTIME_UPGRADE_RESULT_DOWNGRADE_0  = 3,
+    RUNTIME_UPGRADE_RESULT_DOWNGRADE_1  = 4,
+    RUNTIME_UPGRADE_RESULT_DOWNGRADE_2  = 5,
+    RUNTIME_UPGRADE_RESULT_DESTROYED    = 6,
+    RUNTIME_UPGRADE_RESULT_DOWNGRADE_3  = 8,
+};
+
+enum {
+    RUNTIME_UPGRADE_RATE_TYPE_UPGRADE_1         = 0,
+    RUNTIME_UPGRADE_RATE_TYPE_UPGRADE_2         = 1,
+    RUNTIME_UPGRADE_RATE_TYPE_DOWNGRADE_0       = 2,
+    RUNTIME_UPGRADE_RATE_TYPE_DOWNGRADE_1       = 3,
+    RUNTIME_UPGRADE_RATE_TYPE_DOWNGRADE_2       = 4,
+    RUNTIME_UPGRADE_RATE_TYPE_DOWNGRADE_RESET   = 5,
+};
+
+Int32 RTItemUpgradeNormal(
+    RTRuntimeRef Runtime,
+    RTItemSlotRef Item,
+    Int32 UpgradeType,
+    Int32* UpgradePoint,
+    Int32* Seed
+);
+
+#pragma pack(pop)
+
+EXTERN_C_END

@@ -1,0 +1,16 @@
+<quest_dungeon_arena_defense>
+    <arena_defense order="0" Dungeon_ID="4120" MobIdx="1616" Goal_X="95" Goal_Y="208" SpeedType="1"/>
+    <arena_defense order="1" Dungeon_ID="4120" MobIdx="1617" Goal_X="95" Goal_Y="208" SpeedType="2"/>
+    <arena_defense order="2" Dungeon_ID="4120" MobIdx="1618" Goal_X="95" Goal_Y="208" SpeedType="1"/>
+    <arena_defense order="3" Dungeon_ID="4280" MobIdx="2625" Goal_X="171" Goal_Y="119" SpeedType="1"/>
+    <arena_defense order="4" Dungeon_ID="4280" MobIdx="2626" Goal_X="171" Goal_Y="119" SpeedType="1"/>
+    <arena_defense order="5" Dungeon_ID="4280" MobIdx="2627" Goal_X="171" Goal_Y="119" SpeedType="1"/>
+    <arena_defense order="6" Dungeon_ID="4280" MobIdx="2628" Goal_X="171" Goal_Y="119" SpeedType="1"/>
+    <arena_defense order="7" Dungeon_ID="4280" MobIdx="2629" Goal_X="171" Goal_Y="119" SpeedType="1"/>
+    <arena_defense order="8" Dungeon_ID="4280" MobIdx="2630" Goal_X="171" Goal_Y="119" SpeedType="1"/>
+    <arena_defense order="9" Dungeon_ID="4280" MobIdx="2631" Goal_X="171" Goal_Y="119" SpeedType="1"/>
+    <arena_defense order="10" Dungeon_ID="4280" MobIdx="2632" Goal_X="171" Goal_Y="119" SpeedType="1"/>
+    <arena_defense order="11" Dungeon_ID="4280" MobIdx="2633" Goal_X="171" Goal_Y="119" SpeedType="1"/>
+    <arena_defense order="12" Dungeon_ID="4280" MobIdx="2634" Goal_X="171" Goal_Y="119" SpeedType="1"/>
+    <arena_defense order="13" Dungeon_ID="4280" MobIdx="2635" Goal_X="171" Goal_Y="119" SpeedType="1"/>
+</quest_dungeon_arena_defense>

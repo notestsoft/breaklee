@@ -1,0 +1,39 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Configure project (Windows)
+      run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64
+
+    - name: Build project
+      run: cmake --build build --config Release
+
+    - name: Prepare to upload binaries
+      run: |
+        New-Item -ItemType Directory -Force -Path bin
+        Copy-Item ./build/Release/AuthSvr.exe bin
+        Copy-Item ./build/Release/CoreLib.lib bin
+        Copy-Item ./build/Release/MasterSvr.exe bin
+        Copy-Item ./build/Release/NetLib.lib bin
+        Copy-Item ./build/Release/RuntimeDataLib.lib bin
+        Copy-Item ./build/Release/RuntimeLib.lib bin
+        Copy-Item ./build/Release/WorldSvr.exe bin
+      shell: powershell
+
+    - name: Upload binaries
+      uses: actions/upload-artifact@v2
+      with:
+        name: windows-latest
+        path: bin
+
+    - name: Construct artifact URL
+      run: echo "ARTIFACT_URL=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" >> $GITHUB_ENV

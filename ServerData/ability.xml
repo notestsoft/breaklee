@@ -1,0 +1,15 @@
+<ability>
+    <ability_slot_limit>
+        <passive_ability_slot min_count="16" max_count="40" />
+    </ability_slot_limit>
+    
+    <axp_field_rate>
+        <rate_limit min_level="1" max_level="119" rate="0" />
+        <rate_limit min_level="120" max_level="129" rate="75" />
+        <rate_limit min_level="130" max_level="139" rate="80" />
+        <rate_limit min_level="140" max_level="149" rate="85" />
+        <rate_limit min_level="150" max_level="159" rate="90" />
+        <rate_limit min_level="160" max_level="169" rate="95" />
+        <rate_limit min_level="170" max_level="200" rate="100" />
+    </axp_field_rate>
+</ability>
