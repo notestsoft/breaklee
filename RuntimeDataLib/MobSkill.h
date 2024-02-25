@@ -1,6 +1,6 @@
 RUNTIME_DATA_FILE_BEGIN(smob.enc)
 
-RUNTIME_DATA_TYPE_BEGIN(MobAttack, "cabal_mob.attack_main.attack", 2048)
+RUNTIME_DATA_TYPE_BEGIN(MobAttack, "cabal_mob.attack_main.attack", 4096)
 	RUNTIME_DATA_PROPERTY(UInt32, ID, "id")
 	RUNTIME_DATA_TYPE_BEGIN_CHILD(MobAttackData, "attack_data", 1)
 		RUNTIME_DATA_PROPERTY(Int32, AttackType, "attack_type")

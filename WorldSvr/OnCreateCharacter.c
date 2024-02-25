@@ -16,13 +16,13 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 	// TODO: CharacterSlotFlags is not set correctly?!
 	if (!(Client->Account.CharacterSlotFlags & (1 << Packet->SlotIndex)) ||
 		Client->Characters[Packet->SlotIndex].ID > 0) {
-		Response->Status = CREATE_CHARACTER_STATUS_NOT_ALLOWED;
+		Response->CharacterStatus = CREATE_CHARACTER_STATUS_NOT_ALLOWED;
 		return SocketSend(Socket, Connection, Response);
 	}
 
 	if (Packet->NameLength < MIN_CHARACTER_NAME_LENGTH ||
 		Packet->NameLength > MAX_CHARACTER_NAME_LENGTH) {
-		Response->Status = CREATE_CHARACTER_STATUS_NAME_VALIDATION_FAILED;
+		Response->CharacterStatus = CREATE_CHARACTER_STATUS_NAME_VALIDATION_FAILED;
 		return SocketSend(Socket, Connection, Response);
 	}
 
@@ -43,7 +43,7 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 		Style.Face >= MAX_CHARACTER_NORMAL_FACE_COUNT ||
 		Style.HairColor >= MAX_CHARACTER_NORMAL_HAIR_COLOR_COUNT ||
 		Style.BattleRank > 1) {
-		Response->Status = CREATE_CHARACTER_STATUS_NOT_ALLOWED;
+		Response->CharacterStatus = CREATE_CHARACTER_STATUS_NOT_ALLOWED;
 		return SocketSend(Socket, Connection, Response);
 	}
 
@@ -61,7 +61,7 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 
 	struct _RuntimeDataCharacterTemplate* CharacterTemplate = &Context->RuntimeData->CharacterTemplate[BattleStyleIndex - 1];
 	if (CharacterTemplate->BattleStyleIndex != BattleStyleIndex) {
-		Response->Status = CREATE_CHARACTER_STATUS_DBERROR;
+		Response->CharacterStatus = CREATE_CHARACTER_STATUS_DBERROR;
 		return SocketSend(Socket, Connection, Response);
 	}
 
@@ -162,7 +162,7 @@ IPC_PROCEDURE_BINDING(OnWorldCreateCharacter, IPC_WORLD_ACKCREATECHARACTER, IPC_
 	S2C_DATA_CREATE_CHARACTER* Response = PacketInit(S2C_DATA_CREATE_CHARACTER);
 	Response->Command = S2C_CREATE_CHARACTER;
 	Response->CharacterIndex = Packet->Character.ID * MAX_CHARACTER_COUNT + Packet->SlotIndex;
-	Response->Status = Packet->Status;
+	Response->CharacterStatus = Packet->Status;
 	return SocketSend(Context->ClientSocket, ClientConnection, Response);
 
 error:

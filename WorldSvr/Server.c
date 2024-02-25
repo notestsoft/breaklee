@@ -69,12 +69,14 @@ Void ServerLoadRuntimeData(
     Loaded &= ServerLoadMobData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
     Loaded &= ServerLoadWarpData(Context->Runtime, MainArchive);
     Loaded &= ServerLoadShopData(Context->Runtime, Config.WorldSvr.ServerDataPath, Config.WorldSvr.ServerDataPath);
+    // TODO: Migrate WorldData loading to new file structure!
     Loaded &= ServerLoadWorldData(Context->Runtime, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, MainArchive, true);
     Loaded &= ServerLoadCharacterTemplateData(Context, RankArchive, CharacterInitArchive);
     Loaded &= ServerLoadSkillData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, SkillArchive);
     Loaded &= ServerLoadLevelData(Context, MainArchive);
     Loaded &= ServerLoadDungeonData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, Cont1Archive, Cont2Archive, Cont3Archive);
-    if (!Loaded) FatalError("Runtime data loading failed!");
+    // TODO: Enable file loading check after finishing migration to new data structure!
+    //if (!Loaded) FatalError("Runtime data loading failed!");
 
     ArchiveDestroy(MainArchive);
     ArchiveDestroy(Cont1Archive);

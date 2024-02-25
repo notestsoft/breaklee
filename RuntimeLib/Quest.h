@@ -132,6 +132,10 @@ struct _RTCharacterQuestFlagInfo {
     UInt8 Flags[RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT];
 };
 
+struct _RTCharacterDungeonQuestFlagInfo {
+    UInt8 Flags[RUNTIME_CHARACTER_MAX_DUNGEON_QUEST_FLAG_COUNT];
+};
+
 #pragma pack(pop)
 
 Void RTCharacterQuestFlagClear(

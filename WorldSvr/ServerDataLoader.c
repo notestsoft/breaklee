@@ -92,7 +92,7 @@ struct _ArchiveMobData {
     Int32 ResistSuppression;
     Int32 O[4];
     UInt8 K[3];
-    Int32 L[5];
+    Int32 L[6];
 };
 
 #pragma pack(pop)
@@ -1113,6 +1113,9 @@ Bool ServerLoadWorldData(
             if (MapFileMagic == 1006) {
                 MapDataOffset += 4;
             }
+            else if (MapFileMagic == 1007) {
+                MapDataOffset += 4;
+            }
 
             UInt32 EffectCount = *((UInt32*)&MapData[MapDataOffset]);
             MapDataOffset += 4;
@@ -1819,6 +1822,12 @@ Bool ServerLoadDungeonData(
         if (!ParseAttributeInt32(Archive, Iterator->Index, "mission_timeout", &DungeonData->MissionTimeout)) goto error;
 
         RTWorldDataRef WorldData = RTWorldDataGet(Runtime->WorldManager, DungeonData->WorldID);
+        if (!WorldData) {
+            LogMessageFormat(LOG_LEVEL_INFO, "No world (%lld) found for dungeon (%lld)", DungeonData->WorldID, DungeonData->DungeonID);
+            Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+            continue;
+        }
+
         WorldData->HasMissionDungeon = true;
 
         Runtime->DungeonDataCount += 1;
@@ -1953,24 +1962,95 @@ Bool ServerLoadDungeonData(
 
         Mob->ID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
 
-        if (!ParseAttributeUInt16(Archive, Iterator->Index, "MobIdx", &Mob->ID.EntityIndex)) goto error;
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "PPIdx", &Mob->Spawn.PatternPartIndex)) goto error;
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "SpeciesIdx", &Mob->Spawn.MobSpeciesIndex)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "PosX", &Mob->Spawn.AreaX)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "PosY", &Mob->Spawn.AreaY)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Width", &Mob->Spawn.AreaWidth)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Height", &Mob->Spawn.AreaHeight)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpwnInterval", &Mob->Spawn.SpawnInterval)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpwnCount", &Mob->Spawn.SpawnCount)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpawnDefault", &Mob->Spawn.SpawnDefault)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Grade", &Mob->Spawn.Grade)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Lv", &Mob->Spawn.Level)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "MissionGate", &Mob->Spawn.MissionGate)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "PerfectDrop", &Mob->Spawn.PerfectDrop)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Type", &Mob->Spawn.Type)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Min", &Mob->Spawn.Min)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Max", &Mob->Spawn.Max)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Authority", &Mob->Spawn.Authority)) goto error;
+        if (!ParseAttributeUInt16(Archive, Iterator->Index, "MobIdx", &Mob->ID.EntityIndex)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "MobIdx", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeIndex(Archive, Iterator->Index, "PPIdx", &Mob->Spawn.PatternPartIndex)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "PPIdx", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeIndex(Archive, Iterator->Index, "SpeciesIdx", &Mob->Spawn.MobSpeciesIndex)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "SpeciesIdx", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "PosX", &Mob->Spawn.AreaX)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "PosX", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "PosY", &Mob->Spawn.AreaY)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "PosY", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Width", &Mob->Spawn.AreaWidth)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Width", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Height", &Mob->Spawn.AreaHeight)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Height", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpwnInterval", &Mob->Spawn.SpawnInterval)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "SpwnInterval", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpwnCount", &Mob->Spawn.SpawnCount)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "SpwnCount", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpawnDefault", &Mob->Spawn.SpawnDefault)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "SpawnDefault", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Grade", &Mob->Spawn.Grade)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Grade", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Lv", &Mob->Spawn.Level)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Lv", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "MissionGate", &Mob->Spawn.MissionGate)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "MissionGate", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "PerfectDrop", &Mob->Spawn.PerfectDrop)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "PerfectDrop", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Type", &Mob->Spawn.Type)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Type", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Min", &Mob->Spawn.Min)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Min", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Max", &Mob->Spawn.Max)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Max", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Authority", &Mob->Spawn.Authority)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Authority", "quest_dungeon_mobs.xml");
+            goto error;
+        }
 
         ParseAttributeInt32(Archive, Iterator->Index, "TrgIdxSpawn", &Mob->Spawn.SpawnTriggerID);
         ParseAttributeInt32(Archive, Iterator->Index, "TrgIdxKill", &Mob->Spawn.KillTriggerID);

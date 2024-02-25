@@ -70,7 +70,8 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     Response->Server.WorldType = Context->Config.WorldSvr.WorldType;
 
     /* Character Info */
-    Response->MapID = Packet->Character.CharacterData.Position.WorldID;
+    Response->WorldIndex = Packet->Character.CharacterData.Position.WorldID;
+    Response->DungeonIndex = Packet->Character.CharacterData.Position.DungeonIndex;
     Response->Position.X = Packet->Character.CharacterData.Position.X;
     Response->Position.Y = Packet->Character.CharacterData.Position.Y;
     Response->Exp = Packet->Character.CharacterData.Basic.Exp;
@@ -93,14 +94,14 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     Response->ChatServerAddress.Port = 0;
     memcpy(Response->AuctionServerAddress.Host, DummyHost, strlen(DummyHost));
     Response->AuctionServerAddress.Port = 0;
-    memcpy(Response->UnknownServerAddress.Host, DummyHost, strlen(DummyHost));
-    Response->UnknownServerAddress.Port = 0;
+    memcpy(Response->PartyServerAddress.Host, DummyHost, strlen(DummyHost));
+    Response->PartyServerAddress.Port = 0;
 
     Response->Nation = Packet->Character.CharacterData.Profile.Nation;
     Response->WarpMask = Packet->Character.CharacterData.Profile.WarpMask;
     Response->MapsMask = Packet->Character.CharacterData.Profile.MapsMask;
     Response->CharacterStyle = SwapUInt32(Packet->Character.CharacterData.Style.RawValue);
-    Response->CharacterStyleFlags = 0;
+    Response->CharacterLiveStyle = 0;
     Response->AP = Packet->Character.CharacterData.Ability.Point;
     Response->Axp = Packet->Character.CharacterData.Ability.Exp;
     Response->AllAchievementScore = 0;
@@ -316,7 +317,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
         Character->Info.Position.Y = Position->Y;
         Character->Info.Position.WorldID = WarpIndex->WorldID;
         Character->Info.Position.DungeonIndex = TargetWorld->DungeonIndex;
-        Response->MapID = Character->Info.Position.WorldID;
+        Response->WorldIndex = Character->Info.Position.WorldID;
         Response->Position.X = Character->Info.Position.X;
         Response->Position.Y = Character->Info.Position.Y;
     }
