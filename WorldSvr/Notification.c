@@ -137,10 +137,9 @@ Void AppendCharacterToCharacterSpawnIndex(
     Spawn->EquipmentSlotCount = Character->EquipmentInfo.Count;
     Spawn->IsPersonalShop = 0;
     Spawn->GuildIndex = 0;
-    Spawn->PetFlags = 0;
     Spawn->ActiveBuffCount = 0;
-    Spawn->UnknownCount = 0;
-    Spawn->SpecialBuffCount = 0;
+    Spawn->DebuffCount = 0;
+    Spawn->GmBuffCount = 0;
     Spawn->PassiveBuffCount = 0;
     Spawn->DisplayTitle = 0;
     Spawn->EventTitle = 0;
@@ -335,10 +334,9 @@ Void ServerRuntimeOnEvent(
         Spawn->EquipmentSlotCount = Character->EquipmentInfo.Count;
         Spawn->IsPersonalShop = 0;
         Spawn->GuildIndex = 0;
-        Spawn->PetFlags = 0;
         Spawn->ActiveBuffCount = 0;
-        Spawn->UnknownCount = 0;
-        Spawn->SpecialBuffCount = 0;
+        Spawn->DebuffCount = 0;
+        Spawn->GmBuffCount = 0;
         Spawn->PassiveBuffCount = 0;
         Spawn->DisplayTitle = 0;
         Spawn->EventTitle = 0;

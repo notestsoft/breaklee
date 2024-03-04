@@ -176,13 +176,14 @@ struct _RTItemData {
 };
 
 struct _RTItem {
-
     union {
         struct { UInt32 ID; UInt32 Extension; };
         struct { UInt64 _1 : 12; UInt64 IsAccountBinding : 1; };  
-        struct { UInt64 _2 : 19; UInt64 IsCharacterBinding : 1; UInt64 IsTradableBinding : 1; };
-        struct { UInt64 _3 : 13; UInt64 UpgradeLevel : 5; };
-        struct { UInt64 _4 : 32; UInt64 ExtremeLevel : 4; UInt64 DivineLevel : 4; };
+		struct { UInt64 _2 : 18; UInt64 IsPremiumPcOnly : 1; UInt64 IsCharacterBinding : 1; UInt64 IsTradableBinding : 1; };
+		struct { UInt64 _3 : 23; UInt64 IsSpecialInventoryItem : 1; };
+		struct { UInt64 _4 : 26; UInt64 IsBroken : 1; UInt64 IsSealed : 1; };
+		struct { UInt64 _5 : 13; UInt64 UpgradeLevel : 5; };
+        struct { UInt64 _6 : 32; UInt64 ExtremeLevel : 4; UInt64 DivineLevel : 4; };
 		struct { UInt32 PartyQuestItemID : 15; UInt32 PartyQuestItemStackable : 1; };
         struct { UInt64 Serial; };
     };
