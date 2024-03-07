@@ -639,6 +639,7 @@ ArchiveIteratorRef ArchiveAttributeIteratorFirst(
     return (ArchiveIteratorRef)ArrayGetElementAtIndex(Node->AttributeIndices, 0);
 }
 
+// TODO: There is an error in calculation of interator indices, which causes infinite loops
 ArchiveIteratorRef ArchiveAttributeIteratorNext(
     ArchiveRef Archive,
     ArchiveIteratorRef Iterator
@@ -660,7 +661,7 @@ ArchiveIteratorRef ArchiveAttributeIteratorNext(
         FirstAttributeIndex
     );
 
-    Int64 NextIndex = Iterator->Index + 1;
+    Int64 NextIndex = (Int32)(Attribute - FirstAttribute) / sizeof(struct _ArchiveAttribute) + 1;
 
     if (NextIndex >= ArrayGetElementCount(Node->AttributeIndices)) return NULL;
 

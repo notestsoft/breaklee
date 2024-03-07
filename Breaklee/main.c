@@ -59,49 +59,16 @@ Void EncryptDecryptFile(
     CString OutputFilePath = PathRemoveExtensionNoAlloc(FileName);
     PathAppend(OutputFilePath, IsBinary ? ".dat" : ".xml");
 
-    if (IsBinary) {
-        DecryptedFile = FileCreate(OutputFilePath);
-
-        if (!DecryptedFile) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Error creating file `%s`", OutputFilePath);
-            goto cleanup;
-        }
-
-        if (!FileWrite(DecryptedFile, Buffer, BufferLength, FALSE)) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Error writing file `%s`", OutputFilePath);
-            goto cleanup;
-        }
+    DecryptedFile = FileCreate(OutputFilePath);
+    if (!DecryptedFile) {
+        LogMessageFormat(LOG_LEVEL_ERROR, "Error creating file `%s`", OutputFilePath);
+        goto cleanup;
     }
-    else {
-        Archive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
 
-        Bool IgnoreErrors = true;
-
-        if (!ArchiveParseFromSource(Archive, (CString)Buffer, BufferLength, IgnoreErrors)) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Error parsing archive `%s`", FileName);
-            
-            PathAppend(OutputFilePath, ".error");
-            LogMessageFormat(LOG_LEVEL_WARNING, "Writing erroneous file `%s`", OutputFilePath);
-
-            DecryptedFile = FileCreate(OutputFilePath);
-            if (!DecryptedFile) {
-                LogMessageFormat(LOG_LEVEL_ERROR, "Error creating file `%s`", OutputFilePath);
-                goto cleanup;
-            }
-
-            if (!FileWrite(DecryptedFile, Buffer, BufferLength, FALSE)) {
-                LogMessageFormat(LOG_LEVEL_ERROR, "Error writing file `%s`", OutputFilePath);
-                goto cleanup;
-            }
-        }
-        else {
-            LogMessageFormat(LOG_LEVEL_INFO, "Writing file `%s`", OutputFilePath);
-
-            if (!ArchiveWriteToFile(Archive, OutputFilePath, true)) {
-                LogMessageFormat(LOG_LEVEL_ERROR, "Error writing file `%s`", OutputFilePath);
-                goto cleanup;
-            }
-        }
+    LogMessageFormat(LOG_LEVEL_INFO, "Writing file `%s`", OutputFilePath);
+    if (!FileWrite(DecryptedFile, Buffer, BufferLength, FALSE)) {
+        LogMessageFormat(LOG_LEVEL_ERROR, "Error writing file `%s`", OutputFilePath);
+        goto cleanup;
     }
 
 cleanup:
