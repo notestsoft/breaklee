@@ -27,7 +27,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     if (!Packet->Success) goto error;
 
     if (Context->Config.WorldSvr.DebugSetQuestFlags) {
-        memset(Packet->Character.QuestFlagData.Flags, 0xFF, 640);
+        memset(Packet->Character.QuestFlagData.FinishedQuests, 0xFF, RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT);
     }
 
     RTSkillSlotRef GmSkill = &Packet->Character.SkillSlotData.Skills[Packet->Character.SkillSlotData.Count];

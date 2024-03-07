@@ -162,7 +162,7 @@ Void AppendCharacterToCharacterSpawnIndex(
         Slot->EquipmentSlotIndex = ItemSlot->SlotIndex;
         Slot->ItemID = ItemSlot->Item.Serial;
         Slot->ItemOptions = ItemSlot->ItemOptions;
-        Slot->ItemAppearance = 0;
+        Slot->ItemDuration = 0;
     }
 }
 
@@ -359,7 +359,7 @@ Void ServerRuntimeOnEvent(
             Slot->EquipmentSlotIndex = ItemSlot->SlotIndex;
             Slot->ItemID = ItemSlot->Item.Serial;
             Slot->ItemOptions = ItemSlot->ItemOptions;
-            Slot->ItemAppearance = 0;
+            Slot->ItemDuration = 0;
         }
 
         return BroadcastToWorld(

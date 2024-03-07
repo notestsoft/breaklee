@@ -24,6 +24,7 @@ typedef struct _RTCharacterInventoryInfo* RTCharacterInventoryInfoRef;
 typedef struct _RTCharacterSkillSlotInfo* RTCharacterSkillSlotInfoRef;
 typedef struct _RTCharacterQuickSlotInfo* RTCharacterQuickSlotInfoRef;
 typedef struct _RTCharacterQuestFlagInfo* RTCharacterQuestFlagInfoRef;
+typedef struct _RTCharacterDungeonQuestFlagInfo* RTCharacterDungeonQuestFlagInfoRef;
 typedef struct _RTEssenceAbilitySlot* RTEssenceAbilitySlotRef;
 typedef struct _RTCharacterEssenceAbilityInfo* RTCharacterEssenceAbilityInfoRef;
 typedef struct _RTCharacterQuestSlotInfo* RTCharacterQuestSlotInfoRef;

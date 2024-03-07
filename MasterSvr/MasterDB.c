@@ -427,10 +427,10 @@ Bool MasterDBUpdateCharacterQuestFlagData(
 Bool MasterDBUpdateCharacterDungeonQuestFlagData(
     DatabaseRef Database,
     Int32 CharacterID,
-    RTCharacterQuestFlagInfoRef QuestFlagInfo
+    RTCharacterDungeonQuestFlagInfoRef QuestFlagInfo
 ) {
     StatementRef Statement = MasterDBGetStatement(Database, MASTERDB_UPDATE_CHARACTER_DUNGEONQUESTFLAG_DATA);
-    StatementBindParameterBinary(Statement, 0, QuestFlagInfo, sizeof(struct _RTCharacterQuestFlagInfo));
+    StatementBindParameterBinary(Statement, 0, QuestFlagInfo, sizeof(struct _RTCharacterDungeonQuestFlagInfo));
     StatementBindParameterInt32(Statement, 1, CharacterID);
 
     return StatementExecute(Statement);

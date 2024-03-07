@@ -180,7 +180,7 @@ struct _RTCharacter {
     struct _RTCharacterQuickSlotInfo QuickSlotInfo;
     struct _RTCharacterQuestSlotInfo QuestSlotInfo;
     struct _RTCharacterQuestFlagInfo QuestFlagInfo;
-    struct _RTCharacterQuestFlagInfo DungeonQuestFlagInfo;
+    struct _RTCharacterDungeonQuestFlagInfo DungeonQuestFlagInfo;
     
     //GAME_DATA_CHARACTER_ACHIEVEMENT AchievementData;
     struct _RTCharacterEssenceAbilityInfo EssenceAbilityInfo;
@@ -220,7 +220,7 @@ Void RTCharacterInitialize(
     RTCharacterQuickSlotInfoRef QuickSlotInfo,
     RTCharacterQuestSlotInfoRef QuestSlotInfo,
     RTCharacterQuestFlagInfoRef QuestFlagInfo,
-    RTCharacterQuestFlagInfoRef DungeonQuestFlagInfo,
+    RTCharacterDungeonQuestFlagInfoRef DungeonQuestFlagInfo,
     RTCharacterEssenceAbilityInfoRef EssenceAbilityInfo,
     RTCharacterOverlordMasteryInfoRef OverlordMasteryInfo,
     RTCharacterCollectionInfoRef CollectionInfo

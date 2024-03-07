@@ -118,17 +118,17 @@ IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_REQDBSYNC, IPC_DATA_WORLD_REQDBSY
     }
 
 	if (Packet->DBSyncMask & RUNTIME_CHARACTER_SYNC_DUNGEONQUESTFLAG) {
-		RTCharacterQuestFlagInfoRef QuestFlagInfo = (RTCharacterQuestFlagInfoRef)&Packet->Data[DataOffset];
-		DataOffset += sizeof(struct _RTCharacterQuestFlagInfo);
+		RTCharacterDungeonQuestFlagInfoRef QuestFlagInfo = (RTCharacterDungeonQuestFlagInfoRef)&Packet->Data[DataOffset];
+		DataOffset += sizeof(struct _RTCharacterDungeonQuestFlagInfo);
 
-		Bool Success = MasterDBUpdateCharacterQuestFlagData(
+		Bool Success = MasterDBUpdateCharacterDungeonQuestFlagData(
 			Context->Database,
 			Packet->CharacterID,
 			QuestFlagInfo
 		);
 
 		if (!Success) {
-			Response->DBSyncMaskFailure |= RUNTIME_CHARACTER_SYNC_QUESTFLAG;
+			Response->DBSyncMaskFailure |= RUNTIME_CHARACTER_SYNC_DUNGEONQUESTFLAG;
 		}
 	}
 

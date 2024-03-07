@@ -19,7 +19,7 @@ Void RTCharacterInitialize(
 	RTCharacterQuickSlotInfoRef QuickSlotInfo,
 	RTCharacterQuestSlotInfoRef QuestSlotInfo,
 	RTCharacterQuestFlagInfoRef QuestFlagInfo,
-	RTCharacterQuestFlagInfoRef DungeonQuestFlagInfo,
+	RTCharacterDungeonQuestFlagInfoRef DungeonQuestFlagInfo,
 	RTCharacterEssenceAbilityInfoRef EssenceAbilityInfo,
 	RTCharacterOverlordMasteryInfoRef OverlordMasteryInfo,
 	RTCharacterCollectionInfoRef CollectionInfo
@@ -35,7 +35,7 @@ Void RTCharacterInitialize(
 	memcpy(&Character->QuickSlotInfo, QuickSlotInfo, sizeof(struct _RTCharacterQuickSlotInfo));
 	memcpy(&Character->QuestSlotInfo, QuestSlotInfo, sizeof(struct _RTCharacterQuestSlotInfo));
 	memcpy(&Character->QuestFlagInfo, QuestFlagInfo, sizeof(struct _RTCharacterQuestFlagInfo));
-	memcpy(&Character->DungeonQuestFlagInfo, DungeonQuestFlagInfo, sizeof(struct _RTCharacterQuestFlagInfo));
+	memcpy(&Character->DungeonQuestFlagInfo, DungeonQuestFlagInfo, sizeof(struct _RTCharacterDungeonQuestFlagInfo));
 	memcpy(&Character->EssenceAbilityInfo, EssenceAbilityInfo, sizeof(struct _RTCharacterEssenceAbilityInfo));
 	memcpy(&Character->OverlordMasteryInfo, OverlordMasteryInfo, sizeof(struct _RTCharacterOverlordMasteryInfo));
 	memcpy(&Character->CollectionInfo, CollectionInfo, sizeof(struct _RTCharacterCollectionInfo));

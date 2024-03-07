@@ -78,7 +78,7 @@ Void ServerSyncDB(
             }
 
             if (Character->SyncMask & RUNTIME_CHARACTER_SYNC_DUNGEONQUESTFLAG) {
-                PacketAppendMemoryCopy(&Character->DungeonQuestFlagInfo, sizeof(struct _RTCharacterQuestFlagInfo));
+                PacketAppendMemoryCopy(&Character->DungeonQuestFlagInfo, sizeof(struct _RTCharacterDungeonQuestFlagInfo));
             }
 
             if (Character->SyncMask & RUNTIME_CHARACTER_SYNC_ESSENCE_ABILITY) {
