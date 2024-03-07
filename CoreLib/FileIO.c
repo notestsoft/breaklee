@@ -17,6 +17,17 @@ CString PathGetFileNameExtension(
 	return Cursor + 1;
 }
 
+static Char PathRemoveExtensionBuffer[MAX_PATH] = { 0 };
+
+CString PathRemoveExtensionNoAlloc(
+    CString Path
+) {
+    strcpy_s(PathRemoveExtensionBuffer, MAX_PATH, Path);
+    CString Cursor = strrchr(PathRemoveExtensionBuffer, '.');
+    if (Cursor != NULL) *Cursor = '\0';
+    return Path;
+}
+
 Bool DirectoryCreate(
     CString Path
 ) {

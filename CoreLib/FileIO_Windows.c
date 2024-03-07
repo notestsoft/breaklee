@@ -1,5 +1,6 @@
 #include "FileIO.h"
 #include "Diagnostic.h"
+#include "String.h"
 
 #ifdef _WIN32
 
@@ -148,6 +149,42 @@ Bool FileExists(
     }
 
     return false;
+}
+
+Int32 FilesProcess(
+    CString Pattern,
+    FilesProcessCallback Callback,
+    Void* UserData
+) {
+    WIN32_FIND_DATA FindData;
+    HANDLE FileHandle = FindFirstFile(Pattern, &FindData);
+    Int32 ProcessedFileCount = 0;
+    CHAR Buffer[MAX_PATH] = { 0 };
+    CString Directory = PathGetCurrentDirectory(Buffer, MAX_PATH);
+
+    if (FileHandle == INVALID_HANDLE_VALUE) {
+        return ProcessedFileCount;
+    }
+
+    do {
+        if (!(FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+            CString FilePath = PathCombineNoAlloc(Directory, FindData.cFileName);
+            FileRef File = FileOpen(FilePath);
+            
+            if (File) Callback(
+                FindData.cFileName,
+                File,
+                UserData
+            );
+            if (File) FileClose(File);
+
+            ProcessedFileCount += 1;
+        }
+    } while (FindNextFile(FileHandle, &FindData) != 0);
+
+    FindClose(FileHandle);
+
+    return ProcessedFileCount;
 }
 
 CString PathCombineNoAlloc(
