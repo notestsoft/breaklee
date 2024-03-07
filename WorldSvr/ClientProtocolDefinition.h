@@ -260,9 +260,7 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, 142, 13130,
     UInt16 BlessingBeadCount;
     UInt16 QuestSlotCount;
     struct _RTCharacterQuestFlagInfo QuestFlagInfo;
-    struct _RTCharacterQuestFlagInfo DeletedQuestFlagInfo;
-    struct _RTCharacterDungeonQuestFlagInfo QuestDungeonFlagInfo;
-    struct _RTCharacterDungeonQuestFlagInfo MissionDungeonFlagInfo;
+    struct _RTCharacterDungeonQuestFlagInfo DungeonQuestFlagInfo;
     UInt8 Unknown15[4097];
     UInt32 UnknownDailyQuestCount;
     
