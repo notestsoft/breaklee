@@ -46,10 +46,8 @@ struct _RTRuntime {
     Int32 QuestRewardItemSetDataCount;
     Int32 ShopDataCount;
     Int32 TrainerDataCount;
-    Int32 WarpIndexCount;
     Int32 WarpCount;
     Int32 WorldCount;
-    Int32 LevelCount;
     Int32 DungeonDataCount;
     Int32 DungeonMobSpawnDataCount;
     Int32 MissionDungeonPatternPartDataCount;
@@ -68,9 +66,7 @@ struct _RTRuntime {
     struct _RTQuestRewardItemSetData QuestRewardItemSetData[RUNTIME_MEMORY_MAX_QUEST_REWARD_ITEM_SET_DATA_COUNT];
     struct _RTShopData ShopData[RUNTIME_MEMORY_MAX_SHOP_DATA_COUNT];
     struct _RTTrainerData TrainerData[RUNTIME_MEMORY_MAX_TRAINER_DATA_COUNT];
-    struct _RTWarpIndex WarpIndices[RUNTIME_MEMORY_MAX_WARP_INDEX_COUNT];
     struct _RTWarp Warps[RUNTIME_MEMORY_MAX_WARP_COUNT];
-    struct _RTLevel Levels[RUNTIME_MEMORY_MAX_LEVEL_COUNT];
     struct _RTDungeonData DungeonData[RUNTIME_MEMORY_MAX_DUNGEON_COUNT];
     struct _RTMissionDungeonPatternPartData MissionDungeonPatternPartData[RUNTIME_MEMORY_MAX_DUNGEON_PATTERN_PART_COUNT];
 

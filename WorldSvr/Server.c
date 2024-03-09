@@ -73,7 +73,6 @@ Void ServerLoadRuntimeData(
     Loaded &= ServerLoadWorldData(Context->Runtime, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, MainArchive, true);
     Loaded &= ServerLoadCharacterTemplateData(Context, RankArchive, CharacterInitArchive);
     Loaded &= ServerLoadSkillData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, SkillArchive);
-    Loaded &= ServerLoadLevelData(Context, MainArchive);
     Loaded &= ServerLoadDungeonData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, Cont1Archive, Cont2Archive, Cont3Archive);
     // TODO: Enable file loading check after finishing migration to new data structure!
     //if (!Loaded) FatalError("Runtime data loading failed!");

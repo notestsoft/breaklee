@@ -32,11 +32,6 @@ Bool ServerLoadWarpData(
     ArchiveRef Archive
 );
 
-Bool ServerLoadLevelData(
-    ServerContextRef Context,
-    ArchiveRef MainArchive
-);
-
 Bool ServerLoadItemData(
     ServerContextRef Context,
     CString RuntimeDirectory,

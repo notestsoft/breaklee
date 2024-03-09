@@ -3,6 +3,30 @@
 #include "Warp.h"
 #include "WorldManager.h"
 
+RTWarpPointResult RTRuntimeGetWarpPoint(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 WarpIndex
+) {
+    assert(0 <= WarpIndex - 1 && WarpIndex - 1 < Runtime->Context->WarpPointCount);
+    assert(Character->Info.Profile.Nation <= 3);
+
+    RTDataWarpPointRef WarpPoint = &Runtime->Context->WarpPointList[WarpIndex - 1];
+    RTPosition Positions[] = {
+        { WarpPoint->X, WarpPoint->Y },
+        { WarpPoint->Nation1X, WarpPoint->Nation1Y },
+        { WarpPoint->Nation2X, WarpPoint->Nation2Y },
+        { WarpPoint->Nation3X, WarpPoint->Nation2Y },
+    };
+    RTWarpPointResult Result = { 0 };
+    Result.X = Positions[Character->Info.Profile.Nation].X;
+    Result.Y = Positions[Character->Info.Profile.Nation].Y;
+    Result.Fee = WarpPoint->Fee;
+    Result.WorldIndex = WarpPoint->WorldIndex;
+    Result.Level = WarpPoint->Level;
+    return Result;
+}
+
 Bool RTRuntimeWarpCharacter(
     RTRuntimeRef Runtime,
     RTEntityID Entity,
@@ -35,12 +59,10 @@ Bool RTRuntimeWarpCharacter(
         case RUNTIME_NPC_ID_WAR_BATTLEFIELD: return false;
         case RUNTIME_NPC_ID_WAR_LOBBY: return false;
         case RUNTIME_NPC_ID_DEAD: {
-            RTWarpIndexRef WarpIndex = &Runtime->WarpIndices[World->WorldData->DeadWarpIndex - 1];
-            RTPositionRef Position = &WarpIndex->Target[0];
-
+            RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, World->WorldData->DeadWarpIndex);
             RTWorldContextRef TargetWorld = World;
-            if (World->WorldData->WorldIndex != WarpIndex->WorldID) {
-                TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpIndex->WorldID);
+            if (World->WorldData->WorldIndex != WarpPoint.WorldIndex) {
+                TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpPoint.WorldIndex);
                 assert(TargetWorld);
             }
 
@@ -48,18 +70,17 @@ Bool RTRuntimeWarpCharacter(
 
             Character->Info.Resource.HP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
             Character->Info.Resource.MP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX];
-
-            Character->Info.Position.X = Position->X;
-            Character->Info.Position.Y = Position->Y;
-            Character->Info.Position.WorldID = WarpIndex->WorldID;
+            Character->Info.Position.X = WarpPoint.X;
+            Character->Info.Position.Y = WarpPoint.Y;
+            Character->Info.Position.WorldID = WarpPoint.WorldIndex;
             Character->Info.Position.DungeonIndex = TargetWorld->DungeonIndex;
             RTCharacterInitializeAttributes(Runtime, Character);
 
             RTMovementInitialize(
                 Runtime,
                 &Character->Movement,
-                Position->X,
-                Position->Y,
+                WarpPoint.X,
+                WarpPoint.Y,
                 RUNTIME_MOVEMENT_SPEED_BASE,
                 RUNTIME_WORLD_TILE_WALL
             );
@@ -95,23 +116,25 @@ Bool RTRuntimeWarpCharacter(
                 return false;
             }
 
-            RTWarpIndexRef WarpIndex = &Runtime->WarpIndices[World->WorldData->ReturnWarpIndex - 1];
-            RTPositionRef Position = &WarpIndex->Target[0];
-            RTWorldContextRef NewWorld = RTRuntimeGetWorldByID(Runtime, WarpIndex->WorldID);
+            assert(Runtime->Context->WarpPointCount > World->WorldData->ReturnWarpIndex - 1);
+            RTDataWarpPointRef WarpPoint = &Runtime->Context->WarpPointList[World->WorldData->ReturnWarpIndex - 1];
+            // TODO: Use nation warp x, y
+
+            RTWorldContextRef NewWorld = RTRuntimeGetWorldByID(Runtime, WarpPoint->WorldIndex);
             assert(NewWorld);
 
             RTWorldDespawnCharacter(Runtime, World, Entity);
 
-            Character->Info.Position.X = Position->X;
-            Character->Info.Position.Y = Position->Y;
-            Character->Info.Position.WorldID = WarpIndex->WorldID;
+            Character->Info.Position.X = WarpPoint->X;
+            Character->Info.Position.Y = WarpPoint->Y;
+            Character->Info.Position.WorldID = WarpPoint->WorldIndex;
             Character->Info.Position.DungeonIndex = NewWorld->DungeonIndex;
 
             RTMovementInitialize(
                 Runtime,
                 &Character->Movement,
-                Position->X,
-                Position->Y,
+                WarpPoint->X,
+                WarpPoint->Y,
                 RUNTIME_MOVEMENT_SPEED_BASE,
                 RUNTIME_WORLD_TILE_WALL
             );
@@ -143,29 +166,29 @@ Bool RTRuntimeWarpCharacter(
                 RTCharacterInitializeAttributes(Runtime, Character);
             }
 
-            assert(0 <= WarpNpcID - 1  && WarpNpcID - 1 < Runtime->WarpIndexCount);
-            RTWarpIndexRef WarpIndex = &Runtime->WarpIndices[WarpNpcID - 1];
-            RTPositionRef Position = &WarpIndex->Target[0];
-            
+            RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, WarpNpcID);
+
+            // TODO: Use nation warp x, y
+
             RTWorldContextRef TargetWorld = World;
-            if (World->WorldData->WorldIndex != WarpIndex->WorldID) {
-                TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpIndex->WorldID);
+            if (World->WorldData->WorldIndex != WarpPoint.WorldIndex) {
+                TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpPoint.WorldIndex);
                 assert(TargetWorld);
             }
 
             // TODO: Delete Dungeon Instance!
             RTWorldDespawnCharacter(Runtime, World, Entity);
 
-            Character->Info.Position.X = Position->X;
-            Character->Info.Position.Y = Position->Y;
-            Character->Info.Position.WorldID = WarpIndex->WorldID;
+            Character->Info.Position.X = WarpPoint.X;
+            Character->Info.Position.Y = WarpPoint.Y;
+            Character->Info.Position.WorldID = WarpPoint.WorldIndex;
             Character->Info.Position.DungeonIndex = TargetWorld->DungeonIndex;
 
             RTMovementInitialize(
                 Runtime,
                 &Character->Movement,
-                Position->X,
-                Position->Y,
+                WarpPoint.X,
+                WarpPoint.Y,
                 RUNTIME_MOVEMENT_SPEED_BASE,
                 RUNTIME_WORLD_TILE_WALL
             );
@@ -230,29 +253,29 @@ Bool RTRuntimeWarpCharacter(
     if (Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < Warp->Fee) return false;
 
     if (Warp->Type == RUNTIME_WARP_TYPE_GATE) {
-        assert(0 <= Warp->TargetID - 1 && Warp->TargetID - 1 < Runtime->WarpIndexCount);
-        RTWarpIndexRef WarpIndex = &Runtime->WarpIndices[Warp->TargetID - 1];
-        RTPositionRef Position = &WarpIndex->Target[0];
+        assert(0 <= Warp->TargetID - 1 && Runtime->Context->WarpPointCount > Warp->TargetID - 1);
+        RTDataWarpPointRef WarpPoint = &Runtime->Context->WarpPointList[Warp->TargetID - 1];
+        // TODO: Use nation warp x, y
 
         RTWorldContextRef TargetWorld = World;
-        if (World->WorldData->WorldIndex != WarpIndex->WorldID) {
-            TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpIndex->WorldID);
+        if (World->WorldData->WorldIndex != WarpPoint->WorldIndex) {
+            TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpPoint->WorldIndex);
             assert(TargetWorld);
         }
 
         RTWorldDespawnCharacter(Runtime, World, Entity);
 
         Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= Warp->Fee;
-        Character->Info.Position.X = Position->X;
-        Character->Info.Position.Y = Position->Y;
-        Character->Info.Position.WorldID = WarpIndex->WorldID;
+        Character->Info.Position.X = WarpPoint->X;
+        Character->Info.Position.Y = WarpPoint->Y;
+        Character->Info.Position.WorldID = WarpPoint->WorldIndex;
         Character->Info.Position.DungeonIndex = TargetWorld->DungeonIndex;
 
         RTMovementInitialize(
             Runtime,
             &Character->Movement,
-            Position->X,
-            Position->Y,
+            WarpPoint->X,
+            WarpPoint->Y,
             RUNTIME_MOVEMENT_SPEED_BASE,
             RUNTIME_WORLD_TILE_WALL
         );
@@ -277,25 +300,23 @@ Bool RTRuntimeWarpCharacter(
         // TODO: Check MaxPlayerCount & Party Size
         // TODO: Check EntryConditionClass
 
-        assert(0 <= QuestDungeonData->EntryWarpID - 1 && QuestDungeonData->EntryWarpID - 1 < Runtime->WarpIndexCount);
-        RTWarpIndexRef WarpIndex = &Runtime->WarpIndices[QuestDungeonData->EntryWarpID - 1];
-        RTPositionRef Position = &WarpIndex->Target[0];
+        RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, QuestDungeonData->EntryWarpID);
         RTWorldDespawnCharacter(Runtime, World, Entity);
 
-        RTWorldContextRef DungeonWorld = RTRuntimeOpenDungeon(Runtime, Character, WarpIndex->WorldID, QuestDungeonData->DungeonID);
+        RTWorldContextRef DungeonWorld = RTRuntimeOpenDungeon(Runtime, Character, WarpPoint.WorldIndex, QuestDungeonData->DungeonID);
         if (!DungeonWorld) return false;
 
         Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= Warp->Fee;
-        Character->Info.Position.X = Position->X;
-        Character->Info.Position.Y = Position->Y;
-        Character->Info.Position.WorldID = WarpIndex->WorldID;
+        Character->Info.Position.X = WarpPoint.X;
+        Character->Info.Position.Y = WarpPoint.Y;
+        Character->Info.Position.WorldID = WarpPoint.WorldIndex;
         Character->Info.Position.DungeonIndex = DungeonWorld->DungeonIndex;
 
         RTMovementInitialize(
             Runtime,
             &Character->Movement,
-            Position->X,
-            Position->Y,
+            WarpPoint.X,
+            WarpPoint.Y,
             RUNTIME_MOVEMENT_SPEED_BASE,
             RUNTIME_WORLD_TILE_WALL
         );
@@ -325,25 +346,23 @@ Bool RTRuntimeWarpCharacter(
         // TODO: Check MaxPlayerCount & Party Size
         // TODO: Check EntryConditionClass
 
-        assert(0 <= DungeonData->EntryWarpID - 1 && DungeonData->EntryWarpID - 1 < Runtime->WarpIndexCount);
-        RTWarpIndexRef WarpIndex = &Runtime->WarpIndices[DungeonData->EntryWarpID - 1];
-        RTPositionRef Position = &WarpIndex->Target[0];
+        RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, DungeonData->EntryWarpID);
         RTWorldDespawnCharacter(Runtime, World, Entity);
         
-        RTWorldContextRef DungeonWorld = RTRuntimeOpenDungeon(Runtime, Character, WarpIndex->WorldID, DungeonData->DungeonID);
+        RTWorldContextRef DungeonWorld = RTRuntimeOpenDungeon(Runtime, Character, WarpPoint.WorldIndex, DungeonData->DungeonID);
         if (!DungeonWorld) return false;
 
         Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= Warp->Fee;
-        Character->Info.Position.X = Position->X;
-        Character->Info.Position.Y = Position->Y;
-        Character->Info.Position.WorldID = WarpIndex->WorldID;
+        Character->Info.Position.X = WarpPoint.X;
+        Character->Info.Position.Y = WarpPoint.Y;
+        Character->Info.Position.WorldID = WarpPoint.WorldIndex;
         Character->Info.Position.DungeonIndex = DungeonWorld->DungeonIndex;
         
         RTMovementInitialize(
             Runtime,
             &Character->Movement,
-            Position->X,
-            Position->Y,
+            WarpPoint.X,
+            WarpPoint.Y,
             RUNTIME_MOVEMENT_SPEED_BASE,
             RUNTIME_WORLD_TILE_WALL
         );

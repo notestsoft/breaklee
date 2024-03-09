@@ -303,20 +303,17 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
         RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, Character->Info.Position.DungeonIndex);
         if (!DungeonData) goto error;
 
-        assert(0 <= DungeonData->FailWarpNpcID - 1 && DungeonData->FailWarpNpcID - 1 < Runtime->WarpIndexCount);
-        RTWarpIndexRef WarpIndex = &Runtime->WarpIndices[DungeonData->FailWarpNpcID - 1];
-        RTPositionRef Position = &WarpIndex->Target[0];
-
+        RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, DungeonData->FailWarpNpcID);
         RTWorldContextRef TargetWorld = World;
-        if (World->WorldData->WorldIndex != WarpIndex->WorldID) {
-            TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpIndex->WorldID);
+        if (World->WorldData->WorldIndex != WarpPoint.WorldIndex) {
+            TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpPoint.WorldIndex);
             assert(TargetWorld);
         }
 
         World = TargetWorld;
-        Character->Info.Position.X = Position->X;
-        Character->Info.Position.Y = Position->Y;
-        Character->Info.Position.WorldID = WarpIndex->WorldID;
+        Character->Info.Position.X = WarpPoint.X;
+        Character->Info.Position.Y = WarpPoint.Y;
+        Character->Info.Position.WorldID = WarpPoint.WorldIndex;
         Character->Info.Position.DungeonIndex = TargetWorld->DungeonIndex;
         Response->WorldIndex = Character->Info.Position.WorldID;
         Response->Position.X = Character->Info.Position.X;
