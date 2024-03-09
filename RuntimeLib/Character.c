@@ -687,7 +687,7 @@ Void RTCharacterAddExp(
 	
 	// TODO: Limit exp accumulation to the max reachable value from data!
 	Character->Info.Basic.Exp += Exp;
-	Character->Info.Basic.Level = RTRuntimeGetLevelByExp(Runtime, Character->Info.Basic.Exp);
+	Character->Info.Basic.Level = RTRuntimeGetLevelByExp(Runtime, CurrentLevel, Character->Info.Basic.Exp);
 
 	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
 	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
