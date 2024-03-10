@@ -6,6 +6,7 @@
 #include "BattleSystem.h"
 #include "BlendedAbility.h"
 #include "Collection.h"
+#include "Warehouse.h"
 #include "Entity.h"
 #include "Equipment.h"
 #include "EssenceAbility.h"
@@ -191,6 +192,7 @@ struct _RTCharacter {
 
     struct _RTCharacterOverlordMasteryInfo OverlordMasteryInfo;
     struct _RTCharacterCollectionInfo CollectionInfo;
+    struct _RTCharacterWarehouseInfo WarehouseInfo;
     /*
     GAME_DATA_CHARACTER_TRANSFORM TransformData;
     GAME_DATA_CHARACTER_TRANSCENDENCE TranscendenceData;
@@ -223,7 +225,8 @@ Void RTCharacterInitialize(
     RTCharacterQuestFlagInfoRef DungeonQuestFlagInfo,
     RTCharacterEssenceAbilityInfoRef EssenceAbilityInfo,
     RTCharacterOverlordMasteryInfoRef OverlordMasteryInfo,
-    RTCharacterCollectionInfoRef CollectionInfo
+    RTCharacterCollectionInfoRef CollectionInfo,
+    RTCharacterWarehouseInfoRef WarehouseInfo
 );
 
 Void RTCharacterInitializeAttributes(
