@@ -122,7 +122,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     Response->WarTitle = 0;
     Response->CraftEnergy = 0;
     Response->SortingOrderMask = 0;
-    Response->BasicCraftExp = 0;
+    Response->RequestCraftExp = 0;
     Response->GoldMeritExp = 0;
     Response->GoldMeritPoint = 0;
     Response->PlatinumMeritCount = 0;

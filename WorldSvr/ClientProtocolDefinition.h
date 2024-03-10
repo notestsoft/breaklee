@@ -14,7 +14,7 @@
 #define CLIENT_PROTOCOL(__NAMESPACE__, __NAME__, __COMMAND__, __VERSION__, __BODY__)
 #endif
 
-CLIENT_PROTOCOL_STRUCT(S2C_POSITION,
+CLIENT_PROTOCOL_STRUCT(CSC_POSITION,
     UInt16 X;
     UInt16 Y;
 )
@@ -196,7 +196,7 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, 142, 13130,
     RTEntityID Entity;
     UInt32 WorldIndex;
     UInt32 DungeonIndex;
-    S2C_POSITION Position;
+    CSC_POSITION Position;
     UInt64 Exp;
     UInt64 Alz;
     UInt64 Wexp;
@@ -303,14 +303,17 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, 142, 13130,
     UInt32 CraftEnergy;
     UInt8 Unknown17[6];
     UInt8 SortingOrderMask;
-    UInt16 UnknownBasicCraftCount;
-    UInt16 BasicCraftExp;
-    // UInt16 UnknownBasicCraftExp;
-    // UInt8 BasicCraftFlags[256];
-    // UInt8 Unknown19[1796];
-    UInt8 Unknown19[2072];
-    // UInt32 SkillCooldownCount;
-    // UInt8 Unknown65[14];
+    UInt16 RequestCraftCount;
+    UInt16 RequestCraftExp;
+    UInt8 RequestCraftFlags[1024];
+    UInt8 RequestCraftFavoriteFlags[1024];
+    UInt8 UnknownRequestCraftOrderingRelatedData[2];
+    UInt8 BuffCount;
+    UInt32 Unknown2389;
+    UInt32 SpiritPointBuffDuration;
+    UInt32 UpgradePoints;
+    Timestamp UpgradePointTimestamp;
+    UInt8 Unknown2819;
     UInt32 GoldMeritCount;
     UInt32 GoldMeritExp;
     UInt32 GoldMeritPoint;
@@ -563,12 +566,12 @@ CLIENT_PROTOCOL(C2S, SKILL_TO_MOB, 174, 13130,
     UInt16 SkillIndex;
     UInt8 SlotIndex;
     UInt32 Unknown1;
-    S2C_POSITION PositionSet;
+    CSC_POSITION PositionSet;
     UInt8 Unknown2;
     UInt32 Unknown3;
     UInt8 TargetCount;
-    S2C_POSITION PositionCharacter;
-    S2C_POSITION PositionTarget;
+    CSC_POSITION PositionCharacter;
+    CSC_POSITION PositionTarget;
     C2S_DATA_SKILL_TO_MOB_TARGET Data[0];
 )
 
@@ -580,7 +583,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_SKILL_TO_MOB_TARGET,
     UInt32 MobTotalDamage;
     UInt32 MobAdditionalDamage;
     UInt64 MobHP;
-    S2C_POSITION PositionSet;
+    CSC_POSITION PositionSet;
     UInt32 BfxType;
     UInt32 BfxDuration;
     UInt8 Unknown3;
@@ -630,8 +633,8 @@ enum {
 */
 
 CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_GROUP_MOVEMENT,
-    S2C_POSITION PositionBegin;
-    S2C_POSITION PositionEnd;
+    CSC_POSITION PositionBegin;
+    CSC_POSITION PositionEnd;
 )
 
 CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_GROUP_ASTRAL,
@@ -714,35 +717,35 @@ CLIENT_PROTOCOL(S2C, ATTACK_TO_CHARACTER, 177, 0000,
 
 CLIENT_PROTOCOL(C2S, MOVEMENT_BEGIN, 190, 13130,
     C2S_DATA_SIGNATURE;
-    S2C_POSITION PositionBegin;
-    S2C_POSITION PositionEnd;
-    S2C_POSITION PositionCurrent;
+    CSC_POSITION PositionBegin;
+    CSC_POSITION PositionEnd;
+    CSC_POSITION PositionCurrent;
     UInt16 WorldID;
 )
 
 CLIENT_PROTOCOL(C2S, MOVEMENT_END, 191, 13130,
     C2S_DATA_SIGNATURE;
-    S2C_POSITION Position;
+    CSC_POSITION Position;
 )
 
 CLIENT_PROTOCOL(C2S, MOVEMENT_CHANGE, 192, 13130,
     C2S_DATA_SIGNATURE;
-    S2C_POSITION PositionBegin;
-    S2C_POSITION PositionEnd;
-    S2C_POSITION PositionCurrent;
+    CSC_POSITION PositionBegin;
+    CSC_POSITION PositionEnd;
+    CSC_POSITION PositionCurrent;
     UInt16 WorldID;
 )
 
 CLIENT_PROTOCOL(C2S, MOVEMENT_WAYPOINTS, 193, 13130,
     C2S_DATA_SIGNATURE;
-    S2C_POSITION PositionCurrent;
-    S2C_POSITION PositionNext;
+    CSC_POSITION PositionCurrent;
+    CSC_POSITION PositionNext;
 )
 
 CLIENT_PROTOCOL(C2S, MOVEMENT_TILE_POSITION, 194, 13130,
     C2S_DATA_SIGNATURE;
-    S2C_POSITION PositionCurrent;
-    S2C_POSITION PositionNext;
+    CSC_POSITION PositionCurrent;
+    CSC_POSITION PositionNext;
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT,
@@ -818,8 +821,8 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_INDEX,
     Int32 CurrentRage;
     UInt8 Unknown2[8];
     UInt32 MovementSpeed;
-    S2C_POSITION PositionBegin;
-    S2C_POSITION PositionEnd;
+    CSC_POSITION PositionBegin;
+    CSC_POSITION PositionEnd;
     UInt16 PKLevel;
     UInt8 Nation;
     UInt32 Unknown3;
@@ -886,8 +889,8 @@ CLIENT_PROTOCOL_ENUM(
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_MOBS_SPAWN_INDEX,
     RTEntityID Entity;
-    S2C_POSITION PositionBegin;
-    S2C_POSITION PositionEnd;
+    CSC_POSITION PositionBegin;
+    CSC_POSITION PositionEnd;
     UInt16 MobSpeciesIndex;
     UInt64 MaxHP;
     UInt64 CurrentHP;
@@ -976,50 +979,50 @@ CLIENT_PROTOCOL(S2C, MOVEMENT_BEGIN, 210, X596,
     S2C_DATA_SIGNATURE;
     UInt32 CharacterIndex;
     UInt32 TickCount;
-    S2C_POSITION PositionBegin;
-    S2C_POSITION PositionEnd;
+    CSC_POSITION PositionBegin;
+    CSC_POSITION PositionEnd;
 )
 
 CLIENT_PROTOCOL(S2C, MOVEMENT_END, 211, X596,
     S2C_DATA_SIGNATURE;
     UInt32 CharacterIndex;
-    S2C_POSITION Position;
+    CSC_POSITION Position;
 )
 
 CLIENT_PROTOCOL(S2C, MOVEMENT_CHANGE, 212, X596,
     S2C_DATA_SIGNATURE;
     UInt32 CharacterIndex;
     UInt32 TickCount;
-    S2C_POSITION PositionBegin;
-    S2C_POSITION PositionEnd;
+    CSC_POSITION PositionBegin;
+    CSC_POSITION PositionEnd;
 )
 
 CLIENT_PROTOCOL(S2C, MOB_MOVEMENT_BEGIN, 213, X596,
     S2C_DATA_SIGNATURE;
     RTEntityID Entity;
     UInt32 TickCount;
-    S2C_POSITION PositionBegin;
-    S2C_POSITION PositionEnd;
+    CSC_POSITION PositionBegin;
+    CSC_POSITION PositionEnd;
 )
 
 CLIENT_PROTOCOL(S2C, MOB_MOVEMENT_END, 214, X596,
     S2C_DATA_SIGNATURE;
     RTEntityID Entity;
-    S2C_POSITION Position;
+    CSC_POSITION Position;
 )
 
 CLIENT_PROTOCOL(S2C, MOB_CHASE_BEGIN, 215, X596,
     S2C_DATA_SIGNATURE;
     RTEntityID Entity;
     UInt32 TickCount;
-    S2C_POSITION PositionBegin;
-    S2C_POSITION PositionEnd;
+    CSC_POSITION PositionBegin;
+    CSC_POSITION PositionEnd;
 )
 
 CLIENT_PROTOCOL(S2C, MOB_CHASE_END, 216, X596,
     S2C_DATA_SIGNATURE;
     RTEntityID Entity;
-    S2C_POSITION Position;
+    CSC_POSITION Position;
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_SKILL_TO_MOB_TARGET,
@@ -1031,7 +1034,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_SKILL_TO_MOB_TARGET,
     UInt32 BfxDuration;
     UInt8 Unknown2;
     UInt32 Unknown3;
-    S2C_POSITION PositionSet;
+    CSC_POSITION PositionSet;
 )
 
 CLIENT_PROTOCOL(S2C, NFY_SKILL_TO_MOB, 220, X596,
@@ -1039,17 +1042,23 @@ CLIENT_PROTOCOL(S2C, NFY_SKILL_TO_MOB, 220, X596,
     UInt16 SkillIndex;
     UInt8 TargetCount;
     UInt32 CharacterIndex;
-    S2C_POSITION PositionSet;
+    CSC_POSITION PositionSet;
     UInt8 Unknown1;
     UInt64 CharacterHP;
     UInt32 Unknown2;
     S2C_DATA_NFY_SKILL_TO_MOB_TARGET Data[0];
 )
 
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_SKILL_GROUP_MOVEMENT,
+    UInt32 CharacterIndex;
+    RTEntityID Entity;
+    CSC_POSITION PositionEnd;
+)
+
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON,
     UInt32 CharacterIndex;
     RTEntityID Entity;
-    S2C_POSITION Position; 
+    CSC_POSITION Position; 
     UInt16 Unknown1;
     UInt32 Unknown2;
 )
@@ -1095,7 +1104,7 @@ CLIENT_PROTOCOL(C2S, WARP, 244, X596,
 
 CLIENT_PROTOCOL(S2C, WARP, 244, X596,
     S2C_DATA_SIGNATURE;
-    S2C_POSITION Position;
+    CSC_POSITION Position;
     UInt64 AccumulatedExp;
     UInt64 AccumulatedOxp;
     UInt64 ReceivedSkillExp;
@@ -1304,6 +1313,23 @@ CLIENT_PROTOCOL(S2C, NFY_UNKNOWN_302, 302, X596,
 CLIENT_PROTOCOL(S2C, NFY_QUEST_DUNGEON_PATTERN_PART_COMPLETED, 303, X596,
     S2C_DATA_SIGNATURE;
     UInt8 PatternPartIndex;
+)
+
+CLIENT_PROTOCOL(C2S, SKILL_TO_ACTION, 310, X596,
+    C2S_DATA_SIGNATURE;
+    UInt32 TargetIndex;
+    UInt16 ActionIndex;
+    UInt8 X;
+    UInt8 Y;
+)
+
+CLIENT_PROTOCOL(S2C, SKILL_TO_ACTION, 311, X596,
+    S2C_DATA_SIGNATURE;
+    UInt32 CharacterIndex;
+    UInt32 TargetIndex;
+    UInt16 ActionIndex;
+    UInt8 X;
+    UInt8 Y;
 )
 
 CLIENT_PROTOCOL_STRUCT(C2S_DATA_QUEST_ACTION_INDEX,
@@ -1541,18 +1567,18 @@ CLIENT_PROTOCOL(S2C, NFY_PARTY_QUEST_MISSION_MOB_KILL, 379, X596,
     UInt16 MobSpeciesIndex;
 )
 
-CLIENT_PROTOCOL(C2S, CHANGE_DIRECTION, 391, X596,
+CLIENT_PROTOCOL(C2S, CHANGE_DIRECTION, 391, 13130,
     C2S_DATA_SIGNATURE;
     Float32 Direction;
 )
 
-CLIENT_PROTOCOL(S2C, CHANGE_DIRECTION, 392, X596,
+CLIENT_PROTOCOL(S2C, CHANGE_DIRECTION, 392, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 CharacterIndex;
     Float32 Direction;
 )
 
-CLIENT_PROTOCOL(C2S, KEY_MOVEMENT_BEGIN, 401, X596,
+CLIENT_PROTOCOL(C2S, KEY_MOVEMENT_BEGIN, 401, 13130,
     C2S_DATA_SIGNATURE;
     Float32 PositionStartX;
     Float32 PositionStartY;
@@ -1563,10 +1589,10 @@ CLIENT_PROTOCOL(C2S, KEY_MOVEMENT_BEGIN, 401, X596,
     UInt8 Direction;
 )
 
-CLIENT_PROTOCOL(S2C, KEY_MOVEMENT_BEGIN, 403, X596,
+CLIENT_PROTOCOL(S2C, KEY_MOVEMENT_BEGIN, 403, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 CharacterIndex;
-    Timestamp TickCount;
+    UInt32 TickCount;
     Float32 PositionStartX;
     Float32 PositionStartY;
     Float32 PositionEndX;
@@ -1574,20 +1600,20 @@ CLIENT_PROTOCOL(S2C, KEY_MOVEMENT_BEGIN, 403, X596,
     UInt8 Direction;
 )
 
-CLIENT_PROTOCOL(C2S, KEY_MOVEMENT_END, 402, X596,
+CLIENT_PROTOCOL(C2S, KEY_MOVEMENT_END, 402, 13130,
     C2S_DATA_SIGNATURE;
     Float32 PositionCurrentX;
     Float32 PositionCurrentY;
 )
 
-CLIENT_PROTOCOL(S2C, KEY_MOVEMENT_END, 404, X596,
+CLIENT_PROTOCOL(S2C, KEY_MOVEMENT_END, 404, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 CharacterIndex;
     Float32 PositionCurrentX;
     Float32 PositionCurrentY;
 )
 
-CLIENT_PROTOCOL(C2S, KEY_MOVEMENT_CHANGE, 405, X596,
+CLIENT_PROTOCOL(C2S, KEY_MOVEMENT_CHANGE, 405, 13130,
     C2S_DATA_SIGNATURE;
     Float32 PositionStartX;
     Float32 PositionStartY;
@@ -1598,10 +1624,10 @@ CLIENT_PROTOCOL(C2S, KEY_MOVEMENT_CHANGE, 405, X596,
     UInt8 Direction;
 )
 
-CLIENT_PROTOCOL(S2C, KEY_MOVEMENT_CHANGE, 406, X596,
+CLIENT_PROTOCOL(S2C, KEY_MOVEMENT_CHANGE, 406, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 CharacterIndex;
-    Timestamp TickCount;
+    UInt32 TickCount;
     Float32 PositionStartX;
     Float32 PositionStartY;
     Float32 PositionEndX;
@@ -1826,6 +1852,28 @@ CLIENT_PROTOCOL(S2C, PREMIUM_BENEFIT_INFO, 999, 0000,
     UInt8 Unknown1;
     UInt32 Count;
     // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(S2C, NFY_EVENT_DATA, 1002, 13130,
+    S2C_DATA_SIGNATURE_EXTENDED;
+    UInt8 Count;
+    Int32 Events[];
+)
+
+CLIENT_PROTOCOL(C2S, NPC_EVENT_INFO, 1003, 13130,
+    C2S_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(S2C, NPC_EVENT_INFO, 1003, 13130,
+    S2C_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(S2C, NFY_EVENT_INDEX_LIST, 1008, 13130,
+    C2S_DATA_SIGNATURE;
+    UInt8 Count;
+    Int32 EventIndex[];
 )
 
 CLIENT_PROTOCOL(C2S, CREATE_SUBPASSWORD, 1030, 0000,
@@ -2174,6 +2222,25 @@ CLIENT_PROTOCOL(S2C, GET_CASH_BALANCE, 2182, X596,
 CLIENT_PROTOCOL(S2C, NFY_UNKNOWN_2248, 2248, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 Unknown1;
+)
+
+CLIENT_PROTOCOL_STRUCT(C2S_REQUEST_CRAFT_INVENTORY_SLOT,
+    Int32 InventorySlotIndex;
+    UInt32 Count;
+)
+
+CLIENT_PROTOCOL(C2S, REQUEST_CRAFT, 2250, 13130,
+    C2S_DATA_SIGNATURE;
+    UInt32 RequestCode;
+    UInt8 RequestSlotIndex;
+    Int32 Unknown1;
+    Int32 InventorySlotCount;
+    C2S_REQUEST_CRAFT_INVENTORY_SLOT InventorySlots[523];
+)
+
+CLIENT_PROTOCOL(S2C, REQUEST_CRAFT, 2250, 13130,
+    S2C_DATA_SIGNATURE;
+    UInt8 Success;
 )
 
 CLIENT_PROTOCOL(C2S, GET_UNKNOWN_USER_LIST, 2253, X596,

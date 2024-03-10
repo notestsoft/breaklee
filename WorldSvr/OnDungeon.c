@@ -4,6 +4,39 @@
 #include "Notification.h"
 #include "Server.h"
 
+CLIENT_PROCEDURE_BINDING(CHECK_DUNGEON_PLAYTIME) {
+	if (!Character) goto error;
+	
+	// TODO: Add xml data
+
+	S2C_DATA_CHECK_DUNGEON_PLAYTIME* Response = PacketInit(S2C_DATA_CHECK_DUNGEON_PLAYTIME);
+	Response->Command = S2C_CHECK_DUNGEON_PLAYTIME;
+	Response->DungeonID = Packet->DungeonID;
+	Response->MaxInstanceCount = 10;
+	Response->InstanceCount = 0;
+	Response->Unknown1[0] = 0x01;
+	Response->RemainingPlayTimeInSeconds = 21600;
+	Response->MaxEntryCount = 99;
+	return SocketSend(Socket, Connection, Response);
+
+error:
+	return SocketDisconnect(Socket, Connection);
+}
+
+CLIENT_PROCEDURE_BINDING(GET_DUNGEON_REWARD_LIST) {
+	if (!Character) goto error;
+	
+	// TODO: Add reward list data
+
+	S2C_DATA_GET_DUNGEON_REWARD_LIST* Response = PacketInit(S2C_DATA_GET_DUNGEON_REWARD_LIST);
+	Response->Command = S2C_GET_DUNGEON_REWARD_LIST;
+	Response->DungeonID = Packet->DungeonID;
+	return SocketSend(Socket, Connection, Response);
+
+error:
+	return SocketDisconnect(Socket, Connection);
+}
+
 CLIENT_PROCEDURE_BINDING(ENTER_DUNGEON_GATE) {
 	if (!(Client->Flags & CLIENT_FLAGS_CHARACTER_INDEX_LOADED) || Client->Account.AccountID < 1) goto error;
 
