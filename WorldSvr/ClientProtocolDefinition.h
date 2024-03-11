@@ -137,7 +137,11 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_SERVER,
     UInt8 ServerID;
     UInt8 WorldID;
     UInt16 PlayerCount;
-    UInt8 Unknown1[22];
+    UInt8 Unknown1[18];
+    UInt8 MaxPlayerLevel;
+    UInt8 MinPlayerLevel;
+    UInt8 MaxRank;
+    UInt8 MinRank;
     UInt16 MaxPlayerCount;
     S2C_DATA_INITIALIZE_SERVER_ADDRESS Address;
     UInt32 WorldType;
@@ -218,14 +222,12 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, 142, 13130,
     UInt32 CurrentRage;
     UInt32 MaxBP;
     UInt32 CurrentBP;
+    UInt32 Unknown1[2];
     UInt32 CharacterIndex;
-    UInt32 Unknown6;
-    UInt8 Unknown7[3];
-    UInt8 UnknownSkillRank;
     UInt32 SkillLevel;
     UInt32 SkillExp;
     UInt32 SkillPoint;
-    UInt64 UnknownExp;
+    UInt64 RestExp;
     UInt64 HonorPoint;
     UInt64 DeathPenaltyExp;
     UInt32 DeathPenaltyHp;
@@ -254,28 +256,30 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, 142, 13130,
     UInt16 AP;
     UInt32 Axp;
     UInt8 EssenceAbilityCount;
-    UInt8 UnknownDailyMissionCount;
-    UInt16 BlendedAbilityCount;
+    UInt8 ExtendedEssenceAbilityCount;
+    UInt8 BlendedAbilityCount;
+    UInt8 ExtendedBlendedAbilityCount;
     UInt16 PremiumServiceCount;
     UInt16 BlessingBeadCount;
     UInt16 QuestSlotCount;
     struct _RTCharacterQuestFlagInfo QuestFlagInfo;
     struct _RTCharacterDungeonQuestFlagInfo DungeonQuestFlagInfo;
     UInt8 Unknown15[4097];
-    UInt32 UnknownDailyQuestCount;
-    
-    struct {
-        UInt32 Unknown1;
-        UInt32 PetSerial;
-        UInt32 Unknown3;
-        UInt32 Unknown4;
-        UInt64 PetItemKind;
-        UInt32 Unknown5;
-        UInt16 Unknown6;
-        Char PetName[MAX_CHARACTER_NAME_LENGTH + 1];
-    } Pet;
+    UInt32 HelpWindow;
+    UInt32 ActiveDailyQuestCount;
 
-    UInt8 Unknown16[206];
+    struct {
+        UInt32 PetSerial;
+        UInt32 PetId;
+        UInt32 PetOwnerId;
+        UInt64 PetItemKind;
+        UInt8 PetLevel;
+        UInt32 PetExp;
+        Char PetName[MAX_CHARACTER_NAME_LENGTH + 1];
+        UInt8 PetSkills[33];
+        UInt32 DeleteDate;
+        UInt32 Checked;
+    } Pet[3];
 
     UInt8 EquipmentAppearanceCount;
     UInt16 InventoryAppearanceCount;

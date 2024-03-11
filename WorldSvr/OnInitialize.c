@@ -86,6 +86,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     Response->SkillLevel = Packet->Character.CharacterData.Skill.Level;
     Response->SkillExp = (UInt32)Packet->Character.CharacterData.Skill.Exp;
     Response->SkillPoint = Packet->Character.CharacterData.Skill.Point;
+    Response->RestExp = 0;
     Response->HonorPoint = Packet->Character.CharacterData.Honor.Point;
 
     /* TODO: Populate Server host data */
@@ -104,6 +105,10 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     Response->CharacterLiveStyle = 0;
     Response->AP = Packet->Character.CharacterData.Ability.Point;
     Response->Axp = Packet->Character.CharacterData.Ability.Exp;
+    Response->EssenceAbilityCount = 0;
+    Response->ExtendedEssenceAbilityCount = 0;
+    Response->BlendedAbilityCount = 0;
+    Response->ExtendedBlendedAbilityCount = 0;
     Response->AllAchievementScore = 0;
     Response->NormalAchievementScore = 0;
     Response->QuestAchievementScore = 0;
