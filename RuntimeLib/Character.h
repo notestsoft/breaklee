@@ -37,6 +37,7 @@ enum {
     RUNTIME_CHARACTER_SYNC_ESSENCE_ABILITY      = 1 << 8,
     RUNTIME_CHARACTER_SYNC_OVERLORD             = 1 << 9,
     RUNTIME_CHARACTER_SYNC_COLLECTION           = 1 << 10,
+    RUNTIME_CHARACTER_SYNC_WAREHOUSE            = 1 << 11,
 };
 
 enum {

@@ -11,6 +11,7 @@
 // NOTE: Currently we use this shared memory because we don't do parallel processing...
 static struct _RTCharacterEquipmentInfo kEquipmentInfoBackup;
 static struct _RTCharacterInventoryInfo kInventoryInfoBackup;
+static struct _RTCharacterWarehouseInfo kWarehouseInfoBackup;
 
 Bool MoveInventoryItem(
     RTRuntimeRef Runtime,
@@ -23,6 +24,7 @@ Bool MoveInventoryItem(
     // TODO: Check if this is causing an issue when the client is not initialized!
     memcpy(&kEquipmentInfoBackup, &Character->EquipmentInfo, sizeof(struct _RTCharacterEquipmentInfo));
     memcpy(&kInventoryInfoBackup, &Character->InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
+    memcpy(&kWarehouseInfoBackup, &Character->WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
 
     struct _RTItemSlot TempSlot = { 0 };
     if (SourceStorageType == STORAGE_TYPE_INVENTORY) {
@@ -31,6 +33,9 @@ Bool MoveInventoryItem(
     else if (SourceStorageType == STORAGE_TYPE_EQUIPMENT) {
         if (!RTEquipmentRemoveSlot(Runtime, &Character->EquipmentInfo, SourceSlotIndex, &TempSlot)) goto error;
     }
+    else if (SourceStorageType == STORAGE_TYPE_WAREHOUSE) {
+		if (!RTWarehouseRemoveSlot(Runtime, &Character->WarehouseInfo, SourceSlotIndex, &TempSlot)) goto error;
+	}
     else {
         goto error;
     }
@@ -41,6 +46,9 @@ Bool MoveInventoryItem(
     }
     else if (DestinationStorageType == STORAGE_TYPE_EQUIPMENT) {
         if (!RTEquipmentSetSlot(Runtime, &Character->EquipmentInfo, &TempSlot)) goto error;
+    }
+    else if (DestinationStorageType == STORAGE_TYPE_WAREHOUSE) {
+        if (!RTWarehouseSetSlot(Runtime, &Character->WarehouseInfo, &TempSlot)) goto error;
     }
     else {
         goto error;
@@ -54,6 +62,10 @@ Bool MoveInventoryItem(
         Character->SyncMask |= RUNTIME_CHARACTER_SYNC_EQUIPMENT;
     }
 
+    if (SourceStorageType == STORAGE_TYPE_INVENTORY || DestinationStorageType == STORAGE_TYPE_WAREHOUSE) {
+        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_WAREHOUSE;
+    }
+
     Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
 
     return true;
@@ -61,6 +73,7 @@ Bool MoveInventoryItem(
 error:
     memcpy(&Character->EquipmentInfo, &kEquipmentInfoBackup, sizeof(struct _RTCharacterEquipmentInfo));
     memcpy(&Character->InventoryInfo, &kInventoryInfoBackup, sizeof(struct _RTCharacterInventoryInfo));
+    memcpy(&Character->WarehouseInfo, &kWarehouseInfoBackup, sizeof(struct _RTCharacterWarehouseInfo));
     return false;
 }
 

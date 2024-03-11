@@ -344,34 +344,11 @@ CLIENT_PROTOCOL(C2S, GET_WAREHOUSE, 145, 0000,
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_GET_WAREHOUSE_SLOT_INDEX,
-    struct {
-        UInt64 IdLow;                
-        UInt64 BindToAccount;        
-        UInt64 UpgradeLevel;         
-        UInt64 PremiumPcOnly;        
-        UInt64 BindToCharacter;      
-        UInt64 BindOnEquip;          
-        UInt64 Reserved0;            
-        UInt64 SpecialInventoryItem; 
-        UInt64 IdHigh;               
-        UInt64 SpecialBit;           
-        UInt64 IsBroken;             
-        UInt64 u0;                   
-        UInt64 ExtremeUpgrade;       
-        UInt64 DivineUpgrade;        
-        UInt64 Reserved1[3];         
-    } Item;
-    UInt32 Serial;
+    RTItem Item;
+    UInt64 Unknown1;
     UInt64 ItemOptions;
     UInt16 SlotIndex;
-    struct {
-        UInt32 Year;
-        UInt32 Month;
-        UInt32 Day;
-        UInt32 Hour;
-        UInt32 Minute;
-        UInt32 Id;
-    } Period;
+    RTItemDuration ItemDuration;
 )
 
 CLIENT_PROTOCOL(S2C, GET_WAREHOUSE, 145, X596,
