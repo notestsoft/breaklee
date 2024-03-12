@@ -82,6 +82,7 @@ typedef struct _RTWorldContext* RTWorldContextRef;
 typedef struct _RTWorldChunk* RTWorldChunkRef;
 typedef struct _RTWorldManager* RTWorldManagerRef;
 typedef struct _RTLevel* RTLevelRef;
+typedef struct _RTCharacterWarehouseInfo* RTCharacterWarehouseInfoRef;
 
 struct _RTPosition {
 	Int32 X;

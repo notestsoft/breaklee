@@ -22,7 +22,8 @@ Void RTCharacterInitialize(
 	RTCharacterQuestFlagInfoRef DungeonQuestFlagInfo,
 	RTCharacterEssenceAbilityInfoRef EssenceAbilityInfo,
 	RTCharacterOverlordMasteryInfoRef OverlordMasteryInfo,
-	RTCharacterCollectionInfoRef CollectionInfo
+	RTCharacterCollectionInfoRef CollectionInfo,
+	RTCharacterWarehouseInfoRef WarehouseInfo
 ) {
 	Character->SyncMask = 0;
 	Character->SyncPriority = 0;
@@ -39,6 +40,7 @@ Void RTCharacterInitialize(
 	memcpy(&Character->EssenceAbilityInfo, EssenceAbilityInfo, sizeof(struct _RTCharacterEssenceAbilityInfo));
 	memcpy(&Character->OverlordMasteryInfo, OverlordMasteryInfo, sizeof(struct _RTCharacterOverlordMasteryInfo));
 	memcpy(&Character->CollectionInfo, CollectionInfo, sizeof(struct _RTCharacterCollectionInfo));
+	memcpy(&Character->WarehouseInfo, WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
 	memset(&Character->TemporaryInventoryInfo, 0, sizeof(struct _RTCharacterInventoryInfo));
 	memset(&Character->RecoveryInfo, 0, sizeof(struct _RTCharacterRecoveryInfo));
 

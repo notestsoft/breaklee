@@ -179,4 +179,22 @@ IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_REQDBSYNC, IPC_DATA_WORLD_REQDBSY
 			Response->DBSyncMaskFailure |= RUNTIME_CHARACTER_SYNC_COLLECTION;
 		}
 	}
+
+	if (Packet->DBSyncMask & RUNTIME_CHARACTER_SYNC_WAREHOUSE) {
+		RTCharacterWarehouseInfoRef WarehouseInfo = (RTCharacterWarehouseInfoRef)&Packet->Data[DataOffset];
+		DataOffset += sizeof(struct _RTCharacterWarehouseInfo);
+
+		MASTERDB_DATA_ACCOUNT Account = { 0 };
+		Account.AccountID = Packet->AccountID;
+		memcpy(&Account.WarehouseData, WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
+
+		Bool Success = MasterDBUpdateAccountWarehouseData(
+			Context->Database,
+			&Account
+		);
+
+		if (!Success) {
+			Response->DBSyncMaskFailure |= RUNTIME_CHARACTER_SYNC_WAREHOUSE;
+		}
+	}
 }
