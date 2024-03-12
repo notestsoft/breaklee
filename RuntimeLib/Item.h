@@ -229,37 +229,6 @@ struct _RTItemSlot {
     RTItemDuration ItemDuration;
 };
 
-struct _RTWarehouseItemSlot {
-	struct {
-		UInt64 IdLow;
-		UInt64 BindToAccount;
-		UInt64 UpgradeLevel;
-		UInt64 PremiumPcOnly;
-		UInt64 BindToCharacter;
-		UInt64 BindOnEquip;
-		UInt64 Reserved0;
-		UInt64 SpecialInventoryItem;
-		UInt64 IdHigh;
-		UInt64 SpecialBit;
-		UInt64 IsBroken;
-		UInt64 u0;
-		UInt64 ExtremeUpgrade;
-		UInt64 DivineUpgrade;
-		UInt64 Reserved1[3];
-	} Item;
-	UInt32 Serial;
-	UInt64 ItemOptions;
-	UInt16 SlotIndex;
-	struct {
-		UInt32 Year;
-		UInt32 Month;
-		UInt32 Day;
-		UInt32 Hour;
-		UInt32 Minute;
-		UInt32 Id;
-	} Period;
-};
-
 struct _RTItemSlotAppearance {
     UInt16 SlotIndex;
     UInt32 ItemID;

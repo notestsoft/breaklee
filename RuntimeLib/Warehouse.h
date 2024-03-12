@@ -10,7 +10,7 @@ EXTERN_C_BEGIN
 
 struct _RTCharacterWarehouseInfo {
 	UInt16 Count;
-	UInt64 Alz;
+	UInt64 Currency;
 	struct _RTItemSlot Slots[RUNTIME_WAREHOUSE_SLOT_COUNT];
 };
 

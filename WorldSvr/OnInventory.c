@@ -62,11 +62,7 @@ Bool MoveInventoryItem(
         Character->SyncMask |= RUNTIME_CHARACTER_SYNC_EQUIPMENT;
     }
 
-    if (SourceStorageType == STORAGE_TYPE_INVENTORY || DestinationStorageType == STORAGE_TYPE_WAREHOUSE) {
-        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_WAREHOUSE;
-    }
-
-    if (SourceStorageType == STORAGE_TYPE_WAREHOUSE || DestinationStorageType == STORAGE_TYPE_INVENTORY) {
+    if (SourceStorageType == STORAGE_TYPE_WAREHOUSE || DestinationStorageType == STORAGE_TYPE_WAREHOUSE) {
         Character->SyncMask |= RUNTIME_CHARACTER_SYNC_WAREHOUSE;
     }
 
