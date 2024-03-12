@@ -94,6 +94,7 @@ struct _RTQuestData {
     Int32 MissionDungeonCount;
     Int32 DeleteType;
     Int32 DailyCount;
+    Int32 DungeonIndexCount;
     struct _RTQuestConditionData Condition;
     Int32 Reward[9];
     Int32 QuestBeginNpcIndex;
@@ -101,6 +102,7 @@ struct _RTQuestData {
     struct _RTQuestMissionData MissionMobs[RUNTIME_MAX_QUEST_COUNTER_COUNT];
     struct _RTQuestMissionData MissionItems[RUNTIME_MAX_QUEST_COUNTER_COUNT];
     struct _RTQuestMissionData MissionDungeons[RUNTIME_MAX_QUEST_COUNTER_COUNT];
+    Int32 DungeonIndex[RUNTIME_MAX_QUEST_DUNGEON_INDEX_COUNT];
 };
 
 struct _RTQuestRewardItemData {

@@ -635,7 +635,15 @@ Bool ServerLoadQuestData(
             assert(!ChildIterator);
         }
 
-        // TODO: Add dungeon
+        ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, "dungeon");
+        while (ChildIterator) {
+            assert(Quest->DungeonIndexCount < RUNTIME_MAX_QUEST_DUNGEON_INDEX_COUNT);
+
+            if (!ParseAttributeInt32(Archive, ChildIterator->Index, "id", &Quest->DungeonIndex[Quest->DungeonIndexCount])) goto error;
+
+            Quest->DungeonIndexCount += 1;
+            ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
+        }
 
         Runtime->QuestDataCount += 1;
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);

@@ -53,6 +53,7 @@
 #define RUNTIME_NATION_COUNT						            3
 
 #define RUNTIME_MAX_QUEST_COUNTER_COUNT					        3
+#define RUNTIME_MAX_QUEST_DUNGEON_INDEX_COUNT					8
 
 #define RUNTIME_SHOP_MAX_ITEM_COUNT                             128
 

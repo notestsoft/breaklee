@@ -536,13 +536,10 @@ Bool RTCharacterHasQuestDungeon(
 		RTQuestDataRef Quest = RTRuntimeGetQuestByIndex(Runtime, QuestSlot->QuestIndex);
 		if (!Quest) return false;
 
-		Int32 QuestCounterIndex = Quest->MissionMobCount + Quest->MissionItemCount;
-		for (Int32 MissionIndex = 0; MissionIndex < Quest->MissionDungeonCount; MissionIndex += 1) {
-			if (Quest->MissionDungeons[MissionIndex].Value[0] == DungeonID && QuestSlot->Counter[QuestCounterIndex] < 1) {
+		for (Int32 Index = 0; Index < Quest->DungeonIndexCount; Index += 1) {
+			if (Quest->DungeonIndex[Index] == DungeonID) {
 				return true;
 			}
-
-			QuestCounterIndex += 1;
 		}
 	}
 
