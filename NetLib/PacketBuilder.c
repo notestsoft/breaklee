@@ -11,7 +11,7 @@ PacketRef _PacketInit(
     Int32 Length,
     Bool Extended
 ) {
-    //assert(0 < Length && Length <= PACKET_BUILDER_BUFFER_SIZE);
+    assert(0 < Length && Length <= PACKET_BUILDER_BUFFER_SIZE);
     kPacketBuilderBufferIndex = (kPacketBuilderBufferIndex + 1) % PACKET_BUILDER_BUFFER_COUNT;
     UInt8* Buffer = &kPacketBuilderBuffer[0] + PACKET_BUILDER_BUFFER_SIZE * kPacketBuilderBufferIndex;
     memset(Buffer, 0, Length);

@@ -66,6 +66,10 @@ Bool MoveInventoryItem(
         Character->SyncMask |= RUNTIME_CHARACTER_SYNC_WAREHOUSE;
     }
 
+    if (SourceStorageType == STORAGE_TYPE_WAREHOUSE || DestinationStorageType == STORAGE_TYPE_INVENTORY) {
+        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_WAREHOUSE;
+    }
+
     Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
 
     return true;

@@ -105,7 +105,7 @@ Bool RTWarehouseRemoveSlot(
 	Int32 SlotIndex,
 	RTItemSlotRef Result
 ) {
-	RTItemSlotRef Slot = RTInventoryGetSlot(Runtime, Warehouse, SlotIndex);
+	RTItemSlotRef Slot = RTWarehouseGetSlot(Runtime, Warehouse, SlotIndex);
 	if (!Slot) return false;
 
 	memcpy(Result, Slot, sizeof(struct _RTItemSlot));
