@@ -88,11 +88,12 @@ typedef struct {
     GAME_DATA_CHARACTER_BLENDEDABILITY BlendedAbilityData;
     GAME_DATA_CHARACTER_HONORMEDAL HonorMedalData;
     struct _RTCharacterOverlordMasteryInfo OverlordData;
-    struct _RTCharacterCollectionInfo CollectionData;
     GAME_DATA_CHARACTER_TRANSFORM TransformData;
     GAME_DATA_CHARACTER_TRANSCENDENCE TranscendenceData;
     GAME_DATA_CHARACTER_MERCENARY MercenaryData;
     GAME_DATA_CHARACTER_CRAFT CraftData;
+    struct _RTCharacterWarehouseInfo WarehouseData;
+    struct _RTCharacterCollectionInfo CollectionData;
 } GAME_DATA_CHARACTER;
 
 #pragma pack(pop)

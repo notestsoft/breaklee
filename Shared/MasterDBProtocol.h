@@ -34,8 +34,8 @@ typedef struct {
     Char CharacterAnswer[MAX_SUBPASSWORD_ANSWER_LENGTH + 1];
 
     MASTERDB_DATA_ACCOUNT_ACHIEVEMENT_DATA AchievementData;
-    MASTERDB_DATA_ACCOUNT_WAREHOUSE_DATA WarehouseData;
     MASTERDB_DATA_ACCOUNT_MERIT_DATA MeritData;
+    struct _RTCharacterWarehouseInfo WarehouseData;
     struct _RTCharacterCollectionInfo CollectionData;
 
     Timestamp CreatedAt;
