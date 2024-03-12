@@ -367,7 +367,6 @@ Bool RTCharacterQuestAction(
 
 	RTQuestSlotRef QuestSlot = &Character->QuestSlotInfo.QuestSlot[QuestSlotIndex];
 	if (QuestSlot->QuestIndex != QuestIndex) return false;
-	if (QuestSlot->NpcActionIndex != ActionIndex) return false;
 
 	RTQuestDataRef Quest = RTRuntimeGetQuestByIndex(Runtime, QuestIndex);
 	if (!Quest) return false;
@@ -376,6 +375,10 @@ Bool RTCharacterQuestAction(
 	if (ActionIndex < 0 || ActionIndex >= Quest->NpcSet.Count) return false;
 
 	RTQuestNpcDataRef QuestNpc = &Quest->NpcSet.Npcs[ActionIndex];
+	assert(QuestNpc->Index == ActionIndex);
+
+	if (QuestNpc->NpcActionOrder != QuestSlot->NpcActionIndex) return false;
+
 	RTNpcRef Npc = RTRuntimeGetNpcByWorldNpcID(Runtime, QuestNpc->WorldID, QuestNpc->NpcID);
 	if (!Npc) return false;
 
