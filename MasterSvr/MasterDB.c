@@ -54,7 +54,7 @@ Bool MasterDBInsertAccount(
     StatementRef Statement = MasterDBGetStatement(Database, MASTERDB_INSERT_ACCOUNT);
     StatementBindParameterInt64(Statement, 0, Data->AccountID);
     StatementBindParameterBinary(Statement, 1, &Data->AchievementData, sizeof(MASTERDB_DATA_ACCOUNT_ACHIEVEMENT_DATA));
-    StatementBindParameterBinary(Statement, 2, &Data->WarehouseData, sizeof(MASTERDB_DATA_ACCOUNT_WAREHOUSE_DATA));
+    StatementBindParameterBinary(Statement, 2, &Data->WarehouseData, sizeof(struct _RTCharacterWarehouseInfo));
     StatementBindParameterBinary(Statement, 3, &Data->MeritData, sizeof(MASTERDB_DATA_ACCOUNT_MERIT_DATA));
     StatementBindParameterBinary(Statement, 4, &Data->CollectionData, sizeof(struct _RTCharacterCollectionInfo));
 
@@ -83,7 +83,7 @@ Bool MasterDBSelectAccountByID(
     StatementReadResultUInt32(Statement, 7, &Data->CharacterQuestion);
     StatementReadResultString(Statement, 8, MAX_SUBPASSWORD_ANSWER_LENGTH, Data->CharacterAnswer);
     StatementReadResultBinary(Statement, 9, sizeof(MASTERDB_DATA_ACCOUNT_ACHIEVEMENT_DATA), &Data->AchievementData, NULL);
-    StatementReadResultBinary(Statement, 10, sizeof(MASTERDB_DATA_ACCOUNT_WAREHOUSE_DATA), &Data->WarehouseData, NULL);
+    StatementReadResultBinary(Statement, 10, sizeof(struct _RTCharacterWarehouseInfo), &Data->WarehouseData, NULL);
     StatementReadResultBinary(Statement, 11, sizeof(MASTERDB_DATA_ACCOUNT_MERIT_DATA), &Data->MeritData, NULL);
     StatementReadResultBinary(Statement, 12, sizeof(struct _RTCharacterCollectionInfo), &Data->CollectionData, NULL);
     StatementReadResultTimestamp(Statement, 13, &Data->CreatedAt);
@@ -148,7 +148,7 @@ Bool MasterDBUpdateAccountWarehouseData(
     MASTERDB_DATA_ACCOUNT* Data
 ) {
     StatementRef Statement = MasterDBGetStatement(Database, MASTERDB_UPDATE_ACCOUNT_WAREHOUSE_DATA);
-    StatementBindParameterBinary(Statement, 0, &Data->WarehouseData, sizeof(MASTERDB_DATA_ACCOUNT_WAREHOUSE_DATA));
+    StatementBindParameterBinary(Statement, 0, &Data->WarehouseData, sizeof(struct _RTCharacterWarehouseInfo));
     StatementBindParameterInt64(Statement, 1, Data->AccountID);
 
     return StatementExecute(Statement);

@@ -6,6 +6,7 @@
 #include "BattleSystem.h"
 #include "BlendedAbility.h"
 #include "Collection.h"
+#include "Warehouse.h"
 #include "Entity.h"
 #include "Equipment.h"
 #include "EssenceAbility.h"
@@ -36,6 +37,7 @@ enum {
     RUNTIME_CHARACTER_SYNC_ESSENCE_ABILITY      = 1 << 8,
     RUNTIME_CHARACTER_SYNC_OVERLORD             = 1 << 9,
     RUNTIME_CHARACTER_SYNC_COLLECTION           = 1 << 10,
+    RUNTIME_CHARACTER_SYNC_WAREHOUSE            = 1 << 11,
 };
 
 enum {
@@ -191,6 +193,7 @@ struct _RTCharacter {
 
     struct _RTCharacterOverlordMasteryInfo OverlordMasteryInfo;
     struct _RTCharacterCollectionInfo CollectionInfo;
+    struct _RTCharacterWarehouseInfo WarehouseInfo;
     /*
     GAME_DATA_CHARACTER_TRANSFORM TransformData;
     GAME_DATA_CHARACTER_TRANSCENDENCE TranscendenceData;
@@ -223,7 +226,8 @@ Void RTCharacterInitialize(
     RTCharacterDungeonQuestFlagInfoRef DungeonQuestFlagInfo,
     RTCharacterEssenceAbilityInfoRef EssenceAbilityInfo,
     RTCharacterOverlordMasteryInfoRef OverlordMasteryInfo,
-    RTCharacterCollectionInfoRef CollectionInfo
+    RTCharacterCollectionInfoRef CollectionInfo,
+    RTCharacterWarehouseInfoRef WarehouseInfo
 );
 
 Void RTCharacterInitializeAttributes(

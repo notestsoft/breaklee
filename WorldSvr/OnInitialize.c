@@ -289,7 +289,8 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
         &Packet->Character.DungeonQuestFlagData,
         &Packet->Character.EssenceAbilityData,
         &Packet->Character.OverlordData,
-        &Packet->Character.CollectionData
+        &Packet->Character.CollectionData,
+        &Packet->Character.WarehouseData
     );
 
     Client->CharacterDatabaseID = Packet->Character.ID;
