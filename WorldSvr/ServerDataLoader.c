@@ -635,7 +635,15 @@ Bool ServerLoadQuestData(
             assert(!ChildIterator);
         }
 
-        // TODO: Add dungeon
+        ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, "dungeon");
+        while (ChildIterator) {
+            assert(Quest->DungeonIndexCount < RUNTIME_MAX_QUEST_DUNGEON_INDEX_COUNT);
+
+            if (!ParseAttributeInt32(Archive, ChildIterator->Index, "id", &Quest->DungeonIndex[Quest->DungeonIndexCount])) goto error;
+
+            Quest->DungeonIndexCount += 1;
+            ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
+        }
 
         Runtime->QuestDataCount += 1;
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
@@ -681,7 +689,7 @@ Bool ServerLoadWarpData(
     RTRuntimeRef Runtime,
     ArchiveRef Archive
 ) {
-    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.warp_npc");
+    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "World.warp_npc");
     if (ParentIndex < 0) goto error;
 
     ArchiveIteratorRef WorldIterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "world");
@@ -971,33 +979,40 @@ error:
     return false;
 }
 
+Bool ServerLoadWarpData(
+    RTRuntimeRef Runtime,
+    ArchiveRef Archive
+);
+
 Bool ServerLoadWorldData(
     RTRuntimeRef Runtime,
     CString RuntimeDirectory,
     CString ServerDirectory,
-    ArchiveRef MainArchive,
+    ArchiveRef TerrainArchive,
     Bool LoadShops
 ) {
-    ArchiveRef Archive = MainArchive;
-    ArchiveRef TempArchive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
+    ArchiveRef Archive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
 
-    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.map");
+    Int64 ParentIndex = ArchiveNodeGetChildByPath(TerrainArchive, -1, "Terrain.map");
     if (ParentIndex < 0) goto error;
 
-    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "map_index");
+    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(TerrainArchive, ParentIndex, "map_index");
     while (Iterator) {
         Index WorldIndex = 0;
 
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "world_id", &WorldIndex)) goto error;
+        if (!ParseAttributeIndex(TerrainArchive, Iterator->Index, "world_id", &WorldIndex)) goto error;
 
         RTWorldDataRef World = RTWorldDataCreate(Runtime->WorldManager, WorldIndex);
         World->WorldIndex = WorldIndex;
         World->MobTable = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTMob), 8);
 
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "dead_warp", &World->DeadWarpIndex)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "return_warp", &World->ReturnWarpIndex)) goto error;
+        Char WorldFileName[MAX_PATH];
 
-        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+        if (!ParseAttributeInt32(TerrainArchive, Iterator->Index, "dead_warp", &World->DeadWarpIndex)) goto error;
+        if (!ParseAttributeString(TerrainArchive, Iterator->Index, "name", WorldFileName, MAX_PATH)) goto error;
+        if (!ParseAttributeInt32(TerrainArchive, Iterator->Index, "return_warp", &World->ReturnWarpIndex)) goto error;
+
+        Iterator = ArchiveQueryNodeIteratorNext(TerrainArchive, Iterator);
     }
 
     Int32 HasMapCode = 0;
@@ -1012,16 +1027,33 @@ Bool ServerLoadWorldData(
         
         RTWorldDataRef World = RTWorldDataGet(Runtime->WorldManager, WorldIndex);
 
-        Archive = MainArchive;
+        Char WorldFilePath[MAX_PATH];
+        Char WorldFileName[MAX_PATH];
+        sprintf(WorldFileName, "world%zu.enc", World->WorldIndex);
+        PathCombine(RuntimeDirectory, "World", WorldFilePath);
+        PathCombine(WorldFilePath, WorldFileName, WorldFilePath);
+        ArchiveClear(Archive, true);
+
+        if (!ArchiveLoadFromFileEncryptedNoAlloc(Archive, WorldFilePath, false)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading world file %s failed!", WorldFilePath);
+            continue;
+        }
+
+        if (!ServerLoadWarpData(Runtime, Archive)) goto error;
+
         Int64 NodeIndex = ArchiveQueryNodeWithAttribute(
             Archive,
             -1,
-            "cabal.cabal_world.world",
+            "World.cabal_world.world",
             "id",
             UInt64ToStringNoAlloc(World->WorldIndex)
         );
 
         if (NodeIndex < 0) goto error;
+
+        Index WorldIndex = 0;
+        if (!ParseAttributeInt32(Archive, NodeIndex, "id", &WorldIndex)) goto error;
+        assert(WorldIndex == World->WorldIndex);
 
         if (!ParseAttributeInt32(Archive, NodeIndex, "type", &World->Type)) goto error;
         if (!ParseAttributeString(Archive, NodeIndex, "map_file", MapFileName, MAX_PATH)) goto error;
@@ -1187,7 +1219,6 @@ Bool ServerLoadWorldData(
         sprintf(MobFileName, "world%zu-mmap.xml", World->WorldIndex);
         PathCombine(ServerDirectory, MobFileName, MobFilePath);
         if (FileExists(MobFilePath)) {
-            Archive = TempArchive;
             if (!ArchiveLoadFromFile(Archive, MobFilePath, false)) goto error;
 
             Int64 MobParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "world");
@@ -1228,7 +1259,6 @@ Bool ServerLoadWorldData(
             }
 
             ArchiveClear(Archive, true);
-            Archive = MainArchive;
         }
 
         Char DropWorldFilePath[MAX_PATH];
@@ -1239,7 +1269,6 @@ Bool ServerLoadWorldData(
         sprintf(DropWorldFileName, "world%zu-terrain-world.xml", World->WorldIndex);
         PathCombine(ServerDirectory, DropWorldFileName, DropWorldFilePath);
         if (FileExists(DropWorldFilePath)) {
-            Archive = TempArchive;
             if (!ArchiveLoadFromFile(Archive, DropWorldFilePath, false)) goto error;
 
             Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "drops");
@@ -1265,7 +1294,6 @@ Bool ServerLoadWorldData(
             }
 
             ArchiveClear(Archive, true);
-            Archive = MainArchive;
         }
 
         for (Int32 Index = 0; Index < World->DropTable.WorldItemCount; Index += 1) {
@@ -1281,7 +1309,6 @@ Bool ServerLoadWorldData(
         sprintf(DropMobFileName, "world%zu-terrain-mob.xml", World->WorldIndex);
         PathCombine(ServerDirectory, DropMobFileName, DropMobFilePath);
         if (FileExists(DropMobFilePath)) {
-            Archive = TempArchive;
             if (!ArchiveLoadFromFile(Archive, DropMobFilePath, false)) goto error;
 
             Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "drops");
@@ -1308,7 +1335,6 @@ Bool ServerLoadWorldData(
             }
 
             ArchiveClear(Archive, true);
-            Archive = MainArchive;
         }
 
         for (Int32 Index = 0; Index < World->DropTable.MobItemCount; Index++) {
@@ -1324,7 +1350,6 @@ Bool ServerLoadWorldData(
         sprintf(DropQuestFileName, "world%zu-terrain-quest.xml", World->WorldIndex);
         PathCombine(ServerDirectory, DropQuestFileName, DropQuestFilePath);
         if (FileExists(DropQuestFilePath)) {
-            Archive = TempArchive;
             if (!ArchiveLoadFromFile(Archive, DropQuestFilePath, false)) goto error;
 
             Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "drops");
@@ -1347,7 +1372,6 @@ Bool ServerLoadWorldData(
             }
 
             ArchiveClear(Archive, true);
-            Archive = MainArchive;
         }
 
         for (Int32 Index = 0; Index < World->DropTable.QuestItemCount; Index++) {
@@ -1356,7 +1380,7 @@ Bool ServerLoadWorldData(
         }
     }
 
-    ArchiveDestroy(TempArchive);
+    ArchiveDestroy(Archive);
     return true;
 
 error:
@@ -1367,7 +1391,7 @@ error:
         ArrayDestroy(World->MobTable);
     }
 
-    ArchiveDestroy(TempArchive);
+    ArchiveDestroy(Archive);
     return false;
 }
 
@@ -1384,11 +1408,12 @@ Bool ServerLoadSkillData(
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "skill_main");
     while (Iterator) {
-        assert(Runtime->CharacterSkillDataCount < RUNTIME_MEMORY_MAX_CHARACTER_SKILL_DATA_COUNT);
-        RTCharacterSkillDataRef SkillData = &Runtime->CharacterSkillData[Runtime->CharacterSkillDataCount];
-        memset(SkillData, 0, sizeof(struct _RTCharacterSkillData));
+        Index SkillIndex = 0;
+        if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &SkillIndex)) goto error;
 
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "id", &SkillData->SkillID)) goto error;
+        RTCharacterSkillDataRef SkillData = MemoryPoolReserve(Runtime->SkillDataPool, SkillIndex);
+        SkillData->SkillID = SkillIndex;
+
         if (!ParseAttributeInt32(Archive, Iterator->Index, "type", &SkillData->SkillType)) goto error;
         if (!ParseAttributeInt32(Archive, Iterator->Index, "group", &SkillData->SkillGroup)) goto error;
         if (!ParseAttributeInt32(Archive, Iterator->Index, "multi", &SkillData->Multi)) goto error;
@@ -1459,7 +1484,6 @@ Bool ServerLoadSkillData(
             }
         }
 
-        Runtime->CharacterSkillDataCount += 1;
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
     }
 

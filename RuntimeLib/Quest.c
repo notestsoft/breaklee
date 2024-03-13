@@ -367,7 +367,6 @@ Bool RTCharacterQuestAction(
 
 	RTQuestSlotRef QuestSlot = &Character->QuestSlotInfo.QuestSlot[QuestSlotIndex];
 	if (QuestSlot->QuestIndex != QuestIndex) return false;
-	if (QuestSlot->NpcActionIndex != ActionIndex) return false;
 
 	RTQuestDataRef Quest = RTRuntimeGetQuestByIndex(Runtime, QuestIndex);
 	if (!Quest) return false;
@@ -376,6 +375,10 @@ Bool RTCharacterQuestAction(
 	if (ActionIndex < 0 || ActionIndex >= Quest->NpcSet.Count) return false;
 
 	RTQuestNpcDataRef QuestNpc = &Quest->NpcSet.Npcs[ActionIndex];
+	assert(QuestNpc->Index == ActionIndex);
+
+	if (QuestNpc->NpcActionOrder != QuestSlot->NpcActionIndex) return false;
+
 	RTNpcRef Npc = RTRuntimeGetNpcByWorldNpcID(Runtime, QuestNpc->WorldID, QuestNpc->NpcID);
 	if (!Npc) return false;
 
@@ -536,13 +539,10 @@ Bool RTCharacterHasQuestDungeon(
 		RTQuestDataRef Quest = RTRuntimeGetQuestByIndex(Runtime, QuestSlot->QuestIndex);
 		if (!Quest) return false;
 
-		Int32 QuestCounterIndex = Quest->MissionMobCount + Quest->MissionItemCount;
-		for (Int32 MissionIndex = 0; MissionIndex < Quest->MissionDungeonCount; MissionIndex += 1) {
-			if (Quest->MissionDungeons[MissionIndex].Value[0] == DungeonID && QuestSlot->Counter[QuestCounterIndex] < 1) {
+		for (Int32 Index = 0; Index < Quest->DungeonIndexCount; Index += 1) {
+			if (Quest->DungeonIndex[Index] == DungeonID) {
 				return true;
 			}
-
-			QuestCounterIndex += 1;
 		}
 	}
 

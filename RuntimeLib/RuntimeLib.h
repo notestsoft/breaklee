@@ -21,3 +21,4 @@
 #include <RuntimeLib/Warp.h>
 #include <RuntimeLib/World.h>
 #include <RuntimeLib/WorldManager.h>
+#include <RuntimeLib/Warehouse.h>

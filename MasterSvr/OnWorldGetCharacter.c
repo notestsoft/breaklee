@@ -11,8 +11,6 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_REQGETCHARACTER, IPC_DATA_W
 	Account.AccountID = Packet->AccountID;
 	if (!MasterDBGetOrCreateAccount(Context->Database, &Account)) goto error;
 
-    memcpy(&Response->Character.CollectionData, &Account.CollectionData, sizeof(struct _RTCharacterCollectionInfo));
-
 	MASTERDB_DATA_CHARACTER Character = { 0 };
 	Character.CharacterID = Packet->CharacterID;
 	if (!MasterDBSelectCharacterByID(Context->Database, &Character)) goto error;
@@ -43,6 +41,8 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_REQGETCHARACTER, IPC_DATA_W
     memcpy(&Response->Character.TranscendenceData, &Character.TranscendenceData, sizeof(GAME_DATA_CHARACTER_TRANSCENDENCE));
     memcpy(&Response->Character.MercenaryData, &Character.MercenaryData, sizeof(GAME_DATA_CHARACTER_MERCENARY));
     memcpy(&Response->Character.CraftData, &Character.CraftData, sizeof(GAME_DATA_CHARACTER_CRAFT));
+    memcpy(&Response->Character.WarehouseData, &Account.WarehouseData, sizeof(struct _RTCharacterWarehouseInfo));
+    memcpy(&Response->Character.CollectionData, &Account.CollectionData, sizeof(struct _RTCharacterCollectionInfo));
 
 	return SocketSend(Socket, Connection, Response);
 

@@ -38,7 +38,6 @@ struct _RTRuntime {
     struct _RTParty Parties[RUNTIME_MEMORY_MAX_PARTY_COUNT];
 
     Int32 SlopeFormulaDataCount;
-    Int32 CharacterSkillDataCount;
     Int32 ItemDataCount;
     Int32 MobDataCount;
     Int32 NpcCount;
@@ -58,7 +57,6 @@ struct _RTRuntime {
     struct _RTBattleStyleStatsFormulaData BattleStyleStatsFormulaData[RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX];
     struct _RTBattleStyleSkillFormulaData BattleStyleSkillFormulaData[RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX];
     struct _RTBattleStyleRankFormulaData BattleStyleRankFormulaData[RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX];
-    struct _RTCharacterSkillData CharacterSkillData[RUNTIME_MEMORY_MAX_CHARACTER_SKILL_DATA_COUNT];
     struct _RTItemData ItemData[RUNTIME_MEMORY_MAX_ITEM_DATA_COUNT];
     struct _RTMobSpeciesData MobData[RUNTIME_MEMORY_MAX_MOB_DATA_COUNT];
     struct _RTNpc Npcs[RUNTIME_MEMORY_MAX_NPC_COUNT];
@@ -69,8 +67,9 @@ struct _RTRuntime {
     struct _RTWarp Warps[RUNTIME_MEMORY_MAX_WARP_COUNT];
     struct _RTDungeonData DungeonData[RUNTIME_MEMORY_MAX_DUNGEON_COUNT];
     struct _RTMissionDungeonPatternPartData MissionDungeonPatternPartData[RUNTIME_MEMORY_MAX_DUNGEON_PATTERN_PART_COUNT];
-
     Float32 MovementDistanceCache[RUNTIME_MOVEMENT_MAX_DISTANCE_LENGTH * RUNTIME_MOVEMENT_MAX_DISTANCE_LENGTH];
+
+    MemoryPoolRef SkillDataPool;
 
     struct _RTEvent Event;
     RTEventCallback Callback;
@@ -92,7 +91,6 @@ Bool RTRuntimeLoadData(
     CString RuntimeDataPath,
     CString ServerDataPath
 );
-
 
 Void RTRuntimeUpdate(
     RTRuntimeRef Runtime
