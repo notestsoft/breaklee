@@ -38,7 +38,7 @@ error:
 }
 
 CLIENT_PROCEDURE_BINDING(ENTER_DUNGEON_GATE) {
-	if (!(Client->Flags & CLIENT_FLAGS_CHARACTER_INDEX_LOADED) || Client->Account.AccountID < 1) goto error;
+    if (!Character) goto error;
 
     S2C_DATA_ENTER_DUNGEON_GATE* Response = PacketInit(S2C_DATA_ENTER_DUNGEON_GATE);
     Response->Command = S2C_ENTER_DUNGEON_GATE;
@@ -52,23 +52,19 @@ CLIENT_PROCEDURE_BINDING(ENTER_DUNGEON_GATE) {
     Response->Unknown5 = Packet->Unknown5;
     Response->DungeonBoostLevel = Packet->DungeonBoostLevel;
 
-    /*
     RTWorldContextRef World = RTRuntimeGetWorldByID(Runtime, Packet->WorldID);
     if (!World) goto error;
-    */
 
     RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, Packet->DungeonID);
     if (DungeonData && DungeonData->WorldID == Packet->WorldID) {
         Response->Result = 1;
     }
 
-    /* TODO: Check on how to differentiate between quest dg and normal dg
     if (RTCharacterHasQuestDungeon(Runtime, Character, Packet->DungeonID) && DungeonData) {
 
         // TODO: Verify NpcID, WorldID
         Response->Result = 1;
     }
-    */
 
 	return SocketSend(Socket, Connection, Response);
 
@@ -77,7 +73,7 @@ error:
 }
 
 CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_START) {
-    if (!(Client->Flags & CLIENT_FLAGS_CHARACTER_INDEX_LOADED) || Client->Account.AccountID < 1) goto error;
+    if (!Character) goto error;
 
     RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
     if (World->WorldData->Type != RUNTIME_WORLD_TYPE_DUNGEON &&
@@ -92,7 +88,7 @@ error:
 }
 
 CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_SPAWN) {
-    if (!(Client->Flags & CLIENT_FLAGS_CHARACTER_INDEX_LOADED) || Client->Account.AccountID < 1) goto error;
+    if (!Character) goto error;
 
     RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
     if (World->WorldData->Type != RUNTIME_WORLD_TYPE_DUNGEON &&
@@ -125,7 +121,7 @@ error:
 }
 
 CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_END) {
-    if (!(Client->Flags & CLIENT_FLAGS_CHARACTER_INDEX_LOADED) || Client->Account.AccountID < 1) goto error;
+    if (!Character) goto error;
 
     RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
     if (World->WorldData->Type != RUNTIME_WORLD_TYPE_DUNGEON &&
@@ -187,6 +183,7 @@ error:
 }
 
 CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_GATE_OPEN) {
+    if (!Character) goto error;
     // TODO: Implementation missing!
     
 error:

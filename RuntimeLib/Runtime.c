@@ -29,6 +29,7 @@ RTRuntimeRef RTRuntimeCreate(
         RUNTIME_MEMORY_MAX_PARTY_WORLD_CONTEXT_COUNT,
         RUNTIME_MEMORY_MAX_CHARACTER_COUNT
     );
+    Runtime->SkillDataPool = MemoryPoolCreate(Allocator, sizeof(struct _RTCharacterSkillData), RUNTIME_MEMORY_MAX_CHARACTER_SKILL_DATA_COUNT);
     Runtime->Callback = Callback;
     Runtime->UserData = UserData;
     return Runtime;
@@ -37,6 +38,7 @@ RTRuntimeRef RTRuntimeCreate(
 Void RTRuntimeDestroy(
     RTRuntimeRef Runtime
 ) {
+    MemoryPoolDestroy(Runtime->SkillDataPool);
     RTRuntimeDataContextDestroy(Runtime->Context);
     RTWorldManagerDestroy(Runtime->WorldManager);
     AllocatorDeallocate(Runtime->Allocator, Runtime);
@@ -415,13 +417,7 @@ RTCharacterSkillDataRef RTRuntimeGetCharacterSkillDataByID(
     RTRuntimeRef Runtime,
     Int32 SkillID
 ) {
-    for (Int32 Index = 0; Index < Runtime->CharacterSkillDataCount; Index++) {
-        if (Runtime->CharacterSkillData[Index].SkillID == SkillID) {
-            return &Runtime->CharacterSkillData[Index];
-        }
-    }
-
-    return NULL;
+    return MemoryPoolFetch(Runtime->SkillDataPool, SkillID);
 }
 
 RTSkillLevelDataRef RTRuntimeGetSkillLevelDataByID(

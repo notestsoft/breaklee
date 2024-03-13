@@ -72,10 +72,12 @@ Bool RTCharacterChangeSkillLevel(
 	Int32 TargetSkillLevel
 ) {
 	if (SlotIndex < 0 || SlotIndex > RUNTIME_CHARACTER_MAX_SKILL_SLOT_COUNT) return false;
-	if (SkillID < 0 || SkillID >= Runtime->CharacterSkillDataCount) return false;
 
 	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotByIndex(Runtime, Character, SlotIndex);
 	if (!SkillSlot || SkillSlot->ID != SkillID || SkillSlot->Level != CurrentSkillLevel) return false;
+
+	RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillID);
+	if (!SkillData) return false;
 
 	Int32 LevelDiff = TargetSkillLevel - CurrentSkillLevel;
 	Int32 Increment = LevelDiff < 0 ? -1 : 1;
