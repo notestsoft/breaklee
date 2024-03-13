@@ -26,7 +26,7 @@ CLIENT_PROTOCOL(S2C, NFY_ERROR, 7, 13130,
     UInt16 Unknown1;
 )
 
-CLIENT_PROTOCOL(C2S, GET_CHARACTERS, 133, 13130,
+CLIENT_PROTOCOL(C2S, GET_CHARACTERS, 133, 13133,
     C2S_DATA_SIGNATURE;
 )
 
@@ -259,8 +259,8 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, 142, 13130,
     UInt8 ExtendedEssenceAbilityCount;
     UInt8 BlendedAbilityCount;
     UInt8 ExtendedBlendedAbilityCount;
-    UInt8 PremiumServiceCount;
-    UInt8 BlessingBeadCount;
+    UInt16 PremiumServiceCount;
+    UInt16 BlessingBeadCount;
     UInt16 QuestSlotCount;
     struct _RTCharacterQuestFlagInfo QuestFlagInfo;
     struct _RTCharacterDungeonQuestFlagInfo DungeonQuestFlagInfo;
