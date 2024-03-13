@@ -259,14 +259,14 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, 142, 13130,
     UInt8 ExtendedEssenceAbilityCount;
     UInt8 BlendedAbilityCount;
     UInt8 ExtendedBlendedAbilityCount;
-    UInt16 PremiumServiceCount;
-    UInt16 BlessingBeadCount;
+    UInt8 PremiumServiceCount;
+    UInt8 BlessingBeadCount;
     UInt16 QuestSlotCount;
     struct _RTCharacterQuestFlagInfo QuestFlagInfo;
     struct _RTCharacterDungeonQuestFlagInfo DungeonQuestFlagInfo;
     UInt8 Unknown15[4097];
-    UInt32 HelpWindow;
     UInt32 ActiveDailyQuestCount;
+    UInt32 HelpWindow;
 
     struct {
         UInt32 PetSerial;
