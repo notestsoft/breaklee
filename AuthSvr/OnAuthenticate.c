@@ -93,6 +93,18 @@ CLIENT_PROCEDURE_BINDING(AUTHENTICATE) {
         return SocketDisconnect(Socket, Connection);
     }
 
+    if (Packet->SubMessageType == 25) {
+        S2C_DATA_AUTHENTICATE* Response = PacketInit(S2C_DATA_AUTHENTICATE);
+        Response->Command = S2C_AUTHENTICATE;
+        Response->KeepAlive = 1;
+        Response->SubMessageType = 25;
+        Response->LoginStatus = Client->LoginStatus;
+        Response->AccountStatus = Client->AccountStatus;
+
+        S2C_DATA_AUTHENTICATE_EXTENSION_UNKNOWN* ResponseData = PacketAppendStruct(S2C_DATA_AUTHENTICATE_EXTENSION_UNKNOWN);
+        return SocketSend(Socket, Connection, Response);
+    }
+
     assert(Client->RSA);
     Int32 Length = RSA_size(Client->RSA);
     Int32 DecryptedPayloadLength = RSA_private_decrypt(
@@ -199,7 +211,7 @@ CLIENT_PROCEDURE_BINDING(AUTHENTICATE) {
     Response->KeepAlive = 1;
     Response->LoginStatus = Client->LoginStatus;
     Response->AccountStatus = Client->AccountStatus;
-    Response->Extended = 0x11;
+    Response->SubMessageType = 17;
 
     S2C_DATA_AUTHENTICATE_EXTENSION* Extension = PacketAppendStruct(S2C_DATA_AUTHENTICATE_EXTENSION);
 
