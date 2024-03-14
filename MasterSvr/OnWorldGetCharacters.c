@@ -22,7 +22,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacters, IPC_WORLD_REQGETCHARACTERS, IPC_DATA
 	while (MasterDBSelectCharacterIndexFetchNext(Context->Database, Statement, &Character)) {
 		assert(Index < MAX_CHARACTER_COUNT);
 
-		// TODO: Add NationMask, EquipmentAppearance
+		// TODO: Add EquipmentAppearance
 
 		Response->Characters[Character.Index].ID = Character.CharacterID;
 		Response->Characters[Character.Index].CreationDate = Character.CreatedAt;
@@ -30,6 +30,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacters, IPC_WORLD_REQGETCHARACTERS, IPC_DATA
 		Response->Characters[Character.Index].Level = Character.CharacterData.Basic.Level;
 		Response->Characters[Character.Index].OverlordLevel = Character.CharacterData.Overlord.Level;
 		Response->Characters[Character.Index].SkillRank = Character.CharacterData.Skill.Rank;
+		Response->Characters[Character.Index].NationMask = Character.CharacterData.Profile.Nation;
 		memcpy(Response->Characters[Character.Index].Name, Character.Name, MAX_CHARACTER_NAME_LENGTH);
 		Response->Characters[Character.Index].HonorPoint = Character.CharacterData.Honor.Point;
 		Response->Characters[Character.Index].Alz = Character.CharacterData.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];

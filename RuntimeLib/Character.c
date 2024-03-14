@@ -709,8 +709,16 @@ Void RTCharacterAddExp(
 				Character->Info.Overlord.Exp = 0;
 				Character->Info.Overlord.Point = Start->MasteryPointCount;
 
-				// TODO: Client has to receive a notification for overlord level up
-			}
+                RTRuntimeBroadcastEvent(
+                    Runtime,
+                    RUNTIME_EVENT_CHARACTER_OVERLORD_LEVEL_UP,
+                    RTRuntimeGetWorldByCharacter(Runtime, Character),
+                    kEntityIDNull,
+                    Character->ID,
+                    Character->Movement.PositionCurrent.X,
+                    Character->Movement.PositionCurrent.Y
+                );
+            }
 		}
 
 		RTRuntimeBroadcastEvent(

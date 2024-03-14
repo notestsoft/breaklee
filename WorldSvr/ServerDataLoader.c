@@ -50,7 +50,9 @@ struct _ArchiveMobData {
     Int32 A;
     Float32 UnknownF;
     Int32 HPRecharge;
-    Int32 H[3];
+    Int32 AttackRate;
+    Int32 DefenseRate;
+    Int32 Defense;
     Int32 DefaultSkillPhysicalAttackMin;
     Int32 DefaultSkillPhysicalAttackMax;
     Int32 DefaultSkillReach;
@@ -64,10 +66,10 @@ struct _ArchiveMobData {
     Int32 AlertRange;
     Int32 LimitRangeA;
     Int32 FindCount;
-    Float32 UnknownB;
+    Float32 FindInterval;
     Int32 AttackPattern;
-    Int32 Not_DefaultSkillDefenseSkill;
-    Int32 Not_SpecialSkillDefenseSkill;
+    UInt32 Aggressive;
+    UInt32 Cooperative;
     UInt64 Exp;
     Int32 DefaultSkillStance;
     Int32 SpecialSkillStance;
@@ -77,20 +79,27 @@ struct _ArchiveMobData {
     Int32 DefaultSkillGroup;
     Int32 SpecialSkillGroup;
     UInt32 Property;
-    Int32 D[5];
+    Int32 D[4];
+    Int32 DamageDiscount;
     Int32 MoveInterval;
-    Int32 E[2];
+    Int32 Accuracy;
+    Int32 Penetration;
     Int32 ResistCriticalRate;
-    Int32 N[2];
+    Int32 AggroPattern;
+    Int32 AttackCountAmp;
     Int32 LimitRangeB;
     Int32 IgnoreAccuracy;
     Int32 IgnoreDamageReduction;
     Int32 IgnorePenetration;
-    Int32 M[2];
+    Int32 AbsoluteDamage;
+    Int32 AttackSignalValue;
     Int32 ResistSkillAmp;
     Int32 ResistCriticalDamage;
     Int32 ResistSuppression;
-    Int32 O[4];
+    Int32 ResistSilence;
+    Int32 ProportionalHPDmg;
+    Int32 O[1];
+    Int32 IsWorldBoss;
     UInt8 K[3];
     Int32 L[6];
 };
@@ -807,6 +816,7 @@ Bool ServerLoadMobData(
     if (ParentIndex < 0) goto error;
 
     Int32 SkillGroupUsage[50] = { 0 };
+    Int32 AttackPatternUsage[50] = { 0 };
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "mob");
     while (Iterator) {
@@ -903,14 +913,76 @@ Bool ServerLoadMobData(
 
     memset(SkillGroupUsage, 0, sizeof(SkillGroupUsage));
 
-    for (Int32 Index = 0; Index < 3736; Index += 1) {
+    for (Int32 Index = 0; Index < 4335; Index += 1) {
         SkillGroupUsage[MobData[Index].DefaultSkillGroup] += 1;
         SkillGroupUsage[MobData[Index].SpecialSkillGroup] += 1;
+        AttackPatternUsage[MobData[Index].AttackPattern] += 1;
+
+        if (MobData[Index].D[0]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) D[0]: %d", Index, MobData[Index].D[0]);
+        }
+
+        if (MobData[Index].D[1]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) D[1]: %d", Index, MobData[Index].D[1]);
+        }
+
+        if (MobData[Index].D[2]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) D[2]: %d", Index, MobData[Index].D[2]);
+        }
+
+        if (MobData[Index].D[3]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) D[3]: %d", Index, MobData[Index].D[3]);
+        }
+
+        if (MobData[Index].O[0]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) O[0]: %d", Index, MobData[Index].O[0]);
+        }
+
+        if (MobData[Index].K[0]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) K[0]: %d", Index, MobData[Index].K[0]);
+        }
+
+        if (MobData[Index].K[1]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) K[1]: %d", Index, MobData[Index].K[1]);
+        }
+
+        if (MobData[Index].K[2]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) K[2]: %d", Index, MobData[Index].K[2]);
+        }
+
+        if (MobData[Index].L[0]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[0]: %d", Index, MobData[Index].L[0]);
+        }
+
+        if (MobData[Index].L[1]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[1]: %d", Index, MobData[Index].L[1]);
+        }
+
+        if (MobData[Index].L[2]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[2]: %d", Index, MobData[Index].L[2]);
+        }
+
+        if (MobData[Index].L[3]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[3]: %d", Index, MobData[Index].L[3]);
+        }
+
+        if (MobData[Index].L[4]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[4]: %d", Index, MobData[Index].L[4]);
+        }
+
+        if (MobData[Index].L[5]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[5]: %d", Index, MobData[Index].L[5]);
+        }
     }
 
     for (Int32 Index = 0; Index < 50; Index += 1) {
         if (SkillGroupUsage[Index] > 0)
             LogMessageFormat(LOG_LEVEL_WARNING, "Mob Skill Group: %d", Index);
+    }
+
+    for (Int32 Index = 0; Index < 50; Index += 1) {
+        if (AttackPatternUsage[Index] > 0)
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob Attack Pattern: %d", Index);
     }
 
     FileClose(File);
