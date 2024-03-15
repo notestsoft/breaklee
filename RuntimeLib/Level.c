@@ -9,7 +9,7 @@ UInt8 RTRuntimeGetLevelByExp(
     RTDataLevelRef LevelData = RTRuntimeDataLevelGet(Runtime->Context, Level);
     assert(LevelData);
 
-    while (Exp > LevelData->AccumulatedExp) {
+    while (Exp >= LevelData->AccumulatedExp) {
         Level += 1;
         RTDataLevelRef NextLevelData = RTRuntimeDataLevelGet(Runtime->Context, Level);
         if (!NextLevelData) {
