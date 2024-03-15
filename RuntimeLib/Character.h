@@ -102,6 +102,30 @@ union _RTCharacterLiveStyle {
     UInt32 RawValue;
 };
 
+union _RTCharacterExtendedStyle {
+    struct {
+        UInt8 Unknown0 : 1;
+        UInt8 IsAstralWeaponActive : 1;
+        UInt8 Unknown1 : 1;
+        UInt8 IsAuraActive : 1;
+        UInt8 IsBattleMode1Active : 1;
+        UInt8 IsBattleMode2Active : 1;
+        UInt8 IsBattleMode3Active : 1;
+        UInt8 IsComboActive : 1;
+    };
+
+    UInt8 RawValue;
+};
+
+union _RTCharacterPKState {
+    struct {
+        UInt16 Level : 3;
+        UInt16 Count : 13;
+    };
+
+    UInt16 RawValue;
+};
+
 struct _RTCharacterProfile {
     UInt16 Nation;
     UInt32 WarpMask;
@@ -151,6 +175,9 @@ struct _RTCharacterPosition {
 
 struct _RTCharacterInfo {
     union _RTCharacterStyle Style;
+    union _RTCharacterLiveStyle LiveStyle;
+    union _RTCharacterExtendedStyle ExtendedStyle;
+    union _RTCharacterPKState PKState;
     struct _RTCharacterProfile Profile;
     struct _RTCharacterLevel Basic;
     struct _RTCharacterLevel Overlord;

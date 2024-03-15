@@ -762,11 +762,26 @@ CLIENT_PROTOCOL(C2S, MOVEMENT_TILE_POSITION, 194, 13130,
     CSC_POSITION PositionNext;
 )
 
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_GUILD,
+    UInt8 GuildNameLength;
+    Char GuildName[0]; // GuildNameLength
+)
+
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT,
     UInt8 EquipmentSlotIndex;
     UInt64 ItemID;
     UInt64 ItemOptions;
     UInt32 ItemDuration;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_PERSONAL_SHOP_MESSAGE,
+    UInt8 MessageLength;
+    Char Message[0];
+    // UInt64 Unknown1;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_PERSONAL_SHOP_INFO,
+    UInt64 Unknown1;
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_BUFF_SLOT,
@@ -775,48 +790,26 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_BUFF_SLOT,
     UInt8 Unknown1[82];
 )
 
-CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_BATTLE_MODE,
-    UInt8 Unknown0 : 1;
-    UInt8 AstralWeapon : 1;
-    UInt8 Unknown2 : 1;
-    UInt8 Aura : 1;
-    UInt8 BattleMode1 : 1;
-    UInt8 BattleMode2 : 1;
-    UInt8 BattleMode3 : 1;
-    UInt8 Combo : 1;
-)
-
-CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_STYLE_EXTENSION,
-    UInt8 Unknown0 : 1;
-    UInt8 Unknown1 : 1;
-    UInt8 Unknown2 : 1;
-    UInt8 Unknown3 : 1;
-    UInt8 HasPetStyle1 : 1;
-    UInt8 HasPetInfo : 1;
-    UInt8 HasBlessingBeadBalloon : 1;
-    UInt8 HasItemBallon : 1;
-)
-
-CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_PET_FLAGS,
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_PET_INFO,
     UInt8 EvolutionLevel : 3; 
     UInt8 NameLength : 5;
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_PET_SLOT,
-    S2C_DATA_CHARACTERS_SPAWN_PET_FLAGS PetFlags;
+    S2C_DATA_CHARACTERS_SPAWN_PET_INFO Info;
     UInt32 PetSlotIndex;
     Char PetName[0];
     // UInt32 Unknown1;
 )
 
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_BLESSING_BEAD_BALOON_SLOT,
+    UInt8 Unknown1;
+    UInt32 Unknown2;
+)
+
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_BALOON_SLOT,
     RTItem Item;
     UInt8 SlotIndex;
-)
-
-CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_GUILD,
-    UInt8 GuildNameLength;
-    Char GuildName[0]; // GuildNameLength
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_INDEX,
@@ -833,51 +826,58 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_INDEX,
     UInt64 CurrentHP;
     Int32 MaxRage;
     Int32 CurrentRage;
-    UInt8 Unknown2[8];
+    UInt32 Unknown1;
+    UInt32 Unknown2;
     UInt32 MovementSpeed;
     CSC_POSITION PositionBegin;
     CSC_POSITION PositionEnd;
-    UInt16 PKLevel;
+    UInt16 PKState;
     UInt8 Nation;
     UInt32 Unknown3;
     UInt32 CharacterStyle;
     UInt32 CharacterLiveStyle;
-    UInt32 SkillEffectIndex;
-    UInt8 BattleMode;
+    UInt16 Unknown4;
+    UInt16 Unknown5;
+    UInt8 CharacterExtendedStyle;
     UInt8 IsDead;
     UInt8 EquipmentSlotCount;
-    UInt8 CostumeCount;
+    UInt8 CostumeSlotCount;
+    UInt8 IsInvisible;
     UInt8 IsPersonalShop;
     UInt32 GuildIndex;
-    UInt8 Unknown4[5];
-    S2C_DATA_CHARACTERS_STYLE_EXTENSION CharacterStyleExtension;
-    UInt8 Unknown5[2];
-    UInt8 GmBuffCount;
-    UInt8 PassiveBuffCount;
+    UInt16 Unknown6;
+    UInt16 Unknown7;
+    struct {
+        UInt8 Unknown8 : 1;
+        UInt8 Unknown9 : 1;
+        UInt8 Unknown10 : 1;
+        UInt8 HasPetInfo : 1;
+        UInt8 PetCount : 2;
+        UInt8 HasBlessingBeadBaloon : 1;
+        UInt8 HasItemBallon : 1;
+    };
     UInt8 ActiveBuffCount;
     UInt8 DebuffCount;
-    UInt8 UnknownBuffCount;
-    UInt8 Bringer;
+    UInt8 GmBuffCount;
+    UInt8 PassiveBuffCount;
+    UInt8 IsBringer;
+    UInt32 Unknown12;
+    UInt16 Unknown13;
+    UInt16 Unknown14;
     UInt16 DisplayTitle;
     UInt16 EventTitle;
-    UInt16 GuildTitle;
     UInt16 WarTitle;
-    UInt8 Unknown6[5];
+    UInt16 AbilityTitle;
     UInt8 NameLength;
     Char Name[0]; // Size: NameLength - 1
-    /*
-    Equipments: Equipment[EquipmentCount];
-    Costumes: Equipment[CostumeCount];
-    GmBuffData: Buff[GmBuffCount];
-    PassiveBuffData: Buff[PassiveBuffCount];
-    ActiveBuffData: Buff[ActiveBuffCount];
-    DebuffData: Buff[DebuffCount];
-    UnknownBuffData: Buff[UnknownBuffCount];
-
-    if (StyleExtension.HasBlessingBeadBalloon == 1) {
-        BlessingBeadBalloon: BlessingBeadBalloon;
-    }
-    */
+    // S2C_DATA_CHARACTERS_SPAWN_GUILD Guild;
+    // S2C_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT EquipmentSlots[EquipmentSlotCount];
+    // S2C_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT CostumeSlots[CostumeSlotCount];
+    // S2C_DATA_CHARACTERS_SPAWN_PERSONAL_SHOP_MESSAGE PersonalShopMessage[IsPersonalShop];
+    // S2C_DATA_CHARACTERS_SPAWN_PERSONAL_SHOP_INFO PersonalShopInfo[IsPersonalShop];
+    // S2C_DATA_CHARACTERS_SPAWN_BUFF_SLOT Buffs[ActiveBuffCount + DebuffCount + GmBuffCount + PassiveBuffCount];
+    // S2C_DATA_CHARACTERS_SPAWN_PET_SLOT Pets[PetCount];
+    // S2C_DATA_CHARACTERS_SPAWN_BALOON_SLOT ItemBaloon[HasItemBaloon];
 )
 
 CLIENT_PROTOCOL(S2C, CHARACTERS_SPAWN, 200, 13130,
