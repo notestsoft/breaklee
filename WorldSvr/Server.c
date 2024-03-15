@@ -20,6 +20,7 @@ Void ServerLoadRuntimeData(
     ArchiveRef QuestArchive = ArchiveCreateEmpty(Allocator);
     ArchiveRef RankArchive = ArchiveCreateEmpty(Allocator);
     ArchiveRef SkillArchive = ArchiveCreateEmpty(Allocator);
+    ArchiveRef TerrainArchive = ArchiveCreateEmpty(Allocator);
     ArchiveRef CharacterInitArchive = ArchiveCreateEmpty(Allocator);
 
     Bool Loaded = true;
@@ -58,6 +59,11 @@ Void ServerLoadRuntimeData(
         PathCombineNoAlloc(Config.WorldSvr.RuntimeDataPath, "skill.enc"),
         true
     );
+    Loaded &= ArchiveLoadFromFileEncryptedNoAlloc(
+        TerrainArchive,
+        PathCombineNoAlloc(Config.WorldSvr.RuntimeDataPath, "Terrain.enc"),
+        true
+    );
     Loaded &= ArchiveLoadFromFile(
         CharacterInitArchive,
         PathCombineNoAlloc(Config.WorldSvr.ServerDataPath, "server_character_init.xml"),
@@ -67,13 +73,12 @@ Void ServerLoadRuntimeData(
     Loaded &= ServerLoadBattleStyleFormulaData(Context->Runtime, RankArchive);
     Loaded &= ServerLoadItemData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
     Loaded &= ServerLoadMobData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
-    Loaded &= ServerLoadWarpData(Context->Runtime, MainArchive);
     Loaded &= ServerLoadShopData(Context->Runtime, Config.WorldSvr.ServerDataPath, Config.WorldSvr.ServerDataPath);
-    Loaded &= ServerLoadWorldData(Context->Runtime, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, MainArchive, true);
+    Loaded &= ServerLoadWorldData(Context->Runtime, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, TerrainArchive, true);
     Loaded &= ServerLoadCharacterTemplateData(Context, RankArchive, CharacterInitArchive);
     Loaded &= ServerLoadSkillData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, SkillArchive);
-    Loaded &= ServerLoadLevelData(Context, MainArchive);
     Loaded &= ServerLoadDungeonData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, Cont1Archive, Cont2Archive, Cont3Archive);
+    // TODO: Enable file loading check after finishing migration to new data structure!
     if (!Loaded) FatalError("Runtime data loading failed!");
 
     ArchiveDestroy(MainArchive);

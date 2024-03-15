@@ -639,6 +639,7 @@ ArchiveIteratorRef ArchiveAttributeIteratorFirst(
     return (ArchiveIteratorRef)ArrayGetElementAtIndex(Node->AttributeIndices, 0);
 }
 
+// TODO: There is an error in calculation of interator indices, which causes infinite loops
 ArchiveIteratorRef ArchiveAttributeIteratorNext(
     ArchiveRef Archive,
     ArchiveIteratorRef Iterator

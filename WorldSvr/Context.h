@@ -52,6 +52,10 @@ struct _ClientContext {
     Int32 UpgradePoint;
     UInt32 DiceSeed;
 
+    // @Next
+    // TODO: Add a cleanup flag and cleanup the character from world when the connection closes 
+    //       verify that it is not called multiple times together with the DEINITIALIZE packet!
+
     /* Runtime Data */
     Int32 CharacterDatabaseID;
     Index CharacterIndex;

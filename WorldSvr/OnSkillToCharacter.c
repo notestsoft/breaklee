@@ -14,8 +14,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 	RTMovementUpdateDeadReckoning(Runtime, &Character->Movement);
 
-	if (Packet->SlotIndex < 0 || Packet->SlotIndex > RUNTIME_CHARACTER_MAX_SKILL_SLOT_COUNT ||
-		Packet->SkillIndex < 0 || Packet->SkillIndex >= Runtime->CharacterSkillDataCount) {
+	if (Packet->SlotIndex < 0 || Packet->SlotIndex > RUNTIME_CHARACTER_MAX_SKILL_SLOT_COUNT) {
 		goto error;
 	}
 
@@ -25,16 +24,16 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 	// 3, 32
 
-	RTCharacterSkillDataRef Skill = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillSlot->ID);
-	assert(Skill);
+	RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillSlot->ID);
+	assert(SkillData);
 
 	// TODO: Add skill cast time and cooldown checks
 
 	Int32 RequiredMP = RTCharacterCalculateRequiredMP(
 		Runtime,
 		Character,
-		Skill->Mp[0],
-		Skill->Mp[1],
+		SkillData->Mp[0],
+		SkillData->Mp[1],
 		SkillSlot->Level
 	);
 
@@ -49,7 +48,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 	Response->Command = S2C_SKILL_TO_CHARACTER;
 	Response->SkillIndex = Packet->SkillIndex;
 
-	if (Skill->SkillGroup == RUNTIME_SKILL_GROUP_MOVEMENT) {
+	if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_MOVEMENT) {
 		Int32 PacketLength = sizeof(C2S_DATA_SKILL_TO_CHARACTER) + sizeof(C2S_DATA_SKILL_GROUP_MOVEMENT);
 		if (Packet->Signature.Length != PacketLength) goto error;
 		
@@ -64,11 +63,11 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 			PacketData->PositionBegin.X,
 			PacketData->PositionBegin.Y
 		);
-		if (CharacterPositionError > 1) 
-			goto error;
+		//if (CharacterPositionError > 1) 
+		//	goto error;
 		
 		Bool IsValidRange = RTCheckSkillTargetDistance(
-			Skill,
+			SkillData,
 			1,
 			1,
 			PacketData->PositionBegin.X,
@@ -76,8 +75,8 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 			PacketData->PositionEnd.X,
 			PacketData->PositionEnd.Y
 		);
-		if (!IsValidRange) 
-			goto error;
+		//if (!IsValidRange) 
+		//	goto error;
 
 		RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
 		if (!World) goto error;
@@ -98,13 +97,31 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 		RTMovementEndDeadReckoning(Runtime, &Character->Movement);
         RTMovementSetPosition(Runtime, &Character->Movement, TargetPosition.X, TargetPosition.Y);
-
 		Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
 		Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
 
-		return SocketSend(Socket, Connection, Response);
+		SocketSend(Socket, Connection, Response);
+
+		S2C_DATA_NFY_SKILL_TO_CHARACTER* Notification = PacketInit(S2C_DATA_NFY_SKILL_TO_CHARACTER);
+		Notification->Command = S2C_NFY_SKILL_TO_CHARACTER;
+		Notification->SkillIndex = Packet->SkillIndex;
+
+		S2C_DATA_NFY_SKILL_GROUP_MOVEMENT* NotificationData = PacketAppendStruct(S2C_DATA_NFY_SKILL_GROUP_MOVEMENT);
+		NotificationData->CharacterIndex = Client->CharacterIndex;
+		NotificationData->Entity = Character->ID;
+		NotificationData->PositionEnd.X = Character->Movement.PositionEnd.X;
+		NotificationData->PositionEnd.Y = Character->Movement.PositionEnd.Y;
+
+		return BroadcastToWorld(
+			Context,
+			RTRuntimeGetWorldByCharacter(Runtime, Character),
+			kEntityIDNull,
+			Character->Movement.PositionCurrent.X,
+			Character->Movement.PositionCurrent.Y,
+			Notification
+		);
 	}
-	else if (Skill->SkillGroup == RUNTIME_SKILL_GROUP_ASTRAL) {
+	else if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_ASTRAL) {
 		// TODO: Activate astral weapon
 		Int32 PacketLength = sizeof(C2S_DATA_SKILL_TO_CHARACTER) + sizeof(C2S_DATA_SKILL_GROUP_ASTRAL);
 		if (Packet->Signature.Length != PacketLength) goto error;
@@ -129,9 +146,16 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		NotificationData->Unknown1 = PacketData->Unknown1;
 		NotificationData->Unknown2 = PacketData->Unknown2;
 
-		return SocketSend(Socket, Connection, Notification);
+		return BroadcastToWorld(
+			Context,
+			RTRuntimeGetWorldByCharacter(Runtime, Character),
+			kEntityIDNull,
+			Character->Movement.PositionCurrent.X,
+			Character->Movement.PositionCurrent.Y,
+			Notification
+		);
 	}
-	else if (Skill->SkillGroup == RUNTIME_SKILL_GROUP_BATTLE_MODE) {
+	else if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_BATTLE_MODE) {
 		Int32 PacketLength = sizeof(C2S_DATA_SKILL_TO_CHARACTER) + sizeof(C2S_DATA_SKILL_GROUP_BATTLE_MODE);
 		if (Packet->Signature.Length != PacketLength) goto error;
 
@@ -156,7 +180,14 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		NotificationData->StyleExtension = 0; // TODO: Check what StyleExtension is good for
 		NotificationData->IsActivation = PacketData->IsActivation;
 
-		return SocketSend(Socket, Connection, Notification);
+		return BroadcastToWorld(
+			Context,
+			RTRuntimeGetWorldByCharacter(Runtime, Character),
+			kEntityIDNull,
+			Character->Movement.PositionCurrent.X,
+			Character->Movement.PositionCurrent.Y,
+			Notification
+		);
 	}
 	else {
 		goto error;

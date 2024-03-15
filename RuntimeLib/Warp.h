@@ -13,15 +13,6 @@ enum {
 	RUNTIME_WARP_TYPE_DUNGEON,
 };
 
-struct _RTWarpIndex {
-	Int32 Index;
-	Int32 WorldID;
-	struct _RTPosition Position;
-	struct _RTPosition Target[RUNTIME_NATION_COUNT];
-	Int32 Fee;
-	Int32 Level;
-};
-
 struct _RTWarp {
 	Int32 Index;
 	Int32 Type;
@@ -36,6 +27,20 @@ struct _RTWarp {
 };
 
 #pragma pack(pop)
+
+typedef struct {
+    UInt16 X;
+    UInt16 Y;
+    Int32 Fee;
+    Int32 WorldIndex;
+    Int32 Level;
+} RTWarpPointResult;
+
+RTWarpPointResult RTRuntimeGetWarpPoint(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 WarpIndex
+);
 
 Bool RTRuntimeWarpCharacter(
 	RTRuntimeRef Runtime,

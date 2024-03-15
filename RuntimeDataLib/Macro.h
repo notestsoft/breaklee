@@ -14,6 +14,10 @@
 #define RUNTIME_DATA_TYPE_BEGIN_CHILD(__NAME__, __QUERY__, __COUNT__)
 #endif
 
+#ifndef RUNTIME_DATA_PROPERTY_PRECONDITION
+#define RUNTIME_DATA_PROPERTY_PRECONDITION(__TYPE__, __NAME__, __QUERY__, __VALUE__)
+#endif
+
 #ifndef RUNTIME_DATA_PROPERTY
 #define RUNTIME_DATA_PROPERTY(__TYPE__, __NAME__, __QUERY__)
 #endif
@@ -49,8 +53,11 @@
 #include "Ability.h"
 #include "Achievement.h"
 #include "Assistant.h"
+#include "Avatar.h"
 #include "AwakenAuraMode.h"
 #include "BattleStyleChange.h"
+#include "BelongItem.h"
+#include "BlessingBeadCustomizing.h"
 #include "BossArena.h"
 #include "BossResistList.h"
 #include "CashShop.h"
@@ -60,6 +67,7 @@
 #include "ChatBaloon.h"
 #include "CheckItemAbility.h"
 #include "Collection.h"
+#include "Const.h"
 #include "Craft.h"
 #include "Destroy.h"
 #include "DivineUpgrade.h"
@@ -79,7 +87,7 @@
 #include "HonorMedal.h"
 #include "Item.h"
 #include "Keymap.h"
-#include "Main.h"
+#include "Level.h"
 #include "MapInfo.h"
 #include "Market.h"
 #include "MasterCraft.h"
@@ -103,11 +111,13 @@
 #include "Title.h"
 #include "Transform.h"
 #include "WarAdvantage.h"
+#include "Warp.h"
 
 #undef RUNTIME_DATA_FILE_BEGIN
 #undef RUNTIME_DATA_FILE_END
 #undef RUNTIME_DATA_TYPE_BEGIN
 #undef RUNTIME_DATA_TYPE_BEGIN_CHILD
+#undef RUNTIME_DATA_PROPERTY_PRECONDITION
 #undef RUNTIME_DATA_PROPERTY
 #undef RUNTIME_DATA_PROPERTY_ARRAY
 #undef RUNTIME_DATA_TYPE_END_CHILD

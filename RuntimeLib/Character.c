@@ -19,7 +19,7 @@ Void RTCharacterInitialize(
 	RTCharacterQuickSlotInfoRef QuickSlotInfo,
 	RTCharacterQuestSlotInfoRef QuestSlotInfo,
 	RTCharacterQuestFlagInfoRef QuestFlagInfo,
-	RTCharacterQuestFlagInfoRef DungeonQuestFlagInfo,
+	RTCharacterDungeonQuestFlagInfoRef DungeonQuestFlagInfo,
 	RTCharacterEssenceAbilityInfoRef EssenceAbilityInfo,
 	RTCharacterOverlordMasteryInfoRef OverlordMasteryInfo,
 	RTCharacterCollectionInfoRef CollectionInfo,
@@ -36,7 +36,7 @@ Void RTCharacterInitialize(
 	memcpy(&Character->QuickSlotInfo, QuickSlotInfo, sizeof(struct _RTCharacterQuickSlotInfo));
 	memcpy(&Character->QuestSlotInfo, QuestSlotInfo, sizeof(struct _RTCharacterQuestSlotInfo));
 	memcpy(&Character->QuestFlagInfo, QuestFlagInfo, sizeof(struct _RTCharacterQuestFlagInfo));
-	memcpy(&Character->DungeonQuestFlagInfo, DungeonQuestFlagInfo, sizeof(struct _RTCharacterQuestFlagInfo));
+	memcpy(&Character->DungeonQuestFlagInfo, DungeonQuestFlagInfo, sizeof(struct _RTCharacterDungeonQuestFlagInfo));
 	memcpy(&Character->EssenceAbilityInfo, EssenceAbilityInfo, sizeof(struct _RTCharacterEssenceAbilityInfo));
 	memcpy(&Character->OverlordMasteryInfo, OverlordMasteryInfo, sizeof(struct _RTCharacterOverlordMasteryInfo));
 	memcpy(&Character->CollectionInfo, CollectionInfo, sizeof(struct _RTCharacterCollectionInfo));
@@ -689,7 +689,7 @@ Void RTCharacterAddExp(
 	
 	// TODO: Limit exp accumulation to the max reachable value from data!
 	Character->Info.Basic.Exp += Exp;
-	Character->Info.Basic.Level = RTRuntimeGetLevelByExp(Runtime, Character->Info.Basic.Exp);
+	Character->Info.Basic.Level = RTRuntimeGetLevelByExp(Runtime, CurrentLevel, Character->Info.Basic.Exp);
 
 	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
 	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
@@ -709,8 +709,16 @@ Void RTCharacterAddExp(
 				Character->Info.Overlord.Exp = 0;
 				Character->Info.Overlord.Point = Start->MasteryPointCount;
 
-				// TODO: Client has to receive a notification for overlord level up
-			}
+                RTRuntimeBroadcastEvent(
+                    Runtime,
+                    RUNTIME_EVENT_CHARACTER_OVERLORD_LEVEL_UP,
+                    RTRuntimeGetWorldByCharacter(Runtime, Character),
+                    kEntityIDNull,
+                    Character->ID,
+                    Character->Movement.PositionCurrent.X,
+                    Character->Movement.PositionCurrent.Y
+                );
+            }
 		}
 
 		RTRuntimeBroadcastEvent(

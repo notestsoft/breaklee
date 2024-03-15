@@ -155,7 +155,7 @@ Bool MasterDBUpdateCharacterQuestFlagData(
 Bool MasterDBUpdateCharacterDungeonQuestFlagData(
     DatabaseRef Database,
     Int32 CharacterID,
-    RTCharacterQuestFlagInfoRef QuestFlagInfo
+    RTCharacterDungeonQuestFlagInfoRef QuestFlagInfo
 );
 
 Bool MasterDBUpdateCharacterAchievementData(

@@ -6,6 +6,13 @@ Bool EncryptionLoadLibrary();
 
 Bool EncryptionUnloadLibrary();
 
+Bool InflateDecryptBuffer(
+    UInt8* Source,
+    Int32 SourceLength,
+    UInt8** Destination,
+    Int32* DestinationLength
+);
+
 Bool EncryptionDecryptFile(
     CString Filepath,
     UInt8** Destination,

@@ -61,6 +61,7 @@ typedef struct {
 	UInt8 NationMask;
 	Char Name[MAX_CHARACTER_NAME_LENGTH + 1];
 	UInt64 HonorPoint;
+    UInt8 Unknown2[28];
 	UInt64 Alz;
 	UInt8 MapID;
 	UInt16 PositionX;

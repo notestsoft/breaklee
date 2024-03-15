@@ -27,16 +27,6 @@ Bool ServerLoadQuestData(
     ArchiveRef Archive
 );
 
-Bool ServerLoadWarpData(
-    RTRuntimeRef Runtime,
-    ArchiveRef Archive
-);
-
-Bool ServerLoadLevelData(
-    ServerContextRef Context,
-    ArchiveRef MainArchive
-);
-
 Bool ServerLoadItemData(
     ServerContextRef Context,
     CString RuntimeDirectory,
@@ -59,7 +49,7 @@ Bool ServerLoadWorldData(
     RTRuntimeRef Runtime,
     CString RuntimeDirectory,
     CString ServerDirectory,
-    ArchiveRef MainArchive,
+    ArchiveRef TerrainArchive,
     Bool LoadShops
 );
 

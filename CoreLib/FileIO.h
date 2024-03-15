@@ -41,6 +41,18 @@ Bool FileExists(
 	CString FilePath
 );
 
+typedef Void (*FilesProcessCallback)(
+	CString FileName,
+	FileRef File,
+	Void* UserData
+);
+
+Int32 FilesProcess(
+	CString Pattern,
+	FilesProcessCallback Callback,
+	Void* UserData
+);
+
 #ifdef _WIN32
 #define PathGetCurrentDirectory _getcwd
 #else
@@ -72,6 +84,10 @@ CString PathGetFileName(
 );
 
 CString PathGetFileNameExtension(
+	CString Path
+);
+
+CString PathRemoveExtensionNoAlloc(
 	CString Path
 );
 

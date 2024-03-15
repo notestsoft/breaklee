@@ -508,3 +508,114 @@ Bool ParseAttributeString(
 error:
     return false;
 }
+
+Bool ParseAttributeInt8Equal(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    Int8 Value
+) {
+    Int8 Result = 0;
+    return ParseAttributeInt8(Object, NodeIndex, Name, &Result) && Result == Value;
+}
+
+Bool ParseAttributeInt16Equal(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    Int16 Value
+) {
+    Int16 Result = 0;
+    return ParseAttributeInt16(Object, NodeIndex, Name, &Result) && Result == Value;
+}
+
+Bool ParseAttributeInt32Equal(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    Int32 Value
+) {
+    Int32 Result = 0;
+    return ParseAttributeInt32(Object, NodeIndex, Name, &Result) && Result == Value;
+}
+
+Bool ParseAttributeInt64Equal(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    Int64 Value
+) {
+    Int64 Result = 0;
+    return ParseAttributeInt64(Object, NodeIndex, Name, &Result) && Result == Value;
+}
+
+Bool ParseAttributeUInt8Equal(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    UInt8 Value
+) {
+    UInt8 Result = 0;
+    return ParseAttributeUInt8(Object, NodeIndex, Name, &Result) && Result == Value;
+}
+
+Bool ParseAttributeUInt16Equal(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    UInt16 Value
+) {
+    UInt16 Result = 0;
+    return ParseAttributeUInt16(Object, NodeIndex, Name, &Result) && Result == Value;
+}
+
+Bool ParseAttributeUInt32Equal(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    UInt32 Value
+) {
+    UInt32 Result = 0;
+    return ParseAttributeUInt32(Object, NodeIndex, Name, &Result) && Result == Value;
+}
+
+Bool ParseAttributeUInt64Equal(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    UInt64 Value
+) {
+    UInt64 Result = 0;
+    return ParseAttributeUInt64(Object, NodeIndex, Name, &Result) && Result == Value;
+}
+
+Bool ParseAttributeIndexEqual(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    Index Value
+) {
+    Index Result = 0;
+    return ParseAttributeIndex(Object, NodeIndex, Name, &Result) && Result == Value;
+}
+
+Bool ParseAttributeFloat32Equal(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    Float32 Value
+) {
+    Float32 Result = 0;
+    return ParseAttributeFloat32(Object, NodeIndex, Name, &Result) && Result == Value;
+}
+
+Bool ParseAttributeStringEqual(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    CString Value,
+    Int64 Length
+) {
+    Char Buffer[MAX_PATH];
+    return ParseAttributeString(Object, NodeIndex, Name, Buffer, Length) && strcmp(Value, Buffer) == 0;
+}

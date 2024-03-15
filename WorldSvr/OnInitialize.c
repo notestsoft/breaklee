@@ -27,7 +27,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     if (!Packet->Success) goto error;
 
     if (Context->Config.WorldSvr.DebugSetQuestFlags) {
-        memset(Packet->Character.QuestFlagData.Flags, 0xFF, 640);
+        memset(Packet->Character.QuestFlagData.FinishedQuests, 0xFF, RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT);
     }
 
     RTSkillSlotRef GmSkill = &Packet->Character.SkillSlotData.Skills[Packet->Character.SkillSlotData.Count];
@@ -70,7 +70,8 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     Response->Server.WorldType = Context->Config.WorldSvr.WorldType;
 
     /* Character Info */
-    Response->MapID = Packet->Character.CharacterData.Position.WorldID;
+    Response->WorldIndex = Packet->Character.CharacterData.Position.WorldID;
+    Response->DungeonIndex = Packet->Character.CharacterData.Position.DungeonIndex;
     Response->Position.X = Packet->Character.CharacterData.Position.X;
     Response->Position.Y = Packet->Character.CharacterData.Position.Y;
     Response->Exp = Packet->Character.CharacterData.Basic.Exp;
@@ -85,6 +86,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     Response->SkillLevel = Packet->Character.CharacterData.Skill.Level;
     Response->SkillExp = (UInt32)Packet->Character.CharacterData.Skill.Exp;
     Response->SkillPoint = Packet->Character.CharacterData.Skill.Point;
+    Response->RestExp = 0;
     Response->HonorPoint = Packet->Character.CharacterData.Honor.Point;
 
     /* TODO: Populate Server host data */
@@ -93,16 +95,20 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     Response->ChatServerAddress.Port = 0;
     memcpy(Response->AuctionServerAddress.Host, DummyHost, strlen(DummyHost));
     Response->AuctionServerAddress.Port = 0;
-    memcpy(Response->UnknownServerAddress.Host, DummyHost, strlen(DummyHost));
-    Response->UnknownServerAddress.Port = 0;
+    memcpy(Response->PartyServerAddress.Host, DummyHost, strlen(DummyHost));
+    Response->PartyServerAddress.Port = 0;
 
     Response->Nation = Packet->Character.CharacterData.Profile.Nation;
     Response->WarpMask = Packet->Character.CharacterData.Profile.WarpMask;
     Response->MapsMask = Packet->Character.CharacterData.Profile.MapsMask;
     Response->CharacterStyle = SwapUInt32(Packet->Character.CharacterData.Style.RawValue);
-    Response->CharacterStyleFlags = 0;
+    Response->CharacterLiveStyle = 0;
     Response->AP = Packet->Character.CharacterData.Ability.Point;
     Response->Axp = Packet->Character.CharacterData.Ability.Exp;
+    Response->EssenceAbilityCount = 0;
+    Response->ExtendedEssenceAbilityCount = 0;
+    Response->BlendedAbilityCount = 0;
+    Response->ExtendedBlendedAbilityCount = 0;
     Response->AllAchievementScore = 0;
     Response->NormalAchievementScore = 0;
     Response->QuestAchievementScore = 0;
@@ -121,7 +127,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     Response->WarTitle = 0;
     Response->CraftEnergy = 0;
     Response->SortingOrderMask = 0;
-    Response->BasicCraftExp = 0;
+    Response->RequestCraftExp = 0;
     Response->GoldMeritExp = 0;
     Response->GoldMeritPoint = 0;
     Response->PlatinumMeritCount = 0;
@@ -187,6 +193,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     Response->BlendedAbilityCount = 0;
 
     memcpy(&Response->QuestFlagInfo, &Packet->Character.QuestFlagData, sizeof(struct _RTCharacterQuestFlagInfo));
+    memcpy(&Response->DungeonQuestFlagInfo, &Packet->Character.DungeonQuestFlagData, sizeof(struct _RTCharacterDungeonQuestFlagInfo));
 
     Response->QuestSlotCount = 0;
     for (Int32 Index = 0; Index < RUNTIME_CHARACTER_MAX_QUEST_SLOT_COUNT; Index += 1) {
@@ -302,22 +309,19 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
         RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, Character->Info.Position.DungeonIndex);
         if (!DungeonData) goto error;
 
-        assert(0 <= DungeonData->FailWarpNpcID - 1 && DungeonData->FailWarpNpcID - 1 < Runtime->WarpIndexCount);
-        RTWarpIndexRef WarpIndex = &Runtime->WarpIndices[DungeonData->FailWarpNpcID - 1];
-        RTPositionRef Position = &WarpIndex->Target[0];
-
+        RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, DungeonData->FailWarpNpcID);
         RTWorldContextRef TargetWorld = World;
-        if (World->WorldData->WorldIndex != WarpIndex->WorldID) {
-            TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpIndex->WorldID);
+        if (World->WorldData->WorldIndex != WarpPoint.WorldIndex) {
+            TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpPoint.WorldIndex);
             assert(TargetWorld);
         }
 
         World = TargetWorld;
-        Character->Info.Position.X = Position->X;
-        Character->Info.Position.Y = Position->Y;
-        Character->Info.Position.WorldID = WarpIndex->WorldID;
+        Character->Info.Position.X = WarpPoint.X;
+        Character->Info.Position.Y = WarpPoint.Y;
+        Character->Info.Position.WorldID = WarpPoint.WorldIndex;
         Character->Info.Position.DungeonIndex = TargetWorld->DungeonIndex;
-        Response->MapID = Character->Info.Position.WorldID;
+        Response->WorldIndex = Character->Info.Position.WorldID;
         Response->Position.X = Character->Info.Position.X;
         Response->Position.Y = Character->Info.Position.Y;
     }

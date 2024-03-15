@@ -5,17 +5,9 @@
 
 EXTERN_C_BEGIN
 
-#pragma pack(push, 1)
-
-struct _RTLevel {
-    UInt8 Level;
-    UInt64 Exp;
-};
-
-#pragma pack(pop)
-
 UInt8 RTRuntimeGetLevelByExp(
     RTRuntimeRef Runtime,
+    UInt8 Level,
     UInt64 Exp
 );
 

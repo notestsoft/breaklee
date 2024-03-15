@@ -163,4 +163,82 @@ Bool ParseAttributeString(
     Int64 Length
 );
 
+Bool ParseAttributeInt8Equal(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    Int8 Value
+);
+
+Bool ParseAttributeInt16Equal(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    Int16 Value
+);
+
+Bool ParseAttributeInt32Equal(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    Int32 Value
+);
+
+Bool ParseAttributeInt64Equal(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    Int64 Value
+);
+
+Bool ParseAttributeUInt8Equal(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    UInt8 Value
+);
+
+Bool ParseAttributeUInt16Equal(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    UInt16 Value
+);
+
+Bool ParseAttributeUInt32Equal(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    UInt32 Value
+);
+
+Bool ParseAttributeUInt64Equal(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    UInt64 Value
+);
+
+Bool ParseAttributeIndexEqual(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    Index Value
+);
+
+Bool ParseAttributeFloat32Equal(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    Float32 Value
+);
+
+Bool ParseAttributeStringEqual(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    CString Value,
+    Int64 Length
+);
+
 EXTERN_C_END

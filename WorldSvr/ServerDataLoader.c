@@ -50,7 +50,9 @@ struct _ArchiveMobData {
     Int32 A;
     Float32 UnknownF;
     Int32 HPRecharge;
-    Int32 H[3];
+    Int32 AttackRate;
+    Int32 DefenseRate;
+    Int32 Defense;
     Int32 DefaultSkillPhysicalAttackMin;
     Int32 DefaultSkillPhysicalAttackMax;
     Int32 DefaultSkillReach;
@@ -64,10 +66,10 @@ struct _ArchiveMobData {
     Int32 AlertRange;
     Int32 LimitRangeA;
     Int32 FindCount;
-    Float32 UnknownB;
+    Float32 FindInterval;
     Int32 AttackPattern;
-    Int32 Not_DefaultSkillDefenseSkill;
-    Int32 Not_SpecialSkillDefenseSkill;
+    UInt32 Aggressive;
+    UInt32 Cooperative;
     UInt64 Exp;
     Int32 DefaultSkillStance;
     Int32 SpecialSkillStance;
@@ -77,22 +79,29 @@ struct _ArchiveMobData {
     Int32 DefaultSkillGroup;
     Int32 SpecialSkillGroup;
     UInt32 Property;
-    Int32 D[5];
+    Int32 D[4];
+    Int32 DamageDiscount;
     Int32 MoveInterval;
-    Int32 E[2];
+    Int32 Accuracy;
+    Int32 Penetration;
     Int32 ResistCriticalRate;
-    Int32 N[2];
+    Int32 AggroPattern;
+    Int32 AttackCountAmp;
     Int32 LimitRangeB;
     Int32 IgnoreAccuracy;
     Int32 IgnoreDamageReduction;
     Int32 IgnorePenetration;
-    Int32 M[2];
+    Int32 AbsoluteDamage;
+    Int32 AttackSignalValue;
     Int32 ResistSkillAmp;
     Int32 ResistCriticalDamage;
     Int32 ResistSuppression;
-    Int32 O[4];
+    Int32 ResistSilence;
+    Int32 ProportionalHPDmg;
+    Int32 O[1];
+    Int32 IsWorldBoss;
     UInt8 K[3];
-    Int32 L[5];
+    Int32 L[6];
 };
 
 #pragma pack(pop)
@@ -302,33 +311,33 @@ error:
 
 Bool ServerLoadBattleStyleFormulaData(
     RTRuntimeRef Runtime,
-    ArchiveRef Archive
+    ArchiveRef RankArchive
 ) {
-    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.rankup");
+    Int64 ParentIndex = ArchiveNodeGetChildByPath(RankArchive, -1, "cabal.rankup");
     if (ParentIndex < 0) goto error;
 
-    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "class_formula");
+    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(RankArchive, ParentIndex, "class_formula");
     while (Iterator) {
         Int32 BattleStyleIndex = 0;
-        if (!ParseBattleStyleString(Archive, Iterator->Index, "class", &BattleStyleIndex)) goto error;
+        if (!ParseBattleStyleString(RankArchive, Iterator->Index, "class", &BattleStyleIndex)) goto error;
         
         assert(RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MIN <= BattleStyleIndex && BattleStyleIndex <= RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX);
 
         RTBattleStyleClassFormulaDataRef FormulaData = &Runtime->BattleStyleClassFormulaData[BattleStyleIndex - 1];
         FormulaData->BattleStyleIndex = BattleStyleIndex;
 
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "class_atk", FormulaData->Attack, 2, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "class_matk", FormulaData->MagicAttack, 2, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "class_def", FormulaData->Defense, 2, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "class_ar", FormulaData->AttackRate, 2, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "class_dr", FormulaData->DefenseRate, 2, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "class_dmgdsc", FormulaData->DamageReduction, 2, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "class_hit", FormulaData->Accuracy, 2, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "class_penet", FormulaData->Penetration, 2, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "class_hitpenel", FormulaData->AccuracyPenalty, 2, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "class_penetpenel", FormulaData->PenetrationPenalty, 2, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "class_atk", FormulaData->Attack, 2, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "class_matk", FormulaData->MagicAttack, 2, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "class_def", FormulaData->Defense, 2, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "class_ar", FormulaData->AttackRate, 2, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "class_dr", FormulaData->DefenseRate, 2, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "class_dmgdsc", FormulaData->DamageReduction, 2, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "class_hit", FormulaData->Accuracy, 2, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "class_penet", FormulaData->Penetration, 2, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "class_hitpenel", FormulaData->AccuracyPenalty, 2, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "class_penetpenel", FormulaData->PenetrationPenalty, 2, ',')) goto error;
 
-        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+        Iterator = ArchiveQueryNodeIteratorNext(RankArchive, Iterator);
     }
 
     for (Int32 BattleStyleIndex = RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MIN; BattleStyleIndex <= RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX; BattleStyleIndex += 1) {
@@ -339,15 +348,15 @@ Bool ServerLoadBattleStyleFormulaData(
         FormulaData->SkillRankCount = 0;
     }
 
-    Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "exp_for_point");
+    Iterator = ArchiveQueryNodeIteratorFirst(RankArchive, ParentIndex, "exp_for_point");
     while (Iterator) {
         Int32 SkillRank = 0;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "rank", &SkillRank)) goto error;
+        if (!ParseAttributeInt32(RankArchive, Iterator->Index, "rank", &SkillRank)) goto error;
 
-        ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, "condition");
+        ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(RankArchive, Iterator->Index, "condition");
         while (ChildIterator) {
             Int32 BattleStyleIndex = 0;
-            if (!ParseBattleStyleString(Archive, ChildIterator->Index, "class", &BattleStyleIndex)) goto error;
+            if (!ParseBattleStyleString(RankArchive, ChildIterator->Index, "class", &BattleStyleIndex)) goto error;
 
             assert(RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MIN <= BattleStyleIndex && BattleStyleIndex <= RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX);
 
@@ -358,24 +367,24 @@ Bool ServerLoadBattleStyleFormulaData(
             RTBattleStyleSkillRankDataRef RankData = &FormulaData->SkillRanks[FormulaData->SkillRankCount];
             RankData->SkillRank = SkillRank;
 
-            if (!ParseAttributeInt32(Archive, ChildIterator->Index, "exp", &RankData->SkillLevelExp)) goto error;
+            if (!ParseAttributeInt32(RankArchive, ChildIterator->Index, "exp", &RankData->SkillLevelExp)) goto error;
 
             FormulaData->SkillRankCount += 1;
-            ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
+            ChildIterator = ArchiveQueryNodeIteratorNext(RankArchive, ChildIterator);
         }
 
-        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+        Iterator = ArchiveQueryNodeIteratorNext(RankArchive, Iterator);
     }
 
-    Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "mastery_levelup");
+    Iterator = ArchiveQueryNodeIteratorFirst(RankArchive, ParentIndex, "mastery_levelup");
     while (Iterator) {
         Int32 Level = 0;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "level", &Level)) goto error;
+        if (!ParseAttributeInt32(RankArchive, Iterator->Index, "level", &Level)) goto error;
 
-        ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, "condition");
+        ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(RankArchive, Iterator->Index, "condition");
         while (ChildIterator) {
             Int32 BattleStyleIndex;
-            if (!ParseBattleStyleString(Archive, ChildIterator->Index, "class", &BattleStyleIndex)) goto error;
+            if (!ParseBattleStyleString(RankArchive, ChildIterator->Index, "class", &BattleStyleIndex)) goto error;
             
             assert(RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MIN <= BattleStyleIndex && BattleStyleIndex <= RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX);
 
@@ -386,104 +395,104 @@ Bool ServerLoadBattleStyleFormulaData(
             RTBattleStyleRankDataRef RankData = &FormulaData->Ranks[FormulaData->RankCount];
             RankData->Level = Level;
 
-            if (!ParseAttributeInt32(Archive, ChildIterator->Index, "str", &RankData->ConditionSTR)) goto error;
-            if (!ParseAttributeInt32(Archive, ChildIterator->Index, "dex", &RankData->ConditionDEX)) goto error;
-            if (!ParseAttributeInt32(Archive, ChildIterator->Index, "int", &RankData->ConditionINT)) goto error;
+            if (!ParseAttributeInt32(RankArchive, ChildIterator->Index, "str", &RankData->ConditionSTR)) goto error;
+            if (!ParseAttributeInt32(RankArchive, ChildIterator->Index, "dex", &RankData->ConditionDEX)) goto error;
+            if (!ParseAttributeInt32(RankArchive, ChildIterator->Index, "int", &RankData->ConditionINT)) goto error;
 
-            if (!ParseAttributeInt32(Archive, ChildIterator->Index, "skill1idx", &RankData->SkillIndex[0]) ||
-                !ParseAttributeInt32(Archive, ChildIterator->Index, "skill1slotidx", &RankData->SkillSlot[0])) {
+            if (!ParseAttributeInt32(RankArchive, ChildIterator->Index, "skill1idx", &RankData->SkillIndex[0]) ||
+                !ParseAttributeInt32(RankArchive, ChildIterator->Index, "skill1slotidx", &RankData->SkillSlot[0])) {
                 RankData->SkillIndex[0] = 0;
                 RankData->SkillSlot[0] = 0;
             }
 
-            if (!ParseAttributeInt32(Archive, ChildIterator->Index, "skill2idx", &RankData->SkillIndex[1]) ||
-                !ParseAttributeInt32(Archive, ChildIterator->Index, "skill2slotidx", &RankData->SkillSlot[1])) {
+            if (!ParseAttributeInt32(RankArchive, ChildIterator->Index, "skill2idx", &RankData->SkillIndex[1]) ||
+                !ParseAttributeInt32(RankArchive, ChildIterator->Index, "skill2slotidx", &RankData->SkillSlot[1])) {
                 RankData->SkillIndex[1] = 0;
                 RankData->SkillSlot[1] = 0;
             }
 
             FormulaData->RankCount += 1;
-            ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
+            ChildIterator = ArchiveQueryNodeIteratorNext(RankArchive, ChildIterator);
         }
 
-        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+        Iterator = ArchiveQueryNodeIteratorNext(RankArchive, Iterator);
     }
 
-    ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.rankup.stat_formula");
+    ParentIndex = ArchiveNodeGetChildByPath(RankArchive, -1, "cabal.rankup.stat_formula");
     if (ParentIndex < 0) goto error;
 
-    Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "flag");
+    Iterator = ArchiveQueryNodeIteratorFirst(RankArchive, ParentIndex, "flag");
     while (Iterator) {
         Int32 BattleStyleIndex = 0;
-        if (!ParseBattleStyleString(Archive, Iterator->Index, "class", &BattleStyleIndex)) goto error;
+        if (!ParseBattleStyleString(RankArchive, Iterator->Index, "class", &BattleStyleIndex)) goto error;
 
         assert(RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MIN <= BattleStyleIndex && BattleStyleIndex <= RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX);
 
         RTBattleStyleStatsFormulaDataRef FormulaData = &Runtime->BattleStyleStatsFormulaData[BattleStyleIndex - 1];
         FormulaData->BattleStyleIndex = BattleStyleIndex;
 
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "atk_flag", FormulaData->Attack, 3, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "matk_flag", FormulaData->MagicAttack, 3, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "dmgdcs_flag", FormulaData->DamageReduction, 3, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "flee_flag", FormulaData->Evasion, 3, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "ar_flag", FormulaData->AttackRate, 3, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "dr_flag", FormulaData->DefenseRate, 3, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "crpreg_flag", FormulaData->ResistCriticalRate, 3, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "samreg_flag", FormulaData->ResistSkillAmp, 3, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "crdreg_flag", FormulaData->ResistCriticalDamage, 3, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "movreg_flag", FormulaData->ResistUnmovable, 3, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "stnreg_flag", FormulaData->ResistStun, 3, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "dwnreg_flag", FormulaData->ResistDown, 3, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "nubreg_flag", FormulaData->ResistKnockback, 3, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "hp_flag", FormulaData->HP, 3, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "mp_flag", FormulaData->MP, 3, ',')) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "ignorepenet_flag", FormulaData->IgnorePenetration, 3, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "atk_flag", FormulaData->Attack, 3, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "matk_flag", FormulaData->MagicAttack, 3, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "dmgdcs_flag", FormulaData->DamageReduction, 3, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "flee_flag", FormulaData->Evasion, 3, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "ar_flag", FormulaData->AttackRate, 3, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "dr_flag", FormulaData->DefenseRate, 3, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "crpreg_flag", FormulaData->ResistCriticalRate, 3, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "samreg_flag", FormulaData->ResistSkillAmp, 3, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "crdreg_flag", FormulaData->ResistCriticalDamage, 3, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "movreg_flag", FormulaData->ResistUnmovable, 3, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "stnreg_flag", FormulaData->ResistStun, 3, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "dwnreg_flag", FormulaData->ResistDown, 3, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "nubreg_flag", FormulaData->ResistKnockback, 3, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "hp_flag", FormulaData->HP, 3, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "mp_flag", FormulaData->MP, 3, ',')) goto error;
+        if (!ParseAttributeInt32Array(RankArchive, Iterator->Index, "ignorepenet_flag", FormulaData->IgnorePenetration, 3, ',')) goto error;
 
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "atk_code", &FormulaData->AttackSlopeID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "matk_code", &FormulaData->MagicAttackSlopeID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "dmgdcs_code", &FormulaData->DamageReductionSlopeID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "flee_code", &FormulaData->EvasionSlopeID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "ar_code", &FormulaData->AttackRateSlopeID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "dr_code", &FormulaData->DefenseRateSlopeID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "crpreg_code", &FormulaData->ResistCriticalRateSlopeID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "samreg_code", &FormulaData->ResistSkillAmpSlopeID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "crdreg_code", &FormulaData->ResistCriticalDamageSlopeID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "movreg_code", &FormulaData->ResistUnmovableSlopeID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "stnreg_code", &FormulaData->ResistStunSlopeID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "dwnreg_code", &FormulaData->ResistDownSlopeID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "nubreg_code", &FormulaData->ResistKnockbackSlopeID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "hp_code", &FormulaData->HPSlopeID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "mp_code", &FormulaData->MPSlopeID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "ignorepenet_code", &FormulaData->IgnorePenetrationSlopeID)) goto error;
+        if (!ParseAttributeInt32(RankArchive, Iterator->Index, "atk_code", &FormulaData->AttackSlopeID)) goto error;
+        if (!ParseAttributeInt32(RankArchive, Iterator->Index, "matk_code", &FormulaData->MagicAttackSlopeID)) goto error;
+        if (!ParseAttributeInt32(RankArchive, Iterator->Index, "dmgdcs_code", &FormulaData->DamageReductionSlopeID)) goto error;
+        if (!ParseAttributeInt32(RankArchive, Iterator->Index, "flee_code", &FormulaData->EvasionSlopeID)) goto error;
+        if (!ParseAttributeInt32(RankArchive, Iterator->Index, "ar_code", &FormulaData->AttackRateSlopeID)) goto error;
+        if (!ParseAttributeInt32(RankArchive, Iterator->Index, "dr_code", &FormulaData->DefenseRateSlopeID)) goto error;
+        if (!ParseAttributeInt32(RankArchive, Iterator->Index, "crpreg_code", &FormulaData->ResistCriticalRateSlopeID)) goto error;
+        if (!ParseAttributeInt32(RankArchive, Iterator->Index, "samreg_code", &FormulaData->ResistSkillAmpSlopeID)) goto error;
+        if (!ParseAttributeInt32(RankArchive, Iterator->Index, "crdreg_code", &FormulaData->ResistCriticalDamageSlopeID)) goto error;
+        if (!ParseAttributeInt32(RankArchive, Iterator->Index, "movreg_code", &FormulaData->ResistUnmovableSlopeID)) goto error;
+        if (!ParseAttributeInt32(RankArchive, Iterator->Index, "stnreg_code", &FormulaData->ResistStunSlopeID)) goto error;
+        if (!ParseAttributeInt32(RankArchive, Iterator->Index, "dwnreg_code", &FormulaData->ResistDownSlopeID)) goto error;
+        if (!ParseAttributeInt32(RankArchive, Iterator->Index, "nubreg_code", &FormulaData->ResistKnockbackSlopeID)) goto error;
+        if (!ParseAttributeInt32(RankArchive, Iterator->Index, "hp_code", &FormulaData->HPSlopeID)) goto error;
+        if (!ParseAttributeInt32(RankArchive, Iterator->Index, "mp_code", &FormulaData->MPSlopeID)) goto error;
+        if (!ParseAttributeInt32(RankArchive, Iterator->Index, "ignorepenet_code", &FormulaData->IgnorePenetrationSlopeID)) goto error;
 
-        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+        Iterator = ArchiveQueryNodeIteratorNext(RankArchive, Iterator);
     }
 
-    Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "parameter");
+    Iterator = ArchiveQueryNodeIteratorFirst(RankArchive, ParentIndex, "parameter");
     while (Iterator) {
         assert(Runtime->SlopeFormulaDataCount < RUNTIME_MEMORY_MAX_SLOPE_FORMULA_COUNT);
 
         RTBattleStyleSlopeFormulaDataRef FormulaData = &Runtime->BattleStyleSlopeFormulaData[Runtime->SlopeFormulaDataCount];
         FormulaData->SlopeCount = 0;
 
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "code", &FormulaData->SlopeID)) goto error;
+        if (!ParseAttributeInt32(RankArchive, Iterator->Index, "code", &FormulaData->SlopeID)) goto error;
 
-        ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, "condition");
+        ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(RankArchive, Iterator->Index, "condition");
         while (ChildIterator) {
             assert(FormulaData->SlopeCount < RUNTIME_MEMORY_MAX_SLOPE_DATA_COUNT);
 
             RTBattleStyleSlopeDataRef SlopeData = &FormulaData->Slopes[FormulaData->SlopeCount];
 
-            if (!ParseAttributeInt32(Archive, ChildIterator->Index, "penalty_stat", &SlopeData->Penalty)) goto error;
-            if (!ParseAttributeInt32(Archive, ChildIterator->Index, "slope", &SlopeData->Slope)) goto error;
-            if (!ParseAttributeInt32(Archive, ChildIterator->Index, "intercept", &SlopeData->Intercept)) goto error;
+            if (!ParseAttributeInt32(RankArchive, ChildIterator->Index, "penalty_stat", &SlopeData->Penalty)) goto error;
+            if (!ParseAttributeInt32(RankArchive, ChildIterator->Index, "slope", &SlopeData->Slope)) goto error;
+            if (!ParseAttributeInt32(RankArchive, ChildIterator->Index, "intercept", &SlopeData->Intercept)) goto error;
 
             FormulaData->SlopeCount += 1;
-            ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
+            ChildIterator = ArchiveQueryNodeIteratorNext(RankArchive, ChildIterator);
         }
 
         Runtime->SlopeFormulaDataCount += 1;
-        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+        Iterator = ArchiveQueryNodeIteratorNext(RankArchive, Iterator);
     }
 
     return true;
@@ -635,7 +644,15 @@ Bool ServerLoadQuestData(
             assert(!ChildIterator);
         }
 
-        // TODO: Add dungeon
+        ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, "dungeon");
+        while (ChildIterator) {
+            assert(Quest->DungeonIndexCount < RUNTIME_MAX_QUEST_DUNGEON_INDEX_COUNT);
+
+            if (!ParseAttributeInt32(Archive, ChildIterator->Index, "id", &Quest->DungeonIndex[Quest->DungeonIndexCount])) goto error;
+
+            Quest->DungeonIndexCount += 1;
+            ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
+        }
 
         Runtime->QuestDataCount += 1;
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
@@ -681,33 +698,7 @@ Bool ServerLoadWarpData(
     RTRuntimeRef Runtime,
     ArchiveRef Archive
 ) {
-    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.warp_point");
-    if (ParentIndex < 0) goto error;
-
-    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "warp_index");
-    while (Iterator) {
-        assert(Runtime->WarpIndexCount < RUNTIME_MEMORY_MAX_WARP_INDEX_COUNT);
-
-        RTWarpIndexRef WarpIndex = &Runtime->WarpIndices[Runtime->WarpIndexCount];
-        WarpIndex->Index = Runtime->WarpIndexCount;
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "WorldIdx", &WarpIndex->WorldID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "x", &WarpIndex->Position.X)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "y", &WarpIndex->Position.Y)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "nation1x", &WarpIndex->Target[0].X)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "nation1y", &WarpIndex->Target[0].Y)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "nation2x", &WarpIndex->Target[1].X)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "nation2y", &WarpIndex->Target[1].Y)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "nation3x", &WarpIndex->Target[2].X)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "nation3y", &WarpIndex->Target[2].Y)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Fee", &WarpIndex->Fee)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "level", &WarpIndex->Level)) goto error;
-
-        Runtime->WarpIndexCount += 1;
-        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
-    }
-
-    ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.warp_npc");
+    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "World.warp_npc");
     if (ParentIndex < 0) goto error;
 
     ArchiveIteratorRef WorldIterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "world");
@@ -744,35 +735,6 @@ Bool ServerLoadWarpData(
         }
 
         WorldIterator = ArchiveQueryNodeIteratorNext(Archive, WorldIterator);
-    }
-
-    return true;
-
-error:
-    return false;
-}
-
-Bool ServerLoadLevelData(
-    ServerContextRef Context,
-    ArchiveRef MainArchive
-) {
-    ArchiveRef Archive = MainArchive;
-    RTRuntimeRef Runtime = Context->Runtime;
-
-    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.level_up");
-    if (ParentIndex < 0) goto error;
-
-    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "con");
-    while (Iterator) {
-        assert(Runtime->LevelCount < RUNTIME_MEMORY_MAX_LEVEL_COUNT);
-
-        RTLevelRef Level = &Runtime->Levels[Runtime->LevelCount];
-
-        if (!ParseAttributeUInt8(Archive, Iterator->Index, "level", &Level->Level)) goto error;
-        if (!ParseAttributeUInt64(Archive, Iterator->Index, "exp", &Level->Exp)) goto error;
-
-        Runtime->LevelCount += 1;
-        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
     }
 
     return true;
@@ -854,6 +816,7 @@ Bool ServerLoadMobData(
     if (ParentIndex < 0) goto error;
 
     Int32 SkillGroupUsage[50] = { 0 };
+    Int32 AttackPatternUsage[50] = { 0 };
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "mob");
     while (Iterator) {
@@ -950,14 +913,76 @@ Bool ServerLoadMobData(
 
     memset(SkillGroupUsage, 0, sizeof(SkillGroupUsage));
 
-    for (Int32 Index = 0; Index < 3736; Index += 1) {
+    for (Int32 Index = 0; Index < 4335; Index += 1) {
         SkillGroupUsage[MobData[Index].DefaultSkillGroup] += 1;
         SkillGroupUsage[MobData[Index].SpecialSkillGroup] += 1;
+        AttackPatternUsage[MobData[Index].AttackPattern] += 1;
+
+        if (MobData[Index].D[0]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) D[0]: %d", Index, MobData[Index].D[0]);
+        }
+
+        if (MobData[Index].D[1]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) D[1]: %d", Index, MobData[Index].D[1]);
+        }
+
+        if (MobData[Index].D[2]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) D[2]: %d", Index, MobData[Index].D[2]);
+        }
+
+        if (MobData[Index].D[3]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) D[3]: %d", Index, MobData[Index].D[3]);
+        }
+
+        if (MobData[Index].O[0]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) O[0]: %d", Index, MobData[Index].O[0]);
+        }
+
+        if (MobData[Index].K[0]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) K[0]: %d", Index, MobData[Index].K[0]);
+        }
+
+        if (MobData[Index].K[1]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) K[1]: %d", Index, MobData[Index].K[1]);
+        }
+
+        if (MobData[Index].K[2]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) K[2]: %d", Index, MobData[Index].K[2]);
+        }
+
+        if (MobData[Index].L[0]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[0]: %d", Index, MobData[Index].L[0]);
+        }
+
+        if (MobData[Index].L[1]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[1]: %d", Index, MobData[Index].L[1]);
+        }
+
+        if (MobData[Index].L[2]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[2]: %d", Index, MobData[Index].L[2]);
+        }
+
+        if (MobData[Index].L[3]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[3]: %d", Index, MobData[Index].L[3]);
+        }
+
+        if (MobData[Index].L[4]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[4]: %d", Index, MobData[Index].L[4]);
+        }
+
+        if (MobData[Index].L[5]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[5]: %d", Index, MobData[Index].L[5]);
+        }
     }
 
     for (Int32 Index = 0; Index < 50; Index += 1) {
         if (SkillGroupUsage[Index] > 0)
             LogMessageFormat(LOG_LEVEL_WARNING, "Mob Skill Group: %d", Index);
+    }
+
+    for (Int32 Index = 0; Index < 50; Index += 1) {
+        if (AttackPatternUsage[Index] > 0)
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob Attack Pattern: %d", Index);
     }
 
     FileClose(File);
@@ -1026,33 +1051,40 @@ error:
     return false;
 }
 
+Bool ServerLoadWarpData(
+    RTRuntimeRef Runtime,
+    ArchiveRef Archive
+);
+
 Bool ServerLoadWorldData(
     RTRuntimeRef Runtime,
     CString RuntimeDirectory,
     CString ServerDirectory,
-    ArchiveRef MainArchive,
+    ArchiveRef TerrainArchive,
     Bool LoadShops
 ) {
-    ArchiveRef Archive = MainArchive;
-    ArchiveRef TempArchive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
+    ArchiveRef Archive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
 
-    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.map");
+    Int64 ParentIndex = ArchiveNodeGetChildByPath(TerrainArchive, -1, "Terrain.map");
     if (ParentIndex < 0) goto error;
 
-    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "map_index");
+    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(TerrainArchive, ParentIndex, "map_index");
     while (Iterator) {
         Index WorldIndex = 0;
 
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "world_id", &WorldIndex)) goto error;
+        if (!ParseAttributeIndex(TerrainArchive, Iterator->Index, "world_id", &WorldIndex)) goto error;
 
         RTWorldDataRef World = RTWorldDataCreate(Runtime->WorldManager, WorldIndex);
         World->WorldIndex = WorldIndex;
         World->MobTable = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTMob), 8);
 
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "dead_warp", &World->DeadWarpIndex)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "return_warp", &World->ReturnWarpIndex)) goto error;
+        Char WorldFileName[MAX_PATH];
 
-        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+        if (!ParseAttributeInt32(TerrainArchive, Iterator->Index, "dead_warp", &World->DeadWarpIndex)) goto error;
+        if (!ParseAttributeString(TerrainArchive, Iterator->Index, "name", WorldFileName, MAX_PATH)) goto error;
+        if (!ParseAttributeInt32(TerrainArchive, Iterator->Index, "return_warp", &World->ReturnWarpIndex)) goto error;
+
+        Iterator = ArchiveQueryNodeIteratorNext(TerrainArchive, Iterator);
     }
 
     Int32 HasMapCode = 0;
@@ -1067,16 +1099,33 @@ Bool ServerLoadWorldData(
         
         RTWorldDataRef World = RTWorldDataGet(Runtime->WorldManager, WorldIndex);
 
-        Archive = MainArchive;
+        Char WorldFilePath[MAX_PATH];
+        Char WorldFileName[MAX_PATH];
+        sprintf(WorldFileName, "world%zu.enc", World->WorldIndex);
+        PathCombine(RuntimeDirectory, "World", WorldFilePath);
+        PathCombine(WorldFilePath, WorldFileName, WorldFilePath);
+        ArchiveClear(Archive, true);
+
+        if (!ArchiveLoadFromFileEncryptedNoAlloc(Archive, WorldFilePath, false)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading world file %s failed!", WorldFilePath);
+            continue;
+        }
+
+        if (!ServerLoadWarpData(Runtime, Archive)) goto error;
+
         Int64 NodeIndex = ArchiveQueryNodeWithAttribute(
             Archive,
             -1,
-            "cabal.cabal_world.world",
+            "World.cabal_world.world",
             "id",
             UInt64ToStringNoAlloc(World->WorldIndex)
         );
 
         if (NodeIndex < 0) goto error;
+
+        Index WorldIndex = 0;
+        if (!ParseAttributeInt32(Archive, NodeIndex, "id", &WorldIndex)) goto error;
+        assert(WorldIndex == World->WorldIndex);
 
         if (!ParseAttributeInt32(Archive, NodeIndex, "type", &World->Type)) goto error;
         if (!ParseAttributeString(Archive, NodeIndex, "map_file", MapFileName, MAX_PATH)) goto error;
@@ -1111,6 +1160,9 @@ Bool ServerLoadWorldData(
             UInt32 MapFileMagic = *((UInt32*)&MapData[MapDataOffset]);
             MapDataOffset += 132;
             if (MapFileMagic == 1006) {
+                MapDataOffset += 4;
+            }
+            else if (MapFileMagic == 1007) {
                 MapDataOffset += 4;
             }
 
@@ -1239,7 +1291,6 @@ Bool ServerLoadWorldData(
         sprintf(MobFileName, "world%zu-mmap.xml", World->WorldIndex);
         PathCombine(ServerDirectory, MobFileName, MobFilePath);
         if (FileExists(MobFilePath)) {
-            Archive = TempArchive;
             if (!ArchiveLoadFromFile(Archive, MobFilePath, false)) goto error;
 
             Int64 MobParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "world");
@@ -1280,7 +1331,6 @@ Bool ServerLoadWorldData(
             }
 
             ArchiveClear(Archive, true);
-            Archive = MainArchive;
         }
 
         Char DropWorldFilePath[MAX_PATH];
@@ -1291,7 +1341,6 @@ Bool ServerLoadWorldData(
         sprintf(DropWorldFileName, "world%zu-terrain-world.xml", World->WorldIndex);
         PathCombine(ServerDirectory, DropWorldFileName, DropWorldFilePath);
         if (FileExists(DropWorldFilePath)) {
-            Archive = TempArchive;
             if (!ArchiveLoadFromFile(Archive, DropWorldFilePath, false)) goto error;
 
             Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "drops");
@@ -1317,7 +1366,6 @@ Bool ServerLoadWorldData(
             }
 
             ArchiveClear(Archive, true);
-            Archive = MainArchive;
         }
 
         for (Int32 Index = 0; Index < World->DropTable.WorldItemCount; Index += 1) {
@@ -1333,7 +1381,6 @@ Bool ServerLoadWorldData(
         sprintf(DropMobFileName, "world%zu-terrain-mob.xml", World->WorldIndex);
         PathCombine(ServerDirectory, DropMobFileName, DropMobFilePath);
         if (FileExists(DropMobFilePath)) {
-            Archive = TempArchive;
             if (!ArchiveLoadFromFile(Archive, DropMobFilePath, false)) goto error;
 
             Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "drops");
@@ -1360,7 +1407,6 @@ Bool ServerLoadWorldData(
             }
 
             ArchiveClear(Archive, true);
-            Archive = MainArchive;
         }
 
         for (Int32 Index = 0; Index < World->DropTable.MobItemCount; Index++) {
@@ -1376,7 +1422,6 @@ Bool ServerLoadWorldData(
         sprintf(DropQuestFileName, "world%zu-terrain-quest.xml", World->WorldIndex);
         PathCombine(ServerDirectory, DropQuestFileName, DropQuestFilePath);
         if (FileExists(DropQuestFilePath)) {
-            Archive = TempArchive;
             if (!ArchiveLoadFromFile(Archive, DropQuestFilePath, false)) goto error;
 
             Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "drops");
@@ -1399,7 +1444,6 @@ Bool ServerLoadWorldData(
             }
 
             ArchiveClear(Archive, true);
-            Archive = MainArchive;
         }
 
         for (Int32 Index = 0; Index < World->DropTable.QuestItemCount; Index++) {
@@ -1408,7 +1452,7 @@ Bool ServerLoadWorldData(
         }
     }
 
-    ArchiveDestroy(TempArchive);
+    ArchiveDestroy(Archive);
     return true;
 
 error:
@@ -1419,7 +1463,7 @@ error:
         ArrayDestroy(World->MobTable);
     }
 
-    ArchiveDestroy(TempArchive);
+    ArchiveDestroy(Archive);
     return false;
 }
 
@@ -1436,11 +1480,12 @@ Bool ServerLoadSkillData(
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "skill_main");
     while (Iterator) {
-        assert(Runtime->CharacterSkillDataCount < RUNTIME_MEMORY_MAX_CHARACTER_SKILL_DATA_COUNT);
-        RTCharacterSkillDataRef SkillData = &Runtime->CharacterSkillData[Runtime->CharacterSkillDataCount];
-        memset(SkillData, 0, sizeof(struct _RTCharacterSkillData));
+        Index SkillIndex = 0;
+        if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &SkillIndex)) goto error;
 
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "id", &SkillData->SkillID)) goto error;
+        RTCharacterSkillDataRef SkillData = MemoryPoolReserve(Runtime->SkillDataPool, SkillIndex);
+        SkillData->SkillID = SkillIndex;
+
         if (!ParseAttributeInt32(Archive, Iterator->Index, "type", &SkillData->SkillType)) goto error;
         if (!ParseAttributeInt32(Archive, Iterator->Index, "group", &SkillData->SkillGroup)) goto error;
         if (!ParseAttributeInt32(Archive, Iterator->Index, "multi", &SkillData->Multi)) goto error;
@@ -1511,7 +1556,6 @@ Bool ServerLoadSkillData(
             }
         }
 
-        Runtime->CharacterSkillDataCount += 1;
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
     }
 
@@ -1819,6 +1863,12 @@ Bool ServerLoadDungeonData(
         if (!ParseAttributeInt32(Archive, Iterator->Index, "mission_timeout", &DungeonData->MissionTimeout)) goto error;
 
         RTWorldDataRef WorldData = RTWorldDataGet(Runtime->WorldManager, DungeonData->WorldID);
+        if (!WorldData) {
+            LogMessageFormat(LOG_LEVEL_INFO, "No world (%lld) found for dungeon (%lld)", DungeonData->WorldID, DungeonData->DungeonID);
+            Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+            continue;
+        }
+
         WorldData->HasMissionDungeon = true;
 
         Runtime->DungeonDataCount += 1;
@@ -1953,24 +2003,95 @@ Bool ServerLoadDungeonData(
 
         Mob->ID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
 
-        if (!ParseAttributeUInt16(Archive, Iterator->Index, "MobIdx", &Mob->ID.EntityIndex)) goto error;
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "PPIdx", &Mob->Spawn.PatternPartIndex)) goto error;
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "SpeciesIdx", &Mob->Spawn.MobSpeciesIndex)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "PosX", &Mob->Spawn.AreaX)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "PosY", &Mob->Spawn.AreaY)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Width", &Mob->Spawn.AreaWidth)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Height", &Mob->Spawn.AreaHeight)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpwnInterval", &Mob->Spawn.SpawnInterval)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpwnCount", &Mob->Spawn.SpawnCount)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpawnDefault", &Mob->Spawn.SpawnDefault)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Grade", &Mob->Spawn.Grade)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Lv", &Mob->Spawn.Level)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "MissionGate", &Mob->Spawn.MissionGate)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "PerfectDrop", &Mob->Spawn.PerfectDrop)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Type", &Mob->Spawn.Type)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Min", &Mob->Spawn.Min)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Max", &Mob->Spawn.Max)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Authority", &Mob->Spawn.Authority)) goto error;
+        if (!ParseAttributeUInt16(Archive, Iterator->Index, "MobIdx", &Mob->ID.EntityIndex)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "MobIdx", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeIndex(Archive, Iterator->Index, "PPIdx", &Mob->Spawn.PatternPartIndex)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "PPIdx", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeIndex(Archive, Iterator->Index, "SpeciesIdx", &Mob->Spawn.MobSpeciesIndex)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "SpeciesIdx", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "PosX", &Mob->Spawn.AreaX)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "PosX", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "PosY", &Mob->Spawn.AreaY)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "PosY", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Width", &Mob->Spawn.AreaWidth)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Width", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Height", &Mob->Spawn.AreaHeight)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Height", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpwnInterval", &Mob->Spawn.SpawnInterval)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "SpwnInterval", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpwnCount", &Mob->Spawn.SpawnCount)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "SpwnCount", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpawnDefault", &Mob->Spawn.SpawnDefault)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "SpawnDefault", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Grade", &Mob->Spawn.Grade)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Grade", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Lv", &Mob->Spawn.Level)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Lv", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "MissionGate", &Mob->Spawn.MissionGate)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "MissionGate", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "PerfectDrop", &Mob->Spawn.PerfectDrop)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "PerfectDrop", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Type", &Mob->Spawn.Type)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Type", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Min", &Mob->Spawn.Min)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Min", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Max", &Mob->Spawn.Max)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Max", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Authority", &Mob->Spawn.Authority)) {
+            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Authority", "quest_dungeon_mobs.xml");
+            goto error;
+        }
 
         ParseAttributeInt32(Archive, Iterator->Index, "TrgIdxSpawn", &Mob->Spawn.SpawnTriggerID);
         ParseAttributeInt32(Archive, Iterator->Index, "TrgIdxKill", &Mob->Spawn.KillTriggerID);

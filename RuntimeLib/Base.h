@@ -24,6 +24,7 @@ typedef struct _RTCharacterInventoryInfo* RTCharacterInventoryInfoRef;
 typedef struct _RTCharacterSkillSlotInfo* RTCharacterSkillSlotInfoRef;
 typedef struct _RTCharacterQuickSlotInfo* RTCharacterQuickSlotInfoRef;
 typedef struct _RTCharacterQuestFlagInfo* RTCharacterQuestFlagInfoRef;
+typedef struct _RTCharacterDungeonQuestFlagInfo* RTCharacterDungeonQuestFlagInfoRef;
 typedef struct _RTEssenceAbilitySlot* RTEssenceAbilitySlotRef;
 typedef struct _RTCharacterEssenceAbilityInfo* RTCharacterEssenceAbilityInfoRef;
 typedef struct _RTCharacterQuestSlotInfo* RTCharacterQuestSlotInfoRef;
@@ -69,7 +70,6 @@ typedef struct _RTTrainerSkillData* RTTrainerSkillDataRef;
 typedef struct _RTTrainerData* RTTrainerDataRef;
 typedef struct _RTSkillLevelData* RTSkillLevelDataRef;
 typedef struct _RTCharacterSkillData* RTCharacterSkillDataRef;
-typedef struct _RTWarpIndex* RTWarpIndexRef;
 typedef struct _RTWarp* RTWarpRef;
 typedef struct _RTDungeonTriggerEvent* RTDungeonTriggerEventRef;
 typedef struct _RTDungeonTriggerData* RTDungeonTriggerDataRef;
@@ -81,7 +81,6 @@ typedef struct _RTWorldData* RTWorldDataRef;
 typedef struct _RTWorldContext* RTWorldContextRef;
 typedef struct _RTWorldChunk* RTWorldChunkRef;
 typedef struct _RTWorldManager* RTWorldManagerRef;
-typedef struct _RTLevel* RTLevelRef;
 typedef struct _RTCharacterWarehouseInfo* RTCharacterWarehouseInfoRef;
 
 struct _RTPosition {

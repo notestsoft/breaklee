@@ -69,6 +69,13 @@ Bool RTRuntimeDataContextLoad(
                 goto error; \
             }
 
+#define RUNTIME_DATA_PROPERTY_PRECONDITION(__TYPE__, __NAME__, __QUERY__, __VALUE__) \
+            PropertyQuery = __QUERY__; \
+            if (!CONCAT(ParseAttribute, __TYPE__ ## Equal)(Archive, Iterator->Index, PropertyQuery, __VALUE__)) { \
+                Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator); \
+                continue; \
+            }
+
 #define RUNTIME_DATA_PROPERTY_ARRAY(__TYPE__, __NAME__, __QUERY__, __COUNT__, __SEPARATOR__) \
             PropertyQuery = __QUERY__; \
             if (!CONCAT(ParseAttribute, __TYPE__ ## Array)(Archive, Iterator->Index, PropertyQuery, Data->__NAME__, __COUNT__, __SEPARATOR__)) { \

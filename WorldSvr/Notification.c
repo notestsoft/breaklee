@@ -127,25 +127,11 @@ Void AppendCharacterToCharacterSpawnIndex(
     Spawn->PositionBegin.Y = Character->Movement.PositionBegin.Y;
     Spawn->PositionEnd.X = Character->Movement.PositionEnd.X;
     Spawn->PositionEnd.Y = Character->Movement.PositionEnd.Y;
-    Spawn->PKLevel = 0;
     Spawn->Nation = Character->Info.Profile.Nation;
     Spawn->CharacterStyle = SwapUInt32(Character->Info.Style.RawValue);
-    Spawn->CharacterLiveStyle = 0;
-    Spawn->SkillEffectIndex = 0;
-    Spawn->BattleMode = 0;
+    Spawn->CharacterLiveStyle = Character->Info.LiveStyle.RawValue;
     Spawn->IsDead = RTCharacterIsAlive(Arguments->WorldContext->WorldManager->Runtime, Character) ? 0 : 1;
     Spawn->EquipmentSlotCount = Character->EquipmentInfo.Count;
-    Spawn->IsPersonalShop = 0;
-    Spawn->GuildIndex = 0;
-    Spawn->PetFlags = 0;
-    Spawn->ActiveBuffCount = 0;
-    Spawn->UnknownCount = 0;
-    Spawn->SpecialBuffCount = 0;
-    Spawn->PassiveBuffCount = 0;
-    Spawn->DisplayTitle = 0;
-    Spawn->EventTitle = 0;
-    Spawn->GuildTitle = 0;
-    Spawn->WarTitle = 0;
 
     ClientContextRef Client = ServerGetClientByEntity(Arguments->Context, Character->ID);
     assert(Client);
@@ -154,7 +140,8 @@ Void AppendCharacterToCharacterSpawnIndex(
     CString Name = (CString)PacketAppendMemory(strlen(Client->CharacterName));
     memcpy(Name, Client->CharacterName, strlen(Client->CharacterName));
 
-    PacketAppendValue(UInt8, 0); // GuildNameLength
+    S2C_DATA_CHARACTERS_SPAWN_GUILD* Guild = PacketAppendStruct(S2C_DATA_CHARACTERS_SPAWN_GUILD);
+    Guild->GuildNameLength = 0;
 
     for (Index Index = 0; Index < Character->EquipmentInfo.Count; Index += 1) {
         RTItemSlotRef ItemSlot = &Character->EquipmentInfo.Slots[Index];
@@ -163,7 +150,7 @@ Void AppendCharacterToCharacterSpawnIndex(
         Slot->EquipmentSlotIndex = ItemSlot->SlotIndex;
         Slot->ItemID = ItemSlot->Item.Serial;
         Slot->ItemOptions = ItemSlot->ItemOptions;
-        Slot->ItemAppearance = 0;
+        Slot->ItemDuration = ItemSlot->ItemDuration.Serial;
     }
 }
 
@@ -180,7 +167,7 @@ Void ServerBroadcastCharacterListToClient(
     Notification->Command = S2C_CHARACTERS_SPAWN;
     Notification->Count = 0;
     Notification->SpawnType = S2C_DATA_ENTITY_SPAWN_TYPE_LIST;
-
+    
     struct _AppendCharacterToCharacterSpawnIndexArguments Arguments = { 0 };
     Arguments.Context = Context;
     Arguments.WorldContext = WorldContext;
@@ -325,25 +312,11 @@ Void ServerRuntimeOnEvent(
         Spawn->PositionBegin.Y = Character->Movement.PositionBegin.Y;
         Spawn->PositionEnd.X = Character->Movement.PositionEnd.X;
         Spawn->PositionEnd.Y = Character->Movement.PositionEnd.Y;
-        Spawn->PKLevel = 0;
         Spawn->Nation = Character->Info.Profile.Nation;
         Spawn->CharacterStyle = SwapUInt32(Character->Info.Style.RawValue);
-        Spawn->CharacterLiveStyle = 0;
-        Spawn->SkillEffectIndex = 0;
-        Spawn->BattleMode = 0;
+        Spawn->CharacterLiveStyle = Character->Info.LiveStyle.RawValue;
         Spawn->IsDead = RTCharacterIsAlive(Runtime, Character) ? 0 : 1;
         Spawn->EquipmentSlotCount = Character->EquipmentInfo.Count;
-        Spawn->IsPersonalShop = 0;
-        Spawn->GuildIndex = 0;
-        Spawn->PetFlags = 0;
-        Spawn->ActiveBuffCount = 0;
-        Spawn->UnknownCount = 0;
-        Spawn->SpecialBuffCount = 0;
-        Spawn->PassiveBuffCount = 0;
-        Spawn->DisplayTitle = 0;
-        Spawn->EventTitle = 0;
-        Spawn->GuildTitle = 0;
-        Spawn->WarTitle = 0;
 
         ClientContextRef Client = ServerGetClientByEntity(Context, Character->ID);
         assert(Client);
@@ -352,7 +325,8 @@ Void ServerRuntimeOnEvent(
         CString Name = (CString)PacketAppendMemory(strlen(Client->CharacterName));
         memcpy(Name, Client->CharacterName, strlen(Client->CharacterName));
 
-        PacketAppendValue(UInt8, 0); // GuildNameLength
+        S2C_DATA_CHARACTERS_SPAWN_GUILD* Guild = PacketAppendStruct(S2C_DATA_CHARACTERS_SPAWN_GUILD);
+        Guild->GuildNameLength = 0;
 
         for (Index Index = 0; Index < Character->EquipmentInfo.Count; Index += 1) {
             RTItemSlotRef ItemSlot = &Character->EquipmentInfo.Slots[Index];
@@ -361,7 +335,7 @@ Void ServerRuntimeOnEvent(
             Slot->EquipmentSlotIndex = ItemSlot->SlotIndex;
             Slot->ItemID = ItemSlot->Item.Serial;
             Slot->ItemOptions = ItemSlot->ItemOptions;
-            Slot->ItemAppearance = 0;
+            Slot->ItemDuration = ItemSlot->ItemDuration.Serial;
         }
 
         return BroadcastToWorld(

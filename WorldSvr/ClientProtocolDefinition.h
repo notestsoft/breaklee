@@ -14,22 +14,23 @@
 #define CLIENT_PROTOCOL(__NAMESPACE__, __NAME__, __COMMAND__, __VERSION__, __BODY__)
 #endif
 
-CLIENT_PROTOCOL_STRUCT(S2C_POSITION,
+CLIENT_PROTOCOL_STRUCT(CSC_POSITION,
     UInt16 X;
     UInt16 Y;
 )
 
-CLIENT_PROTOCOL(S2C, NFY_ERROR, 7, X596,
+CLIENT_PROTOCOL(S2C, NFY_ERROR, 7, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 ErrorType;
-    UInt32 ErrorCode;
+    UInt16 ErrorCode;
+    UInt16 Unknown1;
 )
 
-CLIENT_PROTOCOL(C2S, GET_CHARACTERS, 133, X596,
+CLIENT_PROTOCOL(C2S, GET_CHARACTERS, 133, 13133,
     C2S_DATA_SIGNATURE;
 )
 
-CLIENT_PROTOCOL(S2C, GET_CHARACTERS, 133, X596,
+CLIENT_PROTOCOL(S2C, GET_CHARACTERS, 133, 13130,
     S2C_DATA_SIGNATURE;
     UInt8 IsSubpasswordSet;
     UInt8 Unknown1[12];
@@ -43,7 +44,7 @@ CLIENT_PROTOCOL(S2C, GET_CHARACTERS, 133, X596,
     GAME_DATA_CHARACTER_INDEX Characters[MAX_CHARACTER_COUNT];
 )
 
-CLIENT_PROTOCOL(C2S, CREATE_CHARACTER, 134, X596,
+CLIENT_PROTOCOL(C2S, CREATE_CHARACTER, 134, 13130,
     C2S_DATA_SIGNATURE;
     UInt32 Style;
     UInt8 EnterBeginnerGuild;
@@ -53,30 +54,42 @@ CLIENT_PROTOCOL(C2S, CREATE_CHARACTER, 134, X596,
     Char Name[0];
 )
 
-CLIENT_PROTOCOL(S2C, CREATE_CHARACTER, 134, X596,
+CLIENT_PROTOCOL_ENUM(
+    S2C_CHARACTER_STATUS_DATABASE_ERROR = 0x01,
+    S2C_CHARACTER_STATUS_DATA_CORRUPTED = 0x02,
+    S2C_CHARACTER_STATUS_NAME_DUPLICATE = 0x03,
+    S2C_CHARACTER_STATUS_NAME_BLACKLIST = 0x04,
+    S2C_CHARACTER_STATUS_SUCCESS = 0xA1,
+    S2C_CHARACTER_STATUS_ERROR_DELETE_WITHIN_A_DAY = 0xB1,
+    S2C_CHARACTER_STATUS_ERROR_DELETE_GUILD_MASTER = 0xB2,
+    S2C_CHARACTER_STATUS_ERROR_JOINING_BEGINNER_GUILD = 0xB3,
+)
+
+CLIENT_PROTOCOL(S2C, CREATE_CHARACTER, 134, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 CharacterIndex;
-    UInt8 Status;
+    UInt8 CharacterStatus;
 )
 
-CLIENT_PROTOCOL(C2S, DELETE_CHARACTER, 135, 0000,
+CLIENT_PROTOCOL(C2S, DELETE_CHARACTER, 135, 13130,
     C2S_DATA_SIGNATURE;
-    // TODO: Add packet layout
+    UInt32 CharacterIndex;
 )
 
-CLIENT_PROTOCOL(S2C, DELETE_CHARACTER, 135, 0000,
+CLIENT_PROTOCOL(S2C, DELETE_CHARACTER, 135, 13130,
     S2C_DATA_SIGNATURE;
-    // TODO: Add packet layout
+    UInt8 CharacterStatus;
+    UInt32 Unknown1;
 )
 
-CLIENT_PROTOCOL(C2S, CONNECT, 140, X596,
+CLIENT_PROTOCOL(C2S, CONNECT, 140, 13130,
     C2S_DATA_SIGNATURE;
     UInt8 ServerID;
     UInt8 ChannelID;
     UInt16 Unknown1;
 )
 
-CLIENT_PROTOCOL(S2C, CONNECT, 140, X596,
+CLIENT_PROTOCOL(S2C, CONNECT, 140, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 XorKey;
     UInt32 AuthKey;
@@ -86,7 +99,7 @@ CLIENT_PROTOCOL(S2C, CONNECT, 140, X596,
     UInt32 Unknown2;
 )
 
-CLIENT_PROTOCOL(C2S, INITIALIZE, 142, X596,
+CLIENT_PROTOCOL(C2S, INITIALIZE, 142, 13130,
     C2S_DATA_SIGNATURE;
     UInt32 CharacterIndex;
 )
@@ -94,6 +107,25 @@ CLIENT_PROTOCOL(C2S, INITIALIZE, 142, X596,
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_SECRET_SHOP_INDEX,
     UInt16 SlotIndex;
     UInt32 ShopItemID;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_WAR_TIMER,
+    UInt32 TimeRemainingTimer;
+    UInt32 TimeAttackTimer;
+    UInt8 IsTimeAttackEnabled;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_WAR,
+    Int32 LobbyEntryOrder;
+    S2C_DATA_INITIALIZE_WAR_TIMER LobbyTimer;
+    S2C_DATA_INITIALIZE_WAR_TIMER BattleFieldTimer;
+    Int32 CapellaScore;
+    Int32 ProcyonScore;
+    Int32 CapellaPoints;
+    Int32 ProcyonPoints;
+    Int32 EntryLimitPerNation;
+    Int32 CapellaBattleFieldTicketCount;
+    Int32 ProcyonBattleFieldTicketCount;
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_SERVER_ADDRESS,
@@ -105,7 +137,11 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_SERVER,
     UInt8 ServerID;
     UInt8 WorldID;
     UInt16 PlayerCount;
-    UInt8 Unknown1[22];
+    UInt8 Unknown1[18];
+    UInt8 MaxPlayerLevel;
+    UInt8 MinPlayerLevel;
+    UInt8 MaxRank;
+    UInt8 MinRank;
     UInt16 MaxPlayerCount;
     S2C_DATA_INITIALIZE_SERVER_ADDRESS Address;
     UInt32 WorldType;
@@ -151,9 +187,9 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_COLLECTION_SLOT,
     UInt16 MissionItemCounts[6];
 )
 
-CLIENT_PROTOCOL(S2C, INITIALIZE, 142, X596,
+CLIENT_PROTOCOL(S2C, INITIALIZE, 142, 13130,
     S2C_DATA_SIGNATURE_EXTENDED;
-    UInt8 Unknown1[50];
+    S2C_DATA_INITIALIZE_WAR War;
     UInt32 WorldType;
     UInt8 IsWarehousePasswordSet;
     UInt8 IsInventoryPasswordSet;
@@ -162,9 +198,9 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, 142, X596,
     UInt8 Unknown1A;
     S2C_DATA_INITIALIZE_SERVER Server;
     RTEntityID Entity;
-    UInt32 MapID;
-    UInt32 UnknownUserID;
-    S2C_POSITION Position;
+    UInt32 WorldIndex;
+    UInt32 DungeonIndex;
+    CSC_POSITION Position;
     UInt64 Exp;
     UInt64 Alz;
     UInt64 Wexp;
@@ -175,7 +211,7 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, 142, X596,
     UInt32 INT;
     UInt32 PNT;
     Int32 SkillRank;
-    UInt32 Unknown5;
+    Int32 MagicSkillRank;
     UInt64 BaseHP;
     UInt64 CurrentHP;
     UInt32 MaxMP;
@@ -186,29 +222,31 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, 142, X596,
     UInt32 CurrentRage;
     UInt32 MaxBP;
     UInt32 CurrentBP;
+    UInt32 Unknown1[2];
     UInt32 CharacterIndex;
-    UInt32 Unknown6;
-    UInt8 Unknown7[3];
-    UInt8 UnknownSkillRank;
     UInt32 SkillLevel;
     UInt32 SkillExp;
     UInt32 SkillPoint;
-    UInt64 UnknownExp;
+    UInt64 RestExp;
     UInt64 HonorPoint;
-    UInt8 Unknown11[22]; // Contains: PK Level, 
+    UInt64 DeathPenaltyExp;
+    UInt32 DeathPenaltyHp;
+    UInt32 DeathPenaltyMp;
+    UInt16 PKLevel;
+    UInt8 Unknown11[4];
     S2C_DATA_INITIALIZE_SERVER_ADDRESS ChatServerAddress;
     S2C_DATA_INITIALIZE_SERVER_ADDRESS AuctionServerAddress;
-    S2C_DATA_INITIALIZE_SERVER_ADDRESS UnknownServerAddress;
-    UInt16 Unknown12;
+    S2C_DATA_INITIALIZE_SERVER_ADDRESS PartyServerAddress;
+    UInt16 UnknownPort;
     UInt8 Nation;
     UInt32 Unknown13;
     UInt32 WarpMask;
     UInt32 MapsMask;
     UInt32 CharacterStyle;
-    UInt32 CharacterStyleFlags;
+    UInt32 CharacterLiveStyle;
     UInt8 Unknown14[282];
     UInt16 EquipmentSlotCount;
-    UInt8 Unknown99;
+    UInt8 EquipmentLockCount;
     UInt32 InventorySlotCount;
     UInt16 SkillSlotCount;
     UInt16 QuickSlotCount;
@@ -218,28 +256,30 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, 142, X596,
     UInt16 AP;
     UInt32 Axp;
     UInt8 EssenceAbilityCount;
-    UInt8 UnknownDailyMissionCount;
-    UInt16 BlendedAbilityCount;
+    UInt8 ExtendedEssenceAbilityCount;
+    UInt8 BlendedAbilityCount;
+    UInt8 ExtendedBlendedAbilityCount;
     UInt16 PremiumServiceCount;
     UInt16 BlessingBeadCount;
     UInt16 QuestSlotCount;
     struct _RTCharacterQuestFlagInfo QuestFlagInfo;
-    struct _RTCharacterQuestFlagInfo DungeonFlagInfo;
+    struct _RTCharacterDungeonQuestFlagInfo DungeonQuestFlagInfo;
     UInt8 Unknown15[4097];
-    UInt32 UnknownDailyQuestCount;
-    
-    struct {
-        UInt32 Unknown1;
-        UInt32 PetSerial;
-        UInt32 Unknown3;
-        UInt32 Unknown4;
-        UInt64 PetItemKind;
-        UInt32 Unknown5;
-        UInt16 Unknown6;
-        Char PetName[MAX_CHARACTER_NAME_LENGTH + 1];
-    } Pet;
+    UInt32 ActiveDailyQuestCount;
+    UInt32 HelpWindow;
 
-    UInt8 Unknown16[206];
+    struct {
+        UInt32 PetSerial;
+        UInt32 PetId;
+        UInt32 PetOwnerId;
+        UInt64 PetItemKind;
+        UInt8 PetLevel;
+        UInt32 PetExp;
+        Char PetName[MAX_CHARACTER_NAME_LENGTH + 1];
+        UInt8 PetSkills[33];
+        UInt32 DeleteDate;
+        UInt32 Checked;
+    } Pet[3];
 
     UInt8 EquipmentAppearanceCount;
     UInt16 InventoryAppearanceCount;
@@ -267,14 +307,17 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, 142, X596,
     UInt32 CraftEnergy;
     UInt8 Unknown17[6];
     UInt8 SortingOrderMask;
-    UInt16 UnknownBasicCraftCount;
-    UInt16 BasicCraftExp;
-    // UInt16 UnknownBasicCraftExp;
-    // UInt8 BasicCraftFlags[256];
-    // UInt8 Unknown19[1796];
-    UInt8 Unknown19[2072];
-    // UInt32 SkillCooldownCount;
-    // UInt8 Unknown65[14];
+    UInt16 RequestCraftCount;
+    UInt16 RequestCraftExp;
+    UInt8 RequestCraftFlags[1024];
+    UInt8 RequestCraftFavoriteFlags[1024];
+    UInt8 UnknownRequestCraftOrderingRelatedData[2];
+    UInt8 BuffCount;
+    UInt32 Unknown2389;
+    UInt32 SpiritPointBuffDuration;
+    UInt32 UpgradePoints;
+    Timestamp UpgradePointTimestamp;
+    UInt8 Unknown2819;
     UInt32 GoldMeritCount;
     UInt32 GoldMeritExp;
     UInt32 GoldMeritPoint;
@@ -321,25 +364,26 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, 142, X596,
     UInt32 TranscendenceCount;
     UInt8 U_UPDATEINV[3134];
     //UInt32 EventPassMissionCount;
-    //UInt32 Unknown45;
+    //UInt32 ;
+    UInt8 Unknown45[48];
     UInt8 NameLength;
     Char Name[0];
 )
 
-CLIENT_PROTOCOL(C2S, DEINITIALIZE, 143, X596,
+CLIENT_PROTOCOL(C2S, DEINITIALIZE, 143, 13130,
     C2S_DATA_SIGNATURE;
     UInt16 UnknownIndex;
     UInt8 WorldIndex;
     UInt8 Logout;
 )
 
-CLIENT_PROTOCOL(S2C, DEINITIALIZE, 143, X596,
+CLIENT_PROTOCOL(S2C, DEINITIALIZE, 143, 13130,
     S2C_DATA_SIGNATURE;
     UInt8 Result;
     UInt8 Unknown1;
 )
 
-CLIENT_PROTOCOL(C2S, GET_WAREHOUSE, 145, 0000,
+CLIENT_PROTOCOL(C2S, GET_WAREHOUSE, 145, 13130,
     C2S_DATA_SIGNATURE;
 )
 
@@ -351,40 +395,40 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_GET_WAREHOUSE_SLOT_INDEX,
     RTItemDuration ItemDuration;
 )
 
-CLIENT_PROTOCOL(S2C, GET_WAREHOUSE, 145, X596,
+CLIENT_PROTOCOL(S2C, GET_WAREHOUSE, 145, 13130,
     S2C_DATA_SIGNATURE;
     UInt16 Count;
     UInt64 Currency;
     S2C_DATA_GET_WAREHOUSE_SLOT_INDEX Slots[0];
 )
 
-CLIENT_PROTOCOL(C2S, SET_QUICKSLOT, 146, X596,
+CLIENT_PROTOCOL(C2S, SET_QUICKSLOT, 146, 13130,
     C2S_DATA_SIGNATURE;
     UInt16 QuickSlotIndex;
     UInt16 SkillSlotIndex;
 )
 
-CLIENT_PROTOCOL(S2C, SET_QUICKSLOT, 146, X596,
+CLIENT_PROTOCOL(S2C, SET_QUICKSLOT, 146, 13130,
     S2C_DATA_SIGNATURE;
     UInt8 Success;
 )
 
-CLIENT_PROTOCOL(C2S, SWAP_QUICKSLOT, 147, X596,
+CLIENT_PROTOCOL(C2S, SWAP_QUICKSLOT, 147, 13130,
     C2S_DATA_SIGNATURE;
     UInt16 SourceSlotIndex;
     UInt16 TargetSlotIndex;
 )
 
-CLIENT_PROTOCOL(S2C, SWAP_QUICKSLOT, 147, X596,
+CLIENT_PROTOCOL(S2C, SWAP_QUICKSLOT, 147, 13130,
     S2C_DATA_SIGNATURE;
     UInt8 Success;
 )
 
-CLIENT_PROTOCOL(C2S, GET_SERVER_TIME, 148, X596,
+CLIENT_PROTOCOL(C2S, GET_SERVER_TIME, 148, 13130,
     C2S_DATA_SIGNATURE;
 )
 
-CLIENT_PROTOCOL(S2C, GET_SERVER_TIME, 148, X596,
+CLIENT_PROTOCOL(S2C, GET_SERVER_TIME, 148, 13130,
     S2C_DATA_SIGNATURE;
     Timestamp Timestamp;
     Int16 Timezone;
@@ -399,7 +443,7 @@ CLIENT_PROTOCOL_ENUM(
     S2C_DATA_LOOT_RESULT_OUTOFRANGE_ERROR
 )
 
-CLIENT_PROTOCOL(C2S, LOOT_INVENTORY_ITEM, 153, X596,
+CLIENT_PROTOCOL(C2S, LOOT_INVENTORY_ITEM, 153, 13130,
     C2S_DATA_SIGNATURE;
     RTEntityID Entity;
     UInt16 UniqueKey;
@@ -407,7 +451,7 @@ CLIENT_PROTOCOL(C2S, LOOT_INVENTORY_ITEM, 153, X596,
     UInt16 InventorySlotIndex;
 )
 
-CLIENT_PROTOCOL(S2C, LOOT_INVENTORY_ITEM, 153, X596,
+CLIENT_PROTOCOL(S2C, LOOT_INVENTORY_ITEM, 153, 13130,
     S2C_DATA_SIGNATURE;
     UInt8 Result;
     UInt64 ItemID;
@@ -421,13 +465,13 @@ CLIENT_PROTOCOL_STRUCT(C2S_DATA_LOOT_CURRENCY_ITEM_INDEX,
     UInt16 UniqueKey;
 )
 
-CLIENT_PROTOCOL(C2S, LOOT_CURRENCY_ITEM, 154, X596,
+CLIENT_PROTOCOL(C2S, LOOT_CURRENCY_ITEM, 154, 13130,
     C2S_DATA_SIGNATURE;
     UInt16 Count;
     C2S_DATA_LOOT_CURRENCY_ITEM_INDEX Data[0];
 )
 
-CLIENT_PROTOCOL(S2C, LOOT_CURRENCY_ITEM, 154, X596,
+CLIENT_PROTOCOL(S2C, LOOT_CURRENCY_ITEM, 154, 13130,
     S2C_DATA_SIGNATURE;
     UInt16 Count;
     UInt8 Result;
@@ -439,7 +483,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_ITEM_PRICE_INDEX,
     UInt32 AmountItemPrice;
 )
 
-CLIENT_PROTOCOL(C2S, BUY_ITEM, 161, X596,
+CLIENT_PROTOCOL(C2S, BUY_ITEM, 161, 13130,
     C2S_DATA_SIGNATURE;
     UInt32 TabIndex;
     UInt16 NpcID;
@@ -453,10 +497,10 @@ CLIENT_PROTOCOL(C2S, BUY_ITEM, 161, X596,
     UInt32 ItemPriceCount;
     S2C_DATA_ITEM_PRICE_INDEX ItemPriceTable[522];
     UInt8 Unknown3;
-    Int32 InventoryIndex[99];
+    Int32 InventoryIndex[50]; // TODO: Check if the appended data after inventory indices are useful
 )
 
-CLIENT_PROTOCOL(S2C, BUY_ITEM, 161, X596,
+CLIENT_PROTOCOL(S2C, BUY_ITEM, 161, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 Unknown1;
     UInt64 ItemID;
@@ -466,7 +510,7 @@ CLIENT_PROTOCOL(S2C, BUY_ITEM, 161, X596,
     UInt16 Unknown4;
 )
 
-CLIENT_PROTOCOL(C2S, SELL_ITEM, 162, X596,
+CLIENT_PROTOCOL(C2S, SELL_ITEM, 162, 13130,
     C2S_DATA_SIGNATURE;
     UInt16 NpcID;
     UInt16 Unknown1;
@@ -475,24 +519,24 @@ CLIENT_PROTOCOL(C2S, SELL_ITEM, 162, X596,
     Int32 InventoryIndex[0];
 )
 
-CLIENT_PROTOCOL(S2C, SELL_ITEM, 162, X596,
+CLIENT_PROTOCOL(S2C, SELL_ITEM, 162, 13130,
     S2C_DATA_SIGNATURE;
     UInt64 Currency;
     UInt32 Unknown1;
 )
 
-CLIENT_PROTOCOL(C2S, RECOVER_ITEM, 166, X596,
+CLIENT_PROTOCOL(C2S, RECOVER_ITEM, 166, 13130,
     C2S_DATA_SIGNATURE;
     UInt8 RecoverySlotIndex;
     UInt32 InventorySlotIndex;
 )
 
-CLIENT_PROTOCOL(S2C, RECOVER_ITEM, 166, X596,
+CLIENT_PROTOCOL(S2C, RECOVER_ITEM, 166, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 Result;
 )
 
-CLIENT_PROTOCOL(C2S, GET_ITEM_RECOVERY_LIST, 167, X596,
+CLIENT_PROTOCOL(C2S, GET_ITEM_RECOVERY_LIST, 167, 13130,
     C2S_DATA_SIGNATURE;
 )
 
@@ -507,7 +551,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_ITEM_RECOVERY_LIST_SLOT,
     Timestamp ExpirationTimestamp;
 )
 
-CLIENT_PROTOCOL(S2C, GET_ITEM_RECOVERY_LIST, 167, X596,
+CLIENT_PROTOCOL(S2C, GET_ITEM_RECOVERY_LIST, 167, 13130,
     S2C_DATA_SIGNATURE;
     UInt8 Count;
     S2C_ITEM_RECOVERY_LIST_SLOT Slots[0];
@@ -531,17 +575,17 @@ CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_TO_MOB_TARGET,
     UInt16 Unknown2;
 )
 
-CLIENT_PROTOCOL(C2S, SKILL_TO_MOB, 174, X596,
+CLIENT_PROTOCOL(C2S, SKILL_TO_MOB, 174, 13130,
     C2S_DATA_SIGNATURE;
     UInt16 SkillIndex;
     UInt8 SlotIndex;
     UInt32 Unknown1;
-    S2C_POSITION PositionSet;
+    CSC_POSITION PositionSet;
     UInt8 Unknown2;
     UInt32 Unknown3;
     UInt8 TargetCount;
-    S2C_POSITION PositionCharacter;
-    S2C_POSITION PositionTarget;
+    CSC_POSITION PositionCharacter;
+    CSC_POSITION PositionTarget;
     C2S_DATA_SKILL_TO_MOB_TARGET Data[0];
 )
 
@@ -553,13 +597,13 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_SKILL_TO_MOB_TARGET,
     UInt32 MobTotalDamage;
     UInt32 MobAdditionalDamage;
     UInt64 MobHP;
-    S2C_POSITION PositionSet;
+    CSC_POSITION PositionSet;
     UInt32 BfxType;
     UInt32 BfxDuration;
     UInt8 Unknown3;
 )
 
-CLIENT_PROTOCOL(S2C, SKILL_TO_MOB, 174, X596,
+CLIENT_PROTOCOL(S2C, SKILL_TO_MOB, 174, 13130,
     S2C_DATA_SIGNATURE;
     UInt16 SkillIndex;
     UInt64 CharacterHP;
@@ -603,8 +647,8 @@ enum {
 */
 
 CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_GROUP_MOVEMENT,
-    S2C_POSITION PositionBegin;
-    S2C_POSITION PositionEnd;
+    CSC_POSITION PositionBegin;
+    CSC_POSITION PositionEnd;
 )
 
 CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_GROUP_ASTRAL,
@@ -617,7 +661,7 @@ CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_GROUP_BATTLE_MODE,
     UInt16 IsActivation;
 )
 
-CLIENT_PROTOCOL(C2S, SKILL_TO_CHARACTER, 175, X596,
+CLIENT_PROTOCOL(C2S, SKILL_TO_CHARACTER, 175, 13130,
     C2S_DATA_SIGNATURE;
     UInt16 SkillIndex;
     UInt8 SlotIndex;
@@ -639,20 +683,20 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_SKILL_GROUP_BATTLE_MODE,
     UInt16 IsActivation;
 )
 
-CLIENT_PROTOCOL(S2C, SKILL_TO_CHARACTER, 175, X596,
+CLIENT_PROTOCOL(S2C, SKILL_TO_CHARACTER, 175, 13130,
     S2C_DATA_SIGNATURE;
     UInt16 SkillIndex;
     UInt8 Data[0];
 )
 
-CLIENT_PROTOCOL(C2S, ATTACK_TO_MOB, 176, X596,
+CLIENT_PROTOCOL(C2S, ATTACK_TO_MOB, 176, 13130,
     C2S_DATA_SIGNATURE;
     RTEntityID Entity;
     UInt8 EntityIDType;
     UInt8 MissMob;
 )
 
-CLIENT_PROTOCOL(S2C, ATTACK_TO_MOB, 176, X596,
+CLIENT_PROTOCOL(S2C, ATTACK_TO_MOB, 176, 13130,
     S2C_DATA_SIGNATURE;
     RTEntityID Entity;
     UInt8 EntityIDType;
@@ -685,44 +729,87 @@ CLIENT_PROTOCOL(S2C, ATTACK_TO_CHARACTER, 177, 0000,
     // TODO: Add packet layout
 )
 
-CLIENT_PROTOCOL(C2S, MOVEMENT_BEGIN, 190, X596,
+CLIENT_PROTOCOL(C2S, MOVEMENT_BEGIN, 190, 13130,
     C2S_DATA_SIGNATURE;
-    S2C_POSITION PositionBegin;
-    S2C_POSITION PositionEnd;
-    S2C_POSITION PositionCurrent;
+    CSC_POSITION PositionBegin;
+    CSC_POSITION PositionEnd;
+    CSC_POSITION PositionCurrent;
     UInt16 WorldID;
 )
 
-CLIENT_PROTOCOL(C2S, MOVEMENT_END, 191, X596,
+CLIENT_PROTOCOL(C2S, MOVEMENT_END, 191, 13130,
     C2S_DATA_SIGNATURE;
-    S2C_POSITION Position;
+    CSC_POSITION Position;
 )
 
-CLIENT_PROTOCOL(C2S, MOVEMENT_CHANGE, 192, X596,
+CLIENT_PROTOCOL(C2S, MOVEMENT_CHANGE, 192, 13130,
     C2S_DATA_SIGNATURE;
-    S2C_POSITION PositionBegin;
-    S2C_POSITION PositionEnd;
-    S2C_POSITION PositionCurrent;
+    CSC_POSITION PositionBegin;
+    CSC_POSITION PositionEnd;
+    CSC_POSITION PositionCurrent;
     UInt16 WorldID;
 )
 
-CLIENT_PROTOCOL(C2S, MOVEMENT_WAYPOINTS, 193, X596,
+CLIENT_PROTOCOL(C2S, MOVEMENT_WAYPOINTS, 193, 13130,
     C2S_DATA_SIGNATURE;
-    S2C_POSITION PositionCurrent;
-    S2C_POSITION PositionNext;
+    CSC_POSITION PositionCurrent;
+    CSC_POSITION PositionNext;
 )
 
-CLIENT_PROTOCOL(C2S, MOVEMENT_TILE_POSITION, 194, X596,
+CLIENT_PROTOCOL(C2S, MOVEMENT_TILE_POSITION, 194, 13130,
     C2S_DATA_SIGNATURE;
-    S2C_POSITION PositionCurrent;
-    S2C_POSITION PositionNext;
+    CSC_POSITION PositionCurrent;
+    CSC_POSITION PositionNext;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_GUILD,
+    UInt8 GuildNameLength;
+    Char GuildName[0]; // GuildNameLength
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT,
     UInt8 EquipmentSlotIndex;
     UInt64 ItemID;
     UInt64 ItemOptions;
-    UInt32 ItemAppearance;
+    UInt32 ItemDuration;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_PERSONAL_SHOP_MESSAGE,
+    UInt8 MessageLength;
+    Char Message[0];
+    // UInt64 Unknown1;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_PERSONAL_SHOP_INFO,
+    UInt64 Unknown1;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_BUFF_SLOT,
+    UInt16 SkillIndex;
+    UInt8 SkillLevel;
+    UInt8 Unknown1[82];
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_PET_INFO,
+    UInt8 EvolutionLevel : 3; 
+    UInt8 NameLength : 5;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_PET_SLOT,
+    S2C_DATA_CHARACTERS_SPAWN_PET_INFO Info;
+    UInt32 PetSlotIndex;
+    Char PetName[0];
+    // UInt32 Unknown1;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_BLESSING_BEAD_BALOON_SLOT,
+    UInt8 Unknown1;
+    UInt32 Unknown2;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_BALOON_SLOT,
+    RTItem Item;
+    UInt8 SlotIndex;
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_INDEX,
@@ -730,59 +817,77 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_INDEX,
     RTEntityID Entity;
     UInt32 Level;
     UInt16 OverlordLevel;
-    UInt8 Unknown1[12];
+    UInt32 HolyPower;
+    UInt32 Rebirth;
+    UInt32 MythLevel;
     UInt8 ForceWingRank;
     UInt8 ForceWingLevel;
     UInt64 MaxHP;
     UInt64 CurrentHP;
-    UInt8 Unknown2[16];
+    Int32 MaxRage;
+    Int32 CurrentRage;
+    UInt32 Unknown1;
+    UInt32 Unknown2;
     UInt32 MovementSpeed;
-    S2C_POSITION PositionBegin;
-    S2C_POSITION PositionEnd;
-    UInt16 PKLevel;
+    CSC_POSITION PositionBegin;
+    CSC_POSITION PositionEnd;
+    UInt16 PKState;
     UInt8 Nation;
     UInt32 Unknown3;
     UInt32 CharacterStyle;
     UInt32 CharacterLiveStyle;
-    UInt32 SkillEffectIndex;
-    UInt8 BattleMode;
+    UInt16 Unknown4;
+    UInt16 Unknown5;
+    UInt8 CharacterExtendedStyle;
     UInt8 IsDead;
-    UInt16 EquipmentSlotCount;
+    UInt8 EquipmentSlotCount;
+    UInt8 CostumeSlotCount;
+    UInt8 IsInvisible;
     UInt8 IsPersonalShop;
     UInt32 GuildIndex;
-    UInt32 Unknown4;
-    UInt8 PetFlags;
-    UInt8 ActiveBuffCount;
-    UInt8 UnknownCount;
-    UInt8 SpecialBuffCount;
-    UInt8 PassiveBuffCount;
-    UInt8 Unknown5[5];
     UInt16 Unknown6;
     UInt16 Unknown7;
+    struct {
+        UInt8 Unknown8 : 1;
+        UInt8 Unknown9 : 1;
+        UInt8 Unknown10 : 1;
+        UInt8 HasPetInfo : 1;
+        UInt8 PetCount : 2;
+        UInt8 HasBlessingBeadBaloon : 1;
+        UInt8 HasItemBallon : 1;
+    };
+    UInt8 ActiveBuffCount;
+    UInt8 DebuffCount;
+    UInt8 GmBuffCount;
+    UInt8 PassiveBuffCount;
+    UInt8 IsBringer;
+    UInt32 Unknown12;
+    UInt16 Unknown13;
+    UInt16 Unknown14;
     UInt16 DisplayTitle;
     UInt16 EventTitle;
-    UInt16 GuildTitle;
     UInt16 WarTitle;
+    UInt16 AbilityTitle;
     UInt8 NameLength;
-    Char Name[0];
-    /*
-    GuildNameLength: byte;
-    GuildName: char[GuildNameLength];
-    Equipments: Equipment[EquipmentCount];
-    ActiveBuffData: BuffData[ActiveBuffCount];
-    SpecialBuffData: BuffData[SpecialBuffCount];
-    PassiveBuffData: BuffData[PassiveBuffCount];
-    */
+    Char Name[0]; // Size: NameLength - 1
+    // S2C_DATA_CHARACTERS_SPAWN_GUILD Guild;
+    // S2C_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT EquipmentSlots[EquipmentSlotCount];
+    // S2C_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT CostumeSlots[CostumeSlotCount];
+    // S2C_DATA_CHARACTERS_SPAWN_PERSONAL_SHOP_MESSAGE PersonalShopMessage[IsPersonalShop];
+    // S2C_DATA_CHARACTERS_SPAWN_PERSONAL_SHOP_INFO PersonalShopInfo[IsPersonalShop];
+    // S2C_DATA_CHARACTERS_SPAWN_BUFF_SLOT Buffs[ActiveBuffCount + DebuffCount + GmBuffCount + PassiveBuffCount];
+    // S2C_DATA_CHARACTERS_SPAWN_PET_SLOT Pets[PetCount];
+    // S2C_DATA_CHARACTERS_SPAWN_BALOON_SLOT ItemBaloon[HasItemBaloon];
 )
 
-CLIENT_PROTOCOL(S2C, CHARACTERS_SPAWN, 200, X596,
+CLIENT_PROTOCOL(S2C, CHARACTERS_SPAWN, 200, 13130,
     S2C_DATA_SIGNATURE;
     UInt8 Count;
     UInt8 SpawnType;
     //S2C_DATA_CHARACTERS_SPAWN_INDEX Data[0];
 )
 
-CLIENT_PROTOCOL(S2C, CHARACTERS_DESPAWN, 201, X596,
+CLIENT_PROTOCOL(S2C, CHARACTERS_DESPAWN, 201, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 CharacterIndex;
     UInt8 DespawnType;
@@ -793,13 +898,13 @@ CLIENT_PROTOCOL_ENUM(
     S2C_DATA_ENTITY_SPAWN_TYPE_INIT = 0x30,
     S2C_DATA_ENTITY_SPAWN_TYPE_WARP,
     S2C_DATA_ENTITY_SPAWN_TYPE_MOVE,
-    S2C_DATA_ENTITY_SPAWN_TYPE_UNKNOWN
+    S2C_DATA_ENTITY_SPAWN_TYPE_RESURRECT
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_MOBS_SPAWN_INDEX,
     RTEntityID Entity;
-    S2C_POSITION PositionBegin;
-    S2C_POSITION PositionEnd;
+    CSC_POSITION PositionBegin;
+    CSC_POSITION PositionEnd;
     UInt16 MobSpeciesIndex;
     UInt64 MaxHP;
     UInt64 CurrentHP;
@@ -814,9 +919,10 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_MOBS_SPAWN_INDEX,
     UInt8 Unknown3;
     UInt32 UnknownCharacterIndex;
     UInt8 Unknown4[12];
+    UInt8 Unknown5[22];
 )
 
-CLIENT_PROTOCOL(S2C, MOBS_SPAWN, 202, X596,
+CLIENT_PROTOCOL(S2C, MOBS_SPAWN, 202, 13130,
     S2C_DATA_SIGNATURE;
     UInt8 Count;
     S2C_DATA_MOBS_SPAWN_INDEX Data[0];
@@ -831,7 +937,7 @@ CLIENT_PROTOCOL_ENUM(
     S2C_DATA_ENTITY_DESPAWN_TYPE_NOTIFY_DEAD
 )
 
-CLIENT_PROTOCOL(S2C, MOBS_DESPAWN, 203, X596,
+CLIENT_PROTOCOL(S2C, MOBS_DESPAWN, 203, 13130,
     S2C_DATA_SIGNATURE;
     RTEntityID Entity;
     UInt8 DespawnType;
@@ -855,7 +961,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_SPAWN_ITEM_INDEX,
     RTItemProperty ItemProperty;
 )
 
-CLIENT_PROTOCOL(S2C, NFY_SPAWN_ITEM, 204, X596,
+CLIENT_PROTOCOL(S2C, NFY_SPAWN_ITEM, 204, 13130,
     S2C_DATA_SIGNATURE;
     UInt8 Count;
     S2C_DATA_NFY_SPAWN_ITEM_INDEX Data[0];
@@ -887,50 +993,50 @@ CLIENT_PROTOCOL(S2C, MOVEMENT_BEGIN, 210, X596,
     S2C_DATA_SIGNATURE;
     UInt32 CharacterIndex;
     UInt32 TickCount;
-    S2C_POSITION PositionBegin;
-    S2C_POSITION PositionEnd;
+    CSC_POSITION PositionBegin;
+    CSC_POSITION PositionEnd;
 )
 
 CLIENT_PROTOCOL(S2C, MOVEMENT_END, 211, X596,
     S2C_DATA_SIGNATURE;
     UInt32 CharacterIndex;
-    S2C_POSITION Position;
+    CSC_POSITION Position;
 )
 
 CLIENT_PROTOCOL(S2C, MOVEMENT_CHANGE, 212, X596,
     S2C_DATA_SIGNATURE;
     UInt32 CharacterIndex;
     UInt32 TickCount;
-    S2C_POSITION PositionBegin;
-    S2C_POSITION PositionEnd;
+    CSC_POSITION PositionBegin;
+    CSC_POSITION PositionEnd;
 )
 
 CLIENT_PROTOCOL(S2C, MOB_MOVEMENT_BEGIN, 213, X596,
     S2C_DATA_SIGNATURE;
     RTEntityID Entity;
     UInt32 TickCount;
-    S2C_POSITION PositionBegin;
-    S2C_POSITION PositionEnd;
+    CSC_POSITION PositionBegin;
+    CSC_POSITION PositionEnd;
 )
 
 CLIENT_PROTOCOL(S2C, MOB_MOVEMENT_END, 214, X596,
     S2C_DATA_SIGNATURE;
     RTEntityID Entity;
-    S2C_POSITION Position;
+    CSC_POSITION Position;
 )
 
 CLIENT_PROTOCOL(S2C, MOB_CHASE_BEGIN, 215, X596,
     S2C_DATA_SIGNATURE;
     RTEntityID Entity;
     UInt32 TickCount;
-    S2C_POSITION PositionBegin;
-    S2C_POSITION PositionEnd;
+    CSC_POSITION PositionBegin;
+    CSC_POSITION PositionEnd;
 )
 
 CLIENT_PROTOCOL(S2C, MOB_CHASE_END, 216, X596,
     S2C_DATA_SIGNATURE;
     RTEntityID Entity;
-    S2C_POSITION Position;
+    CSC_POSITION Position;
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_SKILL_TO_MOB_TARGET,
@@ -942,7 +1048,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_SKILL_TO_MOB_TARGET,
     UInt32 BfxDuration;
     UInt8 Unknown2;
     UInt32 Unknown3;
-    S2C_POSITION PositionSet;
+    CSC_POSITION PositionSet;
 )
 
 CLIENT_PROTOCOL(S2C, NFY_SKILL_TO_MOB, 220, X596,
@@ -950,17 +1056,23 @@ CLIENT_PROTOCOL(S2C, NFY_SKILL_TO_MOB, 220, X596,
     UInt16 SkillIndex;
     UInt8 TargetCount;
     UInt32 CharacterIndex;
-    S2C_POSITION PositionSet;
+    CSC_POSITION PositionSet;
     UInt8 Unknown1;
     UInt64 CharacterHP;
     UInt32 Unknown2;
     S2C_DATA_NFY_SKILL_TO_MOB_TARGET Data[0];
 )
 
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_SKILL_GROUP_MOVEMENT,
+    UInt32 CharacterIndex;
+    RTEntityID Entity;
+    CSC_POSITION PositionEnd;
+)
+
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON,
     UInt32 CharacterIndex;
     RTEntityID Entity;
-    S2C_POSITION Position; 
+    CSC_POSITION Position; 
     UInt16 Unknown1;
     UInt32 Unknown2;
 )
@@ -1006,7 +1118,7 @@ CLIENT_PROTOCOL(C2S, WARP, 244, X596,
 
 CLIENT_PROTOCOL(S2C, WARP, 244, X596,
     S2C_DATA_SIGNATURE;
-    S2C_POSITION Position;
+    CSC_POSITION Position;
     UInt64 AccumulatedExp;
     UInt64 AccumulatedOxp;
     UInt64 ReceivedSkillExp;
@@ -1217,6 +1329,23 @@ CLIENT_PROTOCOL(S2C, NFY_QUEST_DUNGEON_PATTERN_PART_COMPLETED, 303, X596,
     UInt8 PatternPartIndex;
 )
 
+CLIENT_PROTOCOL(C2S, SKILL_TO_ACTION, 310, X596,
+    C2S_DATA_SIGNATURE;
+    UInt32 TargetIndex;
+    UInt16 ActionIndex;
+    UInt8 X;
+    UInt8 Y;
+)
+
+CLIENT_PROTOCOL(S2C, SKILL_TO_ACTION, 311, X596,
+    S2C_DATA_SIGNATURE;
+    UInt32 CharacterIndex;
+    UInt32 TargetIndex;
+    UInt16 ActionIndex;
+    UInt8 X;
+    UInt8 Y;
+)
+
 CLIENT_PROTOCOL_STRUCT(C2S_DATA_QUEST_ACTION_INDEX,
     UInt32 ActionIndex;
     UInt16 SlotIndex;
@@ -1274,7 +1403,7 @@ CLIENT_PROTOCOL(S2C, NFY_CHANGE_STYLE, 323, 0000,
     Char GuildName[0];
 )
 
-CLIENT_PROTOCOL(C2S, GET_PREMIUM_SERVICE, 324, X596,
+CLIENT_PROTOCOL(C2S, GET_PREMIUM_SERVICE, 324, 13130,
     C2S_DATA_SIGNATURE;
 )
 
@@ -1290,7 +1419,7 @@ CLIENT_PROTOCOL_ENUM(
     S2C_DATA_PREMIUM_SERVICE_CHARGE_TYPE_PC_ROOM_BEAD   = (1 << 7),
 )
 
-CLIENT_PROTOCOL(S2C, GET_PREMIUM_SERVICE, 324, X596,
+CLIENT_PROTOCOL(S2C, GET_PREMIUM_SERVICE, 324, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 ChargeType;
     UInt32 ServiceType;
@@ -1299,7 +1428,7 @@ CLIENT_PROTOCOL(S2C, GET_PREMIUM_SERVICE, 324, X596,
     Timestamp UnknownExpirationDate;
 )
 
-CLIENT_PROTOCOL(S2C, NFY_PREMIUM_SERVICE, 325, X596,
+CLIENT_PROTOCOL(S2C, NFY_PREMIUM_SERVICE, 325, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 ChargeType;
     UInt32 ServiceType;
@@ -1452,18 +1581,18 @@ CLIENT_PROTOCOL(S2C, NFY_PARTY_QUEST_MISSION_MOB_KILL, 379, X596,
     UInt16 MobSpeciesIndex;
 )
 
-CLIENT_PROTOCOL(C2S, CHANGE_DIRECTION, 391, X596,
+CLIENT_PROTOCOL(C2S, CHANGE_DIRECTION, 391, 13130,
     C2S_DATA_SIGNATURE;
     Float32 Direction;
 )
 
-CLIENT_PROTOCOL(S2C, CHANGE_DIRECTION, 392, X596,
+CLIENT_PROTOCOL(S2C, CHANGE_DIRECTION, 392, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 CharacterIndex;
     Float32 Direction;
 )
 
-CLIENT_PROTOCOL(C2S, KEY_MOVEMENT_BEGIN, 401, X596,
+CLIENT_PROTOCOL(C2S, KEY_MOVEMENT_BEGIN, 401, 13130,
     C2S_DATA_SIGNATURE;
     Float32 PositionStartX;
     Float32 PositionStartY;
@@ -1474,10 +1603,10 @@ CLIENT_PROTOCOL(C2S, KEY_MOVEMENT_BEGIN, 401, X596,
     UInt8 Direction;
 )
 
-CLIENT_PROTOCOL(S2C, KEY_MOVEMENT_BEGIN, 403, X596,
+CLIENT_PROTOCOL(S2C, KEY_MOVEMENT_BEGIN, 403, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 CharacterIndex;
-    Timestamp TickCount;
+    UInt32 TickCount;
     Float32 PositionStartX;
     Float32 PositionStartY;
     Float32 PositionEndX;
@@ -1485,20 +1614,20 @@ CLIENT_PROTOCOL(S2C, KEY_MOVEMENT_BEGIN, 403, X596,
     UInt8 Direction;
 )
 
-CLIENT_PROTOCOL(C2S, KEY_MOVEMENT_END, 402, X596,
+CLIENT_PROTOCOL(C2S, KEY_MOVEMENT_END, 402, 13130,
     C2S_DATA_SIGNATURE;
     Float32 PositionCurrentX;
     Float32 PositionCurrentY;
 )
 
-CLIENT_PROTOCOL(S2C, KEY_MOVEMENT_END, 404, X596,
+CLIENT_PROTOCOL(S2C, KEY_MOVEMENT_END, 404, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 CharacterIndex;
     Float32 PositionCurrentX;
     Float32 PositionCurrentY;
 )
 
-CLIENT_PROTOCOL(C2S, KEY_MOVEMENT_CHANGE, 405, X596,
+CLIENT_PROTOCOL(C2S, KEY_MOVEMENT_CHANGE, 405, 13130,
     C2S_DATA_SIGNATURE;
     Float32 PositionStartX;
     Float32 PositionStartY;
@@ -1509,10 +1638,10 @@ CLIENT_PROTOCOL(C2S, KEY_MOVEMENT_CHANGE, 405, X596,
     UInt8 Direction;
 )
 
-CLIENT_PROTOCOL(S2C, KEY_MOVEMENT_CHANGE, 406, X596,
+CLIENT_PROTOCOL(S2C, KEY_MOVEMENT_CHANGE, 406, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 CharacterIndex;
-    Timestamp TickCount;
+    UInt32 TickCount;
     Float32 PositionStartX;
     Float32 PositionStartY;
     Float32 PositionEndX;
@@ -1577,11 +1706,11 @@ CLIENT_PROTOCOL(S2C, UNKNOWN_428, 428, X596,
     S2C_DATA_UNKNOWN_428_SLOT_INDEX Slots[0];
 )
 
-CLIENT_PROTOCOL(C2S, GET_SERVER_ENVIRONMENT, 464, X596,
+CLIENT_PROTOCOL(C2S, GET_SERVER_ENVIRONMENT, 464, 13130,
     C2S_DATA_SIGNATURE;
 )
 
-CLIENT_PROTOCOL(S2C, GET_SERVER_ENVIRONMENT, 464, X596,
+CLIENT_PROTOCOL(S2C, GET_SERVER_ENVIRONMENT, 464, 13130,
     S2C_DATA_SIGNATURE;
     UInt16 MaxLevel;
     UInt8 DummyEnabled;
@@ -1596,17 +1725,15 @@ CLIENT_PROTOCOL(S2C, GET_SERVER_ENVIRONMENT, 464, X596,
     UInt8 NetCafePremiumEnabled;
     UInt8 GuildBoardEnabled;
     UInt8 NetCafePremiumType;
-    UInt32 LimitTradeToWorldTypeEnabled;
-    UInt8 AgentShopEnabled;
     UInt8 Unknown1;
     UInt8 Unknown2;
     UInt8 Unknown3;
+    UInt8 AgentShopEnabled;
     UInt16 MegaphoneShoutCooldownTime;
     UInt16 MinAgentShopLevel;
     UInt16 MinPersonalShopLevel;
     UInt8 TPointEnabled;
     UInt8 GuildExpansionEnabled;
-    UInt8 IgnorePartyInviteByDistanceEnabled;
     UInt8 LimitMegaphoneShoutEnabled;
     UInt8 MinTalkLevel;
     UInt8 MinTradeTalkLevel;
@@ -1634,6 +1761,11 @@ CLIENT_PROTOCOL(S2C, GET_SERVER_ENVIRONMENT, 464, X596,
     UInt32 Unknown22;
     UInt32 Unknown23;
     UInt8 Unknown24;
+)
+
+CLIENT_PROTOCOL(S2C, NFY_PC_BANG_ALERT, 480, 0000,
+    S2C_DATA_SIGNATURE;
+    // TODO: Add playload
 )
 
 CLIENT_PROTOCOL(C2S, CHECK_DUNGEON_PLAYTIME, 485, 0000,
@@ -1682,13 +1814,13 @@ CLIENT_PROTOCOL_ENUM(
     C2S_DATA_VERIFY_CREDENTIALS_TYPE_PASSWORD
 )
 
-CLIENT_PROTOCOL(C2S, VERIFY_CREDENTIALS, 800, 0000,
+CLIENT_PROTOCOL(C2S, VERIFY_CREDENTIALS, 800, 13130,
     C2S_DATA_SIGNATURE;
     Int32 CredentialsType;
     Char Credentials[MAX_CREDENTIALS_LENGTH + 1];
 )
 
-CLIENT_PROTOCOL(S2C, VERIFY_CREDENTIALS, 800, 0000,
+CLIENT_PROTOCOL(S2C, VERIFY_CREDENTIALS, 800, 13130,
     S2C_DATA_SIGNATURE;
     Bool Success;
 )
@@ -1736,6 +1868,28 @@ CLIENT_PROTOCOL(S2C, PREMIUM_BENEFIT_INFO, 999, 0000,
     // TODO: Add packet structure
 )
 
+CLIENT_PROTOCOL(S2C, NFY_EVENT_DATA, 1002, 13130,
+    S2C_DATA_SIGNATURE_EXTENDED;
+    UInt8 Count;
+    Int32 Events[];
+)
+
+CLIENT_PROTOCOL(C2S, NPC_EVENT_INFO, 1003, 13130,
+    C2S_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(S2C, NPC_EVENT_INFO, 1003, 13130,
+    S2C_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(S2C, NFY_EVENT_INDEX_LIST, 1008, 13130,
+    C2S_DATA_SIGNATURE;
+    UInt8 Count;
+    Int32 EventIndex[];
+)
+
 CLIENT_PROTOCOL(C2S, CREATE_SUBPASSWORD, 1030, 0000,
     C2S_DATA_SIGNATURE;
     Char Password[MAX_SUBPASSWORD_LENGTH + 1];
@@ -1754,11 +1908,11 @@ CLIENT_PROTOCOL(S2C, CREATE_SUBPASSWORD, 1030, 0000,
     UInt32 Unknown1;
 )
 
-CLIENT_PROTOCOL(C2S, CHECK_SUBPASSWORD, 1032, X596,
+CLIENT_PROTOCOL(C2S, CHECK_SUBPASSWORD, 1032, 13130,
     C2S_DATA_SIGNATURE;
 )
 
-CLIENT_PROTOCOL(S2C, CHECK_SUBPASSWORD, 1032, X596,
+CLIENT_PROTOCOL(S2C, CHECK_SUBPASSWORD, 1032, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 IsVerificationRequired;
 )
@@ -1862,6 +2016,121 @@ CLIENT_PROTOCOL(S2C, NFY_QUEST_MOB_KILL, 2006, 0000,
     UInt16 Unknown1;
 )
 
+CLIENT_PROTOCOL(C2S, PARTY_INVITE, 2011, 0000,
+    C2S_DATA_SIGNATURE;
+    UInt8 Unknown1;
+    UInt32 CharacterIndex;
+    UInt8 ChannelIndex;
+    UInt8 CharacterType;
+    Int32 Level;
+    UInt8 NameLength;
+    Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH];
+)
+
+CLIENT_PROTOCOL(S2C, PARTY_INVITE, 2011, 0000,
+    S2C_DATA_SIGNATURE;
+    UInt8 Unknown1;
+    UInt32 CharacterIndex;
+    UInt8 ChannelIndex;
+    UInt8 NameLength;
+    Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH];
+)
+
+CLIENT_PROTOCOL(S2C, NFY_PARTY_INVITE, 2012, 0000,
+    S2C_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(C2S, PARTY_INVITE_CONFIRM, 2013, 0000,
+    C2S_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(S2C, PARTY_INVITE_CONFIRM, 2013, 0000,
+    S2C_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(S2C, NFY_PARTY_INVITE_TIMEOUT, 2014, 0000,
+    S2C_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(S2C, NFY_PARTY_INFO, 2016, 0000,
+    S2C_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(C2S, PARTY_INVITE_CANCEL, 2017, 0000,
+    C2S_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(S2C, PARTY_INVITE_CANCEL, 2017, 0000,
+    S2C_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(C2S, PARTY_LEAVE, 2019, 0000,
+    C2S_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(S2C, PARTY_LEAVE, 2019, 0000,
+    S2C_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(S2C, PARTY_DISBAND, 2020, 0000,
+    S2C_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(C2S, PARTY_EXPEL_MEMBER, 2021, 0000,
+    C2S_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(S2C, PARTY_EXPEL_MEMBER, 2021, 0000,
+    S2C_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(S2C, NFY_PARTY_EXPEL_MEMBER, 2022, 0000,
+    S2C_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(C2S, PARTY_CHANGE_LEADER, 2023, 0000,
+    C2S_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(S2C, PARTY_CHANGE_LEADER, 2023, 0000,
+    S2C_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(S2C, NFY_PARTY_CHANGE_LEADER, 2024, 0000,
+    S2C_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(S2C, NFY_PARTY_INVITE_RULE, 2026, 0000,
+    S2C_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(S2C, NFY_PARTY_UPDATE, 2028, 0000,
+    S2C_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL(S2C, NFY_PARTY_PICK_UP_CURRENCY, 2035, 0000,
+    S2C_DATA_SIGNATURE;
+    // TODO: Add packet structure
+)
+
 CLIENT_PROTOCOL(C2S, ENTER_DUNGEON_GATE, 2029, 0000,
     C2S_DATA_SIGNATURE;
     UInt32 DungeonID;
@@ -1917,12 +2186,12 @@ CLIENT_PROTOCOL(S2C, GET_SPECIAL_EVENT_CHARACTER, 2156, 0000,
     UInt8 Payload[520];
 )
 
-CLIENT_PROTOCOL(C2S, VERIFY_CREDENTIALS_SUBPASSWORD, 2160, 0000,
+CLIENT_PROTOCOL(C2S, VERIFY_CREDENTIALS_SUBPASSWORD, 2160, 13130,
     C2S_DATA_SIGNATURE;
     Char Password[MAX_SUBPASSWORD_LENGTH + 1];
 )
 
-CLIENT_PROTOCOL(S2C, VERIFY_CREDENTIALS_SUBPASSWORD, 2160, 0000,
+CLIENT_PROTOCOL(S2C, VERIFY_CREDENTIALS_SUBPASSWORD, 2160, 13130,
     S2C_DATA_SIGNATURE;
     UInt8 Success;
     UInt32 Unknown1;
@@ -2079,9 +2348,28 @@ CLIENT_PROTOCOL(S2C, GET_CASH_BALANCE, 2182, X596,
     UInt32 Amount;
 )
 
-CLIENT_PROTOCOL(S2C, NFY_UNKNOWN_2248, 2248, X596,
+CLIENT_PROTOCOL(S2C, NFY_UNKNOWN_2248, 2248, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 Unknown1;
+)
+
+CLIENT_PROTOCOL_STRUCT(C2S_REQUEST_CRAFT_INVENTORY_SLOT,
+    Int32 InventorySlotIndex;
+    UInt32 Count;
+)
+
+CLIENT_PROTOCOL(C2S, REQUEST_CRAFT, 2250, 13130,
+    C2S_DATA_SIGNATURE;
+    UInt32 RequestCode;
+    UInt8 RequestSlotIndex;
+    Int32 Unknown1;
+    Int32 InventorySlotCount;
+    C2S_REQUEST_CRAFT_INVENTORY_SLOT InventorySlots[523];
+)
+
+CLIENT_PROTOCOL(S2C, REQUEST_CRAFT, 2250, 13130,
+    S2C_DATA_SIGNATURE;
+    UInt8 Success;
 )
 
 CLIENT_PROTOCOL(C2S, GET_UNKNOWN_USER_LIST, 2253, X596,
@@ -2213,7 +2501,7 @@ CLIENT_PROTOCOL(S2C, GET_UNKNOWN_2522, 2522, 0000,
     UInt32 Unknown2[4];
 )
 
-CLIENT_PROTOCOL(S2C, NFY_UNKNOWN_2528, 2528, X596,
+CLIENT_PROTOCOL(S2C, NFY_UNKNOWN_2528, 2528, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 Unknown1;
 )
@@ -2237,7 +2525,7 @@ CLIENT_PROTOCOL(S2C, UNKNOWN_2566, 2566, X596,
     UInt16 Unknown1;
 )
 
-CLIENT_PROTOCOL(C2S, GET_UNKNOWN_2571, 2571, X596,
+CLIENT_PROTOCOL(C2S, GET_UNKNOWN_2571, 2571, 13130,
     C2S_DATA_SIGNATURE;
 )
 
@@ -2247,7 +2535,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_UNKNOWN_2571_INDEX,
     UInt32 Unknown2;
 )
 
-CLIENT_PROTOCOL(S2C, GET_UNKNOWN_2571, 2571, 0000,
+CLIENT_PROTOCOL(S2C, GET_UNKNOWN_2571, 2571, 13130,
     S2C_DATA_SIGNATURE;
     UInt16 Count;
     S2C_DATA_UNKNOWN_2571_INDEX Data[0];
@@ -2306,7 +2594,7 @@ CLIENT_PROTOCOL(S2C, REMOVE_CHARACTER_STATS, 2649, X596,
     UInt32 Stat[3];
 )
 
-CLIENT_PROTOCOL(S2C, NFY_UNKNOWN_2756, 2756, X596,
+CLIENT_PROTOCOL(S2C, NFY_UNKNOWN_2756, 2756, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 Unknown1[9];
 )
@@ -2466,28 +2754,28 @@ CLIENT_PROTOCOL(S2C, GET_EVENT_PASS_SEASON, 3000, X596,
     UInt32 Unknown2;
 )
 
-CLIENT_PROTOCOL(S2C, NFY_EVENT_PASS_PROGRESS, 3001, X596,
+CLIENT_PROTOCOL(S2C, NFY_EVENT_PASS_PROGRESS, 3001, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 GroupID;
     UInt32 MissionID;
     UInt32 Progress;
 )
 
-CLIENT_PROTOCOL(S2C, NFY_EVENT_PASS_RESUME, 3002, X596,
+CLIENT_PROTOCOL(S2C, NFY_EVENT_PASS_RESUME, 3002, 13130,
     S2C_DATA_SIGNATURE;
     UInt32 Unknown1;
     UInt32 Unknown2;
     UInt32 Unknown3;
 )
 
-CLIENT_PROTOCOL(S2C, NFY_UNKNOWN_3016, 3016, X596,
+CLIENT_PROTOCOL(S2C, NFY_UNKNOWN_3016, 3016, 13130,
     S2C_DATA_SIGNATURE;
     UInt8 Unknown1;
     Timestamp UnknownTimestamp1;
     Timestamp UnknownTimestamp2;
 )
 
-CLIENT_PROTOCOL(S2C, NFY_UNKNOWN_5305, 5305, X596,
+CLIENT_PROTOCOL(S2C, NFY_UNKNOWN_5305, 5305, 13130,
     S2C_DATA_SIGNATURE;
     UInt8 Unknown1[6];
 )

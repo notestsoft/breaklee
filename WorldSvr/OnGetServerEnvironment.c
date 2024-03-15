@@ -23,14 +23,12 @@ CLIENT_PROCEDURE_BINDING(GET_SERVER_ENVIRONMENT) {
     Response->NetCafePremiumEnabled = 1;
     Response->GuildBoardEnabled = 0;
     Response->NetCafePremiumType = 0;
-    Response->LimitTradeToWorldTypeEnabled = 0;
     Response->AgentShopEnabled = 1;
     Response->MegaphoneShoutCooldownTime = 0;
     Response->MinAgentShopLevel = 10;
     Response->MinPersonalShopLevel = 10;
     Response->TPointEnabled = 1;
     Response->GuildExpansionEnabled = 1;
-    Response->IgnorePartyInviteByDistanceEnabled = 0;
     Response->LimitMegaphoneShoutEnabled = 1;
     Response->MinTalkLevel = 10;
     Response->MinTradeTalkLevel = 10;

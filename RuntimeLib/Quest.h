@@ -94,6 +94,7 @@ struct _RTQuestData {
     Int32 MissionDungeonCount;
     Int32 DeleteType;
     Int32 DailyCount;
+    Int32 DungeonIndexCount;
     struct _RTQuestConditionData Condition;
     Int32 Reward[9];
     Int32 QuestBeginNpcIndex;
@@ -101,6 +102,7 @@ struct _RTQuestData {
     struct _RTQuestMissionData MissionMobs[RUNTIME_MAX_QUEST_COUNTER_COUNT];
     struct _RTQuestMissionData MissionItems[RUNTIME_MAX_QUEST_COUNTER_COUNT];
     struct _RTQuestMissionData MissionDungeons[RUNTIME_MAX_QUEST_COUNTER_COUNT];
+    Int32 DungeonIndex[RUNTIME_MAX_QUEST_DUNGEON_INDEX_COUNT];
 };
 
 struct _RTQuestRewardItemData {
@@ -129,7 +131,12 @@ struct _RTCharacterQuestSlotInfo {
 };
 
 struct _RTCharacterQuestFlagInfo {
-    UInt8 Flags[RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT];
+    UInt8 FinishedQuests[RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT];
+    UInt8 DeletedQuests[RUNTIME_CHARACTER_MAX_NORMAL_QUEST_FLAG_COUNT];
+};
+
+struct _RTCharacterDungeonQuestFlagInfo {
+    UInt8 FinishedDungeons[RUNTIME_CHARACTER_MAX_QUEST_DUNGEON_FLAG_COUNT];
 };
 
 #pragma pack(pop)
@@ -145,6 +152,21 @@ Void RTCharacterQuestFlagSet(
 );
 
 Bool RTCharacterQuestFlagIsSet(
+    RTCharacterRef Character,
+    Int32 QuestIndex
+);
+
+Void RTCharacterQuestDeleteFlagClear(
+    RTCharacterRef Character,
+    Int32 QuestIndex
+);
+
+Void RTCharacterQuestDeleteFlagSet(
+    RTCharacterRef Character,
+    Int32 QuestIndex
+);
+
+Bool RTCharacterQuestDeleteFlagIsSet(
     RTCharacterRef Character,
     Int32 QuestIndex
 );
@@ -186,7 +208,13 @@ Bool RTCharacterQuestCancel(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     Int32 QuestIndex,
-    Int32 SlotIndex
+    Int32 QuestSlotIndex
+);
+
+Bool RTCharacterQuestDelete(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 QuestIndex
 );
 
 Bool RTCharacterQuestAction(

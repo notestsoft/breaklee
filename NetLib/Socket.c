@@ -206,7 +206,8 @@ Bool SocketFetchReadBuffer(
             PacketRef Signature = (PacketRef)Connection->ReadBuffer;
             PacketLength = Signature->Length;
         }
-
+        
+        // TODO: Add error handling when packet is dropped or not fully received to meet the desired PacketLength
         if (Connection->ReadBufferOffset >= PacketLength) {
             if (Socket->Flags & SOCKET_FLAGS_ENCRYPTED) {
                 KeychainDecryptPacket(
@@ -222,6 +223,9 @@ Bool SocketFetchReadBuffer(
             if (Connection->ReadBufferOffset > 0) {
                 memmove(&Connection->ReadBuffer[0], &Connection->ReadBuffer[PacketLength], Connection->ReadBufferOffset);
             }
+        }
+        else {
+            break;
         }
     }
 }
@@ -268,6 +272,8 @@ Void SocketReleaseConnections(
 
         // TODO: Sometimes Connection can become null!!!
         SocketConnectionRef Connection = (SocketConnectionRef)MemoryPoolFetch(Socket->ConnectionPool, ConnectionPoolIndex);
+        if (!Connection) continue;
+
         if (Connection->Flags & SOCKET_CONNECTION_FLAGS_DISCONNECTED && !(Connection->Flags & SOCKET_CONNECTION_FLAGS_DISCONNECTED_END)) {
             Connection->Flags &= ~SOCKET_CONNECTION_FLAGS_DISCONNECTED_END;
             SocketFlushWriteBuffer(Socket, Connection);

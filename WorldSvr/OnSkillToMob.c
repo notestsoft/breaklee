@@ -14,8 +14,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 
 	RTMovementEndDeadReckoning(Runtime, &Character->Movement);
 
-	if (Packet->SlotIndex < 0 || Packet->SlotIndex > RUNTIME_CHARACTER_MAX_SKILL_SLOT_COUNT ||
-		Packet->SkillIndex < 0 || Packet->SkillIndex >= Runtime->CharacterSkillDataCount) {
+	if (Packet->SlotIndex < 0 || Packet->SlotIndex > RUNTIME_CHARACTER_MAX_SKILL_SLOT_COUNT) {
 		goto error;
 	}
 
@@ -23,8 +22,8 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotByIndex(Runtime, Character, Packet->SlotIndex);
 	if (!SkillSlot) goto error;
 
-	RTCharacterSkillDataRef Skill = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillSlot->ID);
-	assert(Skill);
+	RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillSlot->ID);
+	assert(SkillData);
 
 	Bool UseMoveStep = false;
 	Bool UseStun = false;
@@ -35,13 +34,13 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 
 	// TODO: Calculate timing of combo skill
 
-	if (Packet->TargetCount < 1 || (Packet->TargetCount > 1 && !Skill->Multi)) goto error;
+	if (Packet->TargetCount < 1 || (Packet->TargetCount > 1 && !SkillData->Multi)) goto error;
 
 	Int32 RequiredMP = RTCharacterCalculateRequiredMP(
 		Runtime,
 		Character,
-		Skill->Mp[0],
-		Skill->Mp[1],
+		SkillData->Mp[0],
+		SkillData->Mp[1],
 		SkillSlot->Level
 	);
 
@@ -53,8 +52,8 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 
     Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] -= RequiredMP;
     
-	if (Skill->RageValue < 0) {
-		if (!RTCharacterConsumeRage(Runtime, Character, ABS(Skill->RageValue))) goto error;
+	if (SkillData->RageValue < 0) {
+		if (!RTCharacterConsumeRage(Runtime, Character, ABS(SkillData->RageValue))) goto error;
 	}
 
 	// TODO: Apply dash by skill if needed
@@ -120,7 +119,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 		RTCalculateSkillAttackResult(
 			Runtime,
 			SkillSlot->Level,
-			Skill,
+			SkillData,
 			Character->Info.Basic.Level,
 			&Character->Attributes,
 			Mob->SpeciesData->Level,
@@ -130,7 +129,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 
 		if (Index == 0) {
 			if (Result.AttackType == RUNTIME_ATTACK_TYPE_NORMAL || Result.AttackType == RUNTIME_ATTACK_TYPE_CRITICAL) {
-				RTCharacterAddRage(Runtime, Character, MAX(0, Skill->RageValue));
+				RTCharacterAddRage(Runtime, Character, MAX(0, SkillData->RageValue));
 			}
 		}
 

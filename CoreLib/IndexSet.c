@@ -50,7 +50,7 @@ Void IndexSetRemove(
     for (Index ElementIndex = 0; ElementIndex < ArrayGetElementCount(Set->Indices); ElementIndex += 1) {
         Index Element = *((Index*)ArrayGetElementAtIndex(Set->Indices, ElementIndex));
         if (Element == Value) {
-            ArrayRemoveElementAtIndex(Set->Indices, Value);
+            ArrayRemoveElementAtIndex(Set->Indices, ElementIndex);
             break;
         }
     }
