@@ -50,6 +50,7 @@ Bool ServerLoadWorldData(
     CString RuntimeDirectory,
     CString ServerDirectory,
     ArchiveRef TerrainArchive,
+    ArchiveRef MainArchive,
     Bool LoadShops
 );
 

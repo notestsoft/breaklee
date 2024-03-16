@@ -1061,6 +1061,7 @@ Bool ServerLoadWorldData(
     CString RuntimeDirectory,
     CString ServerDirectory,
     ArchiveRef TerrainArchive,
+    ArchiveRef MainArchive,
     Bool LoadShops
 ) {
     ArchiveRef Archive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
@@ -1205,85 +1206,6 @@ Bool ServerLoadWorldData(
 
             Runtime->NpcCount += 1;
             ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
-        }
-
-        if (LoadShops) {
-            ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, NodeIndex, "shop");
-            while (ChildIterator) {
-                assert(Runtime->ShopDataCount < RUNTIME_MEMORY_MAX_SHOP_DATA_COUNT);
-
-                RTShopDataRef ShopData = &Runtime->ShopData[Runtime->ShopDataCount];
-                ShopData->Index = Runtime->ShopDataCount;
-                ShopData->WorldID = World->WorldIndex;
-
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "id", &ShopData->NpcID)) goto error;
-
-                for (Int32 Index = 0; Index < Runtime->ShopDataCount; Index++) {
-                    if (Runtime->ShopData[Index].NpcID == ShopData->NpcID) {
-                        continue;
-                    }
-                }
-
-                ArchiveIteratorRef ItemIterator = ArchiveQueryNodeIteratorFirst(Archive, ChildIterator->Index, "item");
-                while (ItemIterator) {
-                    assert(ShopData->ItemCount < RUNTIME_SHOP_MAX_ITEM_COUNT);
-
-                    RTShopItemDataRef ItemData = &ShopData->Items[ShopData->ItemCount];
-
-                    if (!ParseAttributeInt32(Archive, ItemIterator->Index, "slot_id", &ItemData->SlotID)) goto error;
-                    if (!ParseAttributeInt32(Archive, ItemIterator->Index, "item_id", &ItemData->ItemID)) goto error;
-                    if (!ParseAttributeUInt64(Archive, ItemIterator->Index, "option", &ItemData->ItemOption)) goto error;
-                    if (!ParseAttributeInt32(Archive, ItemIterator->Index, "reputation_class", &ItemData->MinHonorRank)) goto error;
-                    if (!ParseAttributeInt32(Archive, ItemIterator->Index, "duration_id", &ItemData->DurationID)) goto error;
-                    if (!ParseAttributeInt32(Archive, ItemIterator->Index, "price", &ItemData->Price)) goto error;
-                    if (!ParseAttributeInt32(Archive, ItemIterator->Index, "onlypremium", &ItemData->OnlyPremium)) goto error;
-                    if (!ParseAttributeInt32(Archive, ItemIterator->Index, "wexpprice", &ItemData->WexpPrice)) goto error;
-
-                    ShopData->ItemCount += 1;
-                    ItemIterator = ArchiveQueryNodeIteratorNext(Archive, ItemIterator);
-                }
-
-                Runtime->ShopDataCount += 1;
-                ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
-            }
-        }
-
-        // Load Trainer Data
-        {
-            ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, NodeIndex, "trainer");
-            while (ChildIterator) {
-                assert(Runtime->TrainerDataCount < RUNTIME_MEMORY_MAX_TRAINER_DATA_COUNT);
-
-                RTTrainerDataRef TrainerData = &Runtime->TrainerData[Runtime->TrainerDataCount];
-                TrainerData->Index = Runtime->TrainerDataCount;
-                TrainerData->WorldID = World->WorldIndex;
-
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "id", &TrainerData->NpcID)) goto error;
-
-                for (Int32 Index = 0; Index < Runtime->TrainerDataCount; Index++) {
-                    if (Runtime->TrainerData[Index].NpcID == TrainerData->NpcID) {
-                        continue;
-                    }
-                }
-
-                ArchiveIteratorRef SkillIterator = ArchiveQueryNodeIteratorFirst(Archive, ChildIterator->Index, "skill");
-                while (SkillIterator) {
-                    assert(TrainerData->SkillCount < RUNTIME_TRAINER_MAX_SKILL_COUNT);
-
-                    RTTrainerSkillDataRef SkillData = &TrainerData->Skills[TrainerData->SkillCount];
-
-                    if (!ParseAttributeInt32(Archive, SkillIterator->Index, "id", &SkillData->ID)) goto error;
-                    if (!ParseAttributeInt32(Archive, SkillIterator->Index, "slot_id", &SkillData->SlotID)) goto error;
-                    if (!ParseAttributeInt32(Archive, SkillIterator->Index, "level", &SkillData->Level)) goto error;
-                    if (!ParseAttributeInt32(Archive, SkillIterator->Index, "skill_book", &SkillData->SkillBookID)) goto error;
-                    
-                    TrainerData->SkillCount += 1;
-                    SkillIterator = ArchiveQueryNodeIteratorNext(Archive, SkillIterator);
-                }
-
-                Runtime->TrainerDataCount += 1;
-                ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
-            }
         }
 
         Char MobFilePath[MAX_PATH];
@@ -1449,6 +1371,105 @@ Bool ServerLoadWorldData(
         for (Int32 Index = 0; Index < World->DropTable.QuestItemCount; Index++) {
             World->DropTable.QuestItems[Index].Item.DropRate = (Int32)(1000.0f * DropQuestRates[Index] / DropQuestMinRate);
             assert(World->DropTable.QuestItems[Index].Item.DropRate > 0);
+        }
+    }
+
+    for (Index WorldIndex = 0; WorldIndex < Runtime->WorldManager->MaxWorldDataCount; WorldIndex += 1) {
+        if (!RTWorldDataExists(Runtime->WorldManager, WorldIndex)) continue;
+
+        RTWorldDataRef World = RTWorldDataGet(Runtime->WorldManager, WorldIndex);
+
+        Int64 NodeIndex = ArchiveQueryNodeWithAttribute(
+            MainArchive,
+            -1,
+            "cabal.cabal_world.world",
+            "id",
+            UInt64ToStringNoAlloc(World->WorldIndex)
+        );
+
+        if (NodeIndex < 0) continue;
+
+        Index WorldIndex = 0;
+        if (!ParseAttributeInt32(MainArchive, NodeIndex, "id", &WorldIndex)) continue;
+        assert(WorldIndex == World->WorldIndex);
+
+        if (LoadShops) {
+            ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(MainArchive, NodeIndex, "shop");
+            while (ChildIterator) {
+                assert(Runtime->ShopDataCount < RUNTIME_MEMORY_MAX_SHOP_DATA_COUNT);
+
+                RTShopDataRef ShopData = &Runtime->ShopData[Runtime->ShopDataCount];
+                ShopData->Index = Runtime->ShopDataCount;
+                ShopData->WorldID = World->WorldIndex;
+
+                if (!ParseAttributeInt32(MainArchive, ChildIterator->Index, "id", &ShopData->NpcID)) goto error;
+
+                for (Int32 Index = 0; Index < Runtime->ShopDataCount; Index++) {
+                    if (Runtime->ShopData[Index].NpcID == ShopData->NpcID) {
+                        continue;
+                    }
+                }
+
+                ArchiveIteratorRef ItemIterator = ArchiveQueryNodeIteratorFirst(MainArchive, ChildIterator->Index, "item");
+                while (ItemIterator) {
+                    assert(ShopData->ItemCount < RUNTIME_SHOP_MAX_ITEM_COUNT);
+
+                    RTShopItemDataRef ItemData = &ShopData->Items[ShopData->ItemCount];
+
+                    if (!ParseAttributeInt32(MainArchive, ItemIterator->Index, "slot_id", &ItemData->SlotID)) goto error;
+                    if (!ParseAttributeInt32(MainArchive, ItemIterator->Index, "item_id", &ItemData->ItemID)) goto error;
+                    if (!ParseAttributeUInt64(MainArchive, ItemIterator->Index, "option", &ItemData->ItemOption)) goto error;
+                    if (!ParseAttributeInt32(MainArchive, ItemIterator->Index, "reputation_class", &ItemData->MinHonorRank)) goto error;
+                    if (!ParseAttributeInt32(MainArchive, ItemIterator->Index, "duration_id", &ItemData->DurationID)) goto error;
+                    if (!ParseAttributeInt32(MainArchive, ItemIterator->Index, "price", &ItemData->Price)) goto error;
+                    if (!ParseAttributeInt32(MainArchive, ItemIterator->Index, "onlypremium", &ItemData->OnlyPremium)) goto error;
+                    if (!ParseAttributeInt32(MainArchive, ItemIterator->Index, "wexpprice", &ItemData->WexpPrice)) goto error;
+
+                    ShopData->ItemCount += 1;
+                    ItemIterator = ArchiveQueryNodeIteratorNext(MainArchive, ItemIterator);
+                }
+
+                Runtime->ShopDataCount += 1;
+                ChildIterator = ArchiveQueryNodeIteratorNext(MainArchive, ChildIterator);
+            }
+        }
+
+        // Load Trainer Data
+        {
+            ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(MainArchive, NodeIndex, "trainer");
+            while (ChildIterator) {
+                assert(Runtime->TrainerDataCount < RUNTIME_MEMORY_MAX_TRAINER_DATA_COUNT);
+
+                RTTrainerDataRef TrainerData = &Runtime->TrainerData[Runtime->TrainerDataCount];
+                TrainerData->Index = Runtime->TrainerDataCount;
+                TrainerData->WorldID = World->WorldIndex;
+
+                if (!ParseAttributeInt32(MainArchive, ChildIterator->Index, "id", &TrainerData->NpcID)) goto error;
+
+                for (Int32 Index = 0; Index < Runtime->TrainerDataCount; Index++) {
+                    if (Runtime->TrainerData[Index].NpcID == TrainerData->NpcID) {
+                        continue;
+                    }
+                }
+
+                ArchiveIteratorRef SkillIterator = ArchiveQueryNodeIteratorFirst(MainArchive, ChildIterator->Index, "skill");
+                while (SkillIterator) {
+                    assert(TrainerData->SkillCount < RUNTIME_TRAINER_MAX_SKILL_COUNT);
+
+                    RTTrainerSkillDataRef SkillData = &TrainerData->Skills[TrainerData->SkillCount];
+
+                    if (!ParseAttributeInt32(MainArchive, SkillIterator->Index, "id", &SkillData->ID)) goto error;
+                    if (!ParseAttributeInt32(MainArchive, SkillIterator->Index, "slot_id", &SkillData->SlotID)) goto error;
+                    if (!ParseAttributeInt32(MainArchive, SkillIterator->Index, "level", &SkillData->Level)) goto error;
+                    if (!ParseAttributeInt32(MainArchive, SkillIterator->Index, "skill_book", &SkillData->SkillBookID)) goto error;
+
+                    TrainerData->SkillCount += 1;
+                    SkillIterator = ArchiveQueryNodeIteratorNext(MainArchive, SkillIterator);
+                }
+
+                Runtime->TrainerDataCount += 1;
+                ChildIterator = ArchiveQueryNodeIteratorNext(MainArchive, ChildIterator);
+            }
         }
     }
 

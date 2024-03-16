@@ -187,7 +187,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_COLLECTION_SLOT,
     UInt16 MissionItemCounts[6];
 )
 
-CLIENT_PROTOCOL(S2C, INITIALIZE, 142, 13130,
+CLIENT_PROTOCOL(S2C, INITIALIZE, 142, 13133,
     S2C_DATA_SIGNATURE_EXTENDED;
     S2C_DATA_INITIALIZE_WAR War;
     UInt32 WorldType;
@@ -247,20 +247,22 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, 142, 13130,
     UInt8 Unknown14[282];
     UInt16 EquipmentSlotCount;
     UInt8 EquipmentLockCount;
-    UInt32 InventorySlotCount;
+    UInt16 InventorySlotCount;
+    UInt16 VehicleInventorySlotCount;
     UInt16 SkillSlotCount;
     UInt16 QuickSlotCount;
     UInt16 MercenaryCount;
-    UInt16 UnknownCount1;
-    UInt16 UnknownCount2;
+    UInt16 ItemPeriodCount;
     UInt16 AP;
     UInt32 Axp;
     UInt8 EssenceAbilityCount;
     UInt8 ExtendedEssenceAbilityCount;
     UInt8 BlendedAbilityCount;
     UInt8 ExtendedBlendedAbilityCount;
-    UInt16 PremiumServiceCount;
+    UInt8 KarmaAbilityCount;
+    UInt8 ExtendedKarmaAbilityCount;
     UInt16 BlessingBeadCount;
+    UInt16 PremiumServiceCount;
     UInt16 QuestSlotCount;
     struct _RTCharacterQuestFlagInfo QuestFlagInfo;
     struct _RTCharacterDungeonQuestFlagInfo DungeonQuestFlagInfo;
