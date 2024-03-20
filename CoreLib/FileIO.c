@@ -1,3 +1,4 @@
+#include "String.h"
 #include "FileIO.h"
 #include "Diagnostic.h"
 
@@ -22,7 +23,7 @@ static Char PathRemoveExtensionBuffer[MAX_PATH] = { 0 };
 CString PathRemoveExtensionNoAlloc(
     CString Path
 ) {
-    strcpy_s(PathRemoveExtensionBuffer, MAX_PATH, Path);
+    CStringCopySafe(PathRemoveExtensionBuffer, MAX_PATH, Path);
     CString Cursor = strrchr(PathRemoveExtensionBuffer, '.');
     if (Cursor != NULL) *Cursor = '\0';
     return Path;

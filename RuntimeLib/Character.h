@@ -194,7 +194,7 @@ struct _RTCharacterInfo {
 struct _RTCharacter {
     RTEntityID ID;
     RTEntityID PartyID;
-    UInt32 CharacterIndex;
+    Index CharacterIndex;
     UInt32 SyncMask;
     UInt32 SyncPriority;
     Timestamp SyncTimestamp;

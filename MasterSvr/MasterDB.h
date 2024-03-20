@@ -212,7 +212,7 @@ Bool MasterDBDeleteCharacter(
 
 Bool MasterDBInsertSubpassword(
     DatabaseRef Database,
-    Int32 AccountID
+    Int64 AccountID
 );
 
 Bool MasterDBSelectSubpassword(

@@ -549,10 +549,10 @@ Bool MasterDBDeleteCharacter(
 
 Bool MasterDBInsertSubpassword(
     DatabaseRef Database,
-    Int32 AccountID
+    Int64 AccountID
 ) {
     StatementRef Statement = MasterDBGetStatement(Database, MASTERBD_INSERT_SUBPASSWORD);
-    StatementBindParameterInt32(Statement, 0, AccountID);
+    StatementBindParameterInt64(Statement, 0, AccountID);
 
     if (!StatementExecute(Statement)) return false;
 

@@ -50,7 +50,7 @@ struct _ClientContext {
 
     // TODO: Store upgrade point & expiration time in temp memory
     Int32 UpgradePoint;
-    UInt32 DiceSeed;
+    Int32 DiceSeed;
 
     // @Next
     // TODO: Add a cleanup flag and cleanup the character from world when the connection closes 

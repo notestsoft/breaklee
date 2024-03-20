@@ -65,7 +65,7 @@ CLIENT_PROCEDURE_BINDING(ATTACK_TO_MOB) {
 
 	S2C_DATA_NFY_ATTACK_TO_MOB* Notification = PacketInit(S2C_DATA_NFY_ATTACK_TO_MOB);
 	Notification->Command = S2C_NFY_ATTACK_TO_MOB;
-	Notification->CharacterIndex = Client->CharacterIndex,
+	Notification->CharacterIndex = (UInt32)Client->CharacterIndex,
 	Notification->Mob = Response->Entity;
 	Notification->MobIDType = Response->EntityIDType;
 	Notification->AttackType = Response->AttackType;

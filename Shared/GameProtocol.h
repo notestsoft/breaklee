@@ -83,7 +83,7 @@ typedef struct {
     struct _RTCharacterQuickSlotInfo QuickSlotData;
     struct _RTCharacterQuestSlotInfo QuestSlotData;
     struct _RTCharacterQuestFlagInfo QuestFlagData;
-    struct _RTCharacterQuestFlagInfo DungeonQuestFlagData;
+    struct _RTCharacterDungeonQuestFlagInfo DungeonQuestFlagData;
     GAME_DATA_CHARACTER_ACHIEVEMENT AchievementData;
     struct _RTCharacterEssenceAbilityInfo EssenceAbilityData;
     GAME_DATA_CHARACTER_BLENDEDABILITY BlendedAbilityData;

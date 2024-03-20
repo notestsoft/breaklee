@@ -1125,7 +1125,7 @@ Bool ServerLoadWorldData(
         if (NodeIndex < 0) goto error;
 
         Index WorldIndex = 0;
-        if (!ParseAttributeInt32(Archive, NodeIndex, "id", &WorldIndex)) goto error;
+        if (!ParseAttributeIndex(Archive, NodeIndex, "id", &WorldIndex)) goto error;
         assert(WorldIndex == World->WorldIndex);
 
         if (!ParseAttributeInt32(Archive, NodeIndex, "type", &World->Type)) goto error;
@@ -1390,7 +1390,7 @@ Bool ServerLoadWorldData(
         if (NodeIndex < 0) continue;
 
         Index WorldIndex = 0;
-        if (!ParseAttributeInt32(MainArchive, NodeIndex, "id", &WorldIndex)) continue;
+        if (!ParseAttributeIndex(MainArchive, NodeIndex, "id", &WorldIndex)) continue;
         assert(WorldIndex == World->WorldIndex);
 
         if (LoadShops) {
@@ -1501,8 +1501,8 @@ Bool ServerLoadSkillData(
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "skill_main");
     while (Iterator) {
-        Index SkillIndex = 0;
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &SkillIndex)) goto error;
+        Int32 SkillIndex = 0;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "id", &SkillIndex)) goto error;
 
         RTCharacterSkillDataRef SkillData = MemoryPoolReserve(Runtime->SkillDataPool, SkillIndex);
         SkillData->SkillID = SkillIndex;

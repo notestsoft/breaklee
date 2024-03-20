@@ -43,6 +43,14 @@ Bool FileExists(
     return 0;
 }
 
+Int32 FilesProcess(
+	CString Pattern,
+	FilesProcessCallback Callback,
+	Void* UserData
+) {
+    return 0;
+}
+
 CString PathCombineNoAlloc(
     CString Directory,
     CString File

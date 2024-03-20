@@ -1,4 +1,4 @@
-﻿#include "Mob.h"
+#include "Mob.h"
 #include "Runtime.h"
 #include "World.h"
 #include "WorldManager.h"

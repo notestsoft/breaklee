@@ -55,7 +55,7 @@ Void EncryptDecryptFile(
         goto cleanup;
     }
 
-    Bool IsBinary = (*SkipWhitespaceAndNewlines(Buffer) != '<');
+    Bool IsBinary = (*SkipWhitespaceAndNewlines((Char*)Buffer) != '<');
     CString OutputFilePath = PathRemoveExtensionNoAlloc(FileName);
     PathAppend(OutputFilePath, IsBinary ? ".dat" : ".xml");
 

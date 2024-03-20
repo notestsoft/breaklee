@@ -189,7 +189,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 	Notification->Command = S2C_NFY_SKILL_TO_MOB;
 	Notification->SkillIndex = Response->SkillIndex;
 	Notification->TargetCount = Response->TargetCount;
-	Notification->CharacterIndex = Client->CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 	Notification->PositionSet.X = Character->Info.Position.X;
 	Notification->PositionSet.Y = Character->Info.Position.Y;
 	Notification->CharacterHP = Response->CharacterHP;

@@ -27,7 +27,7 @@ CLIENT_PROCEDURE_BINDING(MOVEMENT_BEGIN) {
 
 	S2C_DATA_MOVEMENT_BEGIN* Notification = PacketInit(S2C_DATA_MOVEMENT_BEGIN);
 	Notification->Command = S2C_MOVEMENT_BEGIN;
-	Notification->CharacterIndex = Client->CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 	Notification->TickCount = Character->Movement.TickCount;
 	Notification->PositionBegin.X = Packet->PositionBegin.X;
 	Notification->PositionBegin.Y = Packet->PositionBegin.Y;
@@ -63,7 +63,7 @@ CLIENT_PROCEDURE_BINDING(MOVEMENT_END) {
 
 	S2C_DATA_MOVEMENT_END* Notification = PacketInit(S2C_DATA_MOVEMENT_END);
 	Notification->Command = S2C_MOVEMENT_END;
-	Notification->CharacterIndex = Client->CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 	Notification->Position.X = Packet->Position.X;
 	Notification->Position.Y = Packet->Position.Y;
 
@@ -108,7 +108,7 @@ CLIENT_PROCEDURE_BINDING(MOVEMENT_CHANGE) {
 
 	S2C_DATA_MOVEMENT_CHANGE* Notification = PacketInit(S2C_DATA_MOVEMENT_CHANGE);
 	Notification->Command = S2C_MOVEMENT_CHANGE;
-	Notification->CharacterIndex = Client->CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 	Notification->TickCount = Character->Movement.TickCount;
 	Notification->PositionBegin.X = Packet->PositionBegin.X;
 	Notification->PositionBegin.Y = Packet->PositionBegin.Y;
@@ -172,7 +172,7 @@ CLIENT_PROCEDURE_BINDING(CHANGE_DIRECTION) {
 
 	S2C_DATA_CHANGE_DIRECTION* Notification = PacketInit(S2C_DATA_CHANGE_DIRECTION);
 	Notification->Command = S2C_CHANGE_DIRECTION;
-	Notification->CharacterIndex = Client->CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 	Notification->Direction = Packet->Direction;
 
 	return BroadcastToWorld(
@@ -209,7 +209,7 @@ CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_BEGIN) {
 
 	S2C_DATA_KEY_MOVEMENT_BEGIN* Notification = PacketInit(S2C_DATA_KEY_MOVEMENT_BEGIN);
 	Notification->Command = S2C_KEY_MOVEMENT_BEGIN;
-	Notification->CharacterIndex = Client->CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 	Notification->TickCount = Character->Movement.TickCount;
 	Notification->PositionStartX = Packet->PositionStartX;
 	Notification->PositionStartY = Packet->PositionStartY;
@@ -246,7 +246,7 @@ CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_END) {
 
 	S2C_DATA_KEY_MOVEMENT_END* Notification = PacketInit(S2C_DATA_KEY_MOVEMENT_END);
 	Notification->Command = S2C_KEY_MOVEMENT_END;
-	Notification->CharacterIndex = Client->CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 	Notification->PositionCurrentX = Packet->PositionCurrentX;
 	Notification->PositionCurrentY = Packet->PositionCurrentY;
 
@@ -291,7 +291,7 @@ CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_CHANGE) {
 
 	S2C_DATA_KEY_MOVEMENT_CHANGE* Notification = PacketInit(S2C_DATA_KEY_MOVEMENT_CHANGE);
 	Notification->Command = S2C_KEY_MOVEMENT_CHANGE;
-	Notification->CharacterIndex = Client->CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 	Notification->TickCount = Character->Movement.TickCount;
 	Notification->PositionStartX = Packet->PositionStartX;
 	Notification->PositionStartY = Packet->PositionStartY;

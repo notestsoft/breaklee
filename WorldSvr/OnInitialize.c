@@ -71,7 +71,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
 
     /* Character Info */
     Response->WorldIndex = Packet->Character.CharacterData.Position.WorldID;
-    Response->DungeonIndex = Packet->Character.CharacterData.Position.DungeonIndex;
+    Response->DungeonIndex = (UInt32)Packet->Character.CharacterData.Position.DungeonIndex;
     Response->Position.X = Packet->Character.CharacterData.Position.X;
     Response->Position.Y = Packet->Character.CharacterData.Position.Y;
     Response->Exp = Packet->Character.CharacterData.Basic.Exp;

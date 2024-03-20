@@ -18,7 +18,7 @@ CLIENT_PROCEDURE_BINDING(CHANGE_STYLE) {
 
 	S2C_DATA_NFY_CHANGE_STYLE* Notification = PacketInit(S2C_DATA_NFY_CHANGE_STYLE);
 	Notification->Command = S2C_NFY_CHANGE_STYLE;
-	Notification->CharacterIndex = Character->CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
 	Notification->CharacterStyle = Packet->CharacterStyle;
 	Notification->CharacterLiveStyle = Packet->CharacterLiveStyle;
 	Notification->GuildID = Packet->GuildID;

@@ -66,8 +66,8 @@ enum {
 };
 
 union _RTEventData {
-    struct { UInt32 CharacterIndex; struct _RTCharacterPosition Position; } CharacterSpawn;
-    struct { UInt32 CharacterIndex; struct _RTCharacterPosition Position; } CharacterDespawn;
+    struct { Index CharacterIndex; struct _RTCharacterPosition Position; } CharacterSpawn;
+    struct { Index CharacterIndex; struct _RTCharacterPosition Position; } CharacterDespawn;
 
     /*
     struct { } CharacterChunkUpdate;

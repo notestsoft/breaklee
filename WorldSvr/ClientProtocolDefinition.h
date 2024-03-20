@@ -2319,8 +2319,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_GET_SHOP_DATA_INDEX,
     UInt16 ShopSlotIndex;
     UInt32 ItemID;
     UInt32 ItemType;
-    UInt32 ItemOptions;
-    UInt32 Unknown2;
+    UInt64 ItemOptions;
     UInt32 ItemDuration;
     UInt8 Unknown5[3];
     Int8 MinHonorRank;

@@ -47,7 +47,7 @@ CLIENT_PROCEDURE_BINDING(WAREHOUSE_CURRENCY_DEPOSIT) {
 		Character->WarehouseInfo.Currency += Packet->Amount;
 	}
 	else {
-		Int64 AbsAmount = abs(Packet->Amount);
+		Int64 AbsAmount = ABS(Packet->Amount);
 
 		if (Character->WarehouseInfo.Currency < AbsAmount) goto error;
 

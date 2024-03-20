@@ -178,7 +178,7 @@ Void RTCharacterDungeonQuestFlagClear(
 
 Void RTCharacterDungeonQuestFlagSet(
     RTCharacterRef Character,
-    Int32 DungeonIndex
+    Index DungeonIndex
 );
 
 Bool RTCharacterDungeonQuestFlagIsSet(

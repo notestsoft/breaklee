@@ -107,7 +107,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		Notification->SkillIndex = Packet->SkillIndex;
 
 		S2C_DATA_NFY_SKILL_GROUP_MOVEMENT* NotificationData = PacketAppendStruct(S2C_DATA_NFY_SKILL_GROUP_MOVEMENT);
-		NotificationData->CharacterIndex = Client->CharacterIndex;
+		NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
 		NotificationData->Entity = Character->ID;
 		NotificationData->PositionEnd.X = Character->Movement.PositionEnd.X;
 		NotificationData->PositionEnd.Y = Character->Movement.PositionEnd.Y;
@@ -139,7 +139,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		Notification->SkillIndex = Packet->SkillIndex;
 
 		S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON* NotificationData = PacketAppendStruct(S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON);
-		NotificationData->CharacterIndex = Client->CharacterIndex;
+		NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
 		NotificationData->Entity = Character->ID;
 		NotificationData->Position.X = Character->Movement.PositionCurrent.X;
 		NotificationData->Position.Y = Character->Movement.PositionCurrent.Y;
@@ -174,7 +174,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		Notification->SkillIndex = Packet->SkillIndex;
 
 		S2C_DATA_NFY_SKILL_GROUP_BATTLE_MODE* NotificationData = PacketAppendStruct(S2C_DATA_NFY_SKILL_GROUP_BATTLE_MODE);
-		NotificationData->CharacterIndex = Client->CharacterIndex;
+		NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
 		NotificationData->CharacterStyle = SwapUInt32(Character->Info.Style.RawValue);
 		NotificationData->CharacterLiveStyle = SwapUInt32(0); // TODO: Add character livestyle
 		NotificationData->StyleExtension = 0; // TODO: Check what StyleExtension is good for

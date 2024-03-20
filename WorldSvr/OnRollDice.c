@@ -11,7 +11,7 @@ CLIENT_PROCEDURE_BINDING(ROLL_DICE) {
 	S2C_DATA_NFY_USER_MESSAGE* Notification = PacketInit(S2C_DATA_NFY_USER_MESSAGE);
 	Notification->Command = S2C_NFY_USER_MESSAGE;
 	Notification->MessageType = 10;
-	Notification->CharacterIndex = Character->CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
 	Notification->NameLength = strlen(Client->CharacterName) + 1;
 	CStringCopySafe(Notification->Name, MAX_CHARACTER_NAME_LENGTH, Client->CharacterName);
 

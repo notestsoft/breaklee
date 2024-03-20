@@ -109,7 +109,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_SPAWN) {
 
         S2C_DATA_NFY_QUEST_DUNGEON_SPAWN* Response = PacketInit(S2C_DATA_NFY_QUEST_DUNGEON_SPAWN);
         Response->Command = S2C_NFY_QUEST_DUNGEON_SPAWN;
-        Response->DungeonTimeout1 = (World->DungeonTimeout - GetTimestamp()) * 1000;
+        Response->DungeonTimeout1 = (UInt32)(World->DungeonTimeout - GetTimestamp()) * 1000;
         Response->DungeonTimeout2 = DungeonData->MissionTimeout * 1000;
         SocketSend(Socket, Connection, Response);
     }
@@ -143,7 +143,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_END) {
 
     S2C_DATA_NFY_QUEST_DUNGEON_END* Notification = PacketInit(S2C_DATA_NFY_QUEST_DUNGEON_END);
     Notification->Command = S2C_NFY_QUEST_DUNGEON_END;
-    Notification->CharacterIndex = Client->CharacterIndex;
+    Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
     Notification->Result = Success ? 1 : 0;
     Notification->Unknown1 = 28;
     BroadcastToParty(Context, World->Party, Notification);

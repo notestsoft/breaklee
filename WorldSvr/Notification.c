@@ -114,7 +114,7 @@ Void AppendCharacterToCharacterSpawnIndex(
     Arguments->Notification->Count += 1;
 
     S2C_DATA_CHARACTERS_SPAWN_INDEX* Spawn = PacketAppendStruct(S2C_DATA_CHARACTERS_SPAWN_INDEX);
-    Spawn->CharacterIndex = Character->CharacterIndex;
+    Spawn->CharacterIndex = (UInt32)Character->CharacterIndex;
     Spawn->Entity = Character->ID;
     Spawn->Level = Character->Info.Basic.Level;
     Spawn->OverlordLevel = Character->Info.Overlord.Level;
@@ -299,7 +299,7 @@ Void ServerRuntimeOnEvent(
         );
 
         S2C_DATA_CHARACTERS_SPAWN_INDEX* Spawn = PacketAppendStruct(S2C_DATA_CHARACTERS_SPAWN_INDEX);
-        Spawn->CharacterIndex = Character->CharacterIndex;
+        Spawn->CharacterIndex = (UInt32)Character->CharacterIndex;
         Spawn->Entity = Character->ID;
         Spawn->Level = Character->Info.Basic.Level;
         Spawn->OverlordLevel = Character->Info.Overlord.Level;
@@ -351,7 +351,7 @@ Void ServerRuntimeOnEvent(
     if (Event->Type == RUNTIME_EVENT_CHARACTER_DESPAWN) {
         S2C_DATA_CHARACTERS_DESPAWN* Notification = PacketInit(S2C_DATA_CHARACTERS_DESPAWN);
         Notification->Command = S2C_CHARACTERS_DESPAWN;
-        Notification->CharacterIndex = Event->Data.CharacterSpawn.CharacterIndex;
+        Notification->CharacterIndex = (UInt32)Event->Data.CharacterSpawn.CharacterIndex;
         Notification->DespawnType = S2C_DATA_ENTITY_DESPAWN_TYPE_DISAPPEAR; // TODO: Add all spawn types!
 
         return BroadcastToWorld(
@@ -388,7 +388,7 @@ Void ServerRuntimeOnEvent(
         S2C_DATA_NFY_CHARACTER_EVENT* Notification = PacketInit(S2C_DATA_NFY_CHARACTER_EVENT);
         Notification->Command = S2C_NFY_CHARACTER_EVENT;
         Notification->Type = S2C_DATA_CHARACTER_EVENT_TYPE_LEVELUP;
-        Notification->CharacterIndex = Client->CharacterIndex;
+        Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 
         return BroadcastToWorld(
             Context,
@@ -416,7 +416,7 @@ Void ServerRuntimeOnEvent(
         S2C_DATA_NFY_CHARACTER_EVENT* Notification = PacketInit(S2C_DATA_NFY_CHARACTER_EVENT);
         Notification->Command = S2C_NFY_CHARACTER_EVENT;
         Notification->Type = S2C_DATA_CHARACTER_EVENT_TYPE_OVERLORD_LEVELUP;
-        Notification->CharacterIndex = Client->CharacterIndex;
+        Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 
         return BroadcastToWorld(
             Context,
@@ -509,7 +509,7 @@ Void ServerRuntimeOnEvent(
         S2C_DATA_NFY_CHARACTER_EVENT* Notification = PacketInit(S2C_DATA_NFY_CHARACTER_EVENT);
         Notification->Command = S2C_NFY_CHARACTER_EVENT;
         Notification->Type = S2C_DATA_CHARACTER_EVENT_TYPE_RANKUP;
-        Notification->CharacterIndex = Client->CharacterIndex;
+        Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 
         return BroadcastToWorld(
             Context,
@@ -649,7 +649,7 @@ Void ServerRuntimeOnEvent(
             RTCharacterRef Character = RTWorldManagerGetCharacter(Runtime->WorldManager, Event->Data.MobAttack.Results[Index].Entity);
 
             S2C_DATA_MOB_ATTACK_TARGET* Target = PacketAppendStruct(S2C_DATA_MOB_ATTACK_TARGET);
-            Target->CharacterIndex = Character->CharacterIndex;
+            Target->CharacterIndex = (UInt32)Character->CharacterIndex;
             Target->IsDead = Event->Data.MobAttack.Results[Index].IsDead;
             Target->Result = Event->Data.MobAttack.Results[Index].Result;
             Target->AppliedDamage = Event->Data.MobAttack.Results[Index].AppliedDamage;
@@ -674,7 +674,7 @@ Void ServerRuntimeOnEvent(
         UInt32 SourceIndex = *(UInt32 *)&Event->SourceID;
         if (Event->SourceID.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) {
             RTCharacterRef Character = RTWorldManagerGetCharacter(Runtime->WorldManager, Event->SourceID);
-            SourceIndex = Character->CharacterIndex;
+            SourceIndex = (UInt32)Character->CharacterIndex;
         }
 
         S2C_DATA_NFY_SPAWN_ITEM_INDEX* Spawn = PacketAppendStruct(S2C_DATA_NFY_SPAWN_ITEM_INDEX);
@@ -744,7 +744,7 @@ Void ServerRuntimeOnEvent(
 
         S2C_DATA_NFY_ATTACK_TO_MOB* Notification = PacketInit(S2C_DATA_NFY_ATTACK_TO_MOB);
         Notification->Command = S2C_NFY_ATTACK_TO_MOB;
-        Notification->CharacterIndex = Character->CharacterIndex,
+        Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
         Notification->Mob = Event->Data.AttackToMob.Mob;
         Notification->MobIDType = RUNTIME_ENTITY_TYPE_MOB;
         Notification->AttackType = Event->Data.AttackToMob.AttackType;

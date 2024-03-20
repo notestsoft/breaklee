@@ -25,7 +25,7 @@ CLIENT_PROCEDURE_BINDING(WARP) {
     Response->Position.X = Character->Info.Position.X;
     Response->Position.Y = Character->Info.Position.Y;
     Response->WorldID = Character->Info.Position.WorldID;
-    Response->DungeonID = Character->Info.Position.DungeonIndex;
+    Response->DungeonID = (UInt32)Character->Info.Position.DungeonIndex;
     SocketSend(Socket, Connection, Response);
 
     if (Response->Result == 0) {

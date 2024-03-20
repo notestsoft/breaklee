@@ -3,4 +3,3 @@
 #include <CoreLib/CoreLib.h>
 #include <math.h>
 #include <stdio.h>
-#include <windows.h>
