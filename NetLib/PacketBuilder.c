@@ -112,6 +112,23 @@ UInt8* PacketAppendMemoryCopy(
     return Memory;
 }
 
+UInt8* PacketAppendBytes(
+    UInt8 First,
+    ...
+) {
+    va_list Arguments;
+    UInt8 Value = First;
+    PacketAppendValue(UInt8, Value);
+
+    va_start(Arguments, First);
+
+    while ((Value = va_arg(Arguments, Int32)) != UINT8_MAX) {
+        PacketAppendValue(UInt8, Value);
+    }
+
+    va_end(Arguments);
+}
+
 Void PacketLogBytes(
     Void *Packet
 ) {
