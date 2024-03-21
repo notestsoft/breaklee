@@ -1393,47 +1393,6 @@ Bool ServerLoadWorldData(
         if (!ParseAttributeIndex(MainArchive, NodeIndex, "id", &WorldIndex)) continue;
         assert(WorldIndex == World->WorldIndex);
 
-        if (LoadShops) {
-            ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(MainArchive, NodeIndex, "shop");
-            while (ChildIterator) {
-                assert(Runtime->ShopDataCount < RUNTIME_MEMORY_MAX_SHOP_DATA_COUNT);
-
-                RTShopDataRef ShopData = &Runtime->ShopData[Runtime->ShopDataCount];
-                ShopData->Index = Runtime->ShopDataCount;
-                ShopData->WorldID = World->WorldIndex;
-
-                if (!ParseAttributeInt32(MainArchive, ChildIterator->Index, "id", &ShopData->NpcID)) goto error;
-
-                for (Int32 Index = 0; Index < Runtime->ShopDataCount; Index++) {
-                    if (Runtime->ShopData[Index].NpcID == ShopData->NpcID) {
-                        continue;
-                    }
-                }
-
-                ArchiveIteratorRef ItemIterator = ArchiveQueryNodeIteratorFirst(MainArchive, ChildIterator->Index, "item");
-                while (ItemIterator) {
-                    assert(ShopData->ItemCount < RUNTIME_SHOP_MAX_ITEM_COUNT);
-
-                    RTShopItemDataRef ItemData = &ShopData->Items[ShopData->ItemCount];
-
-                    if (!ParseAttributeInt32(MainArchive, ItemIterator->Index, "slot_id", &ItemData->SlotID)) goto error;
-                    if (!ParseAttributeInt32(MainArchive, ItemIterator->Index, "item_id", &ItemData->ItemID)) goto error;
-                    if (!ParseAttributeUInt64(MainArchive, ItemIterator->Index, "option", &ItemData->ItemOption)) goto error;
-                    if (!ParseAttributeInt32(MainArchive, ItemIterator->Index, "reputation_class", &ItemData->MinHonorRank)) goto error;
-                    if (!ParseAttributeInt32(MainArchive, ItemIterator->Index, "duration_id", &ItemData->DurationID)) goto error;
-                    if (!ParseAttributeInt32(MainArchive, ItemIterator->Index, "price", &ItemData->Price)) goto error;
-                    if (!ParseAttributeInt32(MainArchive, ItemIterator->Index, "onlypremium", &ItemData->OnlyPremium)) goto error;
-                    if (!ParseAttributeInt32(MainArchive, ItemIterator->Index, "wexpprice", &ItemData->WexpPrice)) goto error;
-
-                    ShopData->ItemCount += 1;
-                    ItemIterator = ArchiveQueryNodeIteratorNext(MainArchive, ItemIterator);
-                }
-
-                Runtime->ShopDataCount += 1;
-                ChildIterator = ArchiveQueryNodeIteratorNext(MainArchive, ChildIterator);
-            }
-        }
-
         // Load Trainer Data
         {
             ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(MainArchive, NodeIndex, "trainer");
