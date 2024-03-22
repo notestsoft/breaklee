@@ -39,11 +39,6 @@ UInt8* PacketAppendMemoryCopy(
     Int64 Length
 );
 
-UInt8* PacketAppendBytes(
-    UInt8 First,
-    ...
-);
-
 #define PacketAppendCString(__STRING__) \
 (CString)PacketAppendMemoryCopy((UInt8*)__STRING__, (Int32)strlen(__STRING__) + 1)
 

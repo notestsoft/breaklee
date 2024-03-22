@@ -5,6 +5,56 @@
 #include "Notification.h"
 #include "Server.h"
 
+Void SendEventList(
+    ServerContextRef Context,
+    ClientContextRef Client
+) {
+    S2C_DATA_NFY_EVENT_LIST* EventList = PacketInit(S2C_DATA_NFY_EVENT_LIST);
+    EventList->Command = S2C_NFY_EVENT_LIST;
+    EventList->Count = Context->Runtime->Context->EventCount;
+
+    for (Index Index = 0; Index < Context->Runtime->Context->EventCount; Index += 1) {
+        RTDataEventRef EventData = &Context->Runtime->Context->EventList[Index];
+        PacketAppendValue(UInt32, EventData->ID);
+    }
+
+    SocketSend(Context->ClientSocket, Client->Connection, EventList);
+}
+
+Void SendEventInfo(
+    ServerContextRef Context,
+    ClientContextRef Client
+) {
+    S2C_DATA_NFY_EVENT_INFO* EventInfo = PacketInitExtended(S2C_DATA_NFY_EVENT_INFO);
+    EventInfo->Command = S2C_NFY_EVENT_INFO;
+    EventInfo->HasEventInfo = (Context->Runtime->Context->EventCount > 0) ? 1 : 0;
+
+    S2C_DATA_NFY_EVENT_INFO_HEADER* EventInfoHeader = PacketAppendStruct(S2C_DATA_NFY_EVENT_INFO_HEADER);
+    EventInfoHeader->EventCount = Context->Runtime->Context->EventCount;
+
+    for (Int32 Index = 0; Index < Context->Runtime->Context->EventCount; Index += 1) {
+        RTDataEventRef EventData = &Context->Runtime->Context->EventList[Index];
+
+        S2C_DATA_NFY_EVENT_INFO_EVENT* EventInfoEvent = PacketAppendStruct(S2C_DATA_NFY_EVENT_INFO_EVENT);
+        EventInfoEvent->EventIndex = EventData->ID;
+        EventInfoEvent->EventType = EventData->Type;
+        EventInfoEvent->EventFlags = EventData->UseFlags;
+        EventInfoEvent->EventStartTimestamp = GetTimestamp();
+        EventInfoEvent->EventEndTimestamp = GetTimestamp() + 100000;
+        EventInfoEvent->EventUpdateTimestamp = GetTimestamp();
+        EventInfoEvent->WorldIndex = EventData->WorldIndex;
+        EventInfoEvent->NpcIndex = EventData->NpcIndex;
+        PacketAppendCString(EventData->Description);
+
+        S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO* EventItemInfo = PacketAppendStruct(S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO);
+        EventItemInfo->ItemCount = 0;
+
+        PacketAppendValue(UInt32, 0);
+    }
+
+    SocketSend(Context->ClientSocket, Client->Connection, EventInfo);
+}
+
 CLIENT_PROCEDURE_BINDING(INITIALIZE) {
     if (Character) goto error;
 	
@@ -30,11 +80,13 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
         memset(Packet->Character.QuestFlagData.FinishedQuests, 0xFF, RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT);
     }
 
-    RTSkillSlotRef GmSkill = &Packet->Character.SkillSlotData.Skills[Packet->Character.SkillSlotData.Count];
-    GmSkill->ID = 146;
-    GmSkill->Level = 1;
-    GmSkill->Index = 66;
-    Packet->Character.SkillSlotData.Count += 1;
+    for (Index Index = 144; Index < 148; Index++) {
+        RTSkillSlotRef GmSkill = &Packet->Character.SkillSlotData.Skills[Packet->Character.SkillSlotData.Count];
+        GmSkill->ID = 146;
+        GmSkill->Level = 1;
+        GmSkill->Index = 66;
+        Packet->Character.SkillSlotData.Count += 1;
+    }
 
     /*
     RTWorldRef TargetWorld = RTRuntimeGetWorldByID(Runtime, Packet->Character.CharacterData.Position.WorldID);
@@ -354,9 +406,18 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     Response->WarpMask = 2101247;
     //memset(Response->DungeonFlagInfo.Flags, 0xFF, 640);
 
+    /* this contains counters
+    Int32 Seed = Character->Info.Position.X;
+    for (Int32 Index = 0; Index < 282; Index++)
+        Response->Unknown14[Index] = Random(&Seed);
+        */
     SocketSend(Context->ClientSocket, ClientConnection, Response);
 
     RTWorldSpawnCharacter(Runtime, World, Character->ID);
+
+    // TODO: Move event data to database and trigger request on init
+    SendEventList(Context, Client);
+    SendEventInfo(Context, Client);
 
     return;
 

@@ -1870,24 +1870,195 @@ CLIENT_PROTOCOL(S2C, PREMIUM_BENEFIT_INFO, 999, 0000,
     // TODO: Add packet structure
 )
 
-CLIENT_PROTOCOL(S2C, NFY_EVENT_DATA, 1002, 13130,
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO_DATA,
+    RTItem ItemID;
+    UInt64 ItemOptions;
+    UInt32 Unknown1;
+    UInt32 Unknown2;
+    UInt8 Unknown3;
+    // CString ItemName;
+    // CString ItemDescription;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO,
+    UInt16 ItemCount;
+    // S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO Items[0];
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_EVENT_INFO_EVENT,
+    Int32 EventIndex;
+    Int32 EventType;
+    Int32 EventFlags;
+    Timestamp EventStartTimestamp;
+    Timestamp EventEndTimestamp;
+    Timestamp EventUpdateTimestamp;
+    UInt32 WorldIndex;
+    UInt32 NpcIndex;
+    UInt8 Unknown1[142];
+    Char Name[0];
+    // S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO ItemInfo;
+    // UInt32 Unknown;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_EVENT_INFO_HEADER,
+    UInt8 EventCount;
+    // S2C_DATA_NFY_EVENT_INFO_EVENT Events[0];
+)
+
+CLIENT_PROTOCOL(S2C, NFY_EVENT_INFO, 1002, 13133,
     S2C_DATA_SIGNATURE_EXTENDED;
+    Bool HasEventInfo;
+    // S2C_DATA_NFY_EVENT_INFO_HEADER Header;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_LABEL_HEADER,
+    UInt16 Count;
+    // CString Label;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_UNKNOWN1_HEADER,
+    UInt16 Count;
+    // S2C_DATA_EVENT_UNKNOWN1_DATA Data;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_UNKNOWN2_HEADER,
+    UInt16 Count;
+    // S2C_DATA_EVENT_UNKNOWN2_DATA Data;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_SHOP_HEADER,
+    UInt16 ItemCount;
+    // S2C_DATA_EVENT_SHOP_ITEM_SLOT ItemSlots[];
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_UNKNOWN3_HEADER,
     UInt8 Count;
-    Int32 Events[];
+    // TODO: Add packet payload
 )
 
-CLIENT_PROTOCOL(C2S, NPC_EVENT_INFO, 1003, 13130,
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_BINGO_HEADER,
+    UInt16 Count;
+    // S2C_DATA_EVENT_BINGO_BODY Bingo[];
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_BINGO_BODY,
+    UInt16 RotationCount;
+    UInt16 UnknownCount2;
+    UInt16 UnknownCount3;
+    UInt16 UnknownCount4;
+    // S2C_DATA_EVENT_BINGO_BODY_BOARD Boards[]
+    // S2C_DATA_EVENT_BINGO_BODY_ROTATION Rotations[]
+    // S2C_DATA_EVENT_BINGO_BODY_SLOT Slots[]
+    // S2C_DATA_EVENT_BINGO_BODY_REWARD_SLOT RewardSlots[]
+    // S2C_DATA_EVENT_BINGO_BODY_REWARD_ITEM RewardItems[]
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_BINGO_BODY_BOARD,
+    UInt32 BoardIndex;
+    UInt32 Unknown1;
+    UInt8 Unknown2;
+    UInt32 Unknown4;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_BINGO_BODY_ROTATION,
+    UInt8 PeriodIndex;
+    Timestamp StartTimestamp;
+    Timestamp EndTimestamp;
+    UInt32 BoardIndex;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_BINGO_BODY_SLOT,
+    UInt32 BoardIndex;
+    UInt8 SlotIndex;
+    UInt32 Unknown1;
+    RTItem ItemID;
+    UInt32 Unknown4;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_BINGO_BODY_REWARD_SLOT,
+    UInt32 BoardIndex;
+    UInt8 SlotIndex;
+    UInt32 Unknown1;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_BINGO_BODY_REWARD_ITEM,
+    UInt32 UnknownIndex;
+    UInt32 BoardIndex;
+    RTItem ItemID;
+    UInt64 ItemOptions;
+    UInt32 Unknown1;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_BINGO_INITIALIZE_HEADER,
+    UInt8 Count;
+    // S2C_DATA_EVENT_BINGO_INITIALIZE_BODY Bingo[];
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_BINGO_INITIALIZE_BODY,
+    UInt16 PayloadLength;
+    UInt8 UnknownA[19];
+    UInt8 SlotCount;
+    // S2C_DATA_EVENT_BINGO_INITIALIZE_BODY_SLOT Slots[];
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_BINGO_INITIALIZE_BODY_SLOT,
+    UInt8 SlotIndex;
+    UInt64 Unknown1;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_PERIOD_HEADER,
+    UInt8 Count;
+    // S2C_DATA_EVENT_PERIOD_BODY Body[];
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_PERIOD_BODY,
+    UInt16 Unknown1;
+    Timestamp StartDate;
+    Timestamp EndDate;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_DUNGEON_REWARD_HEADER,
+    UInt16 Count;
+    // S2C_DATA_EVENT_DUNGEON_REWARD_BODY Body[];
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_SHOP_ITEM,
+    UInt32 ShopSlotIndex;
+    RTItem ItemID;
+    UInt64 ItemOptions;
+    UInt8 Unknown1;
+    Int32 UnknownIndex;
+    Int32 TextureIndex;
+    UInt64 CurrencyPrice;
+    UInt16 Unknown2;
+    UInt32 ItemPriceCount;
+    UInt16 Unknown5;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_SHOP_ITEM_PRICE,
+    RTItem ItemID;
+    UInt64 ItemOptions;
+    UInt32 ItemCount;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT,
+    UInt32 EventIndex;
+)
+
+CLIENT_PROTOCOL(C2S, GET_EVENT_LIST, 1003, 13133,
     C2S_DATA_SIGNATURE;
-    // TODO: Add packet structure
 )
 
-CLIENT_PROTOCOL(S2C, NPC_EVENT_INFO, 1003, 13130,
+CLIENT_PROTOCOL(S2C, GET_EVENT_LIST, 1003, 13133,
     S2C_DATA_SIGNATURE;
-    // TODO: Add packet structure
+    UInt8 Unknown1;
+    UInt8 EventCount;
+    UInt32 Unknown2;
+    // S2C_DATA_EVENT Events[];
 )
 
-CLIENT_PROTOCOL(S2C, NFY_EVENT_INDEX_LIST, 1008, 13130,
-    C2S_DATA_SIGNATURE;
+CLIENT_PROTOCOL(S2C, NFY_EVENT_LIST, 1008, 13133,
+    S2C_DATA_SIGNATURE;
     UInt8 Count;
     Int32 EventIndex[];
 )

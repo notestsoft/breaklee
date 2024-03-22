@@ -76,6 +76,7 @@
 #include "Effector.h"
 #include "Enchant.h"
 #include "EnvironmentSettings.h"
+#include "Event.h"
 #include "ExtraObject.h"
 #include "ExtremeUpgrade.h"
 #include "FieldWar.h"
