@@ -5,6 +5,8 @@
 #include "Server.h"
 
 CLIENT_PROCEDURE_BINDING(GET_EVENT_LIST) {
+	if (!Character) goto error;
+
 	S2C_DATA_GET_EVENT_LIST* Response = PacketInit(S2C_DATA_GET_EVENT_LIST);
 	Response->Command = S2C_GET_EVENT_LIST;
 	Response->EventCount = Context->Runtime->Context->EventCount;
@@ -67,6 +69,63 @@ CLIENT_PROCEDURE_BINDING(GET_EVENT_LIST) {
 
 		S2C_DATA_EVENT_DUNGEON_REWARD_HEADER* DungeonRewardHeader = PacketAppendStruct(S2C_DATA_EVENT_DUNGEON_REWARD_HEADER);
 		DungeonRewardHeader->Count = 0;
+	}
+
+	return SocketSend(Socket, Connection, Response);
+
+error:
+	return SocketDisconnect(Socket, Connection);
+}
+
+CLIENT_PROCEDURE_BINDING(EVENT_ACTION) {
+	if (!Character) goto error;
+
+	Index PacketLength = sizeof(C2S_DATA_EVENT_ACTION) + sizeof(UInt16) * Packet->InventorySlotCount;
+	if (Packet->Signature.Length != PacketLength) goto error;
+
+	RTDataEventRef Event = RTRuntimeDataEventGet(Runtime->Context, Packet->EventIndex);
+	if (!Event) goto error;
+	if (Event->NpcIndex != Packet->NpcIndex) goto error;
+
+	// TODO: Add action types for other events...
+	// TODO: Check NPC distance to character
+	// TODO: Check and subtract item prices
+
+	if (Event->EventShopCount < 1) goto error;
+
+	RTDataEventShopRef EventShop = &Event->EventShopList[0];
+	RTDataEventShopItemRef Item = RTRuntimeDataEventShopItemGet(EventShop, Packet->ShopSlotIndex);
+	if (!Item) goto error;
+
+	for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
+		if (!RTInventoryIsSlotEmpty(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex[Index])) {
+			goto error;
+		}
+	}
+	
+	S2C_DATA_EVENT_ACTION* Response = PacketInit(S2C_DATA_EVENT_ACTION);
+	Response->Command = S2C_EVENT_ACTION;
+	Response->EventIndex = Packet->EventIndex;
+	Response->Unknown1 = Packet->Unknown1;
+	Response->ItemCount = Packet->InventorySlotCount;
+
+	struct _RTItemSlot ItemSlot = { 0 };
+	for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
+		ItemSlot.SlotIndex = Packet->InventorySlotIndex[Index];
+		ItemSlot.Item.ID = Item->ItemID;
+		ItemSlot.ItemOptions = Item->ItemOptions;
+		// ItemSlot.ItemDuration = Item->ItemDurationID;
+
+		if (!RTInventorySetSlot(Runtime, &Character->InventoryInfo, &ItemSlot)) goto error;
+
+		Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
+		Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+
+		S2C_DATA_EVENT_ACTION_SHOP_ITEM* ResponseItem = PacketAppendStruct(S2C_DATA_EVENT_ACTION_SHOP_ITEM);
+		ResponseItem->Item = ItemSlot.Item;
+		ResponseItem->ItemOptions = ItemSlot.ItemOptions;
+		ResponseItem->ItemDuration = ItemSlot.ItemDuration;
+		ResponseItem->SlotIndex = ItemSlot.SlotIndex;
 	}
 
 	return SocketSend(Socket, Connection, Response);

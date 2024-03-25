@@ -100,7 +100,18 @@ CLIENT_PROCEDURE_BINDING(SELL_ITEM) {
         Character->Info.Position.WorldID,
         Packet->NpcID
     );
-    if (!Shop) goto error;
+    if (!Shop) {
+        Bool Found = false;
+        for (Index Index = 0; Index < Runtime->Context->EventCount; Index += 1) {
+            RTDataEventRef Event = &Runtime->Context->EventList[Index];
+            if (Event->NpcIndex == Packet->NpcID && Event->EventShopCount > 0) {                
+                Found = true;
+                break;
+            }
+        }
+
+        if (!Found) goto error;
+    }
 
     // TODO: Check NPC distance to character
 

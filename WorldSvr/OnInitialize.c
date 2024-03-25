@@ -182,7 +182,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     Response->RequestCraftExp = 0;
     Response->GoldMeritExp = 0;
     Response->GoldMeritPoint = 0;
-    Response->PlatinumMeritCount = 0;
+    Response->PlatinumMeritSlotCount = 0;
     Response->PlatinumMeritExp = 0;
     Response->PlatinumMeritPoint[0] = 0;
     Response->PlatinumMeritPoint[1] = 0;
@@ -286,8 +286,8 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     Response->EquipmentAppearanceCount = 0;
     Response->InventoryAppearanceCount = 0;
     Response->AchievementCount = 0;
-    Response->TitleCount = 0;
-    Response->ExtendedTitleCount = 0;
+    Response->AchievementRewardCount = 0;
+    Response->ExtendedAchievementRewardCount = 0;
     Response->CraftCount = 0;
 
     Response->OverlordMasteryCount = Packet->Character.OverlordData.Count;
@@ -350,7 +350,6 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     CStringCopySafe(Client->CharacterName, MAX_CHARACTER_NAME_LENGTH, Packet->Character.Name);
 
     Response->Entity = Character->ID;
-    Response->CharacterIndex = Packet->CharacterIndex;
 
     RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
 

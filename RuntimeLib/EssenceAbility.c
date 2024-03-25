@@ -25,8 +25,6 @@ Bool RTCharacterAddEssenceAbility(
     RTCharacterRef Character,
 	UInt32 InventorySlotIndex
 ) {
-	if (Character->EssenceAbilityInfo.Count >= Character->Info.Ability.MaxEssenceAbilitySlotCount) return false;
-
 	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, InventorySlotIndex);
 	if (!ItemSlot) return false;
 
@@ -35,7 +33,9 @@ Bool RTCharacterAddEssenceAbility(
 
 	if (Character->Info.Basic.Level < ItemData->MinLevel) return false;
 
-	if (ItemData->ItemType == RUNTIME_ITEM_TYPE_ABILITY_RUNE) {
+	if (ItemData->ItemType == RUNTIME_ITEM_TYPE_ABILITY_RUNE_ESSENCE) {
+		if (Character->EssenceAbilityInfo.Count >= Character->Info.Ability.MaxEssenceAbilitySlotCount) return false;
+
 		RTDataPassiveAbilityCostRef AbilityCost = RTRuntimeDataPassiveAbilityCostGet(
 			Runtime->Context,
 			ItemSlot->Item.ID

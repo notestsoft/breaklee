@@ -156,6 +156,13 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_QUEST_INDEX,
     UInt8 QuestSlotIndex;
 )
 
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_FORCE_WING_BUFF_SLOT,
+    UInt8 SlotIndex;
+    UInt32 Unknown1;
+    UInt32 Unknown2;
+    UInt16 Unknown3;
+)
+
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_ESSENCE_ABILITY_SLOT,
     UInt32 AbilityID;
     UInt16 Level;
@@ -205,7 +212,7 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, 142, 13133,
     UInt64 Alz;
     UInt64 Wexp;
     Int32 Level;
-    UInt32 Unknown4;
+    UInt32 Unknown1;
     UInt32 STR;
     UInt32 DEX;
     UInt32 INT;
@@ -222,24 +229,23 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, 142, 13133,
     UInt32 CurrentRage;
     UInt32 MaxBP;
     UInt32 CurrentBP;
-    UInt32 Unknown1[2];
-    UInt32 CharacterIndex;
+    Timestamp DPDuration;
+    UInt32 DP;
     UInt32 SkillLevel;
     UInt32 SkillExp;
     UInt32 SkillPoint;
     UInt64 RestExp;
     UInt64 HonorPoint;
     UInt64 DeathPenaltyExp;
-    UInt32 DeathPenaltyHp;
+    UInt64 DeathPenaltyHp;
     UInt32 DeathPenaltyMp;
     UInt16 PKLevel;
-    UInt8 Unknown11[4];
     S2C_DATA_INITIALIZE_SERVER_ADDRESS ChatServerAddress;
     S2C_DATA_INITIALIZE_SERVER_ADDRESS AuctionServerAddress;
     S2C_DATA_INITIALIZE_SERVER_ADDRESS PartyServerAddress;
     UInt16 UnknownPort;
     UInt8 Nation;
-    UInt32 Unknown13;
+    UInt32 Unknown2;
     UInt32 WarpMask;
     UInt32 MapsMask;
     UInt32 CharacterStyle;
@@ -253,6 +259,7 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, 142, 13133,
     UInt16 QuickSlotCount;
     UInt16 MercenaryCount;
     UInt16 ItemPeriodCount;
+    UInt16 UnknownCount2;
     UInt16 AP;
     UInt32 Axp;
     UInt8 EssenceAbilityCount;
@@ -261,13 +268,13 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, 142, 13133,
     UInt8 ExtendedBlendedAbilityCount;
     UInt8 KarmaAbilityCount;
     UInt8 ExtendedKarmaAbilityCount;
-    UInt16 BlessingBeadCount;
-    UInt16 PremiumServiceCount;
+    UInt8 BlessingBeadCount;
+    UInt8 PremiumServiceCount;
     UInt16 QuestSlotCount;
     struct _RTCharacterQuestFlagInfo QuestFlagInfo;
     struct _RTCharacterDungeonQuestFlagInfo DungeonQuestFlagInfo;
     UInt8 Unknown15[4097];
-    UInt32 ActiveDailyQuestCount;
+    UInt32 DailyQuestCount;
     UInt32 HelpWindow;
 
     struct {
@@ -297,77 +304,118 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, 142, 13133,
     Int32 CommunityAchievementScore;
     Int32 SharedAchievementScore;
     Int32 SpecialAchievementScore;
+    Int32 ReservedAchievementScore1;
+    Int32 ReservedAchievementScore2;
     UInt16 DisplayTitle;
     UInt16 EventTitle;
     UInt16 GuildTitle;
     UInt16 WarTitle;
     UInt32 AchievementCount;
-    UInt32 TitleCount;
+    UInt32 AchievementRewardCount;
     UInt32 UnknownCount5;
     UInt32 CraftCount;
-    UInt8 Unknown199;
+    UInt8 Unknown16;
     UInt32 CraftEnergy;
     UInt8 Unknown17[6];
     UInt8 SortingOrderMask;
-    UInt16 RequestCraftCount;
+    UInt8 Unknown18[2];
+    UInt8 RequestCraftCount;
     UInt16 RequestCraftExp;
     UInt8 RequestCraftFlags[1024];
     UInt8 RequestCraftFavoriteFlags[1024];
-    UInt8 UnknownRequestCraftOrderingRelatedData[2];
-    UInt8 BuffCount;
-    UInt32 Unknown2389;
-    UInt32 SpiritPointBuffDuration;
+    UInt16 RequestCraftSortOrder;
+    UInt8 SkillCooldownCount;
+    UInt16 Unknown2389;
+    UInt16 BuffCount;
+    UInt32 SpiritRaiseBuffCooldown;
     UInt32 UpgradePoints;
     Timestamp UpgradePointTimestamp;
-    UInt8 Unknown2819;
     UInt32 GoldMeritCount;
     UInt32 GoldMeritExp;
     UInt32 GoldMeritPoint;
-    UInt8 PlatinumMeritCount;
+    UInt8 IsPlatinumMeritActive;
     UInt32 PlatinumMeritExp;
     UInt32 PlatinumMeritPoint[2];
     UInt8 Unknown21;
     Timestamp CharacterCreationDate;
-    UInt8 Unknown22[9];
-    UInt32 ExtendedTitleCount;
-    UInt64 ForceGem;
-    UInt8 Unknown33[10];
+    UInt16 PlatinumMeritUnknownCount;
+    UInt16 PlatinumMeritSlotCount;
+    UInt16 PlatinumMeritUnknownCount2;
+    UInt16 PlatinumMeritUnknownCount3;
+    UInt8 Unknown22B;
+    UInt16 Unknown23;
+    UInt32 Unknown33;
+    UInt64 Unknown3874;
+    Timestamp UnknownTimestamp2;
+    UInt8 Unknown34;
+    Int32 Unknown35;
+    UInt64 Unknown36;
+    UInt32 ExtendedAchievementRewardCount;
+    UInt32 ForceGem;
+    UInt32 WarpServiceCount;
+    UInt16 Unknown3332[5];
     UInt16 OverlordLevel;
     UInt64 OverlordExp;
     UInt16 OverlordPoint;
     UInt8 OverlordMasteryCount;
     UInt32 UnknownMeritMasteryCount;
-    // UInt32 HonorMedalCount;
-    // UInt32 HonorMedalExp;
-    UInt8 Unknown84[4];
+    UInt32 HonorMedalExp;
     UInt8 HonorMedalCount;
     UInt8 ForceWingRank;
     UInt8 ForceWingLevel;
     UInt64 ForceWingExp;
-    UInt8 Unknown2422s[14];
-    UInt16 ForceWingTrainingPoints;
-    UInt8 Unknown2422e[19];
-    UInt16 ForceWingTrainingSlotCount;
-    UInt16 UnknownSomething;
-    UInt8 Unknown24[107];
+    UInt8 Unknown2422s[8];
+    UInt8 ForceWingActivePresetIndex;
+    UInt8 ForceWingPresetEnabled[5];
+    Int32 ForceWingPresetTrainingPoints[5];
+    UInt8 ForceWingSlotCount;
+    UInt8 ForceWingTrainingSlotCount;
+    S2C_DATA_INITIALIZE_FORCE_WING_BUFF_SLOT ForceWingBuffSlots[8];
+    UInt8 Unknown2111[22];
     UInt16 SpecialGiftboxPoint;
     UInt8 SpecialGiftboxCount;
     UInt32 Unknown2733[9];
     UInt16 CollectionCount;
     UInt16 TransformCount;
-    UInt8 Unknown32[7];
-    // Timestamp SecretShopResetTime;
-    // UInt8 SecretShopRefreshCost;
-    UInt8 UnknownSecretShopRefreshCost;
-    Timestamp UnknownSecretShopResetTime;
+    UInt8 Unknown32[6];
+    UInt8 SecretShopRefreshCost;
+    Timestamp SecretShopResetTime;
+    UInt8 Unknown1111;
     S2C_DATA_SECRET_SHOP_INDEX SecretShops[MAX_SECRET_SHOP_COUNT];
     UInt8 Unknown44[9];
     UInt32 TranscendencePoint;
     UInt32 TranscendenceCount;
-    UInt8 U_UPDATEINV[3134];
-    //UInt32 EventPassMissionCount;
-    //UInt32 ;
-    UInt8 Unknown45[48];
+    UInt8 Unknown45;
+    UInt32 Unknown27A[152];
+    UInt16 Unknown28A;
+    UInt16 Unknown28B;
+    struct { UInt32 Unknown1[4]; Int32 Unknown2[2]; } UnknownSlot[100];
+    Int32 Unknown29;
+    UInt8 StellarSlotCount;
+    Int32 MythRebirth;
+    Int32 MythHolyPower;
+    Int32 MythLevel;
+    UInt64 MythExp;
+    Int32 MythPoints;
+    Int32 MythUnlockedPageCount;
+    UInt8 Poop[13];
+    UInt8 MythPropertySlotCount;
+    Int32 MythStigmaGrade;
+    Int32 MythStigmaExp;
+    Timestamp NewbieRewardTimestamp;
+    Int32 NewbieRewardCount;
+    Timestamp ExplorationStartTimestamp;
+    Timestamp ExplorationEndTimestamp;
+    Int32 UnknownA5;
+    Int32 EventPassMissionCount;
+    Int32 EventPassRewardCount;
+    Int32 AccountCostumeSlotCount;
+    Int32 Unknown1293;
+    Int32 CostumePageCount;
+    Int32 CostumeUnknownSlotCount;
+    Int32 CostumeActivePageIndex;
+    Timestamp Unknown1231Timestamp;
+    UInt8 Unknown8182[12];
     UInt8 NameLength;
     Char Name[0];
 )
@@ -2055,6 +2103,34 @@ CLIENT_PROTOCOL(S2C, GET_EVENT_LIST, 1003, 13133,
     UInt8 EventCount;
     UInt32 Unknown2;
     // S2C_DATA_EVENT Events[];
+)
+
+// TODO: Add support for additional event action types!
+CLIENT_PROTOCOL(C2S, EVENT_ACTION, 1006, 13137,
+    C2S_DATA_SIGNATURE;
+    Int32 EventIndex;
+    Int32 Unknown1;
+    UInt8 NpcIndex;
+    UInt32 ShopSlotIndex;
+    UInt16 InventorySlotCount;
+    UInt16 InventorySlotIndex[0];
+)
+
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_ACTION_SHOP_ITEM,
+    RTItem Item;
+    UInt64 ItemOptions;
+    UInt16 SlotIndex;
+    RTItemDuration ItemDuration;
+)
+
+CLIENT_PROTOCOL(S2C, EVENT_ACTION, 1006, 13137,
+    S2C_DATA_SIGNATURE;
+    Int32 EventIndex;
+    Int32 Unknown1;
+    UInt8 Unknown2;
+    UInt16 ItemCount;
+    // S2C_DATA_EVENT_ACTION_SHOP_ITEM Items[InventorySlotCount];
 )
 
 CLIENT_PROTOCOL(S2C, NFY_EVENT_LIST, 1008, 13133,

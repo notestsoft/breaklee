@@ -17,7 +17,7 @@
 CONFIG_BEGIN(Auth)
 CONFIG_PARAMETER(Bool, Maintenance, "AuthSvr.Maintenance", 0)
 CONFIG_PARAMETER(Bool, CheckVersion, "AuthSvr.CheckVersion", 1)
-CONFIG_PARAMETER(UInt32, ClientVersion, "AuthSvr.ClientVersion", 13133)
+CONFIG_PARAMETER(UInt32, ClientVersion, "AuthSvr.ClientVersion", 13137)
 CONFIG_PARAMETER(UInt32, DebugVersion, "AuthSvr.DebugVersion", 0)
 CONFIG_PARAMETER(UInt32, ClientMagicKey, "AuthSvr.ClientMagicKey", 939077992)
 CONFIG_PARAMETER(UInt32, ServerMagicKey, "AuthSvr.ServerMagicKey", 5834620)
