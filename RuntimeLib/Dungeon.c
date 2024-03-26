@@ -179,6 +179,7 @@ Bool RTDungeonTriggerEvent(
                 RTDungeonTriggerEvent(World, ActionData->TargetID);
                 Triggered = true;
             }
+
             RTEntityID MobID = { 0 };
             MobID.EntityIndex = ActionData->TargetID;
             MobID.WorldIndex = World->WorldData->WorldIndex;

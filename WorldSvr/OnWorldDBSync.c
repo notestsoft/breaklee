@@ -26,26 +26,25 @@ Void ServerSyncDB(
 		assert(Character);
 
 		Bool PerformSync = Force || (
-			Character->SyncMask &&
-			(
-				((Character->SyncPriority & RUNTIME_CHARACTER_SYNC_PRIORITY_LOW) && (Timestamp - Character->SyncTimestamp) >= SERVER_DBSYNC_TIMEOUT_PRIORITY_LOW) ||
-				((Character->SyncPriority & RUNTIME_CHARACTER_SYNC_PRIORITY_HIGH) && (Timestamp - Character->SyncTimestamp) >= SERVER_DBSYNC_TIMEOUT_PRIORITY_HIGH) ||
-				(Character->SyncPriority & RUNTIME_CHARACTER_SYNC_PRIORITY_INSTANT)
-				)
-			);
+			Character->SyncMask.RawValue && (
+				(Character->SyncPriority.Low && (Timestamp - Character->SyncTimestamp) >= SERVER_DBSYNC_TIMEOUT_PRIORITY_LOW) ||
+				(Character->SyncPriority.High && (Timestamp - Character->SyncTimestamp) >= SERVER_DBSYNC_TIMEOUT_PRIORITY_HIGH) ||
+				(Character->SyncPriority.Immediate)
+			)
+		);
 
 		if (PerformSync) {
 			Character->SyncTimestamp = Timestamp;
 
-			IPC_DATA_WORLD_REQDBSYNC* Request = PacketInit(IPC_DATA_WORLD_REQDBSYNC);
+			IPC_DATA_WORLD_REQDBSYNC* Request = PacketInitExtended(IPC_DATA_WORLD_REQDBSYNC);
 			Request->Command = IPC_WORLD_REQDBSYNC;
 			Request->ConnectionID = Connection->ID;
 			Request->AccountID = Client->Account.AccountID;
 			Request->CharacterID = Client->CharacterDatabaseID;
-			Request->DBSyncMask = Character->SyncMask;
-			Request->DBSyncPriority = Character->SyncPriority;
+			Request->SyncMask = Character->SyncMask;
+			Request->SyncPriority = Character->SyncPriority;
 
-			if (Character->SyncMask & RUNTIME_CHARACTER_SYNC_INFO) {
+			if (Character->SyncMask.Info) {
 				RTMovementUpdateDeadReckoning(Context->Runtime, &Character->Movement);
 				Character->Info.Position.X = Character->Movement.PositionCurrent.X;
 				Character->Info.Position.Y = Character->Movement.PositionCurrent.Y;
@@ -53,54 +52,58 @@ Void ServerSyncDB(
 				PacketAppendMemoryCopy(&Character->Info, sizeof(struct _RTCharacterInfo));
 			}
 
-			if (Character->SyncMask & RUNTIME_CHARACTER_SYNC_EQUIPMENT) {
+			if (Character->SyncMask.EquipmentInfo) {
 				PacketAppendMemoryCopy(&Character->EquipmentInfo, sizeof(struct _RTCharacterEquipmentInfo));
 			}
 
-			if (Character->SyncMask & RUNTIME_CHARACTER_SYNC_INVENTORY) {
+			if (Character->SyncMask.InventoryInfo) {
 				PacketAppendMemoryCopy(&Character->InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
 			}
 
-			if (Character->SyncMask & RUNTIME_CHARACTER_SYNC_SKILLSLOT) {
+			if (Character->SyncMask.SkillSlotInfo) {
 				PacketAppendMemoryCopy(&Character->SkillSlotInfo, sizeof(struct _RTCharacterSkillSlotInfo));
 			}
 
-			if (Character->SyncMask & RUNTIME_CHARACTER_SYNC_QUICKSLOT) {
+			if (Character->SyncMask.QuickSlotInfo) {
 				PacketAppendMemoryCopy(&Character->QuickSlotInfo, sizeof(struct _RTCharacterQuickSlotInfo));
 			}
 
-			if (Character->SyncMask & RUNTIME_CHARACTER_SYNC_QUESTSLOT) {
+			if (Character->SyncMask.QuestSlotInfo) {
 				PacketAppendMemoryCopy(&Character->QuestSlotInfo, sizeof(struct _RTCharacterQuestSlotInfo));
 			}
 
-			if (Character->SyncMask & RUNTIME_CHARACTER_SYNC_QUESTFLAG) {
+			if (Character->SyncMask.QuestFlagInfo) {
 				PacketAppendMemoryCopy(&Character->QuestFlagInfo, sizeof(struct _RTCharacterQuestFlagInfo));
 			}
 
-            if (Character->SyncMask & RUNTIME_CHARACTER_SYNC_DUNGEONQUESTFLAG) {
+            if (Character->SyncMask.DungeonQuestFlagInfo) {
                 PacketAppendMemoryCopy(&Character->DungeonQuestFlagInfo, sizeof(struct _RTCharacterDungeonQuestFlagInfo));
             }
 
-			if (Character->SyncMask & RUNTIME_CHARACTER_SYNC_ESSENCE_ABILITY) {
+			if (Character->SyncMask.EssenceAbilityInfo) {
 				PacketAppendMemoryCopy(&Character->EssenceAbilityInfo, sizeof(struct _RTCharacterEssenceAbilityInfo));
 			}
 
-			if (Character->SyncMask & RUNTIME_CHARACTER_SYNC_OVERLORD) {
+			if (Character->SyncMask.OverlordMasteryInfo) {
 				PacketAppendMemoryCopy(&Character->OverlordMasteryInfo, sizeof(struct _RTCharacterOverlordMasteryInfo));
 			}
 
-			if (Character->SyncMask & RUNTIME_CHARACTER_SYNC_COLLECTION) {
+			if (Character->SyncMask.CollectionInfo) {
 				PacketAppendMemoryCopy(&Character->CollectionInfo, sizeof(struct _RTCharacterCollectionInfo));
 			}
 
-			if (Character->SyncMask & RUNTIME_CHARACTER_SYNC_WAREHOUSE) {
+			if (Character->SyncMask.WarehouseInfo) {
 				PacketAppendMemoryCopy(&Character->WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
+			}
+
+			if (Character->SyncMask.RequestCraftInfo) {
+				PacketAppendMemoryCopy(&Character->RequestCraftInfo, sizeof(struct _RTCharacterRequestCraftInfo));
 			}
 
 			SocketSendAll(Context->MasterSocket, Request);
 
-			Character->SyncMask = 0;
-			Character->SyncPriority = 0;
+			Character->SyncMask.RawValue = 0;
+			Character->SyncPriority.RawValue = 0;
 		}
 	}
 }
@@ -108,8 +111,8 @@ Void ServerSyncDB(
 IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_ACKDBSYNC, IPC_DATA_WORLD_ACKDBSYNC) {
 	if (!Client || !Character) return;
 
-	if (Packet->DBSyncMaskFailure) {
-		Character->SyncMask |= Packet->DBSyncMaskFailure;
-		Character->SyncPriority |= Packet->DBSyncPriority;
+	if (Packet->SyncMaskFailed.RawValue) {
+		Character->SyncMask.RawValue |= Packet->SyncMaskFailed.RawValue;
+		Character->SyncPriority.RawValue |= Packet->SyncPriority.RawValue;
 	}
 }

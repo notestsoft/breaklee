@@ -17,8 +17,8 @@ RTSkillSlotRef RTCharacterAddSkillSlot(
 	SkillSlot->Level = Level;
 	SkillSlot->Index = SlotIndex;
 	Character->SkillSlotInfo.Count += 1;
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_SKILLSLOT;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.SkillSlotInfo = true;
+	Character->SyncPriority.Low = true;
 
 	return SkillSlot;
 }
@@ -56,8 +56,8 @@ Void RTCharacterRemoveSkillSlot(
 
 			Character->SkillSlotInfo.Count -= 1;
 
-			Character->SyncMask |= RUNTIME_CHARACTER_SYNC_SKILLSLOT;
-			Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+			Character->SyncMask.SkillSlotInfo = true;
+			Character->SyncPriority.Low = true;
 		}
 	}
 }
@@ -113,9 +113,9 @@ Bool RTCharacterChangeSkillLevel(
 		RTCharacterRemoveSkillSlot(Runtime, Character, SkillID, SlotIndex);
 	}
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_SKILLSLOT;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.Info = true;
+	Character->SyncMask.SkillSlotInfo = true;
+	Character->SyncPriority.Low = true;
 
 	return true;
 }

@@ -14,8 +14,8 @@ CLIENT_PROCEDURE_BINDING(WARP) {
 
     if (RTRuntimeWarpCharacter(Runtime, Character->ID, Packet->NpcID, Packet->WarpPositionX, Packet->WarpPositionY, Packet->WarpWorldID, Packet->WarpIndex, Packet->SlotIndex)) {
         // TODO: Move this to runtime
-        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-        Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+        Character->SyncMask.Info = true;
+        Character->SyncPriority.Low = true;
         Response->Result = 0;
     }
 

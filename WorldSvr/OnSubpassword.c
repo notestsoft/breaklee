@@ -24,7 +24,7 @@ Void OnCreateCharacterSubpassword(
 	Client->Account.CharacterQuestion = Packet->Question;
 	memcpy(Client->Account.CharacterAnswer, Packet->Answer, MAX_SUBPASSWORD_ANSWER_LENGTH);
 
-	IPC_DATA_WORLD_UPDATE_ACCOUNT_SUBPASSWORD_DATA* Request = PacketInit(IPC_DATA_WORLD_UPDATE_ACCOUNT_SUBPASSWORD_DATA);
+	IPC_DATA_WORLD_UPDATE_ACCOUNT_SUBPASSWORD_DATA* Request = PacketInitExtended(IPC_DATA_WORLD_UPDATE_ACCOUNT_SUBPASSWORD_DATA);
 	Request->Command = IPC_WORLD_UPDATE_ACCOUNT_SUBPASSWORD_DATA;
 	Request->ConnectionID = Connection->ID;
 	Request->AccountID = Client->Account.AccountID;
@@ -92,7 +92,7 @@ Void OnDeleteCharacterSubpassword(
 	Client->Account.CharacterQuestion = 0;
 	memset(Client->Account.CharacterAnswer, 0, MAX_SUBPASSWORD_ANSWER_LENGTH);
 
-	IPC_DATA_WORLD_UPDATE_ACCOUNT_SUBPASSWORD_DATA* Request = PacketInit(IPC_DATA_WORLD_UPDATE_ACCOUNT_SUBPASSWORD_DATA);
+	IPC_DATA_WORLD_UPDATE_ACCOUNT_SUBPASSWORD_DATA* Request = PacketInitExtended(IPC_DATA_WORLD_UPDATE_ACCOUNT_SUBPASSWORD_DATA);
 	Request->Command = IPC_WORLD_UPDATE_ACCOUNT_SUBPASSWORD_DATA;
 	Request->ConnectionID = Connection->ID;
 	Request->AccountID = Client->Account.AccountID;

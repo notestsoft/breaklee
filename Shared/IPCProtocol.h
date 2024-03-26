@@ -202,8 +202,8 @@ typedef struct {
 	IPC_DATA_SIGNATURE;
 	Int64 AccountID;
 	Int32 CharacterID;
-	UInt32 DBSyncMask;
-    UInt32 DBSyncPriority;
+	union _RTCharacterSyncMask SyncMask;
+	union _RTCharacterSyncPriority SyncPriority;
 	UInt8 Data[0];
 } IPC_DATA_WORLD_REQDBSYNC;
 
@@ -211,8 +211,8 @@ typedef struct {
 	IPC_DATA_SIGNATURE;
 	Int64 AccountID;
 	Int32 CharacterID;
-	UInt32 DBSyncMaskFailure;
-    UInt32 DBSyncPriority;
+	union _RTCharacterSyncMask SyncMaskFailed;
+	union _RTCharacterSyncPriority SyncPriority;
 } IPC_DATA_WORLD_ACKDBSYNC;
 
 typedef struct {

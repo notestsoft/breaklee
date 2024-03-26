@@ -10,7 +10,7 @@ CLIENT_PROCEDURE_BINDING(GET_CHARACTERS) {
 
     // TODO: Check if is entering premium channel and check service expiration!
 
-    IPC_DATA_WORLD_REQGETCHARACTERS* Request = PacketInit(IPC_DATA_WORLD_REQGETCHARACTERS);
+    IPC_DATA_WORLD_REQGETCHARACTERS* Request = PacketInitExtended(IPC_DATA_WORLD_REQGETCHARACTERS);
     Request->Command = IPC_WORLD_REQGETCHARACTERS;
     Request->ConnectionID = Connection->ID;
     Request->AccountID = Client->Account.AccountID;

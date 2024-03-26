@@ -16,7 +16,7 @@ CLIENT_PROCEDURE_BINDING(SERVER_ENVIRONMENT) {
 	}
 	memset(Client->Username, 0, sizeof(Client->Username));
 	memcpy(Client->Username, Packet->Username, UsernameLength);
-	IPC_DATA_REQAUTHENTICATE* Request = PacketInit(IPC_DATA_REQAUTHENTICATE);
+	IPC_DATA_REQAUTHENTICATE* Request = PacketInitExtended(IPC_DATA_REQAUTHENTICATE);
 	Request->Command = IPC_DATA_AUTHENTICATE;
 	Request->ConnectionID = Connection->ID;
 	memcpy(Request->Username, Packet->Username, UsernameLength);

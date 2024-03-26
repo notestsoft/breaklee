@@ -22,8 +22,8 @@ Void RTCharacterAddOverlordExp(
 		if (Character->Info.Overlord.Exp >= Mastery->AccumulatedExp) {
 			Character->Info.Overlord.Point += Mastery->MasteryPointCount;
 			Character->Info.Overlord.Level = NextMastery->Level;
-			Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-			Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+			Character->SyncMask.Info = true;
+			Character->SyncPriority.Low = true;
 
 			RTRuntimeBroadcastEvent(
 				Runtime,

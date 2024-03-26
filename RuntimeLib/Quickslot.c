@@ -24,8 +24,8 @@ Bool RTCharacterAddQuickSlot(
 	QuickSlot->SlotIndex = SlotIndex;
 	Character->QuickSlotInfo.Count += 1;
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_QUICKSLOT;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.QuickSlotInfo = true;
+	Character->SyncPriority.Low = true;
 
 	return true;
 }
@@ -58,8 +58,8 @@ Bool RTCharacterSwapQuickSlot(
 	SourceQuickSlot->SlotIndex = TargetSlotIndex;
 	TargetQuickSlot->SlotIndex = SourceSlotIndex;
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_QUICKSLOT;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.QuickSlotInfo = true;
+	Character->SyncPriority.Low = true;
 
 	return true;
 }
@@ -82,8 +82,8 @@ Bool RTCharacterRemoveQuickSlot(
 
 			Character->QuickSlotInfo.Count -= 1;
 
-			Character->SyncMask |= RUNTIME_CHARACTER_SYNC_QUICKSLOT;
-			Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+			Character->SyncMask.QuickSlotInfo = true;
+			Character->SyncPriority.Low = true;
 
 			return true;
 		}

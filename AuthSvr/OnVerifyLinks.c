@@ -27,7 +27,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_LINKS) {
     // TODO: Add account premium service info
     // TODO: Add client ip address
 
-    IPC_DATA_AUTH_VERIFYLINKS* Request = PacketInit(IPC_DATA_AUTH_VERIFYLINKS);
+    IPC_DATA_AUTH_VERIFYLINKS* Request = PacketInitExtended(IPC_DATA_AUTH_VERIFYLINKS);
     Request->Command = IPC_AUTH_VERIFYLINKS;
     Request->ConnectionID = Connection->ID;
     Request->ServerID = Packet->ServerID;

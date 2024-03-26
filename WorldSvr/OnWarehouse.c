@@ -55,12 +55,12 @@ CLIENT_PROCEDURE_BINDING(WAREHOUSE_CURRENCY_DEPOSIT) {
 		Character->WarehouseInfo.Currency -= AbsAmount;
 	}
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_WAREHOUSE;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
-
+	Character->SyncMask.InventoryInfo = true;
+	Character->SyncMask.WarehouseInfo = true;
+	Character->SyncPriority.Low = true;
 
 	return SocketSend(Socket, Connection, Response);
+
 error:
 	memcpy(&Character->InventoryInfo, &kInventoryInfoBackup, sizeof(struct _RTCharacterInventoryInfo));
 	memcpy(&Character->WarehouseInfo, &kWarehouseInfoBackup, sizeof(struct _RTCharacterWarehouseInfo));

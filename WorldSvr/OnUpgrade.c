@@ -193,8 +193,8 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 	}
 
 	Client->UpgradePoint = UpgradePoint;
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_HIGH;
+	Character->SyncMask.InventoryInfo = true;
+	Character->SyncPriority.High = true;
 
 	S2C_DATA_UPDATE_UPGRAGE_POINTS* Notification = PacketInit(S2C_DATA_UPDATE_UPGRAGE_POINTS);
 	Notification->Command = S2C_UPDATE_UPGRAGE_POINTS;

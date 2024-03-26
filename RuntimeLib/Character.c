@@ -25,8 +25,8 @@ Void RTCharacterInitialize(
 	RTCharacterCollectionInfoRef CollectionInfo,
 	RTCharacterWarehouseInfoRef WarehouseInfo
 ) {
-	Character->SyncMask = 0;
-	Character->SyncPriority = 0;
+	Character->SyncMask.RawValue = 0;
+	Character->SyncPriority.RawValue = 0;
 	Character->SyncTimestamp = PlatformGetTickCount();
 
 	memcpy(&Character->Info, Info, sizeof(struct _RTCharacterInfo));
@@ -280,9 +280,9 @@ Bool RTCharacterMovementBegin(
 	Character->Movement.WaypointCount = 2;
 
 	RTMovementStartDeadReckoning(Runtime, &Character->Movement);
-
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	
+	Character->SyncMask.Info = true;
+	Character->SyncPriority.Low = true;
 
 	return true;
 }
@@ -375,8 +375,8 @@ Bool RTCharacterMovementChange(
 
 	RTMovementStartDeadReckoning(Runtime, &Character->Movement);
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.Info = true;
+	Character->SyncPriority.Low = true;
 
 	return true;
 }
@@ -440,8 +440,8 @@ Bool RTCharacterMovementEnd(
 
 	RTMovementEndDeadReckoning(Runtime, &Character->Movement);
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.Info = true;
+	Character->SyncPriority.Low = true;
 
 	return true;
 }
@@ -482,8 +482,8 @@ Bool RTCharacterMovementChangeWaypoints(
 	Character->Movement.PositionCurrent.X = PositionCurrentX;
 	Character->Movement.PositionCurrent.Y = PositionCurrentY;
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.Info = true;
+	Character->SyncPriority.Low = true;
 
 	return true;
 }
@@ -562,8 +562,8 @@ Bool RTCharacterMovementChangeChunk(
 
     RTMovementSetPosition(Runtime, &Character->Movement, PositionCurrentX, PositionCurrentY);
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.Info = true;
+	Character->SyncPriority.Low = true;
 
     RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
 
@@ -625,8 +625,8 @@ Bool RTCharacterBattleRankUp(
 			RankData->SkillIndex[0]
 		);
 
-		Character->SyncMask |= RUNTIME_CHARACTER_SYNC_SKILLSLOT;
-		Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+		Character->SyncMask.SkillSlotInfo = true;
+		Character->SyncPriority.Low = true;
 	}
 
 	if (RankData->SkillSlot[1] > 0 && RankData->SkillIndex[1] > 0) {
@@ -638,14 +638,14 @@ Bool RTCharacterBattleRankUp(
 			RankData->SkillIndex[1]
 		);
 
-		Character->SyncMask |= RUNTIME_CHARACTER_SYNC_SKILLSLOT;
-		Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+		Character->SyncMask.SkillSlotInfo = true;
+		Character->SyncPriority.Low = true;
 	}
 
 	Character->Info.Style.BattleRank += 1;
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.Info = true;
+	Character->SyncPriority.Low = true;
 
 	RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
 
@@ -691,9 +691,9 @@ Void RTCharacterAddExp(
 	Character->Info.Basic.Exp += Exp;
 	Character->Info.Basic.Level = RTRuntimeGetLevelByExp(Runtime, CurrentLevel, Character->Info.Basic.Exp);
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
-	
+	Character->SyncMask.Info = true;
+	Character->SyncPriority.Low = true;
+
 	// TODO: Check if LevelDiff is calculated correctly, large exp potions seam to break the reward of stat alloc
 	Bool LevelDiff = Character->Info.Basic.Level - CurrentLevel;
     if (LevelDiff > 0) {
@@ -763,8 +763,8 @@ Int32 RTCharacterAddSkillExp(
 	Character->Info.Skill.Level += SkillLevelDiff;
 	Character->Info.Skill.Point += SkillLevelDiff;
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.Info = true;
+	Character->SyncPriority.Low = true;
 
 	RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
 
@@ -842,8 +842,8 @@ Void RTCharacterAddHonorPoint(
 		CurrentLevelData = NextLevelData;
 	}
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.Info = true;
+	Character->SyncPriority.Low = true;
 }
 
 Void RTCharacterAddAbilityExp(
@@ -860,8 +860,8 @@ Void RTCharacterAddAbilityExp(
 		Character->Info.Ability.Point += 1;
 	}
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.Info = true;
+	Character->SyncPriority.Low = true;
 }
 
 Void RTCharacterAddRage(
@@ -927,8 +927,8 @@ Bool RTCharacterAddStats(
 	Character->Info.Stat[RUNTIME_CHARACTER_STAT_INT] += Stats[RUNTIME_CHARACTER_STAT_INT];
 	Character->Info.Stat[RUNTIME_CHARACTER_STAT_PNT] -= RequiredPoints;
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.Info = true;
+	Character->SyncPriority.Low = true;
 
 	RTCharacterInitializeAttributes(Runtime, Character);
 	return true;
@@ -949,8 +949,8 @@ Bool RTCharacterRemoveStat(
 	Character->Info.Stat[StatIndex] -= Amount;
 	Character->Info.Stat[RUNTIME_CHARACTER_STAT_PNT] += Amount;
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.Info = true;
+	Character->SyncPriority.Low = true;
 
 	RTCharacterInitializeAttributes(Runtime, Character);
 
@@ -970,8 +970,8 @@ Void RTCharacterAddHP(
 	if (NewValue != Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT]) {
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] = NewValue;
 		Character->Info.Resource.MP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-		Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-		Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+		Character->SyncMask.Info = true;
+		Character->SyncPriority.Low = true;
 
 		RTRuntimeBroadcastCharacterData(
 			Runtime,
@@ -994,8 +994,8 @@ Void RTCharacterAddMP(
 	if (NewValue != Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT]) {
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] = NewValue;
 		Character->Info.Resource.MP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
-		Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-		Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+		Character->SyncMask.Info = true;
+		Character->SyncPriority.Low = true;
 
 		RTRuntimeBroadcastCharacterData(
 			Runtime,
@@ -1017,8 +1017,8 @@ Void RTCharacterAddSP(
 	if (NewValue != Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT]) {
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT] = NewValue;
 		Character->Info.Resource.MP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
-		Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-		Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+		Character->SyncMask.Info = true;
+		Character->SyncPriority.Low = true;
 
 		RTRuntimeBroadcastCharacterData(
 			Runtime,
@@ -1040,6 +1040,6 @@ Void RTCharacterApplyDamage(
 	);
 
 	// TODO: Send notification
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.Info = true;
+	Character->SyncPriority.Low = true;
 }

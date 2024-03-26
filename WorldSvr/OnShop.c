@@ -68,8 +68,8 @@ CLIENT_PROCEDURE_BINDING(BUY_ITEM) {
             &ItemSlot
         );
 
-        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
-        Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+        Character->SyncMask.InventoryInfo = true;
+        Character->SyncPriority.Low = true;
 
         if (!Success) 
             break;
@@ -137,9 +137,9 @@ CLIENT_PROCEDURE_BINDING(SELL_ITEM) {
 
         // TODO: Calculate sell price based on upgrade level ...
         Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] += ItemData->SellPrice;
-        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
-        Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_HIGH;
+        Character->SyncMask.Info = true;
+        Character->SyncMask.InventoryInfo = true;
+        Character->SyncPriority.High = true;
     }
 
     S2C_DATA_SELL_ITEM *Response = PacketInit(S2C_DATA_SELL_ITEM);
@@ -254,9 +254,9 @@ CLIENT_PROCEDURE_BINDING(RECOVER_ITEM) {
     RTCharacterUpdateQuestItemCounter(Runtime, Character, RecoverySlot->Item, RecoverySlot->ItemOptions);
 
     Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= RecoveryPrice;
-    Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-    Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
-    Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_HIGH;
+    Character->SyncMask.Info = true;
+    Character->SyncMask.InventoryInfo = true;
+    Character->SyncPriority.High = true;
 
     S2C_DATA_RECOVER_ITEM* Response = PacketInit(S2C_DATA_RECOVER_ITEM);
     Response->Command = S2C_RECOVER_ITEM;

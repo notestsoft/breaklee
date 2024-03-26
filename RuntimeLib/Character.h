@@ -18,6 +18,7 @@
 #include "Quest.h"
 #include "Quickslot.h"
 #include "Recovery.h"
+#include "RequestCraft.h"
 #include "Skill.h"
 #include "SkillSlot.h"
 
@@ -25,25 +26,58 @@ EXTERN_C_BEGIN
 
 #pragma pack(push, 1)
 
-enum {
-    RUNTIME_CHARACTER_SYNC_INFO                 = 1 << 0,
-    RUNTIME_CHARACTER_SYNC_EQUIPMENT            = 1 << 1,
-    RUNTIME_CHARACTER_SYNC_INVENTORY            = 1 << 2,
-    RUNTIME_CHARACTER_SYNC_SKILLSLOT            = 1 << 3,
-    RUNTIME_CHARACTER_SYNC_QUICKSLOT            = 1 << 4,
-    RUNTIME_CHARACTER_SYNC_QUESTSLOT            = 1 << 5,
-    RUNTIME_CHARACTER_SYNC_QUESTFLAG            = 1 << 6,
-    RUNTIME_CHARACTER_SYNC_DUNGEONQUESTFLAG     = 1 << 7,
-    RUNTIME_CHARACTER_SYNC_ESSENCE_ABILITY      = 1 << 8,
-    RUNTIME_CHARACTER_SYNC_OVERLORD             = 1 << 9,
-    RUNTIME_CHARACTER_SYNC_COLLECTION           = 1 << 10,
-    RUNTIME_CHARACTER_SYNC_WAREHOUSE            = 1 << 11,
+union _RTCharacterSyncMask {
+    struct {
+        UInt64 Info : 1;
+        UInt64 EquipmentInfo : 1;
+        UInt64 EquipmentLockInfo : 1;
+        UInt64 InventoryInfo : 1;
+        UInt64 SkillSlotInfo : 1;
+        UInt64 QuickSlotInfo : 1;
+        UInt64 EssenceAbilityInfo : 1;
+        UInt64 BlendedAbilityInfo : 1;
+        UInt64 KarmaAbilityInfo : 1;
+        UInt64 BlessingBeadInfo : 1;
+        UInt64 PremiumServiceInfo : 1;
+        UInt64 QuestSlotInfo : 1;
+        UInt64 QuestFlagInfo : 1;
+        UInt64 DungeonQuestFlagInfo : 1;
+        UInt64 DailyQuestInfo : 1;
+        UInt64 MercenaryInfo : 1;
+        UInt64 EquipmentAppearanceInfo : 1;
+        UInt64 InventoryAppearanceInfo : 1;
+        UInt64 AchievementInfo : 1;
+        UInt64 AchievementRewardInfo : 1;
+        UInt64 RequestCraftInfo : 1;
+        UInt64 BuffInfo : 1;
+        UInt64 VehicleInventoryInfo : 1;
+        UInt64 MeritMasteryInfo : 1;
+        UInt64 PlatinumMeritMasteryInfo : 1;
+        UInt64 OverlordMasteryInfo : 1;
+        UInt64 HonorMedalInfo : 1;
+        UInt64 ForceWingInfo : 1;
+        UInt64 ForceWingTrainingInfo : 1;
+        UInt64 GiftboxInfo : 1;
+        UInt64 CollectionInfo : 1;
+        UInt64 TransformInfo : 1;
+        UInt64 TranscendenceInfo : 1;
+        UInt64 StellarMasteryInfo : 1;
+        UInt64 MythMasteryInfo : 1;
+        UInt64 EventPassInfo : 1;
+        UInt64 CostumeInfo : 1;
+        UInt64 _Padding : 11;
+        UInt64 WarehouseInfo : 1;
+    };
+    UInt64 RawValue;
 };
 
-enum {
-    RUNTIME_CHARACTER_SYNC_PRIORITY_LOW     = 1 << 0,
-    RUNTIME_CHARACTER_SYNC_PRIORITY_HIGH    = 1 << 1,
-    RUNTIME_CHARACTER_SYNC_PRIORITY_INSTANT = 1 << 2,
+union _RTCharacterSyncPriority {
+    struct {
+        UInt64 Low : 1;
+        UInt64 High : 1;
+        UInt64 Immediate : 1;
+    };
+    UInt64 RawValue;
 };
 
 enum {
@@ -195,8 +229,8 @@ struct _RTCharacter {
     RTEntityID ID;
     RTEntityID PartyID;
     Index CharacterIndex;
-    UInt32 SyncMask;
-    UInt32 SyncPriority;
+    union _RTCharacterSyncMask SyncMask;
+    union _RTCharacterSyncPriority SyncPriority;
     Timestamp SyncTimestamp;
 
 //    Int32 Index;
@@ -204,30 +238,43 @@ struct _RTCharacter {
 //    Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1];
     struct _RTCharacterInfo Info;
     struct _RTCharacterEquipmentInfo EquipmentInfo;
+    // struct _RTCharacterEquipmentLockInfo EquipmentLockInfo;
     struct _RTCharacterInventoryInfo InventoryInfo;
     struct _RTCharacterSkillSlotInfo SkillSlotInfo;
     struct _RTCharacterQuickSlotInfo QuickSlotInfo;
+    struct _RTCharacterEssenceAbilityInfo EssenceAbilityInfo;
+    // struct _RTCharacterBlendedAbilityInfo BlendedAbilityInfo;
+    // struct _RTCharacterKarmaAbilityInfo KarmaAbilityInfo;
+    // struct _RTCharacterBlessingBeadInfo BlessingBeadInfo;
+    // struct _RTCharacterPremiumServiceInfo PremiumServiceInfo;
     struct _RTCharacterQuestSlotInfo QuestSlotInfo;
     struct _RTCharacterQuestFlagInfo QuestFlagInfo;
     struct _RTCharacterDungeonQuestFlagInfo DungeonQuestFlagInfo;
-    
-    //GAME_DATA_CHARACTER_ACHIEVEMENT AchievementData;
-    struct _RTCharacterEssenceAbilityInfo EssenceAbilityInfo;
-    /*
-    GAME_DATA_CHARACTER_BLENDEDABILITY BlendedAbilityData;
-    GAME_DATA_CHARACTER_HONORMEDAL HonorMedalData;
-    */
-
+    // struct _RTCharacterDailyQuestInfo DailyQuestInfo;
+    // struct _RTCharacterMercenaryInfo MercenaryInfo;
+    // struct _RTCharacterEquipmentAppearanceInfo EquipmentAppearanceInfo;
+    // struct _RTCharacterInventoryAppearanceInfo InventoryAppearanceInfo;
+    // struct _RTCharacterAchievementInfo AchievementInfo;
+    // struct _RTCharacterAchievementRewardInfo AchievementRewardInfo;
+    struct _RTCharacterRequestCraftInfo RequestCraftInfo;
+    // struct _RTCharacterBuffInfo BuffInfo;
+    // struct _RTCharacterVehicleInventoryInfo VehicleInventoryInfo;
+    // struct _RTCharacterMeritMasteryInfo MeritMasteryInfo;
+    // struct _RTCharacterPlatinumMeritMasteryInfo PlatinumMeritMasteryInfo;
     struct _RTCharacterOverlordMasteryInfo OverlordMasteryInfo;
+    // struct _RTCharacterHonorMedalInfo HonorMedalInfo;
+    // struct _RTCharacterForceWingInfo ForceWingInfo;
+    // struct _RTCharacterForceWingTrainingInfo ForceWingTrainingInfo;
+    // struct _RTCharacterGiftboxInfo GiftboxInfo;
     struct _RTCharacterCollectionInfo CollectionInfo;
-    struct _RTCharacterWarehouseInfo WarehouseInfo;
-    /*
-    GAME_DATA_CHARACTER_TRANSFORM TransformData;
-    GAME_DATA_CHARACTER_TRANSCENDENCE TranscendenceData;
-    GAME_DATA_CHARACTER_MERCENARY MercenaryData;
-    GAME_DATA_CHARACTER_CRAFT CraftData;
-    */
+    // struct _RTCharacterTransformInfo TransformInfo;
+    // struct _RTCharacterTranscendenceInfo TranscendenceInfo;
+    // struct _RTCharacterStellarMasteryInfo StellarMasteryInfo;
+    // struct _RTCharacterMythMasteryInfo MythMasteryInfo;
+    // struct _RTCharacterEventPassInfo EventPassInfo;
+    // struct _RTCharacterCostumeInfo CostumeInfo;
 
+    struct _RTCharacterWarehouseInfo WarehouseInfo;
     struct _RTCharacterInventoryInfo TemporaryInventoryInfo;
     struct _RTCharacterRecoveryInfo RecoveryInfo;
     struct _RTMovement Movement;

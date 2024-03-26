@@ -55,18 +55,18 @@ Bool MoveInventoryItem(
     }
 
     if (SourceStorageType == STORAGE_TYPE_INVENTORY || DestinationStorageType == STORAGE_TYPE_INVENTORY) {
-        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
+        Character->SyncMask.InventoryInfo = true;
     }
 
     if (SourceStorageType == STORAGE_TYPE_EQUIPMENT || DestinationStorageType == STORAGE_TYPE_EQUIPMENT) {
-        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_EQUIPMENT;
+        Character->SyncMask.EquipmentInfo = true;
     }
 
     if (SourceStorageType == STORAGE_TYPE_WAREHOUSE || DestinationStorageType == STORAGE_TYPE_WAREHOUSE) {
-        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_WAREHOUSE;
+        Character->SyncMask.WarehouseInfo = true;
     }
 
-    Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+    Character->SyncPriority.Low = true;
 
     return true;
 
@@ -309,8 +309,8 @@ CLIENT_PROCEDURE_BINDING(MOVE_INVENTORY_ITEM_LIST) {
         if (!Success) goto error;
     }
 
-    Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
-    Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+    Character->SyncMask.InventoryInfo = true;
+    Character->SyncPriority.Low = true;
 
     Response->Success = 1;
     return SocketSend(Socket, Connection, Response);

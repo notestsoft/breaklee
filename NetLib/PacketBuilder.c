@@ -25,15 +25,15 @@ UInt16 ClientPacketGetCommand(
     PacketRef Packet
 ) {
     if (Packet->Magic == PACKET_HEADER_MAGIC) {
-        struct { C2S_DATA_SIGNATURE; } *Data = (Void *)Packet;
+        struct { C2S_DATA_SIGNATURE; } *Data = (Void*)Packet;
         return Data->Command;
     }
-    
+
     if (Packet->Magic == EXTENDED_PACKET_HEADER_MAGIC) {
-        struct { C2S_DATA_SIGNATURE_EXTENDED; } *Data = (Void *)Packet;
+        struct { C2S_DATA_SIGNATURE_EXTENDED; } *Data = (Void*)Packet;
         return Data->Command;
     }
-    
+
     return 0;
 }
 
@@ -41,22 +41,22 @@ UInt16 ServerPacketGetCommand(
     PacketRef Packet
 ) {
     if (Packet->Magic == PACKET_HEADER_MAGIC) {
-        struct { S2C_DATA_SIGNATURE; } *Data = (Void *)Packet;
+        struct { S2C_DATA_SIGNATURE; } *Data = (Void*)Packet;
         return Data->Command;
     }
-    
+
     if (Packet->Magic == EXTENDED_PACKET_HEADER_MAGIC) {
-        struct { S2C_DATA_SIGNATURE_EXTENDED; } *Data = (Void *)Packet;
+        struct { S2C_DATA_SIGNATURE_EXTENDED; } *Data = (Void*)Packet;
         return Data->Command;
     }
-    
+
     return 0;
 }
 
 UInt16 IPCPacketGetCommand(
     PacketRef Packet
 ) {
-    struct { IPC_DATA_SIGNATURE; } *Data = (Void *)Packet;
+    struct { IPC_DATA_SIGNATURE; } *Data = (Void*)Packet;
     return Data->Command;
 }
 
@@ -67,7 +67,7 @@ Int32 PacketGetLength() {
         ExtendedPacketRef ExtendedPacket = (ExtendedPacketRef)Buffer;
         return ExtendedPacket->Length;
     }
-    
+
     return Packet->Length;
 }
 
@@ -79,7 +79,8 @@ Void PacketAppendLength(
     if (Packet->Magic == EXTENDED_PACKET_HEADER_MAGIC) {
         ExtendedPacketRef ExtendedPacket = (ExtendedPacketRef)Buffer;
         ExtendedPacket->Length += Length;
-    } else {
+    }
+    else {
         Packet->Length += (UInt16)Length;
     }
 }
@@ -113,7 +114,7 @@ UInt8* PacketAppendMemoryCopy(
 }
 
 Void PacketLogBytes(
-    Void *Packet
+    Void* Packet
 ) {
     UInt8* Buffer = (UInt8*)Packet;
 

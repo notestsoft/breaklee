@@ -7,7 +7,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacters, IPC_WORLD_REQGETCHARACTERS, IPC_DATA
 	Account.AccountID = Packet->AccountID;
 	if (!MasterDBGetOrCreateAccount(Context->Database, &Account)) goto error;
 
-	IPC_DATA_WORLD_ACKGETCHARACTERS* Response = PacketInit(IPC_DATA_WORLD_ACKGETCHARACTERS);
+	IPC_DATA_WORLD_ACKGETCHARACTERS* Response = PacketInitExtended(IPC_DATA_WORLD_ACKGETCHARACTERS);
 	Response->Command = IPC_WORLD_ACKGETCHARACTERS;
 	Response->ConnectionID = Packet->ConnectionID;
 	

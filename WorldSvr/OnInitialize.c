@@ -60,7 +60,7 @@ CLIENT_PROCEDURE_BINDING(INITIALIZE) {
 	
     if (!(Client->Flags & CLIENT_FLAGS_CHARACTER_INDEX_LOADED) || Client->Account.AccountID < 1) goto error;
    
-	IPC_DATA_WORLD_REQGETCHARACTER* Request = PacketInit(IPC_DATA_WORLD_REQGETCHARACTER);
+	IPC_DATA_WORLD_REQGETCHARACTER* Request = PacketInitExtended(IPC_DATA_WORLD_REQGETCHARACTER);
 	Request->Command = IPC_WORLD_REQGETCHARACTER;
 	Request->ConnectionID = Connection->ID;
 	Request->AccountID = Client->Account.AccountID;
@@ -80,11 +80,12 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
         memset(Packet->Character.QuestFlagData.FinishedQuests, 0xFF, RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT);
     }
 
+    Int32 SlotIndex = Packet->Character.SkillSlotData.Count;
     for (Index Index = 144; Index < 148; Index++) {
         RTSkillSlotRef GmSkill = &Packet->Character.SkillSlotData.Skills[Packet->Character.SkillSlotData.Count];
-        GmSkill->ID = 146;
+        GmSkill->ID = Index;
         GmSkill->Level = 1;
-        GmSkill->Index = 66;
+        GmSkill->Index = SlotIndex++;
         Packet->Character.SkillSlotData.Count += 1;
     }
 

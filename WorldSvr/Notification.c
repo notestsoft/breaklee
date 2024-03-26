@@ -34,7 +34,7 @@ Void BroadcastMessage(
 Void BroadcastUserList(
     ServerContextRef Context
 ) {
-    IPC_DATA_WORLD_NFYUSERLIST* Notification = PacketInit(IPC_DATA_WORLD_NFYUSERLIST);
+    IPC_DATA_WORLD_NFYUSERLIST* Notification = PacketInitExtended(IPC_DATA_WORLD_NFYUSERLIST);
     Notification->Command = IPC_WORLD_NFYUSERLIST;
     Notification->PlayerCount = SocketGetConnectionCount(Context->ClientSocket);
     Notification->MaxPlayerCount = Context->Config.WorldSvr.MaxConnectionCount;

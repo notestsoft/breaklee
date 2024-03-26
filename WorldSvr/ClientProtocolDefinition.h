@@ -2603,20 +2603,58 @@ CLIENT_PROTOCOL(S2C, NFY_UNKNOWN_2248, 2248, 13130,
 
 CLIENT_PROTOCOL_STRUCT(C2S_REQUEST_CRAFT_INVENTORY_SLOT,
     Int32 InventorySlotIndex;
-    UInt32 Count;
+    Int32 Count;
 )
 
-CLIENT_PROTOCOL(C2S, REQUEST_CRAFT, 2250, 13130,
+CLIENT_PROTOCOL(C2S, REQUEST_CRAFT_REGISTER, 2249, 13133,
+    C2S_DATA_SIGNATURE;
+    UInt32 RequestCode;
+    Int32 InventorySlotCount;
+    C2S_REQUEST_CRAFT_INVENTORY_SLOT InventorySlots[0];
+    // UInt8 Unknown2[4168]; - Maybe AuthCaptcha
+)
+
+CLIENT_PROTOCOL(S2C, REQUEST_CRAFT_REGISTER, 2249, 13133,
+    S2C_DATA_SIGNATURE;
+    UInt8 Result;
+)
+
+CLIENT_PROTOCOL(C2S, REQUEST_CRAFT_START, 2250, 13133,
     C2S_DATA_SIGNATURE;
     UInt32 RequestCode;
     UInt8 RequestSlotIndex;
-    Int32 Unknown1;
+    Int32 Unknown1; // - Maybe AuthCaptcha
     Int32 InventorySlotCount;
-    C2S_REQUEST_CRAFT_INVENTORY_SLOT InventorySlots[523];
+    C2S_REQUEST_CRAFT_INVENTORY_SLOT InventorySlots[0];
+    // UInt8 Unknown2[4168]; - Maybe AuthCaptcha
 )
 
-CLIENT_PROTOCOL(S2C, REQUEST_CRAFT, 2250, 13130,
+CLIENT_PROTOCOL(S2C, REQUEST_CRAFT_START, 2250, 13133,
     S2C_DATA_SIGNATURE;
+    UInt8 Result;
+)
+
+CLIENT_PROTOCOL(C2S, REQUEST_CRAFT_END, 2251, 13133,
+    C2S_DATA_SIGNATURE;
+    UInt32 RequestCode;
+    UInt8 RequestSlotIndex;
+    Int32 Unknown1; // - Maybe AuthCaptcha
+    Int32 InventorySlotCount;
+    C2S_REQUEST_CRAFT_INVENTORY_SLOT InventorySlots[0];
+    // UInt8 Unknown2[4168]; - Maybe AuthCaptcha
+)
+
+CLIENT_PROTOCOL(S2C, REQUEST_CRAFT_END, 2251, 13133,
+    S2C_DATA_SIGNATURE;
+    UInt8 Result;
+)
+
+CLIENT_PROTOCOL(S2C, REQUEST_CRAFT_UPDATE, 2252, 13133,
+    S2C_DATA_SIGNATURE;
+    UInt32 ItemID;
+    UInt8 RequestSlotIndex;
+    UInt32 RequestCode;
+    UInt32 RequestCraftExp;
     UInt8 Success;
 )
 

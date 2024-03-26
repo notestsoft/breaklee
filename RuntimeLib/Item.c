@@ -174,16 +174,16 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemPotion) {
 		if (ItemSlot->ItemOptions < 1) {
 			RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
 
-			Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
-			Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+			Character->SyncMask.InventoryInfo = true;
+			Character->SyncPriority.Low = true;
 		}
 	}
 	else {
 		// TODO: Do not delete inexhaustable items!!!
 		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
 
-		Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
-		Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+		Character->SyncMask.InventoryInfo = true;
+		Character->SyncPriority.Low = true;
 	}
 
 	return true;
@@ -209,8 +209,8 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSkillBook) {
 
     RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
 
-    Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
-    Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.InventoryInfo = true;
+	Character->SyncPriority.Low = true;
 
     return true;
 }
@@ -259,8 +259,8 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemImmediateReward) {
 	// TODO: Check if this item should be consumed and check if it is a stackable item
 	RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.InventoryInfo = true;
+	Character->SyncPriority.Low = true;
 
     return true;
 }

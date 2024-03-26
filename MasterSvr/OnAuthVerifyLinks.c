@@ -13,7 +13,7 @@ IPC_PROCEDURE_BINDING(OnAuthVerifyLinks, IPC_AUTH_VERIFYLINKS, IPC_DATA_AUTH_VER
 
 	if (!MasterDBGetOrCreateAccount(Context->Database, &Account)) goto error;
 
-	IPC_DATA_WORLD_VERIFYLINKS* Request = PacketInit(IPC_DATA_WORLD_VERIFYLINKS);
+	IPC_DATA_WORLD_VERIFYLINKS* Request = PacketInitExtended(IPC_DATA_WORLD_VERIFYLINKS);
 	Request->Command = IPC_WORLD_VERIFYLINKS;
 	Request->ConnectionID = Packet->ConnectionID;
 	Request->ServerID = Packet->ServerID;
@@ -33,7 +33,7 @@ IPC_PROCEDURE_BINDING(OnAuthVerifyLinks, IPC_AUTH_VERIFYLINKS, IPC_DATA_AUTH_VER
 
 error:
 	{
-		IPC_DATA_AUTH_VERIFYRESULT* Response = PacketInit(IPC_DATA_AUTH_VERIFYRESULT);
+		IPC_DATA_AUTH_VERIFYRESULT* Response = PacketInitExtended(IPC_DATA_AUTH_VERIFYRESULT);
 		Response->Command = IPC_AUTH_VERIFYRESULT;
 		Response->ConnectionID = Packet->ConnectionID;
 		Response->ServerID = Packet->ServerID;

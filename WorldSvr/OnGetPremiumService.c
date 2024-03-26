@@ -8,7 +8,7 @@
 CLIENT_PROCEDURE_BINDING(GET_PREMIUM_SERVICE) {
 	if (!(Client->Flags & CLIENT_FLAGS_VERIFIED) || Client->Account.AccountID < 1) goto error;
 
-	IPC_DATA_WORLD_REQPREMIUMSERVICE* Request = PacketInit(IPC_DATA_WORLD_REQPREMIUMSERVICE);
+	IPC_DATA_WORLD_REQPREMIUMSERVICE* Request = PacketInitExtended(IPC_DATA_WORLD_REQPREMIUMSERVICE);
 	Request->Command = IPC_WORLD_REQPREMIUMSERVICE;
 	Request->ConnectionID = Connection->ID;
 	Request->AccountID = Client->Account.AccountID;

@@ -137,9 +137,9 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
             }
         }
 
-        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_COLLECTION;
-        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
-        Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_INSTANT;
+        Character->SyncMask.CollectionInfo = true;
+        Character->SyncMask.InventoryInfo = true;
+        Character->SyncPriority.Immediate = true;
         Response->Success = 1;
     }
     else if (CollectionMissionDetail->ItemType == RUNTIME_DATA_COLLECTION_ITEM_TYPE_INDEX_UPGRADE) {
@@ -180,9 +180,9 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
             if (!RTInventoryClearSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex[Index])) goto error;
         }
 
-        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_COLLECTION;
-        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
-        Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_INSTANT;
+        Character->SyncMask.CollectionInfo = true;
+        Character->SyncMask.InventoryInfo = true;
+        Character->SyncPriority.Immediate = true;
         Response->Success = 1;
     }
     else if (CollectionMissionDetail->ItemType == RUNTIME_DATA_COLLECTION_ITEM_TYPE_INDEX_QUEST) {
@@ -229,9 +229,9 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
             }
         }
 
-        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_COLLECTION;
-        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
-        Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_INSTANT;
+        Character->SyncMask.CollectionInfo = true;
+        Character->SyncMask.InventoryInfo = true;
+        Character->SyncPriority.Immediate = true;
         Response->Success = 1;
     }
     else {
@@ -275,9 +275,9 @@ CLIENT_PROCEDURE_BINDING(RECEIVE_COLLECTION_REWARD) {
 
         CollectionSlot->ReceivedReward = true;
         Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_GEM] += Reward->Quantity;
-        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_COLLECTION;
-        Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_HIGH;
+        Character->SyncMask.Info = true;
+        Character->SyncMask.CollectionInfo = true;
+        Character->SyncPriority.High = true;
 
         Response->RewardType = CollectionKindInfoDetail->RewardType;
         S2C_DATA_RECEIVE_COLLECTION_REWARD_CURRENCY* ResponseData = PacketAppendStruct(S2C_DATA_RECEIVE_COLLECTION_REWARD_CURRENCY);
@@ -296,9 +296,9 @@ CLIENT_PROCEDURE_BINDING(RECEIVE_COLLECTION_REWARD) {
         if (!RTInventorySetSlot(Runtime, &Character->InventoryInfo, &ItemSlot)) goto error;
 
         CollectionSlot->ReceivedReward = true;
-        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
-        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_COLLECTION;
-        Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_HIGH;
+        Character->SyncMask.CollectionInfo = true;
+        Character->SyncMask.InventoryInfo = true;
+        Character->SyncPriority.High = true;
 
         Response->RewardType = CollectionKindInfoDetail->RewardType;
         Response->InventorySlotCount = 1;

@@ -33,7 +33,7 @@ Void OnVerifyCharacterSubpassword(
     memcpy(Client->Account.SessionIP, Connection->AddressIP, MAX_ADDRESSIP_LENGTH);
     Client->Account.SessionTimeout = time(NULL) + (time_t)Packet->ExpirationInHours * 60 * 60;
 
-    IPC_DATA_WORLD_UPDATE_ACCOUNT_SESSION_DATA* Request = PacketInit(IPC_DATA_WORLD_UPDATE_ACCOUNT_SESSION_DATA);
+    IPC_DATA_WORLD_UPDATE_ACCOUNT_SESSION_DATA* Request = PacketInitExtended(IPC_DATA_WORLD_UPDATE_ACCOUNT_SESSION_DATA);
     Request->Command = IPC_WORLD_UPDATE_ACCOUNT_SESSION_DATA;
     Request->ConnectionID = Connection->ID;
     Request->AccountID = Client->Account.AccountID;
@@ -56,7 +56,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_CREDENTIALS) {
 	}
 
 	if (Packet->CredentialsType == C2S_DATA_VERIFY_CREDENTIALS_TYPE_PASSWORD) {
-		IPC_DATA_WORLD_REQVERIFYPASSWORD* Request = PacketInit(IPC_DATA_WORLD_REQVERIFYPASSWORD);
+		IPC_DATA_WORLD_REQVERIFYPASSWORD* Request = PacketInitExtended(IPC_DATA_WORLD_REQVERIFYPASSWORD);
 		Request->Command = IPC_WORLD_REQVERIFYPASSWORD;
 		Request->ConnectionID = Connection->ID;
 		Request->AccountID = Client->Account.AccountID;
@@ -117,7 +117,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_CREDENTIALS_SUBPASSWORD) {
 		memcpy(Client->Account.SessionIP, Connection->AddressIP, MAX_ADDRESSIP_LENGTH);
 		Client->Account.SessionTimeout = time(NULL) + (time_t)Packet->ExpirationInHours * 60 * 60;
 
-		IPC_DATA_WORLD_UPDATE_ACCOUNT_SESSION_DATA* Request = PacketInit(IPC_DATA_WORLD_UPDATE_ACCOUNT_SESSION_DATA);
+		IPC_DATA_WORLD_UPDATE_ACCOUNT_SESSION_DATA* Request = PacketInitExtended(IPC_DATA_WORLD_UPDATE_ACCOUNT_SESSION_DATA);
 		Request->Command = IPC_WORLD_UPDATE_ACCOUNT_SESSION_DATA;
 		Request->ConnectionID = Connection->ID;
 		Request->AccountID = Client->Account.AccountID;

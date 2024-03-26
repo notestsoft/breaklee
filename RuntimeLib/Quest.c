@@ -14,8 +14,8 @@ Void RTCharacterQuestFlagClear(
 
 	Character->QuestFlagInfo.FinishedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] &= ~(1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_QUESTFLAG;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.QuestFlagInfo = true;
+	Character->SyncPriority.Low = true;
 }
 
 Void RTCharacterQuestFlagSet(
@@ -26,8 +26,8 @@ Void RTCharacterQuestFlagSet(
 
 	Character->QuestFlagInfo.FinishedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] |= (1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_QUESTFLAG;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.QuestFlagInfo = true;
+	Character->SyncPriority.Low = true;
 }
 
 Bool RTCharacterQuestFlagIsSet(
@@ -47,8 +47,8 @@ Void RTCharacterQuestDeleteFlagClear(
 
 	Character->QuestFlagInfo.DeletedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] &= ~(1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_QUESTFLAG;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.QuestFlagInfo = true;
+	Character->SyncPriority.Low = true;
 }
 
 Void RTCharacterQuestDeleteFlagSet(
@@ -59,8 +59,8 @@ Void RTCharacterQuestDeleteFlagSet(
 
 	Character->QuestFlagInfo.DeletedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] |= (1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_QUESTFLAG;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.QuestFlagInfo = true;
+	Character->SyncPriority.Low = true;
 }
 
 Bool RTCharacterQuestDeleteFlagIsSet(
@@ -80,8 +80,8 @@ Void RTCharacterDungeonQuestFlagClear(
 
 	Character->DungeonQuestFlagInfo.FinishedDungeons[DungeonIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] &= ~(1 << (DungeonIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_DUNGEONQUESTFLAG;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.DungeonQuestFlagInfo = true;
+	Character->SyncPriority.Low = true;
 }
 
 Void RTCharacterDungeonQuestFlagSet(
@@ -92,8 +92,8 @@ Void RTCharacterDungeonQuestFlagSet(
 
 	Character->DungeonQuestFlagInfo.FinishedDungeons[DungeonIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] |= (1 << (DungeonIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_DUNGEONQUESTFLAG;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.DungeonQuestFlagInfo = true;
+	Character->SyncPriority.Low = true;
 }
 
 Bool RTCharacterDungeonQuestFlagIsSet(
@@ -170,8 +170,8 @@ Bool RTCharacterQuestBegin(
 	QuestSlot->DisplayOpenNotice = 0;
 	memset(QuestSlot->Counter, 0, sizeof(UInt8) * RUNTIME_MAX_QUEST_COUNTER_COUNT);
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_QUESTSLOT;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.QuestSlotInfo = true;
+	Character->SyncPriority.Low = true;
 
 	return true;
 }
@@ -291,8 +291,8 @@ Bool RTCharacterQuestClear(
 			return false;
 		}
 
-		Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
-		Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+		Character->SyncMask.InventoryInfo = true;
+		Character->SyncPriority.Low = true;
 	}
 
 	// TODO: Add missing reward types
@@ -316,8 +316,8 @@ Bool RTCharacterQuestClear(
 	);
 
 	memset(QuestSlot, 0, sizeof(struct _RTQuestSlot));
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_QUESTSLOT;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.QuestSlotInfo = true;
+	Character->SyncPriority.Low = true;
 
 	return true;
 }
@@ -334,8 +334,8 @@ Bool RTCharacterQuestCancel(
 	if (QuestSlot->QuestIndex != QuestIndex) return false;
 
 	memset(QuestSlot, 0, sizeof(struct _RTQuestSlot));
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_QUESTSLOT;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.QuestSlotInfo = true;
+	Character->SyncPriority.Low = true;
 
 	// TODO: Reset dungeon state!
 	// TODO: Reset added and removed items state!
@@ -402,8 +402,8 @@ Bool RTCharacterQuestAction(
 		QuestSlot->NpcActionIndex = NextQuestNpc->NpcActionOrder;
 	}
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_QUESTSLOT;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.QuestSlotInfo = true;
+	Character->SyncPriority.Low = true;
 
 	return true;
 }
@@ -424,8 +424,8 @@ Bool RTCharacterSetQuestDisplayNotice(
 	QuestSlot->DisplayNotice = DisplayNotice;
 	QuestSlot->DisplayOpenNotice = DisplayOpenNotice;
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_QUESTSLOT;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.QuestSlotInfo = true;
+	Character->SyncPriority.Low = true;
 
 	return true;
 }
@@ -451,8 +451,8 @@ Bool RTCharacterIncrementQuestMobCounter(
 					Mission->Value[1],
 					Character->QuestSlotInfo.QuestSlot[SlotIndex].Counter[QuestCounterIndex] + 1
 				);
-				Character->SyncMask |= RUNTIME_CHARACTER_SYNC_QUESTSLOT;
-				Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+				Character->SyncMask.QuestSlotInfo = true;
+				Character->SyncPriority.Low = true;
 
 				return true;
 			}

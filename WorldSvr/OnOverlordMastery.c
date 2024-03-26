@@ -42,9 +42,9 @@ CLIENT_PROCEDURE_BINDING(ADD_OVERLORD_MASTERY_SLOT) {
 
 	Slot->Level += 1;
 	Character->Info.Overlord.Point -= MasteryValueLevel->RequiredMasteryPointCount;
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_OVERLORD;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_HIGH;
+	Character->SyncMask.Info = true;
+	Character->SyncMask.OverlordMasteryInfo = true;
+	Character->SyncPriority.High = true;
 
 	S2C_DATA_ADD_OVERLORD_MASTERY_SLOT* Response = PacketInit(S2C_DATA_ADD_OVERLORD_MASTERY_SLOT);
 	Response->Command = S2C_ADD_OVERLORD_MASTERY_SLOT;

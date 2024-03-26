@@ -36,8 +36,8 @@ CLIENT_PROCEDURE_BINDING(LOOT_INVENTORY_ITEM) {
         Response->Result = S2C_DATA_LOOT_RESULT_SLOTINUSE_ERROR;
     }
 
-    Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-    Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+    Character->SyncMask.Info = true;
+    Character->SyncPriority.Low = true;
 
     RTWorldDespawnItem(Runtime, World, Item);
 
@@ -71,8 +71,8 @@ CLIENT_PROCEDURE_BINDING(LOOT_CURRENCY_ITEM) {
 
         Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] += Item->ItemOptions;
 
-        Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-        Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+        Character->SyncMask.Info = true;
+        Character->SyncPriority.Low = true;
 
         Response->Count += 1;
 

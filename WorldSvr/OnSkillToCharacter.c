@@ -97,8 +97,8 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 		RTMovementEndDeadReckoning(Runtime, &Character->Movement);
         RTMovementSetPosition(Runtime, &Character->Movement, TargetPosition.X, TargetPosition.Y);
-		Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-		Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+		Character->SyncMask.Info = true;
+		Character->SyncPriority.Low = true;
 
 		SocketSend(Socket, Connection, Response);
 

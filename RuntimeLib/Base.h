@@ -62,6 +62,7 @@ typedef struct _RTQuestRewardItemData* RTQuestRewardItemDataRef;
 typedef struct _RTQuestRewardItemSetData* RTQuestRewardItemSetDataRef;
 typedef struct _RTQuestSlot* RTQuestSlotRef;
 typedef struct _RTQuickSlot* RTQuickSlotRef;
+typedef struct _RTCharacterRequestCraftInfo* RTCharacterRequestCraftInfoRef;
 typedef struct _RTRuntime* RTRuntimeRef;
 typedef struct _RTShopItemData* RTShopItemDataRef;
 typedef struct _RTShopData* RTShopDataRef;
@@ -76,12 +77,12 @@ typedef struct _RTDungeonTriggerData* RTDungeonTriggerDataRef;
 typedef struct _RTDungeonTriggerActionData* RTDungeonTriggerActionDataRef;
 typedef struct _RTDungeonData* RTDungeonDataRef;
 typedef struct _RTMissionDungeonPatternPartData* RTMissionDungeonPatternPartDataRef;
+typedef struct _RTCharacterWarehouseInfo* RTCharacterWarehouseInfoRef;
 typedef struct _RTWorldItem* RTWorldItemRef;
 typedef struct _RTWorldData* RTWorldDataRef;
 typedef struct _RTWorldContext* RTWorldContextRef;
 typedef struct _RTWorldChunk* RTWorldChunkRef;
 typedef struct _RTWorldManager* RTWorldManagerRef;
-typedef struct _RTCharacterWarehouseInfo* RTCharacterWarehouseInfoRef;
 
 struct _RTPosition {
 	Int32 X;

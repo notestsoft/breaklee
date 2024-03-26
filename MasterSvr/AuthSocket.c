@@ -14,7 +14,7 @@ Void AuthSocketOnConnect(
 
     Client->Auth.Connection = Connection;
 
-    IPC_DATA_AUTH_REQCONNECT* Request = PacketInit(IPC_DATA_AUTH_REQCONNECT);
+    IPC_DATA_AUTH_REQCONNECT* Request = PacketInitExtended(IPC_DATA_AUTH_REQCONNECT);
     Request->Command = IPC_AUTH_REQCONNECT;
     Request->ServerID = Context->Config.MasterSvr.ServerID;
     SocketSend(Socket, Connection, Request);

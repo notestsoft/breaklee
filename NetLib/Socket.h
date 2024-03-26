@@ -6,7 +6,7 @@
 
 EXTERN_C_BEGIN
 
-#define SOCKET_MAX_PACKET_SIZE 0xFFFF
+#define SOCKET_MAX_PACKET_SIZE 0x3FFFF
 
 #pragma pack(push, 1)
 

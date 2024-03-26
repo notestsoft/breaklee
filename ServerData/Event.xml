@@ -3,13 +3,16 @@
         <event_description content="Basics" />
         
         <event_shop>
-            <item slot_id="0" item_id="3103" option="999" duration_id="0" price="0"></item>
-            <item slot_id="1" item_id="3103" option="999" duration_id="0" price="0"></item>
+            <item slot_id="0" item_id="33556680" option="999" duration_id="0" price="0"></item>
+            <item slot_id="1" item_id="33556681" option="999" duration_id="0" price="0"></item>
+            <item slot_id="2" item_id="33556682" option="999" duration_id="0" price="0"></item>
+            <item slot_id="3" item_id="33556683" option="999" duration_id="0" price="0"></item>
+            <item slot_id="4" item_id="33556684" option="999" duration_id="0" price="0"></item>
         </event_shop>
     </event>
 
     <event id="2" type="2" use_flags="15" world_id="1" npc_id="49" description="Equipment">
-        <event_description content="Basics" />
+        <event_description content="Equipment" />
         
         <event_shop>
             <item slot_id="0" item_id="3103" option="999" duration_id="0" price="0"></item>
@@ -18,7 +21,7 @@
     </event_info>
 
     <event id="3" type="2" use_flags="15" world_id="1" npc_id="49" description="Essence Ability">
-        <event_description content="Basics" />
+        <event_description content="Essence Ability" />
         
         <event_shop>
             <item slot_id="0" item_id="3103" option="999" duration_id="0" price="0"></item>
@@ -27,7 +30,7 @@
     </event_info>
 
     <event id="4" type="2" use_flags="15" world_id="1" npc_id="49" description="Blended Ability">
-        <event_description content="Basics" />
+        <event_description content="Blended Ability" />
         
         <event_shop>
             <item slot_id="0" item_id="3103" option="999" duration_id="0" price="0"></item>
@@ -36,7 +39,7 @@
     </event_info>
 
     <event id="5" type="2" use_flags="15" world_id="1" npc_id="49" description="Karma Ability">
-        <event_description content="Basics" />
+        <event_description content="Karma Ability" />
         
         <event_shop>
             <item slot_id="0" item_id="3103" option="999" duration_id="0" price="0"></item>
@@ -45,7 +48,7 @@
     </event_info>
 
     <event id="6" type="2" use_flags="15" world_id="1" npc_id="49" description="Mercenaries">
-        <event_description content="Basics" />
+        <event_description content="Mercenaries" />
         
         <event_shop>
             <item slot_id="0" item_id="3103" option="999" duration_id="0" price="0"></item>
@@ -54,7 +57,7 @@
     </event_info>
 
     <event id="7" type="2" use_flags="15" world_id="1" npc_id="49" description="Basic Craft I">
-        <event_description content="Basics" />
+        <event_description content="Basic Craft I" />
         
         <event_shop>
             <item slot_id="0" item_id="3103" option="999" duration_id="0" price="0"></item>
@@ -63,7 +66,7 @@
     </event_info>
 
     <event id="8" type="2" use_flags="15" world_id="1" npc_id="49" description="Professional Craft I">
-        <event_description content="Basics" />
+        <event_description content="Professional Craft I" />
         
         <event_shop>
             <item slot_id="0" item_id="3103" option="999" duration_id="0" price="0"></item>
@@ -71,8 +74,8 @@
         </event_shop>
     </event_info>
 
-    <event id="9" type="2" use_flags="15" world_id="1" npc_id="10" description="Merit Mastery">
-        <event_description content="Basics" />
+    <event id="9" type="2" use_flags="15" world_id="1" npc_id="49" description="Merit Mastery">
+        <event_description content="Merit Mastery" />
         
         <event_shop>
             <item slot_id="0" item_id="3103" option="999" duration_id="0" price="0"></item>
@@ -80,8 +83,8 @@
         </event_shop>
     </event_info>
 
-    <event id="10" type="2" use_flags="15" world_id="1" npc_id="10" description="Honor Medal">
-        <event_description content="Basics" />
+    <event id="10" type="2" use_flags="15" world_id="1" npc_id="49" description="Honor Medal">
+        <event_description content="Honor Medal" />
         
         <event_shop>
             <item slot_id="0" item_id="3103" option="999" duration_id="0" price="0"></item>
@@ -89,8 +92,8 @@
         </event_shop>
     </event_info>
 
-    <event id="11" type="2" use_flags="15" world_id="1" npc_id="10" description="Collection I">
-        <event_description content="Basics" />
+    <event id="11" type="2" use_flags="15" world_id="1" npc_id="49" description="Collection I">
+        <event_description content="Collection I" />
         
         <event_shop>
             <item slot_id="0" item_id="3103" option="999" duration_id="0" price="0"></item>
@@ -98,8 +101,8 @@
         </event_shop>
     </event_info>
 
-    <event id="12" type="2" use_flags="15" world_id="1" npc_id="10" description="Collection II">
-        <event_description content="Basics" />
+    <event id="12" type="2" use_flags="15" world_id="1" npc_id="49" description="Collection II">
+        <event_description content="Collection II" />
         
         <event_shop>
             <item slot_id="0" item_id="3103" option="999" duration_id="0" price="0"></item>
@@ -107,8 +110,8 @@
         </event_shop>
     </event_info>
 
-    <event id="13" type="2" use_flags="15" world_id="1" npc_id="10" description="Transformation">
-        <event_description content="Basics" />
+    <event id="13" type="2" use_flags="15" world_id="1" npc_id="49" description="Transformation">
+        <event_description content="Transformation" />
         
         <event_shop>
             <item slot_id="0" item_id="3103" option="999" duration_id="0" price="0"></item>
@@ -116,8 +119,8 @@
         </event_shop>
     </event_info>
 
-    <event id="14" type="2" use_flags="15" world_id="1" npc_id="10" description="Upgrade I">
-        <event_description content="Basics" />
+    <event id="14" type="2" use_flags="15" world_id="1" npc_id="49" description="Upgrade I">
+        <event_description content="Upgrade I" />
         
         <event_shop>
             <item slot_id="0" item_id="3103" option="999" duration_id="0" price="0"></item>
@@ -125,8 +128,8 @@
         </event_shop>
     </event_info>
 
-    <event id="15" type="2" use_flags="15" world_id="1" npc_id="10" description="Upgrade II">
-        <event_description content="Basics" />
+    <event id="15" type="2" use_flags="15" world_id="1" npc_id="49" description="Upgrade II">
+        <event_description content="Upgrade II" />
         
         <event_shop>
             <item slot_id="0" item_id="3103" option="999" duration_id="0" price="0"></item>
@@ -134,8 +137,8 @@
         </event_shop>
     </event_info>
 
-    <event id="16" type="2" use_flags="15" world_id="1" npc_id="10" description="Dungeons">
-        <event_description content="Basics" />
+    <event id="16" type="2" use_flags="15" world_id="1" npc_id="49" description="Dungeons">
+        <event_description content="Dungeons" />
         
         <event_shop>
             <item slot_id="0" item_id="3103" option="999" duration_id="0" price="0"></item>

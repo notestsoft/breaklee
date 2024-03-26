@@ -24,9 +24,9 @@ UInt16 Command						\
 struct _ExtendedPacketSignature Signature;	\
 UInt16 Command
 
-#define IPC_DATA_SIGNATURE			\
-struct _PacketSignature Signature;	\
-UInt16 ConnectionID;				\
+#define IPC_DATA_SIGNATURE					\
+struct _ExtendedPacketSignature Signature;	\
+UInt16 ConnectionID;						\
 UInt16 Command
 
 #pragma pack(pop)

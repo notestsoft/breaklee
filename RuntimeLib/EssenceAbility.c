@@ -62,10 +62,10 @@ Bool RTCharacterAddEssenceAbility(
 
 		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, InventorySlotIndex);
 		Character->Info.Ability.Point -= AbilityCostLevel->AP;
-		Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-		Character->SyncMask |= RUNTIME_CHARACTER_SYNC_ESSENCE_ABILITY;
-		Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
-		Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_HIGH;
+		Character->SyncMask.Info = true;
+		Character->SyncMask.EssenceAbilityInfo = true;
+		Character->SyncMask.InventoryInfo = true;
+		Character->SyncPriority.High = true;
 		RTCharacterInitializeAttributes(Runtime, Character);
 
 		return true;
@@ -161,8 +161,8 @@ Bool RTCharacterUpgradeEssenceAbility(
 
 			if (DeleteItem) {
 				RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
-				Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
-				Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_HIGH;
+				Character->SyncMask.InventoryInfo = true;
+				Character->SyncPriority.Low = true;
 			}
 		}
 	}
@@ -170,10 +170,10 @@ Bool RTCharacterUpgradeEssenceAbility(
 	AbilitySlot->Level = AbilityCostLevel->Level;
 
 	Character->Info.Ability.Point -= AbilityCostLevel->AP;
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INFO;
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_ESSENCE_ABILITY;
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_HIGH;
+	Character->SyncMask.Info = true;
+	Character->SyncMask.EssenceAbilityInfo = true;
+	Character->SyncMask.InventoryInfo = true;
+	Character->SyncPriority.High = true;
 	RTCharacterInitializeAttributes(Runtime, Character);
 
 	return true;
@@ -200,8 +200,8 @@ Bool RTCharacterRemoveEssenceAbility(
 		);
 	}
 
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_ESSENCE_ABILITY;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_HIGH;
+	Character->SyncMask.EssenceAbilityInfo = true;
+	Character->SyncPriority.High = true;
 	RTCharacterInitializeAttributes(Runtime, Character);
 
 	return true;

@@ -27,7 +27,7 @@ Void ServerBroadcastWorldList(
     ServerRef Server,
     ServerContextRef Context
 ) {
-    IPC_DATA_AUTH_NFYWORLDLIST* Notification = PacketInit(IPC_DATA_AUTH_NFYWORLDLIST);
+    IPC_DATA_AUTH_NFYWORLDLIST* Notification = PacketInitExtended(IPC_DATA_AUTH_NFYWORLDLIST);
     Notification->Command = IPC_AUTH_NFYWORLDLIST;
     Notification->WorldCount = 0;
 

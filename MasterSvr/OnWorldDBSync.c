@@ -3,16 +3,16 @@
 #include "MasterDB.h"
 
 IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_REQDBSYNC, IPC_DATA_WORLD_REQDBSYNC) {
-	IPC_DATA_WORLD_ACKDBSYNC* Response = PacketInit(IPC_DATA_WORLD_ACKDBSYNC);
+	IPC_DATA_WORLD_ACKDBSYNC* Response = PacketInitExtended(IPC_DATA_WORLD_ACKDBSYNC);
 	Response->Command = IPC_WORLD_ACKDBSYNC;
 	Response->ConnectionID = Packet->ConnectionID;
 	Response->AccountID = Packet->AccountID;
 	Response->CharacterID = Packet->CharacterID;
-	Response->DBSyncMaskFailure = 0;
+	Response->SyncMaskFailed.RawValue = 0;
 
 	Int32 DataOffset = 0;
 
-	if (Packet->DBSyncMask & RUNTIME_CHARACTER_SYNC_INFO) {
+	if (Packet->SyncMask.Info) {
 		RTCharacterInfoRef CharacterInfo = (RTCharacterInfoRef)&Packet->Data[DataOffset];
 		DataOffset += sizeof(struct _RTCharacterInfo);
 
@@ -23,11 +23,11 @@ IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_REQDBSYNC, IPC_DATA_WORLD_REQDBSY
 		);
 
 		if (!Success) {
-			Response->DBSyncMaskFailure |= RUNTIME_CHARACTER_SYNC_INFO;
+			Response->SyncMaskFailed.Info = true;
 		}
 	}
 
-    if (Packet->DBSyncMask & RUNTIME_CHARACTER_SYNC_EQUIPMENT) {
+    if (Packet->SyncMask.EquipmentInfo) {
 		RTCharacterEquipmentInfoRef EquipmentInfo = (RTCharacterEquipmentInfoRef)&Packet->Data[DataOffset];
 		DataOffset += sizeof(struct _RTCharacterEquipmentInfo);
 
@@ -38,11 +38,11 @@ IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_REQDBSYNC, IPC_DATA_WORLD_REQDBSY
 		);
 
 		if (!Success) {
-			Response->DBSyncMaskFailure |= RUNTIME_CHARACTER_SYNC_EQUIPMENT;
+			Response->SyncMaskFailed.EquipmentInfo = true;
 		}
     }
 
-    if (Packet->DBSyncMask & RUNTIME_CHARACTER_SYNC_INVENTORY) {
+    if (Packet->SyncMask.InventoryInfo) {
 		RTCharacterInventoryInfoRef InventoryInfo = (RTCharacterInventoryInfoRef)&Packet->Data[DataOffset];
 		DataOffset += sizeof(struct _RTCharacterInventoryInfo);
 
@@ -53,11 +53,11 @@ IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_REQDBSYNC, IPC_DATA_WORLD_REQDBSY
 		);
 
 		if (!Success) {
-			Response->DBSyncMaskFailure |= RUNTIME_CHARACTER_SYNC_INVENTORY;
+			Response->SyncMaskFailed.InventoryInfo = true;
 		}
     }
 
-    if (Packet->DBSyncMask & RUNTIME_CHARACTER_SYNC_SKILLSLOT) {
+    if (Packet->SyncMask.SkillSlotInfo) {
 		RTCharacterSkillSlotInfoRef SkillSlotInfo = (RTCharacterSkillSlotInfoRef)&Packet->Data[DataOffset];
 		DataOffset += sizeof(struct _RTCharacterSkillSlotInfo);
 
@@ -68,11 +68,11 @@ IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_REQDBSYNC, IPC_DATA_WORLD_REQDBSY
 		);
 
 		if (!Success) {
-			Response->DBSyncMaskFailure |= RUNTIME_CHARACTER_SYNC_SKILLSLOT;
+			Response->SyncMaskFailed.SkillSlotInfo = true;
 		}
     }
 
-    if (Packet->DBSyncMask & RUNTIME_CHARACTER_SYNC_QUICKSLOT) {
+    if (Packet->SyncMask.QuickSlotInfo) {
 		RTCharacterQuickSlotInfoRef QuickSlotInfo = (RTCharacterQuickSlotInfoRef)&Packet->Data[DataOffset];
 		DataOffset += sizeof(struct _RTCharacterQuickSlotInfo);
 
@@ -83,11 +83,11 @@ IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_REQDBSYNC, IPC_DATA_WORLD_REQDBSY
 		);
 
 		if (!Success) {
-			Response->DBSyncMaskFailure |= RUNTIME_CHARACTER_SYNC_QUICKSLOT;
+			Response->SyncMaskFailed.QuickSlotInfo = true;
 		}
     }
 
-    if (Packet->DBSyncMask & RUNTIME_CHARACTER_SYNC_QUESTSLOT) {
+    if (Packet->SyncMask.QuestSlotInfo) {
 		RTCharacterQuestSlotInfoRef QuestSlotInfo = (RTCharacterQuestSlotInfoRef)&Packet->Data[DataOffset];
 		DataOffset += sizeof(struct _RTCharacterQuestSlotInfo);
 
@@ -98,11 +98,11 @@ IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_REQDBSYNC, IPC_DATA_WORLD_REQDBSY
 		);
 
 		if (!Success) {
-			Response->DBSyncMaskFailure |= RUNTIME_CHARACTER_SYNC_QUESTSLOT;
+			Response->SyncMaskFailed.QuestSlotInfo = true;
 		}
     }
 
-    if (Packet->DBSyncMask & RUNTIME_CHARACTER_SYNC_QUESTFLAG) {
+    if (Packet->SyncMask.QuestFlagInfo) {
 		RTCharacterQuestFlagInfoRef QuestFlagInfo = (RTCharacterQuestFlagInfoRef)&Packet->Data[DataOffset];
 		DataOffset += sizeof(struct _RTCharacterQuestFlagInfo);
 
@@ -113,11 +113,11 @@ IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_REQDBSYNC, IPC_DATA_WORLD_REQDBSY
 		);
 
 		if (!Success) {
-			Response->DBSyncMaskFailure |= RUNTIME_CHARACTER_SYNC_QUESTFLAG;
+			Response->SyncMaskFailed.QuestFlagInfo = true;
 		}
     }
 
-	if (Packet->DBSyncMask & RUNTIME_CHARACTER_SYNC_DUNGEONQUESTFLAG) {
+	if (Packet->SyncMask.DungeonQuestFlagInfo) {
 		RTCharacterDungeonQuestFlagInfoRef QuestFlagInfo = (RTCharacterDungeonQuestFlagInfoRef)&Packet->Data[DataOffset];
 		DataOffset += sizeof(struct _RTCharacterDungeonQuestFlagInfo);
 
@@ -128,11 +128,11 @@ IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_REQDBSYNC, IPC_DATA_WORLD_REQDBSY
 		);
 
 		if (!Success) {
-			Response->DBSyncMaskFailure |= RUNTIME_CHARACTER_SYNC_DUNGEONQUESTFLAG;
+			Response->SyncMaskFailed.DungeonQuestFlagInfo = true;
 		}
 	}
 
-	if (Packet->DBSyncMask & RUNTIME_CHARACTER_SYNC_ESSENCE_ABILITY) {
+	if (Packet->SyncMask.EssenceAbilityInfo) {
 		RTCharacterEssenceAbilityInfoRef AbilityInfo = (RTCharacterEssenceAbilityInfoRef)&Packet->Data[DataOffset];
 		DataOffset += sizeof(struct _RTCharacterEssenceAbilityInfo);
 
@@ -143,11 +143,11 @@ IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_REQDBSYNC, IPC_DATA_WORLD_REQDBSY
 		);
 
 		if (!Success) {
-			Response->DBSyncMaskFailure |= RUNTIME_CHARACTER_SYNC_ESSENCE_ABILITY;
+			Response->SyncMaskFailed.EssenceAbilityInfo = true;
 		}
 	}
 
-	if (Packet->DBSyncMask & RUNTIME_CHARACTER_SYNC_OVERLORD) {
+	if (Packet->SyncMask.OverlordMasteryInfo) {
 		RTCharacterOverlordMasteryInfoRef OverlordMasteryInfo = (RTCharacterOverlordMasteryInfoRef)&Packet->Data[DataOffset];
 		DataOffset += sizeof(struct _RTCharacterOverlordMasteryInfo);
 
@@ -158,11 +158,11 @@ IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_REQDBSYNC, IPC_DATA_WORLD_REQDBSY
 		);
 
 		if (!Success) {
-			Response->DBSyncMaskFailure |= RUNTIME_CHARACTER_SYNC_OVERLORD;
+			Response->SyncMaskFailed.OverlordMasteryInfo = true;
 		}
 	}
 
-	if (Packet->DBSyncMask & RUNTIME_CHARACTER_SYNC_COLLECTION) {
+	if (Packet->SyncMask.CollectionInfo) {
 		RTCharacterCollectionInfoRef CollectionInfo = (RTCharacterCollectionInfoRef)&Packet->Data[DataOffset];
 		DataOffset += sizeof(struct _RTCharacterCollectionInfo);
 
@@ -176,11 +176,11 @@ IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_REQDBSYNC, IPC_DATA_WORLD_REQDBSY
 		);
 
 		if (!Success) {
-			Response->DBSyncMaskFailure |= RUNTIME_CHARACTER_SYNC_COLLECTION;
+			Response->SyncMaskFailed.CollectionInfo = true;
 		}
 	}
 
-	if (Packet->DBSyncMask & RUNTIME_CHARACTER_SYNC_WAREHOUSE) {
+	if (Packet->SyncMask.WarehouseInfo) {
 		RTCharacterWarehouseInfoRef WarehouseInfo = (RTCharacterWarehouseInfoRef)&Packet->Data[DataOffset];
 		DataOffset += sizeof(struct _RTCharacterWarehouseInfo);
 
@@ -194,7 +194,7 @@ IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_REQDBSYNC, IPC_DATA_WORLD_REQDBSY
 		);
 
 		if (!Success) {
-			Response->DBSyncMaskFailure |= RUNTIME_CHARACTER_SYNC_WAREHOUSE;
+			Response->SyncMaskFailed.WarehouseInfo = true;
 		}
 	}
 }

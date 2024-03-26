@@ -118,8 +118,8 @@ CLIENT_PROCEDURE_BINDING(EVENT_ACTION) {
 
 		if (!RTInventorySetSlot(Runtime, &Character->InventoryInfo, &ItemSlot)) goto error;
 
-		Character->SyncMask |= RUNTIME_CHARACTER_SYNC_INVENTORY;
-		Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+		Character->SyncMask.InventoryInfo = true;
+		Character->SyncPriority.Low = true;
 
 		S2C_DATA_EVENT_ACTION_SHOP_ITEM* ResponseItem = PacketAppendStruct(S2C_DATA_EVENT_ACTION_SHOP_ITEM);
 		ResponseItem->Item = ItemSlot.Item;

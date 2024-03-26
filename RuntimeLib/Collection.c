@@ -20,8 +20,8 @@ RTCollectionSlotRef RTCharacterGetCollectionSlot(
 	assert(Character->CollectionInfo.Count + 1 < RUNTIME_CHARACTER_MAX_COLLECTION_SLOT_COUNT);
 	RTCollectionSlotRef Slot = &Character->CollectionInfo.Slots[Character->CollectionInfo.Count];
 	Character->CollectionInfo.Count += 1;
-	Character->SyncMask |= RUNTIME_CHARACTER_SYNC_COLLECTION;
-	Character->SyncPriority |= RUNTIME_CHARACTER_SYNC_PRIORITY_LOW;
+	Character->SyncMask.CollectionInfo = true;
+	Character->SyncPriority.Low = true;
 	memset(Slot, 0, sizeof(struct _RTCollectionSlot));
 	Slot->TypeID = TypeID;
 	Slot->CollectionID = CollectionID;

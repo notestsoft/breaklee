@@ -3,7 +3,7 @@
 #include "Server.h"
 
 IPC_PROCEDURE_BINDING(OnWorldVerifyLinks, IPC_WORLD_VERIFYLINKS, IPC_DATA_WORLD_VERIFYLINKS) {
-	IPC_DATA_WORLD_VERIFYRESULT* Response = PacketInit(IPC_DATA_WORLD_VERIFYRESULT);
+	IPC_DATA_WORLD_VERIFYRESULT* Response = PacketInitExtended(IPC_DATA_WORLD_VERIFYRESULT);
 	Response->Command = IPC_WORLD_VERIFYRESULT;
 	Response->ConnectionID = Packet->ConnectionID;
 	Response->ServerID = Packet->ServerID;
