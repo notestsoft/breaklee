@@ -3,27 +3,12 @@
 #include "Base.h"
 #include "Keychain.h"
 #include "Platform.h"
+#include "PacketBuffer.h"
 
 EXTERN_C_BEGIN
 
-#define SOCKET_MAX_PACKET_SIZE 0x3FFFF
+#define SOCKET_RECV_BUFFER_SIZE 4096
 
-#pragma pack(push, 1)
-
-struct _PacketSignature {
-    UInt16 Magic;
-    UInt16 Length;
-};
-
-struct _ExtendedPacketSignature {
-    UInt16 Magic;
-    UInt32 Length;
-};
-
-#pragma pack(pop)
-
-typedef struct _PacketSignature* PacketRef;
-typedef struct _ExtendedPacketSignature* ExtendedPacketRef;
 typedef struct _Socket* SocketRef;
 typedef struct _SocketConnection* SocketConnectionRef;
 
@@ -51,14 +36,7 @@ typedef Void (*SocketConnectionCallback)(
 typedef Void (*SocketPacketCallback)(
     SocketRef Socket,
     SocketConnectionRef Connection,
-    PacketRef Packet
-);
-
-typedef Int32 (*SocketRawPacketCallback)(
-    SocketRef Socket,
-    SocketConnectionRef Connection,
-    UInt8 *Buffer,
-    Int32 Length
+    Void *Packet
 );
 
 typedef Void* SocketConnectionIteratorRef;
@@ -68,9 +46,15 @@ struct _Socket {
     SocketHandle Handle;
     SocketAddress Address;
     UInt32 Flags;
+    UInt16 ProtocolIdentifier;
+    UInt16 ProtocolVersion;
+    UInt16 ProtocolExtension;
+    Index ReadBufferSize;
+    Index WriteBufferSize;
     Index MaxConnectionCount;
     Index NextConnectionID;
     Timestamp Timeout;
+    PacketBufferRef PacketBuffer;
     SocketConnectionCallback OnConnect;
     SocketConnectionCallback OnDisconnect;
     SocketPacketCallback OnSend;
@@ -88,16 +72,20 @@ struct _SocketConnection {
     Index ID;
     UInt32 Flags;
     struct _Keychain Keychain;
-    Int64 ReadBufferOffset;
-    UInt8 ReadBuffer[SOCKET_MAX_PACKET_SIZE];
-    Int64 WriteBufferOffset;
-    UInt8 WriteBuffer[SOCKET_MAX_PACKET_SIZE];
+    PacketBufferRef PacketBuffer;
+    MemoryBufferRef ReadBuffer;
+    MemoryBufferRef WriteBuffer;
     Void* Userdata;
 };
 
 SocketRef SocketCreate(
     AllocatorRef Allocator,
     UInt32 Flags,
+    UInt16 ProtocolIdentifier,
+    UInt16 ProtocolVersion,
+    UInt16 ProtocolExtension,
+    Index ReadBufferSize,
+    Index WriteBufferSize,
     Index MaxConnectionCount,
     SocketConnectionCallback OnConnect,
     SocketConnectionCallback OnDisconnect,

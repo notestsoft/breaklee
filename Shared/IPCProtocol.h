@@ -10,11 +10,11 @@ EXTERN_C_BEGIN
 #pragma pack(push, 1)
 
 enum {
-#define IPC_AUTH_COMMAND(__NAME__, __VALUE__) \
-	__NAME__ = __VALUE__,
+#define IPC_AUTH_COMMAND(__NAME__, __COMMAND__) \
+	__NAME__ = __COMMAND__,
 
-#define IPC_WORLD_COMMAND(__NAME__, __VALUE__) \
-	__NAME__ = __VALUE__,
+#define IPC_WORLD_COMMAND(__NAME__, __COMMAND__) \
+	__NAME__ = __COMMAND__,
    
 #include "IPCCommands.h"
 };
@@ -22,17 +22,17 @@ enum {
 /* --- AUTH <> MASTER --- */
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	UInt8 ServerID;
 } IPC_DATA_AUTH_REQCONNECT;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	Bool Success;
 } IPC_DATA_AUTH_ACKCONNECT;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	UInt8 WorldCount;
 	UInt8 Data[0];
 	/* IPC_DATA_AUTH_WORLD[WorldCount] */
@@ -48,7 +48,7 @@ typedef struct {
 } IPC_DATA_AUTH_WORLD;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	UInt8 ServerID;
 	UInt8 WorldID;
 	Int32 AccountID;
@@ -58,27 +58,27 @@ typedef struct {
 } IPC_DATA_AUTH_VERIFYLINKS;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	UInt8 ServerID;
 	UInt8 WorldID;
 	UInt8 Status;
 } IPC_DATA_AUTH_VERIFYRESULT;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	Int64 AccountID;
 	Char Credentials[MAX_CREDENTIALS_LENGTH + 1];
 } IPC_DATA_AUTH_REQVERIFYPASSWORD;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	Bool Success;
 } IPC_DATA_AUTH_ACKVERIFYPASSWORD;
 
 /* --- WORLD <> MASTER --- */
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	UInt8 WorldID;
 	Char WorldHost[65];
 	UInt16 WorldPort;
@@ -87,19 +87,19 @@ typedef struct {
 } IPC_DATA_WORLD_REQCONNECT;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	UInt8 ServerID;
 	Bool Success;
 } IPC_DATA_WORLD_ACKCONNECT;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	UInt16 PlayerCount;
 	UInt16 MaxPlayerCount;
 } IPC_DATA_WORLD_NFYUSERLIST;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	UInt8 ServerID;
 	UInt8 WorldID;
 	UInt32 AuthKey;
@@ -109,7 +109,7 @@ typedef struct {
 } IPC_DATA_WORLD_VERIFYLINKS;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	UInt8 ServerID;
 	UInt8 WorldID;
 	Int64 AccountID;
@@ -117,23 +117,23 @@ typedef struct {
 } IPC_DATA_WORLD_VERIFYRESULT;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	Int64 AccountID;
 	Char SessionIP[MAX_ADDRESSIP_LENGTH + 1];
 } IPC_DATA_WORLD_REQGETCHARACTERS;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	GAME_DATA_CHARACTER_INDEX Characters[MAX_CHARACTER_COUNT];
 } IPC_DATA_WORLD_ACKGETCHARACTERS;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	Int64 AccountID;
 } IPC_DATA_WORLD_REQPREMIUMSERVICE;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	Int64 AccountID;
 	Bool HasService;
 	UInt32 ServiceType;
@@ -142,7 +142,7 @@ typedef struct {
 } IPC_DATA_WORLD_ACKPREMIUMSERVICE;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	Int64 AccountID;
 	UInt8 SlotIndex;
 	UInt8 NameLength;
@@ -155,21 +155,21 @@ typedef struct {
 } IPC_DATA_WORLD_REQCREATECHARACTER;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	UInt8 Status;
 	UInt8 SlotIndex;
 	GAME_DATA_CHARACTER_INDEX Character;
 } IPC_DATA_WORLD_ACKCREATECHARACTER;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	Int64 AccountID;
 	Char SessionIP[MAX_ADDRESSIP_LENGTH + 1];
 	Timestamp SessionTimeout;
 } IPC_DATA_WORLD_UPDATE_ACCOUNT_SESSION_DATA;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	Int32 AccountID;
 	Int32 CharacterSlotID;
 	UInt64 CharacterSlotOrder;
@@ -177,7 +177,7 @@ typedef struct {
 } IPC_DATA_WORLD_UPDATE_ACCOUNT_CHARACTER_DATA;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	Int64 AccountID;
 	Char CharacterPassword[MAX_SUBPASSWORD_LENGTH + 1];
 	UInt32 CharacterQuestion;
@@ -185,21 +185,21 @@ typedef struct {
 } IPC_DATA_WORLD_UPDATE_ACCOUNT_SUBPASSWORD_DATA;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	Int64 AccountID;
 	Int32 CharacterID;
 	UInt32 CharacterIndex;
 } IPC_DATA_WORLD_REQGETCHARACTER;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	UInt32 CharacterIndex;
 	Bool Success;
 	GAME_DATA_CHARACTER Character;
 } IPC_DATA_WORLD_ACKGETCHARACTER;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	Int64 AccountID;
 	Int32 CharacterID;
 	union _RTCharacterSyncMask SyncMask;
@@ -208,7 +208,7 @@ typedef struct {
 } IPC_DATA_WORLD_REQDBSYNC;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	Int64 AccountID;
 	Int32 CharacterID;
 	union _RTCharacterSyncMask SyncMaskFailed;
@@ -216,13 +216,13 @@ typedef struct {
 } IPC_DATA_WORLD_ACKDBSYNC;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	Int64 AccountID;
 	Char Credentials[MAX_CREDENTIALS_LENGTH + 1];
 } IPC_DATA_WORLD_REQVERIFYPASSWORD;
 
 typedef struct {
-	IPC_DATA_SIGNATURE;
+	IPC_DATA_SIGNATURE_EXTENDED;
 	Bool Success;
 } IPC_DATA_WORLD_ACKVERIFYPASSWORD;
 

@@ -8,8 +8,7 @@
 CLIENT_PROCEDURE_BINDING(WARP) {	
     if (!Character) goto error;
 
-    S2C_DATA_WARP* Response = PacketInit(S2C_DATA_WARP);
-    Response->Command = S2C_WARP;
+    S2C_DATA_WARP* Response = PacketBufferInit(Connection->PacketBuffer, S2C, WARP);
     Response->Result = 1;
 
     if (RTRuntimeWarpCharacter(Runtime, Character->ID, Packet->NpcID, Packet->WarpPositionX, Packet->WarpPositionY, Packet->WarpWorldID, Packet->WarpIndex, Packet->SlotIndex)) {

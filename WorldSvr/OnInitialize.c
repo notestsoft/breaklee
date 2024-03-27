@@ -9,13 +9,12 @@ Void SendEventList(
     ServerContextRef Context,
     ClientContextRef Client
 ) {
-    S2C_DATA_NFY_EVENT_LIST* EventList = PacketInit(S2C_DATA_NFY_EVENT_LIST);
-    EventList->Command = S2C_NFY_EVENT_LIST;
+    S2C_DATA_NFY_EVENT_LIST* EventList = PacketBufferInit(Client->Connection->PacketBuffer, S2C, NFY_EVENT_LIST);
     EventList->Count = Context->Runtime->Context->EventCount;
 
     for (Index Index = 0; Index < Context->Runtime->Context->EventCount; Index += 1) {
         RTDataEventRef EventData = &Context->Runtime->Context->EventList[Index];
-        PacketAppendValue(UInt32, EventData->ID);
+        PacketBufferAppendValue(Client->Connection->PacketBuffer, UInt32, EventData->ID);
     }
 
     SocketSend(Context->ClientSocket, Client->Connection, EventList);
@@ -25,17 +24,16 @@ Void SendEventInfo(
     ServerContextRef Context,
     ClientContextRef Client
 ) {
-    S2C_DATA_NFY_EVENT_INFO* EventInfo = PacketInitExtended(S2C_DATA_NFY_EVENT_INFO);
-    EventInfo->Command = S2C_NFY_EVENT_INFO;
+    S2C_DATA_NFY_EVENT_INFO* EventInfo = PacketBufferInitExtended(Client->Connection->PacketBuffer, S2C, NFY_EVENT_INFO);
     EventInfo->HasEventInfo = (Context->Runtime->Context->EventCount > 0) ? 1 : 0;
 
-    S2C_DATA_NFY_EVENT_INFO_HEADER* EventInfoHeader = PacketAppendStruct(S2C_DATA_NFY_EVENT_INFO_HEADER);
+    S2C_DATA_NFY_EVENT_INFO_HEADER* EventInfoHeader = PacketBufferAppendStruct(Client->Connection->PacketBuffer, S2C_DATA_NFY_EVENT_INFO_HEADER);
     EventInfoHeader->EventCount = Context->Runtime->Context->EventCount;
 
     for (Int32 Index = 0; Index < Context->Runtime->Context->EventCount; Index += 1) {
         RTDataEventRef EventData = &Context->Runtime->Context->EventList[Index];
 
-        S2C_DATA_NFY_EVENT_INFO_EVENT* EventInfoEvent = PacketAppendStruct(S2C_DATA_NFY_EVENT_INFO_EVENT);
+        S2C_DATA_NFY_EVENT_INFO_EVENT* EventInfoEvent = PacketBufferAppendStruct(Client->Connection->PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT);
         EventInfoEvent->EventIndex = EventData->ID;
         EventInfoEvent->EventType = EventData->Type;
         EventInfoEvent->EventFlags = EventData->UseFlags;
@@ -44,12 +42,12 @@ Void SendEventInfo(
         EventInfoEvent->EventUpdateTimestamp = GetTimestamp();
         EventInfoEvent->WorldIndex = EventData->WorldIndex;
         EventInfoEvent->NpcIndex = EventData->NpcIndex;
-        PacketAppendCString(EventData->Description);
+        PacketBufferAppendCString(Client->Connection->PacketBuffer, EventData->Description);
 
-        S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO* EventItemInfo = PacketAppendStruct(S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO);
+        S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO* EventItemInfo = PacketBufferAppendStruct(Client->Connection->PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO);
         EventItemInfo->ItemCount = 0;
 
-        PacketAppendValue(UInt32, 0);
+        PacketBufferAppendValue(Client->Connection->PacketBuffer, UInt32, 0);
     }
 
     SocketSend(Context->ClientSocket, Client->Connection, EventInfo);
@@ -60,8 +58,7 @@ CLIENT_PROCEDURE_BINDING(INITIALIZE) {
 	
     if (!(Client->Flags & CLIENT_FLAGS_CHARACTER_INDEX_LOADED) || Client->Account.AccountID < 1) goto error;
    
-	IPC_DATA_WORLD_REQGETCHARACTER* Request = PacketInitExtended(IPC_DATA_WORLD_REQGETCHARACTER);
-	Request->Command = IPC_WORLD_REQGETCHARACTER;
+	IPC_DATA_WORLD_REQGETCHARACTER* Request = PacketBufferInitExtended(Context->MasterSocket->PacketBuffer, IPC, WORLD_REQGETCHARACTER);
 	Request->ConnectionID = Connection->ID;
 	Request->AccountID = Client->Account.AccountID;
     Request->CharacterID = (Packet->CharacterIndex - Packet->CharacterIndex % MAX_CHARACTER_COUNT) / MAX_CHARACTER_COUNT;
@@ -107,9 +104,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     }
     */
 
-    S2C_DATA_INITIALIZE* Response = PacketInitExtended(S2C_DATA_INITIALIZE);
-    Response->Command = S2C_INITIALIZE;
-
+    S2C_DATA_INITIALIZE* Response = PacketBufferInitExtended(ClientConnection->PacketBuffer, S2C, INITIALIZE);
     // TODO: Populate correct data!!!
 
     /* Server Info */
@@ -188,19 +183,20 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     Response->PlatinumMeritPoint[0] = 0;
     Response->PlatinumMeritPoint[1] = 0;
     Response->CharacterCreationDate = Packet->Character.CreationDate;
-    Response->ForceGem = Packet->Character.CharacterData.Currency[RUNTIME_CHARACTER_CURRENCY_GEM];
+    Response->ForceGem = (UInt32)Packet->Character.CharacterData.Currency[RUNTIME_CHARACTER_CURRENCY_GEM];
     Response->OverlordLevel = Packet->Character.CharacterData.Overlord.Level;
     Response->OverlordExp = Packet->Character.CharacterData.Overlord.Exp;
     Response->OverlordPoint = Packet->Character.CharacterData.Overlord.Point;
     // Response->SpecialGiftboxPoint = 0;
     Response->TranscendencePoint = 0;
     Response->NameLength = strlen(Packet->Character.Name) + 1;
-    CString Name = (CString)PacketAppendMemory(strlen(Packet->Character.Name));
+    CString Name = (CString)PacketBufferAppend(ClientConnection->PacketBuffer, strlen(Packet->Character.Name));
     memcpy(Name, Packet->Character.Name, strlen(Packet->Character.Name));
 
     Response->EquipmentSlotCount = Packet->Character.EquipmentData.Count;
     if (Packet->Character.EquipmentData.Count > 0) {
-        PacketAppendMemoryCopy(
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
             Packet->Character.EquipmentData.Slots,
             sizeof(struct _RTItemSlot) * Packet->Character.EquipmentData.Count
         );
@@ -211,7 +207,8 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
 
     Response->InventorySlotCount = Packet->Character.InventoryData.Count;
     if (Packet->Character.InventoryData.Count > 0) {
-        PacketAppendMemoryCopy(
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
             Packet->Character.InventoryData.Slots,
             sizeof(struct _RTItemSlot) * Packet->Character.InventoryData.Count
         );
@@ -219,7 +216,8 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
 
     Response->SkillSlotCount = Packet->Character.SkillSlotData.Count;
     if (Packet->Character.SkillSlotData.Count > 0) {
-        PacketAppendMemoryCopy(
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
             Packet->Character.SkillSlotData.Skills,
             sizeof(struct _RTSkillSlot) * Packet->Character.SkillSlotData.Count
         );
@@ -227,7 +225,8 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
 
     Response->QuickSlotCount = Packet->Character.QuickSlotData.Count;
     if (Packet->Character.QuickSlotData.Count > 0) {
-        PacketAppendMemoryCopy(
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
             Packet->Character.QuickSlotData.QuickSlots,
             sizeof(struct _RTQuickSlot) * Packet->Character.QuickSlotData.Count
         );
@@ -237,7 +236,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     for (Int32 Index = 0; Index < Packet->Character.EssenceAbilityData.Count; Index += 1) {
         RTEssenceAbilitySlotRef AbilitySlot = &Packet->Character.EssenceAbilityData.Slots[Index];
 
-        S2C_DATA_INITIALIZE_ESSENCE_ABILITY_SLOT* ResponseSlot = PacketAppendStruct(S2C_DATA_INITIALIZE_ESSENCE_ABILITY_SLOT);
+        S2C_DATA_INITIALIZE_ESSENCE_ABILITY_SLOT* ResponseSlot = PacketBufferAppendStruct(ClientConnection->PacketBuffer, S2C_DATA_INITIALIZE_ESSENCE_ABILITY_SLOT);
         ResponseSlot->AbilityID = AbilitySlot->AbilityID;
         ResponseSlot->Level = AbilitySlot->Level;
         ResponseSlot->Unknown1 = AbilitySlot->Unknown1;
@@ -261,7 +260,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
             NpcActionFlags |= 1 << Index;
         }
 
-        S2C_DATA_INITIALIZE_QUEST_INDEX* QuestResponse = PacketAppendStruct(S2C_DATA_INITIALIZE_QUEST_INDEX);
+        S2C_DATA_INITIALIZE_QUEST_INDEX* QuestResponse = PacketBufferAppendStruct(ClientConnection->PacketBuffer, S2C_DATA_INITIALIZE_QUEST_INDEX);
         QuestResponse->QuestIndex = QuestSlot->QuestIndex;
         QuestResponse->NpcActionFlags = NpcActionFlags;
         QuestResponse->DisplayNotice = QuestSlot->DisplayNotice;
@@ -270,14 +269,14 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
 
         Int32 CounterCount = Quest->MissionMobCount + Quest->MissionItemCount;
         for (Int32 CounterIndex = 0; CounterIndex < CounterCount; CounterIndex++) {
-            PacketAppendValue(UInt8, QuestSlot->Counter[CounterIndex]);
+            PacketBufferAppendValue(ClientConnection->PacketBuffer, UInt8, QuestSlot->Counter[CounterIndex]);
         }
 
         Response->QuestSlotCount += 1;
     }
     /*
     Response->PremiumServiceCount = 1;
-    S2C_DATA_INITIALIZE_PREMIUM_SERVICE_SLOT* PremiumServiceSlot = PacketAppendStruct(S2C_DATA_INITIALIZE_PREMIUM_SERVICE_SLOT);
+    S2C_DATA_INITIALIZE_PREMIUM_SERVICE_SLOT* PremiumServiceSlot = PacketBufferAppendStruct(S2C_DATA_INITIALIZE_PREMIUM_SERVICE_SLOT);
     PremiumServiceSlot->ServiceIndex = 1;
     PremiumServiceSlot->Unknown1 = 0;
     PremiumServiceSlot->Duration.Year = 1;
@@ -293,7 +292,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
 
     Response->OverlordMasteryCount = Packet->Character.OverlordData.Count;
     for (Int32 Index = 0; Index < Packet->Character.OverlordData.Count; Index += 1) {
-        S2C_DATA_OVERLORD_MASTERY_SLOT* MasterySlot = PacketAppendStruct(S2C_DATA_OVERLORD_MASTERY_SLOT);
+        S2C_DATA_OVERLORD_MASTERY_SLOT* MasterySlot = PacketBufferAppendStruct(ClientConnection->PacketBuffer, S2C_DATA_OVERLORD_MASTERY_SLOT);
         MasterySlot->MasteryIndex = Packet->Character.OverlordData.Slots[Index].MasteryIndex;
         MasterySlot->Level = Packet->Character.OverlordData.Slots[Index].Level;
     }
@@ -303,7 +302,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     
     Response->SpecialGiftboxCount = 5;
     for (Int32 Index = 0; Index < 5; Index += 1) {
-        RTGiftBoxInfoRef GiftBox = PacketAppendStruct(struct _RTGiftBoxInfo);
+        RTGiftBoxInfoRef GiftBox = PacketBufferAppendStruct(ClientConnection->PacketBuffer, struct _RTGiftBoxInfo);
         GiftBox->Index = Index;
         GiftBox->ReceivedCount = 333;
         GiftBox->ElapsedTime = 0;
@@ -314,7 +313,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     Response->CollectionCount = Packet->Character.CollectionData.Count;
 
     for (Int32 Index = 0; Index < Packet->Character.CollectionData.Count; Index += 1) {
-        S2C_DATA_COLLECTION_SLOT* CollectionSlot = PacketAppendStruct(S2C_DATA_COLLECTION_SLOT);
+        S2C_DATA_COLLECTION_SLOT* CollectionSlot = PacketBufferAppendStruct(ClientConnection->PacketBuffer, S2C_DATA_COLLECTION_SLOT);
         CollectionSlot->TypeID = Packet->Character.CollectionData.Slots[Index].TypeID;
         CollectionSlot->CollectionID = Packet->Character.CollectionData.Slots[Index].CollectionID;
         CollectionSlot->MissionID = Packet->Character.CollectionData.Slots[Index].MissionID;

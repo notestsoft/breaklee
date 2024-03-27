@@ -139,6 +139,13 @@ Void ReadConfigUInt64(
     UInt64* Result
 );
 
+Void ReadConfigIndex(
+    CString FilePath,
+    CString KeyPath,
+    CString Default,
+    Index* Result
+);
+
 Timestamp PlatformGetTickCount();
 
 EXTERN_C_END

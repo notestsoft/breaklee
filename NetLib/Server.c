@@ -1,5 +1,5 @@
 #include "Server.h"
-#include "PacketBuilder.h"
+#include "PacketBuffer.h"
 
 Void _ServerSocketOnConnect(
     SocketRef Socket,
@@ -14,11 +14,14 @@ Void _ServerSocketOnDisconnect(
 Void _ServerSocketOnReceived(
     SocketRef Socket,
     SocketConnectionRef Connection,
-    PacketRef Packet
+    Void *Packet
 );
 
 typedef UInt16 (*PacketGetCommandCallback)(
-    PacketRef Packet
+    UInt16 ProtocolIdentifier,
+    UInt16 ProtocolVersion,
+    UInt16 ProtocolExtension,
+    Void *Packet
 );
 
 struct _ServerSocketContext {
@@ -90,6 +93,11 @@ SocketRef ServerCreateSocket(
     CString SocketHost,
     UInt16 SocketPort,
     Index ConnectionContextSize,
+    UInt16 ProtocolIdentifier,
+    UInt16 ProtocolVersion,
+    UInt16 ProtocolExtension,
+    Index ReadBufferSize,
+    Index WriteBufferSize,
     Index MaxConnectionCount,
     ServerConnectionCallback OnConnect,
     ServerConnectionCallback OnDisconnect
@@ -99,6 +107,11 @@ SocketRef ServerCreateSocket(
     SocketContext->Socket = SocketCreate(
         Server->Allocator,
         SocketFlags,
+        ProtocolIdentifier,
+        ProtocolVersion,
+        ProtocolExtension,
+        ReadBufferSize,
+        WriteBufferSize,
         MaxConnectionCount,
         _ServerSocketOnConnect,
         _ServerSocketOnDisconnect,
@@ -119,7 +132,7 @@ SocketRef ServerCreateSocket(
     }
     
     if (SocketFlags & SOCKET_FLAGS_IPC) {
-        SocketContext->PacketGetCommandCallback = &IPCPacketGetCommand;
+        SocketContext->PacketGetCommandCallback = &ServerPacketGetCommand;
     }
 
     return SocketContext->Socket;
@@ -202,10 +215,16 @@ Void _ServerSocketOnDisconnect(
 Void _ServerSocketOnReceived(
     SocketRef Socket,
     SocketConnectionRef Connection,
-    PacketRef Packet
+    Void *Packet
 ) {
     ServerSocketContextRef SocketContext = (ServerSocketContextRef)Socket->Userdata;
-    Index Command = (Index)SocketContext->PacketGetCommandCallback(Packet);
+    Index Command = (Index)SocketContext->PacketGetCommandCallback(
+        Socket->ProtocolIdentifier,
+        Socket->ProtocolVersion,
+        Socket->ProtocolExtension,
+        Packet
+    );
+
     ServerPacketCallback *CommandCallback = (ServerPacketCallback*)DictionaryLookup(SocketContext->CommandRegistry, &Command);
     if (CommandCallback) (*CommandCallback)(
         SocketContext->Server,
@@ -217,6 +236,12 @@ Void _ServerSocketOnReceived(
     );
     else {
         LogMessageFormat(LOG_LEVEL_WARNING, "Received unknown packet: %d", (Int32)Command);
-        PacketLogBytes(Packet);
+        
+        PacketLogBytes(
+            Socket->ProtocolIdentifier,
+            Socket->ProtocolVersion,
+            Socket->ProtocolExtension,
+            Packet
+        );
     }
 }

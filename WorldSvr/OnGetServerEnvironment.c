@@ -8,8 +8,7 @@
 CLIENT_PROCEDURE_BINDING(GET_SERVER_ENVIRONMENT) {
 	if (!(Client->Flags & CLIENT_FLAGS_VERIFIED) || Client->Account.AccountID < 1) goto error;
 
-	S2C_DATA_GET_SERVER_ENVIRONMENT* Response = PacketInit(S2C_DATA_GET_SERVER_ENVIRONMENT);
-	Response->Command = S2C_GET_SERVER_ENVIRONMENT;
+	S2C_DATA_GET_SERVER_ENVIRONMENT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_SERVER_ENVIRONMENT);
 	Response->MaxLevel = Context->Config.Environment.MaxLevel;
 	Response->DummyEnabled = Context->Config.Environment.DummyEnabled;
 	Response->CashshopEnabled = Context->Config.Environment.CashshopEnabled;

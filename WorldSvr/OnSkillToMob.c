@@ -71,11 +71,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 		goto error;
 	*/
 
-	Int32 SkillPositionX = Packet->PositionTarget.X;
-	Int32 SkillPositionY = Packet->PositionTarget.Y;
-
-	S2C_DATA_SKILL_TO_MOB* Response = PacketInit(S2C_DATA_SKILL_TO_MOB);
-	Response->Command = S2C_SKILL_TO_MOB;
+	S2C_DATA_SKILL_TO_MOB* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SKILL_TO_MOB);
 	Response->SkillIndex = Packet->SkillIndex;
 	Response->CharacterHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
 	Response->CharacterMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
@@ -91,7 +87,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 	// TODO: Add evaluation for each target
 	for (Int32 Index = 0; Index < Packet->TargetCount; Index += 1) {
 		C2S_DATA_SKILL_TO_MOB_TARGET* Target = &Packet->Data[Index];
-		S2C_DATA_SKILL_TO_MOB_TARGET* TargetResponse = PacketAppendStruct(S2C_DATA_SKILL_TO_MOB_TARGET);
+		S2C_DATA_SKILL_TO_MOB_TARGET* TargetResponse = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_TO_MOB_TARGET);
 		TargetResponse->Entity = Target->Entity;
 		TargetResponse->EntityIDType = Target->EntityIDType;
 
@@ -148,8 +144,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 		// TODO: This should be calculated globally inside the mob logic when it dies by a bfx effect and no active attack!
 		if (Result.IsDead) {
 			if (RTCharacterIncrementQuestMobCounter(Runtime, Character, Mob->Spawn.MobSpeciesIndex)) {
-				S2C_DATA_NFY_QUEST_MOB_KILL* Notification = PacketInit(S2C_DATA_NFY_QUEST_MOB_KILL);
-				Notification->Command = S2C_NFY_QUEST_MOB_KILL;
+				S2C_DATA_NFY_QUEST_MOB_KILL* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_QUEST_MOB_KILL);
 				Notification->MobSpeciesIndex = Mob->Spawn.MobSpeciesIndex;
 				Notification->SkillIndex = 0;
 				Notification->Unknown1 = 0;
@@ -185,8 +180,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 		);
 	}
 
-	S2C_DATA_NFY_SKILL_TO_MOB* Notification = PacketInit(S2C_DATA_NFY_SKILL_TO_MOB);
-	Notification->Command = S2C_NFY_SKILL_TO_MOB;
+	S2C_DATA_NFY_SKILL_TO_MOB* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_SKILL_TO_MOB);
 	Notification->SkillIndex = Response->SkillIndex;
 	Notification->TargetCount = Response->TargetCount;
 	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
@@ -196,7 +190,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 
 	for (Int32 Index = 0; Index < Response->TargetCount; Index++) {
 		S2C_DATA_SKILL_TO_MOB_TARGET* TargetResponse = &Response->Data[Index];
-		S2C_DATA_NFY_SKILL_TO_MOB_TARGET* TargetNotification = PacketAppendStruct(S2C_DATA_NFY_SKILL_TO_MOB_TARGET);
+		S2C_DATA_NFY_SKILL_TO_MOB_TARGET* TargetNotification = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_NFY_SKILL_TO_MOB_TARGET);
 		TargetNotification->Entity = TargetResponse->Entity;
 		TargetNotification->EntityIDType = TargetResponse->EntityIDType;
 		TargetNotification->AttackType = TargetResponse->AttackType;

@@ -3,8 +3,7 @@
 #include "MasterDB.h"
 
 IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_REQDBSYNC, IPC_DATA_WORLD_REQDBSYNC) {
-	IPC_DATA_WORLD_ACKDBSYNC* Response = PacketInitExtended(IPC_DATA_WORLD_ACKDBSYNC);
-	Response->Command = IPC_WORLD_ACKDBSYNC;
+	IPC_DATA_WORLD_ACKDBSYNC* Response = PacketBufferInitExtended(Connection->PacketBuffer, IPC, WORLD_ACKDBSYNC);
 	Response->ConnectionID = Packet->ConnectionID;
 	Response->AccountID = Packet->AccountID;
 	Response->CharacterID = Packet->CharacterID;
@@ -197,4 +196,6 @@ IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_REQDBSYNC, IPC_DATA_WORLD_REQDBSY
 			Response->SyncMaskFailed.WarehouseInfo = true;
 		}
 	}
+ 
+    SocketSend(Socket, Connection, Response);
 }

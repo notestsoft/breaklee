@@ -8,13 +8,17 @@
 CLIENT_PROCEDURE_BINDING(OPEN_GIFTBOX) {
     if (!Character) goto error;
 
-    PacketLogBytes(Packet);
-
-    S2C_DATA_OPEN_GIFTBOX* Response = PacketInit(S2C_DATA_OPEN_GIFTBOX);
-    Response->Command = S2C_OPEN_GIFTBOX;
+	PacketLogBytes(
+        Socket->ProtocolIdentifier,
+        Socket->ProtocolVersion,
+        Socket->ProtocolExtension,
+        Packet
+    );
+    
+    S2C_DATA_OPEN_GIFTBOX* Response = PacketBufferInit(Connection->PacketBuffer, S2C, OPEN_GIFTBOX);
     Response->Count = 1;
     
-    S2C_DATA_OPEN_GIFTBOX_ITEM* Item = PacketAppendStruct(S2C_DATA_OPEN_GIFTBOX_ITEM);
+    S2C_DATA_OPEN_GIFTBOX_ITEM* Item = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_OPEN_GIFTBOX_ITEM);
     RTItem ItemID;
     ItemID.ID = 33556376;
     ItemID.UpgradeLevel = 20;
@@ -31,10 +35,14 @@ error:
 CLIENT_PROCEDURE_BINDING(OPEN_GIFTBOX_UNKNOWN) {
     if (!Character) goto error;
 
-    PacketLogBytes(Packet);
+    PacketLogBytes(
+        Socket->ProtocolIdentifier,
+        Socket->ProtocolVersion,
+        Socket->ProtocolExtension,
+        Packet
+    );
 
-    S2C_DATA_OPEN_GIFTBOX_UNKNOWN* Response = PacketInit(S2C_DATA_OPEN_GIFTBOX_UNKNOWN);
-    Response->Command = S2C_OPEN_GIFTBOX_UNKNOWN;
+    S2C_DATA_OPEN_GIFTBOX_UNKNOWN* Response = PacketBufferInit(Connection->PacketBuffer, S2C, OPEN_GIFTBOX_UNKNOWN);
     Response->Count = Packet->Count;
     Response->Unknown[16] = 1;
     Response->Unknown[33] = Packet->Data[0].InventorySlotIndex;

@@ -103,8 +103,7 @@ CLIENT_PROCEDURE_BINDING(PUSH_EQUIPMENT_ITEM) {
     while (NextSlotIndex >= 0) {
         if (!RTEquipmentRemoveSlot(Runtime, &Character->EquipmentInfo, NextSlotIndex, &LeftSlot)) break;
 
-        S2C_DATA_NFY_UNEQUIP_ITEM* Notification = PacketInit(S2C_DATA_NFY_UNEQUIP_ITEM);
-        Notification->Command = S2C_NFY_UNEQUIP_ITEM;
+        S2C_DATA_NFY_UNEQUIP_ITEM* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_UNEQUIP_ITEM);
         Notification->CharacterIndex = Character->CharacterIndex;
         Notification->EquipmentSlotIndex = LeftSlot.SlotIndex;
         BroadcastToWorld(
@@ -127,8 +126,7 @@ CLIENT_PROCEDURE_BINDING(PUSH_EQUIPMENT_ITEM) {
                 FatalError("Internal inconsistency!");
             }
 
-            S2C_DATA_NFY_EQUIP_ITEM* Notification = PacketInit(S2C_DATA_NFY_EQUIP_ITEM);
-            Notification->Command = S2C_NFY_EQUIP_ITEM;
+            S2C_DATA_NFY_EQUIP_ITEM* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_EQUIP_ITEM);
             Notification->CharacterIndex = Character->CharacterIndex;
             Notification->Item = LeftSlot.Item;
             Notification->ItemOptions = LeftSlot.ItemOptions;
@@ -145,8 +143,7 @@ CLIENT_PROCEDURE_BINDING(PUSH_EQUIPMENT_ITEM) {
             break;
         }
 
-        S2C_DATA_NFY_UNEQUIP_ITEM* Notification = PacketInit(S2C_DATA_NFY_UNEQUIP_ITEM);
-        Notification->Command = S2C_NFY_UNEQUIP_ITEM;
+        S2C_DATA_NFY_UNEQUIP_ITEM* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_UNEQUIP_ITEM);
         Notification->CharacterIndex = Character->CharacterIndex;
         Notification->EquipmentSlotIndex = RightSlot.SlotIndex;
         BroadcastToWorld(
@@ -162,8 +159,7 @@ CLIENT_PROCEDURE_BINDING(PUSH_EQUIPMENT_ITEM) {
     }
     */
 
-    S2C_DATA_PUSH_EQUIPMENT_ITEM* Response = PacketInit(S2C_DATA_PUSH_EQUIPMENT_ITEM);
-    Response->Command = S2C_PUSH_EQUIPMENT_ITEM;
+    S2C_DATA_PUSH_EQUIPMENT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PUSH_EQUIPMENT_ITEM);
     Response->Result = 0;
     // TODO: Add implementation!
     return SocketSend(Socket, Connection, Response);
@@ -175,8 +171,7 @@ error:
 CLIENT_PROCEDURE_BINDING(MOVE_INVENTORY_ITEM) {
     if (!Character) goto error;
 
-    S2C_DATA_MOVE_INVENTORY_ITEM* Response = PacketInit(S2C_DATA_MOVE_INVENTORY_ITEM);
-    Response->Command = S2C_MOVE_INVENTORY_ITEM;
+    S2C_DATA_MOVE_INVENTORY_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, MOVE_INVENTORY_ITEM);
     Response->Result = MoveInventoryItem(
         Runtime,
         Character,
@@ -206,8 +201,7 @@ CLIENT_PROCEDURE_BINDING(SWAP_INVENTORY_ITEM) {
     memcpy(&kEquipmentInfoBackup, &Character->EquipmentInfo, sizeof(struct _RTCharacterEquipmentInfo));
     memcpy(&kInventoryInfoBackup, &Character->InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
 
-    S2C_DATA_SWAP_INVENTORY_ITEM* Response = PacketInit(S2C_DATA_SWAP_INVENTORY_ITEM);
-    Response->Command = S2C_SWAP_INVENTORY_ITEM;
+    S2C_DATA_SWAP_INVENTORY_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SWAP_INVENTORY_ITEM);
 
     struct _RTItemSlot TempSlot = { 0 };
 
@@ -262,8 +256,7 @@ CLIENT_PROCEDURE_BINDING(SORT_INVENTORY) {
         return SocketDisconnect(Socket, Connection);
     }
 
-    S2C_DATA_SORT_INVENTORY* Response = PacketInit(S2C_DATA_SORT_INVENTORY);
-    Response->Command = S2C_SORT_INVENTORY;
+    S2C_DATA_SORT_INVENTORY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SORT_INVENTORY);
     Response->Success = 0;
     return SocketSend(Socket, Connection, Response);
 }
@@ -273,13 +266,11 @@ CLIENT_PROCEDURE_BINDING(MOVE_INVENTORY_ITEM_LIST) {
         return SocketDisconnect(Socket, Connection);
     }
 
-    S2C_DATA_SORT_INVENTORY* Response = PacketInit(S2C_DATA_SORT_INVENTORY);
-    Response->Command = S2C_SORT_INVENTORY;
+    S2C_DATA_SORT_INVENTORY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SORT_INVENTORY);
     Response->Success = 0;
 
     Int32 TailLength = Packet->ItemCount * sizeof(CSC_DATA_ITEM_SLOT_INDEX) * 2;
-    Int32 PacketLength = sizeof(C2S_DATA_MOVE_INVENTORY_ITEM_LIST) + TailLength;
-    if (Packet->Signature.Length != PacketLength) goto error;
+    if (Packet->Length != sizeof(C2S_DATA_MOVE_INVENTORY_ITEM_LIST) + TailLength) goto error;
 
     CSC_DATA_ITEM_SLOT_INDEX* Source = (CSC_DATA_ITEM_SLOT_INDEX*)(&Packet->Data[0]);
     CSC_DATA_ITEM_SLOT_INDEX* Destination = (CSC_DATA_ITEM_SLOT_INDEX*)(&Packet->Data[0] + Packet->ItemCount * sizeof(CSC_DATA_ITEM_SLOT_INDEX));

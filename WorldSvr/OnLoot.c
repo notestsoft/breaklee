@@ -15,8 +15,7 @@ CLIENT_PROCEDURE_BINDING(LOOT_INVENTORY_ITEM) {
     RTWorldItemRef Item = RTWorldGetItem(Runtime, World, Packet->Entity, Packet->UniqueKey);
     if (!Item) goto error;
 
-    S2C_DATA_LOOT_INVENTORY_ITEM* Response = PacketInit(S2C_DATA_LOOT_INVENTORY_ITEM);
-    Response->Command = S2C_LOOT_INVENTORY_ITEM;
+    S2C_DATA_LOOT_INVENTORY_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOOT_INVENTORY_ITEM);
 
     // TODO: Check character distance to item (S2C_DATA_LOOT_RESULT_OUTOFRANGE_ERROR)
     // TODO: Check item ownership (S2C_DATA_LOOT_RESULT_OWNERSHIP_ERROR)
@@ -50,14 +49,12 @@ error:
 CLIENT_PROCEDURE_BINDING(LOOT_CURRENCY_ITEM) {
     if (!Character) goto error;
 
-    Int32 PacketLength = sizeof(C2S_DATA_LOOT_CURRENCY_ITEM) + sizeof(C2S_DATA_LOOT_CURRENCY_ITEM_INDEX) * Packet->Count;
-    if (Packet->Signature.Length != PacketLength) goto error;
+    if (Packet->Length != sizeof(C2S_DATA_LOOT_CURRENCY_ITEM) + sizeof(C2S_DATA_LOOT_CURRENCY_ITEM_INDEX) * Packet->Count) goto error;
 
     RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
     if (!World) goto error;
 
-    S2C_DATA_LOOT_CURRENCY_ITEM* Response = PacketInit(S2C_DATA_LOOT_CURRENCY_ITEM);
-    Response->Command = S2C_LOOT_CURRENCY_ITEM;
+    S2C_DATA_LOOT_CURRENCY_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOOT_CURRENCY_ITEM);
     Response->Result = S2C_DATA_LOOT_RESULT_SUCCESS;
 
     for (Int32 Index = 0; Index < Packet->Count; Index++) {

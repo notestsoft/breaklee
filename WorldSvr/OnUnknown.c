@@ -8,8 +8,7 @@
 CLIENT_PROCEDURE_BINDING(UNKNOWN_428) {
 	if (!Character) goto error;
 
-	S2C_DATA_UNKNOWN_428* Response = PacketInit(S2C_DATA_UNKNOWN_428);
-	Response->Command = S2C_UNKNOWN_428;
+	S2C_DATA_UNKNOWN_428* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UNKNOWN_428);
 	return SocketSend(Socket, Connection, Response);
 
 error:
@@ -19,8 +18,7 @@ error:
 CLIENT_PROCEDURE_BINDING(UNKNOWN_2559) {
 	if (!Character) goto error;
 
-	S2C_DATA_UNKNOWN_2559* Response = PacketInit(S2C_DATA_UNKNOWN_2559);
-	Response->Command = S2C_UNKNOWN_2559;
+	S2C_DATA_UNKNOWN_2559* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UNKNOWN_2559);
 	Response->Unknown1 = Packet->Unknown1;
 	return SocketSend(Socket, Connection, Response);
 
@@ -31,8 +29,7 @@ error:
 CLIENT_PROCEDURE_BINDING(UNKNOWN_2566) {
 	if (!Character) goto error;
 
-	S2C_DATA_UNKNOWN_2566* Response = PacketInit(S2C_DATA_UNKNOWN_2566);
-	Response->Command = S2C_UNKNOWN_2566;
+	S2C_DATA_UNKNOWN_2566* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UNKNOWN_2566);
 	Response->Unknown1 = 0;
 	return SocketSend(Socket, Connection, Response);
 
@@ -43,8 +40,7 @@ error:
 CLIENT_PROCEDURE_BINDING(UNKNOWN_2828) {
 	if (!Character) goto error;
 
-	S2C_DATA_UNKNOWN_2828* Response = PacketInit(S2C_DATA_UNKNOWN_2828);
-	Response->Command = S2C_UNKNOWN_2828;
+	S2C_DATA_UNKNOWN_2828* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UNKNOWN_2828);
     Response->Unknown1 = 1;
 	return SocketSend(Socket, Connection, Response);
 
@@ -55,8 +51,7 @@ error:
 CLIENT_PROCEDURE_BINDING(GET_UNKNOWN_USER_LIST) {
 	if (!Character) goto error;
 
-	S2C_DATA_GET_UNKNOWN_USER_LIST* Response = PacketInit(S2C_DATA_GET_UNKNOWN_USER_LIST);
-	Response->Command = S2C_GET_UNKNOWN_USER_LIST;
+	S2C_DATA_GET_UNKNOWN_USER_LIST* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_UNKNOWN_USER_LIST);
 	return SocketSend(Socket, Connection, Response);
 
 error:
@@ -66,8 +61,7 @@ error:
 CLIENT_PROCEDURE_BINDING(UNKNOWN_985) {
 	if (!Character) goto error;
 
-	S2C_DATA_UNKNOWN_985* Response = PacketInit(S2C_DATA_UNKNOWN_985);
-	Response->Command = S2C_UNKNOWN_985;
+	S2C_DATA_UNKNOWN_985* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UNKNOWN_985);
 	Response->Result = 0;
 	return SocketSend(Socket, Connection, Response);
 
@@ -78,8 +72,7 @@ error:
 CLIENT_PROCEDURE_BINDING(UNKNOWN_2173) {
 	if (!Character) goto error;
 
-	S2C_DATA_UNKNOWN_2173* Response = PacketInit(S2C_DATA_UNKNOWN_2173);
-	Response->Command = S2C_UNKNOWN_2173;
+	S2C_DATA_UNKNOWN_2173* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UNKNOWN_2173);
 	Response->Result = 0;
 	return SocketSend(Socket, Connection, Response);
 

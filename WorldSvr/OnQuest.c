@@ -6,8 +6,7 @@
 #include "Server.h"
 
 CLIENT_PROCEDURE_BINDING(QUEST_BEGIN) {
-	S2C_DATA_QUEST_BEGIN* Response = PacketInit(S2C_DATA_QUEST_BEGIN);
-	Response->Command = S2C_QUEST_BEGIN;
+	S2C_DATA_QUEST_BEGIN* Response = PacketBufferInit(Connection->PacketBuffer, S2C, QUEST_BEGIN);
 	Response->Result = 0;
 
 	if (!Character) goto error;
@@ -27,13 +26,12 @@ error:
 }
 
 CLIENT_PROCEDURE_BINDING(QUEST_CLEAR) {
-	S2C_DATA_QUEST_CLEAR* Response = PacketInit(S2C_DATA_QUEST_CLEAR);
-	Response->Command = S2C_QUEST_CLEAR;
+	S2C_DATA_QUEST_CLEAR* Response = PacketBufferInit(Connection->PacketBuffer, S2C, QUEST_CLEAR);
 	Response->Result = 0;
 
 	if (!Character) goto error;
 
-	Int32 SlotCount = (Packet->Signature.Length - sizeof(C2S_DATA_QUEST_CLEAR)) / sizeof(UInt16);
+	Int32 SlotCount = (Packet->Length - sizeof(C2S_DATA_QUEST_CLEAR)) / sizeof(UInt16);
 	UInt64 RewardExp;
 	UInt32 RewardSkillExp;
 	if (RTCharacterQuestClear(Runtime, Character, Packet->QuestIndex, Packet->QuestSlotIndex, SlotCount, Packet->SlotIndex, &RewardExp, &RewardSkillExp)) {
@@ -49,15 +47,13 @@ CLIENT_PROCEDURE_BINDING(QUEST_CLEAR) {
 	/*
 	RTQuestDataRef QuestData = RTRuntimeGetQuestByIndex(Runtime, Packet->QuestID);
 	
-	S2C_DATA_NFY_EVENT_PASS_PROGRESS* Notification1 = PacketInit(S2C_DATA_NFY_EVENT_PASS_PROGRESS);
-	Notification1->Command = S2C_NFY_EVENT_PASS_PROGRESS;
+	S2C_DATA_NFY_EVENT_PASS_PROGRESS* Notification1 = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_EVENT_PASS_PROGRESS);
 	Notification1->GroupID = 3;
 	Notification1->MissionID = 12;
 	Notification1->Progress = 2;
 	SocketSend(Socket, Connection, Notification1);
 
-	S2C_DATA_NFY_EVENT_PASS_RESUME* Notification2 = PacketInit(S2C_DATA_NFY_EVENT_PASS_RESUME);
-	Notification2->Command = S2C_NFY_EVENT_PASS_RESUME;
+	S2C_DATA_NFY_EVENT_PASS_RESUME* Notification2 = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_EVENT_PASS_RESUME);
 	Notification2->Unknown1 = 0;
 	Notification2->Unknown2 = 100;
 	Notification2->Unknown3 = 0;
@@ -71,8 +67,7 @@ error:
 }
 
 CLIENT_PROCEDURE_BINDING(QUEST_CANCEL) {
-	S2C_DATA_QUEST_CANCEL* Response = PacketInit(S2C_DATA_QUEST_CANCEL);
-	Response->Command = S2C_QUEST_CANCEL;
+	S2C_DATA_QUEST_CANCEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, QUEST_CANCEL);
 
 	if (!RTCharacterQuestCancel(Runtime, Character, Packet->QuestID, Packet->SlotID)) goto error;
 
@@ -102,8 +97,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_ACTION) {
 
 	RTQuestSlotRef QuestSlot = &Character->QuestSlotInfo.QuestSlot[Packet->SlotIndex];
 
-	S2C_DATA_QUEST_ACTION* Response = PacketInit(S2C_DATA_QUEST_ACTION);
-	Response->Command = S2C_QUEST_ACTION;
+	S2C_DATA_QUEST_ACTION* Response = PacketBufferInit(Connection->PacketBuffer, S2C, QUEST_ACTION);
 	Response->QuestID = Packet->QuestID;
 	Response->NpcFlags = 0;
 
@@ -134,8 +128,7 @@ CLIENT_PROCEDURE_BINDING(UPDATE_QUEST_LIST) {
 CLIENT_PROCEDURE_BINDING(PARTY_QUEST_BEGIN) {
 	if (!Character) goto error;
 
-	S2C_DATA_PARTY_QUEST_BEGIN* Response = PacketInit(S2C_DATA_PARTY_QUEST_BEGIN);
-	Response->Command = S2C_PARTY_QUEST_BEGIN;
+	S2C_DATA_PARTY_QUEST_BEGIN* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_QUEST_BEGIN);
 
 	if (!RTCharacterPartyQuestBegin(Runtime, Character, Packet->QuestID, Packet->QuestSlotIndex, Packet->QuestItemSlotIndex)) {
 		Response->Result = 1;
@@ -144,8 +137,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_BEGIN) {
 	SocketSend(Socket, Connection, Response);
 
 	if (!Response->Result) {
-		S2C_DATA_NFY_PARTY_QUEST_BEGIN* Notification = PacketInit(S2C_DATA_NFY_PARTY_QUEST_BEGIN);
-		Notification->Command = S2C_NFY_PARTY_QUEST_BEGIN;
+		S2C_DATA_NFY_PARTY_QUEST_BEGIN* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_PARTY_QUEST_BEGIN);
 		Notification->QuestID = Packet->QuestID;
 		Notification->QuestSlotIndex = Packet->QuestSlotIndex;
 		BroadcastToParty(Context, Character->PartyID, Notification);
@@ -158,8 +150,7 @@ error:
 }
 
 CLIENT_PROCEDURE_BINDING(PARTY_QUEST_CLOSE) {
-	S2C_DATA_PARTY_QUEST_CLOSE* Response = PacketInit(S2C_DATA_PARTY_QUEST_CLOSE);
-	Response->Command = S2C_PARTY_QUEST_CLOSE;
+	S2C_DATA_PARTY_QUEST_CLOSE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_QUEST_CLOSE);
 	Response->Result = 1;
 
 	if (!Character) goto error;
@@ -183,7 +174,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_CLOSE) {
 		TailLength += sizeof(UInt16) * 2;
 	}
 
-	if (Packet->Signature.Length != sizeof(C2S_DATA_PARTY_QUEST_CLOSE) + TailLength) {
+	if (Packet->Length != sizeof(C2S_DATA_PARTY_QUEST_CLOSE) + TailLength) {
 		LogMessageFormat("Packet length error for quest(%d) close!", Quest->ID);
 		goto error;
 	}
@@ -221,13 +212,12 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_CLOSE) {
 
 	SocketSend(Socket, Connection, Response);
 
-	S2C_DATA_NFY_PARTY_QUEST_CLOSE* Notification = PacketInit(S2C_DATA_NFY_PARTY_QUEST_CLOSE);
-	Notification->Command = S2C_NFY_PARTY_QUEST_CLOSE;
+	S2C_DATA_NFY_PARTY_QUEST_CLOSE* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_PARTY_QUEST_CLOSE);
 	Notification->QuestID = Packet->QuestID;
 	Notification->QuestSlotIndex = Packet->QuestSlotIndex;
 
 	if (RewardItemSetID > 0) {
-		PacketAppendValue(UInt16, RewardInventorySlotIndex);
+		PacketBufferAppendValue(Context->ClientSocket->PacketBuffer, UInt16, RewardInventorySlotIndex);
 	}
 
 	return BroadcastToParty(Context, Character->PartyID, Notification);
@@ -261,8 +251,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_ACTION) {
 	RTQuestSlotRef QuestSlot = &Party->QuestSlot[Packet->QuestSlotIndex];
 	assert(QuestSlot);
 
-	S2C_DATA_PARTY_QUEST_ACTION* Response = PacketInit(S2C_DATA_PARTY_QUEST_ACTION);
-	Response->Command = S2C_PARTY_QUEST_ACTION;
+	S2C_DATA_PARTY_QUEST_ACTION* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_QUEST_ACTION);
 	Response->QuestSlotIndex = Packet->QuestSlotIndex;
 	Response->QuestID = Packet->QuestID;
 	Response->NpcSetID = Packet->NpcSetID;
@@ -276,8 +265,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_ACTION) {
 
 	SocketSend(Socket, Connection, Response);
 
-	S2C_DATA_NFY_PARTY_QUEST_ACTION* Notification = PacketInit(S2C_DATA_NFY_PARTY_QUEST_ACTION);
-	Notification->Command = S2C_NFY_PARTY_QUEST_ACTION;
+	S2C_DATA_NFY_PARTY_QUEST_ACTION* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_PARTY_QUEST_ACTION);
 	Notification->QuestSlotIndex = Response->QuestSlotIndex;
 	Notification->QuestID = Response->QuestID;
 	Notification->NpcFlags = Response->NpcFlags;
@@ -320,8 +308,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_LOOT_ITEM) {
 
 	RTWorldDespawnItem(Runtime, World, Item);
 
-	S2C_DATA_PARTY_QUEST_LOOT_ITEM* Response = PacketInit(S2C_DATA_PARTY_QUEST_LOOT_ITEM);
-	Response->Command = S2C_PARTY_QUEST_LOOT_ITEM;
+	S2C_DATA_PARTY_QUEST_LOOT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_QUEST_LOOT_ITEM);
 	Response->Result = 1;
 	Response->ItemID = ItemSlot->Item.Serial;
 	Response->ItemOptions = ItemSlot->ItemOptions;
@@ -329,8 +316,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_LOOT_ITEM) {
 	Response->ItemDuration = ItemSlot->ItemDuration.Serial;
 	SocketSend(Socket, Connection, Response);
 
-	S2C_DATA_NFY_PARTY_QUEST_LOOT_ITEM* Notification = PacketInit(S2C_DATA_NFY_PARTY_QUEST_LOOT_ITEM);
-	Notification->Command = S2C_NFY_PARTY_QUEST_LOOT_ITEM;
+	S2C_DATA_NFY_PARTY_QUEST_LOOT_ITEM* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_PARTY_QUEST_LOOT_ITEM);
 	Notification->ItemID = ItemSlot->Item.Serial;
 	Notification->ItemOptions = ItemSlot->ItemOptions;
 	Notification->QuestItemSlotIndex = Packet->QuestItemSlotIndex;

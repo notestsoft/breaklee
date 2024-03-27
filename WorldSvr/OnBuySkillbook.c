@@ -45,8 +45,7 @@ CLIENT_PROCEDURE_BINDING(BUY_SKILLBOOK) {
         Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= ItemData->BuyPrice;
     }
 
-    S2C_DATA_BUY_SKILLBOOK* Response = PacketInit(S2C_DATA_BUY_SKILLBOOK);
-    Response->Command = S2C_BUY_SKILLBOOK;
+    S2C_DATA_BUY_SKILLBOOK* Response = PacketBufferInit(Connection->PacketBuffer, S2C, BUY_SKILLBOOK);
     Response->ItemID = Skill->SkillBookID;
     return SocketSend(Socket, Connection, Response);
 

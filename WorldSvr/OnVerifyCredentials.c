@@ -21,8 +21,7 @@ Void OnVerifyCharacterSubpassword(
             // TODO: Ban account based on configuration due to max failure count reach!
         }
 
-        S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketInit(S2C_DATA_VERIFY_SUBPASSWORD);
-        Response->Command = S2C_VERIFY_SUBPASSWORD;
+        S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_SUBPASSWORD);
         Response->Success = 0;
         Response->FailureCount = Client->SubpasswordFailureCount;
         Response->Type = CHARACTER_SUBPASSWORD_TYPE_CHARACTER;
@@ -33,16 +32,14 @@ Void OnVerifyCharacterSubpassword(
     memcpy(Client->Account.SessionIP, Connection->AddressIP, MAX_ADDRESSIP_LENGTH);
     Client->Account.SessionTimeout = time(NULL) + (time_t)Packet->ExpirationInHours * 60 * 60;
 
-    IPC_DATA_WORLD_UPDATE_ACCOUNT_SESSION_DATA* Request = PacketInitExtended(IPC_DATA_WORLD_UPDATE_ACCOUNT_SESSION_DATA);
-    Request->Command = IPC_WORLD_UPDATE_ACCOUNT_SESSION_DATA;
+    IPC_DATA_WORLD_UPDATE_ACCOUNT_SESSION_DATA* Request = PacketBufferInitExtended(Context->MasterSocket->PacketBuffer, IPC, WORLD_UPDATE_ACCOUNT_SESSION_DATA);
     Request->ConnectionID = Connection->ID;
     Request->AccountID = Client->Account.AccountID;
     memcpy(Request->SessionIP, Client->Account.SessionIP, MAX_ADDRESSIP_LENGTH);
     Request->SessionTimeout = Client->Account.SessionTimeout;
     SocketSendAll(Context->MasterSocket, Request);
 
-    S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketInit(S2C_DATA_VERIFY_SUBPASSWORD);
-    Response->Command = S2C_VERIFY_SUBPASSWORD;
+    S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_SUBPASSWORD);
     Response->Success = 1;
     Response->FailureCount = Client->SubpasswordFailureCount;
     Response->Type = CHARACTER_SUBPASSWORD_TYPE_CHARACTER;
@@ -56,8 +53,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_CREDENTIALS) {
 	}
 
 	if (Packet->CredentialsType == C2S_DATA_VERIFY_CREDENTIALS_TYPE_PASSWORD) {
-		IPC_DATA_WORLD_REQVERIFYPASSWORD* Request = PacketInitExtended(IPC_DATA_WORLD_REQVERIFYPASSWORD);
-		Request->Command = IPC_WORLD_REQVERIFYPASSWORD;
+		IPC_DATA_WORLD_REQVERIFYPASSWORD* Request = PacketBufferInitExtended(Context->MasterSocket->PacketBuffer, IPC, WORLD_REQVERIFYPASSWORD);
 		Request->ConnectionID = Connection->ID;
 		Request->AccountID = Client->Account.AccountID;
 		memcpy(Request->Credentials, Packet->Credentials, MAX_CREDENTIALS_LENGTH);
@@ -66,7 +62,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_CREDENTIALS) {
 
 error: 
 	{
-		S2C_DATA_VERIFY_CREDENTIALS* Response = PacketInit(S2C_DATA_VERIFY_CREDENTIALS);
+		S2C_DATA_VERIFY_CREDENTIALS* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_CREDENTIALS);
 		Response->Success = false;
 		return SocketSend(Socket, Connection, Response);
 	}
@@ -79,8 +75,7 @@ IPC_PROCEDURE_BINDING(OnWorldVerifyPassword, IPC_WORLD_ACKVERIFYPASSWORD, IPC_DA
 		Client->PasswordVerificationTimestamp = GetTimestamp();
 	}
 
-	S2C_DATA_VERIFY_CREDENTIALS* Response = PacketInit(S2C_DATA_VERIFY_CREDENTIALS);
-    Response->Command = S2C_VERIFY_CREDENTIALS;
+	S2C_DATA_VERIFY_CREDENTIALS* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, VERIFY_CREDENTIALS);
 	Response->Success = Packet->Success;
     return SocketSend(Context->ClientSocket, ClientConnection, Response);
 
@@ -105,8 +100,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_CREDENTIALS_SUBPASSWORD) {
 				// TODO: Ban account based on configuration due to max failure count reach!
 			}
 
-			S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketInit(S2C_DATA_VERIFY_SUBPASSWORD);
-			Response->Command = S2C_VERIFY_SUBPASSWORD;
+			S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_SUBPASSWORD);
 			Response->Success = 0;
 			Response->FailureCount = Client->SubpasswordFailureCount;
 			Response->Type = CHARACTER_SUBPASSWORD_TYPE_CHARACTER;
@@ -117,16 +111,14 @@ CLIENT_PROCEDURE_BINDING(VERIFY_CREDENTIALS_SUBPASSWORD) {
 		memcpy(Client->Account.SessionIP, Connection->AddressIP, MAX_ADDRESSIP_LENGTH);
 		Client->Account.SessionTimeout = time(NULL) + (time_t)Packet->ExpirationInHours * 60 * 60;
 
-		IPC_DATA_WORLD_UPDATE_ACCOUNT_SESSION_DATA* Request = PacketInitExtended(IPC_DATA_WORLD_UPDATE_ACCOUNT_SESSION_DATA);
-		Request->Command = IPC_WORLD_UPDATE_ACCOUNT_SESSION_DATA;
+		IPC_DATA_WORLD_UPDATE_ACCOUNT_SESSION_DATA* Request = PacketBufferInitExtended(IPC_DATA_WORLD_UPDATE_ACCOUNT_SESSION_DATA);
 		Request->ConnectionID = Connection->ID;
 		Request->AccountID = Client->Account.AccountID;
 		memcpy(Request->SessionIP, Client->Account.SessionIP, MAX_ADDRESSIP_LENGTH);
 		Request->SessionTimeout = Client->Account.SessionTimeout;
 		SocketSendAll(Server->MasterSocket, Request);
 
-		S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketInit(S2C_DATA_VERIFY_SUBPASSWORD);
-		Response->Command = S2C_VERIFY_SUBPASSWORD;
+		S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_SUBPASSWORD);
 		Response->Success = 1;
 		Response->FailureCount = Client->SubpasswordFailureCount;
 		Response->Type = CHARACTER_SUBPASSWORD_TYPE_CHARACTER;
@@ -144,8 +136,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_CREDENTIALS_SUBPASSWORD) {
 			// TODO: Ban account based on configuration due to max failure count reach!
 		}
 
-		S2C_DATA_VERIFY_CREDENTIALS_SUBPASSWORD* Response = PacketInit(S2C_DATA_VERIFY_CREDENTIALS_SUBPASSWORD);
-		Response->Command = S2C_VERIFY_CREDENTIALS_SUBPASSWORD;
+		S2C_DATA_VERIFY_CREDENTIALS_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_CREDENTIALS_SUBPASSWORD);
 		Response->Success = 0;
 		return SocketSend(Socket, Connection, Response);
 	}
@@ -159,8 +150,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_CREDENTIALS_SUBPASSWORD) {
 		Packet // TODO: Verify wrong packet is begin passed here...
 	);
 
-	S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketInit(S2C_DATA_VERIFY_SUBPASSWORD);
-	Response->Command = S2C_VERIFY_SUBPASSWORD;
+	S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_SUBPASSWORD);
 	Response->Success = 0;
 	Response->FailureCount = 0;
 	return SocketSend(Socket, Connection, Response);
@@ -183,8 +173,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_SUBPASSWORD) {
         );
     }
 
-    S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketInit(S2C_DATA_VERIFY_SUBPASSWORD);
-    Response->Command = S2C_VERIFY_SUBPASSWORD;
+    S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_SUBPASSWORD);
     Response->Success = 0;
     Response->FailureCount = 0;
     Response->Type = Packet->Type;

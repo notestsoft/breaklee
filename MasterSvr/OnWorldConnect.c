@@ -15,8 +15,7 @@ IPC_PROCEDURE_BINDING(OnWorldConnect, IPC_WORLD_REQCONNECT, IPC_DATA_WORLD_REQCO
 	Client->World.PlayerCount = 0;
 	Client->World.MaxPlayerCount = Packet->MaxPlayerCount;
 
-	IPC_DATA_WORLD_ACKCONNECT* Response = PacketInitExtended(IPC_DATA_WORLD_ACKCONNECT);
-	Response->Command = IPC_WORLD_ACKCONNECT;
+	IPC_DATA_WORLD_ACKCONNECT* Response = PacketBufferInitExtended(Connection->PacketBuffer, IPC, WORLD_ACKCONNECT);
 	Response->ServerID = Context->Config.MasterSvr.ServerID;
 	Response->Success = true;
 	SocketSend(Socket, Connection, Response);

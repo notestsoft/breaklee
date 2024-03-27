@@ -11,6 +11,7 @@
 #include <CoreLib/FileIO.h>
 #include <CoreLib/IndexMemoryPool.h>
 #include <CoreLib/IndexSet.h>
+#include <CoreLib/MemoryBuffer.h>
 #include <CoreLib/MemoryPool.h>
 #include <CoreLib/ParsePrimitives.h>
 #include <CoreLib/String.h>

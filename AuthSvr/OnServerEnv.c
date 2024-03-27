@@ -16,8 +16,7 @@ CLIENT_PROCEDURE_BINDING(SERVER_ENVIRONMENT) {
 	}
 	memset(Client->Username, 0, sizeof(Client->Username));
 	memcpy(Client->Username, Packet->Username, UsernameLength);
-	IPC_DATA_REQAUTHENTICATE* Request = PacketInitExtended(IPC_DATA_REQAUTHENTICATE);
-	Request->Command = IPC_DATA_AUTHENTICATE;
+	IPC_DATA_REQAUTHENTICATE* Request = PacketBufferInitExtended(IPC_DATA_REQAUTHENTICATE);
 	Request->ConnectionID = Connection->ID;
 	memcpy(Request->Username, Packet->Username, UsernameLength);
 	SocketSendAll(Server->DataSocket, Request);
@@ -25,8 +24,7 @@ CLIENT_PROCEDURE_BINDING(SERVER_ENVIRONMENT) {
 
 DATA_PROCEDURE_BINDING(OnDataAccountInfo, IPC_DATA_ACCOUNTINFO, IPC_DATA_ACKACCOUNTINFO) {
 	*/
-	S2C_DATA_SERVER_ENVIRONMENT* Response = PacketInit(S2C_DATA_SERVER_ENVIRONMENT);
-	Response->Command = S2C_SERVER_ENVIRONMENT;
+	S2C_DATA_SERVER_ENVIRONMENT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SERVER_ENVIRONMENT);
 	// TODO: Add support for image authentication
 	Client->Flags |= CLIENT_FLAGS_USERNAME_CHECKED;
 	SocketSend(Socket, Connection, Response);

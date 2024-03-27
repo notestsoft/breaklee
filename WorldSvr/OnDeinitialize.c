@@ -5,8 +5,7 @@
 #include "Server.h"
 
 CLIENT_PROCEDURE_BINDING(DEINITIALIZE) {
-    S2C_DATA_DEINITIALIZE* Response = PacketInit(S2C_DATA_DEINITIALIZE);
-    Response->Command = S2C_DEINITIALIZE;
+    S2C_DATA_DEINITIALIZE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DEINITIALIZE);
 
     if (Character) {
         RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Context->Runtime, Character);

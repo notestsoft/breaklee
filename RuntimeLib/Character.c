@@ -335,6 +335,10 @@ Bool RTCharacterMovementChange(
 		DeltaStartY = WaypointA->Y + OffsetY - PositionBeginY;
 	}
 	else {
+ 		if (AbsDeltaY == 0) {
+			AbsDeltaY = 1;
+		}
+   
 		Int32 OffsetY = (DeltaY > 0) ? (PositionBeginY - WaypointA->Y) : (WaypointA->Y - PositionBeginY);
 		Int32 OffsetX = (AbsDeltaX * OffsetY + (AbsDeltaY >> 1)) / AbsDeltaY;
 
@@ -415,6 +419,10 @@ Bool RTCharacterMovementEnd(
 		DeltaStartY = WaypointA->Y + OffsetY - PositionY;
 	}
 	else {
+		if (AbsDeltaY == 0) {
+			AbsDeltaY = 1;
+		}
+
 		Int32 OffsetY = (DeltaY > 0) ? (PositionY - WaypointA->Y) : (WaypointA->Y - PositionY);
 		Int32 OffsetX = (AbsDeltaX * OffsetY + (AbsDeltaY >> 1)) / AbsDeltaY;
 
@@ -516,7 +524,7 @@ Bool RTCharacterMovementChangeChunk(
 	Int32 DeltaStartY = 0;
 
 	if (AbsDeltaX >= AbsDeltaY) {
-		if (!AbsDeltaX) { 
+		if (AbsDeltaX == 0) { 
 			AbsDeltaX = 1;
 		}
 
@@ -531,6 +539,10 @@ Bool RTCharacterMovementChangeChunk(
 		DeltaStartY = WaypointA->Y + OffsetY - PositionCurrentY;
 	} 
 	else {
+		if (AbsDeltaY == 0) {
+			AbsDeltaY = 1;
+		}
+        
 		Int32 OffsetY = (DeltaY > 0) ? (PositionCurrentY - WaypointA->Y) : (WaypointA->Y - PositionCurrentY);
 		Int32 OffsetX = (AbsDeltaX * OffsetY + (AbsDeltaY >> 1)) / AbsDeltaY;
 

@@ -8,8 +8,7 @@
 CLIENT_PROCEDURE_BINDING(ADD_PASSIVE_ABILITY) {
 	if (!Character) goto error;
 
-	S2C_DATA_ADD_PASSIVE_ABILITY* Response = PacketInit(S2C_DATA_ADD_PASSIVE_ABILITY);
-	Response->Command = S2C_ADD_PASSIVE_ABILITY;
+	S2C_DATA_ADD_PASSIVE_ABILITY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ADD_PASSIVE_ABILITY);
 	Response->Result = RTCharacterAddEssenceAbility(
 		Runtime,
 		Character,
@@ -25,10 +24,9 @@ error:
 CLIENT_PROCEDURE_BINDING(UPGRADE_PASSIVE_ABILITY) {
 	if (!Character) goto error;
 
-	Int32 InventorySlotCount = (Packet->Signature.Length - sizeof(C2S_DATA_UPGRADE_PASSIVE_ABILITY)) / sizeof(UInt16);
+	Int32 InventorySlotCount = (Packet->Length - sizeof(C2S_DATA_UPGRADE_PASSIVE_ABILITY)) / sizeof(UInt16);
 
-	S2C_DATA_UPGRADE_PASSIVE_ABILITY* Response = PacketInit(S2C_DATA_UPGRADE_PASSIVE_ABILITY);
-	Response->Command = S2C_UPGRADE_PASSIVE_ABILITY;
+	S2C_DATA_UPGRADE_PASSIVE_ABILITY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPGRADE_PASSIVE_ABILITY);
 	Response->Result = RTCharacterUpgradeEssenceAbility(
 		Runtime,
 		Character,
@@ -37,7 +35,13 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_PASSIVE_ABILITY) {
 		Packet->InventorySlotIndex
 	);
 
-	PacketLogBytes(Packet);
+	PacketLogBytes(
+        Socket->ProtocolIdentifier,
+        Socket->ProtocolVersion,
+        Socket->ProtocolExtension,
+        Packet
+    );
+    
 	return SocketSend(Socket, Connection, Response);
 
 error:
@@ -47,8 +51,7 @@ error:
 CLIENT_PROCEDURE_BINDING(REMOVE_PASSIVE_ABILITY) {
 	if (!Character) goto error;
 
-	S2C_DATA_REMOVE_PASSIVE_ABILITY* Response = PacketInit(S2C_DATA_REMOVE_PASSIVE_ABILITY);
-	Response->Command = S2C_REMOVE_PASSIVE_ABILITY;
+	S2C_DATA_REMOVE_PASSIVE_ABILITY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, REMOVE_PASSIVE_ABILITY);
 	Response->Result = RTCharacterRemoveEssenceAbility(
 		Runtime,
 		Character,

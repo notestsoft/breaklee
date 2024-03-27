@@ -15,8 +15,7 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 
 	// TODO: Implementation is missing
 
-	S2C_DATA_ADD_FORCE_SLOT_OPTION* Response = PacketInit(S2C_DATA_ADD_FORCE_SLOT_OPTION);
-	Response->Command = S2C_ADD_FORCE_SLOT_OPTION;
+	S2C_DATA_ADD_FORCE_SLOT_OPTION* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ADD_FORCE_SLOT_OPTION);
 	return SocketSend(Socket, Connection, Response);
 
 error:
@@ -28,7 +27,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 	if (!Character) goto error;
 
 	Int32 TailLength = sizeof(UInt16) * Packet->SafeCount;
-	if (sizeof(C2S_DATA_UPGRADE_ITEM_LEVEL) + TailLength > Packet->Signature.Length) goto error;
+	if (sizeof(C2S_DATA_UPGRADE_ITEM_LEVEL) + TailLength > Packet->Length) goto error;
 
 	if (Packet->CoreCount < 1) goto error;
 
@@ -196,14 +195,12 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 	Character->SyncMask.InventoryInfo = true;
 	Character->SyncPriority.High = true;
 
-	S2C_DATA_UPDATE_UPGRAGE_POINTS* Notification = PacketInit(S2C_DATA_UPDATE_UPGRAGE_POINTS);
-	Notification->Command = S2C_UPDATE_UPGRAGE_POINTS;
+	S2C_DATA_UPDATE_UPGRAGE_POINTS* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, UPDATE_UPGRAGE_POINTS);
 	Notification->UpgradePoint = Client->UpgradePoint;
 	Notification->Timestamp = (UInt32)GetTimestamp() + 1000 * 60 * 60;
 	SocketSend(Socket, Connection, Notification);
 
-	S2C_DATA_UPGRADE_ITEM_LEVEL* Response = PacketInit(S2C_DATA_UPGRADE_ITEM_LEVEL);
-	Response->Command = S2C_UPGRADE_ITEM_LEVEL;
+	S2C_DATA_UPGRADE_ITEM_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPGRADE_ITEM_LEVEL);
 	Response->Result = Result;
 	Response->ItemID = ItemSlot->Item.Serial;
 	Response->ItemOption = ItemSlot->ItemOptions;

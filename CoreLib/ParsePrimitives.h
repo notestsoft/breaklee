@@ -48,6 +48,11 @@ Void ParseUInt64(
     UInt64* Result
 );
 
+Void ParseIndex(
+    CString Value,
+    Index* Result
+);
+
 Bool ParseAttributeInt8(
     ArchiveRef Object,
     Int64 NodeIndex,

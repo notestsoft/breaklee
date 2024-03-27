@@ -9,8 +9,7 @@ CLIENT_PROCEDURE_BINDING(GET_EVENT_PASS_SEASON) {
 
 	// TODO: Add season info
 
-	S2C_DATA_GET_EVENT_PASS_SEASON* Response = PacketInit(S2C_DATA_GET_EVENT_PASS_SEASON);
-	Response->Command = S2C_GET_EVENT_PASS_SEASON;
+	S2C_DATA_GET_EVENT_PASS_SEASON* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_EVENT_PASS_SEASON);
 	Response->ExpirationDate = (UInt32)time(NULL);
 	Response->Unknown2 = 5;
 	return SocketSend(Socket, Connection, Response);
@@ -24,8 +23,7 @@ CLIENT_PROCEDURE_BINDING(GET_EVENT_PASS_REWARD_LIST) {
 	
 	// TODO: Add reward list data
 
-	S2C_DATA_GET_EVENT_PASS_REWARD_LIST* Response = PacketInit(S2C_DATA_GET_EVENT_PASS_REWARD_LIST);
-	Response->Command = S2C_GET_EVENT_PASS_REWARD_LIST;
+	S2C_DATA_GET_EVENT_PASS_REWARD_LIST* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_EVENT_PASS_REWARD_LIST);
 	Response->RewardSlotCount = 0;
 	return SocketSend(Socket, Connection, Response);
 

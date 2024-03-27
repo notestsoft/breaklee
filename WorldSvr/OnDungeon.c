@@ -9,8 +9,7 @@ CLIENT_PROCEDURE_BINDING(CHECK_DUNGEON_PLAYTIME) {
 	
 	// TODO: Add xml data
 
-	S2C_DATA_CHECK_DUNGEON_PLAYTIME* Response = PacketInit(S2C_DATA_CHECK_DUNGEON_PLAYTIME);
-	Response->Command = S2C_CHECK_DUNGEON_PLAYTIME;
+	S2C_DATA_CHECK_DUNGEON_PLAYTIME* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHECK_DUNGEON_PLAYTIME);
 	Response->DungeonID = Packet->DungeonID;
 	Response->MaxInstanceCount = 10;
 	Response->InstanceCount = 0;
@@ -28,8 +27,7 @@ CLIENT_PROCEDURE_BINDING(GET_DUNGEON_REWARD_LIST) {
 	
 	// TODO: Add reward list data
 
-	S2C_DATA_GET_DUNGEON_REWARD_LIST* Response = PacketInit(S2C_DATA_GET_DUNGEON_REWARD_LIST);
-	Response->Command = S2C_GET_DUNGEON_REWARD_LIST;
+	S2C_DATA_GET_DUNGEON_REWARD_LIST* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_DUNGEON_REWARD_LIST);
 	Response->DungeonID = Packet->DungeonID;
 	return SocketSend(Socket, Connection, Response);
 
@@ -40,8 +38,7 @@ error:
 CLIENT_PROCEDURE_BINDING(ENTER_DUNGEON_GATE) {
     if (!Character) goto error;
 
-    S2C_DATA_ENTER_DUNGEON_GATE* Response = PacketInit(S2C_DATA_ENTER_DUNGEON_GATE);
-    Response->Command = S2C_ENTER_DUNGEON_GATE;
+    S2C_DATA_ENTER_DUNGEON_GATE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ENTER_DUNGEON_GATE);
     Response->Result = 0;
     Response->DungeonID = Packet->DungeonID;
     Response->Unknown1 = Packet->Unknown1;
@@ -79,8 +76,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_START) {
     if (World->WorldData->Type != RUNTIME_WORLD_TYPE_DUNGEON &&
         World->WorldData->Type != RUNTIME_WORLD_TYPE_QUEST_DUNGEON) goto error;
 
-    S2C_DATA_QUEST_DUNGEON_START* Response = PacketInit(S2C_DATA_QUEST_DUNGEON_START);
-    Response->Command = S2C_QUEST_DUNGEON_START;
+    S2C_DATA_QUEST_DUNGEON_START* Response = PacketBufferInit(Connection->PacketBuffer, S2C, QUEST_DUNGEON_START);
     return SocketSend(Socket, Connection, Response);
 
 error:
@@ -107,8 +103,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_SPAWN) {
         RTDungeonStart(World);
         // RTWorldContextUpdate(Runtime, World);
 
-        S2C_DATA_NFY_QUEST_DUNGEON_SPAWN* Response = PacketInit(S2C_DATA_NFY_QUEST_DUNGEON_SPAWN);
-        Response->Command = S2C_NFY_QUEST_DUNGEON_SPAWN;
+        S2C_DATA_NFY_QUEST_DUNGEON_SPAWN* Response = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_QUEST_DUNGEON_SPAWN);
         Response->DungeonTimeout1 = (UInt32)(World->DungeonTimeout - GetTimestamp()) * 1000;
         Response->DungeonTimeout2 = DungeonData->MissionTimeout * 1000;
         SocketSend(Socket, Connection, Response);
@@ -131,18 +126,15 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_END) {
     if (Success) {
         RTCharacterDungeonQuestFlagSet(Character, World->DungeonIndex);
 
-        S2C_DATA_NFY_DUNGEON_COMPLETE_INFO* Notification = PacketInit(S2C_DATA_NFY_DUNGEON_COMPLETE_INFO);
-        Notification->Command = S2C_NFY_DUNGEON_COMPLETE_INFO;
+        S2C_DATA_NFY_DUNGEON_COMPLETE_INFO* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_DUNGEON_COMPLETE_INFO);
         BroadcastToParty(Context, World->Party, Notification);
     }
 
-    S2C_DATA_QUEST_DUNGEON_END* Response = PacketInit(S2C_DATA_QUEST_DUNGEON_END);
-    Response->Command = S2C_QUEST_DUNGEON_END;
+    S2C_DATA_QUEST_DUNGEON_END* Response = PacketBufferInit(Connection->PacketBuffer, S2C, QUEST_DUNGEON_END);
     Response->Result = Success ? 1 : 0;
     SocketSend(Socket, Connection, Response);
 
-    S2C_DATA_NFY_QUEST_DUNGEON_END* Notification = PacketInit(S2C_DATA_NFY_QUEST_DUNGEON_END);
-    Notification->Command = S2C_NFY_QUEST_DUNGEON_END;
+    S2C_DATA_NFY_QUEST_DUNGEON_END* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_QUEST_DUNGEON_END);
     Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
     Notification->Result = Success ? 1 : 0;
     Notification->Unknown1 = 28;
@@ -174,8 +166,7 @@ CLIENT_PROCEDURE_BINDING(ATTACK_BOSS_MOB) {
     // TODO: Implementation missing!
     // NOTE: It can be that when an npc is progressed but the dungeon is reopened it calls to repeat the event trigger of the npc and despawn it...
 
-    S2C_DATA_ATTACK_BOSS_MOB* Response = PacketInit(S2C_DATA_ATTACK_BOSS_MOB);
-    Response->Command = S2C_ATTACK_BOSS_MOB;
+    S2C_DATA_ATTACK_BOSS_MOB* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ATTACK_BOSS_MOB);
     return SocketSend(Socket, Connection, Response);
 
 error:

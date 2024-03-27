@@ -18,7 +18,7 @@ Void PROC_ ## __NAME__(                     \
 )
 #endif
 
-#define C2S_COMMAND(__NAME__, __VALUE__) \
+#define C2S_COMMAND(__NAME__, __COMMAND__) \
 CLIENT_PROCEDURE_BINDING(__NAME__);
 #include "ClientCommands.h"
 

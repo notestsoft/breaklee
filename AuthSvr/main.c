@@ -6,23 +6,23 @@
 #include "IPCProcs.h"
 #include "Notification.h"
 
-#define C2S_COMMAND(__NAME__, __VALUE__)        \
-Void SERVER_PROC_ ## __NAME__(                  \
-    ServerRef Server,                           \
-    Void *ServerContext,                        \
-    SocketRef Socket,                           \
-    SocketConnectionRef Connection,             \
-    Void *ConnectionContext,                    \
-    Void *Packet                                \
-) {                                             \
-    PROC_ ## __NAME__(                          \
-        Server,                                 \
-        (ServerContextRef)ServerContext,        \
-        Socket,                                 \
-        Connection,                             \
-        (ClientContextRef)ConnectionContext,    \
-        (C2S_DATA_ ## __NAME__*)Packet          \
-    );                                          \
+#define C2S_COMMAND(__NAME__, __COMMAND__)                  \
+Void SERVER_PROC_ ## __NAME__(                              \
+    ServerRef Server,                                       \
+    Void *ServerContext,                                    \
+    SocketRef Socket,                                       \
+    SocketConnectionRef Connection,                         \
+    Void *ConnectionContext,                                \
+    Void *Packet                                            \
+) {                                                         \
+    PROC_ ## __NAME__(                                      \
+        Server,                                             \
+        (ServerContextRef)ServerContext,                    \
+        Socket,                                             \
+        Connection,                                         \
+        (ClientContextRef)ConnectionContext,                \
+        (C2S_DATA_ ## __NAME__*)Packet                      \
+    );                                                      \
 }
 #include "ClientCommands.h"
 
@@ -98,13 +98,18 @@ Int32 main(Int32 argc, CString* argv) {
         NULL,
         Config.Auth.Port,
         sizeof(struct _ClientContext),
+        Config.NetLib.ProtocolIdentifier,
+        Config.NetLib.ProtocolVersion,
+        Config.NetLib.ProtocolExtension,
+        Config.NetLib.ReadBufferSize,
+        Config.NetLib.WriteBufferSize,
         Config.Auth.MaxConnectionCount,
         &ClientSocketOnConnect,
         &ClientSocketOnDisconnect
     );
 
-#define C2S_COMMAND(__NAME__, __VALUE__) \
-    ServerSocketRegisterPacketCallback(Server, ServerContext.ClientSocket, __VALUE__, &SERVER_PROC_ ## __NAME__);
+#define C2S_COMMAND(__NAME__, __COMMAND__) \
+    ServerSocketRegisterPacketCallback(Server, ServerContext.ClientSocket, __COMMAND__, &SERVER_PROC_ ## __NAME__);
 #include "ClientCommands.h"
 
     ServerContext.MasterSocket = ServerCreateSocket(
@@ -113,6 +118,11 @@ Int32 main(Int32 argc, CString* argv) {
         NULL,
         Config.MasterSvr.Port,
         sizeof(struct _MasterContext),
+        Config.NetLib.ProtocolIdentifier,
+        Config.NetLib.ProtocolVersion,
+        Config.NetLib.ProtocolExtension,
+        Config.NetLib.ReadBufferSize,
+        Config.NetLib.WriteBufferSize,
         Config.MasterSvr.MaxServerCount,
         &MasterSocketOnConnect,
         &MasterSocketOnDisconnect

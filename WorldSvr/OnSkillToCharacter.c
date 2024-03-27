@@ -44,17 +44,16 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
     Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] -= RequiredMP;
 
-	S2C_DATA_SKILL_TO_CHARACTER* Response = PacketInit(S2C_DATA_SKILL_TO_CHARACTER);
-	Response->Command = S2C_SKILL_TO_CHARACTER;
+	S2C_DATA_SKILL_TO_CHARACTER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SKILL_TO_CHARACTER);
 	Response->SkillIndex = Packet->SkillIndex;
 
 	if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_MOVEMENT) {
 		Int32 PacketLength = sizeof(C2S_DATA_SKILL_TO_CHARACTER) + sizeof(C2S_DATA_SKILL_GROUP_MOVEMENT);
-		if (Packet->Signature.Length != PacketLength) goto error;
+		if (Packet->Length != PacketLength) goto error;
 		
 		C2S_DATA_SKILL_GROUP_MOVEMENT* PacketData = (C2S_DATA_SKILL_GROUP_MOVEMENT*)&Packet->Data[0];
 
-		S2C_DATA_SKILL_GROUP_MOVEMENT* ResponseData = PacketAppendStruct(S2C_DATA_SKILL_GROUP_MOVEMENT);
+		S2C_DATA_SKILL_GROUP_MOVEMENT* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_MOVEMENT);
 		ResponseData->CharacterMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 
 		Int32 CharacterPositionError = RTCalculateDistance(
@@ -102,11 +101,10 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 		SocketSend(Socket, Connection, Response);
 
-		S2C_DATA_NFY_SKILL_TO_CHARACTER* Notification = PacketInit(S2C_DATA_NFY_SKILL_TO_CHARACTER);
-		Notification->Command = S2C_NFY_SKILL_TO_CHARACTER;
+		S2C_DATA_NFY_SKILL_TO_CHARACTER* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_SKILL_TO_CHARACTER);
 		Notification->SkillIndex = Packet->SkillIndex;
 
-		S2C_DATA_NFY_SKILL_GROUP_MOVEMENT* NotificationData = PacketAppendStruct(S2C_DATA_NFY_SKILL_GROUP_MOVEMENT);
+		S2C_DATA_NFY_SKILL_GROUP_MOVEMENT* NotificationData = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_SKILL_GROUP_MOVEMENT);
 		NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
 		NotificationData->Entity = Character->ID;
 		NotificationData->PositionEnd.X = Character->Movement.PositionEnd.X;
@@ -124,21 +122,19 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 	else if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_ASTRAL) {
 		// TODO: Activate astral weapon
 		Int32 PacketLength = sizeof(C2S_DATA_SKILL_TO_CHARACTER) + sizeof(C2S_DATA_SKILL_GROUP_ASTRAL);
-		if (Packet->Signature.Length != PacketLength) goto error;
+		if (Packet->Length != PacketLength) goto error;
 
 		C2S_DATA_SKILL_GROUP_ASTRAL* PacketData = (C2S_DATA_SKILL_GROUP_ASTRAL*)&Packet->Data[0];
 
-		S2C_DATA_SKILL_GROUP_ASTRAL* ResponseData = PacketAppendStruct(S2C_DATA_SKILL_GROUP_ASTRAL);
+		S2C_DATA_SKILL_GROUP_ASTRAL* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_ASTRAL);
 		ResponseData->Unknown1 = PacketData->Unknown1;
 		ResponseData->Unknown2 = PacketData->Unknown2;
-
 		SocketSend(Socket, Connection, Response);
 
-		S2C_DATA_NFY_SKILL_TO_CHARACTER* Notification = PacketInit(S2C_DATA_NFY_SKILL_TO_CHARACTER);
-		Notification->Command = S2C_NFY_SKILL_TO_CHARACTER;
+		S2C_DATA_NFY_SKILL_TO_CHARACTER* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_SKILL_TO_CHARACTER);
 		Notification->SkillIndex = Packet->SkillIndex;
 
-		S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON* NotificationData = PacketAppendStruct(S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON);
+		S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON* NotificationData = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON);
 		NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
 		NotificationData->Entity = Character->ID;
 		NotificationData->Position.X = Character->Movement.PositionCurrent.X;
@@ -157,23 +153,21 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 	}
 	else if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_BATTLE_MODE) {
 		Int32 PacketLength = sizeof(C2S_DATA_SKILL_TO_CHARACTER) + sizeof(C2S_DATA_SKILL_GROUP_BATTLE_MODE);
-		if (Packet->Signature.Length != PacketLength) goto error;
+		if (Packet->Length != PacketLength) goto error;
 
 		C2S_DATA_SKILL_GROUP_BATTLE_MODE* PacketData = (C2S_DATA_SKILL_GROUP_BATTLE_MODE*)&Packet->Data[0];
 
 		// TODO: Activate, deactivate battle mode
 
-		S2C_DATA_SKILL_GROUP_BATTLE_MODE* ResponseData = PacketAppendStruct(S2C_DATA_SKILL_GROUP_BATTLE_MODE);
+		S2C_DATA_SKILL_GROUP_BATTLE_MODE* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_BATTLE_MODE);
 		ResponseData->CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 		ResponseData->IsActivation = PacketData->IsActivation;
-
 		SocketSend(Socket, Connection, Response);
 
-		S2C_DATA_NFY_SKILL_TO_CHARACTER* Notification = PacketInit(S2C_DATA_NFY_SKILL_TO_CHARACTER);
-		Notification->Command = S2C_NFY_SKILL_TO_CHARACTER;
+		S2C_DATA_NFY_SKILL_TO_CHARACTER* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_SKILL_TO_CHARACTER);
 		Notification->SkillIndex = Packet->SkillIndex;
 
-		S2C_DATA_NFY_SKILL_GROUP_BATTLE_MODE* NotificationData = PacketAppendStruct(S2C_DATA_NFY_SKILL_GROUP_BATTLE_MODE);
+		S2C_DATA_NFY_SKILL_GROUP_BATTLE_MODE* NotificationData = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_SKILL_GROUP_BATTLE_MODE);
 		NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
 		NotificationData->CharacterStyle = SwapUInt32(Character->Info.Style.RawValue);
 		NotificationData->CharacterLiveStyle = SwapUInt32(0); // TODO: Add character livestyle
@@ -199,8 +193,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 	/* TODO: Send notification S2C_DATA_SKILL_TO_CHARACTER_UPDATE
 	
-	S2C_DATA_SKILL_TO_MOB_UPDATE* Notification = PacketInit(S2C_DATA_SKILL_TO_MOB_UPDATE);
-	Notification->Command = S2C_SKILL_TO_MOB_UPDATE;
+	S2C_DATA_SKILL_TO_MOB_UPDATE* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, SKILL_TO_MOB_UPDATE);
 	Notification->SkillIndex = Response->SkillIndex;
 	Notification->TargetCount = Response->TargetCount;
 	Notification->CharacterID = Character->ID;

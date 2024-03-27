@@ -11,13 +11,11 @@ CLIENT_PROCEDURE_BINDING(CHANGE_STYLE) {
 	// TODO: Verify packet length!
 
 	// TODO: Implementation missing!
-	S2C_DATA_CHANGE_STYLE* Response = PacketInit(S2C_DATA_CHANGE_STYLE);
-	Response->Command = S2C_CHANGE_STYLE;
+	S2C_DATA_CHANGE_STYLE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHANGE_STYLE);
 	Response->Success = 1;
 	SocketSend(Socket, Connection, Response);
 
-	S2C_DATA_NFY_CHANGE_STYLE* Notification = PacketInit(S2C_DATA_NFY_CHANGE_STYLE);
-	Notification->Command = S2C_NFY_CHANGE_STYLE;
+	S2C_DATA_NFY_CHANGE_STYLE* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_CHANGE_STYLE);
 	Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
 	Notification->CharacterStyle = Packet->CharacterStyle;
 	Notification->CharacterLiveStyle = Packet->CharacterLiveStyle;

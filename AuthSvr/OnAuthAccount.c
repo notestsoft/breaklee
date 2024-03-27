@@ -11,8 +11,7 @@ Void StartDisconnectTimer(
     SocketConnectionRef Connection,
     UInt64 Timeout
 ) {
-    S2C_DATA_DISCONNECT_TIMER* Response = PacketInit(S2C_DATA_DISCONNECT_TIMER);
-    Response->Command = S2C_DISCONNECT_TIMER;
+    S2C_DATA_DISCONNECT_TIMER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DISCONNECT_TIMER);
     Response->Timeout = Timeout;
     Client->Flags |= CLIENT_FLAGS_CHECK_DISCONNECT_TIMER;
     Client->DisconnectTimestamp = ServerGetTimestamp(Server) + Timeout;
@@ -33,8 +32,7 @@ CLIENT_PROCEDURE_BINDING(AUTH_ACCOUNT) {
         Client->Flags |= CLIENT_FLAGS_AUTHORIZED;
     }
 
-    S2C_DATA_AUTH_ACCOUNT* Response = PacketInit(S2C_DATA_AUTH_ACCOUNT);
-    Response->Command = S2C_AUTH_ACCOUNT;
+    S2C_DATA_AUTH_ACCOUNT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, AUTH_ACCOUNT);
     Response->ServerStatus = ServerStatus;
     SocketSend(Socket, Connection, Response);
 

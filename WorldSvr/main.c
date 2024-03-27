@@ -7,7 +7,7 @@
 #include "IPCProcs.h"
 #include "Notification.h"
 
-#define C2S_COMMAND(__NAME__, __VALUE__)                                                                                         \
+#define C2S_COMMAND(__NAME__, __COMMAND__)                                                                                       \
 Void SERVER_PROC_ ## __NAME__(                                                                                                   \
     ServerRef Server,                                                                                                            \
     Void *ServerContext,                                                                                                         \
@@ -34,7 +34,7 @@ Void SERVER_ ## __NAME__(                                                       
 ) {                                                                                                          \
     ServerContextRef Context = (ServerContextRef)ServerContext;                                              \
     MasterContextRef Master = (MasterContextRef)ConnectionContext;                                           \
-    struct { IPC_DATA_SIGNATURE; } *Header = Packet;                                                         \
+    struct { IPC_DATA_SIGNATURE_EXTENDED; } *Header = Packet;                                                         \
     SocketConnectionRef ClientConnection = SocketGetConnection(Context->ClientSocket, Header->ConnectionID); \
     ClientContextRef Client = NULL;                                                                          \
     RTCharacterRef Character = NULL;                                                                         \
@@ -112,13 +112,18 @@ Int32 main(Int32 argc, CString* argv) {
         NULL,
         Config.WorldSvr.Port,
         sizeof(struct _ClientContext),
+        Config.NetLib.ProtocolIdentifier,
+        Config.NetLib.ProtocolVersion,
+        Config.NetLib.ProtocolExtension,
+        Config.NetLib.ReadBufferSize,
+        Config.NetLib.WriteBufferSize,
         Config.WorldSvr.MaxConnectionCount,
         &ClientSocketOnConnect,
         &ClientSocketOnDisconnect
     );
     
-#define C2S_COMMAND(__NAME__, __VALUE__) \
-    ServerSocketRegisterPacketCallback(Server, ServerContext.ClientSocket, __VALUE__, &SERVER_PROC_ ## __NAME__);
+#define C2S_COMMAND(__NAME__, __COMMAND__) \
+    ServerSocketRegisterPacketCallback(Server, ServerContext.ClientSocket, __COMMAND__, &SERVER_PROC_ ## __NAME__);
 #include "ClientCommands.h"
     
     ServerContext.MasterSocket = ServerCreateSocket(
@@ -127,6 +132,11 @@ Int32 main(Int32 argc, CString* argv) {
         Config.MasterSvr.Host,
         Config.MasterSvr.Port,
         sizeof(struct _MasterContext),
+        Config.NetLib.ProtocolIdentifier,
+        Config.NetLib.ProtocolVersion,
+        Config.NetLib.ProtocolExtension,
+        Config.NetLib.ReadBufferSize,
+        Config.NetLib.WriteBufferSize,
         1,
         &MasterSocketOnConnect,
         &MasterSocketOnDisconnect

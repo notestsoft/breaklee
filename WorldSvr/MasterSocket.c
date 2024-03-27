@@ -13,8 +13,7 @@ Void MasterSocketOnConnect(
     
     Master->ServerID = 0;
 
-    IPC_DATA_WORLD_REQCONNECT* Request = PacketInitExtended(IPC_DATA_WORLD_REQCONNECT);
-    Request->Command = IPC_WORLD_REQCONNECT;
+    IPC_DATA_WORLD_REQCONNECT* Request = PacketBufferInitExtended(Connection->PacketBuffer, IPC, WORLD_REQCONNECT);
     Request->WorldID = Context->Config.WorldSvr.WorldID;
     memcpy(Request->WorldHost, Context->Config.WorldSvr.Host, sizeof(Request->WorldHost));
     Request->WorldPort = Context->Config.WorldSvr.Port;
