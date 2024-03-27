@@ -163,7 +163,6 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 	Response->AXP = Character->Info.Ability.Exp;
 	Response->AP = Character->Info.Ability.Point;
 	Response->TargetCount = TargetCount;
-
 	SocketSend(Socket, Connection, Response);
 
 	if (ReceivedSkillExp > 0) {
@@ -190,7 +189,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 
 	for (Int32 Index = 0; Index < Response->TargetCount; Index++) {
 		S2C_DATA_SKILL_TO_MOB_TARGET* TargetResponse = &Response->Data[Index];
-		S2C_DATA_NFY_SKILL_TO_MOB_TARGET* TargetNotification = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_NFY_SKILL_TO_MOB_TARGET);
+		S2C_DATA_NFY_SKILL_TO_MOB_TARGET* TargetNotification = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_SKILL_TO_MOB_TARGET);
 		TargetNotification->Entity = TargetResponse->Entity;
 		TargetNotification->EntityIDType = TargetResponse->EntityIDType;
 		TargetNotification->AttackType = TargetResponse->AttackType;

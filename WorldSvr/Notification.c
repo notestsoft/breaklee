@@ -286,9 +286,10 @@ Void ServerRuntimeOnEvent(
     Void* UserData
 ) {
     ServerContextRef Context = (ServerContextRef)UserData;
+    PacketBufferRef PacketBuffer = Context->ClientSocket->PacketBuffer;
 
     if (Event->Type == RUNTIME_EVENT_CHARACTER_SPAWN) {
-        S2C_DATA_CHARACTERS_SPAWN* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, CHARACTERS_SPAWN);
+        S2C_DATA_CHARACTERS_SPAWN* Notification = PacketBufferInit(PacketBuffer, S2C, CHARACTERS_SPAWN);
         Notification->Count = 1;
         Notification->SpawnType = S2C_DATA_ENTITY_SPAWN_TYPE_INIT; // TODO: Add all spawn types!
 
@@ -297,7 +298,7 @@ Void ServerRuntimeOnEvent(
             Event->Data.CharacterSpawn.CharacterIndex
         );
 
-        S2C_DATA_CHARACTERS_SPAWN_INDEX* Spawn = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_CHARACTERS_SPAWN_INDEX);
+        S2C_DATA_CHARACTERS_SPAWN_INDEX* Spawn = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_CHARACTERS_SPAWN_INDEX);
         Spawn->CharacterIndex = (UInt32)Character->CharacterIndex;
         Spawn->Entity = Character->ID;
         Spawn->Level = Character->Info.Basic.Level;
@@ -321,16 +322,16 @@ Void ServerRuntimeOnEvent(
         assert(Client);
 
         Spawn->NameLength = strlen(Client->CharacterName) + 1;
-        CString Name = (CString)PacketBufferAppend(Context->ClientSocket->PacketBuffer, strlen(Client->CharacterName));
+        CString Name = (CString)PacketBufferAppend(PacketBuffer, strlen(Client->CharacterName));
         memcpy(Name, Client->CharacterName, strlen(Client->CharacterName));
 
-        S2C_DATA_CHARACTERS_SPAWN_GUILD* Guild = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_CHARACTERS_SPAWN_GUILD);
+        S2C_DATA_CHARACTERS_SPAWN_GUILD* Guild = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_CHARACTERS_SPAWN_GUILD);
         Guild->GuildNameLength = 0;
 
         for (Index Index = 0; Index < Character->EquipmentInfo.Count; Index += 1) {
             RTItemSlotRef ItemSlot = &Character->EquipmentInfo.Slots[Index];
 
-            S2C_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* Slot = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
+            S2C_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* Slot = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
             Slot->EquipmentSlotIndex = ItemSlot->SlotIndex;
             Slot->ItemID = ItemSlot->Item.Serial;
             Slot->ItemOptions = ItemSlot->ItemOptions;
@@ -348,7 +349,7 @@ Void ServerRuntimeOnEvent(
     }
 
     if (Event->Type == RUNTIME_EVENT_CHARACTER_DESPAWN) {
-        S2C_DATA_CHARACTERS_DESPAWN* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, CHARACTERS_DESPAWN);
+        S2C_DATA_CHARACTERS_DESPAWN* Notification = PacketBufferInit(PacketBuffer, S2C, CHARACTERS_DESPAWN);
         Notification->CharacterIndex = (UInt32)Event->Data.CharacterSpawn.CharacterIndex;
         Notification->DespawnType = S2C_DATA_ENTITY_DESPAWN_TYPE_DISAPPEAR; // TODO: Add all spawn types!
 
@@ -376,13 +377,13 @@ Void ServerRuntimeOnEvent(
 
         RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Client->CharacterIndex);
         {
-            S2C_DATA_NFY_CHARACTER_DATA* Notification = PacketBufferInit(Client->Connection->PacketBuffer, S2C, NFY_CHARACTER_DATA);
+            S2C_DATA_NFY_CHARACTER_DATA* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_CHARACTER_DATA);
             Notification->Type = S2C_DATA_CHARACTER_UPDATE_TYPE_LEVEL;
             Notification->Level = Character->Info.Basic.Level;
             SocketSend(Context->ClientSocket, Client->Connection, Notification);
         }
 
-        S2C_DATA_NFY_CHARACTER_EVENT* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_CHARACTER_EVENT);
+        S2C_DATA_NFY_CHARACTER_EVENT* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_CHARACTER_EVENT);
         Notification->Type = S2C_DATA_CHARACTER_EVENT_TYPE_LEVELUP;
         Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 
@@ -402,13 +403,13 @@ Void ServerRuntimeOnEvent(
 
         RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Client->CharacterIndex);
         {
-            S2C_DATA_NFY_CHARACTER_DATA* Notification = PacketBufferInit(Client->Connection->PacketBuffer, S2C, NFY_CHARACTER_DATA);
+            S2C_DATA_NFY_CHARACTER_DATA* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_CHARACTER_DATA);
             Notification->Type = S2C_DATA_CHARACTER_UPDATE_TYPE_OVERLORD_LEVEL;
             Notification->Level = Character->Info.Overlord.Level;
             SocketSend(Context->ClientSocket, Client->Connection, Notification);
         }
 
-        S2C_DATA_NFY_CHARACTER_EVENT* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_CHARACTER_EVENT);
+        S2C_DATA_NFY_CHARACTER_EVENT* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_CHARACTER_EVENT);
         Notification->Type = S2C_DATA_CHARACTER_EVENT_TYPE_OVERLORD_LEVELUP;
         Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 
@@ -426,7 +427,7 @@ Void ServerRuntimeOnEvent(
         ClientContextRef Client = ServerGetClientByEntity(Context, Event->TargetID);
         if (Client) {
             RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Client->CharacterIndex);
-            S2C_DATA_NFY_CHARACTER_DATA* Notification = PacketBufferInit(Client->Connection->PacketBuffer, S2C, NFY_CHARACTER_DATA);
+            S2C_DATA_NFY_CHARACTER_DATA* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_CHARACTER_DATA);
             Notification->Type = Event->Data.CharacterData.Type;
             
             if (Notification->Type == S2C_DATA_CHARACTER_UPDATE_TYPE_HPPOTION) {
@@ -474,7 +475,7 @@ Void ServerRuntimeOnEvent(
                 BattleStyleIndex
             );
 
-            S2C_DATA_UPDATE_SKILL_STATUS* Notification = PacketBufferInit(Client->Connection->PacketBuffer, S2C, UPDATE_SKILL_STATUS);
+            S2C_DATA_UPDATE_SKILL_STATUS* Notification = PacketBufferInit(PacketBuffer, S2C, UPDATE_SKILL_STATUS);
             Notification->SkillRank = Character->Info.Skill.Rank;
             Notification->SkillLevel = Character->Info.Skill.Level;
             Notification->SkillLevelMax = SkillLevelMax;
@@ -492,12 +493,12 @@ Void ServerRuntimeOnEvent(
 
         RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Client->CharacterIndex);
         {
-            S2C_DATA_BATTLE_RANK_UP* Notification = PacketBufferInit(Client->Connection->PacketBuffer, S2C, BATTLE_RANK_UP);
+            S2C_DATA_BATTLE_RANK_UP* Notification = PacketBufferInit(PacketBuffer, S2C, BATTLE_RANK_UP);
             Notification->Level = Character->Info.Style.BattleRank;
             SocketSend(Context->ClientSocket, Client->Connection, Notification);
         }
 
-        S2C_DATA_NFY_CHARACTER_EVENT* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_CHARACTER_EVENT);
+        S2C_DATA_NFY_CHARACTER_EVENT* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_CHARACTER_EVENT);
         Notification->Type = S2C_DATA_CHARACTER_EVENT_TYPE_RANKUP;
         Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 
@@ -512,10 +513,10 @@ Void ServerRuntimeOnEvent(
     }
 
     if (Event->Type == RUNTIME_EVENT_MOB_SPAWN || Event->Type == RUNTIME_EVENT_MOB_UPDATE) {
-        S2C_DATA_MOBS_SPAWN* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, MOBS_SPAWN);
+        S2C_DATA_MOBS_SPAWN* Notification = PacketBufferInit(PacketBuffer, S2C, MOBS_SPAWN);
         Notification->Count = 1;
 
-        S2C_DATA_MOBS_SPAWN_INDEX* Spawn = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_MOBS_SPAWN_INDEX);
+        S2C_DATA_MOBS_SPAWN_INDEX* Spawn = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_MOBS_SPAWN_INDEX);
         Spawn->Entity = Event->TargetID;
         Spawn->PositionBegin.X = Event->Data.MobSpawnOrUpdate.PositionBeginX;
         Spawn->PositionBegin.Y = Event->Data.MobSpawnOrUpdate.PositionBeginY;
@@ -537,7 +538,7 @@ Void ServerRuntimeOnEvent(
     }
 
     if (Event->Type == RUNTIME_EVENT_MOB_DESPAWN) {
-        S2C_DATA_MOBS_DESPAWN* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, MOBS_DESPAWN);
+        S2C_DATA_MOBS_DESPAWN* Notification = PacketBufferInit(PacketBuffer, S2C, MOBS_DESPAWN);
         Notification->Entity = Event->TargetID;
         Notification->DespawnType = S2C_DATA_ENTITY_DESPAWN_TYPE_DEAD;
 
@@ -552,7 +553,7 @@ Void ServerRuntimeOnEvent(
     }
 
     if (Event->Type == RUNTIME_EVENT_MOB_MOVEMENT_BEGIN) {
-        S2C_DATA_MOB_MOVEMENT_BEGIN* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, MOB_MOVEMENT_BEGIN);
+        S2C_DATA_MOB_MOVEMENT_BEGIN* Notification = PacketBufferInit(PacketBuffer, S2C, MOB_MOVEMENT_BEGIN);
         Notification->Entity = Event->TargetID;
         Notification->TickCount = Event->Data.MobMovementBegin.TickCount;
         Notification->PositionBegin.X = Event->Data.MobMovementBegin.PositionBeginX;
@@ -571,7 +572,7 @@ Void ServerRuntimeOnEvent(
     }
 
     if (Event->Type == RUNTIME_EVENT_MOB_MOVEMENT_END) {
-        S2C_DATA_MOB_MOVEMENT_END* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, MOB_MOVEMENT_END);
+        S2C_DATA_MOB_MOVEMENT_END* Notification = PacketBufferInit(PacketBuffer, S2C, MOB_MOVEMENT_END);
         Notification->Entity = Event->TargetID;
         Notification->Position.X = Event->Data.MobMovementEnd.PositionCurrentX;
         Notification->Position.Y = Event->Data.MobMovementEnd.PositionCurrentY;
@@ -587,7 +588,7 @@ Void ServerRuntimeOnEvent(
     }
 
     if (Event->Type == RUNTIME_EVENT_MOB_CHASE_BEGIN) {
-        S2C_DATA_MOB_CHASE_BEGIN* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, MOB_CHASE_BEGIN);
+        S2C_DATA_MOB_CHASE_BEGIN* Notification = PacketBufferInit(PacketBuffer, S2C, MOB_CHASE_BEGIN);
         Notification->Entity = Event->TargetID;
         Notification->TickCount = Event->Data.MobMovementBegin.TickCount;
         Notification->PositionBegin.X = Event->Data.MobMovementBegin.PositionBeginX;
@@ -606,7 +607,7 @@ Void ServerRuntimeOnEvent(
     }
 
     if (Event->Type == RUNTIME_EVENT_MOB_CHASE_END) {
-        S2C_DATA_MOB_CHASE_END* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, MOB_CHASE_END);
+        S2C_DATA_MOB_CHASE_END* Notification = PacketBufferInit(PacketBuffer, S2C, MOB_CHASE_END);
         Notification->Entity = Event->TargetID;
         Notification->Position.X = Event->Data.MobMovementEnd.PositionCurrentX;
         Notification->Position.Y = Event->Data.MobMovementEnd.PositionCurrentY;
@@ -622,7 +623,7 @@ Void ServerRuntimeOnEvent(
     }
 
     if (Event->Type == RUNTIME_EVENT_MOB_ATTACK) {
-        S2C_DATA_NFY_MOB_ATTACK_AOE* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_MOB_ATTACK_AOE);
+        S2C_DATA_NFY_MOB_ATTACK_AOE* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_MOB_ATTACK_AOE);
         Notification->Entity = Event->SourceID;
         Notification->IsDefaultSkill = Event->Data.MobAttack.IsDefaultSkill;
         Notification->MobHP = Event->Data.MobAttack.MobHP;
@@ -631,7 +632,7 @@ Void ServerRuntimeOnEvent(
         for (Int32 Index = 0; Index < Event->Data.MobAttack.ResultCount; Index += 1) {
             RTCharacterRef Character = RTWorldManagerGetCharacter(Runtime->WorldManager, Event->Data.MobAttack.Results[Index].Entity);
 
-            S2C_DATA_MOB_ATTACK_TARGET* Target = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_MOB_ATTACK_TARGET);
+            S2C_DATA_MOB_ATTACK_TARGET* Target = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_MOB_ATTACK_TARGET);
             Target->CharacterIndex = (UInt32)Character->CharacterIndex;
             Target->IsDead = Event->Data.MobAttack.Results[Index].IsDead;
             Target->Result = Event->Data.MobAttack.Results[Index].Result;
@@ -650,7 +651,7 @@ Void ServerRuntimeOnEvent(
     }
 
     if (Event->Type == RUNTIME_EVENT_ITEM_SPAWN) {
-        S2C_DATA_NFY_SPAWN_ITEM* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_SPAWN_ITEM);
+        S2C_DATA_NFY_SPAWN_ITEM* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_SPAWN_ITEM);
         Notification->Count = 1;
 
         UInt32 SourceIndex = *(UInt32 *)&Event->SourceID;
@@ -659,7 +660,7 @@ Void ServerRuntimeOnEvent(
             SourceIndex = (UInt32)Character->CharacterIndex;
         }
 
-        S2C_DATA_NFY_SPAWN_ITEM_INDEX* Spawn = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_SPAWN_ITEM_INDEX);
+        S2C_DATA_NFY_SPAWN_ITEM_INDEX* Spawn = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_NFY_SPAWN_ITEM_INDEX);
         Spawn->Entity = Event->Data.ItemSpawn.Entity;
         Spawn->ItemOptions = Event->Data.ItemSpawn.ItemOptions;
         Spawn->SourceIndex = SourceIndex;
@@ -681,7 +682,7 @@ Void ServerRuntimeOnEvent(
     }
 
     if (Event->Type == RUNTIME_EVENT_ITEM_DESPAWN) {
-        S2C_DATA_NFY_DESPAWN_ITEM* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_DESPAWN_ITEM);
+        S2C_DATA_NFY_DESPAWN_ITEM* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_DESPAWN_ITEM);
         Notification->Entity = Event->TargetID;
         Notification->DespawnType = S2C_DATA_ENTITY_DESPAWN_TYPE_DISAPPEAR;
 
@@ -696,7 +697,7 @@ Void ServerRuntimeOnEvent(
     }
 
     if (Event->Type == RUNTIME_EVENT_QUEST_DUNGEON_PATTERN_PART_COMPLETED) {
-        S2C_DATA_NFY_QUEST_DUNGEON_PATTERN_PART_COMPLETED* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_QUEST_DUNGEON_PATTERN_PART_COMPLETED);
+        S2C_DATA_NFY_QUEST_DUNGEON_PATTERN_PART_COMPLETED* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_QUEST_DUNGEON_PATTERN_PART_COMPLETED);
         Notification->PatternPartIndex = Event->World->PatternPartIndex;
 
         return BroadcastToParty(
@@ -707,7 +708,7 @@ Void ServerRuntimeOnEvent(
     }
 
     if (Event->Type == RUNTIME_EVENT_PARTY_QUEST_MISSION_MOB_KILL) {
-        S2C_DATA_NFY_PARTY_QUEST_MISSION_MOB_KILL* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_PARTY_QUEST_MISSION_MOB_KILL);
+        S2C_DATA_NFY_PARTY_QUEST_MISSION_MOB_KILL* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_PARTY_QUEST_MISSION_MOB_KILL);
         Notification->QuestID = Event->Data.PartyQuestMissionMobKill.QuestID;
         Notification->MobSpeciesIndex = Event->Data.PartyQuestMissionMobKill.MobSpeciesIndex;
 
@@ -721,7 +722,7 @@ Void ServerRuntimeOnEvent(
     if (Event->Type == RUNTIME_EVENT_ATTACK_TO_MOB) {
         RTCharacterRef Character = RTWorldManagerGetCharacter(Runtime->WorldManager, Event->Data.AttackToMob.Character);
 
-        S2C_DATA_NFY_ATTACK_TO_MOB* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_ATTACK_TO_MOB);
+        S2C_DATA_NFY_ATTACK_TO_MOB* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_ATTACK_TO_MOB);
         Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
         Notification->Mob = Event->Data.AttackToMob.Mob;
         Notification->MobIDType = RUNTIME_ENTITY_TYPE_MOB;

@@ -26,7 +26,7 @@ UInt16 Command
 UInt16 Magic;                       \
 UInt32 Length;                      \
 UInt16 Command;                     \
-UInt16 ConnectionID
+Index ConnectionID
 
 #pragma pack(pop)
 

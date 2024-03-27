@@ -198,9 +198,9 @@ Void SocketSend(
 
     UInt32 PacketLength = 0;
     if (PacketMagic == Socket->ProtocolExtension) {
-        PacketLength = *((UInt32*)(Packet + sizeof(UInt16)));
+        PacketLength = *((UInt32*)((UInt8*)Packet + sizeof(UInt16)));
     } else {
-        PacketLength = *((UInt16*)(Packet + sizeof(UInt16)));
+        PacketLength = *((UInt16*)((UInt8*)Packet + sizeof(UInt16)));
     }
 
     SocketSendRaw(Socket, Connection, Packet, PacketLength);
@@ -243,9 +243,9 @@ Bool SocketFetchReadBuffer(
             PacketMagic -= Socket->ProtocolVersion;
             
             if (PacketMagic == Socket->ProtocolExtension) {
-                PacketLength = *((UInt32*)(Packet + sizeof(UInt16)));
+                PacketLength = *((UInt32*)((UInt8*)Packet + sizeof(UInt16)));
             } else if (PacketMagic == 0) {
-                PacketLength = *((UInt16*)(Packet + sizeof(UInt16)));
+                PacketLength = *((UInt16*)((UInt8*)Packet + sizeof(UInt16)));
             } else {
                 SocketDisconnect(Socket, Connection);
                 break;
@@ -266,7 +266,7 @@ Bool SocketFetchReadBuffer(
             UInt16 PacketMagic = *((UInt16*)Packet);
             PacketMagic -= Socket->ProtocolIdentifier;
             PacketMagic -= Socket->ProtocolVersion;
-            if (PacketMagic != 0) {
+            if (PacketMagic != 0 && PacketMagic != Socket->ProtocolExtension) {
                 SocketDisconnect(Socket, Connection);
                 break;
             }
@@ -293,9 +293,9 @@ Bool SocketFlushWriteBuffer(
         
         UInt32 PacketLength = 0;
         if (PacketMagic == Socket->ProtocolExtension) {
-            PacketLength = *((UInt32*)(Packet + sizeof(UInt16)));
+            PacketLength = *((UInt32*)((UInt8*)Packet + sizeof(UInt16)));
         } else {
-            PacketLength = *((UInt16*)(Packet + sizeof(UInt16)));
+            PacketLength = *((UInt16*)((UInt8*)Packet + sizeof(UInt16)));
         }
         
         if (Socket->OnSend) Socket->OnSend(Socket, Connection, Packet);

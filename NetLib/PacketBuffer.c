@@ -47,18 +47,15 @@ Void* _PacketBufferInit(
     if (Extended) {
         assert(Length >= 8);
 
-        struct { UInt16 Magic; UInt32 Length; UInt16 Command; } *Signature = Packet;
-        Signature->Magic = PacketBuffer->ProtocolIdentifier + PacketBuffer->ProtocolVersion;
-        Signature->Magic += PacketBuffer->ProtocolExtension;
-        Signature->Length = Length;
-        Signature->Command = Command;
+        *(UInt16*)((UInt8*)Packet + 0) = PacketBuffer->ProtocolIdentifier + PacketBuffer->ProtocolVersion + PacketBuffer->ProtocolExtension;
+        *(UInt32*)((UInt8*)Packet + 2) = Length;
+        *(UInt16*)((UInt8*)Packet + 6) = Command;
     } else {
         assert(Length >= 6);
 
-        struct { UInt16 Magic; UInt16 Length; UInt16 Command; } *Signature = Packet;
-        Signature->Magic = PacketBuffer->ProtocolIdentifier + PacketBuffer->ProtocolVersion;
-        Signature->Length = Length;
-        Signature->Command = Command;
+        *(UInt16*)((UInt8*)Packet + 0) = PacketBuffer->ProtocolIdentifier + PacketBuffer->ProtocolVersion;
+        *(UInt16*)((UInt8*)Packet + 2) = Length;
+        *(UInt16*)((UInt8*)Packet + 4) = Command;
     }
     
     return Packet;
@@ -119,10 +116,10 @@ UInt32 PacketGetLength(
     PacketMagic -= ProtocolVersion;
     
     if (PacketMagic == ProtocolExtension) {
-        return *((UInt32*)(Packet + sizeof(UInt16)));
+        return *((UInt32*)((UInt8*)Packet + sizeof(UInt16)));
     }
     
-    return *((UInt16*)(Packet + sizeof(UInt16)));
+    return *((UInt16*)((UInt8*)Packet + sizeof(UInt16)));
 }
 
 Void PacketSetLength(
@@ -137,10 +134,10 @@ Void PacketSetLength(
     PacketMagic -= ProtocolVersion;
     
     if (PacketMagic == ProtocolExtension) {
-        *((UInt32*)(Packet + sizeof(UInt16))) = Length;
+        *((UInt32*)((UInt8*)Packet + sizeof(UInt16))) = Length;
     }
     
-    *((UInt16*)(Packet + sizeof(UInt16))) = Length;
+    *((UInt16*)((UInt8*)Packet + sizeof(UInt16))) = Length;
 }
 
 Void PacketLogBytes(
@@ -167,7 +164,7 @@ UInt16 ClientPacketGetCommand(
     UInt16 ProtocolExtension,
     Void *Packet
 ) {
-    return *(UInt16*)(Packet + 8);
+    return *(UInt16*)((UInt8*)Packet + 8);
 }
 
 UInt16 ServerPacketGetCommand(
@@ -181,8 +178,8 @@ UInt16 ServerPacketGetCommand(
     PacketMagic -= ProtocolVersion;
     
     if (PacketMagic == ProtocolExtension) {
-        return *((UInt16*)(Packet + 6));
+        return *((UInt16*)((UInt8*)Packet + 6));
     }
     
-    return *((UInt16*)(Packet + 4));
+    return *((UInt16*)((UInt8*)Packet + 4));
 }

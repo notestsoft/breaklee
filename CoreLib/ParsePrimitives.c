@@ -39,35 +39,35 @@ Void ParseUInt8(
     CString Value,
     UInt8* Result
 ) {
-    *Result = (UInt8)strtoull(Value, NULL, 10);
+    *Result = (UInt8)strtoull(Value, NULL, 0);
 }
 
 Void ParseUInt16(
     CString Value,
     UInt16* Result
 ) {
-    *Result = (UInt16)strtoull(Value, NULL, 10);
+    *Result = (UInt16)strtoull(Value, NULL, 0);
 }
 
 Void ParseUInt32(
     CString Value,
     UInt32* Result
 ) {
-    *Result = (UInt32)strtoull(Value, NULL, 10);
+    *Result = (UInt32)strtoull(Value, NULL, 0);
 }
 
 Void ParseUInt64(
     CString Value,
     UInt64* Result
 ) {
-    *Result = (UInt64)strtoull(Value, NULL, 10);
+    *Result = (UInt64)strtoull(Value, NULL, 0);
 }
 
 Void ParseIndex(
     CString Value,
     Index* Result
 ) {
-    *Result = (Index)strtoull(Value, NULL, 10);
+    *Result = (Index)strtoull(Value, NULL, 0);
 }
 
 Bool ParseAttributeInt8(

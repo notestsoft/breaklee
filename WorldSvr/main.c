@@ -23,42 +23,49 @@ Void SERVER_PROC_ ## __NAME__(                                                  
 }
 #include "ClientCommands.h"
 
-#define IPC_MASTER_PROCEDURE(__NAME__, __COMMAND__, __PROTOCOL__)                                            \
-Void SERVER_ ## __NAME__(                                                                                    \
-    ServerRef Server,                                                                                        \
-    Void *ServerContext,                                                                                     \
-    SocketRef Socket,                                                                                        \
-    SocketConnectionRef Connection,                                                                          \
-    Void *ConnectionContext,                                                                                 \
-    Void *Packet                                                                                             \
-) {                                                                                                          \
-    ServerContextRef Context = (ServerContextRef)ServerContext;                                              \
-    MasterContextRef Master = (MasterContextRef)ConnectionContext;                                           \
-    struct { IPC_DATA_SIGNATURE_EXTENDED; } *Header = Packet;                                                         \
-    SocketConnectionRef ClientConnection = SocketGetConnection(Context->ClientSocket, Header->ConnectionID); \
-    ClientContextRef Client = NULL;                                                                          \
-    RTCharacterRef Character = NULL;                                                                         \
-                                                                                                             \
-    if (ClientConnection) {                                                                                  \
-        Client = (ClientContextRef)ClientConnection->Userdata;                                               \
-    }                                                                                                        \
-                                                                                                             \
-    if (Client && Client->CharacterIndex > 0) {                                                              \
-        Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Client->CharacterIndex); \
-    }                                                                                                        \
-                                                                                                             \
-    __NAME__(                                                                                                \
-        Server,                                                                                              \
-        Context,                                                                                             \
-        Socket,                                                                                              \
-        Connection,                                                                                          \
-        Master,                                                                                              \
-        ClientConnection,                                                                                    \
-        Client,                                                                                              \
-        Context->Runtime,                                                                                    \
-        Character,                                                                                           \
-        (__PROTOCOL__*)Packet                                                                                \
-    );                                                                                                       \
+// TODO: This is not a good solution considering the connection id is being reused
+Index PacketGetConnectionID(
+    Void* Packet
+) {
+    return *(Index*)((UInt8*)Packet + 8);
+}
+
+#define IPC_MASTER_PROCEDURE(__NAME__, __COMMAND__, __PROTOCOL__)                                               \
+Void SERVER_ ## __NAME__(                                                                                       \
+    ServerRef Server,                                                                                           \
+    Void *ServerContext,                                                                                        \
+    SocketRef Socket,                                                                                           \
+    SocketConnectionRef Connection,                                                                             \
+    Void *ConnectionContext,                                                                                    \
+    Void *Packet                                                                                                \
+) {                                                                                                             \
+    ServerContextRef Context = (ServerContextRef)ServerContext;                                                 \
+    MasterContextRef Master = (MasterContextRef)ConnectionContext;                                              \
+    Index ConnectionID = PacketGetConnectionID(Packet);                                                         \
+    SocketConnectionRef ClientConnection = SocketGetConnection(Context->ClientSocket, ConnectionID);            \
+    ClientContextRef Client = NULL;                                                                             \
+    RTCharacterRef Character = NULL;                                                                            \
+                                                                                                                \
+    if (ClientConnection) {                                                                                     \
+        Client = (ClientContextRef)ClientConnection->Userdata;                                                  \
+    }                                                                                                           \
+                                                                                                                \
+    if (Client && Client->CharacterIndex > 0) {                                                                 \
+        Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Client->CharacterIndex);  \
+    }                                                                                                           \
+                                                                                                                \
+    __NAME__(                                                                                                   \
+        Server,                                                                                                 \
+        Context,                                                                                                \
+        Socket,                                                                                                 \
+        Connection,                                                                                             \
+        Master,                                                                                                 \
+        ClientConnection,                                                                                       \
+        Client,                                                                                                 \
+        Context->Runtime,                                                                                       \
+        Character,                                                                                              \
+        (__PROTOCOL__*)Packet                                                                                   \
+    );                                                                                                          \
 }
 #include "IPCProcDefinition.h"
 
