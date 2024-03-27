@@ -23,7 +23,7 @@ struct _RTCharacterNewbieSupportInfo {
 
 #pragma pack(pop)
 
-Bool RTCharacterHasTakenNewbieSupportReward(
+Bool RTCharacterCanTakenNewbieSupportReward(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     UInt8 CategoryType,
