@@ -220,6 +220,7 @@ Void DictionaryInsert(
         }
     }
 
+    assert(Bucket);
     if (Bucket->IsFilled) {
         Bucket->Next = (DictionaryBucketRef)AllocatorAllocate(Dictionary->BucketAllocator, sizeof(struct _DictionaryBucket));
         Bucket = Bucket->Next;

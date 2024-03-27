@@ -3,6 +3,11 @@
 SocketRef SocketCreate(
     AllocatorRef Allocator,
     UInt32 Flags,
+    UInt16 ProtocolIdentifier,
+    UInt16 ProtocolVersion,
+    UInt16 ProtocolExtension,
+    Index ReadBufferSize,
+    Index WriteBufferSize,
     Index MaxConnectionCount,
     SocketConnectionCallback OnConnect,
     SocketConnectionCallback OnDisconnect,
@@ -18,17 +23,23 @@ SocketRef SocketCreate(
     if (!Socket) FatalError("Memory allocation failed!");
     memset(Socket, 0, sizeof(struct _Socket));
     Socket->Allocator = Allocator;
-    Socket->MaxConnectionCount = MaxConnectionCount;
-    Socket->ConnectionIndices = IndexSetCreate(Allocator, MaxConnectionCount);
-    Socket->ConnectionPool = MemoryPoolCreate(Allocator, sizeof(struct _SocketConnection), MaxConnectionCount);
     Socket->Handle = -1;
     Socket->Flags = Flags;
+    Socket->ProtocolIdentifier = ProtocolIdentifier;
+    Socket->ProtocolVersion = ProtocolVersion;
+    Socket->ProtocolExtension = ProtocolExtension;
+    Socket->ReadBufferSize = ReadBufferSize;
+    Socket->WriteBufferSize = WriteBufferSize;
+    Socket->MaxConnectionCount = MaxConnectionCount;
     Socket->NextConnectionID = 1;
     Socket->Timeout = 0;
+    Socket->PacketBuffer = PacketBufferCreate(Allocator, ProtocolIdentifier, ProtocolVersion, ProtocolExtension, 4, WriteBufferSize);
     Socket->OnConnect = OnConnect;
     Socket->OnDisconnect = OnDisconnect;
     Socket->OnSend = OnSend;
     Socket->OnReceived = OnReceived;
+    Socket->ConnectionIndices = IndexSetCreate(Allocator, MaxConnectionCount);
+    Socket->ConnectionPool = MemoryPoolCreate(Allocator, sizeof(struct _SocketConnection), MaxConnectionCount);
     Socket->Userdata = Userdata;
     return Socket;
 }
@@ -37,6 +48,7 @@ Void SocketDestroy(
     SocketRef Socket
 ) {
     assert(Socket);
+    PacketBufferDestroy(Socket->PacketBuffer);
     IndexSetDestroy(Socket->ConnectionIndices);
     MemoryPoolDestroy(Socket->ConnectionPool);
     AllocatorDeallocate(Socket->Allocator, Socket);
@@ -50,6 +62,16 @@ SocketConnectionRef SocketReserveConnection(
     IndexSetInsert(Socket->ConnectionIndices, ConnectionPoolIndex);
     memset(Connection, 0, sizeof(struct _SocketConnection));
     Connection->ConnectionPoolIndex = ConnectionPoolIndex;
+    Connection->PacketBuffer = PacketBufferCreate(
+        Socket->Allocator,
+        Socket->ProtocolIdentifier,
+        Socket->ProtocolVersion,
+        Socket->ProtocolExtension,
+        4,
+        Socket->WriteBufferSize
+    );
+    Connection->ReadBuffer = MemoryBufferCreate(Socket->Allocator, 4, Socket->ReadBufferSize);
+    Connection->WriteBuffer = MemoryBufferCreate(Socket->Allocator, 4, Socket->WriteBufferSize);
     return Connection;
 }
 
@@ -57,6 +79,9 @@ Void SocketReleaseConnection(
     SocketRef Socket,
     SocketConnectionRef Connection
 ) {
+    PacketBufferDestroy(Connection->PacketBuffer);
+    MemoryBufferDestroy(Connection->ReadBuffer);
+    MemoryBufferDestroy(Connection->WriteBuffer);
     IndexSetRemove(Socket->ConnectionIndices, Connection->ConnectionPoolIndex);
     MemoryPoolRelease(Socket->ConnectionPool, Connection->ConnectionPoolIndex);
 }
@@ -142,9 +167,7 @@ Void SocketSendRaw(
 ) {
     if (!(Socket->Flags & (SOCKET_FLAGS_LISTENING | SOCKET_FLAGS_CONNECTED))) return;
 
-    assert(Connection->WriteBufferOffset + Length <= SOCKET_MAX_PACKET_SIZE);
-    memcpy(&Connection->WriteBuffer[Connection->WriteBufferOffset], Data, Length);
-    Connection->WriteBufferOffset += Length;
+    MemoryBufferAppendCopy(Connection->WriteBuffer, Data, Length);
 }
 
 Void SocketSendAllRaw(
@@ -169,7 +192,18 @@ Void SocketSend(
     SocketConnectionRef Connection,
     Void *Packet
 ) {
-    SocketSendRaw(Socket, Connection, Packet, ((PacketRef)Packet)->Length);
+    UInt16 PacketMagic = *((UInt16*)Packet);
+    PacketMagic -= Socket->ProtocolIdentifier;
+    PacketMagic -= Socket->ProtocolVersion;
+
+    UInt32 PacketLength = 0;
+    if (PacketMagic == Socket->ProtocolExtension) {
+        PacketLength = *((UInt32*)((UInt8*)Packet + sizeof(UInt16)));
+    } else {
+        PacketLength = *((UInt16*)((UInt8*)Packet + sizeof(UInt16)));
+    }
+
+    SocketSendRaw(Socket, Connection, Packet, PacketLength);
 }
 
 Void SocketSendAll(
@@ -192,37 +226,54 @@ Bool SocketFetchReadBuffer(
     SocketRef Socket,
     SocketConnectionRef Connection
 ) {
-    while (Connection->ReadBufferOffset >= sizeof(struct _PacketSignature)) {
-        Int32 PacketLength = 0;
-
+    while (MemoryBufferGetOffset(Connection->ReadBuffer) >= 6) {
+        UInt32 PacketLength = 0;
+        
         if (Socket->Flags & SOCKET_FLAGS_ENCRYPTED) {
             PacketLength = KeychainGetPacketLength(
                 &Connection->Keychain,
-                Connection->ReadBuffer,
-                Connection->ReadBufferOffset
+                MemoryBufferGetMemory(Connection->ReadBuffer, 0),
+                MemoryBufferGetOffset(Connection->ReadBuffer)
             );
         }
         else {
-            PacketRef Signature = (PacketRef)Connection->ReadBuffer;
-            PacketLength = Signature->Length;
+            Void* Packet = MemoryBufferGetMemory(Connection->ReadBuffer, 0);
+            UInt16 PacketMagic = *((UInt16*)Packet);
+            PacketMagic -= Socket->ProtocolIdentifier;
+            PacketMagic -= Socket->ProtocolVersion;
+            
+            if (PacketMagic == Socket->ProtocolExtension) {
+                PacketLength = *((UInt32*)((UInt8*)Packet + sizeof(UInt16)));
+            } else if (PacketMagic == 0) {
+                PacketLength = *((UInt16*)((UInt8*)Packet + sizeof(UInt16)));
+            } else {
+                SocketDisconnect(Socket, Connection);
+                break;
+            }
         }
         
         // TODO: Add error handling when packet is dropped or not fully received to meet the desired PacketLength
-        if (Connection->ReadBufferOffset >= PacketLength) {
+        if (MemoryBufferGetOffset(Connection->ReadBuffer) >= PacketLength) {
             if (Socket->Flags & SOCKET_FLAGS_ENCRYPTED) {
                 KeychainDecryptPacket(
                     &Connection->Keychain,
-                    Connection->ReadBuffer,
+                    MemoryBufferGetMemory(Connection->ReadBuffer, 0),
                     PacketLength
                 );
             }
 
-            if (Socket->OnReceived) Socket->OnReceived(Socket, Connection, (PacketRef)Connection->ReadBuffer);
-
-            Connection->ReadBufferOffset -= PacketLength;
-            if (Connection->ReadBufferOffset > 0) {
-                memmove(&Connection->ReadBuffer[0], &Connection->ReadBuffer[PacketLength], Connection->ReadBufferOffset);
+            Void* Packet = MemoryBufferGetMemory(Connection->ReadBuffer, 0);
+            UInt16 PacketMagic = *((UInt16*)Packet);
+            PacketMagic -= Socket->ProtocolIdentifier;
+            PacketMagic -= Socket->ProtocolVersion;
+            if (PacketMagic != 0 && PacketMagic != Socket->ProtocolExtension) {
+                SocketDisconnect(Socket, Connection);
+                break;
             }
+
+            if (Socket->OnReceived) Socket->OnReceived(Socket, Connection, Packet);
+
+            MemoryBufferPopFront(Connection->ReadBuffer, PacketLength);
         }
         else {
             break;
@@ -234,31 +285,31 @@ Bool SocketFlushWriteBuffer(
     SocketRef Socket,
     SocketConnectionRef Connection
 ) {
-    while (Connection->WriteBufferOffset > 0) {
-        PacketRef Packet = (PacketRef)Connection->WriteBuffer;
-        Int32 PacketLength = Packet->Length;
-
-        if (Socket->OnSend)
-            Socket->OnSend(Socket, Connection, Packet);
+    while (MemoryBufferGetOffset(Connection->WriteBuffer) > 0) {
+        Void* Packet = MemoryBufferGetMemory(Connection->WriteBuffer, 0);
+        UInt16 PacketMagic = *((UInt16*)Packet);
+        PacketMagic -= Socket->ProtocolIdentifier;
+        PacketMagic -= Socket->ProtocolVersion;
+        
+        UInt32 PacketLength = 0;
+        if (PacketMagic == Socket->ProtocolExtension) {
+            PacketLength = *((UInt32*)((UInt8*)Packet + sizeof(UInt16)));
+        } else {
+            PacketLength = *((UInt16*)((UInt8*)Packet + sizeof(UInt16)));
+        }
+        
+        if (Socket->OnSend) Socket->OnSend(Socket, Connection, Packet);
 
         if (Socket->Flags & SOCKET_FLAGS_ENCRYPTED) {
-            KeychainEncryptPacket(&Connection->Keychain, (UInt8 *)Packet, PacketLength);
+            KeychainEncryptPacket(&Connection->Keychain, Packet, PacketLength);
         }
 
-        if (send(Connection->Handle, (Char*)Packet, PacketLength, 0) == -1) {
+        if (send(Connection->Handle, Packet, PacketLength, 0) == -1) {
             SocketDisconnect(Socket, Connection);
             break;
         }
-        else {
-            Connection->WriteBufferOffset -= PacketLength;
-            if (Connection->WriteBufferOffset > 0) {
-                memmove(
-                    &Connection->WriteBuffer[0],
-                    &Connection->WriteBuffer[PacketLength],
-                    Connection->WriteBufferOffset
-                );
-            }
-        }
+        
+        MemoryBufferPopFront(Connection->WriteBuffer, PacketLength);
     }
 }
 
@@ -333,6 +384,9 @@ Void SocketUpdate(
         return;
     }
 
+    Int64 RecvLength = 0;
+    UInt8 RecvBuffer[SOCKET_RECV_BUFFER_SIZE] = { 0 };
+    
     IndexSetIteratorRef Iterator = IndexSetGetIterator(Socket->ConnectionIndices);
     while (Iterator) {
         Index ConnectionPoolIndex = Iterator->Value;
@@ -341,19 +395,18 @@ Void SocketUpdate(
         SocketConnectionRef Connection = (SocketConnectionRef)MemoryPoolFetch(Socket->ConnectionPool, ConnectionPoolIndex);        
         SocketFlushWriteBuffer(Socket, Connection);
 
-        Int64 ReadLength;
         Bool Success = PlatformSocketRecv(
             Connection->Handle,
-            &Connection->ReadBuffer[Connection->ReadBufferOffset],
-            SOCKET_MAX_PACKET_SIZE - Connection->ReadBufferOffset,
-            &ReadLength
+            RecvBuffer,
+            SOCKET_RECV_BUFFER_SIZE,
+            &RecvLength
         );
         if (!Success) {
             SocketDisconnect(Socket, Connection);
             continue;
         }
-
-        Connection->ReadBufferOffset += ReadLength;
+        
+        MemoryBufferAppendCopy(Connection->ReadBuffer, RecvBuffer, RecvLength);
         SocketFetchReadBuffer(Socket, Connection);
     }
 

@@ -144,8 +144,8 @@ Void RTMovementUpdateDeadReckoning(
 	Int32 DeltaY = WaypointB->Y - WaypointA->Y;
 	Int32 AbsDeltaX = (DeltaX >= 0) ? DeltaX : -DeltaX;
 	Int32 AbsDeltaY = (DeltaY >= 0) ? DeltaY : -DeltaY;
-	Int32 NewPositionX = Movement->PositionCurrent.X;
-	Int32 NewPositionY = Movement->PositionCurrent.Y;
+	Int32 NewPositionX;
+	Int32 NewPositionY;
 
 	if (AbsDeltaX > AbsDeltaY) {
 		Int32 PositionX = (Int32)(Overflow * Movement->Cos);

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <NetLib/NetLib.h>
 #include "Constants.h"
@@ -20,21 +20,22 @@ typedef struct {                                        \
 } __NAME__;
 #include "ClientProtocolDefinition.h"
 
-#define CLIENT_PROTOCOL(__NAMESPACE__, __NAME__, __COMMAND__, __VERSION__, __BODY__)    \
-typedef struct {                                                                        \
-    __BODY__                                                                            \
+#define CLIENT_PROTOCOL(__NAMESPACE__, __NAME__, __SIGNATURE__, __COMMAND__, __BODY__) \
+typedef struct {                                                                       \
+    __NAMESPACE__ ## _DATA_SIGNATURE_ ## __SIGNATURE__;                                \
+    __BODY__                                                                           \
 } __NAMESPACE__ ## _DATA_ ## __NAME__;
 #include "ClientProtocolDefinition.h"
 
 enum {
-#define C2S_COMMAND(__NAME__, __VALUE__) \
-	C2S_ ## __NAME__ = __VALUE__,
+#define C2S_COMMAND(__NAME__, __COMMAND__) \
+	C2S_ ## __NAME__ = __COMMAND__,
 #include "ClientCommands.h"
 };
 
 enum {
-#define S2C_COMMAND(__NAME__, __VALUE__) \
-	S2C_ ## __NAME__ = __VALUE__,
+#define S2C_COMMAND(__NAME__, __COMMAND__) \
+	S2C_ ## __NAME__ = __COMMAND__,
 #include "ClientCommands.h"
 };
 

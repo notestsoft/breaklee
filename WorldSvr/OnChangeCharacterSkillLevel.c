@@ -19,8 +19,7 @@ CLIENT_PROCEDURE_BINDING(CHANGE_CHARACTER_SKILL_LEVEL) {
 	);
 	if (!Success) goto error;
 
-	S2C_DATA_CHANGE_CHARACTER_SKILL_LEVEL* Response = PacketInit(S2C_DATA_CHANGE_CHARACTER_SKILL_LEVEL);
-    Response->Command = S2C_CHANGE_CHARACTER_SKILL_LEVEL;
+	S2C_DATA_CHANGE_CHARACTER_SKILL_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHANGE_CHARACTER_SKILL_LEVEL);
 	return SocketSend(Socket, Connection, Response);
 
 error:

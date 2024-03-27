@@ -45,16 +45,16 @@ Bool PlatformSetSocketIOBlocking(
     SocketHandle Handle,
     Bool Blocking
 ) {
-   if (Handle < 0) return false;
+    if (Handle < 0) return false;
 
 #ifdef _WIN32
-   u_long Mode = Blocking ? 0 : 1;
-   return (ioctlsocket(Handle, FIONBIO, &Mode) == 0) ? true : false;
+    u_long Mode = Blocking ? 0 : 1;
+    return (ioctlsocket(Handle, FIONBIO, &Mode) == 0) ? true : false;
 #else
-   int Flags = fcntl(Handle, F_GETFL, 0);
-   if (Flags == -1) return false;
+    int Flags = fcntl(Handle, F_GETFL, 0);
+    if (Flags == -1) return false;
     Flags = Blocking ? (Flags & ~O_NONBLOCK) : (Flags | O_NONBLOCK);
-   return (fcntl(Handle, F_SETFL, Flags) == 0) ? true : false;
+    return (fcntl(Handle, F_SETFL, Flags) == 0) ? true : false;
 #endif
 }
 
@@ -108,8 +108,8 @@ Bool PlatformSocketSelect(
 #endif
 
     if (FD_ISSET(Handle, &Except)) {
-        Char Message[0xFF];
-        if (GetPlatformErrorMessage(Message, 0xFF)) {
+        Char Message[MAX_PATH];
+        if (GetPlatformErrorMessage(Message, MAX_PATH)) {
             LogMessage(LOG_LEVEL_ERROR, Message);
         }
 

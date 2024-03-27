@@ -8,8 +8,7 @@
 CLIENT_PROCEDURE_BINDING(GET_CASH_BALANCE) {
     if (!Character) goto error;
 
-    S2C_DATA_GET_CASH_BALANCE* Response = PacketInit(S2C_DATA_GET_CASH_BALANCE);
-    Response->Command = S2C_GET_CASH_BALANCE;
+    S2C_DATA_GET_CASH_BALANCE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_CASH_BALANCE);
     Response->Amount = 999;
 	return SocketSend(Socket, Connection, Response);
 

@@ -11,7 +11,7 @@ EXTERN_C_BEGIN
 struct _RTCharacterWarehouseInfo {
 	UInt16 Count;
 	UInt64 Currency;
-	struct _RTItemSlot Slots[RUNTIME_WAREHOUSE_SLOT_COUNT];
+	struct _RTItemSlot Slots[RUNTIME_WAREHOUSE_TOTAL_SIZE];
 };
 
 #pragma pack(pop)

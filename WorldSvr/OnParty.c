@@ -10,8 +10,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_INVITE) {
 
 	// TODO: Implementation missing
 
-	S2C_DATA_PARTY_INVITE* Response = PacketInit(S2C_DATA_PARTY_INVITE);
-	Response->Command = S2C_PARTY_INVITE;
+	S2C_DATA_PARTY_INVITE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_INVITE);
 	return SocketSend(Socket, Connection, Response);
 
 error:
@@ -23,8 +22,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_INVITE_CONFIRM) {
 
 	// TODO: Implementation missing
 
-	S2C_DATA_PARTY_INVITE_CONFIRM* Response = PacketInit(S2C_DATA_PARTY_INVITE_CONFIRM);
-	Response->Command = S2C_PARTY_INVITE_CONFIRM;
+	S2C_DATA_PARTY_INVITE_CONFIRM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_INVITE_CONFIRM);
 	return SocketSend(Socket, Connection, Response);
 
 error:
@@ -36,8 +34,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_INVITE_CANCEL) {
 
 	// TODO: Implementation missing
 
-	S2C_DATA_PARTY_INVITE_CANCEL* Response = PacketInit(S2C_DATA_PARTY_INVITE_CANCEL);
-	Response->Command = S2C_PARTY_INVITE_CANCEL;
+	S2C_DATA_PARTY_INVITE_CANCEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_INVITE_CANCEL);
 	return SocketSend(Socket, Connection, Response);
 
 error:
@@ -49,8 +46,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_LEAVE) {
 
 	// TODO: Implementation missing
 
-	S2C_DATA_PARTY_LEAVE* Response = PacketInit(S2C_DATA_PARTY_LEAVE);
-	Response->Command = S2C_PARTY_LEAVE;
+	S2C_DATA_PARTY_LEAVE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_LEAVE);
 	return SocketSend(Socket, Connection, Response);
 
 error:
@@ -62,8 +58,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_EXPEL_MEMBER) {
 
 	// TODO: Implementation missing
 
-	S2C_DATA_PARTY_EXPEL_MEMBER* Response = PacketInit(S2C_DATA_PARTY_EXPEL_MEMBER);
-	Response->Command = S2C_PARTY_EXPEL_MEMBER;
+	S2C_DATA_PARTY_EXPEL_MEMBER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_EXPEL_MEMBER);
 	return SocketSend(Socket, Connection, Response);
 
 error:
@@ -75,8 +70,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_CHANGE_LEADER) {
 
 	// TODO: Implementation missing
 
-	S2C_DATA_PARTY_CHANGE_LEADER* Response = PacketInit(S2C_DATA_PARTY_CHANGE_LEADER);
-	Response->Command = S2C_PARTY_CHANGE_LEADER;
+	S2C_DATA_PARTY_CHANGE_LEADER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_CHANGE_LEADER);
 	return SocketSend(Socket, Connection, Response);
 
 error:

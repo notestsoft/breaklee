@@ -3,8 +3,7 @@
 #include "MasterDB.h"
 
 IPC_PROCEDURE_BINDING(OnWorldCreateCharacter, IPC_WORLD_REQCREATECHARACTER, IPC_DATA_WORLD_REQCREATECHARACTER) {
-	IPC_DATA_WORLD_ACKCREATECHARACTER* Response = PacketInitExtended(IPC_DATA_WORLD_ACKCREATECHARACTER);
-	Response->Command = IPC_WORLD_ACKCREATECHARACTER;
+	IPC_DATA_WORLD_ACKCREATECHARACTER* Response = PacketBufferInitExtended(Connection->PacketBuffer, IPC, WORLD_ACKCREATECHARACTER);
 	Response->ConnectionID = Packet->ConnectionID;
 
 	Int32 NameExists = 0;

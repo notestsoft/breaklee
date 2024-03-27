@@ -8,7 +8,7 @@ Bool RTWarehouseSetSlot(
 	RTCharacterWarehouseInfoRef Warehouse,
 	RTItemSlotRef Slot
 ) {
-	assert(0 <= Slot->SlotIndex && Slot->SlotIndex < RUNTIME_INVENTORY_TOTAL_SIZE);
+	assert(0 <= Slot->SlotIndex && Slot->SlotIndex < RUNTIME_WAREHOUSE_TOTAL_SIZE);
 	assert(RTRuntimeGetItemDataByIndex(Runtime, Slot->Item.ID));
 
 	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, Slot->Item.ID);
@@ -119,7 +119,7 @@ Bool RTWarehouseClearSlot(
 	RTCharacterWarehouseInfoRef Warehouse,
 	Int32 SlotIndex
 ) {
-	assert(0 <= SlotIndex && SlotIndex < RUNTIME_WAREHOUSE_SLOT_COUNT);
+	assert(0 <= SlotIndex && SlotIndex < RUNTIME_WAREHOUSE_TOTAL_SIZE);
 
 	Int32 WarehouseIndex = RTWarehouseGetSlotIndex(
 		Runtime,

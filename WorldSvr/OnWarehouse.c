@@ -10,13 +10,12 @@ static struct _RTCharacterWarehouseInfo kWarehouseInfoBackup;
 CLIENT_PROCEDURE_BINDING(GET_WAREHOUSE) {
 	if (!Character) goto error;
 
-	S2C_DATA_GET_WAREHOUSE* Response = PacketInit(S2C_DATA_GET_WAREHOUSE);
-	Response->Command = S2C_GET_WAREHOUSE;
+	S2C_DATA_GET_WAREHOUSE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_WAREHOUSE);
 	Response->Count = Character->WarehouseInfo.Count;
 	Response->Currency = Character->WarehouseInfo.Currency;
 
 	for (Int32 Index = 0; Index < Character->WarehouseInfo.Count; Index++) {
-		S2C_DATA_GET_WAREHOUSE_SLOT_INDEX* Slots = PacketAppendStruct(S2C_DATA_GET_WAREHOUSE_SLOT_INDEX);
+		S2C_DATA_GET_WAREHOUSE_SLOT_INDEX* Slots = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_GET_WAREHOUSE_SLOT_INDEX);
 
 		Slots->Item.Serial = Character->WarehouseInfo.Slots[Index].Item.Serial;
 	}
@@ -30,9 +29,8 @@ CLIENT_PROCEDURE_BINDING(WAREHOUSE_CURRENCY_DEPOSIT) {
 	memcpy(&kInventoryInfoBackup, &Character->InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
 	memcpy(&kWarehouseInfoBackup, &Character->WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
 
-	S2C_DATA_WAREHOUSE_CURRENCY_DEPOSIT* Response = PacketInit(S2C_DATA_WAREHOUSE_CURRENCY_DEPOSIT);
+	S2C_DATA_WAREHOUSE_CURRENCY_DEPOSIT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, WAREHOUSE_CURRENCY_DEPOSIT);
 
-	Response->Command = S2C_WAREHOUSE_CURRENCY_DEPOSIT;
 	Response->Result = 1;
 
 	//TODO: Calculate the tax for the deposit

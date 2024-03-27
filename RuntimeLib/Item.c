@@ -128,8 +128,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStub) {
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemPotion) {
 	/* TODO: Send notification event in character!
-	S2C_DATA_CHARACTER_UPDATE* Notification = PacketInit(S2C_DATA_CHARACTER_UPDATE);
-	Notification->Command = S2C_CHARACTER_UPDATE;
+	S2C_DATA_CHARACTER_UPDATE* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, CHARACTER_UPDATE);
 
 	switch (ItemData->Options[0]) {
 	case RUNTIME_ITEM_POTION_TYPE_HP:

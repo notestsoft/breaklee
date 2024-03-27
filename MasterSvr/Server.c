@@ -27,8 +27,7 @@ Void ServerBroadcastWorldList(
     ServerRef Server,
     ServerContextRef Context
 ) {
-    IPC_DATA_AUTH_NFYWORLDLIST* Notification = PacketInitExtended(IPC_DATA_AUTH_NFYWORLDLIST);
-    Notification->Command = IPC_AUTH_NFYWORLDLIST;
+    IPC_DATA_AUTH_NFYWORLDLIST* Notification = PacketBufferInitExtended(Context->AuthSocket->PacketBuffer, IPC, AUTH_NFYWORLDLIST);
     Notification->WorldCount = 0;
 
     SocketConnectionIteratorRef Iterator = SocketGetConnectionIterator(Context->WorldSocket);
@@ -38,7 +37,7 @@ Void ServerBroadcastWorldList(
 
         ClientContextRef Client = (ClientContextRef)Connection->Userdata;
         if (Client->World.IsWorldInitialized) {
-            IPC_DATA_AUTH_WORLD* World = PacketAppendStruct(IPC_DATA_AUTH_WORLD);
+            IPC_DATA_AUTH_WORLD* World = PacketBufferAppendStruct(Context->AuthSocket->PacketBuffer, IPC_DATA_AUTH_WORLD);
             World->WorldID = Client->World.WorldID;
             memcpy(World->WorldHost, Client->World.WorldHost, sizeof(World->WorldHost));
             World->WorldPort = Client->World.WorldPort;

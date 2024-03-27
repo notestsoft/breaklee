@@ -61,11 +61,10 @@ CLIENT_PROCEDURE_BINDING(PUBLIC_KEY) {
     Client->RSA = RSA;
     Client->Flags |= CLIENT_FLAGS_PUBLICKEY_INITIALIZED;
 
-    S2C_DATA_PUBLIC_KEY* Response = PacketInit(S2C_DATA_PUBLIC_KEY);
-    Response->Command = S2C_PUBLIC_KEY;
+    S2C_DATA_PUBLIC_KEY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PUBLIC_KEY);
     Response->Unknown1 = 1;
     Response->PublicKeyLength = (UInt16)KeyLength;
-    PacketAppendMemoryCopy(Key, KeyLength);
+    PacketBufferAppendCopy(Connection->PacketBuffer, Key, KeyLength);
     SocketSend(Socket, Connection, Response);
 
     BIO_free(BIO);

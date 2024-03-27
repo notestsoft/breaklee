@@ -100,8 +100,6 @@ static inline Void SkipUntilCharacter(
     if (*State->TokenStart == Terminator)
         return;
 
-    Char* Start = State->Cursor;
-
     while (State->Cursor < State->End) {
         if (State->NoLinebreak && CharacterIsLinebreak(*State->Cursor)) {
             break;

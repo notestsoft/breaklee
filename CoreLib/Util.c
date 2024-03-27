@@ -345,6 +345,17 @@ Void ReadConfigUInt64(
     ParseUInt64(Buffer, Result);
 }
 
+Void ReadConfigIndex(
+    CString FilePath,
+    CString KeyPath,
+    CString Default,
+    Index* Result
+) {
+    Char Buffer[MAX_PATH] = { 0 };
+    ReadConfigString(FilePath, KeyPath, Default, Buffer, MAX_PATH);
+    ParseIndex(Buffer, Result);
+}
+
 Timestamp PlatformGetTickCount() {
 #ifdef _WIN32
     return GetTickCount64();

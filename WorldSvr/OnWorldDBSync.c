@@ -36,8 +36,7 @@ Void ServerSyncDB(
 		if (PerformSync) {
 			Character->SyncTimestamp = Timestamp;
 
-			IPC_DATA_WORLD_REQDBSYNC* Request = PacketInitExtended(IPC_DATA_WORLD_REQDBSYNC);
-			Request->Command = IPC_WORLD_REQDBSYNC;
+			IPC_DATA_WORLD_REQDBSYNC* Request = PacketBufferInitExtended(Context->MasterSocket->PacketBuffer, IPC, WORLD_REQDBSYNC);
 			Request->ConnectionID = Connection->ID;
 			Request->AccountID = Client->Account.AccountID;
 			Request->CharacterID = Client->CharacterDatabaseID;
@@ -48,56 +47,56 @@ Void ServerSyncDB(
 				RTMovementUpdateDeadReckoning(Context->Runtime, &Character->Movement);
 				Character->Info.Position.X = Character->Movement.PositionCurrent.X;
 				Character->Info.Position.Y = Character->Movement.PositionCurrent.Y;
-
-				PacketAppendMemoryCopy(&Character->Info, sizeof(struct _RTCharacterInfo));
+                
+                PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->Info, sizeof(struct _RTCharacterInfo));
 			}
 
 			if (Character->SyncMask.EquipmentInfo) {
-				PacketAppendMemoryCopy(&Character->EquipmentInfo, sizeof(struct _RTCharacterEquipmentInfo));
+				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->EquipmentInfo, sizeof(struct _RTCharacterEquipmentInfo));
 			}
 
 			if (Character->SyncMask.InventoryInfo) {
-				PacketAppendMemoryCopy(&Character->InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
+				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
 			}
 
 			if (Character->SyncMask.SkillSlotInfo) {
-				PacketAppendMemoryCopy(&Character->SkillSlotInfo, sizeof(struct _RTCharacterSkillSlotInfo));
+				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->SkillSlotInfo, sizeof(struct _RTCharacterSkillSlotInfo));
 			}
 
 			if (Character->SyncMask.QuickSlotInfo) {
-				PacketAppendMemoryCopy(&Character->QuickSlotInfo, sizeof(struct _RTCharacterQuickSlotInfo));
+				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->QuickSlotInfo, sizeof(struct _RTCharacterQuickSlotInfo));
 			}
 
 			if (Character->SyncMask.QuestSlotInfo) {
-				PacketAppendMemoryCopy(&Character->QuestSlotInfo, sizeof(struct _RTCharacterQuestSlotInfo));
+				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->QuestSlotInfo, sizeof(struct _RTCharacterQuestSlotInfo));
 			}
 
 			if (Character->SyncMask.QuestFlagInfo) {
-				PacketAppendMemoryCopy(&Character->QuestFlagInfo, sizeof(struct _RTCharacterQuestFlagInfo));
+				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->QuestFlagInfo, sizeof(struct _RTCharacterQuestFlagInfo));
 			}
 
             if (Character->SyncMask.DungeonQuestFlagInfo) {
-                PacketAppendMemoryCopy(&Character->DungeonQuestFlagInfo, sizeof(struct _RTCharacterDungeonQuestFlagInfo));
+                PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->DungeonQuestFlagInfo, sizeof(struct _RTCharacterDungeonQuestFlagInfo));
             }
 
 			if (Character->SyncMask.EssenceAbilityInfo) {
-				PacketAppendMemoryCopy(&Character->EssenceAbilityInfo, sizeof(struct _RTCharacterEssenceAbilityInfo));
+				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->EssenceAbilityInfo, sizeof(struct _RTCharacterEssenceAbilityInfo));
 			}
 
 			if (Character->SyncMask.OverlordMasteryInfo) {
-				PacketAppendMemoryCopy(&Character->OverlordMasteryInfo, sizeof(struct _RTCharacterOverlordMasteryInfo));
+				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->OverlordMasteryInfo, sizeof(struct _RTCharacterOverlordMasteryInfo));
 			}
 
 			if (Character->SyncMask.CollectionInfo) {
-				PacketAppendMemoryCopy(&Character->CollectionInfo, sizeof(struct _RTCharacterCollectionInfo));
+				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->CollectionInfo, sizeof(struct _RTCharacterCollectionInfo));
 			}
 
 			if (Character->SyncMask.WarehouseInfo) {
-				PacketAppendMemoryCopy(&Character->WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
+				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
 			}
 
 			if (Character->SyncMask.RequestCraftInfo) {
-				PacketAppendMemoryCopy(&Character->RequestCraftInfo, sizeof(struct _RTCharacterRequestCraftInfo));
+				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->RequestCraftInfo, sizeof(struct _RTCharacterRequestCraftInfo));
 			}
 
 			SocketSendAll(Context->MasterSocket, Request);

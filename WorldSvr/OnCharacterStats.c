@@ -16,8 +16,7 @@ CLIENT_PROCEDURE_BINDING(ADD_CHARACTER_STATS) {
 
     Bool Success = RTCharacterAddStats(Runtime, Character, (Int32*)Packet->StatDelta);
     
-    S2C_DATA_ADD_CHARACTER_STATS* Response = PacketInit(S2C_DATA_ADD_CHARACTER_STATS);
-    Response->Command = S2C_ADD_CHARACTER_STATS;
+    S2C_DATA_ADD_CHARACTER_STATS* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ADD_CHARACTER_STATS);
     Response->Result = Success ? 0 : 1;
     Response->Stat[RUNTIME_CHARACTER_STAT_STR] = Character->Info.Stat[RUNTIME_CHARACTER_STAT_STR];
     Response->Stat[RUNTIME_CHARACTER_STAT_DEX] = Character->Info.Stat[RUNTIME_CHARACTER_STAT_DEX];
@@ -37,7 +36,7 @@ CLIENT_PROCEDURE_BINDING(REMOVE_CHARACTER_STATS) {
         Packet->StatFlag[RUNTIME_CHARACTER_STAT_INT] ? sizeof(UInt16) : 0
     );
 
-    if (Packet->Signature.Length != sizeof(C2S_DATA_REMOVE_CHARACTER_STATS) + PacketTailLength) goto error;
+    if (Packet->Length != sizeof(C2S_DATA_REMOVE_CHARACTER_STATS) + PacketTailLength) goto error;
 
     if (Character->Info.Stat[RUNTIME_CHARACTER_STAT_STR] != Packet->Stat[RUNTIME_CHARACTER_STAT_STR] ||
         Character->Info.Stat[RUNTIME_CHARACTER_STAT_DEX] != Packet->Stat[RUNTIME_CHARACTER_STAT_DEX] ||
@@ -86,8 +85,7 @@ CLIENT_PROCEDURE_BINDING(REMOVE_CHARACTER_STATS) {
         }
     }
 
-    S2C_DATA_REMOVE_CHARACTER_STATS* Response = PacketInit(S2C_DATA_REMOVE_CHARACTER_STATS);
-    Response->Command = S2C_REMOVE_CHARACTER_STATS;
+    S2C_DATA_REMOVE_CHARACTER_STATS* Response = PacketBufferInit(Connection->PacketBuffer, S2C, REMOVE_CHARACTER_STATS);
     Response->Result = 0;
     Response->Stat[RUNTIME_CHARACTER_STAT_STR] = Character->Info.Stat[RUNTIME_CHARACTER_STAT_STR];
     Response->Stat[RUNTIME_CHARACTER_STAT_DEX] = Character->Info.Stat[RUNTIME_CHARACTER_STAT_DEX];

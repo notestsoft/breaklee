@@ -49,6 +49,11 @@ SocketRef ServerCreateSocket(
     CString SocketHost,
     UInt16 SocketPort,
     Index ConnectionContextSize,
+    UInt16 ProtocolIdentifier,
+    UInt16 ProtocolVersion,
+    UInt16 ProtocolExtension,
+    Index ReadBufferSize,
+    Index WriteBufferSize,
     Index MaxConnectionCount,
     ServerConnectionCallback OnConnect,
     ServerConnectionCallback OnDisconnect

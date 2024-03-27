@@ -6,10 +6,10 @@
 S2C_DATA_SERVER_LIST* BuildWorldListNotification(
     ServerRef Server,
     ServerContextRef Context,
+    PacketBufferRef PacketBuffer,
     Bool IsLocalHost
 ) {
-    S2C_DATA_SERVER_LIST* Notification = PacketInit(S2C_DATA_SERVER_LIST);
-    Notification->Command = S2C_SERVER_LIST;
+    S2C_DATA_SERVER_LIST* Notification = PacketBufferInit(PacketBuffer, S2C, SERVER_LIST);
     Notification->ServerCount = 0;
 
     SocketConnectionIteratorRef Iterator = SocketGetConnectionIterator(Context->MasterSocket);
@@ -19,14 +19,14 @@ S2C_DATA_SERVER_LIST* BuildWorldListNotification(
 
         MasterContextRef Master = (MasterContextRef)Connection->Userdata;
 
-        S2C_DATA_SERVER_LIST_INDEX* NotificationServer = PacketAppendStruct(S2C_DATA_SERVER_LIST_INDEX);
+        S2C_DATA_SERVER_LIST_INDEX* NotificationServer = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_SERVER_LIST_INDEX);
         NotificationServer->ServerID = Master->ServerID;
         NotificationServer->WorldCount = 0;
 
         for (Int32 WorldIndex = 0; WorldIndex < ArrayGetElementCount(Master->Worlds); WorldIndex += 1) {
             MasterContextWorldRef MasterWorld = (MasterContextWorldRef)ArrayGetElementAtIndex(Master->Worlds, WorldIndex);
 
-            S2C_DATA_SERVER_LIST_WORLD* NotificationWorld = PacketAppendStruct(S2C_DATA_SERVER_LIST_WORLD);
+            S2C_DATA_SERVER_LIST_WORLD* NotificationWorld = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_SERVER_LIST_WORLD);
             NotificationWorld->ServerID = NotificationServer->ServerID;
             NotificationWorld->WorldID = MasterWorld->WorldID;
             NotificationWorld->PlayerCount = MasterWorld->PlayerCount;
@@ -44,7 +44,7 @@ S2C_DATA_SERVER_LIST* BuildWorldListNotification(
         }
 
         NotificationServer->WorldCount += 1;
-        S2C_DATA_SERVER_LIST_WORLD* ZeroWorld = PacketAppendStruct(S2C_DATA_SERVER_LIST_WORLD);
+        S2C_DATA_SERVER_LIST_WORLD* ZeroWorld = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_SERVER_LIST_WORLD);
 
         Notification->ServerCount += 1;
     }
@@ -53,10 +53,10 @@ S2C_DATA_SERVER_LIST* BuildWorldListNotification(
 }
 
 S2C_DATA_UNKNOWN_124* BuildMessageUnknown124(
-    ServerRef Server
+    ServerRef Server,
+    PacketBufferRef PacketBuffer
 ) {
-    S2C_DATA_UNKNOWN_124* Response = PacketInit(S2C_DATA_UNKNOWN_124);
-    Response->Command = S2C_UNKNOWN_124;
+    S2C_DATA_UNKNOWN_124* Response = PacketBufferInit(PacketBuffer, S2C, UNKNOWN_124);
     Response->Unknown1 = 0;
     Response->Unknown2[0] = 100;
     Response->Unknown2[1] = 200;
@@ -81,7 +81,7 @@ Void BroadcastWorldList(
 
         ClientContextRef Client = (ClientContextRef)Connection->Userdata;
         Bool IsLocalHost = strcmp(Client->Connection->AddressIP, "127.0.0.1") == 0;
-        S2C_DATA_SERVER_LIST* Notification = BuildWorldListNotification(Server, Context, IsLocalHost);
+        S2C_DATA_SERVER_LIST* Notification = BuildWorldListNotification(Server, Context, Connection->PacketBuffer, IsLocalHost);
 
         Bool Authorized = (
             (Client->Flags & CLIENT_FLAGS_AUTHENTICATED) &&
@@ -92,7 +92,7 @@ Void BroadcastWorldList(
         }
     }
 
-    S2C_DATA_UNKNOWN_124* Response = BuildMessageUnknown124(Server);
+    S2C_DATA_UNKNOWN_124* Response = BuildMessageUnknown124(Server, Context->ClientSocket->PacketBuffer);
 
     Iterator = SocketGetConnectionIterator(Context->ClientSocket);
     while (Iterator) {
@@ -123,10 +123,10 @@ Void BroadcastWorldListToConnection(
     );
     if (Authorized) {
         Bool IsLocalHost = strcmp(Client->Connection->AddressIP, "127.0.0.1") == 0;
-        S2C_DATA_SERVER_LIST* Notification = BuildWorldListNotification(Server, Context, IsLocalHost);
+        S2C_DATA_SERVER_LIST* Notification = BuildWorldListNotification(Server, Context, Connection->PacketBuffer, IsLocalHost);
         SocketSend(Context->ClientSocket, Connection, Notification);
 
-        S2C_DATA_UNKNOWN_124* Response = BuildMessageUnknown124(Server);
-        SocketSend(Context->ClientSocket, Connection, Notification);
+        S2C_DATA_UNKNOWN_124* Response = BuildMessageUnknown124(Server, Connection->PacketBuffer);
+        SocketSend(Context->ClientSocket, Connection, Response);
     }
 }

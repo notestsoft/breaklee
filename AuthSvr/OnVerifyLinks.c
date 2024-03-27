@@ -27,8 +27,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_LINKS) {
     // TODO: Add account premium service info
     // TODO: Add client ip address
 
-    IPC_DATA_AUTH_VERIFYLINKS* Request = PacketInitExtended(IPC_DATA_AUTH_VERIFYLINKS);
-    Request->Command = IPC_AUTH_VERIFYLINKS;
+    IPC_DATA_AUTH_VERIFYLINKS* Request = PacketBufferInitExtended(Context->MasterSocket->PacketBuffer, IPC, AUTH_VERIFYLINKS);
     Request->ConnectionID = Connection->ID;
     Request->ServerID = Packet->ServerID;
     Request->WorldID = Packet->WorldID;
@@ -53,8 +52,7 @@ IPC_PROCEDURE_BINDING(OnMasterVerifyResult, IPC_AUTH_VERIFYRESULT, IPC_DATA_AUTH
 
     // TODO: Check already logged in here?
 
-	S2C_DATA_VERIFY_LINKS* Response = PacketInit(S2C_DATA_VERIFY_LINKS);
-	Response->Command = S2C_VERIFY_LINKS;
+	S2C_DATA_VERIFY_LINKS* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, VERIFY_LINKS);
 	Response->WorldID = Packet->WorldID;
 	Response->ServerID = Packet->ServerID;
     Response->Status = Packet->Status;

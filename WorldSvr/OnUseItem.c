@@ -1,4 +1,4 @@
-﻿#include "ClientProtocol.h"
+#include "ClientProtocol.h"
 #include "ClientProcedures.h"
 #include "ClientSocket.h"
 #include "IPCProcs.h"
@@ -8,8 +8,7 @@
 CLIENT_PROCEDURE_BINDING(USE_ITEM) {
 	if (!Character) goto error;
 
-	S2C_DATA_USE_ITEM* Response = PacketInit(S2C_DATA_USE_ITEM);
-	Response->Command = S2C_USE_ITEM;
+	S2C_DATA_USE_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, USE_ITEM);
 	Response->Result = 1;
 	
 	Bool Success = false;
@@ -72,19 +71,24 @@ CLIENT_PROCEDURE_BINDING(CONVERT_ITEM) {
 		goto error;
 	}
 
-	S2C_DATA_CONVERT_ITEM* Response = PacketInit(S2C_DATA_CONVERT_ITEM);
-	Response->Command = S2C_CONVERT_ITEM;
+	S2C_DATA_CONVERT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CONVERT_ITEM);
 	Response->Result = 0;
 	Response->Item = TargetItemSlot->Item;
 	Response->ItemOptions = TargetItemSlot->ItemOptions;
 	Response->InventorySlotIndex = TargetItemSlot->SlotIndex;
-	PacketLogBytes(Response);
+	
+	PacketLogBytes(
+        Socket->ProtocolIdentifier,
+        Socket->ProtocolVersion,
+        Socket->ProtocolExtension,
+        Response
+    );
+    
 	return SocketSend(Socket, Connection, Response);
 
 error:
 	{
-		S2C_DATA_CONVERT_ITEM* Response = PacketInit(S2C_DATA_CONVERT_ITEM);
-		Response->Command = S2C_CONVERT_ITEM;
+		S2C_DATA_CONVERT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CONVERT_ITEM);
 		Response->Result = 1;
 		return SocketSend(Socket, Connection, Response);
 	}

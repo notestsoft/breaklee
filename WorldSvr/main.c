@@ -7,7 +7,7 @@
 #include "IPCProcs.h"
 #include "Notification.h"
 
-#define C2S_COMMAND(__NAME__, __VALUE__)                                                                                         \
+#define C2S_COMMAND(__NAME__, __COMMAND__)                                                                                       \
 Void SERVER_PROC_ ## __NAME__(                                                                                                   \
     ServerRef Server,                                                                                                            \
     Void *ServerContext,                                                                                                         \
@@ -23,42 +23,49 @@ Void SERVER_PROC_ ## __NAME__(                                                  
 }
 #include "ClientCommands.h"
 
-#define IPC_MASTER_PROCEDURE(__NAME__, __COMMAND__, __PROTOCOL__)                                            \
-Void SERVER_ ## __NAME__(                                                                                    \
-    ServerRef Server,                                                                                        \
-    Void *ServerContext,                                                                                     \
-    SocketRef Socket,                                                                                        \
-    SocketConnectionRef Connection,                                                                          \
-    Void *ConnectionContext,                                                                                 \
-    Void *Packet                                                                                             \
-) {                                                                                                          \
-    ServerContextRef Context = (ServerContextRef)ServerContext;                                              \
-    MasterContextRef Master = (MasterContextRef)ConnectionContext;                                           \
-    struct { IPC_DATA_SIGNATURE; } *Header = Packet;                                                         \
-    SocketConnectionRef ClientConnection = SocketGetConnection(Context->ClientSocket, Header->ConnectionID); \
-    ClientContextRef Client = NULL;                                                                          \
-    RTCharacterRef Character = NULL;                                                                         \
-                                                                                                             \
-    if (ClientConnection) {                                                                                  \
-        Client = (ClientContextRef)ClientConnection->Userdata;                                               \
-    }                                                                                                        \
-                                                                                                             \
-    if (Client && Client->CharacterIndex > 0) {                                                              \
-        Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Client->CharacterIndex); \
-    }                                                                                                        \
-                                                                                                             \
-    __NAME__(                                                                                                \
-        Server,                                                                                              \
-        Context,                                                                                             \
-        Socket,                                                                                              \
-        Connection,                                                                                          \
-        Master,                                                                                              \
-        ClientConnection,                                                                                    \
-        Client,                                                                                              \
-        Context->Runtime,                                                                                    \
-        Character,                                                                                           \
-        (__PROTOCOL__*)Packet                                                                                \
-    );                                                                                                       \
+// TODO: This is not a good solution considering the connection id is being reused
+Index PacketGetConnectionID(
+    Void* Packet
+) {
+    return *(Index*)((UInt8*)Packet + 8);
+}
+
+#define IPC_MASTER_PROCEDURE(__NAME__, __COMMAND__, __PROTOCOL__)                                               \
+Void SERVER_ ## __NAME__(                                                                                       \
+    ServerRef Server,                                                                                           \
+    Void *ServerContext,                                                                                        \
+    SocketRef Socket,                                                                                           \
+    SocketConnectionRef Connection,                                                                             \
+    Void *ConnectionContext,                                                                                    \
+    Void *Packet                                                                                                \
+) {                                                                                                             \
+    ServerContextRef Context = (ServerContextRef)ServerContext;                                                 \
+    MasterContextRef Master = (MasterContextRef)ConnectionContext;                                              \
+    Index ConnectionID = PacketGetConnectionID(Packet);                                                         \
+    SocketConnectionRef ClientConnection = SocketGetConnection(Context->ClientSocket, ConnectionID);            \
+    ClientContextRef Client = NULL;                                                                             \
+    RTCharacterRef Character = NULL;                                                                            \
+                                                                                                                \
+    if (ClientConnection) {                                                                                     \
+        Client = (ClientContextRef)ClientConnection->Userdata;                                                  \
+    }                                                                                                           \
+                                                                                                                \
+    if (Client && Client->CharacterIndex > 0) {                                                                 \
+        Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Client->CharacterIndex);  \
+    }                                                                                                           \
+                                                                                                                \
+    __NAME__(                                                                                                   \
+        Server,                                                                                                 \
+        Context,                                                                                                \
+        Socket,                                                                                                 \
+        Connection,                                                                                             \
+        Master,                                                                                                 \
+        ClientConnection,                                                                                       \
+        Client,                                                                                                 \
+        Context->Runtime,                                                                                       \
+        Character,                                                                                              \
+        (__PROTOCOL__*)Packet                                                                                   \
+    );                                                                                                          \
 }
 #include "IPCProcDefinition.h"
 
@@ -112,13 +119,18 @@ Int32 main(Int32 argc, CString* argv) {
         NULL,
         Config.WorldSvr.Port,
         sizeof(struct _ClientContext),
+        Config.NetLib.ProtocolIdentifier,
+        Config.NetLib.ProtocolVersion,
+        Config.NetLib.ProtocolExtension,
+        Config.NetLib.ReadBufferSize,
+        Config.NetLib.WriteBufferSize,
         Config.WorldSvr.MaxConnectionCount,
         &ClientSocketOnConnect,
         &ClientSocketOnDisconnect
     );
     
-#define C2S_COMMAND(__NAME__, __VALUE__) \
-    ServerSocketRegisterPacketCallback(Server, ServerContext.ClientSocket, __VALUE__, &SERVER_PROC_ ## __NAME__);
+#define C2S_COMMAND(__NAME__, __COMMAND__) \
+    ServerSocketRegisterPacketCallback(Server, ServerContext.ClientSocket, __COMMAND__, &SERVER_PROC_ ## __NAME__);
 #include "ClientCommands.h"
     
     ServerContext.MasterSocket = ServerCreateSocket(
@@ -127,6 +139,11 @@ Int32 main(Int32 argc, CString* argv) {
         Config.MasterSvr.Host,
         Config.MasterSvr.Port,
         sizeof(struct _MasterContext),
+        Config.NetLib.ProtocolIdentifier,
+        Config.NetLib.ProtocolVersion,
+        Config.NetLib.ProtocolExtension,
+        Config.NetLib.ReadBufferSize,
+        Config.NetLib.WriteBufferSize,
         1,
         &MasterSocketOnConnect,
         &MasterSocketOnDisconnect

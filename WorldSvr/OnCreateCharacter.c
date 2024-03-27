@@ -7,7 +7,7 @@
 #include "Util.h"
 
 CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
-	S2C_DATA_CREATE_CHARACTER* Response = PacketInit(S2C_DATA_CREATE_CHARACTER);
+	S2C_DATA_CREATE_CHARACTER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CREATE_CHARACTER);
 
 	if (!(Client->Flags & CLIENT_FLAGS_CHARACTER_INDEX_LOADED) || Client->Account.AccountID < 1) {
 		return SocketDisconnect(Socket, Connection);
@@ -51,8 +51,7 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 		Style.BattleRank = 10;
 	}
 
-	IPC_DATA_WORLD_REQCREATECHARACTER* Request = PacketInitExtended(IPC_DATA_WORLD_REQCREATECHARACTER);
-	Request->Command = IPC_WORLD_REQCREATECHARACTER;
+	IPC_DATA_WORLD_REQCREATECHARACTER* Request = PacketBufferInitExtended(Context->MasterSocket->PacketBuffer, IPC, WORLD_REQCREATECHARACTER);
 	Request->ConnectionID = Connection->ID;
 	Request->AccountID = Client->Account.AccountID;
 	Request->SlotIndex = Packet->SlotIndex;
@@ -159,8 +158,7 @@ IPC_PROCEDURE_BINDING(OnWorldCreateCharacter, IPC_WORLD_ACKCREATECHARACTER, IPC_
 		Client->Characters[Packet->SlotIndex] = Packet->Character;
 	}
 	
-	S2C_DATA_CREATE_CHARACTER* Response = PacketInit(S2C_DATA_CREATE_CHARACTER);
-	Response->Command = S2C_CREATE_CHARACTER;
+	S2C_DATA_CREATE_CHARACTER* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, CREATE_CHARACTER);
 	Response->CharacterIndex = Packet->Character.ID * MAX_CHARACTER_COUNT + Packet->SlotIndex;
 	Response->CharacterStatus = Packet->Status;
 	return SocketSend(Context->ClientSocket, ClientConnection, Response);

@@ -82,6 +82,11 @@ Int32 main(Int32 argc, CString* argv) {
         Config.AuthSvr.Host,
         Config.AuthSvr.Port,
         sizeof(union _ClientContext),
+        Config.NetLib.ProtocolIdentifier,
+        Config.NetLib.ProtocolVersion,
+        Config.NetLib.ProtocolExtension,
+        Config.NetLib.ReadBufferSize,
+        Config.NetLib.WriteBufferSize,
         1,
         &AuthSocketOnConnect,
         &AuthSocketOnDisconnect
@@ -93,6 +98,11 @@ Int32 main(Int32 argc, CString* argv) {
         NULL,
         Config.MasterSvr.Port,
         sizeof(union _ClientContext),
+        Config.NetLib.ProtocolIdentifier,
+        Config.NetLib.ProtocolVersion,
+        Config.NetLib.ProtocolExtension,
+        Config.NetLib.ReadBufferSize,
+        Config.NetLib.WriteBufferSize,
         Config.MasterSvr.MaxWorldCount,
         &WorldSocketOnConnect,
         &WorldSocketOnDisconnect

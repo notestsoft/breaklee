@@ -5,8 +5,7 @@
 #include "Server.h"
 
 IPC_PROCEDURE_BINDING(OnMasterVerifyPassword, IPC_AUTH_REQVERIFYPASSWORD, IPC_DATA_AUTH_REQVERIFYPASSWORD) {
-    IPC_DATA_AUTH_ACKVERIFYPASSWORD* Response = PacketInitExtended(IPC_DATA_AUTH_ACKVERIFYPASSWORD);
-    Response->Command = IPC_AUTH_ACKVERIFYPASSWORD;
+    IPC_DATA_AUTH_ACKVERIFYPASSWORD* Response = PacketBufferInitExtended(Context->MasterSocket->PacketBuffer, IPC, AUTH_ACKVERIFYPASSWORD);
     Response->ConnectionID = Packet->ConnectionID;
     Response->Success = false;
 

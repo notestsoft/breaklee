@@ -6,28 +6,27 @@ EXTERN_C_BEGIN
 
 #pragma pack(push, 1)
 
-#define C2S_DATA_SIGNATURE          \
-struct _PacketSignature Signature;  \
+#define C2S_DATA_SIGNATURE_DEFAULT  \
+UInt16 Magic;                       \
+UInt16 Length;                      \
 UInt32 Checksum;                    \
 UInt16 Command
 
-#define C2S_DATA_SIGNATURE_EXTENDED         \
-struct _ExtendedPacketSignature Signature;  \
-UInt32 Checksum;                            \
-UInt16 Command
-
-#define S2C_DATA_SIGNATURE			\
-struct _PacketSignature Signature;	\
+#define S2C_DATA_SIGNATURE_DEFAULT	\
+UInt16 Magic;                       \
+UInt16 Length;                      \
 UInt16 Command						\
 
-#define S2C_DATA_SIGNATURE_EXTENDED	        \
-struct _ExtendedPacketSignature Signature;	\
+#define S2C_DATA_SIGNATURE_EXTENDED	\
+UInt16 Magic;                       \
+UInt32 Length;                      \
 UInt16 Command
 
-#define IPC_DATA_SIGNATURE					\
-struct _ExtendedPacketSignature Signature;	\
-UInt16 ConnectionID;						\
-UInt16 Command
+#define IPC_DATA_SIGNATURE_EXTENDED	\
+UInt16 Magic;                       \
+UInt32 Length;                      \
+UInt16 Command;                     \
+Index ConnectionID
 
 #pragma pack(pop)
 

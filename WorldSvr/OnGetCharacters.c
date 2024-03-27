@@ -10,8 +10,7 @@ CLIENT_PROCEDURE_BINDING(GET_CHARACTERS) {
 
     // TODO: Check if is entering premium channel and check service expiration!
 
-    IPC_DATA_WORLD_REQGETCHARACTERS* Request = PacketInitExtended(IPC_DATA_WORLD_REQGETCHARACTERS);
-    Request->Command = IPC_WORLD_REQGETCHARACTERS;
+    IPC_DATA_WORLD_REQGETCHARACTERS* Request = PacketBufferInitExtended(Context->MasterSocket->PacketBuffer, IPC, WORLD_REQGETCHARACTERS);
     Request->ConnectionID = Connection->ID;
     Request->AccountID = Client->Account.AccountID;
     memcpy(Request->SessionIP, Connection->AddressIP, MAX_ADDRESSIP_LENGTH);
@@ -27,8 +26,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacters, IPC_WORLD_ACKGETCHARACTERS, IPC_DATA
     memcpy(Client->Characters, Packet->Characters, sizeof(Packet->Characters));
     Client->Flags |= CLIENT_FLAGS_CHARACTER_INDEX_LOADED;
 
-    S2C_DATA_GET_CHARACTERS* Response = PacketInit(S2C_DATA_GET_CHARACTERS);
-    Response->Command = S2C_GET_CHARACTERS;
+    S2C_DATA_GET_CHARACTERS* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, GET_CHARACTERS);
     Response->IsSubpasswordSet = strlen(Client->Account.CharacterPassword) > 0;
     Response->Unknown2 = 1;
     Response->CharacterSlotID = Client->Account.CharacterSlotID;

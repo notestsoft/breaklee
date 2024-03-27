@@ -15,8 +15,7 @@ Void StartAuthTimer(
     ClientContextRef Client,
     UInt32 Timeout
 ) {
-    S2C_DATA_AUTH_TIMER* Response = PacketInit(S2C_DATA_AUTH_TIMER);
-    Response->Command = S2C_AUTH_TIMER;
+    S2C_DATA_AUTH_TIMER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, AUTH_TIMER);
     Response->Timeout = Timeout;
     SocketSend(Socket, Connection, Response);
 
@@ -31,44 +30,43 @@ Void SendURLList(
     SocketConnectionRef Connection,
     ClientContextRef Client
 ) {
-    S2C_DATA_URL_LIST* Response = PacketInit(S2C_DATA_URL_LIST);
-    Response->Command = S2C_URL_LIST;
+    S2C_DATA_URL_LIST* Response = PacketBufferInit(Connection->PacketBuffer, S2C, URL_LIST);
     
-    S2C_DATA_URL *Url = PacketAppendStruct(S2C_DATA_URL);
+    S2C_DATA_URL *Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
     Url->Length = (UInt32)strlen(Context->Config.Links.Itemshop);
-    PacketAppendCString(Context->Config.Links.Itemshop);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Itemshop);
     
-    Url = PacketAppendStruct(S2C_DATA_URL);
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
     Url->Length = (UInt32)strlen(Context->Config.Links.Unknown1);
-    PacketAppendCString(Context->Config.Links.Unknown1);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Unknown1);
     
-    Url = PacketAppendStruct(S2C_DATA_URL);
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
     Url->Length = (UInt32)strlen(Context->Config.Links.Unknown2);
-    PacketAppendCString(Context->Config.Links.Unknown2);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Unknown2);
     
-    Url = PacketAppendStruct(S2C_DATA_URL);
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
     Url->Length = (UInt32)strlen(Context->Config.Links.Guild);
-    PacketAppendCString(Context->Config.Links.Guild);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Guild);
     
-    Url = PacketAppendStruct(S2C_DATA_URL);
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
     Url->Length = (UInt32)strlen(Context->Config.Links.SNS);
-    PacketAppendCString(Context->Config.Links.SNS);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.SNS);
     
-    Url = PacketAppendStruct(S2C_DATA_URL);
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
     Url->Length = (UInt32)strlen(Context->Config.Links.Unknown3);
-    PacketAppendCString(Context->Config.Links.Unknown3);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Unknown3);
     
-    Url = PacketAppendStruct(S2C_DATA_URL);
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
     Url->Length = (UInt32)strlen(Context->Config.Links.Unknown4);
-    PacketAppendCString(Context->Config.Links.Unknown4);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Unknown4);
 
     Response->PayloadLength[0] = (
-        Response->Signature.Length - 
+        Response->Length -
         sizeof(S2C_DATA_URL_LIST) +
         sizeof(Response->PayloadLength[1])
     );
     Response->PayloadLength[1] = (
-        Response->Signature.Length -
+        Response->Length -
         sizeof(S2C_DATA_URL_LIST)
     );
 
@@ -82,8 +80,7 @@ Void SendMessageLoginSuccess(
     SocketConnectionRef Connection,
     ClientContextRef Client
 ) {
-    S2C_DATA_SYSTEM_MESSAGE* Response = PacketInit(S2C_DATA_SYSTEM_MESSAGE);
-    Response->Command = S2C_SYSTEM_MESSAGE;
+    S2C_DATA_SYSTEM_MESSAGE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SYSTEM_MESSAGE);
     Response->Message = SYSTEM_MESSAGE_LOGIN_SUCCESS;
     SocketSend(Socket, Connection, Response);
 }
@@ -94,14 +91,13 @@ CLIENT_PROCEDURE_BINDING(AUTHENTICATE) {
     }
 
     if (Packet->SubMessageType == 25) {
-        S2C_DATA_AUTHENTICATE* Response = PacketInit(S2C_DATA_AUTHENTICATE);
-        Response->Command = S2C_AUTHENTICATE;
+        S2C_DATA_AUTHENTICATE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, AUTHENTICATE);
         Response->KeepAlive = 1;
         Response->SubMessageType = 25;
         Response->LoginStatus = Client->LoginStatus;
         Response->AccountStatus = Client->AccountStatus;
 
-        S2C_DATA_AUTHENTICATE_EXTENSION_UNKNOWN* ResponseData = PacketAppendStruct(S2C_DATA_AUTHENTICATE_EXTENSION_UNKNOWN);
+        S2C_DATA_AUTHENTICATE_EXTENSION_UNKNOWN* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_AUTHENTICATE_EXTENSION_UNKNOWN);
         return SocketSend(Socket, Connection, Response);
     }
 
@@ -125,8 +121,7 @@ CLIENT_PROCEDURE_BINDING(AUTHENTICATE) {
     Int32 PasswordLength = (Int32)strlen(Password);
     if (PasswordLength > MAX_PASSWORD_LENGTH) goto error;
 
-    S2C_DATA_AUTHENTICATE* Response = PacketInit(S2C_DATA_AUTHENTICATE);
-    Response->Command = S2C_AUTHENTICATE;
+    S2C_DATA_AUTHENTICATE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, AUTHENTICATE);
     Response->KeepAlive = 1;
     Response->LoginStatus = LOGIN_STATUS_ERROR;
     Response->AccountStatus = ACCOUNT_STATUS_NORMAL;
@@ -206,14 +201,13 @@ CLIENT_PROCEDURE_BINDING(AUTHENTICATE) {
     StartAuthTimer(Server, Context, Socket, Connection, Client, Context->Config.Auth.AutoDisconnectDelay);
     SendURLList(Server, Context, Socket, Connection, Client);
 
-    Response = PacketInit(S2C_DATA_AUTHENTICATE);
-    Response->Command = S2C_AUTHENTICATE;
+    Response = PacketBufferInit(Connection->PacketBuffer, S2C, AUTHENTICATE);
     Response->KeepAlive = 1;
     Response->LoginStatus = Client->LoginStatus;
     Response->AccountStatus = Client->AccountStatus;
     Response->SubMessageType = 17;
 
-    S2C_DATA_AUTHENTICATE_EXTENSION* Extension = PacketAppendStruct(S2C_DATA_AUTHENTICATE_EXTENSION);
+    S2C_DATA_AUTHENTICATE_EXTENSION* Extension = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_AUTHENTICATE_EXTENSION);
 
     GenerateRandomKey(Extension->AuthKey, sizeof(Extension->AuthKey));
 

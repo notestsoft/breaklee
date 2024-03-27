@@ -134,6 +134,7 @@ Void KeychainEncryptPacket(
 ) {
     if (Keychain->Client) return KeychainEncryptClientPacket(Keychain, Packet, Length);
 
+    // TODO: Get rid of the malloc!
     UInt8* Buffer = malloc(Length + 4);
     memset(Buffer, 0, Length + 4);
     assert(Buffer);

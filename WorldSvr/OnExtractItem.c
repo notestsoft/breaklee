@@ -10,8 +10,7 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 		return SocketDisconnect(Socket, Connection);
 	}
 
-	S2C_DATA_EXTRACT_ITEM* Response = PacketInit(S2C_DATA_EXTRACT_ITEM);
-	Response->Command = S2C_EXTRACT_ITEM;
+	S2C_DATA_EXTRACT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, EXTRACT_ITEM);
 	Response->Result = 1;
 	Response->ItemCount = 0;
 
@@ -53,7 +52,7 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 				Slot.SlotIndex = Character->TemporaryInventoryInfo.Count;
 
 				if (RTInventorySetSlot(Runtime, &Character->TemporaryInventoryInfo, &Slot)) {
-					S2C_EXTRACT_ITEM_SLOT_INDEX *ResponseItemSlot = PacketAppendStruct(S2C_EXTRACT_ITEM_SLOT_INDEX);
+					S2C_EXTRACT_ITEM_SLOT_INDEX *ResponseItemSlot = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_EXTRACT_ITEM_SLOT_INDEX);
 					ResponseItemSlot->ItemID = Slot.Item.Serial;
 					ResponseItemSlot->ItemOption = Slot.ItemOptions;
 					ResponseItemSlot->InventorySlotIndex = RUNTIME_INVENTORY_TOTAL_SIZE + Slot.SlotIndex;
@@ -66,7 +65,6 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 	return SocketSend(Socket, Connection, Response);
 
 error:
-	Response->Command = S2C_EXTRACT_ITEM;
 	Response->Result = 0;
 	Response->ItemCount = 0;
 	return SocketSend(Socket, Connection, Response);
