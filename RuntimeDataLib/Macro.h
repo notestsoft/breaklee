@@ -97,6 +97,7 @@
 #include "MissionDungeon.h"
 #include "Mob.h"
 #include "MobSkill.h"
+#include "NewbieSupport.h"
 #include "OverlordMastery.h"
 #include "Pet.h"
 #include "PVPBattle.h"

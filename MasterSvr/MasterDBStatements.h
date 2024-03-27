@@ -49,17 +49,17 @@ STATEMENT(
 
 STATEMENT(
     MASTERDB_INSERT_CHARACTER,
-    "INSERT INTO `characters` (`account_id`, `name`, `index`, `character_data`, `equipment_data`, `inventory_data`, `skillslot_data`, `quickslot_data`, `quest_data`, `questflag_data`, `dungeon_questflag_data`, `achievement_data`, `essence_data`, `blended_data`, `honormedal_data`, `overlord_data`, `transform_data`, `transcendence_data`, `mercenary_data`, `craft_data`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+    "INSERT INTO `characters` (`account_id`, `name`, `index`, `character_data`, `equipment_data`, `inventory_data`, `skillslot_data`, `quickslot_data`, `quest_data`, `questflag_data`, `dungeon_questflag_data`, `achievement_data`, `essence_data`, `blended_data`, `honormedal_data`, `overlord_data`, `transform_data`, `transcendence_data`, `mercenary_data`, `craft_data`, `newbie_support_data`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
 )
 
 STATEMENT(
     MASTERDB_SELECT_CHARACTER_BY_ID,
-    "SELECT `account_id`, `id`, `name`, `index`, `character_data`, `equipment_data`, `inventory_data`, `skillslot_data`, `quickslot_data`, `quest_data`, `questflag_data`, `dungeon_questflag_data`, `achievement_data`, `essence_data`, `blended_data`, `honormedal_data`, `overlord_data`, `transform_data`, `transcendence_data`, `mercenary_data`, `craft_data`, `created_at`, `updated_at` FROM `characters` WHERE `id` = ?;"
+    "SELECT `account_id`, `id`, `name`, `index`, `character_data`, `equipment_data`, `inventory_data`, `skillslot_data`, `quickslot_data`, `quest_data`, `questflag_data`, `dungeon_questflag_data`, `achievement_data`, `essence_data`, `blended_data`, `honormedal_data`, `overlord_data`, `transform_data`, `transcendence_data`, `mercenary_data`, `craft_data`, `newbie_support_data`, `created_at`, `updated_at` FROM `characters` WHERE `id` = ?;"
 )
 
 STATEMENT(
     MASTERDB_SELECT_CHARACTER_BY_ACCOUNT,
-    "SELECT `account_id`, `id`, `name`, `index`, `character_data`, `equipment_data`, `inventory_data`, `skillslot_data`, `quickslot_data`, `quest_data`, `questflag_data`, `dungeon_questflag_data`, `achievement_data`, `essence_data`, `blended_data`, `honormedal_data`, `overlord_data`, `transform_data`, `transcendence_data`, `mercenary_data`, `craft_data`, `created_at`, `updated_at` FROM `characters` WHERE `account_id` = ?;"
+    "SELECT `account_id`, `id`, `name`, `index`, `character_data`, `equipment_data`, `inventory_data`, `skillslot_data`, `quickslot_data`, `quest_data`, `questflag_data`, `dungeon_questflag_data`, `achievement_data`, `essence_data`, `blended_data`, `honormedal_data`, `overlord_data`, `transform_data`, `transcendence_data`, `mercenary_data`, `craft_data`, `newbie_support_data`, `created_at`, `updated_at` FROM `characters` WHERE `account_id` = ?;"
 )
 
 STATEMENT(
@@ -155,6 +155,11 @@ STATEMENT(
 STATEMENT(
     MASTERDB_UPDATE_CHARACTER_CRAFT_DATA,
     "UPDATE `characters` SET `craft_data` = ? WHERE `id` = ?;"
+)
+
+STATEMENT(
+    MASTERDB_UPDATE_CHARACTER_NEWBIE_SUPPORT_DATA,
+    "UPDATE `characters` SET `newbie_support_data` = ? WHERE `id` = ?;"
 )
 
 STATEMENT(

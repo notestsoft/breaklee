@@ -42,6 +42,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_REQGETCHARACTER, IPC_DATA_W
     memcpy(&Response->Character.CraftData, &Character.CraftData, sizeof(GAME_DATA_CHARACTER_CRAFT));
     memcpy(&Response->Character.WarehouseData, &Account.WarehouseData, sizeof(struct _RTCharacterWarehouseInfo));
     memcpy(&Response->Character.CollectionData, &Account.CollectionData, sizeof(struct _RTCharacterCollectionInfo));
+    memcpy(&Response->Character.NewbieSupportData, &Character.NewbieSupportData, sizeof(struct _RTCharacterNewbieSupportInfo));
 
 	return SocketSend(Socket, Connection, Response);
 

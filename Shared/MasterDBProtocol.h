@@ -65,6 +65,7 @@ typedef struct {
     GAME_DATA_CHARACTER_TRANSCENDENCE TranscendenceData;
     GAME_DATA_CHARACTER_MERCENARY MercenaryData;
     GAME_DATA_CHARACTER_CRAFT CraftData;
+    struct _RTCharacterNewbieSupportInfo NewbieSupportData;
 
     Timestamp CreatedAt;
     Timestamp UpdatedAt;

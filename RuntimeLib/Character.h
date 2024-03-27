@@ -14,6 +14,7 @@
 #include "Item.h"
 #include "KarmaAbility.h"
 #include "Movement.h"
+#include "NewbieSupport.h"
 #include "OverlordMastery.h"
 #include "Quest.h"
 #include "Quickslot.h"
@@ -63,9 +64,10 @@ union _RTCharacterSyncMask {
         UInt64 TranscendenceInfo : 1;
         UInt64 StellarMasteryInfo : 1;
         UInt64 MythMasteryInfo : 1;
+        UInt64 NewbieSupportInfo : 1;
         UInt64 EventPassInfo : 1;
         UInt64 CostumeInfo : 1;
-        UInt64 _Padding : 11;
+        UInt64 _Padding : 10;
         UInt64 WarehouseInfo : 1;
     };
     UInt64 RawValue;
@@ -271,6 +273,7 @@ struct _RTCharacter {
     // struct _RTCharacterTranscendenceInfo TranscendenceInfo;
     // struct _RTCharacterStellarMasteryInfo StellarMasteryInfo;
     // struct _RTCharacterMythMasteryInfo MythMasteryInfo;
+    struct _RTCharacterNewbieSupportInfo NewbieSupportInfo;
     // struct _RTCharacterEventPassInfo EventPassInfo;
     // struct _RTCharacterCostumeInfo CostumeInfo;
 
@@ -301,6 +304,7 @@ Void RTCharacterInitialize(
     RTCharacterEssenceAbilityInfoRef EssenceAbilityInfo,
     RTCharacterOverlordMasteryInfoRef OverlordMasteryInfo,
     RTCharacterCollectionInfoRef CollectionInfo,
+    RTCharacterNewbieSupportInfoRef NewbieSupportInfo,
     RTCharacterWarehouseInfoRef WarehouseInfo
 );
 

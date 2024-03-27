@@ -26,6 +26,7 @@ CREATE TABLE `characters` (
     `transcendence_data` BLOB NOT NULL,
     `mercenary_data` BLOB NOT NULL,
     `craft_data` BLOB NOT NULL,
+    `newbie_support_data` BLOB NOT NULL,
 
     `created_at` BIGINT UNSIGNED NOT NULL DEFAULT UNIX_TIMESTAMP(),
     `updated_at` BIGINT UNSIGNED NOT NULL DEFAULT UNIX_TIMESTAMP(),

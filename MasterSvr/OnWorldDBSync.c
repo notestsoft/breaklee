@@ -179,6 +179,21 @@ IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_REQDBSYNC, IPC_DATA_WORLD_REQDBSY
 		}
 	}
 
+	if (Packet->SyncMask.NewbieSupportInfo) {
+		RTCharacterNewbieSupportInfoRef NewbieSupportInfo = (RTCharacterNewbieSupportInfoRef)&Packet->Data[DataOffset];
+		DataOffset += sizeof(struct _RTCharacterNewbieSupportInfo);
+
+		Bool Success = MasterDBUpdateCharacterNewbieSupportData(
+			Context->Database,
+			Packet->CharacterID,
+			NewbieSupportInfo
+		);
+
+		if (!Success) {
+			Response->SyncMaskFailed.NewbieSupportInfo = true;
+		}
+	}
+
 	if (Packet->SyncMask.WarehouseInfo) {
 		RTCharacterWarehouseInfoRef WarehouseInfo = (RTCharacterWarehouseInfoRef)&Packet->Data[DataOffset];
 		DataOffset += sizeof(struct _RTCharacterWarehouseInfo);

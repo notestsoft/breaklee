@@ -201,6 +201,7 @@ Bool MasterDBInsertCharacter(
     StatementBindParameterBinary(Statement, 17, &Data->TranscendenceData, sizeof(GAME_DATA_CHARACTER_TRANSCENDENCE));
     StatementBindParameterBinary(Statement, 18, &Data->MercenaryData, sizeof(GAME_DATA_CHARACTER_MERCENARY));
     StatementBindParameterBinary(Statement, 19, &Data->CraftData, sizeof(GAME_DATA_CHARACTER_CRAFT));
+    StatementBindParameterBinary(Statement, 20, &Data->NewbieSupportData, sizeof(struct _RTCharacterNewbieSupportInfo));
 
     if (!StatementExecute(Statement)) return false;
 
@@ -238,8 +239,9 @@ Bool MasterDBSelectCharacterByID(
     StatementReadResultBinary(Statement, 18, sizeof(GAME_DATA_CHARACTER_TRANSCENDENCE), &Data->TranscendenceData, NULL);
     StatementReadResultBinary(Statement, 19, sizeof(GAME_DATA_CHARACTER_MERCENARY), &Data->MercenaryData, NULL);
     StatementReadResultBinary(Statement, 20, sizeof(GAME_DATA_CHARACTER_CRAFT), &Data->CraftData, NULL);
-    StatementReadResultTimestamp(Statement, 21, &Data->CreatedAt);
-    StatementReadResultTimestamp(Statement, 22, &Data->UpdatedAt);
+    StatementReadResultBinary(Statement, 21, sizeof(struct _RTCharacterNewbieSupportInfo), &Data->NewbieSupportData, NULL);
+    StatementReadResultTimestamp(Statement, 22, &Data->CreatedAt);
+    StatementReadResultTimestamp(Statement, 23, &Data->UpdatedAt);
 
     StatementFlushResults(Statement);
 
@@ -286,8 +288,9 @@ Bool MasterDBSelectCharacterFetchNext(
     StatementReadResultBinary(Statement, 18, sizeof(GAME_DATA_CHARACTER_TRANSCENDENCE), &Result->TranscendenceData, NULL);
     StatementReadResultBinary(Statement, 19, sizeof(GAME_DATA_CHARACTER_MERCENARY), &Result->MercenaryData, NULL);
     StatementReadResultBinary(Statement, 20, sizeof(GAME_DATA_CHARACTER_CRAFT), &Result->CraftData, NULL);
-    StatementReadResultTimestamp(Statement, 21, &Result->CreatedAt);
-    StatementReadResultTimestamp(Statement, 22, &Result->UpdatedAt);
+    StatementReadResultBinary(Statement, 21, sizeof(struct _RTCharacterNewbieSupportInfo), &Result->NewbieSupportData, NULL);
+    StatementReadResultTimestamp(Statement, 22, &Result->CreatedAt);
+    StatementReadResultTimestamp(Statement, 23, &Result->UpdatedAt);
 
     return true;
 }
@@ -533,6 +536,18 @@ Bool MasterDBUpdateCharacterCraftData(
     StatementRef Statement = MasterDBGetStatement(Database, MASTERDB_UPDATE_CHARACTER_CRAFT_DATA);
     StatementBindParameterBinary(Statement, 0, &Data->CraftData, sizeof(GAME_DATA_CHARACTER_CRAFT));
     StatementBindParameterInt32(Statement, 1, Data->CharacterID);
+
+    return StatementExecute(Statement);
+}
+
+Bool MasterDBUpdateCharacterNewbieSupportData(
+    DatabaseRef Database,
+    Int32 CharacterID,
+    RTCharacterNewbieSupportInfoRef Data
+) {
+    StatementRef Statement = MasterDBGetStatement(Database, MASTERDB_UPDATE_CHARACTER_NEWBIE_SUPPORT_DATA);
+    StatementBindParameterBinary(Statement, 0, Data, sizeof(struct _RTCharacterNewbieSupportInfo));
+    StatementBindParameterInt32(Statement, 1, CharacterID);
 
     return StatementExecute(Statement);
 }

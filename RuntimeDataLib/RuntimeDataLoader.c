@@ -247,6 +247,21 @@ RTDataUpgradeItemBasicGradeRef RTRuntimeDataUpgradeItemBasicGradeGet(
     return NULL;
 }
 
+RTDataNewbieSupportCategoryRewardRef RTRuntimeDataNewbieSupportCategoryRewardGet(
+    RTDataNewbieSupportCategoryRef Category,
+    Int32 ConditionValue1,
+    Int32 ConditionValue2
+) {
+    for (Index Index = 0; Index < Category->NewbieSupportCategoryRewardCount; Index += 1) {
+        RTDataNewbieSupportCategoryRewardRef Reward = &Category->NewbieSupportCategoryRewardList[Index];
+        if (Reward->ConditionValue1 == ConditionValue1 && Reward->ConditionValue2 == ConditionValue2) {
+            return Reward;
+        }
+    }
+
+    return NULL;
+}
+
 Bool ParseAttributeRTDataItemType(
     ArchiveRef Object,
     Int64 NodeIndex,

@@ -205,6 +205,12 @@ Bool MasterDBUpdateCharacterCraftData(
     MASTERDB_DATA_CHARACTER* Data
 );
 
+Bool MasterDBUpdateCharacterNewbieSupportData(
+    DatabaseRef Database,
+    Int32 CharacterID,
+    RTCharacterNewbieSupportInfoRef Data
+);
+
 Bool MasterDBDeleteCharacter(
     DatabaseRef Database,
     MASTERDB_DATA_CHARACTER* Data

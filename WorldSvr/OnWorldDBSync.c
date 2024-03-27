@@ -91,6 +91,10 @@ Void ServerSyncDB(
 				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->CollectionInfo, sizeof(struct _RTCharacterCollectionInfo));
 			}
 
+			if (Character->SyncMask.NewbieSupportInfo) {
+				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->NewbieSupportInfo, sizeof(struct _RTCharacterNewbieSupportInfo));
+			}
+
 			if (Character->SyncMask.WarehouseInfo) {
 				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
 			}

@@ -95,6 +95,7 @@ typedef struct {
     GAME_DATA_CHARACTER_CRAFT CraftData;
     struct _RTCharacterWarehouseInfo WarehouseData;
     struct _RTCharacterCollectionInfo CollectionData;
+    struct _RTCharacterNewbieSupportInfo NewbieSupportData;
 } GAME_DATA_CHARACTER;
 
 #pragma pack(pop)

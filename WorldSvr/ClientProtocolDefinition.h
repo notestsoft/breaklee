@@ -184,6 +184,13 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_COLLECTION_SLOT,
     UInt16 MissionItemCounts[6];
 )
 
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_NEWBIE_SUPPORT_SLOT,
+    UInt8 CategoryType;
+    UInt8 ConditionValue1;
+    UInt8 ConditionValue2;
+    UInt8 Unknown1;
+)
+
 CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     S2C_DATA_INITIALIZE_WAR War;
     UInt32 WorldType;
@@ -391,8 +398,8 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     UInt8 MythPropertySlotCount;
     Int32 MythStigmaGrade;
     Int32 MythStigmaExp;
-    Timestamp NewbieRewardTimestamp;
-    Int32 NewbieRewardCount;
+    Timestamp NewbieSupportTimestamp;
+    Int32 NewbieSupportSlotCount;
     Timestamp ExplorationStartTimestamp;
     Timestamp ExplorationEndTimestamp;
     Int32 UnknownA5;
@@ -2477,6 +2484,20 @@ CLIENT_PROTOCOL(S2C, GET_UNKNOWN_SHOP_ITEM_PRICE, DEFAULT, 2308,
     UInt32 Count;
     S2C_DATA_GET_UNKNOWN_SHOP_ITEM_PRICE_INDEX Data[0];
 )
+
+CLIENT_PROTOCOL(C2S, TAKE_NEWBIE_REWARD, DEFAULT, 2319,
+    UInt8 CategoryType;
+    UInt8 ConditionValue1;
+    UInt8 ConditionValue2;
+    UInt8 Unknown1;
+    UInt8 InventorySlotCount;
+    UInt16 InventorySlotIndex[50];
+)
+
+CLIENT_PROTOCOL(S2C, TAKE_NEWBIE_REWARD, DEFAULT, 2319,
+    UInt8 Success;
+)
+
 /*
 CLIENT_PROTOCOL(C2S, GET_KEYMAP, DEFAULT, 2502,
 )

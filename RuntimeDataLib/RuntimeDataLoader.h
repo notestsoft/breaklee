@@ -71,4 +71,10 @@ RTDataUpgradeItemBasicGradeRef RTRuntimeDataUpgradeItemBasicGradeGet(
 	Int32 Grade
 );
 
+RTDataNewbieSupportCategoryRewardRef RTRuntimeDataNewbieSupportCategoryRewardGet(
+	RTDataNewbieSupportCategoryRef Category,
+	Int32 ConditionValue1,
+	Int32 ConditionValue2
+);
+
 EXTERN_C_END

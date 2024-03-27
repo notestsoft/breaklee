@@ -23,6 +23,7 @@ Void RTCharacterInitialize(
 	RTCharacterEssenceAbilityInfoRef EssenceAbilityInfo,
 	RTCharacterOverlordMasteryInfoRef OverlordMasteryInfo,
 	RTCharacterCollectionInfoRef CollectionInfo,
+	RTCharacterNewbieSupportInfoRef NewbieSupportInfo,
 	RTCharacterWarehouseInfoRef WarehouseInfo
 ) {
 	Character->SyncMask.RawValue = 0;
@@ -40,6 +41,7 @@ Void RTCharacterInitialize(
 	memcpy(&Character->EssenceAbilityInfo, EssenceAbilityInfo, sizeof(struct _RTCharacterEssenceAbilityInfo));
 	memcpy(&Character->OverlordMasteryInfo, OverlordMasteryInfo, sizeof(struct _RTCharacterOverlordMasteryInfo));
 	memcpy(&Character->CollectionInfo, CollectionInfo, sizeof(struct _RTCharacterCollectionInfo));
+	memcpy(&Character->NewbieSupportInfo, NewbieSupportInfo, sizeof(struct _RTCharacterNewbieSupportInfo));
 	memcpy(&Character->WarehouseInfo, WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
 	memset(&Character->TemporaryInventoryInfo, 0, sizeof(struct _RTCharacterInventoryInfo));
 	memset(&Character->RecoveryInfo, 0, sizeof(struct _RTCharacterRecoveryInfo));

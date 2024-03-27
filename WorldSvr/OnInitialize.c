@@ -324,6 +324,16 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     Response->TransformCount = 0;
     Response->TranscendenceCount = 0;
 
+    Response->NewbieSupportTimestamp = Packet->Character.NewbieSupportData.Timestamp;
+    Response->NewbieSupportSlotCount = Packet->Character.NewbieSupportData.Count;
+    for (Int32 Index = 0; Index < Packet->Character.NewbieSupportData.Count; Index += 1) {
+        S2C_DATA_NEWBIE_SUPPORT_SLOT* NewbieSupportSlot = PacketBufferAppendStruct(ClientConnection->PacketBuffer, S2C_DATA_NEWBIE_SUPPORT_SLOT);
+        NewbieSupportSlot->CategoryType = Packet->Character.NewbieSupportData.Slots[Index].CategoryType;
+        NewbieSupportSlot->ConditionValue1 = Packet->Character.NewbieSupportData.Slots[Index].ConditionValue1;
+        NewbieSupportSlot->ConditionValue2 = Packet->Character.NewbieSupportData.Slots[Index].ConditionValue2;
+        NewbieSupportSlot->Unknown1 = Packet->Character.NewbieSupportData.Slots[Index].Unknown1;
+    }
+
     assert(ClientConnection->ID < RUNTIME_MEMORY_MAX_CHARACTER_COUNT);
 
     Character = RTWorldManagerCreateCharacter(Context->Runtime->WorldManager, Packet->CharacterIndex);
@@ -342,6 +352,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
         &Packet->Character.EssenceAbilityData,
         &Packet->Character.OverlordData,
         &Packet->Character.CollectionData,
+        &Packet->Character.NewbieSupportData,
         &Packet->Character.WarehouseData
     );
 
