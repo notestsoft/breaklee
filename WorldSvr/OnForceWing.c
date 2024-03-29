@@ -4,6 +4,7 @@
 #include "Notification.h"
 #include "Server.h"
 
+// TODO: Move ForceWingGradeUp to RuntimeLib!
 CLIENT_PROCEDURE_BINDING(FORCE_WING_GRADE_UP) {
 	if (!Character) goto error;
 
@@ -83,8 +84,10 @@ CLIENT_PROCEDURE_BINDING(FORCE_WING_GRADE_UP) {
 	Character->ForceWingInfo.Grade = NextGradeInfoData->Grade;
 	Character->ForceWingInfo.Level = NextGradeInfoData->MinLevel;
 
+	Int32 AddedTrainingPointCount = NextGradeInfoData->Grade * RUNTIME_CHARACTER_FORCE_WING_GRADE_TRAINING_POINT_COUNT;
+
 	for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT; Index += 1) {
-		Character->ForceWingInfo.PresetTrainingPointCount[Index] += RUNTIME_CHARACTER_FORCE_WING_GRADE_TRAINING_POINT_COUNT;
+		Character->ForceWingInfo.PresetTrainingPointCount[Index] += AddedTrainingPointCount;
 	}
 
 	RTDataForceWingSkillRef SkillData = RTRuntimeDataForceWingSkillGet(Runtime->Context, Character->ForceWingInfo.Grade);
@@ -105,7 +108,7 @@ CLIENT_PROCEDURE_BINDING(FORCE_WING_GRADE_UP) {
 	Response->ForceWingLevel = Character->ForceWingInfo.Level;
 	Response->ForceWingExp = Character->ForceWingInfo.Exp;
 	Response->Unknown1 = 0;
-	Response->AddedTrainingPointCount = RUNTIME_CHARACTER_FORCE_WING_GRADE_TRAINING_POINT_COUNT;
+	Response->AddedTrainingPointCount = AddedTrainingPointCount;
 	return SocketSend(Socket, Connection, Response);
 
 error:
@@ -144,6 +147,10 @@ CLIENT_PROCEDURE_BINDING(SET_FORCEWING_PRESET_SLOT) {
 	if (!Character) goto error;
 
 	S2C_DATA_SET_FORCEWING_PRESET_SLOT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SET_FORCEWING_PRESET_SLOT);
+	if (!RTCharacterForceWingSetPresetTraining(Runtime, Character, Packet->PresetPageIndex, Packet->PresetSlotIndex, Packet->TrainingSlotIndex)) {
+		Response->Result = 1;
+	}
+
 	return SocketSend(Socket, Connection, Response);
 
 error:
@@ -154,6 +161,13 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCEWING_TRAINING_LEVEL) {
 	if (!Character) goto error;
 
 	S2C_DATA_ADD_FORCEWING_TRAINING_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ADD_FORCEWING_TRAINING_LEVEL);
+	if (!RTCharacterForceWingAddTrainingLevel(Runtime, Character, Packet->PresetPageIndex, Packet->PresetSlotIndex, Packet->TrainingSlotIndex, Packet->AddedTrainingLevel, &Response->TrainingLevel)) {
+		Response->Result = 1;
+	}
+	else {
+		Response->RemainingTrainingPointCount = Character->ForceWingInfo.PresetTrainingPointCount[Packet->PresetPageIndex];
+	}
+
 	return SocketSend(Socket, Connection, Response);
 
 error:

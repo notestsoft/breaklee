@@ -30,6 +30,8 @@ CONFIG_PARAMETER(UInt64, ExpMultiplier, "WorldSvr.ExpMultiplier", 500)
 CONFIG_PARAMETER(UInt64, SkillExpMultiplier, "WorldSvr.SkillExpMultiplier", 500)
 CONFIG_PARAMETER(UInt32, DebugCharacter, "WorldSvr.DebugCharacter", 1)
 CONFIG_PARAMETER(Bool, DebugSetQuestFlags, "WorldSvr.DebugSetQuestFlags", 0)
+CONFIG_PARAMETER(Bool, DBSyncTimerPriorityLow, "WorldSvr.DBSyncTimerPriorityLow", 1000)
+CONFIG_PARAMETER(Bool, DBSyncTimerPriorityHigh, "WorldSvr.DBSyncTimerPriorityHigh", 1000)
 CONFIG_END(WorldSvr)
 
 CONFIG_BEGIN(Environment)

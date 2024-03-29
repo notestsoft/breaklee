@@ -13,6 +13,7 @@ struct _RTForceWingArrivalSkillSlot {
     UInt8 ForceEffectGrade[RUNTIME_CHARACTER_MAX_FORCE_WING_ARRIVAL_STATS_COUNT];
 };
 
+// TODO: Swap names of preset and training or even use ability as thats the original term..
 struct _RTForceWingPresetSlot {
     UInt8 PresetPageIndex;
     UInt8 SlotIndex;
@@ -48,13 +49,7 @@ Bool RTCharacterEnableForceWing(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 );
-/*
-Bool RTCharacterForceWingGradeUp(
-    RTRuntimeRef Runtime,
-    RTCharacterRef Character,
-    
-);
-*/
+
 Bool RTCharacterForceWingLevelUp(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
@@ -69,7 +64,25 @@ Bool RTCharacterForceWingLevelUp(
 Bool RTCharacterForceWingSetActivePreset(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    Int32 PresetIndex
+    Int32 PresetPageIndex
+);
+
+Bool RTCharacterForceWingSetPresetTraining(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 PresetPageIndex,
+    Int32 PresetSlotIndex,
+    Int32 TrainingSlotIndex
+);
+
+Bool RTCharacterForceWingAddTrainingLevel(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 PresetPageIndex,
+    Int32 PresetSlotIndex,
+    Int32 TrainingSlotIndex,
+    Int32 AddedTrainingLevelCount,
+    UInt8* TargetTrainingLevel
 );
 
 Bool RTCharacterForceWingRollArrivalSkill(

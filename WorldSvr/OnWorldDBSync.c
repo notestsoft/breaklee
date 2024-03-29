@@ -27,8 +27,8 @@ Void ServerSyncDB(
 
 		Bool PerformSync = Force || (
 			Character->SyncMask.RawValue && (
-				(Character->SyncPriority.Low && (Timestamp - Character->SyncTimestamp) >= SERVER_DBSYNC_TIMEOUT_PRIORITY_LOW) ||
-				(Character->SyncPriority.High && (Timestamp - Character->SyncTimestamp) >= SERVER_DBSYNC_TIMEOUT_PRIORITY_HIGH) ||
+				(Character->SyncPriority.Low && (Timestamp - Character->SyncTimestamp) >= Context->Config.WorldSvr.DBSyncTimerPriorityLow) ||
+				(Character->SyncPriority.High && (Timestamp - Character->SyncTimestamp) >= Context->Config.WorldSvr.DBSyncTimerPriorityHigh) ||
 				(Character->SyncPriority.Immediate)
 			)
 		);

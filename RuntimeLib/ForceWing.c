@@ -16,6 +16,7 @@ Bool RTCharacterEnableForceWing(
 
 	Character->ForceWingInfo.Grade = GradeInfoData->Grade;
 	Character->ForceWingInfo.Level = GradeInfoData->MinLevel;
+	Character->ForceWingInfo.PresetEnabled[0] = true;
 
 	for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT; Index += 1) {
 		Character->ForceWingInfo.PresetTrainingPointCount[Index] += RUNTIME_CHARACTER_FORCE_WING_LEVEL_TRAINING_POINT_COUNT;
@@ -170,17 +171,138 @@ Bool RTCharacterForceWingLevelUp(
 Bool RTCharacterForceWingSetActivePreset(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
-	Int32 PresetIndex
+	Int32 PresetPageIndex
 ) {
 	if (Character->ForceWingInfo.Grade < 1) return false;
-	if (PresetIndex < 0 || PresetIndex >= RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT) return false;
-	if (!Character->ForceWingInfo.PresetEnabled[PresetIndex]) return false;
+	if (PresetPageIndex < 0 || PresetPageIndex >= RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT) return false;
+	if (!Character->ForceWingInfo.PresetEnabled[PresetPageIndex]) return false;
 
 	// TODO: Apply changed force effects to character
 
-	Character->ForceWingInfo.ActivePresetIndex = PresetIndex;
+	Character->ForceWingInfo.ActivePresetIndex = PresetPageIndex;
 	Character->SyncMask.ForceWingInfo = true;
 	Character->SyncPriority.Low = true;
+}
+
+Bool RTCharacterForceWingTrainingIsUnlocked(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 PresetPageIndex,
+	Int32 PresetSlotIndex,
+	Int32 TrainingSlotIndex
+) {
+	if (Character->ForceWingInfo.Grade < 1) return false;
+	if (PresetPageIndex < 0 || PresetPageIndex >= RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT) return false;
+	if (!Character->ForceWingInfo.PresetEnabled[PresetPageIndex]) return false;
+
+	RTDataForceWingTrainingGradeRef TrainingGradeData = RTRuntimeDataForceWingTrainingGradeGet(Runtime->Context, PresetSlotIndex);
+	if (!TrainingGradeData) return false;
+
+	RTDataForceWingTrainingGradeInfoRef TrainingGradeInfoData = RTRuntimeDataForceWingTrainingGradeInfoGet(Runtime->Context, TrainingSlotIndex);
+	if (!TrainingGradeInfoData) return false;
+
+	return (
+		Character->ForceWingInfo.Grade >= TrainingGradeInfoData->RequiredGrade &&
+		(Character->ForceWingInfo.Grade > TrainingGradeInfoData->RequiredGrade || Character->ForceWingInfo.Level >= TrainingGradeInfoData->RequiredLevel)
+	);
+}
+
+Bool RTCharacterForceWingSetPresetTraining(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 PresetPageIndex,
+	Int32 PresetSlotIndex,
+	Int32 TrainingSlotIndex
+) {
+	if (!RTCharacterForceWingTrainingIsUnlocked(Runtime, Character, PresetPageIndex, PresetSlotIndex, TrainingSlotIndex)) return false;
+
+	for (Index Index = 0; Index < Character->ForceWingInfo.TrainingSlotCount; Index += 1) {
+		RTForceWingTrainingSlotRef TrainingSlot = &Character->ForceWingInfo.TrainingSlots[Index];
+		if (TrainingSlot->PresetPageIndex != PresetPageIndex) continue;
+		if (TrainingSlot->SlotIndex != PresetSlotIndex) continue;
+
+		TrainingSlot->TrainingIndex = TrainingSlotIndex;
+		Character->SyncMask.ForceWingInfo = true;
+		Character->SyncPriority.High = true;
+		return true;
+	}
+
+	assert(Character->ForceWingInfo.TrainingSlotCount < RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_SLOT_COUNT);
+
+	RTForceWingTrainingSlotRef TrainingSlot = &Character->ForceWingInfo.TrainingSlots[Character->ForceWingInfo.TrainingSlotCount];
+	TrainingSlot->PresetPageIndex = PresetPageIndex;
+	TrainingSlot->SlotIndex = PresetSlotIndex;
+	TrainingSlot->TrainingIndex = TrainingSlotIndex;
+	Character->ForceWingInfo.TrainingSlotCount += 1;
+	Character->SyncMask.ForceWingInfo = true;
+	Character->SyncPriority.High = true;
+	return true;
+}
+
+RTForceWingPresetSlotRef RTCharacterForceWingGetPresetSlot(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 PresetPageIndex,
+	Int32 PresetSlotIndex,
+	Int32 TrainingSlotIndex
+) {
+	for (Index Index = 0; Index < Character->ForceWingInfo.PresetSlotCount; Index += 1) {
+		RTForceWingPresetSlotRef PresetSlot = &Character->ForceWingInfo.PresetSlots[Index];
+		if (PresetSlot->PresetPageIndex != PresetPageIndex) continue;
+		if (PresetSlot->SlotIndex != PresetSlotIndex) continue;
+		if (PresetSlot->TrainingIndex != TrainingSlotIndex) continue;
+
+		return PresetSlot;
+	}
+
+	return NULL;
+}
+
+Bool RTCharacterForceWingAddTrainingLevel(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 PresetPageIndex,
+	Int32 PresetSlotIndex,
+	Int32 TrainingSlotIndex,
+	Int32 AddedTrainingLevelCount,
+	UInt8* TargetTrainingLevel
+) {
+	if (!RTCharacterForceWingTrainingIsUnlocked(Runtime, Character, PresetPageIndex, PresetSlotIndex, TrainingSlotIndex)) return false;
+
+	RTDataForceWingTrainingAbilityRef TrainingAbilityData = RTRuntimeDataForceWingTrainingAbilityGet(Runtime->Context, PresetSlotIndex);
+	if (!TrainingAbilityData) return false;
+
+	RTDataForceWingTrainingAbilityDetailRef TrainingAbilityDetailData = RTRuntimeDataForceWingTrainingAbilityDetailGet(TrainingAbilityData, TrainingSlotIndex);
+	if (!TrainingAbilityDetailData) return false;
+
+	RTForceWingPresetSlotRef PresetSlot = RTCharacterForceWingGetPresetSlot(Runtime, Character, PresetPageIndex, PresetSlotIndex, TrainingSlotIndex);
+
+	Int32 RequiredTrainingPointCount = 0;
+	Int32 CurrentTrainingLevel = (PresetSlot) ? PresetSlot->TrainingLevel : 1;
+	*TargetTrainingLevel = CurrentTrainingLevel + AddedTrainingLevelCount;
+	for (Int32 TrainingLevel = CurrentTrainingLevel + 1; TrainingLevel <= *TargetTrainingLevel; TrainingLevel += 1) {
+		RTDataForceWingTrainingAbilityDetailInfoRef TrainingLevelData = RTRuntimeDataForceWingTrainingAbilityDetailInfoGet(TrainingAbilityDetailData, TrainingLevel);
+		if (!TrainingLevelData) return false;
+
+		RequiredTrainingPointCount += TrainingLevelData->RequiredTrainingPointCount;
+	}
+
+	if (Character->ForceWingInfo.PresetTrainingPointCount[PresetPageIndex] < RequiredTrainingPointCount) return false;
+
+	if (!PresetSlot) {
+		assert(Character->ForceWingInfo.PresetSlotCount < RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_SLOT_COUNT);
+		PresetSlot = &Character->ForceWingInfo.PresetSlots[Character->ForceWingInfo.PresetSlotCount];
+		PresetSlot->PresetPageIndex = PresetPageIndex;
+		PresetSlot->SlotIndex = PresetSlotIndex;
+		PresetSlot->TrainingIndex = TrainingSlotIndex;
+		Character->ForceWingInfo.PresetSlotCount += 1;
+	}
+
+	PresetSlot->TrainingLevel = *TargetTrainingLevel;
+	Character->ForceWingInfo.PresetTrainingPointCount[PresetPageIndex] -= RequiredTrainingPointCount;
+	Character->SyncMask.ForceWingInfo = true;
+	Character->SyncPriority.High = true;
+	return true;
 }
 
 Bool RTCharacterForceWingRollArrivalSkill(
