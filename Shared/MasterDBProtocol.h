@@ -61,6 +61,7 @@ typedef struct {
     GAME_DATA_CHARACTER_BLENDEDABILITY BlendedAbilityData;
     GAME_DATA_CHARACTER_HONORMEDAL HonorMedalData;
     struct _RTCharacterOverlordMasteryInfo OverlordData;
+    struct _RTCharacterForceWingInfo ForceWingData;
     GAME_DATA_CHARACTER_TRANSFORM TransformData;
     GAME_DATA_CHARACTER_TRANSCENDENCE TranscendenceData;
     GAME_DATA_CHARACTER_MERCENARY MercenaryData;

@@ -17,6 +17,9 @@ enum {
     RUNTIME_EVENT_CHARACTER_BATTLE_RANK_UP,
     RUNTIME_EVENT_CHARACTER_OVERLORD_LEVEL_UP,
     RUNTIME_EVENT_CHARACTER_UPDATE_SKILL_STATUS,
+    RUNTIME_EVENT_CHARACTER_UPDATE_FORCE_WING,
+    RUNTIME_EVENT_CHARACTER_UPDATE_FORCE_WING_EXP,
+    RUNTIME_EVENT_CHARACTER_UPDATE_FORCE_WING_LEVEL_UP,
     RUNTIME_EVENT_CHARACTER_DATA,
     RUNTIME_EVENT_ATTACK_TO_MOB,
     RUNTIME_EVENT_MOB_SPAWN,
@@ -75,6 +78,20 @@ union _RTEventData {
     struct { } CharacterSkillLevelUp;
     struct { } CharacterSkillRankUp;
     struct { } CharacterBattleRankUp;
+    */
+    struct { 
+        Index CharacterIndex; 
+        UInt8 ForceWingGrade;
+        UInt8 ForceWingLevel;
+        Int64 ForceWingExp;
+        UInt32 TrainingPointCount;
+    } CharacterUpdateForceWing;
+
+    struct {
+        Int64 ForceWingExp;
+    } CharacterUpdateForceWingExp;
+
+    /*
     struct { } CharacterUpdateSkillStatus;
     */
     struct { 

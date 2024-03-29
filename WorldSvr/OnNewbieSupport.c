@@ -14,6 +14,7 @@ CLIENT_PROCEDURE_BINDING(TAKE_NEWBIE_REWARD) {
 		Runtime,
 		Character,
 		Packet->CategoryType,
+		Packet->RewardIndex,
 		Packet->ConditionValue1,
 		Packet->ConditionValue2,
 		Packet->InventorySlotCount,

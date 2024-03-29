@@ -197,11 +197,12 @@ Bool MasterDBInsertCharacter(
     StatementBindParameterBinary(Statement, 13, &Data->BlendedAbilityData, sizeof(GAME_DATA_CHARACTER_BLENDEDABILITY));
     StatementBindParameterBinary(Statement, 14, &Data->HonorMedalData, sizeof(GAME_DATA_CHARACTER_HONORMEDAL));
     StatementBindParameterBinary(Statement, 15, &Data->OverlordData, sizeof(struct _RTCharacterOverlordMasteryInfo));
-    StatementBindParameterBinary(Statement, 16, &Data->TransformData, sizeof(GAME_DATA_CHARACTER_TRANSFORM));
-    StatementBindParameterBinary(Statement, 17, &Data->TranscendenceData, sizeof(GAME_DATA_CHARACTER_TRANSCENDENCE));
-    StatementBindParameterBinary(Statement, 18, &Data->MercenaryData, sizeof(GAME_DATA_CHARACTER_MERCENARY));
-    StatementBindParameterBinary(Statement, 19, &Data->CraftData, sizeof(GAME_DATA_CHARACTER_CRAFT));
-    StatementBindParameterBinary(Statement, 20, &Data->NewbieSupportData, sizeof(struct _RTCharacterNewbieSupportInfo));
+    StatementBindParameterBinary(Statement, 16, &Data->ForceWingData, sizeof(struct _RTCharacterForceWingInfo));
+    StatementBindParameterBinary(Statement, 17, &Data->TransformData, sizeof(GAME_DATA_CHARACTER_TRANSFORM));
+    StatementBindParameterBinary(Statement, 18, &Data->TranscendenceData, sizeof(GAME_DATA_CHARACTER_TRANSCENDENCE));
+    StatementBindParameterBinary(Statement, 19, &Data->MercenaryData, sizeof(GAME_DATA_CHARACTER_MERCENARY));
+    StatementBindParameterBinary(Statement, 20, &Data->CraftData, sizeof(GAME_DATA_CHARACTER_CRAFT));
+    StatementBindParameterBinary(Statement, 21, &Data->NewbieSupportData, sizeof(struct _RTCharacterNewbieSupportInfo));
 
     if (!StatementExecute(Statement)) return false;
 
@@ -235,13 +236,14 @@ Bool MasterDBSelectCharacterByID(
     StatementReadResultBinary(Statement, 14, sizeof(GAME_DATA_CHARACTER_BLENDEDABILITY), &Data->BlendedAbilityData, NULL);
     StatementReadResultBinary(Statement, 15, sizeof(GAME_DATA_CHARACTER_HONORMEDAL), &Data->HonorMedalData, NULL);
     StatementReadResultBinary(Statement, 16, sizeof(struct _RTCharacterOverlordMasteryInfo), &Data->OverlordData, NULL);
-    StatementReadResultBinary(Statement, 17, sizeof(GAME_DATA_CHARACTER_TRANSFORM), &Data->TransformData, NULL);
-    StatementReadResultBinary(Statement, 18, sizeof(GAME_DATA_CHARACTER_TRANSCENDENCE), &Data->TranscendenceData, NULL);
-    StatementReadResultBinary(Statement, 19, sizeof(GAME_DATA_CHARACTER_MERCENARY), &Data->MercenaryData, NULL);
-    StatementReadResultBinary(Statement, 20, sizeof(GAME_DATA_CHARACTER_CRAFT), &Data->CraftData, NULL);
-    StatementReadResultBinary(Statement, 21, sizeof(struct _RTCharacterNewbieSupportInfo), &Data->NewbieSupportData, NULL);
-    StatementReadResultTimestamp(Statement, 22, &Data->CreatedAt);
-    StatementReadResultTimestamp(Statement, 23, &Data->UpdatedAt);
+    StatementReadResultBinary(Statement, 17, sizeof(struct _RTCharacterForceWingInfo), &Data->ForceWingData, NULL);
+    StatementReadResultBinary(Statement, 18, sizeof(GAME_DATA_CHARACTER_TRANSFORM), &Data->TransformData, NULL);
+    StatementReadResultBinary(Statement, 19, sizeof(GAME_DATA_CHARACTER_TRANSCENDENCE), &Data->TranscendenceData, NULL);
+    StatementReadResultBinary(Statement, 20, sizeof(GAME_DATA_CHARACTER_MERCENARY), &Data->MercenaryData, NULL);
+    StatementReadResultBinary(Statement, 21, sizeof(GAME_DATA_CHARACTER_CRAFT), &Data->CraftData, NULL);
+    StatementReadResultBinary(Statement, 22, sizeof(struct _RTCharacterNewbieSupportInfo), &Data->NewbieSupportData, NULL);
+    StatementReadResultTimestamp(Statement, 23, &Data->CreatedAt);
+    StatementReadResultTimestamp(Statement, 24, &Data->UpdatedAt);
 
     StatementFlushResults(Statement);
 
@@ -284,13 +286,14 @@ Bool MasterDBSelectCharacterFetchNext(
     StatementReadResultBinary(Statement, 14, sizeof(GAME_DATA_CHARACTER_BLENDEDABILITY), &Result->BlendedAbilityData, NULL);
     StatementReadResultBinary(Statement, 15, sizeof(GAME_DATA_CHARACTER_HONORMEDAL), &Result->HonorMedalData, NULL);
     StatementReadResultBinary(Statement, 16, sizeof(struct _RTCharacterOverlordMasteryInfo), &Result->OverlordData, NULL);
-    StatementReadResultBinary(Statement, 17, sizeof(GAME_DATA_CHARACTER_TRANSFORM), &Result->TransformData, NULL);
-    StatementReadResultBinary(Statement, 18, sizeof(GAME_DATA_CHARACTER_TRANSCENDENCE), &Result->TranscendenceData, NULL);
-    StatementReadResultBinary(Statement, 19, sizeof(GAME_DATA_CHARACTER_MERCENARY), &Result->MercenaryData, NULL);
-    StatementReadResultBinary(Statement, 20, sizeof(GAME_DATA_CHARACTER_CRAFT), &Result->CraftData, NULL);
-    StatementReadResultBinary(Statement, 21, sizeof(struct _RTCharacterNewbieSupportInfo), &Result->NewbieSupportData, NULL);
-    StatementReadResultTimestamp(Statement, 22, &Result->CreatedAt);
-    StatementReadResultTimestamp(Statement, 23, &Result->UpdatedAt);
+    StatementReadResultBinary(Statement, 17, sizeof(struct _RTCharacterForceWingInfo), &Result->ForceWingData, NULL);
+    StatementReadResultBinary(Statement, 18, sizeof(GAME_DATA_CHARACTER_TRANSFORM), &Result->TransformData, NULL);
+    StatementReadResultBinary(Statement, 19, sizeof(GAME_DATA_CHARACTER_TRANSCENDENCE), &Result->TranscendenceData, NULL);
+    StatementReadResultBinary(Statement, 20, sizeof(GAME_DATA_CHARACTER_MERCENARY), &Result->MercenaryData, NULL);
+    StatementReadResultBinary(Statement, 21, sizeof(GAME_DATA_CHARACTER_CRAFT), &Result->CraftData, NULL);
+    StatementReadResultBinary(Statement, 22, sizeof(struct _RTCharacterNewbieSupportInfo), &Result->NewbieSupportData, NULL);
+    StatementReadResultTimestamp(Statement, 23, &Result->CreatedAt);
+    StatementReadResultTimestamp(Statement, 24, &Result->UpdatedAt);
 
     return true;
 }
@@ -491,6 +494,18 @@ Bool MasterDBUpdateCharacterOverlordData(
 ) {
     StatementRef Statement = MasterDBGetStatement(Database, MASTERDB_UPDATE_CHARACTER_OVERLORD_DATA);
     StatementBindParameterBinary(Statement, 0, Data, sizeof(struct _RTCharacterOverlordMasteryInfo));
+    StatementBindParameterInt32(Statement, 1, CharacterID);
+
+    return StatementExecute(Statement);
+}
+
+Bool MasterDBUpdateCharacterForceWingData(
+    DatabaseRef Database,
+    Int32 CharacterID,
+    RTCharacterForceWingInfoRef Data
+) {
+    StatementRef Statement = MasterDBGetStatement(Database, MASTERDB_UPDATE_CHARACTER_FORCEWING_DATA);
+    StatementBindParameterBinary(Statement, 0, Data, sizeof(struct _RTCharacterForceWingInfo));
     StatementBindParameterInt32(Statement, 1, CharacterID);
 
     return StatementExecute(Statement);

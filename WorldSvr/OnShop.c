@@ -74,7 +74,7 @@ CLIENT_PROCEDURE_BINDING(SELL_ITEM) {
     if (!Character) goto error;
 
     // TODO: Add packet bounds checking for dynamically appended data!
-    if (Packet->InventoryIndexCount < 1 || Packet->InventoryIndexCount > SERVER_CHARACTER_MAX_SELL_ITEM_COUNT) goto error;
+    if (Packet->InventoryIndexCount < 1) goto error;// || Packet->InventoryIndexCount > SERVER_CHARACTER_MAX_SELL_ITEM_COUNT) goto error;
 
     RTShopDataRef Shop = RTRuntimeGetShopByWorldNpcID(
         Runtime,

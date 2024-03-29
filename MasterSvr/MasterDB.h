@@ -185,6 +185,12 @@ Bool MasterDBUpdateCharacterOverlordData(
     RTCharacterOverlordMasteryInfoRef Data
 );
 
+Bool MasterDBUpdateCharacterForceWingData(
+    DatabaseRef Database,
+    Int32 CharacterID,
+    RTCharacterForceWingInfoRef Data
+);
+
 Bool MasterDBUpdateCharacterTransformData(
     DatabaseRef Database,
     MASTERDB_DATA_CHARACTER* Data

@@ -248,7 +248,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemImmediateReward) {
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_OXP: {
 		if (Character->Info.Overlord.Level < 1) return false;
 		RTCharacterAddOverlordExp(Runtime, Character, ItemSlot->ItemOptions);
-		return true;
+		break;
 	}
 
 	default:
@@ -369,7 +369,6 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemArmor) {
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemAccessory) {
-
 	return false;
 }
 
@@ -386,6 +385,101 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotExtender) {
 	RTItemDataRef TargetItemData = RTRuntimeGetItemDataByIndex(Runtime, TargetItemSlot->Item.ID);
 	if (!TargetItemData) return false;
 
+	// TODO: Check item data on how to check if the target item is an extendable item...
 
 	return false;
+}
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHolyWater) {
+	if (!RTCharacterEnableForceWing(Runtime, Character)) return false;
+
+	RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+	Character->SyncMask.InventoryInfo = true;
+	Character->SyncPriority.High = true;
+
+	return true;
+}
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
+	// TODO: Check payload length for inventory slot index 
+	struct {
+		UInt32 RegisteredStackSize;
+		UInt32 InventoryItemCount;
+		UInt16 InventorySlotIndex[0];
+	} *Data = Payload;
+
+	// TODO: Cleanup inventory slot processing
+	UInt64 StackSize = 0;
+	UInt64 Amount = 0;
+	for (Index Index = 0; Index < Data->InventoryItemCount; Index += 1) {
+		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Data->InventorySlotIndex[Index]);
+		if (!ItemSlot) return false;
+
+		StackSize += ItemSlot->ItemOptions & 0xFFFF;
+		Amount += ItemSlot->ItemOptions >> 16;
+	}
+
+	if (Data->RegisteredStackSize > StackSize) return false;
+
+	UInt64 TotalAmount = Amount * Data->RegisteredStackSize;
+
+	switch (ItemData->Options[0]) {
+	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_ALZ:
+		RTCharacterAddCurrency(Runtime, Character, RUNTIME_CHARACTER_CURRENCY_ALZ, TotalAmount);
+		break;
+
+	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_EXP:
+		RTCharacterAddExp(Runtime, Character, TotalAmount);
+		break;
+
+	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_SKILLEXP:
+		RTCharacterAddSkillExp(Runtime, Character, (UInt32)TotalAmount);
+		break;
+
+	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_PETEXP:
+		UNIMPLEMENTED;
+
+	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_GUILDEXP:
+		UNIMPLEMENTED;
+
+	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_HONOR:
+		RTCharacterAddHonorPoint(Runtime, Character, TotalAmount);
+		break;
+
+	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_AXP:
+		RTCharacterAddAbilityExp(Runtime, Character, TotalAmount);
+		break;
+
+	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_WAREXP:
+		UNIMPLEMENTED;
+
+	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_OXP: {
+		if (Character->Info.Overlord.Level < 1) return false;
+		RTCharacterAddOverlordExp(Runtime, Character, TotalAmount);
+		break;
+	}
+
+	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_WINGEXP: {
+		if (Character->ForceWingInfo.Grade < 1) return false;
+		RTCharacterAddWingExp(Runtime, Character, TotalAmount);
+		break;
+	}
+
+	default:
+		return false;
+	}
+
+	// TODO: Add support for multiple item consumptions
+	StackSize -= Data->RegisteredStackSize;
+	if (StackSize < 1) {
+		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+	}
+	else {
+		ItemSlot->ItemOptions = Amount << 16 | (StackSize & 0xFFFF);
+	}
+
+	Character->SyncMask.InventoryInfo = true;
+	Character->SyncPriority.Low = true;
+
+	return true;
 }

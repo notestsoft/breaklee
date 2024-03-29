@@ -3,11 +3,20 @@
         <event_description content="Basics" />
         
         <event_shop>
-            <item slot_id="0" item_id="33556680" option="999" duration_id="0" price="0"></item>
-            <item slot_id="1" item_id="33556681" option="999" duration_id="0" price="0"></item>
-            <item slot_id="2" item_id="33556682" option="999" duration_id="0" price="0"></item>
-            <item slot_id="3" item_id="33556683" option="999" duration_id="0" price="0"></item>
-            <item slot_id="4" item_id="33556684" option="999" duration_id="0" price="0"></item>
+            <item slot_id="0" item_id="33556546" option="1000000000" duration_id="0" price="0"></item>
+            <item slot_id="1" item_id="33556681" option="65536000999" duration_id="0" price="0"></item>
+            <item slot_id="2" item_id="33556682" option="65536000999" duration_id="0" price="0"></item>
+            <item slot_id="3" item_id="33556683" option="65536000999" duration_id="0" price="0"></item>
+            <item slot_id="4" item_id="33556820" option="65536000999" duration_id="0" price="0"></item>
+            <item slot_id="7" item_id="33556371" option="0" duration_id="0" price="0"></item>
+
+            <item slot_id="8" item_id="33556435" option="999" duration_id="0" price="0"></item>
+            <item slot_id="9" item_id="33556818" option="999" duration_id="0" price="0"></item>
+            <item slot_id="10" item_id="33556435" option="999" duration_id="0" price="0"></item>
+            <item slot_id="11" item_id="33557013" option="999" duration_id="0" price="0"></item>
+            <item slot_id="12" item_id="33557014" option="999" duration_id="0" price="0"></item>
+            <item slot_id="13" item_id="33557015" option="999" duration_id="0" price="0"></item>
+            <item slot_id="14" item_id="33557016" option="999" duration_id="0" price="0"></item>
         </event_shop>
     </event>
 

@@ -146,13 +146,6 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_QUEST_INDEX,
     UInt8 QuestSlotIndex;
 )
 
-CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_FORCE_WING_BUFF_SLOT,
-    UInt8 SlotIndex;
-    UInt32 Unknown1;
-    UInt32 Unknown2;
-    UInt16 Unknown3;
-)
-
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_ESSENCE_ABILITY_SLOT,
     UInt32 AbilityID;
     UInt16 Level;
@@ -188,7 +181,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_NEWBIE_SUPPORT_SLOT,
     UInt8 CategoryType;
     UInt8 ConditionValue1;
     UInt8 ConditionValue2;
-    UInt8 Unknown1;
+    UInt8 RewardIndex;
 )
 
 CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
@@ -357,17 +350,20 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     UInt32 UnknownMeritMasteryCount;
     UInt32 HonorMedalExp;
     UInt8 HonorMedalCount;
-    UInt8 ForceWingRank;
+    UInt8 ForceWingGrade;
     UInt8 ForceWingLevel;
-    UInt64 ForceWingExp;
-    UInt8 Unknown2422s[8];
+    Int64 ForceWingExp;
+    UInt64 ForceWingUnknown1;
+    // TODO: Store the force wing data just in the same memory layout and make the fixed size part of 142 dynamic
     UInt8 ForceWingActivePresetIndex;
-    UInt8 ForceWingPresetEnabled[5];
-    Int32 ForceWingPresetTrainingPoints[5];
-    UInt8 ForceWingSlotCount;
+    UInt8 ForceWingPresetEnabled[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT];
+    Int32 ForceWingPresetTrainingPoints[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT];
+    UInt8 ForceWingPresetSlotCount;
     UInt8 ForceWingTrainingSlotCount;
-    S2C_DATA_INITIALIZE_FORCE_WING_BUFF_SLOT ForceWingBuffSlots[8];
-    UInt8 Unknown2111[22];
+    struct _RTForceWingArrivalSkillSlot ForceWingArrivalSkillSlots[RUNTIME_CHARACTER_MAX_FORCE_WING_ARRIVAL_SKILL_COUNT];
+    struct _RTForceWingArrivalSkillSlot RestoreForceWingArrivalSkillSlot;
+    UInt8 ForceWingTrainingUnlockFlags[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_SIZE];
+    UInt8 Unknown2111[21];
     UInt16 SpecialGiftboxPoint;
     UInt8 SpecialGiftboxCount;
     UInt32 Unknown2733[9];
@@ -829,7 +825,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_INDEX,
     UInt32 HolyPower;
     UInt32 Rebirth;
     UInt32 MythLevel;
-    UInt8 ForceWingRank;
+    UInt8 ForceWingGrade;
     UInt8 ForceWingLevel;
     UInt64 MaxHP;
     UInt64 CurrentHP;
@@ -1229,6 +1225,8 @@ CLIENT_PROTOCOL_ENUM(
     S2C_DATA_CHARACTER_EVENT_TYPE_RANKUP = 2,
     S2C_DATA_CHARACTER_EVENT_TYPE_OVERLORD_LEVELUP = 3,
     S2C_DATA_CHARACTER_EVENT_TYPE_UNKNOWN = 4,
+    S2C_DATA_CHARACTER_EVENT_TYPE_FORCEWING_GRADEUP = 6,
+    S2C_DATA_CHARACTER_EVENT_TYPE_FORCEWING_LEVELUP = 7,
 )
 
 CLIENT_PROTOCOL(S2C, NFY_CHARACTER_EVENT, DEFAULT, 288,
@@ -2489,7 +2487,7 @@ CLIENT_PROTOCOL(C2S, TAKE_NEWBIE_REWARD, DEFAULT, 2319,
     UInt8 CategoryType;
     UInt8 ConditionValue1;
     UInt8 ConditionValue2;
-    UInt8 Unknown1;
+    UInt8 RewardIndex;
     UInt8 InventorySlotCount;
     UInt16 InventorySlotIndex[50];
 )
@@ -2656,6 +2654,73 @@ CLIENT_PROTOCOL(S2C, ADD_OVERLORD_MASTERY_SLOT, DEFAULT, 2763,
     UInt8 Level;
 )
 
+CLIENT_PROTOCOL(S2C, NFY_FORCE_WING_GRADE, DEFAULT, 2788,
+    UInt32 CharacterIndex;
+    UInt8 ForceWingGrade;
+)
+
+CLIENT_PROTOCOL(S2C, NFY_FORCE_WING_UPDATE, DEFAULT, 2789,
+    UInt8 Status;
+    UInt8 ForceWingGrade;
+    UInt8 ForceWingLevel;
+    Int64 ForceWingExp;
+    Int64 Unknown1;
+    UInt32 TrainingPointCount;
+)
+
+CLIENT_PROTOCOL(C2S, FORCE_WING_LEVEL_UP, DEFAULT, 2790,
+    Int32 ItemStackCount1;
+    UInt16 InventorySlotCount1;
+    Int32 ItemStackCount2;
+    UInt16 InventorySlotCount2;
+    UInt16 InventorySlotIndex[0];
+//    UInt16 InventorySlotIndex2[0];
+)
+
+CLIENT_PROTOCOL(S2C, FORCE_WING_LEVEL_UP, DEFAULT, 2790,
+    UInt8 Success;
+    UInt8 ForceWingGrade;
+    UInt8 ForceWingLevel;
+    Int64 ForceWingExp;
+    Int64 Unknown1;
+    UInt32 AddedTrainingPointCount;
+)
+
+CLIENT_PROTOCOL(S2C, NFY_FORCE_WING_EXP, DEFAULT, 2791,
+    Int64 ForceWingExp;
+)
+
+CLIENT_PROTOCOL(C2S, SET_FORCEWING_PRESET_SLOT, DEFAULT, 2792,
+    UInt8 PresetPageIndex;
+    UInt8 PresetSlotIndex;
+    UInt8 TrainingSlotIndex;
+)
+
+CLIENT_PROTOCOL(S2C, SET_FORCEWING_PRESET_SLOT, DEFAULT, 2792,
+    Int32 Result;
+)
+
+CLIENT_PROTOCOL(C2S, ADD_FORCEWING_TRAINING_LEVEL, DEFAULT, 2793,
+    UInt8 PresetPageIndex;
+    UInt8 PresetSlotIndex;
+    UInt8 TrainingSlotIndex;
+    Int32 AddedTrainingLevel;
+)
+
+CLIENT_PROTOCOL(S2C, ADD_FORCEWING_TRAINING_LEVEL, DEFAULT, 2793,
+    Int32 Result;
+    Int32 RemainingTrainingPointCount;
+    UInt8 TrainingLevel;
+)
+
+CLIENT_PROTOCOL(C2S, SET_ACTIVE_FORCEWING_PRESET, DEFAULT, 2794,
+    UInt8 PresetPageIndex;
+)
+
+CLIENT_PROTOCOL(S2C, SET_ACTIVE_FORCEWING_PRESET, DEFAULT, 2794,
+    Int32 Result;
+)
+
 CLIENT_PROTOCOL(C2S, OPEN_GIFTBOX, DEFAULT, 2797,
     UInt8 Index;
 )
@@ -2751,11 +2816,54 @@ CLIENT_PROTOCOL(S2C, RECEIVE_COLLECTION_REWARD, DEFAULT, 2831,
     UInt16 InventorySlotCount;
 )
 
+CLIENT_PROTOCOL_STRUCT(C2S_FORCE_WING_INVENTORY_SLOT,
+    UInt16 ItemStackSize;
+    UInt16 InventorySlotIndex;
+)
+
+CLIENT_PROTOCOL(C2S, FORCE_WING_GRADE_UP, DEFAULT, 2837,
+    UInt16 InventorySlotCount;
+    C2S_FORCE_WING_INVENTORY_SLOT InventorySlots[0];
+)
+
+CLIENT_PROTOCOL(S2C, FORCE_WING_GRADE_UP, DEFAULT, 2837,
+    UInt8 Success;
+    UInt8 ForceWingGrade;
+    UInt8 ForceWingLevel;
+    Int64 ForceWingExp;
+    Int64 Unknown1;
+    UInt32 AddedTrainingPointCount;
+)
+
 CLIENT_PROTOCOL(S2C, NFY_UPDATE_TRANSCENDENCE_POINTS, DEFAULT, 2926,
     UInt32 TranscendencePoints;
 )
 
+CLIENT_PROTOCOL(C2S, ROLL_FORCEWING_ARRIVAL_SKILL, DEFAULT, 2965,
+    UInt8 SkillSlotIndex;
+    UInt32 Unknown1;
+    UInt16 InventorySlotCount;
+    UInt16 InventorySlotIndex[0];
+)
+
+CLIENT_PROTOCOL(S2C, ROLL_FORCEWING_ARRIVAL_SKILL, DEFAULT, 2965,
+    Int32 Result;
+    struct _RTForceWingArrivalSkillSlot SkillSlot;
+)
+
+CLIENT_PROTOCOL(C2S, CHANGE_FORCEWING_ARRIVAL_SKILL, DEFAULT, 2966,
+)
+
+CLIENT_PROTOCOL(S2C, CHANGE_FORCEWING_ARRIVAL_SKILL, DEFAULT, 2966,
+    UInt8 Success;
+)
+
+CLIENT_PROTOCOL(C2S, SET_FORCEWING_TRAINING_SLOT_FLAGS, DEFAULT, 2968,
+    UInt8 Flags[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_SIZE];
+)
+
 CLIENT_PROTOCOL(C2S, GET_EVENT_PASS_REWARD_LIST, DEFAULT, 2999,
+    UInt8 Result;
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_GET_EVENT_PASS_REWARD_LIST_SLOT,

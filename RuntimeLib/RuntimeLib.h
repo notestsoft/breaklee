@@ -8,6 +8,7 @@
 #include <RuntimeLib/Equipment.h>
 #include <RuntimeLib/Event.h>
 #include <RuntimeLib/Force.h>
+#include <RuntimeLib/ForceWing.h>
 #include <RuntimeLib/GiftBox.h>
 #include <RuntimeLib/Inventory.h>
 #include <RuntimeLib/Item.h>

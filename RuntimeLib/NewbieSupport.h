@@ -12,7 +12,7 @@ struct _RTNewbieSupportSlot {
     UInt8 CategoryType;
     UInt8 ConditionValue1;
     UInt8 ConditionValue2;
-    UInt8 Unknown1;
+    UInt8 RewardIndex;
 };
 
 struct _RTCharacterNewbieSupportInfo {
@@ -27,6 +27,7 @@ Bool RTCharacterCanTakenNewbieSupportReward(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     UInt8 CategoryType,
+    UInt8 RewardIndex,
     UInt8 ConditionValue1,
     UInt8 ConditionValue2
 );
@@ -35,6 +36,7 @@ Bool RTCharacterTakeNewbieSupportReward(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     UInt8 CategoryType,
+    UInt8 RewardIndex,
     UInt8 ConditionValue1,
     UInt8 ConditionValue2,
     Int32 InventorySlotCount,

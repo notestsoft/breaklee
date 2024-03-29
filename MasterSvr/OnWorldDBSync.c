@@ -161,6 +161,21 @@ IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_REQDBSYNC, IPC_DATA_WORLD_REQDBSY
 		}
 	}
 
+	if (Packet->SyncMask.ForceWingInfo) {
+		RTCharacterForceWingInfoRef ForceWingInfo = (RTCharacterForceWingInfoRef)&Packet->Data[DataOffset];
+		DataOffset += sizeof(struct _RTCharacterForceWingInfo);
+
+		Bool Success = MasterDBUpdateCharacterForceWingData(
+			Context->Database,
+			Packet->CharacterID,
+			ForceWingInfo
+		);
+
+		if (!Success) {
+			Response->SyncMaskFailed.ForceWingInfo = true;
+		}
+	}
+
 	if (Packet->SyncMask.CollectionInfo) {
 		RTCharacterCollectionInfoRef CollectionInfo = (RTCharacterCollectionInfoRef)&Packet->Data[DataOffset];
 		DataOffset += sizeof(struct _RTCharacterCollectionInfo);

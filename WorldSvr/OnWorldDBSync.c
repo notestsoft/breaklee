@@ -87,6 +87,10 @@ Void ServerSyncDB(
 				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->OverlordMasteryInfo, sizeof(struct _RTCharacterOverlordMasteryInfo));
 			}
 
+			if (Character->SyncMask.ForceWingInfo) {
+				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->ForceWingInfo, sizeof(struct _RTCharacterForceWingInfo));
+			}
+
 			if (Character->SyncMask.CollectionInfo) {
 				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->CollectionInfo, sizeof(struct _RTCharacterCollectionInfo));
 			}

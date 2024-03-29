@@ -118,8 +118,8 @@ Void AppendCharacterToCharacterSpawnIndex(
     Spawn->Entity = Character->ID;
     Spawn->Level = Character->Info.Basic.Level;
     Spawn->OverlordLevel = Character->Info.Overlord.Level;
-    Spawn->ForceWingRank = 0;
-    Spawn->ForceWingLevel = Character->Info.ForceWing.Level;
+    Spawn->ForceWingGrade = Character->ForceWingInfo.Grade;
+    Spawn->ForceWingLevel = Character->ForceWingInfo.Level;
     Spawn->MaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
     Spawn->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
     Spawn->MovementSpeed = (UInt32)(Character->Movement.Speed * RUNTIME_MOVEMENT_SPEED_SCALE);
@@ -303,8 +303,8 @@ Void ServerRuntimeOnEvent(
         Spawn->Entity = Character->ID;
         Spawn->Level = Character->Info.Basic.Level;
         Spawn->OverlordLevel = Character->Info.Overlord.Level;
-        Spawn->ForceWingRank = 0;
-        Spawn->ForceWingLevel = Character->Info.ForceWing.Level;
+        Spawn->ForceWingGrade = Character->ForceWingInfo.Grade;
+        Spawn->ForceWingLevel = Character->ForceWingInfo.Level;
         Spawn->MaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
         Spawn->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
         Spawn->MovementSpeed = (UInt32)(Character->Movement.Speed * RUNTIME_MOVEMENT_SPEED_SCALE);
@@ -485,6 +485,63 @@ Void ServerRuntimeOnEvent(
         }
 
         return;
+    }
+
+    if (Event->Type == RUNTIME_EVENT_CHARACTER_UPDATE_FORCE_WING) {
+        S2C_DATA_NFY_FORCE_WING_GRADE* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_FORCE_WING_GRADE);
+        Notification->CharacterIndex = Event->Data.CharacterUpdateForceWing.CharacterIndex;
+        Notification->ForceWingGrade = Event->Data.CharacterUpdateForceWing.ForceWingGrade;
+        BroadcastToWorld(
+            Context,
+            Event->World,
+            kEntityIDNull,
+            Event->X,
+            Event->Y,
+            Notification
+        );
+
+        ClientContextRef Client = ServerGetClientByEntity(Context, Event->TargetID);
+        if (Client) {
+            S2C_DATA_NFY_FORCE_WING_UPDATE* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_FORCE_WING_UPDATE);
+            Notification->Status = 1;
+            Notification->ForceWingGrade = Event->Data.CharacterUpdateForceWing.ForceWingGrade;
+            Notification->ForceWingLevel = Event->Data.CharacterUpdateForceWing.ForceWingLevel;
+            Notification->ForceWingExp = Event->Data.CharacterUpdateForceWing.ForceWingExp;
+            Notification->Unknown1 = 0;
+            Notification->TrainingPointCount = Event->Data.CharacterUpdateForceWing.TrainingPointCount;
+            SocketSend(Context->ClientSocket, Client->Connection, Notification);
+        }
+
+        return;
+    }
+
+    if (Event->Type == RUNTIME_EVENT_CHARACTER_UPDATE_FORCE_WING_EXP) {
+        ClientContextRef Client = ServerGetClientByEntity(Context, Event->TargetID);
+        if (Client) {
+            S2C_DATA_NFY_FORCE_WING_EXP* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_FORCE_WING_EXP);
+            Notification->ForceWingExp = Event->Data.CharacterUpdateForceWingExp.ForceWingExp;
+            SocketSend(Context->ClientSocket, Client->Connection, Notification);
+        }
+
+        return;
+    }
+
+    if (Event->Type == RUNTIME_EVENT_CHARACTER_UPDATE_FORCE_WING_LEVEL_UP) {
+        ClientContextRef Client = ServerGetClientByEntity(Context, Event->TargetID);
+        if (!Client) return;
+
+        S2C_DATA_NFY_CHARACTER_EVENT* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_CHARACTER_EVENT);
+        Notification->Type = S2C_DATA_CHARACTER_EVENT_TYPE_FORCEWING_LEVELUP;
+        Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
+
+        return BroadcastToWorld(
+            Context,
+            Event->World,
+            kEntityIDNull,
+            Event->X,
+            Event->Y,
+            Notification
+        );
     }
 
     if (Event->Type == RUNTIME_EVENT_CHARACTER_BATTLE_RANK_UP) {

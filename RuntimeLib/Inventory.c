@@ -232,3 +232,49 @@ Void RTInventoryFindItems(
 		}
 	}
 }
+
+Bool RTInventoryCanConsumeStackableItems(
+	RTRuntimeRef Runtime,
+	RTCharacterInventoryInfoRef Inventory,
+	UInt32 RequiredItemID,
+	Int64 RequiredItemCount,
+	UInt16 InventorySlotCount,
+	UInt16* InventorySlotIndex
+) {
+	Int64 ConsumableItemCount = 0;
+	for (Index Index = 0; Index < InventorySlotCount; Index += 1) {
+		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, Inventory, InventorySlotIndex[Index]);
+		if (!ItemSlot) return false;
+		if (ItemSlot->Item.ID != RequiredItemID) return false;
+
+		ConsumableItemCount += ItemSlot->ItemOptions;
+	}
+
+	return ConsumableItemCount >= RequiredItemCount;
+}
+
+Void RTInventoryConsumeStackableItems(
+	RTRuntimeRef Runtime,
+	RTCharacterInventoryInfoRef Inventory,
+	UInt32 RequiredItemID,
+	Int64 RequiredItemCount,
+	UInt16 InventorySlotCount,
+	UInt16* InventorySlotIndex
+) {
+	Int64 RemainingItemCount = RequiredItemCount;
+	for (Index Index = 0; Index < InventorySlotCount; Index += 1) {
+		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, Inventory, InventorySlotIndex[Index]);
+		assert(ItemSlot);
+		assert(ItemSlot->Item.ID == RequiredItemID);
+
+		Int64 ConsumeItemCount = MIN(RemainingItemCount, ItemSlot->ItemOptions);
+		ItemSlot->ItemOptions -= ConsumeItemCount;
+		if (ItemSlot->ItemOptions < 1) {
+			RTInventoryClearSlot(Runtime, Inventory, ItemSlot->SlotIndex);
+		}
+
+		RemainingItemCount -= ConsumeItemCount;
+	}
+
+	assert(RemainingItemCount < 1);
+}

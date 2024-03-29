@@ -36,6 +36,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_REQGETCHARACTER, IPC_DATA_W
     memcpy(&Response->Character.BlendedAbilityData, &Character.BlendedAbilityData, sizeof(GAME_DATA_CHARACTER_BLENDEDABILITY));
     memcpy(&Response->Character.HonorMedalData, &Character.HonorMedalData, sizeof(GAME_DATA_CHARACTER_HONORMEDAL));
     memcpy(&Response->Character.OverlordData, &Character.OverlordData, sizeof(struct _RTCharacterOverlordMasteryInfo));
+    memcpy(&Response->Character.ForceWingData, &Character.ForceWingData, sizeof(struct _RTCharacterForceWingInfo));
     memcpy(&Response->Character.TransformData, &Character.TransformData, sizeof(GAME_DATA_CHARACTER_TRANSFORM));
     memcpy(&Response->Character.TranscendenceData, &Character.TranscendenceData, sizeof(GAME_DATA_CHARACTER_TRANSCENDENCE));
     memcpy(&Response->Character.MercenaryData, &Character.MercenaryData, sizeof(GAME_DATA_CHARACTER_MERCENARY));

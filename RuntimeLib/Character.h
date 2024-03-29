@@ -10,6 +10,7 @@
 #include "Entity.h"
 #include "Equipment.h"
 #include "EssenceAbility.h"
+#include "ForceWing.h"
 #include "Inventory.h"
 #include "Item.h"
 #include "KarmaAbility.h"
@@ -57,7 +58,6 @@ union _RTCharacterSyncMask {
         UInt64 OverlordMasteryInfo : 1;
         UInt64 HonorMedalInfo : 1;
         UInt64 ForceWingInfo : 1;
-        UInt64 ForceWingTrainingInfo : 1;
         UInt64 GiftboxInfo : 1;
         UInt64 CollectionInfo : 1;
         UInt64 TransformInfo : 1;
@@ -67,7 +67,7 @@ union _RTCharacterSyncMask {
         UInt64 NewbieSupportInfo : 1;
         UInt64 EventPassInfo : 1;
         UInt64 CostumeInfo : 1;
-        UInt64 _Padding : 10;
+        UInt64 _Padding : 11;
         UInt64 WarehouseInfo : 1;
     };
     UInt64 RawValue;
@@ -217,7 +217,6 @@ struct _RTCharacterInfo {
     struct _RTCharacterProfile Profile;
     struct _RTCharacterLevel Basic;
     struct _RTCharacterLevel Overlord;
-    struct _RTCharacterLevel ForceWing;
     struct _RTCharacterHonor Honor;
     struct _RTCharacterAbility Ability;
     struct _RTCharacterSkill Skill;
@@ -265,8 +264,7 @@ struct _RTCharacter {
     // struct _RTCharacterPlatinumMeritMasteryInfo PlatinumMeritMasteryInfo;
     struct _RTCharacterOverlordMasteryInfo OverlordMasteryInfo;
     // struct _RTCharacterHonorMedalInfo HonorMedalInfo;
-    // struct _RTCharacterForceWingInfo ForceWingInfo;
-    // struct _RTCharacterForceWingTrainingInfo ForceWingTrainingInfo;
+    struct _RTCharacterForceWingInfo ForceWingInfo;
     // struct _RTCharacterGiftboxInfo GiftboxInfo;
     struct _RTCharacterCollectionInfo CollectionInfo;
     // struct _RTCharacterTransformInfo TransformInfo;
@@ -303,6 +301,7 @@ Void RTCharacterInitialize(
     RTCharacterDungeonQuestFlagInfoRef DungeonQuestFlagInfo,
     RTCharacterEssenceAbilityInfoRef EssenceAbilityInfo,
     RTCharacterOverlordMasteryInfoRef OverlordMasteryInfo,
+    RTCharacterForceWingInfoRef ForceWingInfo,
     RTCharacterCollectionInfoRef CollectionInfo,
     RTCharacterNewbieSupportInfoRef NewbieSupportInfo,
     RTCharacterWarehouseInfoRef WarehouseInfo
@@ -400,6 +399,12 @@ Int32 RTCharacterAddSkillExp(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     UInt32 SkillExp
+);
+
+Void RTCharacterAddWingExp(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt64 Exp
 );
 
 Void RTCharacterAddHonorPoint(

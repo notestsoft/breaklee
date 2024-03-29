@@ -20,6 +20,13 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM) {
 
 		if (Character->Info.Basic.Level < ItemData->MinLevel) goto error;
 
+		PacketLogBytes(
+			Socket->ProtocolIdentifier,
+			Socket->ProtocolVersion,
+			Socket->ProtocolExtension,
+			Packet
+		);
+
 		LogMessageFormat(LOG_LEVEL_INFO, "Use Item ItemType: %d", ItemData->ItemType);
 		// TODO: Check if it is a general option of an item that it been consumed from the inventory
 

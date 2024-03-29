@@ -22,6 +22,7 @@ Void RTCharacterInitialize(
 	RTCharacterDungeonQuestFlagInfoRef DungeonQuestFlagInfo,
 	RTCharacterEssenceAbilityInfoRef EssenceAbilityInfo,
 	RTCharacterOverlordMasteryInfoRef OverlordMasteryInfo,
+	RTCharacterForceWingInfoRef ForceWingInfo,
 	RTCharacterCollectionInfoRef CollectionInfo,
 	RTCharacterNewbieSupportInfoRef NewbieSupportInfo,
 	RTCharacterWarehouseInfoRef WarehouseInfo
@@ -40,6 +41,7 @@ Void RTCharacterInitialize(
 	memcpy(&Character->DungeonQuestFlagInfo, DungeonQuestFlagInfo, sizeof(struct _RTCharacterDungeonQuestFlagInfo));
 	memcpy(&Character->EssenceAbilityInfo, EssenceAbilityInfo, sizeof(struct _RTCharacterEssenceAbilityInfo));
 	memcpy(&Character->OverlordMasteryInfo, OverlordMasteryInfo, sizeof(struct _RTCharacterOverlordMasteryInfo));
+	memcpy(&Character->ForceWingInfo, ForceWingInfo, sizeof(struct _RTCharacterForceWingInfo));
 	memcpy(&Character->CollectionInfo, CollectionInfo, sizeof(struct _RTCharacterCollectionInfo));
 	memcpy(&Character->NewbieSupportInfo, NewbieSupportInfo, sizeof(struct _RTCharacterNewbieSupportInfo));
 	memcpy(&Character->WarehouseInfo, WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
@@ -752,6 +754,8 @@ Int32 RTCharacterAddSkillExp(
 	RTCharacterRef Character,
 	UInt32 SkillExp
 ) {
+	RTCharacterAddWingExp(Runtime, Character, SkillExp);
+
 	Int32 CurrentSkillLevel = Character->Info.Skill.Level;
 	Int32 BattleStyleIndex = Character->Info.Style.BattleStyle | (Character->Info.Style.ExtendedBattleStyle << 3);
 	RTBattleStyleSkillRankDataRef SkillRankData = RTRuntimeGetBattleStyleSkillRankData(

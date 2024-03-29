@@ -5,6 +5,7 @@ Bool RTCharacterCanTakenNewbieSupportReward(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
 	UInt8 CategoryType,
+	UInt8 RewardIndex,
 	UInt8 ConditionValue1,
 	UInt8 ConditionValue2
 ) {
@@ -13,25 +14,27 @@ Bool RTCharacterCanTakenNewbieSupportReward(
 	for (Index Index = 0; Index < Character->NewbieSupportInfo.Count; Index += 1) {
 		RTNewbieSupportSlotRef Slot = &Character->NewbieSupportInfo.Slots[Index];
 		if (Slot->CategoryType != CategoryType) continue;
+		if (Slot->RewardIndex != RewardIndex) continue;
 		if (Slot->ConditionValue1 != ConditionValue1) continue;
 		if (Slot->ConditionValue2 != ConditionValue2) continue;
 
-		return true;
+		return false;
 	}
 
-	return false;
+	return true;
 }
 
 Bool RTCharacterTakeNewbieSupportReward(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     UInt8 CategoryType,
-    UInt8 ConditionValue1,
+	UInt8 RewardIndex,
+	UInt8 ConditionValue1,
     UInt8 ConditionValue2,
     Int32 InventorySlotCount,
     UInt16* InventorySlotIndex
 ) {
-	if (RTCharacterCanTakenNewbieSupportReward(Runtime, Character, CategoryType, ConditionValue1, ConditionValue2)) return false;
+	if (!RTCharacterCanTakenNewbieSupportReward(Runtime, Character, CategoryType, RewardIndex, ConditionValue1, ConditionValue2)) return false;
 
 	RTDataNewbieSupportCategoryRef Category = RTRuntimeDataNewbieSupportCategoryGet(Runtime->Context, CategoryType);
 	if (!Category) return false;
@@ -64,30 +67,27 @@ Bool RTCharacterTakeNewbieSupportReward(
 	UInt32 BattleStyleIndex = Character->Info.Style.BattleStyle | (Character->Info.Style.ExtendedBattleStyle << 3);
 	UInt32 BattleStyleFlag = 1 << (BattleStyleIndex - 1);
 
-	for (Index RewardIndex = 0; RewardIndex < RewardPool->NewbieSupportRewardPoolItemCount; RewardIndex += 1) {
-		RTDataNewbieSupportRewardPoolItemRef RewardItem = &RewardPool->NewbieSupportRewardPoolItemList[RewardIndex];
-		if (!RewardItem->BattleStyleFlag || RewardItem->BattleStyleFlag & BattleStyleFlag) {
+	if (RewardIndex < 0 || RewardIndex > RewardPool->NewbieSupportRewardPoolItemCount) return false;
 
-			for (Index Index = 0; Index < RewardItem->Count; Index += 1) {
-				struct _RTItemSlot TempSlot = { 0 };
-				TempSlot.Item.Serial = RewardItem->ItemID;
-				TempSlot.ItemOptions = RewardItem->ItemOptions;
-				TempSlot.ItemDuration.Serial = RewardItem->ItemDuration;
-				TempSlot.SlotIndex = InventorySlotIndex[Index];
+	RTDataNewbieSupportRewardPoolItemRef RewardItem = &RewardPool->NewbieSupportRewardPoolItemList[RewardIndex];
+	if (RewardItem->BattleStyleFlag && (RewardItem->BattleStyleFlag & BattleStyleFlag) < 1) return false;
 
-				Bool Success = RTInventorySetSlot(Runtime, &Character->InventoryInfo, &TempSlot);
-				assert(Success);
-			}
+	for (Index RewardItemIndex = 0; RewardItemIndex < RewardItem->Count; RewardItemIndex += 1) {
+		struct _RTItemSlot TempSlot = { 0 };
+		TempSlot.Item.Serial = RewardItem->ItemID;
+		TempSlot.ItemOptions = RewardItem->ItemOptions;
+		TempSlot.ItemDuration.Serial = RewardItem->ItemDuration;
+		TempSlot.SlotIndex = InventorySlotIndex[RewardItemIndex];
 
-			break;
-		}
+		Bool Success = RTInventorySetSlot(Runtime, &Character->InventoryInfo, &TempSlot);
+		assert(Success);
 	}
 
 	RTNewbieSupportSlotRef NewbieSupportSlot = &Character->NewbieSupportInfo.Slots[Character->NewbieSupportInfo.Count];
 	NewbieSupportSlot->CategoryType = CategoryType;
 	NewbieSupportSlot->ConditionValue1 = ConditionValue1;
 	NewbieSupportSlot->ConditionValue2 = ConditionValue2;
-	NewbieSupportSlot->Unknown1 = 0;
+	NewbieSupportSlot->RewardIndex = RewardIndex;
 	Character->NewbieSupportInfo.Count += 1;
 
 	Character->SyncMask.NewbieSupportInfo = true;

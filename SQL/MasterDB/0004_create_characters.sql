@@ -22,6 +22,7 @@ CREATE TABLE `characters` (
     `blended_data` BLOB NOT NULL,
     `honormedal_data` BLOB NOT NULL,
     `overlord_data` BLOB NOT NULL,
+    `forcewing_data` BLOB NOT NULL,
     `transform_data` BLOB NOT NULL,
     `transcendence_data` BLOB NOT NULL,
     `mercenary_data` BLOB NOT NULL,

@@ -59,7 +59,7 @@ struct _ClientContext {
     /* Runtime Data */
     Int32 CharacterDatabaseID;
     Index CharacterIndex;
-    Char CharacterName[MAX_CHARACTER_NAME_LENGTH];
+    Char CharacterName[MAX_CHARACTER_NAME_LENGTH + 1];
 };
 typedef struct _ClientContext* ClientContextRef;
 

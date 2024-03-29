@@ -1,0 +1,80 @@
+#pragma once
+
+#include "Base.h"
+#include "Constants.h"
+
+EXTERN_C_BEGIN
+
+#pragma pack(push, 1)
+
+struct _RTForceWingArrivalSkillSlot {
+    UInt8 SlotIndex;
+    UInt32 ForceEffectIndex[RUNTIME_CHARACTER_MAX_FORCE_WING_ARRIVAL_STATS_COUNT];
+    UInt8 ForceEffectGrade[RUNTIME_CHARACTER_MAX_FORCE_WING_ARRIVAL_STATS_COUNT];
+};
+
+struct _RTForceWingPresetSlot {
+    UInt8 PresetPageIndex;
+    UInt8 SlotIndex;
+    UInt8 TrainingIndex;
+    UInt8 TrainingLevel;
+};
+
+struct _RTForceWingTrainingSlot {
+    UInt8 PresetPageIndex;
+    UInt8 SlotIndex;
+    UInt8 TrainingIndex;
+};
+
+struct _RTCharacterForceWingInfo {
+    UInt8 Grade;
+    UInt8 Level;
+    Int64 Exp;
+    UInt8 ActivePresetIndex;
+    UInt8 PresetSlotCount;
+    UInt8 TrainingSlotCount;
+    UInt8 TrainingUnlockFlags[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_SIZE];
+    UInt8 PresetEnabled[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT];
+    Int32 PresetTrainingPointCount[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT];
+    struct _RTForceWingPresetSlot PresetSlots[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_SLOT_COUNT];
+    struct _RTForceWingArrivalSkillSlot ArrivalSkillSlots[RUNTIME_CHARACTER_MAX_FORCE_WING_ARRIVAL_SKILL_COUNT];
+    struct _RTForceWingArrivalSkillSlot ArrivalSkillRestoreSlot;
+    struct _RTForceWingTrainingSlot TrainingSlots[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_SLOT_COUNT];
+};
+
+#pragma pack(pop)
+
+Bool RTCharacterEnableForceWing(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+/*
+Bool RTCharacterForceWingGradeUp(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    
+);
+*/
+Bool RTCharacterForceWingLevelUp(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 ItemStackCount1,
+    UInt16 InventorySlotCount1,
+    UInt16* InventorySlotIndex1,
+    Int32 ItemStackCount2,
+    UInt16 InventorySlotCount2,
+    UInt16* InventorySlotIndex2
+);
+
+Bool RTCharacterForceWingSetActivePreset(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 PresetIndex
+);
+
+Bool RTCharacterForceWingChangeArrivalSkill(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+EXTERN_C_END

@@ -153,35 +153,6 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     Response->CharacterLiveStyle = 0;
     Response->AP = Packet->Character.CharacterData.Ability.Point;
     Response->Axp = Packet->Character.CharacterData.Ability.Exp;
-    Response->EssenceAbilityCount = 0;
-    Response->ExtendedEssenceAbilityCount = 0;
-    Response->BlendedAbilityCount = 0;
-    Response->ExtendedBlendedAbilityCount = 0;
-    Response->AllAchievementScore = 0;
-    Response->NormalAchievementScore = 0;
-    Response->QuestAchievementScore = 0;
-    Response->DungeonAchievementScore = 0;
-    Response->ItemsAchievementScore = 0;
-    Response->PvpAchievementScore = 0;
-    Response->WarAchievementScore = 0;
-    Response->HuntingAchievementScore = 0;
-    Response->CraftAchievementScore = 0;
-    Response->CommunityAchievementScore = 0;
-    Response->SharedAchievementScore = 0;
-    Response->SpecialAchievementScore = 0;
-    Response->DisplayTitle = 0;
-    Response->EventTitle = 0;
-    Response->GuildTitle = 0;
-    Response->WarTitle = 0;
-    Response->CraftEnergy = 0;
-    Response->SortingOrderMask = 0;
-    Response->RequestCraftExp = 0;
-    Response->GoldMeritExp = 0;
-    Response->GoldMeritPoint = 0;
-    Response->PlatinumMeritSlotCount = 0;
-    Response->PlatinumMeritExp = 0;
-    Response->PlatinumMeritPoint[0] = 0;
-    Response->PlatinumMeritPoint[1] = 0;
     Response->CharacterCreationDate = Packet->Character.CreationDate;
     Response->ForceGem = (UInt32)Packet->Character.CharacterData.Currency[RUNTIME_CHARACTER_CURRENCY_GEM];
     Response->OverlordLevel = Packet->Character.CharacterData.Overlord.Level;
@@ -298,8 +269,52 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     }
 
     // HonorMedalCount
-    // ForceWingCount
+
+    Response->ForceWingGrade = Packet->Character.ForceWingData.Grade;
+    Response->ForceWingLevel = Packet->Character.ForceWingData.Level;
+    Response->ForceWingExp = Packet->Character.ForceWingData.Exp;
+    Response->ForceWingUnknown1 = 0;
+    Response->ForceWingActivePresetIndex = Packet->Character.ForceWingData.ActivePresetIndex;
+
+    for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT; Index += 1) {
+        Response->ForceWingPresetEnabled[Index] = Packet->Character.ForceWingData.PresetEnabled[Index];
+        Response->ForceWingPresetTrainingPoints[Index] = Packet->Character.ForceWingData.PresetTrainingPointCount[Index];
+    }
+
+    memcpy(
+        &Response->ForceWingArrivalSkillSlots[0],
+        &Packet->Character.ForceWingData.ArrivalSkillSlots[0],
+        sizeof(struct _RTForceWingArrivalSkillSlot) * RUNTIME_CHARACTER_MAX_FORCE_WING_ARRIVAL_SKILL_COUNT
+    );
     
+    memcpy(
+        &Response->RestoreForceWingArrivalSkillSlot,
+        &Packet->Character.ForceWingData.ArrivalSkillRestoreSlot,
+        sizeof(struct _RTForceWingArrivalSkillSlot)
+    );
+
+    for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_SIZE; Index += 1) {
+        Response->ForceWingTrainingUnlockFlags[Index] = Packet->Character.ForceWingData.TrainingUnlockFlags[Index];
+    }
+    
+    Response->ForceWingPresetSlotCount = Packet->Character.ForceWingData.PresetSlotCount;
+    if (Packet->Character.ForceWingData.PresetSlotCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            &Packet->Character.ForceWingData.PresetSlots[0],
+            sizeof(struct _RTForceWingPresetSlot) * Packet->Character.ForceWingData.PresetSlotCount
+        );
+    }
+
+    Response->ForceWingTrainingSlotCount = Packet->Character.ForceWingData.TrainingSlotCount;
+    if (Packet->Character.ForceWingData.TrainingSlotCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            &Packet->Character.ForceWingData.TrainingSlots[0],
+            sizeof(struct _RTForceWingTrainingSlot)* Packet->Character.ForceWingData.TrainingSlotCount
+        );
+    }
+
     Response->SpecialGiftboxCount = 5;
     for (Int32 Index = 0; Index < 5; Index += 1) {
         RTGiftBoxInfoRef GiftBox = PacketBufferAppendStruct(ClientConnection->PacketBuffer, struct _RTGiftBoxInfo);
@@ -331,7 +346,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
         NewbieSupportSlot->CategoryType = Packet->Character.NewbieSupportData.Slots[Index].CategoryType;
         NewbieSupportSlot->ConditionValue1 = Packet->Character.NewbieSupportData.Slots[Index].ConditionValue1;
         NewbieSupportSlot->ConditionValue2 = Packet->Character.NewbieSupportData.Slots[Index].ConditionValue2;
-        NewbieSupportSlot->Unknown1 = Packet->Character.NewbieSupportData.Slots[Index].Unknown1;
+        NewbieSupportSlot->RewardIndex = Packet->Character.NewbieSupportData.Slots[Index].RewardIndex;
     }
 
     assert(ClientConnection->ID < RUNTIME_MEMORY_MAX_CHARACTER_COUNT);
@@ -351,6 +366,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
         &Packet->Character.DungeonQuestFlagData,
         &Packet->Character.EssenceAbilityData,
         &Packet->Character.OverlordData,
+        &Packet->Character.ForceWingData,
         &Packet->Character.CollectionData,
         &Packet->Character.NewbieSupportData,
         &Packet->Character.WarehouseData
@@ -358,7 +374,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
 
     Client->CharacterDatabaseID = Packet->Character.ID;
     Client->CharacterIndex = Packet->CharacterIndex;
-    CStringCopySafe(Client->CharacterName, MAX_CHARACTER_NAME_LENGTH, Packet->Character.Name);
+    CStringCopySafe(Client->CharacterName, MAX_CHARACTER_NAME_LENGTH + 1, Packet->Character.Name);
 
     Response->Entity = Character->ID;
 
