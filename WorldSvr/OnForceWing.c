@@ -87,6 +87,15 @@ CLIENT_PROCEDURE_BINDING(FORCE_WING_GRADE_UP) {
 		Character->ForceWingInfo.PresetTrainingPointCount[Index] += RUNTIME_CHARACTER_FORCE_WING_GRADE_TRAINING_POINT_COUNT;
 	}
 
+	RTDataForceWingSkillRef SkillData = RTRuntimeDataForceWingSkillGet(Runtime->Context, Character->ForceWingInfo.Grade);
+	if (SkillData) {
+		assert(0 <= SkillData->SlotIndex && SkillData->SlotIndex < RUNTIME_CHARACTER_MAX_FORCE_WING_ARRIVAL_SKILL_COUNT);
+
+		RTForceWingArrivalSkillSlotRef SkillSlot = &Character->ForceWingInfo.ArrivalSkillSlots[SkillData->SlotIndex];
+		memset(SkillSlot, 0, sizeof(struct _RTForceWingArrivalSkillSlot));
+		SkillSlot->SlotIndex = SkillData->SlotIndex;
+	}
+
 	Character->SyncMask.InventoryInfo = true;
 	Character->SyncMask.ForceWingInfo = true;
 	Character->SyncPriority.High = true;
@@ -169,6 +178,17 @@ CLIENT_PROCEDURE_BINDING(ROLL_FORCEWING_ARRIVAL_SKILL) {
 	if (!Character) goto error;
 
 	S2C_DATA_ROLL_FORCEWING_ARRIVAL_SKILL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ROLL_FORCEWING_ARRIVAL_SKILL);
+	if (!RTCharacterForceWingRollArrivalSkill(Runtime, Character, Packet->SkillSlotIndex, Packet->InventorySlotCount, &Packet->InventorySlotIndex[0])) {
+		Response->Result = 1;
+	}
+	else {
+		memcpy(
+			&Response->SkillSlot,
+			&Character->ForceWingInfo.ArrivalSkillSlots[Packet->SkillSlotIndex],
+			sizeof(struct _RTForceWingArrivalSkillSlot)
+		);
+	}
+
 	return SocketSend(Socket, Connection, Response);
 
 error:

@@ -72,6 +72,14 @@ Bool RTCharacterForceWingSetActivePreset(
     Int32 PresetIndex
 );
 
+Bool RTCharacterForceWingRollArrivalSkill(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt8 SkillSlotIndex,
+    UInt16 InventorySlotCount,
+    UInt16* InventorySlotIndex
+);
+
 Bool RTCharacterForceWingChangeArrivalSkill(
     RTRuntimeRef Runtime,
     RTCharacterRef Character

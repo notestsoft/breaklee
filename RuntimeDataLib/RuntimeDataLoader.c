@@ -132,6 +132,21 @@ CONCAT(RTData, __NAME__ ## Ref) CONCAT(RTRuntimeData, __NAME__ ## Get)( \
     return NULL; \
 }
 
+#define RUNTIME_DATA_TYPE_INDEX_SUFFIXED(__NAME__, __SUFFIX__, __TYPE__, __FIELD__) \
+CONCAT(RTData, __NAME__ ## Ref) CONCAT(RTRuntimeData ## __NAME__, Get ## __SUFFIX__)( \
+	RTRuntimeDataContextRef Context, \
+	__TYPE__ __FIELD__ \
+) { \
+    for (Int32 _Index = 0; _Index < Context->CONCAT(__NAME__, Count); _Index++) { \
+        CONCAT(RTData, __NAME__ ## Ref) Data = &Context->CONCAT(__NAME__, List)[_Index]; \
+        if (Data->__FIELD__ == __FIELD__) { \
+            return Data; \
+        } \
+    } \
+ \
+    return NULL; \
+}
+
 #define RUNTIME_DATA_TYPE_INDEX_CHILD(__PARENT__, __NAME__, __TYPE__, __FIELD__)        \
 CONCAT(RTData, __NAME__ ## Ref) CONCAT(RTRuntimeData, __NAME__ ## Get)(			        \
 	CONCAT(RTData, __PARENT__ ## Ref) Parent,										    \
