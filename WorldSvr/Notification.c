@@ -152,6 +152,13 @@ Void AppendCharacterToCharacterSpawnIndex(
         Slot->ItemOptions = ItemSlot->ItemOptions;
         Slot->ItemDuration = ItemSlot->ItemDuration.Serial;
     }
+
+    // TODO: This is a placeholder for costumes add them after adding the costume system
+    Spawn->CostumeSlotCount = 6;
+    for (Index Index = 0; Index < 6; Index += 1) {
+        S2C_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* Slot = PacketBufferAppendStruct(Arguments->PacketBuffer, S2C_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
+        Slot->EquipmentSlotIndex = Index;
+    }
 }
 
 Void ServerBroadcastCharacterListToClient(
