@@ -69,6 +69,38 @@ CLIENT_PROCEDURE_BINDING(CONVERT_ITEM) {
 	RTItemDataRef TargetItemData = RTRuntimeGetItemDataByIndex(Runtime, TargetItemSlot->Item.ID);
 	if (!TargetItemData) goto error;
 
+	if (SourceItemData->ItemType == RUNTIME_ITEM_TYPE_COATING_KIT) {
+		if (TargetItemData->ItemType != RUNTIME_ITEM_TYPE_VEHICLE_BIKE) goto error;
+
+		if (SourceItemData->ItemID == 636) {
+			RTDataUpgradeLimitRef UpgradeLimit = RTRuntimeDataUpgradeLimitGet(Runtime->Context, TargetItemData->ItemGrade);
+			if (!UpgradeLimit) goto error;
+			if (TargetItemSlot->Item.UpgradeLevel >= UpgradeLimit->MaxItemLevel) goto error;
+			if (!RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceItemSlot->SlotIndex)) goto error;
+
+			TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->TargetSlotIndex);
+			assert(TargetItemSlot);
+			TargetItemSlot->Item.UpgradeLevel += 1;
+		}
+		else {
+			if (!RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceItemSlot->SlotIndex)) goto error;
+
+			TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->TargetSlotIndex);
+			assert(TargetItemSlot);
+			TargetItemSlot->Item.VehicleColor = SourceItemData->CoatingKit.VehicleColor;
+		}
+
+		Character->SyncMask.InventoryInfo = true;
+		Character->SyncPriority.High = true;
+
+		S2C_DATA_CONVERT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CONVERT_ITEM);
+		Response->Result = 0;
+		Response->Item = TargetItemSlot->Item;
+		Response->ItemOptions = TargetItemSlot->ItemOptions;
+		Response->InventorySlotIndex = TargetItemSlot->SlotIndex;
+		return SocketSend(Socket, Connection, Response);
+	}
+
 	if (SourceItemData->ItemType == RUNTIME_ITEM_TYPE_SLOT_EXTENDER) {
 		struct _RTItemSlotExtenderPayload Payload;
 		Payload.TargetSlotIndex = Packet->TargetSlotIndex;

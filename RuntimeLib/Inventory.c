@@ -129,6 +129,8 @@ Bool RTInventorySetSlot(
 	return true;
 }
 
+// TODO: RTInventoryClearSlot is moving the memory and causes pointer corruptions on stack while referencing slots..
+//		 instead of moving the memory all inventory slots could just stay in their static locations to reduce complexity.
 Bool RTInventoryClearSlot(
 	RTRuntimeRef Runtime,
 	RTCharacterInventoryInfoRef Inventory,
