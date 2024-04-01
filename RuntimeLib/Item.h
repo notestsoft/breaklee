@@ -29,6 +29,14 @@ enum {
 	RUNTIME_ITEM_SUBTYPE_POTION_MP = 2,
 	RUNTIME_ITEM_SUBTYPE_POTION_SP = 3,
 	RUNTIME_ITEM_SUBTYPE_POTION_STAT = 4,
+	RUNTIME_ITEM_SUBTYPE_POTION_HONOR = 5,
+	
+	RUNTIME_ITEM_SUBTYPE_POTION_AUTO_HP = 8,
+
+	RUNTIME_ITEM_SUBTYPE_POTION_FULL_RECOVERY = 10,
+	RUNTIME_ITEM_SUBTYPE_POTION_STAT_RESET = 11,
+	RUNTIME_ITEM_SUBTYPE_POTION_RAGE = 12,
+	RUNTIME_ITEM_SUBTYPE_POTION_BP = 13,
 	// TODO: Add missing potion types
 };
 
@@ -155,8 +163,10 @@ struct _RTItemData {
 		struct {
 			Int32 PotionType;
 			Int32 Unknown1[3];
+			Int32 PotionValue;
 			Int32 Unknown2;
-			Int32 Unknown3[3];
+			Int32 PotionCooldown;
+			Int32 Unknown3;
 			Int32 StatType;
 		} Potion;
 

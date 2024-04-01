@@ -47,7 +47,7 @@ Void ServerSyncDB(
 				RTMovementUpdateDeadReckoning(Context->Runtime, &Character->Movement);
 				Character->Info.Position.X = Character->Movement.PositionCurrent.X;
 				Character->Info.Position.Y = Character->Movement.PositionCurrent.Y;
-                
+
                 PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->Info, sizeof(struct _RTCharacterInfo));
 			}
 

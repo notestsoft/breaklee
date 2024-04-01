@@ -50,7 +50,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 		return;
 	}
 
-    Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] -= RequiredMP;
+    RTCharacterAddMP(Runtime, Character, -RequiredMP, false);
     
 	if (SkillData->RageValue < 0) {
 		if (!RTCharacterConsumeRage(Runtime, Character, ABS(SkillData->RageValue))) goto error;

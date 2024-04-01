@@ -32,6 +32,11 @@ Void* _PacketBufferInit(
 #define PacketBufferInitExtended(PacketBuffer, __NAMESPACE__, __NAME__) \
 (__NAMESPACE__ ## _DATA_ ## __NAME__*)_PacketBufferInit(PacketBuffer, true, sizeof(__NAMESPACE__ ## _DATA_ ## __NAME__), __NAMESPACE__ ## _ ## __NAME__)
 
+Void* PacketBufferInitFromFile(
+    PacketBufferRef PacketBuffer,
+    CString FilePath
+);
+
 Void* PacketBufferAppend(
     PacketBufferRef PacketBuffer,
     Index Length

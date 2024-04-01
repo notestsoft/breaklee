@@ -61,6 +61,28 @@ Void* _PacketBufferInit(
     return Packet;
 }
 
+Void* PacketBufferInitFromFile(
+    PacketBufferRef PacketBuffer,
+    CString FilePath
+) {
+    MemoryBufferClear(PacketBuffer->MemoryBuffer);
+
+    FileRef File = FileOpen(FilePath);
+    if (!File) FatalError("Error reading file!");
+
+    UInt8* Buffer = NULL;
+    Int32 BufferLength = 0;
+    if (!FileRead(File, &Buffer, &BufferLength)) {
+        FileClose(File);
+        FatalError("Error reading file!");
+    }
+
+    Void* Packet = MemoryBufferAppendCopy(PacketBuffer->MemoryBuffer, Buffer, BufferLength);
+    free(Buffer);
+    FileClose(File);
+    return Packet;
+}
+
 Void* PacketBufferAppend(
     PacketBufferRef PacketBuffer,
     Index Length

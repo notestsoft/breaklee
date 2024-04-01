@@ -25,7 +25,7 @@ RTWorldChunkRef RTWorldContextGetChunk(
     UInt16 Y
 ) {
     Index ChunkIndex = RTCalculateWorldChunkIndex(X, Y);
-    assert(ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT* RUNTIME_WORLD_CHUNK_COUNT);
+    assert(ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT);
     return &WorldContext->Chunks[ChunkIndex];
 }
 /*

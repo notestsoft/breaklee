@@ -1,0 +1,14 @@
+<events>
+   <event id="1" type = "2" use_flags = "15" world_id = "1" npc_id = "49" description = "Event 1">
+       <event_description content = "Event 1" />
+       <event_shop>
+           <item slot_id = "0" item_id = "2665" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "1" item_id = "2666" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "2" item_id = "33554582" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "3" item_id = "33555267" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "4" item_id = "33556343" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "5" item_id = "33556478" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "6" item_id = "33556592" option = "0" duration_id = "0" price = "0"></item>
+       </event_shop>
+   </event>
+</events>

@@ -1,0 +1,86 @@
+<events>
+   <event id="1" type = "2" use_flags = "15" world_id = "1" npc_id = "49" description = "Event 1">
+       <event_description content = "Event 1" />
+       <event_shop>
+           <item slot_id = "0" item_id = "33556680" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "1" item_id = "33556681" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "2" item_id = "33556682" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "3" item_id = "33556683" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "4" item_id = "33556684" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "5" item_id = "33556778" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "6" item_id = "33556779" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "7" item_id = "33556780" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "8" item_id = "33556781" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "9" item_id = "33556782" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "10" item_id = "33556783" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "11" item_id = "33556784" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "12" item_id = "33556785" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "13" item_id = "33556786" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "14" item_id = "33556787" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "15" item_id = "33556788" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "16" item_id = "33556789" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "17" item_id = "33556790" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "18" item_id = "33556791" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "19" item_id = "33556792" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "20" item_id = "33556820" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "21" item_id = "33556850" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "22" item_id = "33556882" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "23" item_id = "33556883" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "24" item_id = "33556938" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "25" item_id = "33556939" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "26" item_id = "33556940" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "27" item_id = "33556941" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "28" item_id = "33556942" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "29" item_id = "33556943" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "30" item_id = "33556944" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "31" item_id = "33556945" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "32" item_id = "33556946" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "33" item_id = "33556947" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "34" item_id = "33556948" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "35" item_id = "33556949" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "36" item_id = "33556950" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "37" item_id = "33556951" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "38" item_id = "33556952" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "39" item_id = "33556953" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "40" item_id = "33556954" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "41" item_id = "33556955" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "42" item_id = "33556956" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "43" item_id = "33556957" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "44" item_id = "33556958" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "45" item_id = "33556959" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "46" item_id = "33556960" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "47" item_id = "33556961" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "48" item_id = "33556962" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "49" item_id = "33556963" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "50" item_id = "33556964" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "51" item_id = "33556965" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "52" item_id = "33556966" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "53" item_id = "33556967" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "54" item_id = "33556968" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "55" item_id = "33556969" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "56" item_id = "33556970" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "57" item_id = "33556971" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "58" item_id = "33556972" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "59" item_id = "33556973" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "60" item_id = "33556974" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "61" item_id = "33556975" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "62" item_id = "33556976" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "63" item_id = "33556977" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "64" item_id = "33556978" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "65" item_id = "33556979" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "66" item_id = "33556980" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "67" item_id = "33556981" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "68" item_id = "33556982" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "69" item_id = "33556983" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "70" item_id = "33556984" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "71" item_id = "33557401" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "72" item_id = "33557402" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "73" item_id = "33557403" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "74" item_id = "33557407" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "75" item_id = "33557408" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "76" item_id = "33557409" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "77" item_id = "33557411" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "78" item_id = "33558292" option = "0" duration_id = "0" price = "0"></item>
+       </event_shop>
+   </event>
+</events>

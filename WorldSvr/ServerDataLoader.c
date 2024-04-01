@@ -240,7 +240,7 @@ Bool ServerLoadCharacterTemplateData(
         RTBattleStyleLevelFormulaDataRef FormulaData = &Context->Runtime->BattleStyleLevelFormulaData[BattleStyleIndex - 1];
         FormulaData->BattleStyleIndex = BattleStyleIndex;
 
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "bdelta", &FormulaData->DeltaHP)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "bdelta", &FormulaData->DeltaHP2)) goto error;
 
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
     }
@@ -786,7 +786,6 @@ Bool ServerLoadItemData(
             ItemData->Width = ArchiveItemData->SlotSize.Width;
             ItemData->Height = ArchiveItemData->SlotSize.Height;
             ItemData->MaxStackSize = ArchiveItemData->MaxStackSize;
-
             Runtime->ItemDataCount += 1;
         }
 

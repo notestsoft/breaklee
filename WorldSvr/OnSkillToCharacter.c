@@ -42,7 +42,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		return;
 	}
 
-    Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] -= RequiredMP;
+    RTCharacterAddMP(Runtime, Character, -RequiredMP, false);
 
 	S2C_DATA_SKILL_TO_CHARACTER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SKILL_TO_CHARACTER);
 	Response->SkillIndex = Packet->SkillIndex;

@@ -6,7 +6,7 @@
 // TODO: Load from file soon..
 
 static const Int32 kRageLimit[] = {
-	0, 1, 1, 1, 1, 3, 3, 5, 5, 6, 7, 7, 8, 8, 9, 9, 10, 10, 10, 10
+	0, 1, 1, 1, 1, 3, 3, 5, 5, 6, 7, 7, 8, 8, 9, 9, 10, 10, 10, 10, 10, 10
 };
 
 Void RTCharacterInitialize(
@@ -72,13 +72,11 @@ Void RTCharacterInitializeAttributes(
 
 	RTBattleStyleLevelFormulaDataRef LevelFormula = RTRuntimeGetBattleStyleLevelFormulaData(Runtime, BattleStyleIndex);
 	
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX] = LevelFormula->BaseHP + LevelFormula->DeltaHP * (Character->Info.Basic.Level - 1) / 10;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX] = LevelFormula->BaseHP + (10 * LevelFormula->DeltaHP2 * (Character->Info.Basic.Level - 1) / 300);
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX] = LevelFormula->BaseMP + LevelFormula->DeltaMP * (Character->Info.Basic.Level - 1) / 10;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX] = 0;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX] = MIN(RUNTIME_CHARACTER_MAX_SP, (Character->Info.Style.BattleRank - 1) * RUNTIME_CHARACTER_SP_PER_BATTLE_RANK);
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_MAX] = 0;
-
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX] = 0;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] = 0;
 	if (BattleStyleIndex == RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_GL) {
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX] = MIN(
 			RUNTIME_CHARACTER_MAX_RAGE,
@@ -106,6 +104,11 @@ Void RTCharacterInitializeAttributes(
 		Character->Info.Resource.BP
 	);
 
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] = MIN(
+		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX],
+		Character->Info.Resource.Rage
+	);
+
 	// Battle Style Class Formula 
 
 	RTBattleStyleClassFormulaDataRef ClassFormula = RTRuntimeGetBattleStyleClassFormulaData(Runtime, BattleStyleIndex);
@@ -126,7 +129,7 @@ Void RTCharacterInitializeAttributes(
 	Int32 ClassFormulaIndexCount = sizeof(ClassFormulaIndices) / sizeof(ClassFormulaIndices[0]);
 	for (Int32 Index = 0; Index < ClassFormulaIndexCount; Index++) {
 		Character->Attributes.Values[ClassFormulaIndices[Index].AttributeIndex] += (
-			Character->Info.Style.BattleRank * ClassFormulaIndices[Index].Values[0] + ClassFormulaIndices[Index].Values[1]
+			(Int64)Character->Info.Style.BattleRank * ClassFormulaIndices[Index].Values[0] + ClassFormulaIndices[Index].Values[1]
 		);
 	}
 
@@ -701,7 +704,7 @@ Void RTCharacterAddExp(
 		return RTCharacterAddOverlordExp(Runtime, Character, Exp);
 	}
 
-	UInt8 CurrentLevel = Character->Info.Basic.Level;
+	Int32 CurrentLevel = Character->Info.Basic.Level;
 	
 	// TODO: Limit exp accumulation to the max reachable value from data!
 	Character->Info.Basic.Exp += Exp;
@@ -710,12 +713,11 @@ Void RTCharacterAddExp(
 	Character->SyncMask.Info = true;
 	Character->SyncPriority.Low = true;
 
-	// TODO: Check if LevelDiff is calculated correctly, large exp potions seam to break the reward of stat alloc
-	Bool LevelDiff = Character->Info.Basic.Level - CurrentLevel;
+	Int32 LevelDiff = Character->Info.Basic.Level - CurrentLevel;
     if (LevelDiff > 0) {
 		RTCharacterInitializeAttributes(Runtime, Character);
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX];
+        RTCharacterSetHP(Runtime, Character, Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX], false);
+        RTCharacterSetMP(Runtime, Character, Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX], false);
 		Character->Info.Stat[RUNTIME_CHARACTER_STAT_PNT] += LevelDiff * 5;
 
 		if (Character->Info.Overlord.Level < 1) {
@@ -882,54 +884,6 @@ Void RTCharacterAddAbilityExp(
 	Character->SyncPriority.Low = true;
 }
 
-Void RTCharacterAddRage(
-	RTRuntimeRef Runtime,
-	RTCharacterRef Character,
-	UInt32 Rage
-) {
-	Int32 NewValue = MIN(
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX],
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] + MAX(0, Rage)
-	);
-
-	if (Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] != NewValue) {
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] = NewValue;
-
-		RTRuntimeBroadcastCharacterData(
-			Runtime,
-			Character,
-			RUNTIME_EVENT_CHARACTER_DATA_TYPE_RAGE
-		);
-	}
-}
-
-Bool RTCharacterConsumeRage(
-	RTRuntimeRef Runtime,
-	RTCharacterRef Character,
-	UInt32 Rage
-) {
-	assert(Rage >= 0);
-
-	if (Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] < Rage) return false;
-
-	Int32 NewValue = MIN(
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX],
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] - Rage
-	);
-
-	if (Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] != NewValue) {
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] = NewValue;
-
-		RTRuntimeBroadcastCharacterData(
-			Runtime,
-			Character,
-			RUNTIME_EVENT_CHARACTER_DATA_TYPE_RAGE
-		);
-	}
-
-	return true;
-}
-
 Bool RTCharacterAddStats(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
@@ -949,6 +903,7 @@ Bool RTCharacterAddStats(
 	Character->SyncPriority.Low = true;
 
 	RTCharacterInitializeAttributes(Runtime, Character);
+
 	return true;
 }
 
@@ -975,19 +930,35 @@ Bool RTCharacterRemoveStat(
 	return true;
 }
 
-Void RTCharacterAddHP(
+Bool RTCharacterResetStats(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+	Int32 BattleStyleIndex = Character->Info.Style.BattleStyle | (Character->Info.Style.ExtendedBattleStyle << 3);
+	RTBattleStyleRankDataRef PreviousRankData = RTRuntimeGetBattleStyleRankData(Runtime, BattleStyleIndex, Character->Info.Style.BattleRank - 1);
+	if (!PreviousRankData) return false;
+
+	Int32 AccumulatedPoints = 0;
+	AccumulatedPoints += Character->Info.Stat[RUNTIME_CHARACTER_STAT_STR] - PreviousRankData->ConditionSTR;
+	AccumulatedPoints += Character->Info.Stat[RUNTIME_CHARACTER_STAT_DEX] - PreviousRankData->ConditionDEX;
+	AccumulatedPoints += Character->Info.Stat[RUNTIME_CHARACTER_STAT_INT] - PreviousRankData->ConditionINT;
+	Character->Info.Stat[RUNTIME_CHARACTER_STAT_STR] = PreviousRankData->ConditionSTR;
+	Character->Info.Stat[RUNTIME_CHARACTER_STAT_DEX] = PreviousRankData->ConditionDEX;
+	Character->Info.Stat[RUNTIME_CHARACTER_STAT_INT] = PreviousRankData->ConditionINT;
+	Character->Info.Stat[RUNTIME_CHARACTER_STAT_PNT] += AccumulatedPoints;
+
+	return true;
+}
+
+Void RTCharacterSetHP(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
-	Int32 HP,
+	Int32 NewValue,
 	Bool IsPotion
 ) {
-	Int32 NewValue = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] + HP;
-	NewValue = MAX(NewValue, 0);
-	NewValue = MIN(NewValue, Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX]);
-
 	if (NewValue != Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT]) {
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] = NewValue;
-		Character->Info.Resource.MP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+		Character->Info.Resource.HP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
 		Character->SyncMask.Info = true;
 		Character->SyncPriority.Low = true;
 
@@ -999,16 +970,25 @@ Void RTCharacterAddHP(
 	}
 }
 
-Void RTCharacterAddMP(
+Void RTCharacterAddHP(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
-	Int32 MP,
+	Int32 HP,
 	Bool IsPotion
 ) {
-	Int32 NewValue = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] + MP;
+	Int64 NewValue = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+	NewValue += HP;
 	NewValue = MAX(NewValue, 0);
-	NewValue = MIN(NewValue, Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX]);
+	NewValue = MIN(NewValue, Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX]);
+	RTCharacterSetHP(Runtime, Character, NewValue, IsPotion);
+}
 
+Void RTCharacterSetMP(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 NewValue,
+	Bool IsPotion
+) {
 	if (NewValue != Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT]) {
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] = NewValue;
 		Character->Info.Resource.MP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
@@ -1023,18 +1003,27 @@ Void RTCharacterAddMP(
 	}
 }
 
-Void RTCharacterAddSP(
+Void RTCharacterAddMP(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
-	Int32 SP
+	Int32 MP,
+	Bool IsPotion
 ) {
-	Int32 NewValue = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT] + SP;
+	Int64 NewValue = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+	NewValue += MP;
 	NewValue = MAX(NewValue, 0);
-	NewValue = MIN(NewValue, Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX]);
+	NewValue = MIN(NewValue, Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX]);
+	RTCharacterSetMP(Runtime, Character, NewValue, IsPotion);
+}
 
+Void RTCharacterSetSP(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 NewValue
+) {
 	if (NewValue != Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT]) {
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT] = NewValue;
-		Character->Info.Resource.MP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+		Character->Info.Resource.SP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
 		Character->SyncMask.Info = true;
 		Character->SyncPriority.Low = true;
 
@@ -1044,6 +1033,103 @@ Void RTCharacterAddSP(
 			RUNTIME_EVENT_CHARACTER_DATA_TYPE_SP
 		);
 	}
+}
+
+Void RTCharacterAddSP(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 SP
+) {
+	Int64 NewValue = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+	NewValue += SP;
+	NewValue = MAX(NewValue, 0);
+	NewValue = MIN(NewValue, Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX]);
+	RTCharacterSetSP(Runtime, Character, NewValue);
+}
+
+Void RTCharacterSetBP(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 NewValue
+) {
+	if (NewValue != Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT]) {
+		Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT] = NewValue;
+		Character->Info.Resource.BP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT];
+		Character->SyncMask.Info = true;
+		Character->SyncPriority.Low = true;
+
+		RTRuntimeBroadcastCharacterData(
+			Runtime,
+			Character,
+			RUNTIME_EVENT_CHARACTER_DATA_TYPE_BP
+		);
+	}
+}
+
+Void RTCharacterAddBP(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 BP
+) {
+	Int64 NewValue = Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT];
+	NewValue += BP;
+	NewValue = MAX(NewValue, 0);
+	NewValue = MIN(NewValue, Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_MAX]);
+	RTCharacterSetBP(Runtime, Character, NewValue);
+}
+
+Void RTCharacterAddRage(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	UInt32 Rage
+) {
+	Int32 NewValue = MIN(
+		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX],
+		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] + MAX(0, Rage)
+	);
+
+	if (NewValue != Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]) {
+		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] = NewValue;
+		Character->Info.Resource.Rage = Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT];
+		Character->SyncMask.Info = true;
+		Character->SyncPriority.Low = true;
+
+		RTRuntimeBroadcastCharacterData(
+			Runtime,
+			Character,
+			RUNTIME_EVENT_CHARACTER_DATA_TYPE_RAGE
+		);
+	}
+}
+
+Bool RTCharacterConsumeRage(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	UInt32 Rage
+) {
+	assert(Rage >= 0);
+
+	if (Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] < Rage) return false;
+
+	Int32 NewValue = MIN(
+		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX],
+		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] - Rage
+	);
+
+	if (NewValue != Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]) {
+        Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] = NewValue;
+		Character->Info.Resource.Rage = Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT];
+		Character->SyncMask.Info = true;
+		Character->SyncPriority.Low = true;
+
+		RTRuntimeBroadcastCharacterData(
+			Runtime,
+			Character,
+			RUNTIME_EVENT_CHARACTER_DATA_TYPE_RAGE
+		);
+	}
+
+	return true;
 }
 
 Void RTCharacterApplyDamage(

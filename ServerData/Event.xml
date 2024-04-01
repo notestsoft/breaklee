@@ -1,5 +1,5 @@
 <events>
-    <event id="1" type="2" use_flags="15" world_id="1" npc_id="49" description="Basics">
+    <event id="1822" type="2" use_flags="11" world_id="1" npc_id="49" description="Basics">
         <event_description content="Basics" />
         
         <event_shop>
@@ -15,8 +15,19 @@
             <item slot_id="11" item_id="33557013" option="999" duration_id="0" price="0"></item>
             <item slot_id="12" item_id="33557014" option="999" duration_id="0" price="0"></item>
             
-            <item slot_id="16" item_id="440" option="1" duration_id="0" price="0"></item>   
+            <item slot_id="16" item_id="1561" option="4208880" duration_id="0" price="0"></item>
+            <item slot_id="17" item_id="1300" option="4208880" duration_id="0" price="0"></item>
+            <item slot_id="18" item_id="1502" option="4208880" duration_id="0" price="0"></item>
+            <item slot_id="19" item_id="2878" option="4208880" duration_id="0" price="0"></item>
+            <item slot_id="20" item_id="33555099" option="4208880" duration_id="0" price="0"></item>
+            <item slot_id="21" item_id="33555565" option="4208880" duration_id="0" price="0"></item>
+            <item slot_id="22" item_id="33557607" option="4208880" duration_id="0" price="0"></item>
+            <item slot_id="23" item_id="33557331" option="4208880" duration_id="0" price="0"></item>
+            <item slot_id="24" item_id="33557993" option="4208880" duration_id="0" price="0"></item>
+            
         </event_shop>
+        
+        <event_item item_id="1561" option="4208880" external_id="-1" texture_item_id="33556964" title="Event Item" description="Event Item Description_"></event_item>
     </event>
 
     <event id="2" type="2" use_flags="15" world_id="1" npc_id="49" description="Equipment">
@@ -25,7 +36,11 @@
         <event_shop>
             <item slot_id="0" item_id="3103" option="999" duration_id="0" price="0"></item>
             <item slot_id="1" item_id="3103" option="999" duration_id="0" price="0"></item>
+            
+            <item slot_id="16" item_id="1562" option="4208880" duration_id="0" price="0"></item>
         </event_shop>
+
+        <event_item item_id="1562" option="4208880" external_id="-1" texture_item_id="33556964" title="Event Item" description="Event Item Description_"></event_item>
     </event_info>
 
     <event id="3" type="2" use_flags="15" world_id="1" npc_id="49" description="Essence Ability">

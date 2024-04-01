@@ -25,6 +25,8 @@ Void RTCharacterAddOverlordExp(
 			Character->SyncMask.Info = true;
 			Character->SyncPriority.Low = true;
 
+			RTCharacterInitializeAttributes(Runtime, Character);
+
 			RTRuntimeBroadcastEvent(
 				Runtime,
 				RUNTIME_EVENT_CHARACTER_OVERLORD_LEVEL_UP,
@@ -39,8 +41,6 @@ Void RTCharacterAddOverlordExp(
 			break;
 		}
 	}
-
-	RTCharacterInitializeAttributes(Runtime, Character);
 }
 
 RTOverlordMasterySlotRef RTCharacterGetOverlordMasterySlot(

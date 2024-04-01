@@ -27,6 +27,30 @@ Void RTMobInit(
 	Mob->ActiveSkill = &Mob->SpeciesData->DefaultSkill;
 }
 
+Void RTMobInitFromSpeciesData(
+	RTRuntimeRef Runtime,
+	RTMobRef Mob,
+	RTMobSpeciesDataRef MobSpeciesData
+) {
+	assert(Mob && MobSpeciesData);
+
+	Mob->SpeciesData = MobSpeciesData;
+	Mob->Attributes.Seed = (Int32)PlatformGetTickCount();
+	Mob->Attributes.AttackTimeout = 0;
+	memset(Mob->Attributes.Values, 0, sizeof(Mob->Attributes.Values));
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED] = Mob->SpeciesData->MoveSpeed;
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX] = Mob->SpeciesData->HP;
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] = Mob->SpeciesData->HP;
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_ATTACK_RATE] = Mob->SpeciesData->AttackRate;
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_DEFENSE] = Mob->SpeciesData->Defense;
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_DEFENSE_RATE] = Mob->SpeciesData->DefenseRate;
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_EXP] = (Int32)Mob->SpeciesData->Exp;
+	Mob->HPTriggerThreshold = (Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX] * 300) / 1000;
+	Mob->SpecialAttack = NULL;
+	Mob->SpecialAttackSkill = NULL;
+	Mob->ActiveSkill = &Mob->SpeciesData->DefaultSkill;
+}
+
 Bool RTMobCanMove(RTMobRef Mob) {
 	return Mob->SpeciesData->CanMove;
 }

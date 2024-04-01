@@ -1,0 +1,26 @@
+<events>
+   <event id="1" type = "2" use_flags = "15" world_id = "1" npc_id = "49" description = "Event 1">
+       <event_description content = "Event 1" />
+       <event_shop>
+           <item slot_id = "0" item_id = "33555079" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "1" item_id = "33555080" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "2" item_id = "33555081" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "3" item_id = "33555082" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "4" item_id = "33555083" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "5" item_id = "33555084" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "6" item_id = "33555085" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "7" item_id = "33555086" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "8" item_id = "33555087" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "9" item_id = "33555088" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "10" item_id = "33555089" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "11" item_id = "33555090" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "12" item_id = "33555091" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "13" item_id = "33555092" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "14" item_id = "33555093" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "15" item_id = "33555094" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "16" item_id = "33555095" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "17" item_id = "33555096" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "18" item_id = "33555097" option = "0" duration_id = "0" price = "0"></item>
+       </event_shop>
+   </event>
+</events>

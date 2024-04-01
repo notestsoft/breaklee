@@ -127,41 +127,65 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStub) {
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemPotion) {
-	/* TODO: Send notification event in character!
-	S2C_DATA_CHARACTER_UPDATE* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, CHARACTER_UPDATE);
-
-	switch (ItemData->Options[0]) {
-	case RUNTIME_ITEM_POTION_TYPE_HP:
-		RTCharacterAddHP(Runtime, Character, ItemData->Options[4], true);
-		Notification->Type = S2C_DATA_CHARACTER_UPDATE_TYPE_HPPOTION;
-		Notification->HP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-		break;
-
-	case RUNTIME_ITEM_POTION_TYPE_MP:
-		RTCharacterAddMP(Runtime, Character, ItemData->Options[4]);
-		Notification->Type = S2C_DATA_CHARACTER_UPDATE_TYPE_MPPOTION;
-		Notification->MP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
-		break;
-
-	case RUNTIME_ITEM_POTION_TYPE_SP:
-		break;
-
-	default:
-		goto error;
-	}
-	*/
-
 	switch (ItemData->Potion.PotionType) {
 		case RUNTIME_ITEM_SUBTYPE_POTION_HP:
-			RTCharacterAddHP(Runtime, Character, ItemData->Options[4], true);
+		case RUNTIME_ITEM_SUBTYPE_POTION_AUTO_HP:
+			RTCharacterAddHP(Runtime, Character, ItemData->Potion.PotionValue, true);
 			break;
 
 		case RUNTIME_ITEM_SUBTYPE_POTION_MP:
-			RTCharacterAddMP(Runtime, Character, ItemData->Options[4], true);
+			RTCharacterAddMP(Runtime, Character, ItemData->Potion.PotionValue, true);
 			break;
 
 		case RUNTIME_ITEM_SUBTYPE_POTION_SP:
-			RTCharacterAddSP(Runtime, Character, ItemData->Options[4]);
+			RTCharacterAddSP(Runtime, Character, ItemData->Potion.PotionValue);
+			break;
+
+		case RUNTIME_ITEM_SUBTYPE_POTION_STAT: {
+			Int32 StatIndex = 0;
+			switch (ItemData->Potion.StatType) {
+			case RUNTIME_ITEM_POTION_STAT_TYPE_STR:
+				StatIndex = RUNTIME_CHARACTER_STAT_STR;
+				break;
+
+			case RUNTIME_ITEM_POTION_STAT_TYPE_DEX:
+				StatIndex = RUNTIME_CHARACTER_STAT_DEX;
+				break;
+
+			case RUNTIME_ITEM_POTION_STAT_TYPE_INT:
+				StatIndex = RUNTIME_CHARACTER_STAT_INT;
+				break;
+
+			default:
+				return false;
+			}
+
+			if (!RTCharacterRemoveStat(Runtime, Character, StatIndex, ItemData->Potion.PotionValue)) {
+				return false;
+			}
+
+			break;
+		}
+
+		case RUNTIME_ITEM_SUBTYPE_POTION_HONOR:
+			RTCharacterAddHonorPoint(Runtime, Character, ItemData->Potion.PotionValue);
+			break;
+
+		case RUNTIME_ITEM_SUBTYPE_POTION_FULL_RECOVERY:
+			RTCharacterAddHP(Runtime, Character, INT32_MAX, true);
+			RTCharacterAddMP(Runtime, Character, INT32_MAX, true);
+			break;
+
+		case RUNTIME_ITEM_SUBTYPE_POTION_STAT_RESET:
+			if (!RTCharacterResetStats(Runtime, Character)) return false;
+			break;
+
+		case RUNTIME_ITEM_SUBTYPE_POTION_RAGE:
+			RTCharacterAddRage(Runtime, Character, ItemData->Potion.PotionValue);
+			break;
+
+		case RUNTIME_ITEM_SUBTYPE_POTION_BP:
+			RTCharacterAddBP(Runtime, Character, ItemData->Potion.PotionValue);
 			break;
 
 		default:

@@ -455,7 +455,11 @@ Void ServerRuntimeOnEvent(
             }
 
             if (Notification->Type == S2C_DATA_CHARACTER_UPDATE_TYPE_SP) {
-                Notification->MP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+                Notification->SP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+            }
+
+            if (Notification->Type == S2C_DATA_CHARACTER_UPDATE_TYPE_BP) {
+                Notification->BP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT];
             }
 
             if (Notification->Type == S2C_DATA_CHARACTER_UPDATE_TYPE_RAGE) {

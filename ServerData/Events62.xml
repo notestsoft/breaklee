@@ -1,0 +1,21 @@
+<events>
+   <event id="1" type = "2" use_flags = "15" world_id = "1" npc_id = "49" description = "Event 1">
+       <event_description content = "Event 1" />
+       <event_shop>
+           <item slot_id = "0" item_id = "1465" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "1" item_id = "1480" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "2" item_id = "1481" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "3" item_id = "1482" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "4" item_id = "1483" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "5" item_id = "1484" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "6" item_id = "1485" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "7" item_id = "1486" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "8" item_id = "1487" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "9" item_id = "1488" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "10" item_id = "1489" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "11" item_id = "33556060" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "12" item_id = "33556061" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "13" item_id = "33556062" option = "0" duration_id = "0" price = "0"></item>
+       </event_shop>
+   </event>
+</events>

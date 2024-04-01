@@ -30,24 +30,40 @@ Void SendEventInfo(
     S2C_DATA_NFY_EVENT_INFO_HEADER* EventInfoHeader = PacketBufferAppendStruct(Client->Connection->PacketBuffer, S2C_DATA_NFY_EVENT_INFO_HEADER);
     EventInfoHeader->EventCount = Context->Runtime->Context->EventCount;
 
-    for (Int32 Index = 0; Index < Context->Runtime->Context->EventCount; Index += 1) {
-        RTDataEventRef EventData = &Context->Runtime->Context->EventList[Index];
+    for (Int32 EventIndex = 0; EventIndex < Context->Runtime->Context->EventCount; EventIndex += 1) {
+        RTDataEventRef EventData = &Context->Runtime->Context->EventList[EventIndex];
 
         S2C_DATA_NFY_EVENT_INFO_EVENT* EventInfoEvent = PacketBufferAppendStruct(Client->Connection->PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT);
         EventInfoEvent->EventIndex = EventData->ID;
         EventInfoEvent->EventType = EventData->Type;
         EventInfoEvent->EventFlags = EventData->UseFlags;
-        EventInfoEvent->EventStartTimestamp = GetTimestamp();
-        EventInfoEvent->EventEndTimestamp = GetTimestamp() + 100000;
-        EventInfoEvent->EventUpdateTimestamp = GetTimestamp();
+        EventInfoEvent->EventStartTimestamp = GetTimestamp() - 1000000;
+        EventInfoEvent->EventEndTimestamp = GetTimestamp() + 1000000;
+        EventInfoEvent->EventUpdateTimestamp = 0;
         EventInfoEvent->WorldIndex = EventData->WorldIndex;
         EventInfoEvent->NpcIndex = EventData->NpcIndex;
         PacketBufferAppendCString(Client->Connection->PacketBuffer, EventData->Description);
 
         S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO* EventItemInfo = PacketBufferAppendStruct(Client->Connection->PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO);
+        EventItemInfo->ItemCount = EventData->EventItemCount;
+
+        for (Index ItemIndex = 0; ItemIndex < EventData->EventItemCount; ItemIndex += 1) {
+            RTDataEventItemRef EventItem = &EventData->EventItemList[ItemIndex];
+
+            S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO_DATA* EventItemData = PacketBufferAppendStruct(Client->Connection->PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO_DATA);
+            EventItemData->ItemID.ID = EventItem->ItemID;
+            EventItemData->ItemOptions = EventItem->ItemOptions;
+            EventItemData->ExternalID = EventItem->ExternalID;
+            EventItemData->TextureItemID = EventItem->TextureItemID;
+            PacketBufferAppendCString(Client->Connection->PacketBuffer, EventItem->Title);
+            PacketBufferAppendCString(Client->Connection->PacketBuffer, EventItem->Description);
+        }
+
+        EventItemInfo = PacketBufferAppendStruct(Client->Connection->PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO);
         EventItemInfo->ItemCount = 0;
 
-        PacketBufferAppendValue(Client->Connection->PacketBuffer, UInt32, 0);
+        EventItemInfo = PacketBufferAppendStruct(Client->Connection->PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO);
+        EventItemInfo->ItemCount = 0;
     }
 
     SocketSend(Context->ClientSocket, Client->Connection, EventInfo);
@@ -404,14 +420,12 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
         Response->Position.Y = Character->Info.Position.Y;
     }
 
-    Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX] = 25000;
-    Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT] = 25000;
-
     // TODO: Check if max hp or base hp is requested here...
     Response->BaseHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
     Response->MaxMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX];
     Response->MaxSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX];
     Response->MaxBP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_MAX];
+    Response->MaxRage = Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX];
 
     Response->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
     Response->CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
@@ -439,11 +453,37 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
         */
     SocketSend(Context->ClientSocket, ClientConnection, Response);
 
+    if (!RTCharacterIsAlive(Runtime, Character)) {
+        RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, World->WorldData->DeadWarpIndex);
+        RTWorldContextRef TargetWorld = World;
+        if (World->WorldData->WorldIndex != WarpPoint.WorldIndex) {
+            TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpPoint.WorldIndex);
+            assert(TargetWorld);
+        }
+        
+        Character->Info.Resource.HP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
+        Character->Info.Resource.MP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX];
+        Character->Info.Position.X = WarpPoint.X;
+        Character->Info.Position.Y = WarpPoint.Y;
+        Character->Info.Position.WorldID = WarpPoint.WorldIndex;
+        Character->Info.Position.DungeonIndex = TargetWorld->DungeonIndex;
+        RTCharacterInitializeAttributes(Runtime, Character);
+
+        RTMovementInitialize(
+            Runtime,
+            &Character->Movement,
+            WarpPoint.X,
+            WarpPoint.Y,
+            RUNTIME_MOVEMENT_SPEED_BASE,
+            RUNTIME_WORLD_TILE_WALL
+        );
+    }
+
     RTWorldSpawnCharacter(Runtime, World, Character->ID);
 
     // TODO: Move event data to database and trigger request on init
-    SendEventList(Context, Client);
     SendEventInfo(Context, Client);
+    SendEventList(Context, Client);
 
     return;
 

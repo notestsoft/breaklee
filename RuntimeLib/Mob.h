@@ -203,6 +203,12 @@ Void RTMobInit(
 	RTMobRef Mob
 );
 
+Void RTMobInitFromSpeciesData(
+	RTRuntimeRef Runtime,
+	RTMobRef Mob,
+	RTMobSpeciesDataRef MobSpeciesData
+);
+
 Void RTMobApplyDamage(
 	RTRuntimeRef Runtime,
 	RTWorldContextRef World,

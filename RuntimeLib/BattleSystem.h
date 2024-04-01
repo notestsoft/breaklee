@@ -94,6 +94,7 @@ struct _RTBattleStyleLevelFormulaData {
 	Int32 BattleStyleIndex;
 	Int32 BaseHP;
 	Int32 DeltaHP;
+	Int32 DeltaHP2;
 	Int32 BaseMP;
 	Int32 DeltaMP;
 };

@@ -193,6 +193,7 @@ struct _RTCharacterResource {
     Int32 SP;
     Int32 BP;
     Int32 DP;
+    Int32 Rage;
 };
 
 struct _RTCharacterSkill {
@@ -444,10 +445,29 @@ Bool RTCharacterRemoveStat(
     Int32 Amount
 );
 
+Bool RTCharacterResetStats(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Void RTCharacterSetHP(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 NewValue,
+    Bool IsPotion
+);
+
 Void RTCharacterAddHP(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     Int32 HP,
+    Bool IsPotion
+);
+
+Void RTCharacterSetMP(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 NewValue,
     Bool IsPotion
 );
 
@@ -458,10 +478,28 @@ Void RTCharacterAddMP(
     Bool IsPotion
 );
 
+Void RTCharacterSetSP(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 NewValue
+);
+
 Void RTCharacterAddSP(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     Int32 SP
+);
+
+Void RTCharacterSetBP(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 NewValue
+);
+
+Void RTCharacterAddBP(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 BP
 );
 
 Void RTCharacterApplyDamage(
