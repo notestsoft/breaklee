@@ -9,6 +9,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG=1")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /ZI /Od")
+set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /ZI")
 
 if(WIN32)
 	if(CMAKE_CL_64)
@@ -17,9 +19,11 @@ if(WIN32)
 		set(PLATFORM_LIBRARY_DIR ${PROJECT_SOURCE_DIR}/Libraries/Win32)
 	endif()
 
+    set(LUA_INCLUDE_DIR ${PLATFORM_LIBRARY_DIR}/Lua/include)
 	set(MARIADB_INCLUDE_DIR ${PLATFORM_LIBRARY_DIR}/MariaDB/include)
 	set(OPENSSL_INCLUDE_DIR ${PLATFORM_LIBRARY_DIR}/OpenSSL/include)
 	set(ZLIB_INCLUDE_DIR ${PLATFORM_LIBRARY_DIR}/Zlib/include)
+    set(LUA_LIBRARY lua54)
 	set(MARIADB_LIBRARY libmariadb)
 	set(ZLIB_LIBRARY zlib)
 	set(OPENSSL_CRYPTO_LIBRARY libcrypto_static)
@@ -28,6 +32,7 @@ if(WIN32)
 	add_definitions(-DUSE_MYSQL_INCLUDE)
 
 	link_directories(
+        ${PLATFORM_LIBRARY_DIR}/Lua
 		${PLATFORM_LIBRARY_DIR}/MariaDB/lib
 		${PLATFORM_LIBRARY_DIR}/OpenSSL/lib
 		${PLATFORM_LIBRARY_DIR}/Zlib/lib
@@ -39,6 +44,7 @@ if(WIN32)
 
 	file(COPY ${RUNTIME_LIBRARIES} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/)
 else()
+    find_package(Lua54 REQUIRED) 
 	find_package(ZLIB REQUIRED)
 	find_package(OpenSSL REQUIRED)
 
@@ -108,7 +114,7 @@ target_include_directories(CoreLib PUBLIC ${MARIADB_INCLUDE_DIR} ${OPENSSL_INCLU
 target_include_directories(MasterSvr PUBLIC ${PROJECT_SOURCE_DIR} ${SHARED_HEADERS_DIR})
 target_include_directories(NetLib PUBLIC ${PROJECT_SOURCE_DIR})
 target_include_directories(RuntimeDataLib PUBLIC ${PROJECT_SOURCE_DIR})
-target_include_directories(RuntimeLib PUBLIC ${PROJECT_SOURCE_DIR})
+target_include_directories(RuntimeLib PUBLIC ${PROJECT_SOURCE_DIR} ${LUA_INCLUDE_DIR})
 target_include_directories(WorldSvr PUBLIC ${PROJECT_SOURCE_DIR} ${SHARED_HEADERS_DIR})
 
 target_link_libraries(AuthSvr NetLib CoreLib)
@@ -122,10 +128,10 @@ endif()
 
 target_link_libraries(MasterSvr NetLib CoreLib RuntimeLib RuntimeDataLib)
 target_link_libraries(RuntimeDataLib CoreLib)
-target_link_libraries(RuntimeLib PRIVATE CoreLib RuntimeDataLib)
+target_link_libraries(RuntimeLib CoreLib RuntimeDataLib ${LUA_LIBRARY})
 
 if(NOT WIN32)
-	target_link_libraries(RuntimeLib PRIVATE m)
+	target_link_libraries(RuntimeLib m)
 endif()
 
 target_link_libraries(WorldSvr NetLib CoreLib RuntimeLib RuntimeDataLib)
