@@ -27,6 +27,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 	RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillSlot->ID);
 	assert(SkillData);
 
+	// TODO: Add SkillData validations
 	// TODO: Add skill cast time and cooldown checks
 
 	Int32 RequiredMP = RTCharacterCalculateRequiredMP(
@@ -157,7 +158,14 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 		C2S_DATA_SKILL_GROUP_BATTLE_MODE* PacketData = (C2S_DATA_SKILL_GROUP_BATTLE_MODE*)&Packet->Data[0];
 
-		// TODO: Activate, deactivate battle mode
+		// TODO: Activate, deactivate battle mode, do runtime validations
+
+		if (PacketData->IsActivation) {
+			Character->Info.ExtendedStyle.BattleModeFlags |= (1 << (SkillData->Intensity - 1));
+		}
+		else {
+			Character->Info.ExtendedStyle.BattleModeFlags &= ~(1 << (SkillData->Intensity - 1));
+		}
 
 		S2C_DATA_SKILL_GROUP_BATTLE_MODE* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_BATTLE_MODE);
 		ResponseData->CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
@@ -170,8 +178,8 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		S2C_DATA_NFY_SKILL_GROUP_BATTLE_MODE* NotificationData = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_SKILL_GROUP_BATTLE_MODE);
 		NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
 		NotificationData->CharacterStyle = SwapUInt32(Character->Info.Style.RawValue);
-		NotificationData->CharacterLiveStyle = SwapUInt32(0); // TODO: Add character livestyle
-		NotificationData->StyleExtension = 0; // TODO: Check what StyleExtension is good for
+		NotificationData->CharacterLiveStyle = SwapUInt32(Character->Info.LiveStyle.RawValue);
+		NotificationData->CharacterExtendedStyle = Character->Info.ExtendedStyle.RawValue;
 		NotificationData->IsActivation = PacketData->IsActivation;
 
 		return BroadcastToWorld(

@@ -174,7 +174,7 @@ RTEntityID RTMobGetMaxAggroTarget(
 		if (!Character || 
 			Character->Info.Position.WorldID != WorldContext->WorldData->WorldIndex ||
 			!RTCharacterIsAlive(Runtime, Character) ||
-			Distance > Mob->SpeciesData->AlertRange + Mob->SpeciesData->AdditionalAlertRange) {
+			Distance > Mob->SpeciesData->AlertRange) {
 			Int32 TailLength = Mob->Aggro.Count - Index - 1;
 			if (TailLength > 0) {
 				memmove(&Mob->Aggro.Entities[Index], &Mob->Aggro.Entities[Index + 1], sizeof(RTEntityID));
@@ -473,7 +473,7 @@ Void RTMobUpdate(
 		Int32 Distance = RTMovementDistance(&Mob->Movement, &Character->Movement);
 		RTMobUpdateActiveSkill(Runtime, WorldContext, Mob, Distance);
 
-		if (Distance <= Mob->ActiveSkill->Distance) {
+		if (Distance <= Mob->ActiveSkill->Range) {
 			RTMobAttackTarget(Runtime, WorldContext, Mob, Character);
 			return;
 		}
@@ -485,7 +485,7 @@ Void RTMobUpdate(
 				Mob->Spawn.AreaY + Mob->Spawn.AreaHeight / 2
 			);
 
-			if (SpawnDistance < Mob->SpeciesData->LimitRangeA && SpawnDistance < Mob->SpeciesData->LimitRangeB) {
+			if (SpawnDistance < Mob->SpeciesData->ChaseRange && SpawnDistance < Mob->SpeciesData->LimitRangeB) {
 				TargetPositionX = Character->Movement.PositionCurrent.X;
 				TargetPositionY = Character->Movement.PositionCurrent.Y;
 			}

@@ -1,0 +1,234 @@
+<constants>
+    <sp_limit>
+        <mastery_level level="1" value="0" />
+        <mastery_level level="2" value="5000" />
+        <mastery_level level="3" value="10000" />
+        <mastery_level level="4" value="15000" />
+        <mastery_level level="5" value="20000" />
+        <mastery_level level="6" value="25000" />
+        <mastery_level level="7" value="25000" />
+        <mastery_level level="8" value="25000" />
+        <mastery_level level="9" value="25000" />
+        <mastery_level level="10" value="25000" />
+        <mastery_level level="11" value="25000" />
+        <mastery_level level="12" value="25000" />
+        <mastery_level level="13" value="25000" />
+        <mastery_level level="14" value="25000" />
+        <mastery_level level="15" value="25000" />
+        <mastery_level level="16" value="25000" />
+        <mastery_level level="17" value="25000" />
+        <mastery_level level="18" value="25000" />
+        <mastery_level level="19" value="30000" />
+        <mastery_level level="20" value="35000" />
+        <mastery_level level="21" value="35000" />
+    </sp_limit>
+    <rage_limit>
+        <mastery_style style="1">
+            <mastery_level level="1" value="0" />
+            <mastery_level level="2" value="0" />
+            <mastery_level level="3" value="0" />
+            <mastery_level level="4" value="0" />
+            <mastery_level level="5" value="0" />
+            <mastery_level level="6" value="0" />
+            <mastery_level level="7" value="0" />
+            <mastery_level level="8" value="0" />
+            <mastery_level level="9" value="0" />
+            <mastery_level level="10" value="0" />
+            <mastery_level level="11" value="0" />
+            <mastery_level level="12" value="0" />
+            <mastery_level level="13" value="0" />
+            <mastery_level level="14" value="0" />
+            <mastery_level level="15" value="0" />
+            <mastery_level level="16" value="0" />
+            <mastery_level level="17" value="0" />
+            <mastery_level level="18" value="0" />
+            <mastery_level level="19" value="0" />
+            <mastery_level level="20" value="0" />
+            <mastery_level level="21" value="0" />
+        </mastery_style>
+        <mastery_style style="2">
+            <mastery_level level="1" value="0" />
+            <mastery_level level="2" value="0" />
+            <mastery_level level="3" value="0" />
+            <mastery_level level="4" value="0" />
+            <mastery_level level="5" value="0" />
+            <mastery_level level="6" value="0" />
+            <mastery_level level="7" value="0" />
+            <mastery_level level="8" value="0" />
+            <mastery_level level="9" value="0" />
+            <mastery_level level="10" value="0" />
+            <mastery_level level="11" value="0" />
+            <mastery_level level="12" value="0" />
+            <mastery_level level="13" value="0" />
+            <mastery_level level="14" value="0" />
+            <mastery_level level="15" value="0" />
+            <mastery_level level="16" value="0" />
+            <mastery_level level="17" value="0" />
+            <mastery_level level="18" value="0" />
+            <mastery_level level="19" value="0" />
+            <mastery_level level="20" value="0" />
+            <mastery_level level="21" value="0" />
+        </mastery_style>
+        <mastery_style style="3">
+            <mastery_level level="1" value="0" />
+            <mastery_level level="2" value="0" />
+            <mastery_level level="3" value="0" />
+            <mastery_level level="4" value="0" />
+            <mastery_level level="5" value="0" />
+            <mastery_level level="6" value="0" />
+            <mastery_level level="7" value="0" />
+            <mastery_level level="8" value="0" />
+            <mastery_level level="9" value="0" />
+            <mastery_level level="10" value="0" />
+            <mastery_level level="11" value="0" />
+            <mastery_level level="12" value="0" />
+            <mastery_level level="13" value="0" />
+            <mastery_level level="14" value="0" />
+            <mastery_level level="15" value="0" />
+            <mastery_level level="16" value="0" />
+            <mastery_level level="17" value="0" />
+            <mastery_level level="18" value="0" />
+            <mastery_level level="19" value="0" />
+            <mastery_level level="20" value="0" />
+            <mastery_level level="21" value="0" />
+        </mastery_style>
+        <mastery_style style="4">
+            <mastery_level level="1" value="0" />
+            <mastery_level level="2" value="0" />
+            <mastery_level level="3" value="0" />
+            <mastery_level level="4" value="0" />
+            <mastery_level level="5" value="0" />
+            <mastery_level level="6" value="0" />
+            <mastery_level level="7" value="0" />
+            <mastery_level level="8" value="0" />
+            <mastery_level level="9" value="0" />
+            <mastery_level level="10" value="0" />
+            <mastery_level level="11" value="0" />
+            <mastery_level level="12" value="0" />
+            <mastery_level level="13" value="0" />
+            <mastery_level level="14" value="0" />
+            <mastery_level level="15" value="0" />
+            <mastery_level level="16" value="0" />
+            <mastery_level level="17" value="0" />
+            <mastery_level level="18" value="0" />
+            <mastery_level level="19" value="0" />
+            <mastery_level level="20" value="0" />
+            <mastery_level level="21" value="0" />
+        </mastery_style>
+        <mastery_style style="5">
+            <mastery_level level="1" value="0" />
+            <mastery_level level="2" value="0" />
+            <mastery_level level="3" value="0" />
+            <mastery_level level="4" value="0" />
+            <mastery_level level="5" value="0" />
+            <mastery_level level="6" value="0" />
+            <mastery_level level="7" value="0" />
+            <mastery_level level="8" value="0" />
+            <mastery_level level="9" value="0" />
+            <mastery_level level="10" value="0" />
+            <mastery_level level="11" value="0" />
+            <mastery_level level="12" value="0" />
+            <mastery_level level="13" value="0" />
+            <mastery_level level="14" value="0" />
+            <mastery_level level="15" value="0" />
+            <mastery_level level="16" value="0" />
+            <mastery_level level="17" value="0" />
+            <mastery_level level="18" value="0" />
+            <mastery_level level="19" value="0" />
+            <mastery_level level="20" value="0" />
+            <mastery_level level="21" value="0" />
+        </mastery_style>
+        <mastery_style style="6">
+            <mastery_level level="1" value="0" />
+            <mastery_level level="2" value="0" />
+            <mastery_level level="3" value="0" />
+            <mastery_level level="4" value="0" />
+            <mastery_level level="5" value="0" />
+            <mastery_level level="6" value="0" />
+            <mastery_level level="7" value="0" />
+            <mastery_level level="8" value="0" />
+            <mastery_level level="9" value="0" />
+            <mastery_level level="10" value="0" />
+            <mastery_level level="11" value="0" />
+            <mastery_level level="12" value="0" />
+            <mastery_level level="13" value="0" />
+            <mastery_level level="14" value="0" />
+            <mastery_level level="15" value="0" />
+            <mastery_level level="16" value="0" />
+            <mastery_level level="17" value="0" />
+            <mastery_level level="18" value="0" />
+            <mastery_level level="19" value="0" />
+            <mastery_level level="20" value="0" />
+            <mastery_level level="21" value="0" />
+        </mastery_style>
+        <mastery_style style="7">
+            <mastery_level level="1" value="0" />
+            <mastery_level level="2" value="1" />
+            <mastery_level level="3" value="1" />
+            <mastery_level level="4" value="1" />
+            <mastery_level level="5" value="1" />
+            <mastery_level level="6" value="3" />
+            <mastery_level level="7" value="3" />
+            <mastery_level level="8" value="5" />
+            <mastery_level level="9" value="5" />
+            <mastery_level level="10" value="6" />
+            <mastery_level level="11" value="7" />
+            <mastery_level level="12" value="7" />
+            <mastery_level level="13" value="8" />
+            <mastery_level level="14" value="8" />
+            <mastery_level level="15" value="9" />
+            <mastery_level level="16" value="9" />
+            <mastery_level level="17" value="10" />
+            <mastery_level level="18" value="10" />
+            <mastery_level level="19" value="10" />
+            <mastery_level level="20" value="10" />
+            <mastery_level level="21" value="10" />
+        </mastery_style>
+        <mastery_style style="8">
+            <mastery_level level="1" value="0" />
+            <mastery_level level="2" value="0" />
+            <mastery_level level="3" value="0" />
+            <mastery_level level="4" value="0" />
+            <mastery_level level="5" value="0" />
+            <mastery_level level="6" value="0" />
+            <mastery_level level="7" value="0" />
+            <mastery_level level="8" value="0" />
+            <mastery_level level="9" value="0" />
+            <mastery_level level="10" value="0" />
+            <mastery_level level="11" value="0" />
+            <mastery_level level="12" value="0" />
+            <mastery_level level="13" value="0" />
+            <mastery_level level="14" value="0" />
+            <mastery_level level="15" value="0" />
+            <mastery_level level="16" value="0" />
+            <mastery_level level="17" value="0" />
+            <mastery_level level="18" value="0" />
+            <mastery_level level="19" value="0" />
+            <mastery_level level="20" value="0" />
+            <mastery_level level="21" value="0" />
+        </mastery_style>
+        <mastery_style style="9">
+            <mastery_level level="1" value="0" />
+            <mastery_level level="2" value="0" />
+            <mastery_level level="3" value="0" />
+            <mastery_level level="4" value="0" />
+            <mastery_level level="5" value="0" />
+            <mastery_level level="6" value="0" />
+            <mastery_level level="7" value="0" />
+            <mastery_level level="8" value="0" />
+            <mastery_level level="9" value="0" />
+            <mastery_level level="10" value="0" />
+            <mastery_level level="11" value="0" />
+            <mastery_level level="12" value="0" />
+            <mastery_level level="13" value="0" />
+            <mastery_level level="14" value="0" />
+            <mastery_level level="15" value="0" />
+            <mastery_level level="16" value="0" />
+            <mastery_level level="17" value="0" />
+            <mastery_level level="18" value="0" />
+            <mastery_level level="19" value="0" />
+            <mastery_level level="20" value="0" />
+            <mastery_level level="21" value="0" />
+        </mastery_style>
+    </rage_limit>
+</constants>

@@ -4,6 +4,10 @@
 #include <RuntimeDataLib/RuntimeDataLib.h>
 #include <math.h>
 
+EXTERN_C_BEGIN
+
+#include <lua.h>
+
 #pragma pack(push, 1)
 
 typedef struct _RTBattleAttributes* RTBattleAttributesRef;
@@ -97,3 +101,5 @@ struct _RTPosition {
 typedef struct _RTPosition RTPosition;
 
 #pragma pack(pop)
+
+EXTERN_C_END

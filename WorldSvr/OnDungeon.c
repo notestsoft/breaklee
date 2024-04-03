@@ -155,13 +155,13 @@ CLIENT_PROCEDURE_BINDING(ATTACK_BOSS_MOB) {
     RTMobRef Mob = RTWorldContextGetMob(World, Packet->Entity);
     if (!Mob) goto error;
 
-    // TODO: Find out what this field means!
-    if (Mob->SpeciesData->Boss == 2) {
+    // TODO: Find out what this field means and map it in new data format!
+    //if (Mob->SpeciesData->Boss == 2) {
         RTWorldDespawnMob(Runtime, World, Mob);
-    }
-    else {
-        goto error;
-    }
+    //}
+    //else {
+    //    goto error;
+    //}
 
     // TODO: Implementation missing!
     // NOTE: It can be that when an npc is progressed but the dungeon is reopened it calls to repeat the event trigger of the npc and despawn it...

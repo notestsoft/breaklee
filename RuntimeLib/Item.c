@@ -88,7 +88,7 @@ Void RTCharacterApplyItemUpgradeForceEffect(
 		*/
 }
 
-Bool RTItemUseInternal(
+Int32 RTItemUseInternal(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
 	RTItemSlotRef ItemSlot,
@@ -107,6 +107,8 @@ Bool RTItemUseInternal(
 		);																\
 	}
 #include <RuntimeLib/ItemProcDefinition.h>
+
+	return RUNTIME_ITEM_USE_RESULT_FAILED;
 }
 
 UInt32 RTItemGetSerialID(
@@ -123,7 +125,7 @@ UInt32 RTItemGetSerialID(
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStub) {
-	return false;
+	return RUNTIME_ITEM_USE_RESULT_FAILED;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemPotion) {
@@ -157,11 +159,11 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemPotion) {
 				break;
 
 			default:
-				return false;
+				return RUNTIME_ITEM_USE_RESULT_FAILED;
 			}
 
 			if (!RTCharacterRemoveStat(Runtime, Character, StatIndex, ItemData->Potion.PotionValue)) {
-				return false;
+				return RUNTIME_ITEM_USE_RESULT_FAILED;
 			}
 
 			break;
@@ -177,7 +179,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemPotion) {
 			break;
 
 		case RUNTIME_ITEM_SUBTYPE_POTION_STAT_RESET:
-			if (!RTCharacterResetStats(Runtime, Character)) return false;
+			if (!RTCharacterResetStats(Runtime, Character)) return RUNTIME_ITEM_USE_RESULT_FAILED;
 			break;
 
 		case RUNTIME_ITEM_SUBTYPE_POTION_RAGE:
@@ -189,7 +191,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemPotion) {
 			break;
 
 		default:
-			return false;
+			return RUNTIME_ITEM_USE_RESULT_FAILED;
 	}
 
 	if (ItemData->MaxStackSize > 0) {
@@ -209,7 +211,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemPotion) {
 		Character->SyncPriority.Low = true;
 	}
 
-	return true;
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSkillBook) {
@@ -218,12 +220,12 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSkillBook) {
     } *Data = Payload;
 
     RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, ItemData->SkillBook.SkillID);
-    if (!SkillData) return false;
+    if (!SkillData) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
     // TODO: Check if character is allowed to learn the skill by battle style and skill ranks...
 
     RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotByIndex(Runtime, Character, Data->SkillSlotIndex);
-    if (SkillSlot) return false;
+    if (SkillSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
     // TODO: Check if ItemOptions begins at 0 for Level 1
 
@@ -235,7 +237,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSkillBook) {
 	Character->SyncMask.InventoryInfo = true;
 	Character->SyncPriority.Low = true;
 
-    return true;
+    return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemImmediateReward) {
@@ -270,13 +272,13 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemImmediateReward) {
 		UNIMPLEMENTED;
 
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_OXP: {
-		if (Character->Info.Overlord.Level < 1) return false;
+		if (Character->Info.Overlord.Level < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
 		RTCharacterAddOverlordExp(Runtime, Character, ItemSlot->ItemOptions);
 		break;
 	}
 
 	default:
-		return false;
+		return RUNTIME_ITEM_USE_RESULT_FAILED;
 	}
 
 	// TODO: Check if this item should be consumed and check if it is a stackable item
@@ -285,12 +287,14 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemImmediateReward) {
 	Character->SyncMask.InventoryInfo = true;
 	Character->SyncPriority.Low = true;
 
-    return true;
+    return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemWeapon) {
-	if (!RTCharacterCheckItemStatRequirements(Runtime, Character, ItemData, ItemSlot->Item.UpgradeLevel)) return false;
-	
+	if (!RTCharacterCheckItemStatRequirements(Runtime, Character, ItemData, ItemSlot->Item.UpgradeLevel)) {
+		return RUNTIME_ITEM_USE_RESULT_FAILED;
+	}
+
 	RTCharacterApplyForceEffect(
 		Runtime,
 		Character,
@@ -352,11 +356,13 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemWeapon) {
 	UInt64 DivineLevel : 4;
 	*/
 
-	return true;
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemArmor) {
-	if (!RTCharacterCheckItemStatRequirements(Runtime, Character, ItemData, ItemSlot->Item.UpgradeLevel)) return false;
+	if (!RTCharacterCheckItemStatRequirements(Runtime, Character, ItemData, ItemSlot->Item.UpgradeLevel)) {
+		return RUNTIME_ITEM_USE_RESULT_FAILED;
+	}
 
 	RTCharacterApplyForceEffect(
 		Runtime,
@@ -389,39 +395,46 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemArmor) {
 		ItemSlot->Item.UpgradeLevel
 	);
 
-	return true;
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemAccessory) {
-	return false;
+	return RUNTIME_ITEM_USE_RESULT_FAILED;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEffector) {
-	return false;
+	return RUNTIME_ITEM_USE_RESULT_FAILED;
+}
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSpecialPotion) {
+	if (!RTCharacterIsAlive(Runtime, Character)) return RUNTIME_ITEM_USE_RESULT_IS_DEAD;
+
+	// TODO: Check potion cooldown time
+	return RUNTIME_ITEM_USE_RESULT_FAILED;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotExtender) {
 	struct _RTItemSlotExtenderPayload* Data = Payload;
 
 	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Data->TargetSlotIndex);
-	if (!TargetItemSlot) return false;
+	if (!TargetItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
 	RTItemDataRef TargetItemData = RTRuntimeGetItemDataByIndex(Runtime, TargetItemSlot->Item.ID);
-	if (!TargetItemData) return false;
+	if (!TargetItemData) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
 	// TODO: Check item data on how to check if the target item is an extendable item...
 
-	return false;
+	return RUNTIME_ITEM_USE_RESULT_FAILED;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHolyWater) {
-	if (!RTCharacterEnableForceWing(Runtime, Character)) return false;
+	if (!RTCharacterEnableForceWing(Runtime, Character)) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
 	RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
 	Character->SyncMask.InventoryInfo = true;
 	Character->SyncPriority.High = true;
 
-	return true;
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
@@ -437,13 +450,13 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
 	UInt64 Amount = 0;
 	for (Index Index = 0; Index < Data->InventoryItemCount; Index += 1) {
 		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Data->InventorySlotIndex[Index]);
-		if (!ItemSlot) return false;
+		if (!ItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
 		StackSize += ItemSlot->ItemOptions & 0xFFFF;
 		Amount += ItemSlot->ItemOptions >> 16;
 	}
 
-	if (Data->RegisteredStackSize > StackSize) return false;
+	if (Data->RegisteredStackSize > StackSize) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
 	UInt64 TotalAmount = Amount * Data->RegisteredStackSize;
 
@@ -478,19 +491,19 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
 		UNIMPLEMENTED;
 
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_OXP: {
-		if (Character->Info.Overlord.Level < 1) return false;
+		if (Character->Info.Overlord.Level < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
 		RTCharacterAddOverlordExp(Runtime, Character, TotalAmount);
 		break;
 	}
 
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_WINGEXP: {
-		if (Character->ForceWingInfo.Grade < 1) return false;
+		if (Character->ForceWingInfo.Grade < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
 		RTCharacterAddWingExp(Runtime, Character, TotalAmount);
 		break;
 	}
 
 	default:
-		return false;
+		return RUNTIME_ITEM_USE_RESULT_FAILED;
 	}
 
 	// TODO: Add support for multiple item consumptions
@@ -505,5 +518,5 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
 	Character->SyncMask.InventoryInfo = true;
 	Character->SyncPriority.Low = true;
 
-	return true;
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }

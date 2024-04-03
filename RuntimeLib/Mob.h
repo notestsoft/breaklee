@@ -74,16 +74,22 @@ struct _RTMobSkillData {
 	Int32 Reach;
 	Int32 Range;
 	Int32 Stance;
-	Int32 Distance;
-	Int32 DistanceDecreased;
-	Int32 Offset;
 	Int32 SkillGroup;
-	Bool IsDefenseSkill;
 	Timestamp Interval;
+
+	Int32 Distance;
+	Int32 Offset;
 };
 
+// TODO: Add additional missing fields like resists...
 struct _RTMobSpeciesData {
 	Int32 MobSpeciesIndex;
+	Int32 Level;
+	Int64 HP;
+	Int32 HPRecharge;
+	Int32 AttackRate;
+	Int32 DefenseRate;
+	Int32 Defense;
 	Float32 MoveSpeed;
 	Float32 ChaseSpeed;
 	Float32 Radius;
@@ -99,19 +105,12 @@ struct _RTMobSpeciesData {
 	Int32 MoveInterval;
 	Int32 ChaseInterval;
 	Int32 AlertRange;
-	Int32 AdditionalAlertRange; // TODO: Add calculation for normal and quest dungeon!
-	Int32 LimitRangeA;
+	Int32 ChaseRange;
 	Int32 LimitRangeB;
-	Int32 Level;
-	Int32 HP;
-	Int32 Defense;
-	Int32 AttackRate;
-	Int32 DefenseRate;
-	Int32 HpRecharge;
 	struct _RTMobSkillData DefaultSkill;
 	struct _RTMobSkillData SpecialSkill;
 	Int32 AttackSignal;
-	Int32 Boss;
+	Int32 IsWorldBoss;
 	Int32 CanAttack;
 	Int32 CanMove;
 	UInt64 Exp;

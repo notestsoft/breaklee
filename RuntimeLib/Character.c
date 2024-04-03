@@ -3,12 +3,6 @@
 #include "Force.h"
 #include "Runtime.h"
 
-// TODO: Load from file soon..
-
-static const Int32 kRageLimit[] = {
-	0, 1, 1, 1, 1, 3, 3, 5, 5, 6, 7, 7, 8, 8, 9, 9, 10, 10, 10, 10, 10, 10
-};
-
 Void RTCharacterInitialize(
 	RTRuntimeRef Runtime, 
 	RTCharacterRef Character,
@@ -71,19 +65,20 @@ Void RTCharacterInitializeAttributes(
 	// Battle Style Level Formula 
 
 	RTBattleStyleLevelFormulaDataRef LevelFormula = RTRuntimeGetBattleStyleLevelFormulaData(Runtime, BattleStyleIndex);
-	
+	RTDataSpiritPointLimitRef SpiritPointLimitData = RTRuntimeDataSpiritPointLimitGet(Runtime->Context, Character->Info.Style.BattleRank);
+	assert(SpiritPointLimitData);
+
+	RTDataRageLimitRef RageLimitData = RTRuntimeDataRageLimitGet(Runtime->Context, BattleStyleIndex);
+	assert(RageLimitData);
+
+	RTDataRageLimitLevelRef RageLimitLevelData = RTRuntimeDataRageLimitLevelGet(RageLimitData, Character->Info.Style.BattleRank);
+	assert(RageLimitLevelData);
+
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX] = LevelFormula->BaseHP + (10 * LevelFormula->DeltaHP2 * (Character->Info.Basic.Level - 1) / 300);
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX] = LevelFormula->BaseMP + LevelFormula->DeltaMP * (Character->Info.Basic.Level - 1) / 10;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX] = MIN(RUNTIME_CHARACTER_MAX_SP, (Character->Info.Style.BattleRank - 1) * RUNTIME_CHARACTER_SP_PER_BATTLE_RANK);
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX] = SpiritPointLimitData->Value;
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_MAX] = 0;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX] = 0;
-	if (BattleStyleIndex == RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_GL) {
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX] = MIN(
-			RUNTIME_CHARACTER_MAX_RAGE,
-			kRageLimit[Character->Info.Style.BattleRank]
-		);
-	}
-
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX] = RageLimitLevelData->Value;
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] = MIN(
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX],
 		Character->Info.Resource.HP
@@ -220,6 +215,12 @@ Void RTCharacterInitializeAttributes(
 	if (AxpFieldRate) {
 		Character->AxpFieldRate = AxpFieldRate->Rate;
 	}
+
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_DEFENSE] = 99999;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_ATTACK] = 99999;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MAGIC_ATTACK] = 99999;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_CRITICAL_RATE] = 80;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_CRITICAL_RATE_MAX] = 80;
 }
 
 Bool RTCharacterIsAlive(

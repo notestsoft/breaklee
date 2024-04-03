@@ -94,6 +94,7 @@ struct _RTCharacterSkillData {
 	Int32 SkillType;
 	Int32 SkillGroup;
 	Int32 Multi;
+	Int32 Intensity;
 	Int32 Target;
 	Int32 MaxTarget;
 	Int32 Reach;
@@ -117,6 +118,7 @@ struct _RTCharacterSkillData {
 	Int32 ConditionOneChakram;
 	Int32 ConditionTwoChakram;
 	Int32 ConditionExclusive;
+	Int32 ConditionUseCase;
 	Int32 SkillExp1;
 	Int32 SkillExp2;
 	Int32 SAmp[2];

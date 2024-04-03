@@ -6,12 +6,10 @@
 #include "Server.h"
 
 CLIENT_PROCEDURE_BINDING(USE_ITEM) {
-	if (!Character) goto error;
-
 	S2C_DATA_USE_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, USE_ITEM);
-	Response->Result = 1;
-	
-	Bool Success = false;
+	Response->Result = S2C_DATA_USE_ITEM_RESULT_FAILED;
+
+	if (!Character) goto error;
 
 	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
 	if (ItemSlot) {
@@ -33,7 +31,7 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM) {
 		#define RUNTIME_ITEM_PROCEDURE(__NAME__, __TYPE__, __INTERNAL__)	\
 		if (ItemData->ItemType == __TYPE__) {								\
 		if ((__INTERNAL__)) goto error;										\
-			Success = __NAME__(												\
+			Response->Result = __NAME__(									\
 				Runtime,													\
 				Character,													\
 				ItemSlot,													\
@@ -44,14 +42,11 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM) {
 		#include <RuntimeLib/ItemProcDefinition.h>
 	}
 
-	if (Success) {
-		Response->Result = 0;
-	}
-
 	return SocketSend(Socket, Connection, Response);
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	Response->Result = S2C_DATA_USE_ITEM_RESULT_FAILED;
+	return SocketSend(Socket, Connection, Response);
 }
 
 CLIENT_PROCEDURE_BINDING(CONVERT_ITEM) {

@@ -3,7 +3,7 @@
 #include "Base.h"
 
 #define RUNTIME_ITEM_PROCEDURE_BINDING(__NAME__) \
-Bool __NAME__(                                   \
+Int32 __NAME__(                                  \
     RTRuntimeRef Runtime,                        \
     RTCharacterRef Character,                    \
     RTItemSlotRef ItemSlot,                      \
@@ -16,6 +16,22 @@ EXTERN_C_BEGIN
 #pragma pack(push, 1)
 
 // TODO: Make upgrade point system data driven and configurable in enchant.xml
+
+enum {
+	RUNTIME_ITEM_USE_RESULT_SUCCESS = 0,
+	RUNTIME_ITEM_USE_RESULT_FAILED = 1,
+	RUNTIME_ITEM_USE_RESULT_IS_DEAD = 17,
+	RUNTIME_ITEM_USE_RESULT_IS_NOT_DEAD = 18,
+	RUNTIME_ITEM_USE_RESULT_REJECTED = 19,
+	RUNTIME_ITEM_USE_RESULT_GUILD_INFO_ERROR = 20,
+	RUNTIME_ITEM_USE_RESULT_ITEM_EXPIRED = 21,
+	RUNTIME_ITEM_USE_RESULT_COOLDOWN_1 = 22,
+	RUNTIME_ITEM_USE_RESULT_COOLDOWN_2 = 23,
+	RUNTIME_ITEM_USE_RESULT_COOLDOWN_3 = 24,
+	RUNTIME_ITEM_USE_RESULT_WAR_USAGE_LIMIT = 25,
+	RUNTIME_ITEM_USE_RESULT_WAR_USAGE = 26,
+	RUNTIME_ITEM_USE_RESULT_DUNGEON_USAGE_LIMIT = 27,
+};
 
 enum {
     RUNTIME_ITEM_CONFIGURATION_FLAGS_NODROP    = 1 << 0,
@@ -31,7 +47,7 @@ enum {
 	RUNTIME_ITEM_SUBTYPE_POTION_STAT = 4,
 	RUNTIME_ITEM_SUBTYPE_POTION_HONOR = 5,
 	
-	RUNTIME_ITEM_SUBTYPE_POTION_AUTO_HP = 8,
+	RUNTIME_ITEM_SUBTYPE_POTION_AUTO_HP = 8, // TODO: Change notification from hp potion to auto hp potion!
 
 	RUNTIME_ITEM_SUBTYPE_POTION_FULL_RECOVERY = 10,
 	RUNTIME_ITEM_SUBTYPE_POTION_STAT_RESET = 11,
@@ -182,6 +198,17 @@ struct _RTItemData {
 			Int32 Unknown1[4];
 		} CoatingKit;
 
+		struct {
+			Int32 ForceEffectIndex;
+			Int32 CooldownGroupIndex;
+			Int32 Unknown1[2];
+			Int32 PotionValue;
+			Int32 Unknown2;
+			Int32 Cooldown;
+			Int32 Unknown3;
+			Int32 Duration;
+		} SpecialPotion;
+
 		// TODO: Add other item types like potion, pet, ...
 
 		struct { Int32 Options[22]; };
@@ -256,7 +283,7 @@ struct _RTItemSlotAppearance {
 
 #pragma pack(pop)
 
-Bool RTItemUseInternal(
+Int32 RTItemUseInternal(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
 	RTItemSlotRef ItemSlot,
@@ -276,15 +303,14 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemWeapon);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemArmor);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemAccessory);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEffector);
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSpecialPotion);
 
 struct _RTItemSlotExtenderPayload {
 	UInt16 TargetSlotIndex;
 };
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotExtender);
-
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHolyWater);
-
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion);
 
 EXTERN_C_END

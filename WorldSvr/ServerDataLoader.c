@@ -47,8 +47,7 @@ struct _ArchiveItemData {
 
 struct _ArchiveMobData {
     Int32 Level;
-    Int32 A;
-    Float32 UnknownF;
+    Float64 HP;
     Int32 HPRecharge;
     Int32 AttackRate;
     Int32 DefenseRate;
@@ -64,7 +63,7 @@ struct _ArchiveMobData {
     Int32 SpecialSkillRange;
     Float32 SpecialSkillInterval;
     Int32 AlertRange;
-    Int32 LimitRangeA;
+    Int32 ChaseRange;
     Int32 FindCount;
     Float32 FindInterval;
     Int32 AttackPattern;
@@ -805,66 +804,63 @@ Bool ServerLoadMobData(
 ) {
     RTRuntimeRef Runtime = Context->Runtime;
 
-    Char MobFilePath[MAX_PATH];
-    PathCombine(ServerDirectory, "mob.xml", MobFilePath);
+    CString FilePath = PathCombineNoAlloc(RuntimeDirectory, "mobserver.dat");
+    UInt8* Memory = NULL;
+    Int32 MemoryLength;
+    FileRef File = FileOpen(FilePath);
+    FileRead(File, &Memory, &MemoryLength);
 
-    ArchiveRef Archive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
-    if (!ArchiveLoadFromFile(Archive, MobFilePath, false)) goto error;
+    struct _ArchiveMobData* ArchiveMobMemory = (struct _ArchiveMobData*)Memory;
 
-    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "mobs");
-    if (ParentIndex < 0) goto error;
+    Index MobCount = MemoryLength / sizeof(struct _ArchiveMobData);
+    for (Int32 Index = 0; Index < MobCount; Index += 1) {
+        struct _ArchiveMobData* ArchiveMobData = &ArchiveMobMemory[Index];
 
-    Int32 SkillGroupUsage[50] = { 0 };
-    Int32 AttackPatternUsage[50] = { 0 };
-
-    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "mob");
-    while (Iterator) {
-        Int32 Index;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "order", &Index)) goto error;
-
+        assert(Index < RUNTIME_MEMORY_MAX_MOB_DATA_COUNT);
         RTMobSpeciesDataRef MobData = &Runtime->MobData[Index];
+        Runtime->MobDataCount = MAX(Runtime->MobDataCount, Index + 1);
+
         MobData->MobSpeciesIndex = Index;
-        Runtime->MobDataCount += 1;
-
-        // 1=1, 2=2, 3=3, 3=8, 4=4,
-
-        if (!ParseAttributeFloat32(Archive, Iterator->Index, "MoveSpeed", &MobData->MoveSpeed)) goto error;
-        if (!ParseAttributeFloat32(Archive, Iterator->Index, "ChasSpeed", &MobData->ChaseSpeed)) goto error;
-        if (!ParseAttributeFloat32(Archive, Iterator->Index, "Radius", &MobData->Radius)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Property", &MobData->Property)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "AttkPattern", &MobData->AttackPattern)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Aggressive", &MobData->AggressiveType)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Cooperate", &MobData->Cooperate)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Escape", &MobData->Escape)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Attack", &MobData->AttackType)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Scale", &MobData->Scale)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "FindCount", &MobData->FindCount)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "FindInterval", &MobData->FindInterval)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "MoveInterval", &MobData->MoveInterval)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "ChasInterval", &MobData->ChaseInterval)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "AlertRange", &MobData->AlertRange)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Limt0Range", &MobData->LimitRangeA)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Limt1Range", &MobData->LimitRangeB)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "LEV", &MobData->Level)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "HP", &MobData->HP)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Defense", &MobData->Defense)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "AttacksR", &MobData->AttackRate)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "DefenseR", &MobData->DefenseRate)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "HPRechagR", &MobData->HpRecharge)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "AtkSignal", &MobData->AttackSignal)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Boss", &MobData->Boss)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "canatk", &MobData->CanAttack)) goto error;
-        if (!ParseAttributeUInt64(Archive, Iterator->Index, "EXP", &MobData->Exp)) goto error;
-        
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "PhyAttMin1", &MobData->DefaultSkill.PhysicalAttackMin)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "PhyAttMax1", &MobData->DefaultSkill.PhysicalAttackMax)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Reach1", &MobData->DefaultSkill.Reach)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Range1", &MobData->DefaultSkill.Range)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Group1", &MobData->DefaultSkill.SkillGroup)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Stance1", &MobData->DefaultSkill.Stance)) goto error;
-        if (!ParseAttributeUInt64(Archive, Iterator->Index, "Interval1", &MobData->DefaultSkill.Interval)) goto error;
-        
-        MobData->DefaultSkill.IsDefenseSkill = true;
+        MobData->Level = ArchiveMobData->Level;
+        MobData->MoveSpeed = ArchiveMobData->MovementSpeed / 100;
+        MobData->ChaseSpeed = ArchiveMobData->ChaseSpeed / 100;
+        MobData->Radius = 0; // TODO: Load radius from mobs data
+        MobData->Property = ArchiveMobData->Property;
+        MobData->AttackPattern = ArchiveMobData->AttackPattern;
+        MobData->AggressiveType = ArchiveMobData->Aggressive; // TODO: Check if this maps correctly
+        MobData->Cooperate = ArchiveMobData->Cooperative;
+        MobData->Escape = 0; // TODO: Property is missing
+        MobData->AttackType = 0; // TODO: Property is missing
+        MobData->Scale = ArchiveMobData->Scale;
+        MobData->FindCount = ArchiveMobData->FindCount;
+        MobData->FindInterval = ArchiveMobData->FindInterval * 1000;
+        MobData->MoveInterval = ArchiveMobData->MoveInterval;
+        MobData->AlertRange = ArchiveMobData->AlertRange;
+        MobData->ChaseRange = ArchiveMobData->ChaseRange;
+        MobData->LimitRangeB = ArchiveMobData->LimitRangeB;
+        MobData->ChaseInterval = 100;
+        MobData->HP = ArchiveMobData->HP;
+        MobData->Defense = ArchiveMobData->Defense;
+        MobData->AttackRate = ArchiveMobData->AttackRate;
+        MobData->DefenseRate = ArchiveMobData->DefenseRate;
+        MobData->HPRecharge = ArchiveMobData->HPRecharge;
+        MobData->DefaultSkill.PhysicalAttackMin = ArchiveMobData->DefaultSkillPhysicalAttackMin;
+        MobData->DefaultSkill.PhysicalAttackMax = ArchiveMobData->DefaultSkillPhysicalAttackMax;
+        MobData->DefaultSkill.Reach = ArchiveMobData->DefaultSkillReach;
+        MobData->DefaultSkill.Range = ArchiveMobData->DefaultSkillRange;
+        MobData->DefaultSkill.Stance = ArchiveMobData->DefaultSkillStance;
+        MobData->DefaultSkill.SkillGroup = ArchiveMobData->DefaultSkillGroup;
+        MobData->DefaultSkill.Interval = ArchiveMobData->DefaultSkillInterval * 1000;
+        MobData->SpecialSkill.PhysicalAttackMin = ArchiveMobData->SpecialSkillPhysicalAttackMin;
+        MobData->SpecialSkill.PhysicalAttackMax = ArchiveMobData->SpecialSkillPhysicalAttackMax;
+        MobData->SpecialSkill.Reach = ArchiveMobData->SpecialSkillReach;
+        MobData->SpecialSkill.Range = ArchiveMobData->SpecialSkillRange;
+        MobData->SpecialSkill.Stance = ArchiveMobData->SpecialSkillStance;
+        MobData->SpecialSkill.SkillGroup = ArchiveMobData->SpecialSkillGroup;
+        MobData->SpecialSkill.Interval = ArchiveMobData->SpecialSkillInterval * 1000;
+        MobData->AttackSignal = ArchiveMobData->AttackSignalValue;
+        MobData->IsWorldBoss = ArchiveMobData->IsWorldBoss;
+        MobData->Exp = ArchiveMobData->Exp;
 
         Int32 Radius = (MobData->Scale + 1) >> 1;
         MobData->DefaultSkill.Distance = (MobData->Scale >> 1) + MobData->DefaultSkill.Reach;
@@ -873,104 +869,77 @@ Bool ServerLoadMobData(
             MobData->DefaultSkill.Offset = Radius;
         }
 
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "PhyAttMin2", &MobData->SpecialSkill.PhysicalAttackMin)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "PhyAttMax2", &MobData->SpecialSkill.PhysicalAttackMax)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Reach2", &MobData->SpecialSkill.Reach)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Range2", &MobData->SpecialSkill.Range)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Group2", &MobData->SpecialSkill.SkillGroup)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Stance2", &MobData->SpecialSkill.Stance)) goto error;
-        if (!ParseAttributeUInt64(Archive, Iterator->Index, "Interval2", &MobData->SpecialSkill.Interval)) goto error;
-
-        MobData->SpecialSkill.IsDefenseSkill = false;
         MobData->SpecialSkill.Distance = (MobData->Scale >> 1) + MobData->SpecialSkill.Reach;
         MobData->SpecialSkill.Offset = Radius + ((MobData->SpecialSkill.Reach - Radius) >> 1);
         if (MobData->SpecialSkill.Offset < Radius) {
             MobData->SpecialSkill.Offset = Radius;
         }
 
-        assert(MobData->DefaultSkill.SkillGroup < 50);
-        SkillGroupUsage[MobData->DefaultSkill.SkillGroup] += 1;
-        SkillGroupUsage[MobData->SpecialSkill.SkillGroup] += 1;
-
+        // TODO: Replace this with other computations based on attack types and patterns...
+        MobData->CanAttack = 1;
         MobData->CanMove = (MobData->FindCount >= RUNTIME_MOB_FIND_COUNT_UNMOVABLE) ? 0 : 1;
-
-        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
     }
 
-    for (Int32 Index = 0; Index < 50; Index += 1) {
-        if (SkillGroupUsage[Index] > 0)
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob Skill Group: %d", Index);
-    }
+    Int32 SkillGroupUsage[50] = { 0 };
+    Int32 AttackPatternUsage[50] = { 0 };
 
-    CString FilePath = PathCombineNoAlloc(RuntimeDirectory, "mobserver.dat");
-    UInt8* Memory = NULL;
-    Int32 MemoryLength;
-    FileRef File = FileOpen(FilePath);
-    FileRead(File, &Memory, &MemoryLength);
+    for (Int32 Index = 0; Index < MobCount; Index += 1) {
+        struct _ArchiveMobData* ArchiveMobData = &ArchiveMobMemory[Index];
 
-    struct _ArchiveMobData* MobData = (struct _ArchiveMobData*)Memory;
+        SkillGroupUsage[ArchiveMobData->DefaultSkillGroup] += 1;
+        SkillGroupUsage[ArchiveMobData->SpecialSkillGroup] += 1;
+        AttackPatternUsage[ArchiveMobData->AttackPattern] += 1;
 
-    memset(SkillGroupUsage, 0, sizeof(SkillGroupUsage));
-
-    for (Int32 Index = 0; Index < 4335; Index += 1) {
-        SkillGroupUsage[MobData[Index].DefaultSkillGroup] += 1;
-        SkillGroupUsage[MobData[Index].SpecialSkillGroup] += 1;
-        AttackPatternUsage[MobData[Index].AttackPattern] += 1;
-
-        if (MobData[Index].D[0]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) D[0]: %d", Index, MobData[Index].D[0]);
+        if (ArchiveMobData->D[0]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) D[0]: %d", Index, ArchiveMobData->D[0]);
         }
 
-        if (MobData[Index].D[1]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) D[1]: %d", Index, MobData[Index].D[1]);
+        if (ArchiveMobData->D[1]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) D[1]: %d", Index, ArchiveMobData->D[1]);
         }
 
-        if (MobData[Index].D[2]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) D[2]: %d", Index, MobData[Index].D[2]);
+        if (ArchiveMobData->D[2]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) D[2]: %d", Index, ArchiveMobData->D[2]);
         }
 
-        if (MobData[Index].D[3]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) D[3]: %d", Index, MobData[Index].D[3]);
+        if (ArchiveMobData->O[0]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) O[0]: %d", Index, ArchiveMobData->O[0]);
         }
 
-        if (MobData[Index].O[0]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) O[0]: %d", Index, MobData[Index].O[0]);
+        if (ArchiveMobData->K[0]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) K[0]: %d", Index, ArchiveMobData->K[0]);
         }
 
-        if (MobData[Index].K[0]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) K[0]: %d", Index, MobData[Index].K[0]);
+        if (ArchiveMobData->K[1]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) K[1]: %d", Index, ArchiveMobData->K[1]);
         }
 
-        if (MobData[Index].K[1]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) K[1]: %d", Index, MobData[Index].K[1]);
+        if (ArchiveMobData->K[2]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) K[2]: %d", Index, ArchiveMobData->K[2]);
         }
 
-        if (MobData[Index].K[2]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) K[2]: %d", Index, MobData[Index].K[2]);
+        if (ArchiveMobData->L[0]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[0]: %d", Index, ArchiveMobData->L[0]);
         }
 
-        if (MobData[Index].L[0]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[0]: %d", Index, MobData[Index].L[0]);
+        if (ArchiveMobData->L[1]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[1]: %d", Index, ArchiveMobData->L[1]);
         }
 
-        if (MobData[Index].L[1]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[1]: %d", Index, MobData[Index].L[1]);
+        if (ArchiveMobData->L[2]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[2]: %d", Index, ArchiveMobData->L[2]);
         }
 
-        if (MobData[Index].L[2]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[2]: %d", Index, MobData[Index].L[2]);
+        if (ArchiveMobData->L[3]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[3]: %d", Index, ArchiveMobData->L[3]);
         }
 
-        if (MobData[Index].L[3]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[3]: %d", Index, MobData[Index].L[3]);
+        if (ArchiveMobData->L[4]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[4]: %d", Index, ArchiveMobData->L[4]);
         }
 
-        if (MobData[Index].L[4]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[4]: %d", Index, MobData[Index].L[4]);
-        }
-
-        if (MobData[Index].L[5]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[5]: %d", Index, MobData[Index].L[5]);
+        if (ArchiveMobData->L[5]) {
+            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[5]: %d", Index, ArchiveMobData->L[5]);
         }
     }
 
@@ -986,11 +955,9 @@ Bool ServerLoadMobData(
 
     FileClose(File);
     free(Memory);
-    ArchiveDestroy(Archive);
     return true;
 
 error:
-    ArchiveDestroy(Archive);
     return false;
 }
 
@@ -1468,6 +1435,7 @@ Bool ServerLoadSkillData(
         if (!ParseAttributeInt32(Archive, Iterator->Index, "type", &SkillData->SkillType)) goto error;
         if (!ParseAttributeInt32(Archive, Iterator->Index, "group", &SkillData->SkillGroup)) goto error;
         if (!ParseAttributeInt32(Archive, Iterator->Index, "multi", &SkillData->Multi)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "intensity", &SkillData->Intensity)) goto error;
         
         ArchiveIteratorRef AttributeIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, "attribute");
         if (AttributeIterator) {
@@ -1509,6 +1477,7 @@ Bool ServerLoadSkillData(
                 if (!ParseAttributeInt32(Archive, ConditionIterator->Index, "onechakram", &SkillData->ConditionOneChakram)) goto error;
                 if (!ParseAttributeInt32(Archive, ConditionIterator->Index, "twochakram", &SkillData->ConditionTwoChakram)) goto error;
                 if (!ParseAttributeInt32(Archive, ConditionIterator->Index, "exclusive", &SkillData->ConditionExclusive)) goto error;
+                if (!ParseAttributeInt32(Archive, ConditionIterator->Index, "usecase", &SkillData->ConditionUseCase)) goto error;
             }
         }
 

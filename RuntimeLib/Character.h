@@ -144,9 +144,7 @@ union _RTCharacterExtendedStyle {
         UInt8 IsAstralWeaponActive : 1;
         UInt8 Unknown1 : 1;
         UInt8 IsAuraActive : 1;
-        UInt8 IsBattleMode1Active : 1;
-        UInt8 IsBattleMode2Active : 1;
-        UInt8 IsBattleMode3Active : 1;
+        UInt8 BattleModeFlags : 3;
         UInt8 IsComboActive : 1;
     };
 
