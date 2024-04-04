@@ -199,7 +199,16 @@ static inline Bool TryParseAttribute(
     Char* AttributeStart = CurrentState.TokenStart;
     Char* AttributeEnd = CurrentState.TokenEnd;
 
-    if (!ConsumeToken(&CurrentState, TokenIdentifier)) goto error;
+    if (!ConsumeToken(&CurrentState, TokenIdentifier)) {
+        // NOTE: We just allow to use empty identifiers so invalid file structures still parse well
+        if (*AttributeStart == '=') {
+            State->Token = TokenIdentifier;
+            State->TokenStart = State->Cursor;
+            State->TokenEnd = State->Cursor + 1;
+        } else {
+            goto error;
+        }
+    }
 
     if (!ConsumeToken(&CurrentState, '=')) goto error;
 
@@ -318,6 +327,11 @@ Bool ArchiveParseFromSource(
 
         if (!ConsumeToken(&State, TokenIdentifier)) 
             goto error;
+
+        if (State.Token == '=') {
+            if (!TryParseAttribute(&State, true))
+                goto error;
+        }
 
         while (State.Token == TokenIdentifier) {
             if (!TryParseAttribute(&State, true)) 

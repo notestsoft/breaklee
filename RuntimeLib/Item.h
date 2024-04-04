@@ -303,10 +303,6 @@ Int32 RTItemUseInternal(
 	Void* Payload
 );
 
-Bool RTItemTypeIsExtendable(
-	Int32 ItemType
-);
-
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStub);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemPotion);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSkillBook);

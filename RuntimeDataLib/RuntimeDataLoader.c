@@ -66,7 +66,6 @@ Bool RTRuntimeDataContextLoad(
             PropertyQuery = __QUERY__; \
             if (!CONCAT(ParseAttribute, __TYPE__)(Archive, Iterator->Index, PropertyQuery, &Data->__NAME__)) { \
                 LogMessageFormat(LOG_LEVEL_ERROR, "Couldn't parse attribute %s in %s\n", PropertyQuery, Query); \
-                goto error; \
             }
 
 #define RUNTIME_DATA_PROPERTY_PRECONDITION(__TYPE__, __NAME__, __QUERY__, __VALUE__) \
