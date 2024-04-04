@@ -128,7 +128,7 @@ struct _RTItemData {
 			Int32 AttackRate;
 			Int32 Attack;
 			Int32 MagicAttack;
-			Int32 Unknown1;
+			Int32 MaxSlotCount;
 			Int32 Str;
 			Int32 Dex;
 			Int32 Int;
@@ -143,7 +143,7 @@ struct _RTItemData {
 			Int32 HP;
 			Int32 DefenseRate;
 			Int32 Defense;
-			Int32 Unknown2;
+			Int32 MaxSlotCount;
 			Int32 Str;
 			Int32 Dex;
 			Int32 Int;
@@ -158,7 +158,7 @@ struct _RTItemData {
 			Int32 ForceEffect1;
 			Int32 ForceValue1;
 			Int32 MinLevel;
-			Int32 Unknown2;
+			Int32 MaxSlotCount;
 			Int32 ForceEffect2;
 			Int32 ForceValue2;
 			Int32 ForceEffect3;
@@ -235,6 +235,18 @@ struct _RTItem {
 };
 typedef struct _RTItem RTItem;
 
+struct _RTItemOptions {
+	union {
+		struct { UInt64 Serial; };
+		struct {
+			UInt64 _Padding0 : 28;
+			UInt64 SlotCount : 3;
+			UInt64 _Padding1 : 33;
+		} Equipment;
+	};
+};
+typedef struct _RTItemOptions RTItemOptions;
+
 struct _RTItemDuration {
     union {
         struct { UInt32 Serial; };
@@ -291,8 +303,8 @@ Int32 RTItemUseInternal(
 	Void* Payload
 );
 
-UInt32 RTItemGetSerialID(
-	RTItem Item
+Bool RTItemTypeIsExtendable(
+	Int32 ItemType
 );
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStub);

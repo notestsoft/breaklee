@@ -465,9 +465,38 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotExtender) {
 	RTItemDataRef TargetItemData = RTRuntimeGetItemDataByIndex(Runtime, TargetItemSlot->Item.ID);
 	if (!TargetItemData) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
-	// TODO: Check item data on how to check if the target item is an extendable item...
+	RTItemOptions TargetItemOptions = { 0 };
+	TargetItemOptions.Serial = TargetItemSlot->ItemOptions;
+	if (TargetItemSlot->Item.IsAccountBinding) return RUNTIME_ITEM_USE_RESULT_FAILED;
+	// TODO: Use an equipment type union to name Options[3] to MaxSlotCount!
+	if (TargetItemOptions.Equipment.SlotCount >= TargetItemData->Options[3]) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
-	return RUNTIME_ITEM_USE_RESULT_FAILED;
+	TargetItemOptions.Equipment.SlotCount += 1;
+
+	Bool IsExtendable = (
+		(TargetItemData->ItemType == RUNTIME_ITEM_TYPE_WEAPON_FORCE_CONTROLLER) ||
+		(TargetItemData->ItemType == RUNTIME_ITEM_TYPE_WEAPON_ONE_HAND) ||
+		(TargetItemData->ItemType == RUNTIME_ITEM_TYPE_WEAPON_TWO_HAND) ||
+		(TargetItemData->ItemType == RUNTIME_ITEM_TYPE_CHAKRAM) ||
+		(TargetItemData->ItemType == RUNTIME_ITEM_TYPE_SUIT) ||
+		(TargetItemData->ItemType == RUNTIME_ITEM_TYPE_GLOVES) ||
+		(TargetItemData->ItemType == RUNTIME_ITEM_TYPE_BOOTS) ||
+		(TargetItemData->ItemType == RUNTIME_ITEM_TYPE_HELMED1) ||
+		(TargetItemData->ItemType == RUNTIME_ITEM_TYPE_HELMED2) ||
+		(TargetItemData->ItemType == RUNTIME_ITEM_TYPE_VEHICLE_BIKE)
+	);
+	if (!IsExtendable) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	RTDataUpgradeGradeRef UpgradeGrade = RTRuntimeDataUpgradeGradeGet(Runtime->Context, TargetItemData->ItemGrade);
+	if (!UpgradeGrade) return RUNTIME_ITEM_USE_RESULT_FAILED;
+	if (ItemData->ItemGrade != UpgradeGrade->CostGrade) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	TargetItemSlot->Item.IsAccountBinding = true;
+	TargetItemSlot->ItemOptions = TargetItemOptions.Serial;
+
+	RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHolyWater) {
