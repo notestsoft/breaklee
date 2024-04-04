@@ -409,7 +409,50 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEffector) {
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSpecialPotion) {
 	if (!RTCharacterIsAlive(Runtime, Character)) return RUNTIME_ITEM_USE_RESULT_IS_DEAD;
 
-	// TODO: Check potion cooldown time
+	// TODO: Check item cooldowns
+	// TODO: Depending on buff slot they should override the old buff
+
+	UInt64 ItemOptions = RTQuestItemGetOptions(ItemSlot->ItemOptions);
+	UInt64 ItemCount = RTQuestItemGetCount(ItemSlot->ItemOptions);
+	if (ItemCount < 1) return RUNTIME_ITEM_USE_RESULT_REJECTED;
+
+	ItemCount -= 1;
+	ItemSlot->ItemOptions = RTQuestItemOptions(ItemOptions, ItemCount);
+
+	if (ItemCount < 1) {
+		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+	}
+
+	Int32 ForceEffectValue = (Int32)ItemOptions;
+ 
+	RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
+	assert(World);
+
+	RTEventData EventData = { 0 };
+	EventData.CharacterDataBuff.Type = RUNTIME_EVENT_CHARACTER_DATA_TYPE_BUFF_POTION;
+	EventData.CharacterDataBuff.BuffResult = RTCharacterApplyBuff(
+		Character,
+		ItemData->SpecialPotion.ForceEffectIndex,
+		ForceEffectValue,
+		ItemData->SpecialPotion.Duration,
+		ItemData->SpecialPotion.Cooldown
+	);
+
+	RTRuntimeBroadcastEventData(
+		Runtime,
+		RUNTIME_EVENT_CHARACTER_DATA_BUFF,
+		World,
+		kEntityIDNull,
+		Character->ID,
+		Character->Movement.PositionCurrent.X,
+		Character->Movement.PositionCurrent.Y,
+		EventData
+	);
+
+	if (EventData.CharacterDataBuff.BuffResult == RUNTIME_SKILL_RESULT_BUFF_SUCCESS) {
+		return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+	}
+
 	return RUNTIME_ITEM_USE_RESULT_FAILED;
 }
 

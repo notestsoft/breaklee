@@ -168,6 +168,14 @@ Int32 RTCalculateSkillSlopeValue(
 	Int32 Level
 );
 
+Int32 RTCharacterApplyBuff(
+	RTCharacterRef Character,
+	Int32 ForceEffectIndex,
+	Int32 ForceEffectValue,
+	Int32 Duration,
+	Int32 Cooldown
+);
+
 #pragma pack(pop)
 
 EXTERN_C_END

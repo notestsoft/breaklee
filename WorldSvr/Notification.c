@@ -474,6 +474,18 @@ Void ServerRuntimeOnEvent(
         return;
     }
 
+    if (Event->Type == RUNTIME_EVENT_CHARACTER_DATA_BUFF) {
+        ClientContextRef Client = ServerGetClientByEntity(Context, Event->TargetID);
+        if (Client) {
+            S2C_DATA_NFY_CHARACTER_DATA* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_CHARACTER_DATA);
+            Notification->Type = Event->Data.CharacterDataBuff.Type;
+            Notification->BuffResult = Event->Data.CharacterDataBuff.BuffResult;
+            SocketSend(Context->ClientSocket, Client->Connection, Notification);
+        }
+
+        return;
+    }
+
     if (Event->Type == RUNTIME_EVENT_CHARACTER_UPDATE_SKILL_STATUS) {
         ClientContextRef Client = ServerGetClientByEntity(Context, Event->TargetID);
         if (Client) {
