@@ -121,14 +121,17 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		);
 	}
 	else if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_ASTRAL) {
-		// TODO: Activate astral weapon
 		Int32 PacketLength = sizeof(C2S_DATA_SKILL_TO_CHARACTER) + sizeof(C2S_DATA_SKILL_GROUP_ASTRAL);
 		if (Packet->Length != PacketLength) goto error;
 
 		C2S_DATA_SKILL_GROUP_ASTRAL* PacketData = (C2S_DATA_SKILL_GROUP_ASTRAL*)&Packet->Data[0];
 
+		// TODO: Activate, deactivate battle mode, do runtime validations
+		Character->Info.ExtendedStyle.IsAstralWeaponActive = PacketData->IsActivation;
+
 		S2C_DATA_SKILL_GROUP_ASTRAL* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_ASTRAL);
-		ResponseData->Unknown1 = PacketData->Unknown1;
+		ResponseData->CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+		ResponseData->IsActivation = PacketData->IsActivation;
 		ResponseData->Unknown2 = PacketData->Unknown2;
 		SocketSend(Socket, Connection, Response);
 
@@ -137,10 +140,10 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 		S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON* NotificationData = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON);
 		NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
-		NotificationData->Entity = Character->ID;
-		NotificationData->Position.X = Character->Movement.PositionCurrent.X;
-		NotificationData->Position.Y = Character->Movement.PositionCurrent.Y;
-		NotificationData->Unknown1 = PacketData->Unknown1;
+		NotificationData->CharacterStyle = SwapUInt32(Character->Info.Style.RawValue);
+		NotificationData->CharacterLiveStyle = SwapUInt32(Character->Info.LiveStyle.RawValue);
+		NotificationData->CharacterExtendedStyle = Character->Info.ExtendedStyle.RawValue;
+		NotificationData->IsActivation = PacketData->IsActivation;
 		NotificationData->Unknown2 = PacketData->Unknown2;
 
 		return BroadcastToWorld(
