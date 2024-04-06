@@ -227,11 +227,14 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_LEVEL) {
 
 	RTItemDataRef TargetData = RTRuntimeGetItemDataByIndex(Runtime, TargetSlot->Item.ID);
 	if (!TargetData) goto error;
+    
+    RTDataItemType TargetItemType = TargetData->ItemType;
+    if (TargetItemType == RUNTIME_ITEM_TYPE_HELMED2) TargetItemType = RUNTIME_ITEM_TYPE_HELMED1;
 
 	RTDataExtremeUpgradeBaseGradeRef ExtremeUpgradeBaseGrade = NULL;
 	for (Index Index = 0; Index < Runtime->Context->ExtremeUpgradeBaseCount; Index += 1) {
 		RTDataExtremeUpgradeBaseRef ExtremeUpgradeBase = &Runtime->Context->ExtremeUpgradeBaseList[Index];
-		if (ExtremeUpgradeBase->Type != TargetData->ItemType) continue;
+		if (ExtremeUpgradeBase->Type != TargetItemType) continue;
 
 		ExtremeUpgradeBaseGrade = RTRuntimeDataExtremeUpgradeBaseGradeGet(ExtremeUpgradeBase, TargetData->ItemGrade);
 		if (ExtremeUpgradeBaseGrade) break;
@@ -383,6 +386,9 @@ CLIENT_PROCEDURE_BINDING(EXTREME_UPGRADE_SEAL) {
 	RTItemDataRef TargetData = RTRuntimeGetItemDataByIndex(Runtime, TargetSlot->Item.ID);
 	if (!TargetData) goto error;
 
+    RTDataItemType TargetItemType = TargetData->ItemType;
+    if (TargetItemType == RUNTIME_ITEM_TYPE_HELMED2) TargetItemType = RUNTIME_ITEM_TYPE_HELMED1;
+
 	if (SourceData->ItemType != RUNTIME_ITEM_TYPE_EXTREME_SEAL_STONE) goto error;
 
 	S2C_DATA_EXTREME_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, EXTREME_UPGRADE_SEAL);
@@ -394,7 +400,7 @@ CLIENT_PROCEDURE_BINDING(EXTREME_UPGRADE_SEAL) {
 		RTDataExtremeUpgradeBaseGradeRef ExtremeUpgradeBaseGrade = NULL;
 		for (Index Index = 0; Index < Runtime->Context->ExtremeUpgradeBaseCount; Index += 1) {
 			RTDataExtremeUpgradeBaseRef ExtremeUpgradeBase = &Runtime->Context->ExtremeUpgradeBaseList[Index];
-			if (ExtremeUpgradeBase->Type != TargetData->ItemType) continue;
+			if (ExtremeUpgradeBase->Type != TargetItemType) continue;
 
 			ExtremeUpgradeBaseGrade = RTRuntimeDataExtremeUpgradeBaseGradeGet(ExtremeUpgradeBase, TargetData->ItemGrade);
 			if (ExtremeUpgradeBaseGrade) break;
@@ -407,7 +413,7 @@ CLIENT_PROCEDURE_BINDING(EXTREME_UPGRADE_SEAL) {
 		RTDataExtremeUpgradeCategoryRef SourceCategory = RTRuntimeDataExtremeUpgradeCategoryGetByCategory(Runtime->Context, SourceSlot->ItemOptions >> 8);
 		if (!SourceCategory) goto error;
 
-		RTDataExtremeUpgradeCategoryRef TargetCategory = RTRuntimeDataExtremeUpgradeCategoryGet(Runtime->Context, TargetData->ItemType);
+		RTDataExtremeUpgradeCategoryRef TargetCategory = RTRuntimeDataExtremeUpgradeCategoryGet(Runtime->Context, TargetItemType);
 		if (!TargetCategory) goto error;
 
 		if (SourceCategory->Group != TargetCategory->Group) goto error;
@@ -425,7 +431,7 @@ CLIENT_PROCEDURE_BINDING(EXTREME_UPGRADE_SEAL) {
 		if (TargetSlot->Item.ExtremeLevel < SourceData->ExtremeSealStone.MinLevel) goto error;
 		if (TargetSlot->Item.ExtremeLevel > SourceData->ExtremeSealStone.MaxLevel) goto error;
 
-		RTDataExtremeUpgradeCategoryRef TargetCategory = RTRuntimeDataExtremeUpgradeCategoryGet(Runtime->Context, TargetData->ItemType);
+		RTDataExtremeUpgradeCategoryRef TargetCategory = RTRuntimeDataExtremeUpgradeCategoryGet(Runtime->Context, TargetItemType);
 		if (!TargetCategory) goto error;
 
 		SourceSlot->ItemOptions = ((UInt64)TargetCategory->Category << 8) | TargetSlot->Item.ExtremeLevel;

@@ -307,7 +307,7 @@ Bool ParseAttributeRTDataItemType(
         *Result = RUNTIME_ITEM_TYPE_BOOTS;
     }
     else if (strcmp(Data->Data, "HELM") == 0) {
-        *Result = RUNTIME_ITEM_TYPE_HELMED2; // TODO: What should we do with RUNTIME_ITEM_TYPE_HELMED1?
+        *Result = RUNTIME_ITEM_TYPE_HELMED1;
     }
     else if (strcmp(Data->Data, "BIKE") == 0) {
         *Result = RUNTIME_ITEM_TYPE_VEHICLE_BIKE;

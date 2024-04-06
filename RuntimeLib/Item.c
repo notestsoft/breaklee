@@ -31,7 +31,10 @@ Void RTCharacterApplyItemUpgradeForceEffect(
 	RTItemDataRef ItemData,
 	Int32 ItemUpgradeLevel
 ) {
-	RTDataUpgradeItemBasicRef UpgradeItemBasic = RTRuntimeDataUpgradeItemBasicGet(Runtime->Context, ItemData->ItemType);
+    RTDataItemType ItemType = ItemData->ItemType;
+    if (ItemType == RUNTIME_ITEM_TYPE_HELMED2) ItemType = RUNTIME_ITEM_TYPE_HELMED1;
+
+	RTDataUpgradeItemBasicRef UpgradeItemBasic = RTRuntimeDataUpgradeItemBasicGet(Runtime->Context, ItemType);
 	if (UpgradeItemBasic) {
 		RTDataUpgradeItemBasicGradeRef UpgradeItemBasicGrade = RTRuntimeDataUpgradeItemBasicGradeGet(UpgradeItemBasic, ItemData->ItemGrade);
 		if (UpgradeItemBasicGrade) {
@@ -326,7 +329,10 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemWeapon) {
 		ItemSlot->Item.UpgradeLevel
 	);
 
-	RTDataUpgradeItemRef UpgradeItem = RTRuntimeDataUpgradeItemGet(Runtime->Context, ItemData->ItemType);
+    RTDataItemType ItemType = ItemData->ItemType;
+    if (ItemType == RUNTIME_ITEM_TYPE_HELMED2) ItemType = RUNTIME_ITEM_TYPE_HELMED1;
+
+	RTDataUpgradeItemRef UpgradeItem = RTRuntimeDataUpgradeItemGet(Runtime->Context, ItemType);
 	if (UpgradeItem) {
 		RTDataUpgradeItemGradeRef UpgradeItemGrade = RTRuntimeDataUpgradeItemGradeGet(UpgradeItem, ItemData->ItemGrade);
 		if (UpgradeItemGrade) {
