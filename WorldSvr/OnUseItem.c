@@ -75,15 +75,18 @@ CLIENT_PROCEDURE_BINDING(CONVERT_ITEM) {
 			RTDataUpgradeLimitRef UpgradeLimit = RTRuntimeDataUpgradeLimitGet(Runtime->Context, TargetItemData->ItemGrade);
 			if (!UpgradeLimit) goto error;
 			if (TargetItemSlot->Item.UpgradeLevel >= UpgradeLimit->MaxItemLevel) goto error;
-			if (!RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceItemSlot->SlotIndex)) goto error;
+			
+            RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceItemSlot->SlotIndex);
 
+            // TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
 			TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->TargetSlotIndex);
 			assert(TargetItemSlot);
 			TargetItemSlot->Item.UpgradeLevel += 1;
 		}
 		else {
-			if (!RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceItemSlot->SlotIndex)) goto error;
+			RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceItemSlot->SlotIndex);
 
+            // TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
 			TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->TargetSlotIndex);
 			assert(TargetItemSlot);
 			TargetItemSlot->Item.VehicleColor = SourceItemData->CoatingKit.VehicleColor;
@@ -101,6 +104,7 @@ CLIENT_PROCEDURE_BINDING(CONVERT_ITEM) {
 		goto error;
 	}
 
+    // TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
 	TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->TargetSlotIndex);
 	if (TargetItemSlot) {
 		Response->Item = TargetItemSlot->Item;

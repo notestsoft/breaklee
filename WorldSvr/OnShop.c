@@ -109,12 +109,13 @@ CLIENT_PROCEDURE_BINDING(SELL_ITEM) {
         Character->RecoveryInfo.Slots[RecoverySlotIndex] = *ItemSlot;
         Character->RecoveryInfo.Count = MIN(Character->RecoveryInfo.Count + 1, RUNTIME_CHARACTER_MAX_RECOVERY_SLOT_COUNT);
 
-        if (!RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlotIndex)) goto error;
-
+        // TODO: This is probably causing issues with other items still being involved inside the inventory...
         if (ItemData->ItemType == RUNTIME_ITEM_TYPE_QUEST_S) {
             UInt64 QuestItemOptions = RTQuestItemOptions(RTQuestItemGetOptions(ItemSlot->ItemOptions), 0);
             RTCharacterUpdateQuestItemCounter(Runtime, Character, ItemSlot->Item, QuestItemOptions);
         }
+
+        RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlotIndex);
 
         // TODO: Calculate sell price based on upgrade level ...
         Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] += ItemData->SellPrice;

@@ -248,13 +248,23 @@ struct _RTItem {
 };
 typedef struct _RTItem RTItem;
 
+union _RTItemOptionSlot {
+	UInt8 ForceIndex : 4;
+	UInt8 ForceLevel : 3;
+	UInt8 IsEpic : 1;
+};
+
 struct _RTItemOptions {
 	union {
 		struct { UInt64 Serial; };
 		struct {
-			UInt64 _Padding0 : 28;
-			UInt64 SlotCount : 3;
-			UInt64 _Padding1 : 33;
+			union _RTItemOptionSlot Slots[3];
+			union {
+				UInt8 ExtraForceIndex : 4;
+				UInt8 SlotCount : 3;
+				UInt8 _Padding : 1;
+			};
+			UInt32 _Padding1 : 32;
 		} Equipment;
 	};
 };
@@ -294,7 +304,7 @@ typedef struct _RTItemProperty RTItemProperty;
 
 struct _RTItemSlot {
     RTItem Item;
-    UInt64 Unknown1;
+    UInt64 ItemSerial;
 	UInt64 ItemOptions;
     UInt16 SlotIndex; // NOTE: Unused inside a party inventory.. @CleanUp
     RTItemDuration ItemDuration;

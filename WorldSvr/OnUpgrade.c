@@ -33,7 +33,9 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 
 	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
 	if (!ItemSlot) goto error;
-	
+
+    struct _RTItemSlot ItemSlotCopy = *ItemSlot;
+
 	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
 	if (!ItemData) goto error;
 
@@ -125,20 +127,19 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 		if (!CoreData->Options[UpgradeCoreFlagIndex]) goto error;
 
 		if (CoreData->ItemType == RUNTIME_ITEM_TYPE_UPGRADE_CORE) {
-			if (!RTInventoryClearSlot(Runtime, &Character->InventoryInfo, CoreSlot->SlotIndex)) goto error;
-
+			RTInventoryClearSlot(Runtime, &Character->InventoryInfo, CoreSlot->SlotIndex);
 			RequiredCoreCount -= 1;
 		}
 		else if (CoreData->ItemType == RUNTIME_ITEM_TYPE_UPGRADE_CORE_SET) {
 			Int32 ConsumableCoreCount = MIN(RequiredCoreCount, (Int32)CoreSlot->ItemOptions);
 
 			CoreSlot->ItemOptions -= ConsumableCoreCount;
-			if (CoreSlot->ItemOptions < 1) {
-				if (!RTInventoryClearSlot(Runtime, &Character->InventoryInfo, CoreSlot->SlotIndex)) goto error;
-			}
-
 			RemainingCoreCount = (Int32)CoreSlot->ItemOptions;
 			RequiredCoreCount -= ConsumableCoreCount;
+
+			if (CoreSlot->ItemOptions < 1) {
+				RTInventoryClearSlot(Runtime, &Character->InventoryInfo, CoreSlot->SlotIndex);
+			}
 		}
 
 		if (RequiredCoreCount < 1) {
@@ -148,7 +149,8 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 
 	if (RequiredCoreCount > 0) goto error;
 
-	struct _RTItemSlot ItemSlotCopy = *ItemSlot;
+    // TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
+    ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
 
 	Int32 Seed = (Int32)PlatformGetTickCount();
 	Int32 UpgradePoint = Client->UpgradePoint;
@@ -177,16 +179,18 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 			Int32 ConsumableSafeCount = MIN(RequiredSafeCount, (Int32)SafeSlot->ItemOptions);
 
 			SafeSlot->ItemOptions -= ConsumableSafeCount;
-			if (SafeSlot->ItemOptions < 1) {
-				if (!RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SafeSlot->SlotIndex)) goto error;
-			}
-
 			RemainingSafeCount = (Int32)SafeSlot->ItemOptions;
 			RequiredSafeCount -= ConsumableSafeCount;
 			ConsumedSafeCount += ConsumableSafeCount;
+
+			if (SafeSlot->ItemOptions < 1) {
+				RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SafeSlot->SlotIndex);
+			}
 		}
 
 		if (ConsumedSafeCount > 0 && RequiredSafeCount < 1) {
+            // TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
+            ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
 			*ItemSlot = ItemSlotCopy;
 		}
 	}

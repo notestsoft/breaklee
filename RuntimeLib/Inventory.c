@@ -7,21 +7,6 @@ static struct _RTCharacterInventoryInfo kInventorySnapshot = { 0 };
 
 // TODO: Move rollback logic to here...
 
-Int32 RTInventoryGetInsertionIndex(
-	RTRuntimeRef Runtime,
-	RTCharacterInventoryInfoRef Inventory,
-	Int32 SlotIndex
-) {
-	for (Int32 Index = 0; Index < Inventory->Count; Index += 1) {
-		RTItemSlotRef InventorySlot = &Inventory->Slots[Index];
-		if (InventorySlot->SlotIndex > SlotIndex) {
-			return Index;
-		}
-	}
-
-	return Inventory->Count;
-}
-
 Int32 RTInventoryGetNextFreeSlotIndex(
 	RTRuntimeRef Runtime,
 	RTCharacterInventoryInfoRef Inventory
@@ -84,15 +69,8 @@ Bool RTInventorySetSlot(
 	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, Slot->Item.ID);
 	assert(ItemData);
 
-	Int32 Index = RTInventoryGetSlotIndex(
-		Runtime, 
-		Inventory, 
-		Slot->SlotIndex
-	);
-	if (Index >= 0) {
-		RTItemSlotRef InventorySlot = RTInventoryGetSlot(Runtime, Inventory, Slot->SlotIndex);
-		assert(InventorySlot);
-
+	RTItemSlotRef InventorySlot = RTInventoryGetSlot(Runtime, Inventory, Slot->SlotIndex);
+	if (InventorySlot) {
 		if (Slot->Item.ID != InventorySlot->Item.ID) return false;
 
 		if (ItemData->ItemType == RUNTIME_ITEM_TYPE_QUEST_S) {
@@ -113,17 +91,7 @@ Bool RTInventorySetSlot(
 		return false;
 	}
 
-	Int32 InsertionIndex = RTInventoryGetInsertionIndex(Runtime, Inventory, Slot->SlotIndex);
-	Int32 InsertionTailLength = Inventory->Count - InsertionIndex;
-	if (InsertionTailLength > 0) {
-		memmove(
-			&Inventory->Slots[InsertionIndex + 1],
-			&Inventory->Slots[InsertionIndex],
-			sizeof(struct _RTItemSlot) * InsertionTailLength
-		);
-	}
-
-	RTItemSlotRef InventorySlot = &Inventory->Slots[InsertionIndex];
+	InventorySlot = &Inventory->Slots[Inventory->Count];
 	memcpy(InventorySlot, Slot, sizeof(struct _RTItemSlot));
 	Inventory->Count += 1;
 	return true;

@@ -35,13 +35,6 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_PASSIVE_ABILITY) {
 		Packet->InventorySlotIndex
 	);
 
-	PacketLogBytes(
-        Socket->ProtocolIdentifier,
-        Socket->ProtocolVersion,
-        Socket->ProtocolExtension,
-        Packet
-    );
-    
 	return SocketSend(Socket, Connection, Response);
 
 error:
