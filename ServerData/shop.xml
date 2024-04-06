@@ -12,6 +12,8 @@
         <item slot_id="17" item_id="33556325" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="18" item_id="1490" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         
+        <item slot_id="19" item_id="33554722" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
+
     </shop>
     <shop world_id="1" npc_id="46">
         <item slot_id="0" item_id="9" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />

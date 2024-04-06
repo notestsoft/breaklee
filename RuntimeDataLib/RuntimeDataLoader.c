@@ -324,3 +324,101 @@ Bool ParseAttributeRTDataItemType(
 error:
     return false;
 }
+
+Bool ParseAttributeRTDataItemCategory(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    RTDataItemCategory* Result
+) {
+    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    if (AttributeIndex < 0) goto error;
+
+    ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
+    if (!Data) goto error;
+
+    if (strcmp(Data->Data, "MG") == 0) {
+        *Result = RUNTIME_ITEM_CATEGORY_WEAPON_FORCE_CONTROLLER;
+    }
+    else if (strcmp(Data->Data, "1H") == 0) {
+        *Result = RUNTIME_ITEM_CATEGORY_WEAPON_ONE_HAND;
+    }
+    else if (strcmp(Data->Data, "2H") == 0) {
+        *Result = RUNTIME_ITEM_CATEGORY_WEAPON_TWO_HAND;
+    }
+    else if (strcmp(Data->Data, "SUIT") == 0) {
+        *Result = RUNTIME_ITEM_CATEGORY_SUIT;
+    }
+    else if (strcmp(Data->Data, "GLOVE") == 0) {
+        *Result = RUNTIME_ITEM_CATEGORY_GLOVES;
+    }
+    else if (strcmp(Data->Data, "BOOT") == 0) {
+        *Result = RUNTIME_ITEM_CATEGORY_BOOTS;
+    }
+    else if (strcmp(Data->Data, "HELM") == 0) {
+        *Result = RUNTIME_ITEM_CATEGORY_HELMED;
+    }
+    else if (strcmp(Data->Data, "BIKE") == 0) {
+        *Result = RUNTIME_ITEM_CATEGORY_VEHICLE_BIKE;
+    }
+    else if (strcmp(Data->Data, "CHAKRAM") == 0) {
+        *Result = RUNTIME_ITEM_CATEGORY_CHAKRAM;
+    }
+    else {
+        goto error;
+    }
+
+    return true;
+
+error:
+    return false;
+}
+
+Bool ParseAttributeRTDataItemGroup(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    RTDataItemGroup* Result
+) {
+    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    if (AttributeIndex < 0) goto error;
+
+    ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
+    if (!Data) goto error;
+
+    if (strcmp(Data->Data, "MG") == 0) {
+        *Result = RUNTIME_ITEM_GROUP_WEAPON_ONE_HAND;
+    }
+    else if (strcmp(Data->Data, "1H") == 0) {
+        *Result = RUNTIME_ITEM_GROUP_WEAPON_ONE_HAND;
+    }
+    else if (strcmp(Data->Data, "2H") == 0) {
+        *Result = RUNTIME_ITEM_GROUP_WEAPON_TWO_HAND;
+    }
+    else if (strcmp(Data->Data, "SUIT") == 0) {
+        *Result = RUNTIME_ITEM_GROUP_ARMOR;
+    }
+    else if (strcmp(Data->Data, "GLOVE") == 0) {
+        *Result = RUNTIME_ITEM_GROUP_ARMOR;
+    }
+    else if (strcmp(Data->Data, "BOOT") == 0) {
+        *Result = RUNTIME_ITEM_GROUP_ARMOR;
+    }
+    else if (strcmp(Data->Data, "HELM") == 0) {
+        *Result = RUNTIME_ITEM_GROUP_ARMOR;
+    }
+    else if (strcmp(Data->Data, "BIKE") == 0) {
+        *Result = RUNTIME_ITEM_GROUP_VEHICLE;
+    }
+    else if (strcmp(Data->Data, "CHAKRAM") == 0) {
+        *Result = RUNTIME_ITEM_GROUP_WEAPON_ONE_HAND;
+    }
+    else {
+        goto error;
+    }
+
+    return true;
+
+error:
+    return false;
+}

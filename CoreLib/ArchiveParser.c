@@ -19,6 +19,8 @@ typedef struct {
     Token NextToken;
     Char* NextTokenStart;
     Char* NextTokenEnd;
+    Char* NameStart;
+    Char* NameEnd;
     Bool NoLinebreak;
     Bool NoPeekNext;
     Bool NoCascade;
@@ -201,10 +203,9 @@ static inline Bool TryParseAttribute(
 
     if (!ConsumeToken(&CurrentState, TokenIdentifier)) {
         // NOTE: We just allow to use empty identifiers so invalid file structures still parse well
-        if (*AttributeStart == '=') {
-            State->Token = TokenIdentifier;
-            State->TokenStart = State->Cursor;
-            State->TokenEnd = State->Cursor + 1;
+        if (*AttributeStart == '=' && State->NameStart != NULL) {
+            AttributeStart = CurrentState.NameStart;
+            AttributeEnd = CurrentState.NameEnd;
         } else {
             goto error;
         }
@@ -303,8 +304,8 @@ Bool ArchiveParseFromSource(
         }
 
         if (ConsumeToken(&State, '/')) {
-            Char* NameStart = State.TokenStart;
-            Char* NameEnd = State.TokenEnd;
+            State.NameStart = State.TokenStart;
+            State.NameEnd = State.TokenEnd;
 
             if (!ConsumeToken(&State, TokenIdentifier)) goto error;
             if (!ConsumeToken(&State, '>')) goto error;
@@ -313,17 +314,16 @@ Bool ArchiveParseFromSource(
                 goto error;
 
             ArchiveStringRef Name = ArchiveNodeGetName(Archive, State.NodeIndex);
-            if (!IgnoreErrors && memcmp(Name->Data, NameStart, NameEnd - NameStart) != 0)
+            if (!IgnoreErrors && memcmp(Name->Data, State.NameStart, State.NameEnd - State.NameStart) != 0)
                 goto error;
 
             State.NodeIndex = ArchiveNodeGetParent(Archive, State.NodeIndex);
             continue;
         }
 
-        Char* NameStart = State.TokenStart;
-        Char* NameEnd = State.TokenEnd;
-
-        State.NodeIndex = ArchiveAddNode(Archive, State.NodeIndex, NameStart, (Int32)(NameEnd - NameStart));
+        State.NameStart = State.TokenStart;
+        State.NameEnd = State.TokenEnd;
+        State.NodeIndex = ArchiveAddNode(Archive, State.NodeIndex, State.NameStart, (Int32)(State.NameEnd - State.NameStart));
 
         if (!ConsumeToken(&State, TokenIdentifier)) 
             goto error;

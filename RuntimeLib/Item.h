@@ -105,7 +105,8 @@ enum {
 #define RUNTIME_ITEM_MASK_EXTREME_LEVEL     (0b1111 << 32)
 #define RUNTIME_ITEM_MASK_DIVINE_LEVEL      (0b1111 << 36)
 #define RUNTIME_ITEM_MASK_LEVEL             RUNTIME_ITEM_MASK_UPGRADE_LEVEL | RUNTIME_ITEM_MASK_EXTREME_LEVEL | RUNTIME_ITEM_MASK_DIVINE_LEVEL
-#define RUNTIME_ITEM_MASK_INDEX				~(RUNTIME_ITEM_MASK_ACCOUNT_BINDING | RUNTIME_ITEM_MASK_CHARACTER_BINDING | RUNTIME_ITEM_MASK_TRADABLE_BINDING | RUNTIME_ITEM_MASK_UPGRADE_LEVEL | RUNTIME_ITEM_MASK_VEHICLE_COLOR)
+#define RUNTIME_ITEM_MASK_BROKEN			(1 << 27)
+#define RUNTIME_ITEM_MASK_INDEX				~(RUNTIME_ITEM_MASK_ACCOUNT_BINDING | RUNTIME_ITEM_MASK_CHARACTER_BINDING | RUNTIME_ITEM_MASK_TRADABLE_BINDING | RUNTIME_ITEM_MASK_UPGRADE_LEVEL | RUNTIME_ITEM_MASK_VEHICLE_COLOR | RUNTIME_ITEM_MASK_BROKEN)
 
 #define RUNTIME_QUEST_ITEM_INDEX_MASK		0x000FFF80
 #define RUNTIME_QUEST_ITEM_INDEX_EXPONENT	7
@@ -209,7 +210,18 @@ struct _RTItemData {
 			Int32 Duration;
 		} SpecialPotion;
 
+		struct {
+			Int32 Unknown1[6];
+			Int32 SuccessRate;
+			Int32 Unknown2;
+			Int32 HasSafeguard;
+		} RepairKit;
 		// TODO: Add other item types like potion, pet, ...
+
+		struct {
+			Int32 MinLevel;
+			Int32 MaxLevel;
+		} ExtremeSealStone;
 
 		struct { Int32 Options[22]; };
 	};
@@ -226,7 +238,8 @@ struct _RTItem {
 		struct { UInt64 _2 : 18; UInt64 IsPremiumPcOnly : 1; UInt64 IsCharacterBinding : 1; UInt64 IsTradableBinding : 1; };
 		struct { UInt64 _7 : 21; UInt64 VehicleColor : 3; };
 		struct { UInt64 _3 : 23; UInt64 IsSpecialInventoryItem : 1; };
-		struct { UInt64 _4 : 26; UInt64 IsBroken : 1; UInt64 IsSealed : 1; };
+		//struct { UInt64 _4 : 26; UInt64 IsBroken : 1; UInt64 IsSealed : 1; };
+		struct { UInt64 _4 : 27; UInt64 IsBroken : 1; };
 		struct { UInt64 _5 : 13; UInt64 UpgradeLevel : 5; };
         struct { UInt64 _6 : 32; UInt64 ExtremeLevel : 4; UInt64 DivineLevel : 4; };
 		struct { UInt32 PartyQuestItemID : 15; UInt32 PartyQuestItemStackable : 1; };

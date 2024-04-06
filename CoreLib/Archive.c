@@ -286,7 +286,7 @@ static inline Int64 ArchiveLookupName(
     UInt8* Start = ArrayGetElementAtIndex(Archive->NameTable, 0);
     UInt8* Cursor = Start;
     UInt8* End = ArrayGetElementAtIndex(Archive->NameTable, ArrayGetElementCount(Archive->NameTable) - 1);
-    Bool IsZeroTerminated = Name[Length - 1] == 0;
+    Bool IsZeroTerminated = (Length < 1) ? true : Name[Length - 1] == 0;
 
     while (Cursor <= End) {
         ArchiveStringRef String = (ArchiveStringRef)Cursor;

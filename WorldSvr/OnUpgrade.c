@@ -211,3 +211,228 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 error:
 	return SocketDisconnect(Socket, Connection);
 }
+
+CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_LEVEL) {
+	if (!Character) goto error;
+
+	Int32 TailLength = sizeof(UInt16) * Packet->InventorySlotCount;
+	if (sizeof(C2S_DATA_UPGRADE_EXTREME_LEVEL) + TailLength > Packet->Length) goto error;
+
+	RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->TargetSlotIndex);
+	if (!TargetSlot) goto error;
+
+	RTItemDataRef TargetData = RTRuntimeGetItemDataByIndex(Runtime, TargetSlot->Item.ID);
+	if (!TargetData) goto error;
+
+	RTDataExtremeUpgradeBaseGradeRef ExtremeUpgradeBaseGrade = NULL;
+	for (Index Index = 0; Index < Runtime->Context->ExtremeUpgradeBaseCount; Index += 1) {
+		RTDataExtremeUpgradeBaseRef ExtremeUpgradeBase = &Runtime->Context->ExtremeUpgradeBaseList[Index];
+		if (ExtremeUpgradeBase->Type != TargetData->ItemType) continue;
+
+		ExtremeUpgradeBaseGrade = RTRuntimeDataExtremeUpgradeBaseGradeGet(ExtremeUpgradeBase, TargetData->ItemGrade);
+		if (ExtremeUpgradeBaseGrade) break;
+	}
+	if (!ExtremeUpgradeBaseGrade) goto error;
+
+	RTDataExtremeUpgradeMainRef ExtremeUpgradeMain = RTRuntimeDataExtremeUpgradeMainGet(Runtime->Context, ExtremeUpgradeBaseGrade->ExtremeUpgradeGroup);
+	if (!ExtremeUpgradeMain) goto error;
+
+	RTDataExtremeUpgradeMainLevelRef ExtremeUpgradeMainLevel = RTRuntimeDataExtremeUpgradeMainLevelGet(ExtremeUpgradeMain, TargetSlot->Item.ExtremeLevel + 1);
+	if (!ExtremeUpgradeMainLevel) goto error;
+
+	RTDataExtremeUpgradeFormulaRef ExtremeUpgradeFormula = RTRuntimeDataExtremeUpgradeFormulaGet(Runtime->Context, ExtremeUpgradeBaseGrade->FormulaGroup);
+	if (!ExtremeUpgradeFormula) goto error;
+
+	RTDataExtremeUpgradeFormulaLevelRef ExtremeUpgradeFormulaLevel = RTRuntimeDataExtremeUpgradeFormulaLevelGet(ExtremeUpgradeFormula, TargetSlot->Item.ExtremeLevel + 1);
+	if (!ExtremeUpgradeFormulaLevel) goto error;
+
+	if (Packet->InventorySlotCount != ExtremeUpgradeFormulaLevel->RequiredCoreCount) {
+		S2C_DATA_UPGRADE_EXTREME_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPGRADE_EXTREME_LEVEL);
+		Response->Result = S2C_UPGRADE_EXTRENE_LEVEL_RESULT_INSUFFICIENT_CORES;
+		Response->Currency = Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
+		return SocketSend(Socket, Connection, Response);
+	}
+
+	if (TargetSlot->Item.UpgradeLevel < 15) goto error;
+	if (TargetSlot->Item.ExtremeLevel >= ExtremeUpgradeBaseGrade->ExtremeUpgradeMax) goto error;
+
+	if (Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < ExtremeUpgradeFormulaLevel->CurrencyPrice) {
+		S2C_DATA_UPGRADE_EXTREME_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPGRADE_EXTREME_LEVEL);
+		Response->Result = S2C_UPGRADE_EXTRENE_LEVEL_RESULT_INSUFFICIENT_CURRENCY;
+		Response->Currency = Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
+		return SocketSend(Socket, Connection, Response);
+	}
+
+	Int32 CorePower = 0;
+
+	for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
+		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex[Index]);
+		if (!ItemSlot) goto error;
+
+		RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
+		if (!ItemData) goto error;
+		if (ItemData->ItemType != RUNTIME_ITEM_TYPE_EXTREME_CORE) goto error;
+
+		RTDataExtremeUpgradeOptionRef ExtremeUpgradeOption = RTRuntimeDataExtremeUpgradeOptionGet(Runtime->Context, ItemData->ItemGrade);
+		if (!ExtremeUpgradeOption) goto error;
+		if (ExtremeUpgradeOption->ExtremeUpgradeOptionLevelCount < 1) goto error;
+
+		CorePower += ExtremeUpgradeOption->ExtremeUpgradeOptionLevelList[0].OptionLevel;
+	}
+
+	S2C_DATA_UPGRADE_EXTREME_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPGRADE_EXTREME_LEVEL);
+
+	Int32 SuccessRate = 1000 * (ExtremeUpgradeFormulaLevel->ExtremeUpgradeFactor * CorePower) / (100 * ExtremeUpgradeFormulaLevel->BaseExtremeLevel);
+	Int32 RandomValue = RandomRange(&Client->DiceSeed, 0, 1000);
+	if (RandomValue < SuccessRate) {
+		Response->Result = S2C_UPGRADE_EXTREME_LEVEL_RESULT_SUCCESS;
+		TargetSlot->Item.ExtremeLevel += 1;
+	}
+	else {
+		Int32 BreakRate = ExtremeUpgradeFormulaLevel->BreakItemRate;
+		Int32 RandomValue = RandomRange(&Client->DiceSeed, 0, 1000);
+		if (RandomValue < BreakRate) {
+			Response->Result = S2C_UPGRADE_EXTREME_LEVEL_RESULT_BROKEN;
+			TargetSlot->Item.IsBroken = true;
+		}
+		else {
+			Response->Result = S2C_UPGRADE_EXTREME_LEVEL_RESULT_RESET;
+			TargetSlot->Item.ExtremeLevel = 0;
+		}
+	}
+
+	Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= ExtremeUpgradeFormulaLevel->CurrencyPrice;
+
+	for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
+		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex[Index]);
+	}
+
+	Character->SyncMask.Info = true;
+	Character->SyncMask.InventoryInfo = true;
+	Character->SyncPriority.High = true;
+
+	Response->Currency = Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
+	return SocketSend(Socket, Connection, Response);
+
+error:
+	return SocketDisconnect(Socket, Connection);
+}
+
+CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_REPAIR) {
+	if (!Character) goto error;
+
+	RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->SourceSlotIndex);
+	if (!SourceSlot) goto error;
+
+	RTItemDataRef SourceData = RTRuntimeGetItemDataByIndex(Runtime, SourceSlot->Item.ID);
+	if (!SourceData) goto error;
+
+	RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->TargetSlotIndex);
+	if (!TargetSlot) goto error;
+
+	RTItemDataRef TargetData = RTRuntimeGetItemDataByIndex(Runtime, TargetSlot->Item.ID);
+	if (!TargetData) goto error;
+
+	if (SourceData->ItemType != RUNTIME_ITEM_TYPE_REPAIR_KIT) goto error;
+	if (!TargetSlot->Item.IsBroken) goto error;
+
+	S2C_DATA_UPGRADE_EXTREME_REPAIR* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPGRADE_EXTREME_REPAIR);
+	Response->Result = S2C_UPGRADE_EXTREME_REPAIR_RESULT_ERROR;
+
+	UInt16 SourceItemSlotIndex = SourceSlot->SlotIndex;
+	UInt16 TargetItemSlotIndex = TargetSlot->SlotIndex;
+	Int32 RandomValue = RandomRange(&Client->DiceSeed, 0, 1000);
+	if (RandomValue < SourceData->RepairKit.SuccessRate) {
+		Response->Result = S2C_UPGRADE_EXTREME_REPAIR_RESULT_SUCCESS;
+		TargetSlot->Item.IsBroken = false;
+	}
+	else if (SourceData->RepairKit.HasSafeguard) {
+		Response->Result = S2C_UPGRADE_EXTREME_REPAIR_RESULT_FAILED;
+	}
+	else {
+		Response->Result = S2C_UPGRADE_EXTREME_REPAIR_RESULT_BROKEN;
+		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, TargetItemSlotIndex);
+	}
+
+	RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceItemSlotIndex);
+	Character->SyncMask.InventoryInfo = true;
+	Character->SyncPriority.High = true;
+
+	return SocketSend(Socket, Connection, Response);
+
+error:
+	return SocketDisconnect(Socket, Connection);
+}
+
+CLIENT_PROCEDURE_BINDING(EXTREME_UPGRADE_SEAL) {
+	if (!Character) goto error;
+
+	RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->SourceSlotIndex);
+	if (!SourceSlot) goto error;
+
+	RTItemDataRef SourceData = RTRuntimeGetItemDataByIndex(Runtime, SourceSlot->Item.ID);
+	if (!SourceData) goto error;
+
+	RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->TargetSlotIndex);
+	if (!TargetSlot) goto error;
+
+	RTItemDataRef TargetData = RTRuntimeGetItemDataByIndex(Runtime, TargetSlot->Item.ID);
+	if (!TargetData) goto error;
+
+	if (SourceData->ItemType != RUNTIME_ITEM_TYPE_EXTREME_SEAL_STONE) goto error;
+
+	S2C_DATA_EXTREME_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, EXTREME_UPGRADE_SEAL);
+	Response->IsUnsealing = SourceSlot->ItemOptions > 0;
+	if (Response->IsUnsealing) {
+		if (TargetSlot->Item.ExtremeLevel > 0) goto error;
+		if (TargetSlot->Item.UpgradeLevel < 15) goto error;
+
+		RTDataExtremeUpgradeBaseGradeRef ExtremeUpgradeBaseGrade = NULL;
+		for (Index Index = 0; Index < Runtime->Context->ExtremeUpgradeBaseCount; Index += 1) {
+			RTDataExtremeUpgradeBaseRef ExtremeUpgradeBase = &Runtime->Context->ExtremeUpgradeBaseList[Index];
+			if (ExtremeUpgradeBase->Type != TargetData->ItemType) continue;
+
+			ExtremeUpgradeBaseGrade = RTRuntimeDataExtremeUpgradeBaseGradeGet(ExtremeUpgradeBase, TargetData->ItemGrade);
+			if (ExtremeUpgradeBaseGrade) break;
+		}
+		if (!ExtremeUpgradeBaseGrade) goto error;
+		
+		Int32 SourceExtremeLevel = SourceSlot->ItemOptions & 0b111;
+		if (SourceExtremeLevel > ExtremeUpgradeBaseGrade->ExtremeUpgradeMax) goto error;
+		
+		RTDataExtremeUpgradeCategoryRef SourceCategory = RTRuntimeDataExtremeUpgradeCategoryGetByCategory(Runtime->Context, SourceSlot->ItemOptions >> 8);
+		if (!SourceCategory) goto error;
+
+		RTDataExtremeUpgradeCategoryRef TargetCategory = RTRuntimeDataExtremeUpgradeCategoryGet(Runtime->Context, TargetData->ItemType);
+		if (!TargetCategory) goto error;
+
+		if (SourceCategory->Group != TargetCategory->Group) goto error;
+
+		TargetSlot->Item.ExtremeLevel = SourceExtremeLevel;
+		Response->ItemID = TargetSlot->Item;
+
+		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceSlot->SlotIndex);
+		Character->SyncMask.InventoryInfo = true;
+		Character->SyncPriority.High = true;
+	}
+	else {
+		if (SourceSlot->ItemOptions > 0) goto error;
+		if (TargetSlot->Item.IsBroken) goto error;
+		if (TargetSlot->Item.ExtremeLevel < SourceData->ExtremeSealStone.MinLevel) goto error;
+		if (TargetSlot->Item.ExtremeLevel > SourceData->ExtremeSealStone.MaxLevel) goto error;
+
+		RTDataExtremeUpgradeCategoryRef TargetCategory = RTRuntimeDataExtremeUpgradeCategoryGet(Runtime->Context, TargetData->ItemType);
+		if (!TargetCategory) goto error;
+
+		SourceSlot->ItemOptions = ((UInt64)TargetCategory->Category << 8) | TargetSlot->Item.ExtremeLevel;
+		TargetSlot->Item.ExtremeLevel = 0;
+		Response->ItemID.Serial = SourceSlot->ItemOptions;
+		Character->SyncMask.InventoryInfo = true;
+		Character->SyncPriority.High = true;
+	}
+
+	return SocketSend(Socket, Connection, Response);
+
+error:
+	return SocketDisconnect(Socket, Connection);
+}
