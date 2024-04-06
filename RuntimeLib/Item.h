@@ -20,6 +20,8 @@ EXTERN_C_BEGIN
 enum {
 	RUNTIME_ITEM_USE_RESULT_SUCCESS = 0,
 	RUNTIME_ITEM_USE_RESULT_FAILED = 1,
+	RUNTIME_ITEM_USE_RESULT_SUCCESS_DESTROY_ITEM = 15,
+	RUNTIME_ITEM_USE_RESULT_SUCCESS_SAFEGUARD_ITEM = 16,
 	RUNTIME_ITEM_USE_RESULT_IS_DEAD = 17,
 	RUNTIME_ITEM_USE_RESULT_IS_NOT_DEAD = 18,
 	RUNTIME_ITEM_USE_RESULT_REJECTED = 19,
@@ -216,12 +218,23 @@ struct _RTItemData {
 			Int32 Unknown2;
 			Int32 HasSafeguard;
 		} RepairKit;
-		// TODO: Add other item types like potion, pet, ...
 
 		struct {
 			Int32 MinLevel;
 			Int32 MaxLevel;
 		} ExtremeSealStone;
+
+		struct {
+			// TODO: Check if the upper part is same as RepairKit
+			Int32 TargetItemType;
+			Int32 Padding0[4];
+			Int32 MaxSlotCount;
+			Int32 SuccessRate;
+			Int32 Padding1;
+			Int32 HasSafeguard;
+		} SlotConverter;
+
+		// TODO: Add other item types like potion, pet, ...
 
 		struct { Int32 Options[22]; };
 	};
@@ -341,6 +354,12 @@ struct _RTItemSlotExtenderPayload {
 };
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotExtender);
+
+struct _RTItemSlotConverterPayload {
+	UInt16 TargetSlotIndex;
+};
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotConverter);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHolyWater);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion);
 

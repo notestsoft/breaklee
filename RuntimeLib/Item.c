@@ -505,6 +505,46 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotExtender) {
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotConverter) {
+	struct _RTItemSlotConverterPayload* Data = Payload;
+
+	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Data->TargetSlotIndex);
+	if (!TargetItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	RTItemDataRef TargetItemData = RTRuntimeGetItemDataByIndex(Runtime, TargetItemSlot->Item.ID);
+	if (!TargetItemData) return RUNTIME_ITEM_USE_RESULT_FAILED;
+	
+	if (ItemData->SlotConverter.TargetItemType != TargetItemData->ItemType) return RUNTIME_ITEM_USE_RESULT_FAILED;
+	if (ItemData->ItemGrade != TargetItemData->ItemGrade) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	RTItemOptions TargetItemOptions = { 0 };
+	TargetItemOptions.Serial = TargetItemSlot->ItemOptions;
+	if (TargetItemOptions.Equipment.SlotCount >= ItemData->SlotConverter.MaxSlotCount) return RUNTIME_ITEM_USE_RESULT_FAILED;
+	if (TargetItemOptions.Equipment.SlotCount >= TargetItemData->Options[3]) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	Int32 SourceItemSlotIndex = ItemSlot->SlotIndex;
+	Int32 TargetItemSlotIndex = TargetItemSlot->SlotIndex;
+
+	Int32 Seed = GetTickCount();
+	Int32 RandomValue = RandomRange(&Seed, 0, 1000);
+	if (RandomValue < ItemData->SlotConverter.SuccessRate) {
+		TargetItemOptions.Equipment.SlotCount += 1;
+		TargetItemSlot->ItemOptions = TargetItemOptions.Serial;
+		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceItemSlotIndex);
+		return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+	}
+	else {
+		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceItemSlotIndex);
+
+		if (!ItemData->SlotConverter.HasSafeguard) {
+			RTInventoryClearSlot(Runtime, &Character->InventoryInfo, TargetItemSlotIndex);
+			return RUNTIME_ITEM_USE_RESULT_SUCCESS_DESTROY_ITEM;
+		}
+
+		return RUNTIME_ITEM_USE_RESULT_SUCCESS_SAFEGUARD_ITEM;
+	}
+}
+
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHolyWater) {
 	if (!RTCharacterEnableForceWing(Runtime, Character)) return RUNTIME_ITEM_USE_RESULT_FAILED;
 

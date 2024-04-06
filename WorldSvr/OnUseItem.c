@@ -94,9 +94,13 @@ CLIENT_PROCEDURE_BINDING(CONVERT_ITEM) {
 
 		Response->Result = RUNTIME_ITEM_USE_RESULT_SUCCESS;
 	}
-
-	if (SourceItemData->ItemType == RUNTIME_ITEM_TYPE_SLOT_EXTENDER) {
+	else if (SourceItemData->ItemType == RUNTIME_ITEM_TYPE_SLOT_EXTENDER) {
 		struct _RTItemSlotExtenderPayload Payload = { 0 };
+		Payload.TargetSlotIndex = Packet->TargetSlotIndex;
+		Response->Result = RTItemUseInternal(Runtime, Character, SourceItemSlot, SourceItemData, &Payload);
+	}
+	else if (SourceItemData->ItemType == RUNTIME_ITEM_TYPE_SLOT_CONVERTER) {
+		struct _RTItemSlotConverterPayload Payload = { 0 };
 		Payload.TargetSlotIndex = Packet->TargetSlotIndex;
 		Response->Result = RTItemUseInternal(Runtime, Character, SourceItemSlot, SourceItemData, &Payload);
 	}
@@ -112,10 +116,8 @@ CLIENT_PROCEDURE_BINDING(CONVERT_ITEM) {
 		Response->InventorySlotIndex = TargetItemSlot->SlotIndex;
 	}
 
-	if (Response->Result == RUNTIME_ITEM_USE_RESULT_SUCCESS) {
-		Character->SyncMask.InventoryInfo = true;
-		Character->SyncPriority.High = true;
-	}
+	Character->SyncMask.InventoryInfo = true;
+	Character->SyncPriority.High = true;
 
 	PacketLogBytes(
         Socket->ProtocolIdentifier,
