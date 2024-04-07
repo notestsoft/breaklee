@@ -17,6 +17,24 @@
         <enchant_grade_value item_grade="15" cost_grade="14" />
     </enchant_grade>
 
+    <enchant_extend_grade>
+        <enchant_grade_value item_grade="1" cost_grade="1" />
+        <enchant_grade_value item_grade="2" cost_grade="1" />
+        <enchant_grade_value item_grade="3" cost_grade="1" />
+        <enchant_grade_value item_grade="4" cost_grade="4" />
+        <enchant_grade_value item_grade="5" cost_grade="5" />
+        <enchant_grade_value item_grade="6" cost_grade="5" />
+        <enchant_grade_value item_grade="7" cost_grade="5" />
+        <enchant_grade_value item_grade="8" cost_grade="8" />
+        <enchant_grade_value item_grade="9" cost_grade="8" />
+        <enchant_grade_value item_grade="10" cost_grade="8" />
+        <enchant_grade_value item_grade="11" cost_grade="11" />
+        <enchant_grade_value item_grade="12" cost_grade="11" />
+        <enchant_grade_value item_grade="13" cost_grade="11" />
+        <enchant_grade_value item_grade="14" cost_grade="14" />
+        <enchant_grade_value item_grade="15" cost_grade="14" />
+    </enchant_extend_grade>
+
     <enchant_rate>
         <enchant_rate_type type="0">
             <enchant_rate_value level="0" rates="1000,0,0,0,0,0" />

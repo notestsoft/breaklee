@@ -583,7 +583,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotExtender) {
 	);
 	if (!IsExtendable) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
-	RTDataUpgradeGradeRef UpgradeGrade = RTRuntimeDataUpgradeGradeGet(Runtime->Context, TargetItemData->ItemGrade);
+	RTDataUpgradeExtendGradeRef UpgradeGrade = RTRuntimeDataUpgradeExtendGradeGet(Runtime->Context, TargetItemData->ItemGrade);
 	if (!UpgradeGrade) return RUNTIME_ITEM_USE_RESULT_FAILED;
 	if (ItemData->ItemGrade != UpgradeGrade->CostGrade) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
