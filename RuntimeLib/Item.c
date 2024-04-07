@@ -114,6 +114,96 @@ Int32 RTItemUseInternal(
 	return RUNTIME_ITEM_USE_RESULT_FAILED;
 }
 
+Int32 RTItemOptionFirstEpicSlotIndex(
+	RTItemOptions* Options
+) {
+	for (Int32 Index = 0; Index < RUNTIME_ITEM_MAX_OPTION_COUNT; Index += 1) {
+		if (Options->Equipment.Slots[Index].IsEpic) return Index;
+	}
+
+	return -1;
+}
+
+Int32 RTItemOptionLastEmptySlotIndex(
+	RTItemOptions* Options
+) {
+	for (Int32 Index = RUNTIME_ITEM_MAX_OPTION_COUNT - 1; Index >= 0; Index -= 1) {
+		UInt8 Value = *((UInt8*)&Options->Equipment.Slots[Index]);
+		if (!Value) return Index;
+	}
+
+	return -1;
+}
+
+Bool RTItemOptionHasEpic(
+	RTItemOptions Options
+) {
+	for (Int32 Index = 0; Index < RUNTIME_ITEM_MAX_OPTION_COUNT; Index += 1) {
+		if (Options.Equipment.Slots[Index].IsEpic) return true;
+	}
+
+	return false;
+}
+
+Bool RTItemOptionPreserveEpicSlot(
+	RTItemOptions* Options
+) {
+	UInt8 Value = *((UInt8*)&Options->Equipment.Slots[0]);
+	if (Value > 0) {
+		return RTItemOptionPushSlots(Options);
+	}
+
+	return true;
+}
+
+Bool RTItemOptionPushSlots(
+	RTItemOptions* Options
+) {
+	Int32 LastEmptySlotIndex = RTItemOptionLastEmptySlotIndex(Options);
+	if (LastEmptySlotIndex < 0) return false;
+
+	for (Int32 Index = LastEmptySlotIndex - 1; Index >= 0; Index -= 1) {
+		Options->Equipment.Slots[Index + 1] = Options->Equipment.Slots[Index];
+	}
+
+	RTItemOptionSlot EmptySlot = { 0 };
+	Options->Equipment.Slots[0] = EmptySlot;
+	return true;
+}
+
+Bool RTItemOptionAppendSlot(
+	RTItemOptions* Options,
+	RTItemOptionSlot Slot
+) {
+	Int32 LastNonEpicSlotIndex = -1;
+
+	for (Int32 Index = 0; Index < RUNTIME_ITEM_MAX_OPTION_COUNT; ++Index) {
+		if (!Options->Equipment.Slots[Index].IsEpic) {
+			LastNonEpicSlotIndex = Index;
+			break;
+		}
+	}
+
+	if (LastNonEpicSlotIndex == RUNTIME_ITEM_MAX_OPTION_COUNT - 1) {
+		return false;
+	}
+
+	for (Int32 Index = LastNonEpicSlotIndex + 1; Index > 0; --Index) {
+		Options->Equipment.Slots[Index] = Options->Equipment.Slots[Index - 1];
+	}
+
+	Options->Equipment.Slots[0] = Slot;
+
+	if (LastNonEpicSlotIndex == RUNTIME_ITEM_MAX_OPTION_COUNT - 1) {
+		Options->Equipment.ExtraForceIndex = Options->Equipment.Slots[LastNonEpicSlotIndex].ForceIndex;
+		Options->Equipment.Slots[LastNonEpicSlotIndex].ForceIndex = 0;
+		Options->Equipment.Slots[LastNonEpicSlotIndex].ForceLevel = 0;
+		Options->Equipment.Slots[LastNonEpicSlotIndex].IsEpic = 0;
+	}
+
+	return true;
+}
+
 UInt32 RTItemGetSerialID(
 	RTItem Item
 ) {
@@ -543,6 +633,68 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotConverter) {
 
 		return RUNTIME_ITEM_USE_RESULT_SUCCESS_SAFEGUARD_ITEM;
 	}
+}
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpicConverter) {
+	struct _RTItemEpicConverterPayload* Data = Payload;
+
+	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Data->TargetSlotIndex);
+	if (!TargetItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	RTItemDataRef TargetItemData = RTRuntimeGetItemDataByIndex(Runtime, TargetItemSlot->Item.ID);
+	if (!TargetItemData) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	if (ItemData->EpicConverter.TargetItemType != TargetItemData->ItemType) return RUNTIME_ITEM_USE_RESULT_FAILED;
+	if (ItemData->EpicConverter.RequiredItemLevel > TargetItemSlot->Item.UpgradeLevel) return RUNTIME_ITEM_USE_RESULT_FAILED;
+	if (ItemData->ItemGrade > TargetItemData->ItemGrade) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	RTItemOptions TargetItemOptions = { 0 };
+	TargetItemOptions.Serial = TargetItemSlot->ItemOptions;
+	if (TargetItemOptions.Equipment.SlotCount < ItemData->EpicConverter.RequiredSlotCount) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	RTDataEpicOptionPoolRef OptionPool = RTRuntimeDataEpicOptionPoolGet(Runtime->Context, ItemData->EpicConverter.PoolID);
+	if (!OptionPool) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	Int32 MaxRandomValue = 0;
+	for (Int32 Index = 0; Index < OptionPool->EpicOptionPoolValueCount; Index += 1) {
+		MaxRandomValue += OptionPool->EpicOptionPoolValueList[Index].Rate;
+	}
+
+	Int32 Seed = GetTickCount();
+	Int32 RandomValue = RandomRange(&Seed, 0, MaxRandomValue);
+	Int32 RateOffset = 0;
+	Bool Success = false;
+
+	for (Int32 Index = 0; Index < OptionPool->EpicOptionPoolValueCount; Index += 1) {
+		RTDataEpicOptionPoolValueRef OptionPoolValue = &OptionPool->EpicOptionPoolValueList[Index];
+
+		if (RandomValue <= OptionPoolValue->Rate + RateOffset) {
+			Int32 SlotIndex = RTItemOptionFirstEpicSlotIndex(&TargetItemOptions);
+
+			Bool IsReset = OptionPoolValue->EpicOption < 1 && OptionPoolValue->EpicGrade < 1;
+			if (IsReset && SlotIndex < 0) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+			if (!IsReset) {
+				if (SlotIndex >= 0) return RUNTIME_ITEM_USE_RESULT_FAILED;
+				if (!RTItemOptionPreserveEpicSlot(&TargetItemOptions)) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+				SlotIndex = 0;
+			}
+
+			TargetItemOptions.Equipment.Slots[SlotIndex].IsEpic = !IsReset;
+			TargetItemOptions.Equipment.Slots[SlotIndex].ForceIndex = OptionPoolValue->EpicOption;
+			TargetItemOptions.Equipment.Slots[SlotIndex].ForceLevel = OptionPoolValue->EpicGrade;
+			Success = true;
+			break;
+		}
+		
+		RateOffset += OptionPoolValue->Rate;
+	}
+
+	TargetItemSlot->ItemOptions = TargetItemOptions.Serial;
+	RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+
+	return (Success) ? RUNTIME_ITEM_USE_RESULT_SUCCESS : RUNTIME_ITEM_USE_RESULT_SUCCESS_SAFEGUARD_ITEM;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHolyWater) {

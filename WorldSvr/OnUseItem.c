@@ -104,6 +104,11 @@ CLIENT_PROCEDURE_BINDING(CONVERT_ITEM) {
 		Payload.TargetSlotIndex = Packet->TargetSlotIndex;
 		Response->Result = RTItemUseInternal(Runtime, Character, SourceItemSlot, SourceItemData, &Payload);
 	}
+	else if (SourceItemData->ItemType == RUNTIME_ITEM_TYPE_EPIC_CONVERTER) {
+		struct _RTItemEpicConverterPayload Payload = { 0 };
+		Payload.TargetSlotIndex = Packet->TargetSlotIndex;
+		Response->Result = RTItemUseInternal(Runtime, Character, SourceItemSlot, SourceItemData, &Payload);
+	}
 	else {
 		goto error;
 	}

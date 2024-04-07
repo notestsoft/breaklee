@@ -225,7 +225,6 @@ struct _RTItemData {
 		} ExtremeSealStone;
 
 		struct {
-			// TODO: Check if the upper part is same as RepairKit
 			Int32 TargetItemType;
 			Int32 Padding0[4];
 			Int32 MaxSlotCount;
@@ -233,6 +232,17 @@ struct _RTItemData {
 			Int32 Padding1;
 			Int32 HasSafeguard;
 		} SlotConverter;
+
+		struct {
+			Int32 TargetItemType;
+			Int32 Padding0[3];
+			Int32 RequiredItemLevel;
+			Int32 RequiredSlotCount;
+			Int32 SuccessRate;
+			Int32 Padding1;
+			Int32 HasSafeguard;
+			Int32 PoolID;
+		} EpicConverter;
 
 		// TODO: Add other item types like potion, pet, ...
 
@@ -266,12 +276,13 @@ struct _RTItemOptionSlot {
 	UInt8 ForceLevel : 3;
 	UInt8 IsEpic : 1;
 };
+typedef struct _RTItemOptionSlot RTItemOptionSlot;
 
 struct _RTItemOptions {
 	union {
 		struct { UInt64 Serial; };
 		struct {
-			struct _RTItemOptionSlot Slots[3];
+			RTItemOptionSlot Slots[RUNTIME_ITEM_MAX_OPTION_COUNT];
 			struct {
 				UInt8 ExtraForceIndex : 4;
 				UInt8 SlotCount : 3;
@@ -339,6 +350,27 @@ Int32 RTItemUseInternal(
 	Void* Payload
 );
 
+Int32 RTItemOptionFirstEpicSlotIndex(
+	RTItemOptions* Options
+);
+
+Int32 RTItemOptionLastEmptySlotIndex(
+	RTItemOptions* Options
+);
+
+Bool RTItemOptionHasEpic(
+	RTItemOptions Options
+);
+
+Bool RTItemOptionPushSlots(
+	RTItemOptions* Options
+);
+
+Bool RTItemOptionAppendSlot(
+	RTItemOptions* Options,
+	RTItemOptionSlot Slot
+);
+
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStub);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemPotion);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSkillBook);
@@ -360,6 +392,12 @@ struct _RTItemSlotConverterPayload {
 };
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotConverter);
+
+struct _RTItemEpicConverterPayload {
+	UInt16 TargetSlotIndex;
+};
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpicConverter);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHolyWater);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion);
 

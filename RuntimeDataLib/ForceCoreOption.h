@@ -1,0 +1,13 @@
+RUNTIME_DATA_FILE_BEGIN(EpicOptionPool.xml)
+
+RUNTIME_DATA_TYPE_BEGIN(EpicOptionPool, "EpicOptionPool.Pool", 128)
+	RUNTIME_DATA_PROPERTY(Int32, Index, "id")
+	RUNTIME_DATA_TYPE_BEGIN_CHILD(EpicOptionPoolValue, "Epic", 8)
+		RUNTIME_DATA_PROPERTY(Int32, EpicOption, "id")
+		RUNTIME_DATA_PROPERTY(Int32, EpicGrade, "grade")
+		RUNTIME_DATA_PROPERTY(Int32, Rate, "rate")
+	RUNTIME_DATA_TYPE_END_CHILD(EpicOptionPoolValue, 32)
+RUNTIME_DATA_TYPE_END(EpicOptionPool)
+RUNTIME_DATA_TYPE_INDEX(EpicOptionPool, Int32, Index)
+
+RUNTIME_DATA_FILE_END

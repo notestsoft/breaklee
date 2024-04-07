@@ -114,6 +114,7 @@
         <item slot_id="109" item_id="33554636" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="110" item_id="33556063" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="111" item_id="33556059" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
+        <item slot_id="112" item_id="33554731" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
 
     </shop>
 	<shop world_id="1" npc_id="35">

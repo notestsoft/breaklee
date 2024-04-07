@@ -1,0 +1,415 @@
+<EpicOptionPool>
+    <Pool id="1">
+        <Epic id="1" grade="1" rate="100" />
+        <Epic id="1" grade="2" rate="200" />
+        <Epic id="1" grade="3" rate="500" />
+        <Epic id="1" grade="5" rate="200" />
+    </Pool>
+    <Pool id="2">
+        <Epic id="1" grade="1" rate="100" />
+        <Epic id="1" grade="2" rate="150" />
+        <Epic id="1" grade="3" rate="500" />
+        <Epic id="1" grade="5" rate="150" />
+        <Epic id="1" grade="6" rate="100" />
+    </Pool>
+    <Pool id="3">
+        <Epic id="1" grade="1" rate="50" />
+        <Epic id="1" grade="2" rate="150" />
+        <Epic id="1" grade="3" rate="500" />
+        <Epic id="1" grade="5" rate="150" />
+        <Epic id="1" grade="6" rate="100" />
+        <Epic id="1" grade="7" rate="50" />
+    </Pool>
+    <Pool id="4">
+        <Epic id="13" grade="1" rate="100" />
+        <Epic id="13" grade="2" rate="200" />
+        <Epic id="13" grade="3" rate="500" />
+        <Epic id="13" grade="5" rate="200" />
+    </Pool>
+    <Pool id="5">
+        <Epic id="13" grade="1" rate="100" />
+        <Epic id="13" grade="2" rate="150" />
+        <Epic id="13" grade="3" rate="500" />
+        <Epic id="13" grade="5" rate="150" />
+        <Epic id="13" grade="6" rate="100" />
+    </Pool>
+    <Pool id="6">
+        <Epic id="13" grade="1" rate="50" />
+        <Epic id="13" grade="2" rate="150" />
+        <Epic id="13" grade="3" rate="500" />
+        <Epic id="13" grade="5" rate="150" />
+        <Epic id="13" grade="6" rate="100" />
+        <Epic id="13" grade="7" rate="50" />
+    </Pool>
+    <Pool id="7">
+        <Epic id="5" grade="1" rate="100" />
+        <Epic id="5" grade="2" rate="200" />
+        <Epic id="5" grade="3" rate="500" />
+        <Epic id="5" grade="5" rate="200" />
+    </Pool>
+    <Pool id="8">
+        <Epic id="5" grade="1" rate="100" />
+        <Epic id="5" grade="2" rate="150" />
+        <Epic id="5" grade="3" rate="500" />
+        <Epic id="5" grade="5" rate="150" />
+        <Epic id="5" grade="6" rate="100" />
+    </Pool>
+    <Pool id="9">
+        <Epic id="5" grade="1" rate="50" />
+        <Epic id="5" grade="2" rate="150" />
+        <Epic id="5" grade="3" rate="500" />
+        <Epic id="5" grade="5" rate="150" />
+        <Epic id="5" grade="6" rate="100" />
+        <Epic id="5" grade="7" rate="50" />
+    </Pool>
+    <Pool id="10">
+        <Epic id="4" grade="1" rate="100" />
+        <Epic id="4" grade="2" rate="200" />
+        <Epic id="4" grade="3" rate="500" />
+        <Epic id="4" grade="5" rate="200" />
+    </Pool>
+    <Pool id="11">
+        <Epic id="4" grade="1" rate="100" />
+        <Epic id="4" grade="2" rate="150" />
+        <Epic id="4" grade="3" rate="500" />
+        <Epic id="4" grade="5" rate="150" />
+        <Epic id="4" grade="6" rate="100" />
+    </Pool>
+    <Pool id="12">
+        <Epic id="4" grade="1" rate="50" />
+        <Epic id="4" grade="2" rate="150" />
+        <Epic id="4" grade="3" rate="500" />
+        <Epic id="4" grade="5" rate="150" />
+        <Epic id="4" grade="6" rate="100" />
+        <Epic id="4" grade="7" rate="50" />
+    </Pool>
+    <Pool id="13">
+        <Epic id="12" grade="1" rate="100" />
+        <Epic id="12" grade="2" rate="200" />
+        <Epic id="12" grade="3" rate="500" />
+        <Epic id="12" grade="5" rate="200" />
+    </Pool>
+    <Pool id="14">
+        <Epic id="12" grade="1" rate="100" />
+        <Epic id="12" grade="2" rate="150" />
+        <Epic id="12" grade="3" rate="500" />
+        <Epic id="12" grade="5" rate="150" />
+        <Epic id="12" grade="6" rate="100" />
+    </Pool>
+    <Pool id="15">
+        <Epic id="12" grade="1" rate="50" />
+        <Epic id="12" grade="2" rate="150" />
+        <Epic id="12" grade="3" rate="500" />
+        <Epic id="12" grade="5" rate="150" />
+        <Epic id="12" grade="6" rate="100" />
+        <Epic id="12" grade="7" rate="50" />
+    </Pool>
+    <Pool id="16">
+        <Epic id="9" grade="1" rate="100" />
+        <Epic id="9" grade="2" rate="200" />
+        <Epic id="9" grade="3" rate="500" />
+        <Epic id="9" grade="5" rate="200" />
+    </Pool>
+    <Pool id="17">
+        <Epic id="9" grade="1" rate="100" />
+        <Epic id="9" grade="2" rate="150" />
+        <Epic id="9" grade="3" rate="500" />
+        <Epic id="9" grade="5" rate="150" />
+        <Epic id="9" grade="6" rate="100" />
+    </Pool>
+    <Pool id="18">
+        <Epic id="10" grade="1" rate="50" />
+        <Epic id="10" grade="2" rate="150" />
+        <Epic id="10" grade="3" rate="500" />
+        <Epic id="10" grade="5" rate="150" />
+        <Epic id="10" grade="6" rate="100" />
+        <Epic id="10" grade="7" rate="50" />
+    </Pool>
+    <Pool id="19">
+        <Epic id="10" grade="1" rate="100" />
+        <Epic id="10" grade="2" rate="200" />
+        <Epic id="10" grade="3" rate="500" />
+        <Epic id="10" grade="5" rate="200" />
+    </Pool>
+    <Pool id="20">
+        <Epic id="10" grade="1" rate="100" />
+        <Epic id="10" grade="2" rate="150" />
+        <Epic id="10" grade="3" rate="500" />
+        <Epic id="10" grade="5" rate="150" />
+        <Epic id="10" grade="6" rate="100" />
+    </Pool>
+    <Pool id="21">
+        <Epic id="9" grade="1" rate="50" />
+        <Epic id="9" grade="2" rate="150" />
+        <Epic id="9" grade="3" rate="500" />
+        <Epic id="9" grade="5" rate="150" />
+        <Epic id="9" grade="6" rate="100" />
+        <Epic id="9" grade="7" rate="50" />
+    </Pool>
+    <Pool id="22">
+        <Epic id="11" grade="1" rate="100" />
+        <Epic id="11" grade="2" rate="200" />
+        <Epic id="11" grade="3" rate="500" />
+        <Epic id="11" grade="5" rate="200" />
+    </Pool>
+    <Pool id="23">
+        <Epic id="11" grade="1" rate="100" />
+        <Epic id="11" grade="2" rate="150" />
+        <Epic id="11" grade="3" rate="500" />
+        <Epic id="11" grade="5" rate="150" />
+        <Epic id="11" grade="6" rate="100" />
+    </Pool>
+    <Pool id="24">
+        <Epic id="11" grade="1" rate="50" />
+        <Epic id="11" grade="2" rate="150" />
+        <Epic id="11" grade="3" rate="500" />
+        <Epic id="11" grade="5" rate="150" />
+        <Epic id="11" grade="6" rate="100" />
+        <Epic id="11" grade="7" rate="50" />
+    </Pool>
+
+    <Pool id="27">
+        <Epic id="14" grade="1" rate="50" />
+        <Epic id="14" grade="2" rate="150" />
+        <Epic id="14" grade="3" rate="500" />
+        <Epic id="14" grade="5" rate="150" />
+        <Epic id="14" grade="6" rate="100" />
+        <Epic id="14" grade="7" rate="50" />
+    </Pool>
+
+    <Pool id="30">
+        <Epic id="15" grade="1" rate="50" />
+        <Epic id="15" grade="2" rate="150" />
+        <Epic id="15" grade="3" rate="500" />
+        <Epic id="15" grade="5" rate="150" />
+        <Epic id="15" grade="6" rate="100" />
+        <Epic id="15" grade="7" rate="50" />
+    </Pool>
+    <Pool id="31">
+        <Epic id="0" grade="0" rate="1000" />
+    </Pool>
+    <Pool id="32">
+        <Epic id="14" grade="1" rate="250" />
+        <Epic id="14" grade="2" rate="500" />
+        <Epic id="14" grade="3" rate="150" />
+        <Epic id="14" grade="5" rate="100" />
+    </Pool>
+    <Pool id="33">
+        <Epic id="6" grade="1" rate="250" />
+        <Epic id="6" grade="2" rate="500" />
+        <Epic id="6" grade="3" rate="150" />
+        <Epic id="6" grade="5" rate="100" />
+    </Pool>
+    <Pool id="34">
+        <Epic id="1" grade="1" rate="250" />
+        <Epic id="1" grade="2" rate="500" />
+        <Epic id="1" grade="3" rate="150" />
+        <Epic id="1" grade="5" rate="100" />
+    </Pool>
+    <Pool id="35">
+        <Epic id="5" grade="1" rate="250" />
+        <Epic id="5" grade="2" rate="500" />
+        <Epic id="5" grade="3" rate="150" />
+        <Epic id="5" grade="5" rate="100" />
+    </Pool>
+    <Pool id="36">
+        <Epic id="4" grade="1" rate="250" />
+        <Epic id="4" grade="2" rate="500" />
+        <Epic id="4" grade="3" rate="150" />
+        <Epic id="4" grade="5" rate="100" />
+    </Pool>
+    <Pool id="37">
+        <Epic id="11" grade="1" rate="250" />
+        <Epic id="11" grade="2" rate="500" />
+        <Epic id="11" grade="3" rate="150" />
+        <Epic id="11" grade="5" rate="100" />
+    </Pool>
+    <Pool id="38">
+        <Epic id="13" grade="1" rate="250" />
+        <Epic id="13" grade="2" rate="500" />
+        <Epic id="13" grade="3" rate="150" />
+        <Epic id="13" grade="5" rate="100" />
+    </Pool>
+    <Pool id="39">
+        <Epic id="15" grade="1" rate="250" />
+        <Epic id="15" grade="2" rate="500" />
+        <Epic id="15" grade="3" rate="150" />
+        <Epic id="15" grade="5" rate="100" />
+    </Pool>
+    <Pool id="40">
+        <Epic id="1" grade="1" rate="250" />
+        <Epic id="1" grade="2" rate="500" />
+        <Epic id="1" grade="3" rate="150" />
+        <Epic id="1" grade="5" rate="100" />
+    </Pool>
+    <Pool id="41">
+        <Epic id="3" grade="1" rate="250" />
+        <Epic id="3" grade="2" rate="500" />
+        <Epic id="3" grade="3" rate="150" />
+        <Epic id="3" grade="5" rate="100" />
+    </Pool>
+    <Pool id="42">
+        <Epic id="10" grade="1" rate="250" />
+        <Epic id="10" grade="2" rate="500" />
+        <Epic id="10" grade="3" rate="150" />
+        <Epic id="10" grade="5" rate="100" />
+    </Pool>
+    <Pool id="43">
+        <Epic id="11" grade="1" rate="250" />
+        <Epic id="11" grade="2" rate="500" />
+        <Epic id="11" grade="3" rate="150" />
+        <Epic id="11" grade="5" rate="100" />
+    </Pool>
+    <Pool id="44">
+        <Epic id="12" grade="1" rate="250" />
+        <Epic id="12" grade="2" rate="500" />
+        <Epic id="12" grade="3" rate="150" />
+        <Epic id="12" grade="5" rate="100" />
+    </Pool>
+    <Pool id="45">
+        <Epic id="13" grade="1" rate="250" />
+        <Epic id="13" grade="2" rate="500" />
+        <Epic id="13" grade="3" rate="150" />
+        <Epic id="13" grade="5" rate="100" />
+    </Pool>
+    <Pool id="46">
+        <Epic id="14" grade="1" rate="250" />
+        <Epic id="14" grade="2" rate="500" />
+        <Epic id="14" grade="3" rate="150" />
+        <Epic id="14" grade="5" rate="100" />
+    </Pool>
+    <Pool id="47">
+        <Epic id="5" grade="1" rate="250" />
+        <Epic id="5" grade="2" rate="500" />
+        <Epic id="5" grade="3" rate="150" />
+        <Epic id="5" grade="5" rate="100" />
+    </Pool>
+    <Pool id="48">
+        <Epic id="1" grade="1" rate="250" />
+        <Epic id="1" grade="2" rate="500" />
+        <Epic id="1" grade="3" rate="150" />
+        <Epic id="1" grade="5" rate="100" />
+    </Pool>
+    <Pool id="49">
+        <Epic id="2" grade="1" rate="250" />
+        <Epic id="2" grade="2" rate="500" />
+        <Epic id="2" grade="3" rate="150" />
+        <Epic id="2" grade="5" rate="100" />
+    </Pool>
+    <Pool id="50">
+        <Epic id="3" grade="1" rate="250" />
+        <Epic id="3" grade="2" rate="500" />
+        <Epic id="3" grade="3" rate="150" />
+        <Epic id="3" grade="5" rate="100" />
+    </Pool>
+    <Pool id="51">
+        <Epic id="7" grade="1" rate="250" />
+        <Epic id="7" grade="2" rate="500" />
+        <Epic id="7" grade="3" rate="150" />
+        <Epic id="7" grade="5" rate="100" />
+    </Pool>
+    <Pool id="52">
+        <Epic id="8" grade="1" rate="250" />
+        <Epic id="8" grade="2" rate="500" />
+        <Epic id="8" grade="3" rate="150" />
+        <Epic id="8" grade="5" rate="100" />
+    </Pool>
+    <Pool id="53">
+        <Epic id="9" grade="1" rate="250" />
+        <Epic id="9" grade="2" rate="500" />
+        <Epic id="9" grade="3" rate="150" />
+        <Epic id="9" grade="5" rate="100" />
+    </Pool>
+    <Pool id="54">
+        <Epic id="10" grade="1" rate="250" />
+        <Epic id="10" grade="2" rate="500" />
+        <Epic id="10" grade="3" rate="150" />
+        <Epic id="10" grade="5" rate="100" />
+    </Pool>
+    <Pool id="55">
+        <Epic id="14" grade="1" rate="250" />
+        <Epic id="14" grade="2" rate="500" />
+        <Epic id="14" grade="3" rate="150" />
+        <Epic id="14" grade="5" rate="100" />
+    </Pool>
+    <Pool id="56">
+        <Epic id="1" grade="1" rate="50" />
+        <Epic id="1" grade="2" rate="150" />
+        <Epic id="1" grade="3" rate="500" />
+        <Epic id="1" grade="5" rate="150" />
+        <Epic id="1" grade="6" rate="100" />
+        <Epic id="1" grade="7" rate="50" />
+    </Pool>
+    <Pool id="57">
+        <Epic id="2" grade="1" rate="50" />
+        <Epic id="2" grade="2" rate="150" />
+        <Epic id="2" grade="3" rate="500" />
+        <Epic id="2" grade="5" rate="150" />
+        <Epic id="2" grade="6" rate="100" />
+        <Epic id="2" grade="7" rate="50" />
+    </Pool>
+    <Pool id="58">
+        <Epic id="4" grade="1" rate="50" />
+        <Epic id="4" grade="2" rate="150" />
+        <Epic id="4" grade="3" rate="500" />
+        <Epic id="4" grade="5" rate="150" />
+        <Epic id="4" grade="6" rate="100" />
+        <Epic id="4" grade="7" rate="50" />
+    </Pool>
+    <Pool id="59">
+        <Epic id="5" grade="1" rate="50" />
+        <Epic id="5" grade="2" rate="150" />
+        <Epic id="5" grade="3" rate="500" />
+        <Epic id="5" grade="5" rate="150" />
+        <Epic id="5" grade="6" rate="100" />
+        <Epic id="5" grade="7" rate="50" />
+    </Pool>
+    <Pool id="60">
+        <Epic id="6" grade="1" rate="50" />
+        <Epic id="6" grade="2" rate="150" />
+        <Epic id="6" grade="3" rate="500" />
+        <Epic id="6" grade="5" rate="150" />
+        <Epic id="6" grade="6" rate="100" />
+        <Epic id="6" grade="7" rate="50" />
+    </Pool>
+    <Pool id="61">
+        <Epic id="7" grade="1" rate="50" />
+        <Epic id="7" grade="2" rate="150" />
+        <Epic id="7" grade="3" rate="500" />
+        <Epic id="7" grade="5" rate="150" />
+        <Epic id="7" grade="6" rate="100" />
+        <Epic id="7" grade="7" rate="50" />
+    </Pool>
+    <Pool id="62">
+        <Epic id="8" grade="1" rate="50" />
+        <Epic id="8" grade="2" rate="150" />
+        <Epic id="8" grade="3" rate="500" />
+        <Epic id="8" grade="5" rate="150" />
+        <Epic id="8" grade="6" rate="100" />
+        <Epic id="8" grade="7" rate="50" />
+    </Pool>
+    <Pool id="63">
+        <Epic id="9" grade="1" rate="50" />
+        <Epic id="9" grade="2" rate="150" />
+        <Epic id="9" grade="3" rate="500" />
+        <Epic id="9" grade="5" rate="150" />
+        <Epic id="9" grade="6" rate="100" />
+        <Epic id="9" grade="7" rate="50" />
+    </Pool>
+    <Pool id="64">
+        <Epic id="10" grade="1" rate="50" />
+        <Epic id="10" grade="2" rate="150" />
+        <Epic id="10" grade="3" rate="500" />
+        <Epic id="10" grade="5" rate="150" />
+        <Epic id="10" grade="6" rate="100" />
+        <Epic id="10" grade="7" rate="50" />
+    </Pool>
+    <Pool id="65">
+        <Epic id="11" grade="1" rate="50" />
+        <Epic id="11" grade="2" rate="150" />
+        <Epic id="11" grade="3" rate="500" />
+        <Epic id="11" grade="5" rate="150" />
+        <Epic id="11" grade="6" rate="100" />
+        <Epic id="11" grade="7" rate="50" />
+    </Pool>
+</EpicOptionPool>
