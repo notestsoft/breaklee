@@ -228,6 +228,7 @@ struct _RTCharacterInfo {
 struct _RTCharacter {
     RTEntityID ID;
     RTEntityID PartyID;
+    RTEntityID TargetCharacterID;
     Index CharacterIndex;
     union _RTCharacterSyncMask SyncMask;
     union _RTCharacterSyncPriority SyncPriority;
