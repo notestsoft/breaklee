@@ -7,6 +7,9 @@
 
 EXTERN_C_BEGIN
 
+#define MOB_EVENT_SPAWN		"on_spawn"
+#define MOB_EVENT_DESPAWN	"on_despawn"
+
 enum {
 	RUNTIME_MOB_AGGRESSIVE_TYPE_PASSIVE,
 	RUNTIME_MOB_AGGRESSIVE_TYPE_AGGRESSIVE,
@@ -195,6 +198,8 @@ struct _RTMob {
 	struct _RTMobAggroData Aggro;
     struct _RTMovement Movement;
 	struct _RTBattleAttributes Attributes;
+
+	RTScriptRef Script;
 };
 
 Void RTMobInit(
@@ -228,6 +233,13 @@ Bool RTMobCanRespawn(
 
 Bool RTMobIsAlive(
 	RTMobRef Mob
+);
+
+Void RTMobOnEvent(
+	RTRuntimeRef Runtime,
+	RTWorldContextRef World,
+	RTMobRef Mob,
+	CString Event
 );
 
 EXTERN_C_END

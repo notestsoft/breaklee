@@ -49,6 +49,7 @@ struct _RTWorldData {
     Bool HasQuestDungeon;
     Bool HasMissionDungeon;
     ArrayRef MobTable;
+    ArrayRef MobScriptTable;
     struct _RTDropTable DropTable;
     UInt32 Tiles[RUNTIME_WORLD_SIZE * RUNTIME_WORLD_SIZE];
 };

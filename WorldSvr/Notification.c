@@ -130,6 +130,7 @@ Void AppendCharacterToCharacterSpawnIndex(
     Spawn->Nation = Character->Info.Profile.Nation;
     Spawn->CharacterStyle = SwapUInt32(Character->Info.Style.RawValue);
     Spawn->CharacterLiveStyle = Character->Info.LiveStyle.RawValue;
+    Spawn->CharacterExtendedStyle = Character->Info.ExtendedStyle.RawValue;
     Spawn->IsDead = RTCharacterIsAlive(Arguments->WorldContext->WorldManager->Runtime, Character) ? 0 : 1;
     Spawn->EquipmentSlotCount = Character->EquipmentInfo.Count;
 

@@ -1,7 +1,8 @@
 #include "Character.h"
+#include "Force.h"
 #include "Mob.h"
 #include "Runtime.h"
-#include "Force.h"
+#include "Script.h"
 #include "World.h"
 #include "WorldManager.h"
 
@@ -29,6 +30,7 @@ RTRuntimeRef RTRuntimeCreate(
         RUNTIME_MEMORY_MAX_PARTY_WORLD_CONTEXT_COUNT,
         RUNTIME_MEMORY_MAX_CHARACTER_COUNT
     );
+    Runtime->ScriptManager = RTScriptManagerCreate(Runtime, RUNTIME_MEMORY_MAX_SCRIPT_COUNT);
     Runtime->SkillDataPool = MemoryPoolCreate(Allocator, sizeof(struct _RTCharacterSkillData), RUNTIME_MEMORY_MAX_CHARACTER_SKILL_DATA_COUNT);
     Runtime->Callback = Callback;
     Runtime->UserData = UserData;
@@ -39,6 +41,7 @@ Void RTRuntimeDestroy(
     RTRuntimeRef Runtime
 ) {
     MemoryPoolDestroy(Runtime->SkillDataPool);
+    RTScriptManagerDestroy(Runtime->ScriptManager);
     RTRuntimeDataContextDestroy(Runtime->Context);
     RTWorldManagerDestroy(Runtime->WorldManager);
     AllocatorDeallocate(Runtime->Allocator, Runtime);

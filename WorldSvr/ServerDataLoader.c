@@ -1026,6 +1026,7 @@ Bool ServerLoadWorldData(
     RTRuntimeRef Runtime,
     CString RuntimeDirectory,
     CString ServerDirectory,
+    CString ScriptDirectory,
     ArchiveRef TerrainArchive,
     ArchiveRef MainArchive,
     Bool LoadShops
@@ -1176,6 +1177,8 @@ Bool ServerLoadWorldData(
 
         Char MobFilePath[MAX_PATH];
         Char MobFileName[MAX_PATH];
+        Char MobScriptFileName[MAX_PATH];
+        Char MobScriptFilePath[MAX_PATH];
         sprintf(MobFileName, "world%zu-mmap.xml", World->WorldIndex);
         PathCombine(ServerDirectory, MobFileName, MobFilePath);
         if (FileExists(MobFilePath)) {
@@ -1209,6 +1212,13 @@ Bool ServerLoadWorldData(
                 if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Authority", &Mob->Spawn.Authority)) goto error;
                 if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Server_Mob", &Mob->Spawn.ServerMobID)) goto error;
                 if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Loot_Delay", &Mob->Spawn.LootDelay)) goto error;
+
+                if (ParseAttributeString(Archive, ChildIterator->Index, "Script", MobScriptFileName, MAX_PATH)) {
+                    PathCombine(ScriptDirectory, MobScriptFileName, MobScriptFilePath);
+                    Mob->Script = RTScriptManagerLoadScript(Runtime->ScriptManager, MobScriptFilePath);
+                    assert(Mob->Script);
+                    
+                }
 
                 Mob->SpeciesData = &Runtime->MobData[Mob->Spawn.MobSpeciesIndex];
                 Mob->IsInfiniteSpawn = true;

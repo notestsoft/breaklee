@@ -28,6 +28,7 @@ struct _RTRuntime {
     struct _RTRuntimeConfig Config;
     RTRuntimeDataContextRef Context;
     RTWorldManagerRef WorldManager;
+    RTScriptManagerRef ScriptManager;
 
     Int32 EntityCount;
     Int32 PartyCount;

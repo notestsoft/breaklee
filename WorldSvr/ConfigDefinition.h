@@ -24,6 +24,7 @@ CONFIG_PARAMETER(UInt8, MaxSubpasswordFailureCount, "WorldSvr.MaxSubpasswordFail
 CONFIG_PARAMETER(UInt64, SubpasswordBanDuration, "WorldSvr.SubpasswordBanDuration", 0)
 CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, RuntimeDataPath, "WorldSvr.RuntimeDataPath", Data)
 CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, ServerDataPath, "WorldSvr.ServerDataPath", ServerData)
+CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, ScriptDataPath, "WorldSvr.ScriptDataPath", Scripts)
 CONFIG_PARAMETER(UInt32, MinRollDiceValue, "WorldSvr.MinRollDiceValue", 0)
 CONFIG_PARAMETER(UInt32, MaxRollDiceValue, "WorldSvr.MaxRollDiceValue", 999)
 CONFIG_PARAMETER(UInt64, ExpMultiplier, "WorldSvr.ExpMultiplier", 500)

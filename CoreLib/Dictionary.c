@@ -340,6 +340,7 @@ DictionaryKeyIterator DictionaryGetKeyIterator(
     Iterator.Bucket = NULL;
     Iterator.BucketIndex = 0;
     Iterator.Key = NULL;
+    Iterator.Value = NULL;
 
     for (Index Index = 0; Index < Dictionary->Capacity; Index += 1) {
         DictionaryBucketRef Bucket = (DictionaryBucketRef)(((UInt8*)Dictionary->Buckets) + sizeof(struct _DictionaryBucket) * Index);
@@ -351,6 +352,7 @@ DictionaryKeyIterator DictionaryGetKeyIterator(
             Iterator.Bucket = Bucket;
             Iterator.BucketIndex = Index;
             Iterator.Key = _DictionaryBufferGetElement(Dictionary, &Dictionary->KeyBuffer, Bucket->KeyOffset);
+            Iterator.Value = _DictionaryBufferGetElement(Dictionary, &Dictionary->ElementBuffer, Bucket->ElementOffset);
             return Iterator;
         }
     }

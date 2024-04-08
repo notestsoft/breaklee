@@ -1,5 +1,6 @@
 #include "Mob.h"
 #include "Movement.h"
+#include "Script.h"
 #include "Runtime.h"
 #include "WorldManager.h"
 
@@ -556,4 +557,15 @@ Void RTMobUpdate(
 	}
 
 	Mob->RemainingFindCount = Mob->SpeciesData->FindCount;
+}
+
+Void RTMobOnEvent(
+	RTRuntimeRef Runtime,
+	RTWorldContextRef World,
+	RTMobRef Mob,
+	CString Event
+) {
+	if (!Mob->Script) return;
+
+	RTScriptCall(Mob->Script, Event, Runtime, World, Mob);
 }

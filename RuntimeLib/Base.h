@@ -7,6 +7,8 @@
 EXTERN_C_BEGIN
 
 #include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
 
 #pragma pack(push, 1)
 
@@ -55,6 +57,7 @@ typedef struct _RTItemSlotAppearance* RTItemSlotAppearanceRef;
 typedef struct _RTMobSpawnData* RTMobSpawnDataRef;
 typedef struct _RTMobSkillData* RTMobSkillDataRef;
 typedef struct _RTMobSpeciesData* RTMobSpeciesDataRef;
+typedef struct _RTMobScript* RTMobScriptRef;
 typedef struct _RTMob* RTMobRef;
 typedef struct _RTMovement* RTMovementRef;
 typedef struct _RTNewbieSupportSlot* RTNewbieSupportSlotRef;
@@ -74,6 +77,8 @@ typedef struct _RTQuestSlot* RTQuestSlotRef;
 typedef struct _RTQuickSlot* RTQuickSlotRef;
 typedef struct _RTCharacterRequestCraftInfo* RTCharacterRequestCraftInfoRef;
 typedef struct _RTRuntime* RTRuntimeRef;
+typedef struct _RTScript* RTScriptRef;
+typedef struct _RTScriptManager* RTScriptManagerRef;
 typedef struct _RTShopItemData* RTShopItemDataRef;
 typedef struct _RTShopData* RTShopDataRef;
 typedef struct _RTSkillSlot* RTSkillSlotRef;

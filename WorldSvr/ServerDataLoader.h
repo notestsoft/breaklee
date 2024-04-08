@@ -49,6 +49,7 @@ Bool ServerLoadWorldData(
     RTRuntimeRef Runtime,
     CString RuntimeDirectory,
     CString ServerDirectory,
+    CString ScriptDirectory,
     ArchiveRef TerrainArchive,
     ArchiveRef MainArchive,
     Bool LoadShops

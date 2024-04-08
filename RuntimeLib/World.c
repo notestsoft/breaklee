@@ -304,6 +304,8 @@ Void RTWorldSpawnMob(
     if (Mob->Spawn.SpawnTriggerID) {
         RTDungeonTriggerEvent(WorldContext, Mob->Spawn.SpawnTriggerID);
     }
+
+    RTMobOnEvent(Runtime, WorldContext, Mob, MOB_EVENT_SPAWN);
 }
 
 RTMobRef RTWorldContextGetMob(
@@ -357,6 +359,8 @@ Void RTWorldDespawnMob(
         Mob->Movement.PositionCurrent.X,
         Mob->Movement.PositionCurrent.Y
     );
+
+    RTMobOnEvent(Runtime, WorldContext, Mob, MOB_EVENT_DESPAWN);
 
     // TODO: This should be evaluated inside the mob it self!
     if (!RTEntityIsNull(Mob->DropOwner)) {

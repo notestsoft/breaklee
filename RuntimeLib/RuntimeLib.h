@@ -17,6 +17,7 @@
 #include <RuntimeLib/Quest.h>
 #include <RuntimeLib/Quickslot.h>
 #include <RuntimeLib/Runtime.h>
+#include <RuntimeLib/Script.h>
 #include <RuntimeLib/Skill.h>
 #include <RuntimeLib/Upgrade.h>
 #include <RuntimeLib/Warp.h>

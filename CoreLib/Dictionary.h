@@ -25,6 +25,7 @@ struct _DictionaryKeyIterator {
     DictionaryBucketRef Bucket;
     Index BucketIndex;
     Void* Key;
+    Void* Value;
 };
 typedef struct _DictionaryKeyIterator DictionaryKeyIterator;
 
