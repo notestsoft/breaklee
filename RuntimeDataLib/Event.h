@@ -1,6 +1,6 @@
 RUNTIME_DATA_FILE_BEGIN(Events29.xml)
 
-RUNTIME_DATA_TYPE_BEGIN(Event, "events.event", 16)
+RUNTIME_DATA_TYPE_BEGIN(Event, "events.event", 32)
 	RUNTIME_DATA_PROPERTY(Int32, ID, "id")
 	RUNTIME_DATA_PROPERTY(Int32, Type, "type")
 	RUNTIME_DATA_PROPERTY(Int32, UseFlags, "use_flags")

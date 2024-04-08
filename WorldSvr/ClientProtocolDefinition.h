@@ -1124,7 +1124,7 @@ CLIENT_PROTOCOL(S2C, BATTLE_RANK_UP, DEFAULT, 276,
 
 CLIENT_PROTOCOL(C2S, ADD_FORCE_SLOT_OPTION, DEFAULT, 280,
     Int32 ItemSlotIndex;
-    Int32 Unknown1;
+    Int32 RandomScrollSlotIndex;
     Int32 OptionScrollSlotIndex;
     Int32 Unknown2;
     UInt8 ForceCoreCount;
@@ -1132,7 +1132,9 @@ CLIENT_PROTOCOL(C2S, ADD_FORCE_SLOT_OPTION, DEFAULT, 280,
 )
 
 CLIENT_PROTOCOL(S2C, ADD_FORCE_SLOT_OPTION, DEFAULT, 280,
-    UInt8 Unknown1[10];
+    UInt8 Result;
+    UInt64 ItemOptions;
+    UInt8 Unknown1;
 )
 
 CLIENT_PROTOCOL(C2S, QUEST_BEGIN, DEFAULT, 282,

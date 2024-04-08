@@ -276,6 +276,7 @@ RTDataNewbieSupportCategoryRewardRef RTRuntimeDataNewbieSupportCategoryRewardGet
     return NULL;
 }
 
+// TODO: "MG" is not inside of forcecore_option so force controller weapons will not work!
 Bool ParseAttributeRTDataItemType(
     ArchiveRef Object,
     Int64 NodeIndex,
@@ -288,38 +289,147 @@ Bool ParseAttributeRTDataItemType(
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
     if (!Data) goto error;
 
-    if (strcmp(Data->Data, "MG") == 0) {
-        *Result = RUNTIME_ITEM_TYPE_WEAPON_FORCE_CONTROLLER;
-    }
-    else if (strcmp(Data->Data, "1H") == 0) {
-        *Result = RUNTIME_ITEM_TYPE_WEAPON_ONE_HAND;
-    }
-    else if (strcmp(Data->Data, "2H") == 0) {
-        *Result = RUNTIME_ITEM_TYPE_WEAPON_TWO_HAND;
-    }
-    else if (strcmp(Data->Data, "SUIT") == 0) {
-        *Result = RUNTIME_ITEM_TYPE_SUIT;
-    }
-    else if (strcmp(Data->Data, "GLOVE") == 0) {
-        *Result = RUNTIME_ITEM_TYPE_GLOVES;
-    }
-    else if (strcmp(Data->Data, "BOOT") == 0) {
-        *Result = RUNTIME_ITEM_TYPE_BOOTS;
-    }
-    else if (strcmp(Data->Data, "HELM") == 0) {
-        *Result = RUNTIME_ITEM_TYPE_HELMED1;
-    }
-    else if (strcmp(Data->Data, "BIKE") == 0) {
-        *Result = RUNTIME_ITEM_TYPE_VEHICLE_BIKE;
-    }
-    else if (strcmp(Data->Data, "CHAKRAM") == 0) {
-        *Result = RUNTIME_ITEM_TYPE_CHAKRAM;
-    }
-    else {
-        goto error;
-    }
+    struct { Char Key[MAX_PATH]; RTDataItemType Value; } Dictionary[] = {
+        { "MG", RUNTIME_ITEM_TYPE_WEAPON_FORCE_CONTROLLER },
+        { "1H", RUNTIME_ITEM_TYPE_WEAPON_ONE_HAND },
+        { "2H", RUNTIME_ITEM_TYPE_WEAPON_TWO_HAND },
+        { "SUIT", RUNTIME_ITEM_TYPE_SUIT },
+        { "GLOVE", RUNTIME_ITEM_TYPE_GLOVES },
+        { "BOOT", RUNTIME_ITEM_TYPE_BOOTS },
+        { "HELM", RUNTIME_ITEM_TYPE_HELMED1 },
+        { "BIKE", RUNTIME_ITEM_TYPE_VEHICLE_BIKE },
+        { "CHAKRAM", RUNTIME_ITEM_TYPE_CHAKRAM },
+        { "AMULET", RUNTIME_ITEM_TYPE_AMULET },
+        { "BELT", RUNTIME_ITEM_TYPE_BELT },
+        { "BIKE_5", RUNTIME_ITEM_TYPE_VEHICLE_BIKE },
+        { "BIKE_8", RUNTIME_ITEM_TYPE_VEHICLE_BIKE },
+        { "BIKE_11", RUNTIME_ITEM_TYPE_VEHICLE_BIKE },
+        { "BIKE_14", RUNTIME_ITEM_TYPE_VEHICLE_BIKE },
+        { "BOARD", RUNTIME_ITEM_TYPE_VEHICLE_BOARD },
+        { "BRACELET_1", RUNTIME_ITEM_TYPE_BRACELET },
+        { "BRACELET_2", RUNTIME_ITEM_TYPE_BRACELET },
+        { "BRACELET_3", RUNTIME_ITEM_TYPE_BRACELET },
+        { "BRACELET_4", RUNTIME_ITEM_TYPE_BRACELET },
+        { "BRACELET_5", RUNTIME_ITEM_TYPE_BRACELET },
+        { "BRACELET_6", RUNTIME_ITEM_TYPE_BRACELET },
+        { "BRACELET_7", RUNTIME_ITEM_TYPE_BRACELET },
+        { "BRACELET_8", RUNTIME_ITEM_TYPE_BRACELET },
+        { "BRACELET_9", RUNTIME_ITEM_TYPE_BRACELET },
+        { "BRACELET_10", RUNTIME_ITEM_TYPE_BRACELET },
+        { "BRACELET_11", RUNTIME_ITEM_TYPE_BRACELET },
+        { "BRACELET_12", RUNTIME_ITEM_TYPE_BRACELET },
+        { "BRACELET_13", RUNTIME_ITEM_TYPE_BRACELET },
+        { "BRACELET_14", RUNTIME_ITEM_TYPE_BRACELET },
+        { "BROOCH", RUNTIME_ITEM_TYPE_BROOCH },
+        { "CHARM", RUNTIME_ITEM_TYPE_CHARM },
+        { "EMBLEM_1", RUNTIME_ITEM_TYPE_CHARM },
+        { "EMBLEM_2", RUNTIME_ITEM_TYPE_CHARM },
+        { "EMBLEM_3", RUNTIME_ITEM_TYPE_CHARM },
+        { "EARRING_1", RUNTIME_ITEM_TYPE_EARRING },
+        { "EARRING_2", RUNTIME_ITEM_TYPE_EARRING },
+        { "EARRING_3", RUNTIME_ITEM_TYPE_EARRING },
+        { "EARRING_4", RUNTIME_ITEM_TYPE_EARRING },
+        { "EARRING_5", RUNTIME_ITEM_TYPE_EARRING },
+        { "EARRING_6", RUNTIME_ITEM_TYPE_EARRING },
+        { "EARRING_7", RUNTIME_ITEM_TYPE_EARRING },
+        { "EARRING_8", RUNTIME_ITEM_TYPE_EARRING },
+        { "EARRING_9", RUNTIME_ITEM_TYPE_EARRING },
+        { "EARRING_10", RUNTIME_ITEM_TYPE_EARRING },
+        { "EARRING_11", RUNTIME_ITEM_TYPE_EARRING },
+        { "EARRING_12", RUNTIME_ITEM_TYPE_EARRING },
+        { "EARRING_13", RUNTIME_ITEM_TYPE_EARRING },
+        { "EARRING_14", RUNTIME_ITEM_TYPE_EARRING },
+        { "EPULET", RUNTIME_ITEM_TYPE_EPAULET },
+        { "RING", RUNTIME_ITEM_TYPE_RING },
+        { "UNIQUEEMBLEM", 0 },
+    };
 
-    return true;
+    Int32 Count = sizeof(Dictionary) / sizeof(Dictionary[0]);
+    for (Int32 Index = 0; Index < Count; Index += 1) {
+        if (strcmp(Data->Data, Dictionary[Index].Key) == 0) {
+            *Result = Dictionary[Index].Value;
+            return true;
+        }
+    }
+    
+error:
+    return false;
+}
+
+Bool ParseAttributeRTDataItemTypeGrade(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    RTDataItemTypeGrade* Result
+) {
+    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    if (AttributeIndex < 0) goto error;
+
+    ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
+    if (!Data) goto error;
+
+    struct { Char Key[MAX_PATH]; RTDataItemTypeGrade Value; } Dictionary[] = {
+        { "MG", -1 },
+        { "1H", -1 },
+        { "2H", -1 },
+        { "SUIT", -1 },
+        { "GLOVE", -1 },
+        { "BOOT", -1 },
+        { "HELM", -1 },
+        { "BIKE", -1 },
+        { "CHAKRAM", -1 },
+        { "AMULET", -1 },
+        { "BELT", -1 },
+        { "BIKE_5", 5 },
+        { "BIKE_8", 8 },
+        { "BIKE_11", 11 },
+        { "BIKE_14", 14 },
+        { "BOARD", -1 },
+        { "BRACELET_1", 1 },
+        { "BRACELET_2", 2 },
+        { "BRACELET_3", 3 },
+        { "BRACELET_4", 4 },
+        { "BRACELET_5", 5 },
+        { "BRACELET_6", 6 },
+        { "BRACELET_7", 7 },
+        { "BRACELET_8", 8 },
+        { "BRACELET_9", 9 },
+        { "BRACELET_10", 10 },
+        { "BRACELET_11", 11 },
+        { "BRACELET_12", 12 },
+        { "BRACELET_13", 13 },
+        { "BRACELET_14", 14 },
+        { "BROOCH", -1 },
+        { "CHARM", -1 },
+        { "EMBLEM_1", 1 },
+        { "EMBLEM_2", 2 },
+        { "EMBLEM_3", 3 },
+        { "EARRING_1", 1 },
+        { "EARRING_2", 2 },
+        { "EARRING_3", 3 },
+        { "EARRING_4", 4 },
+        { "EARRING_5", 5 },
+        { "EARRING_6", 6 },
+        { "EARRING_7", 7 },
+        { "EARRING_8", 8 },
+        { "EARRING_9", 9 },
+        { "EARRING_10", 10 },
+        { "EARRING_11", 11 },
+        { "EARRING_12", 12 },
+        { "EARRING_13", 13 },
+        { "EARRING_14", 14 },
+        { "EPULET", -1 },
+        { "RING", -1 },
+        { "UNIQUEEMBLEM", -1 },
+    };
+
+    Int32 Count = sizeof(Dictionary) / sizeof(Dictionary[0]);
+    for (Int32 Index = 0; Index < Count; Index += 1) {
+        if (strcmp(Data->Data, Dictionary[Index].Key) == 0) {
+            *Result = Dictionary[Index].Value;
+            return true;
+        }
+    }
 
 error:
     return false;
