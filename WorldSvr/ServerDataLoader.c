@@ -1193,7 +1193,8 @@ Bool ServerLoadWorldData(
                 RTMobRef Mob = (RTMobRef)ArrayAppendUninitializedElement(World->MobTable);
                 memset(Mob, 0, sizeof(struct _RTMob));
 
-                Mob->ID.EntityIndex = ArrayGetElementCount(World->MobTable);
+                //Mob->ID.EntityIndex = ArrayGetElementCount(World->MobTable);
+                if (!ParseAttributeIndex(Archive, ChildIterator->Index, "order", &Mob->ID.EntityIndex)) goto error;
                 Mob->ID.WorldIndex = World->WorldIndex;
                 Mob->ID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
 
@@ -1216,8 +1217,6 @@ Bool ServerLoadWorldData(
                 if (ParseAttributeString(Archive, ChildIterator->Index, "Script", MobScriptFileName, MAX_PATH)) {
                     PathCombine(ScriptDirectory, MobScriptFileName, MobScriptFilePath);
                     Mob->Script = RTScriptManagerLoadScript(Runtime->ScriptManager, MobScriptFilePath);
-                    assert(Mob->Script);
-                    
                 }
 
                 Mob->SpeciesData = &Runtime->MobData[Mob->Spawn.MobSpeciesIndex];

@@ -273,6 +273,6 @@
     <pp order="271" PPIdx="4367" MissionMobs="" MissionNPC="1"/>
     <pp order="272" PPIdx="4368" MissionMobs="1177:01:00" MissionNPC="0"/>
     <pp order="273" PPIdx="4369" MissionMobs="1177:01:00" MissionNPC="0"/>
-    <pp order="274" PPIdx="4370" MissionMobs="1177:01:00" MissionNPC="0"/>
+    <pp order="274" PPIdx="4370" MissionMobs="1314:01:00" MissionNPC="0"/>
     <pp order="275" PPIdx="4371" MissionMobs="1177:01" MissionNPC="0"/>
 </quest_dungeon_pattern_parts>

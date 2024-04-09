@@ -182,6 +182,7 @@ Bool RTCharacterForceWingSetActivePreset(
 	Character->ForceWingInfo.ActivePresetIndex = PresetPageIndex;
 	Character->SyncMask.ForceWingInfo = true;
 	Character->SyncPriority.Low = true;
+	return true;
 }
 
 Bool RTCharacterForceWingTrainingIsUnlocked(

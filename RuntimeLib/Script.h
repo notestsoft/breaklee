@@ -20,7 +20,7 @@ RTScriptRef RTScriptManagerLoadScript(
 
 Bool RTScriptCall(
     RTScriptRef Script,
-    CString Function,
+    const Char* Function,
     ...
 );
 

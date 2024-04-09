@@ -26,6 +26,7 @@ Void RTMobInit(
 	Mob->SpecialAttack = NULL;
 	Mob->SpecialAttackSkill = NULL;
 	Mob->ActiveSkill = &Mob->SpeciesData->DefaultSkill;
+	memset(&Mob->Aggro, 0, sizeof(struct _RTMobAggroData));
 }
 
 Void RTMobInitFromSpeciesData(
@@ -354,6 +355,8 @@ Void RTMobUpdate(
 	if (Timestamp < Mob->NextTimestamp) {
 		return;
 	}
+
+	RTMobOnEvent(Runtime, WorldContext, Mob, MOB_EVENT_UPDATE);
 	
 	if (Mob->EventSpawnTimestamp > 0 && Mob->EventSpawnTimestamp <= Timestamp) {
 		Mob->EventSpawnTimestamp = 0;
@@ -567,5 +570,5 @@ Void RTMobOnEvent(
 ) {
 	if (!Mob->Script) return;
 
-	RTScriptCall(Mob->Script, Event, Runtime, World, Mob);
+	RTScriptCall(Mob->Script, Event, Runtime, World, Mob, NULL);
 }

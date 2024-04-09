@@ -6,10 +6,6 @@
 
 EXTERN_C_BEGIN
 
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
-
 #pragma pack(push, 1)
 
 typedef struct _RTBattleAttributes* RTBattleAttributesRef;

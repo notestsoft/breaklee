@@ -225,4 +225,10 @@
     <spawn order="223" SpeciesIdx="176" PosX="140" PosY="90" Width="11" Height="11" SpwnInterval="12000" SpawnDefault="1" EvtProperty="" EvtMobs="" EvtInterval="" MissionGate="0" PerfectDrop="0" Type="0" Min="0" Max="0" Authority="0" Server_Mob="0" Loot_Delay="0"/>
     <spawn order="224" SpeciesIdx="176" PosX="113" PosY="73" Width="11" Height="11" SpwnInterval="12000" SpawnDefault="1" EvtProperty="" EvtMobs="" EvtInterval="" MissionGate="0" PerfectDrop="0" Type="0" Min="0" Max="0" Authority="0" Server_Mob="0" Loot_Delay="0"/>
     <spawn order="225" SpeciesIdx="176" PosX="135" PosY="70" Width="11" Height="11" SpwnInterval="12000" SpawnDefault="1" EvtProperty="" EvtMobs="" EvtInterval="" MissionGate="0" PerfectDrop="0" Type="0" Min="0" Max="0" Authority="0" Server_Mob="0" Loot_Delay="0"/>
+    <spawn Script="more_minions.lua" order="226" SpeciesIdx="3335" PosX="0" PosY="0" Width="0" Height="0" SpwnInterval="0" SpawnDefault="0" EvtProperty="" EvtMobs="" EvtInterval="" MissionGate="0" PerfectDrop="0" Type="0" Min="0" Max="0" Authority="0" Server_Mob="0" Loot_Delay="0"/>
+    <spawn order="227" SpeciesIdx="4330" PosX="0" PosY="0" Width="0" Height="0" SpwnInterval="0" SpawnDefault="0" EvtProperty="" EvtMobs="" EvtInterval="" MissionGate="0" PerfectDrop="0" Type="0" Min="0" Max="0" Authority="0" Server_Mob="0" Loot_Delay="0"/>
+    <spawn order="228" SpeciesIdx="4330" PosX="0" PosY="0" Width="0" Height="0" SpwnInterval="0" SpawnDefault="0" EvtProperty="" EvtMobs="" EvtInterval="" MissionGate="0" PerfectDrop="0" Type="0" Min="0" Max="0" Authority="0" Server_Mob="0" Loot_Delay="0"/>
+    <spawn order="229" SpeciesIdx="4330" PosX="0" PosY="0" Width="0" Height="0" SpwnInterval="0" SpawnDefault="0" EvtProperty="" EvtMobs="" EvtInterval="" MissionGate="0" PerfectDrop="0" Type="0" Min="0" Max="0" Authority="0" Server_Mob="0" Loot_Delay="0"/>
+    <spawn order="230" SpeciesIdx="4330" PosX="0" PosY="0" Width="0" Height="0" SpwnInterval="0" SpawnDefault="0" EvtProperty="" EvtMobs="" EvtInterval="" MissionGate="0" PerfectDrop="0" Type="0" Min="0" Max="0" Authority="0" Server_Mob="0" Loot_Delay="0"/>
+
 </world>

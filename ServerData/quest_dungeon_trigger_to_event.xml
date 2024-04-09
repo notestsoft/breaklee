@@ -4581,7 +4581,7 @@
     <trigger order="1953" QDungeonIdx="4369" TrgIdx="24" Order="1" TrgType="2" LiveStateMMapIdx="," DeadStateMMapIdx="," TrgNpcIdx="-1" EvtActGroupIdx="24"/>
     <trigger order="1954" QDungeonIdx="4369" TrgIdx="25" Order="1" TrgType="2" LiveStateMMapIdx="," DeadStateMMapIdx="," TrgNpcIdx="-1" EvtActGroupIdx="25"/>
     <trigger order="1955" QDungeonIdx="4369" TrgIdx="26" Order="1" TrgType="2" LiveStateMMapIdx="," DeadStateMMapIdx="," TrgNpcIdx="-1" EvtActGroupIdx="26"/>
-    <trigger order="4849" QDungeonIdx="4370" TrgIdx="1" Order="1" TrgType="2" LiveStateMMapIdx="," DeadStateMMapIdx="," TrgNpcIdx="-1" EvtActGroupIdx="1"/>
+	<trigger order="4849" QDungeonIdx="4370" TrgIdx="1" Order="1" TrgType="1" LiveStateMMapIdx="," DeadStateMMapIdx="," TrgNpcIdx="-1" EvtActGroupIdx="1"/>
     <trigger order="4850" QDungeonIdx="4370" TrgIdx="2" Order="1" TrgType="2" LiveStateMMapIdx="," DeadStateMMapIdx="5,6,7,8,9,10,11" TrgNpcIdx="-1" EvtActGroupIdx="2"/>
     <trigger order="4851" QDungeonIdx="4370" TrgIdx="3" Order="1" TrgType="2" LiveStateMMapIdx="," DeadStateMMapIdx="4,6,7,8,9,10,11" TrgNpcIdx="-1" EvtActGroupIdx="3"/>
     <trigger order="4852" QDungeonIdx="4370" TrgIdx="4" Order="1" TrgType="2" LiveStateMMapIdx="," DeadStateMMapIdx="4,5,7,8,9,10,11" TrgNpcIdx="-1" EvtActGroupIdx="4"/>

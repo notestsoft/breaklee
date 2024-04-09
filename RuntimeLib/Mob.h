@@ -9,6 +9,7 @@ EXTERN_C_BEGIN
 
 #define MOB_EVENT_SPAWN		"on_spawn"
 #define MOB_EVENT_DESPAWN	"on_despawn"
+#define MOB_EVENT_UPDATE	"on_update"
 
 enum {
 	RUNTIME_MOB_AGGRESSIVE_TYPE_PASSIVE,
