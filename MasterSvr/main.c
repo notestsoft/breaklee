@@ -113,7 +113,8 @@ Int32 main(Int32 argc, CString* argv) {
         Config.MasterDB.Username,
         Config.MasterDB.Password,
         Config.MasterDB.Database,
-        Config.MasterDB.Port
+        Config.MasterDB.Port,
+        Config.MasterDB.AutoReconnect
     );
     
     if (!ServerContext.Database) {

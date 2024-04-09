@@ -12,7 +12,8 @@ DatabaseRef DatabaseConnect(
     CString Username,
     CString Password,
     CString Database,
-    UInt16 Port
+    UInt16 Port,
+    Bool AutoReconnect
 );
 
 Void DatabaseDisconnect(

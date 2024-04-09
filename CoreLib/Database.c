@@ -68,7 +68,8 @@ DatabaseRef DatabaseConnect(
 	CString Username,
 	CString Password,
 	CString Database,
-	UInt16 Port
+	UInt16 Port,
+	Bool AutoReconnect
 ) {
 	LogMessageFormat(
 		LOG_LEVEL_INFO,
@@ -81,6 +82,9 @@ DatabaseRef DatabaseConnect(
 
 	MYSQL* Connection = mysql_init(NULL);
 	if (Connection == NULL) return NULL;
+
+	my_bool AutoReconnectArgument = AutoReconnect;
+	mysql_options(Connection, MYSQL_OPT_RECONNECT, &AutoReconnectArgument);
 
 	Bool Success = mysql_real_connect(
 		Connection,

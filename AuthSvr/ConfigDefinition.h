@@ -35,6 +35,7 @@ CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, Username, "AuthDB.Username", root)
 CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, Password, "AuthDB.Password", root)
 CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, Database, "AuthDB.Database", auth)
 CONFIG_PARAMETER(UInt16, Port, "AuthDB.Port", 3310)
+CONFIG_PARAMETER(Bool, AutoReconnect, "AuthDB.AutoReconnect", 1)
 CONFIG_END(AuthDB)
 
 CONFIG_BEGIN(MasterSvr)
