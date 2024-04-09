@@ -101,6 +101,8 @@ Void RTCharacterApplyForceEffect(
 	assert(0 <= ForceEffect && ForceEffect < RUNTIME_FORCE_EFFECT_COUNT);
 
 	struct _RTForceEffectFormula* Formula = &kForceEffectFormulas[ForceEffect];
+	if (!Formula) return;
+
 	assert(Formula->ForceEffectID);
 
 	for (Int32 Index = 0; Index < RUNTIME_MAX_FORCE_EFFECT_CODE_COUNT; Index += 1) {
