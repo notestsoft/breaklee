@@ -702,7 +702,8 @@ Void RTCharacterAddExp(
 	RTCharacterAddAbilityExp(Runtime, Character, Axp);
 
 	if (Character->Info.Overlord.Level > 0) {
-		return RTCharacterAddOverlordExp(Runtime, Character, Exp);
+		RTCharacterAddOverlordExp(Runtime, Character, Exp);
+		return;
 	}
 
 	Int32 CurrentLevel = Character->Info.Basic.Level;

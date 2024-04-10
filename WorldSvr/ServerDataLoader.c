@@ -1175,6 +1175,36 @@ Bool ServerLoadWorldData(
             ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
         }
 
+        // Load Trainer Data
+        // TODO: Move trainer data to server data
+        {
+            ArchiveIteratorRef SkillIterator = ArchiveQueryNodeIteratorFirst(Archive, NodeIndex, "skill");
+            if (SkillIterator) {
+                assert(Runtime->TrainerDataCount < RUNTIME_MEMORY_MAX_TRAINER_DATA_COUNT);
+
+                RTTrainerDataRef TrainerData = &Runtime->TrainerData[Runtime->TrainerDataCount];
+                TrainerData->Index = Runtime->TrainerDataCount;
+                TrainerData->WorldID = World->WorldIndex;
+                TrainerData->NpcID = 2;
+
+                while (SkillIterator) {
+                    assert(TrainerData->SkillCount < RUNTIME_TRAINER_MAX_SKILL_COUNT);
+
+                    RTTrainerSkillDataRef SkillData = &TrainerData->Skills[TrainerData->SkillCount];
+
+                    if (!ParseAttributeInt32(Archive, SkillIterator->Index, "id", &SkillData->ID)) goto error;
+                    if (!ParseAttributeInt32(Archive, SkillIterator->Index, "slot_id", &SkillData->SlotID)) goto error;
+                    if (!ParseAttributeInt32(Archive, SkillIterator->Index, "level", &SkillData->Level)) goto error;
+                    if (!ParseAttributeInt32(Archive, SkillIterator->Index, "skill_book", &SkillData->SkillBookID)) goto error;
+
+                    TrainerData->SkillCount += 1;
+                    SkillIterator = ArchiveQueryNodeIteratorNext(Archive, SkillIterator);
+                }
+
+                Runtime->TrainerDataCount += 1;
+            }
+        }
+
         Char MobFilePath[MAX_PATH];
         Char MobFileName[MAX_PATH];
         Char MobScriptFileName[MAX_PATH];
@@ -1367,44 +1397,6 @@ Bool ServerLoadWorldData(
         Index WorldIndex = 0;
         if (!ParseAttributeIndex(MainArchive, NodeIndex, "id", &WorldIndex)) continue;
         assert(WorldIndex == World->WorldIndex);
-
-        // Load Trainer Data
-        {
-            ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(MainArchive, NodeIndex, "trainer");
-            while (ChildIterator) {
-                assert(Runtime->TrainerDataCount < RUNTIME_MEMORY_MAX_TRAINER_DATA_COUNT);
-
-                RTTrainerDataRef TrainerData = &Runtime->TrainerData[Runtime->TrainerDataCount];
-                TrainerData->Index = Runtime->TrainerDataCount;
-                TrainerData->WorldID = World->WorldIndex;
-
-                if (!ParseAttributeInt32(MainArchive, ChildIterator->Index, "id", &TrainerData->NpcID)) goto error;
-
-                for (Int32 Index = 0; Index < Runtime->TrainerDataCount; Index++) {
-                    if (Runtime->TrainerData[Index].NpcID == TrainerData->NpcID) {
-                        continue;
-                    }
-                }
-
-                ArchiveIteratorRef SkillIterator = ArchiveQueryNodeIteratorFirst(MainArchive, ChildIterator->Index, "skill");
-                while (SkillIterator) {
-                    assert(TrainerData->SkillCount < RUNTIME_TRAINER_MAX_SKILL_COUNT);
-
-                    RTTrainerSkillDataRef SkillData = &TrainerData->Skills[TrainerData->SkillCount];
-
-                    if (!ParseAttributeInt32(MainArchive, SkillIterator->Index, "id", &SkillData->ID)) goto error;
-                    if (!ParseAttributeInt32(MainArchive, SkillIterator->Index, "slot_id", &SkillData->SlotID)) goto error;
-                    if (!ParseAttributeInt32(MainArchive, SkillIterator->Index, "level", &SkillData->Level)) goto error;
-                    if (!ParseAttributeInt32(MainArchive, SkillIterator->Index, "skill_book", &SkillData->SkillBookID)) goto error;
-
-                    TrainerData->SkillCount += 1;
-                    SkillIterator = ArchiveQueryNodeIteratorNext(MainArchive, SkillIterator);
-                }
-
-                Runtime->TrainerDataCount += 1;
-                ChildIterator = ArchiveQueryNodeIteratorNext(MainArchive, ChildIterator);
-            }
-        }
     }
 
     ArchiveDestroy(Archive);

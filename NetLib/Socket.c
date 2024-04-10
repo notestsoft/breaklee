@@ -279,6 +279,8 @@ Bool SocketFetchReadBuffer(
             break;
         }
     }
+
+    return true;
 }
 
 Bool SocketFlushWriteBuffer(
@@ -311,6 +313,8 @@ Bool SocketFlushWriteBuffer(
         
         MemoryBufferPopFront(Connection->WriteBuffer, PacketLength);
     }
+
+    return true;
 }
 
 Void SocketReleaseConnections(

@@ -199,7 +199,7 @@ Bool RTCharacterForceWingTrainingIsUnlocked(
 	RTDataForceWingTrainingGradeRef TrainingGradeData = RTRuntimeDataForceWingTrainingGradeGet(Runtime->Context, PresetSlotIndex);
 	if (!TrainingGradeData) return false;
 
-	RTDataForceWingTrainingGradeInfoRef TrainingGradeInfoData = RTRuntimeDataForceWingTrainingGradeInfoGet(Runtime->Context, TrainingSlotIndex);
+	RTDataForceWingTrainingGradeInfoRef TrainingGradeInfoData = RTRuntimeDataForceWingTrainingGradeInfoGet(TrainingGradeData, TrainingSlotIndex);
 	if (!TrainingGradeInfoData) return false;
 
 	return (

@@ -360,7 +360,8 @@ Void RTMobUpdate(
 	
 	if (Mob->EventSpawnTimestamp > 0 && Mob->EventSpawnTimestamp <= Timestamp) {
 		Mob->EventSpawnTimestamp = 0;
-		return RTWorldSpawnMob(Runtime, WorldContext, Mob);
+		RTWorldSpawnMob(Runtime, WorldContext, Mob);
+		return;
 	}
 
 	if (Mob->EventDespawnTimestamp > 0 && Mob->EventDespawnTimestamp <= Timestamp) {
@@ -390,7 +391,7 @@ Void RTMobUpdate(
 			Mob->IsSpawned = true;
 			Mob->RemainingSpawnCount = MAX(0, Mob->RemainingSpawnCount - 1);
 			Mob->NextTimestamp = Timestamp;
-			return RTWorldSpawnMob(Runtime, WorldContext, Mob);
+			RTWorldSpawnMob(Runtime, WorldContext, Mob);
 		}
 
 		return;

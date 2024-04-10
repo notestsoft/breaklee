@@ -198,7 +198,8 @@ Void DictionaryInsert(
     Int32 ElementSize
 ) {
     if (Element == NULL || ElementSize < 1) {
-        return DictionaryRemove(Dictionary, Key);
+        DictionaryRemove(Dictionary, Key);
+        return;
     }
 
     UInt64 Hash = Dictionary->Hasher(Key);

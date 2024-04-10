@@ -65,7 +65,7 @@ Void DiagnosticCreateLogFile(
 
     if (!DirectoryCreate("Logs")) {
         printf("Error creating directory!\n");
-        return EXIT_FAILURE;
+        return;
     }
 
     FILE* FileStream = fopen(FilePath, "w+");

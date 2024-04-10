@@ -132,7 +132,10 @@ Void KeychainEncryptPacket(
     UInt8* Packet,
     Int32 Length
 ) {
-    if (Keychain->Client) return KeychainEncryptClientPacket(Keychain, Packet, Length);
+    if (Keychain->Client) {
+        KeychainEncryptClientPacket(Keychain, Packet, Length);
+        return;
+    }
 
     // TODO: Get rid of the malloc!
     UInt8* Buffer = malloc(Length + 4);
@@ -198,7 +201,10 @@ Void KeychainDecryptPacket(
     UInt8* Packet,
     Int64 Length
 ) {
-    if (Keychain->Client) return KeychainDecryptClientPacket(Keychain, Packet, Length);
+    if (Keychain->Client) {
+        KeychainDecryptClientPacket(Keychain, Packet, Length);
+        return;
+    }
 
     UInt32 Header = (UInt32)KeychainGetPacketLength(Keychain, Packet, Length);
     Header <<= 16;

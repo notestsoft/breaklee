@@ -99,6 +99,8 @@ IndexSetRef IndexSetIntersection(
             IndexSetInsert(Result, Element);
         }
     }
+
+    return Result;
 }
 
 IndexSetRef IndexSetDifference(
@@ -116,6 +118,8 @@ IndexSetRef IndexSetDifference(
         Index Element = *((Index*)ArrayGetElementAtIndex(Rhs->Indices, ElementIndex));
         IndexSetRemove(Result, Element);
     }
+
+    return Result;
 }
 
 IndexSetRef IndexSetSymmetricDifference(
@@ -138,6 +142,8 @@ IndexSetRef IndexSetSymmetricDifference(
             IndexSetInsert(Result, Element);
         }
     }
+
+    return Result;
 }
 
 Bool IndexSetIsSubsetOf(

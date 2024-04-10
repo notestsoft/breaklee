@@ -113,6 +113,7 @@ Bool RTEquipmentSetSlot(
     CurrentSlot = &Equipment->Slots[Equipment->Count];
     memcpy(CurrentSlot, Slot, sizeof(struct _RTItemSlot));
     Equipment->Count += 1;
+    return true;
 }
 
 Bool RTEquipmentClearSlot(
