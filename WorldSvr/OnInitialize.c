@@ -126,7 +126,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     /* Server Info */
     Response->WorldType = Context->Config.WorldSvr.WorldType;
     Response->Server.ServerID = Master->ServerID;
-    Response->Server.WorldID = Context->Config.WorldSvr.WorldID;
+    Response->Server.WorldServerID = Context->Config.WorldSvr.WorldID;
     Response->Server.PlayerCount = SocketGetConnectionCount(Context->ClientSocket);
     Response->Server.MaxPlayerCount = Context->Config.WorldSvr.MaxConnectionCount;
     memcpy(Response->Server.Address.Host, Context->Config.WorldSvr.Host, strlen(Context->Config.WorldSvr.Host));
@@ -484,6 +484,9 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
     // TODO: Move event data to database and trigger request on init
     SendEventInfo(Context, Client);
     SendEventList(Context, Client);
+
+    S2C_DATA_NFY_PARTY_INIT* Notification = PacketBufferInit(ClientConnection->PacketBuffer, S2C, NFY_PARTY_INIT);
+    SocketSend(Context->ClientSocket, ClientConnection, Notification);
 
     return;
 

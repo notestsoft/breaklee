@@ -74,6 +74,8 @@ Int32 main(Int32 argc, CString* argv) {
     ServerContext.Database = NULL;
     ServerContext.WorldListBroadcastTimestamp = 0;
     ServerContext.WorldListUpdateTimestamp = 0;
+    ServerContext.PartyPool = MemoryPoolCreate(Allocator, sizeof(struct _RTParty), Config.MasterSvr.MaxPartyCount);
+    ServerContext.PartyTable = EntityDictionaryCreate(Allocator, Config.MasterSvr.MaxPartyCount);
     ServerRef Server = ServerCreate(Allocator, &ServerOnUpdate, &ServerContext);
 
     ServerContext.AuthSocket = ServerCreateSocket(

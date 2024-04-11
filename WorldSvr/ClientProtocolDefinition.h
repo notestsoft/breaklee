@@ -77,7 +77,7 @@ CLIENT_PROTOCOL(S2C, DELETE_CHARACTER, DEFAULT, 135,
 
 CLIENT_PROTOCOL(C2S, CONNECT, DEFAULT, 140,
     UInt8 ServerID;
-    UInt8 ChannelID;
+    UInt8 WorldServerID;
     UInt16 Unknown1;
 )
 
@@ -125,7 +125,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_SERVER_ADDRESS,
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_SERVER,
     UInt8 ServerID;
-    UInt8 WorldID;
+    UInt8 WorldServerID;
     UInt16 PlayerCount;
     UInt8 Unknown1[18];
     UInt8 MaxPlayerLevel;
@@ -1666,6 +1666,12 @@ CLIENT_PROTOCOL(S2C, UNKNOWN_428, DEFAULT, 428,
     S2C_DATA_UNKNOWN_428_SLOT_INDEX Slots[0];
 )
 
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_ENVIRONMENT_WORLD_RESTRICTION,
+    Int32 Index;
+    Int32 StartIndex;
+    Int32 Count;
+)
+
 CLIENT_PROTOCOL(C2S, GET_SERVER_ENVIRONMENT, DEFAULT, 464,
 )
 
@@ -1674,7 +1680,8 @@ CLIENT_PROTOCOL(S2C, GET_SERVER_ENVIRONMENT, DEFAULT, 464,
     UInt8 DummyEnabled;
     UInt8 CashshopEnabled;
     UInt8 NetCafePointEnabled;
-    UInt16 MinChatLevel;
+//    UInt16 MinChatLevel;
+    UInt16 MaxRank;
     UInt16 MinShoutLevel;
     UInt16 MinShoutSkillRank;
     UInt64 MaxInventoryCurrency;
@@ -1683,11 +1690,12 @@ CLIENT_PROTOCOL(S2C, GET_SERVER_ENVIRONMENT, DEFAULT, 464,
     UInt8 NetCafePremiumEnabled;
     UInt8 GuildBoardEnabled;
     UInt8 NetCafePremiumType;
+    UInt8 AgentShopEnabled;
     UInt8 Unknown1;
     UInt8 Unknown2;
     UInt8 Unknown3;
-    UInt8 AgentShopEnabled;
-    UInt16 MegaphoneShoutCooldownTime;
+    UInt8 MegaphoneShoutCooldownTime;
+    UInt8 MinDummyLevel;
     UInt16 MinAgentShopLevel;
     UInt16 MinPersonalShopLevel;
     UInt8 TPointEnabled;
@@ -1698,21 +1706,15 @@ CLIENT_PROTOCOL(S2C, GET_SERVER_ENVIRONMENT, DEFAULT, 464,
     Int32 MaxDP;
     Int32 Unknown4;
     Int32 Unknown5;
-    UInt16 Unknown6;
-    UInt16 Unknown7;
+    UInt8 MinTradeTalkLevel2;
+    UInt8 MinTradeTalkLevel3;
+    UInt8 MaxSkillRank;
+    UInt8 MaxMagicRank;
     Int64 MaxHonorPoint;
     Int64 MinHonorPoint;
     Int32 Unknown8;
-    Int32 Unknown9;
-    Int32 Unknown10;
-    Int32 Unknown11;
-    Int32 Unknown12;
-    Int32 Unknown13;
-    Int32 Unknown14;
-    Int32 Unknown15;
-    Int32 Unknown16;
-    Int32 Unknown17;
-    Int32 Unknown18;
+    Int32 UnknownCount;
+    // S2C_DATA_ENVIRONMENT_WORLD_RESTRICTION Restrictions[UnknownCount];
     UInt8 Unknown19[255];
     UInt32 Unknown20;
     UInt32 Unknown21;
@@ -2155,39 +2157,73 @@ CLIENT_PROTOCOL(S2C, NFY_QUEST_MOB_KILL, DEFAULT, 2006,
 CLIENT_PROTOCOL(C2S, PARTY_INVITE, DEFAULT, 2011,
     UInt8 Unknown1;
     UInt32 CharacterIndex;
-    UInt8 ChannelIndex;
+    UInt8 WorldServerID;
+    UInt8 NameLength;
+    Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH];
+    UInt32 Unknown2;
+)
+
+CLIENT_PROTOCOL(S2C, PARTY_INVITE, DEFAULT, 2011,
+    UInt8 Unknown1;
+    UInt32 CharacterIndex;
+    UInt8 WorldServerID;
     UInt8 CharacterType;
     Int32 Level;
     UInt8 NameLength;
     Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH];
 )
 
-CLIENT_PROTOCOL(S2C, PARTY_INVITE, DEFAULT, 2011,
-    UInt8 Unknown1;
+CLIENT_PROTOCOL(S2C, NFY_PARTY_INVITE, DEFAULT, 2012,
     UInt32 CharacterIndex;
-    UInt8 ChannelIndex;
+    UInt8 WorldServerID;
+    UInt8 CharacterType;
+    Int32 Level;
     UInt8 NameLength;
     Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH];
 )
 
-CLIENT_PROTOCOL(S2C, NFY_PARTY_INVITE, DEFAULT, 2012,
-    // TODO: Add packet structure
-)
-
 CLIENT_PROTOCOL(C2S, PARTY_INVITE_CONFIRM, DEFAULT, 2013,
-    // TODO: Add packet structure
+    UInt32 CharacterIndex;
+    UInt8 WorldServerID;
+    Int32 Unknown1;
 )
 
 CLIENT_PROTOCOL(S2C, PARTY_INVITE_CONFIRM, DEFAULT, 2013,
-    // TODO: Add packet structure
+    UInt8 Result;
 )
 
 CLIENT_PROTOCOL(S2C, NFY_PARTY_INVITE_TIMEOUT, DEFAULT, 2014,
-    // TODO: Add packet structure
+    UInt32 Result;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_PARTY_MEMBER,
+    UInt32 CharacterIndex;
+    Int32 Level;
+    Int32 Unknown1;
+    Int32 Unknown2;
+    UInt8 Unknown3;
+    UInt8 Unknown4;
+    Int32 Unknown5;
+    UInt16 OverlordLevel;
+    Int32 MythRebirth;
+    Int32 MythHolyPower;
+    Int32 MythLevel;
+    UInt8 ForceWingGrade;
+    UInt8 ForceWingLevel;
+    UInt8 NameLength;
+    Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH];
+    UInt8 Unknown6[36];
 )
 
 CLIENT_PROTOCOL(S2C, NFY_PARTY_INFO, DEFAULT, 2016,
-    // TODO: Add packet structure
+    UInt32 Result;
+    UInt32 LeaderCharacterIndex;
+    UInt32 Unknown1;
+    UInt8 Unknown2;
+    UInt8 WorldServerID;
+    UInt8 Unknown3;
+    UInt32 MemberCount;
+    S2C_DATA_PARTY_MEMBER Members[RUNTIME_PARTY_MAX_MEMBER_COUNT];
 )
 
 CLIENT_PROTOCOL(C2S, PARTY_INVITE_CANCEL, DEFAULT, 2017,
@@ -2239,7 +2275,8 @@ CLIENT_PROTOCOL(S2C, NFY_PARTY_INVITE_RULE, DEFAULT, 2026,
 )
 
 CLIENT_PROTOCOL(S2C, NFY_PARTY_UPDATE, DEFAULT, 2028,
-    // TODO: Add packet structure
+    UInt32 MemberCount;
+    S2C_DATA_PARTY_MEMBER Members[RUNTIME_PARTY_MAX_MEMBER_COUNT];
 )
 
 CLIENT_PROTOCOL(S2C, NFY_PARTY_PICK_UP_CURRENCY, DEFAULT, 2035,
@@ -2267,6 +2304,44 @@ CLIENT_PROTOCOL(S2C, ENTER_DUNGEON_GATE, DEFAULT, 2029,
     UInt32 WorldID;
     UInt8 Unknown5;
     UInt16 DungeonBoostLevel;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_PARTY_INIT_MEMBER,
+    UInt32 CharacterIndex;
+    Int32 Level;
+    Int32 Unknown1;
+    Int32 Unknown2;
+    UInt8 Unknown3;
+    UInt8 Unknown4;
+    Int32 Unknown5;
+    UInt16 OverlordLevel;
+    Int32 MythRebirth;
+    Int32 MythHolyPower;
+    Int32 MythLevel;
+    UInt8 ForceWingGrade;
+    UInt8 ForceWingLevel;
+    UInt8 NameLength;
+    Char Name[MAX_CHARACTER_NAME_LENGTH];
+    UInt8 Unknown6[36];
+)
+
+CLIENT_PROTOCOL(S2C, NFY_PARTY_INIT, DEFAULT, 2056,
+    Int32 Result;
+    UInt32 DungeonIndex;
+    UInt16 Unknown1;
+    RTEntityID PartyID;
+    RTEntityID PartyLeaderID;
+    Int32 Unknown2;
+    UInt8 Unknown3;
+    UInt8 WorldServerIndex;
+    UInt8 Unknown4;
+    Int32 MemberCount;
+    S2C_DATA_NFY_PARTY_INIT_MEMBER Members[RUNTIME_PARTY_MAX_MEMBER_COUNT];
+    UInt8 Padding[100];
+    UInt8 Unknown5;
+    UInt32 SoloDungeonIndex;
+    Timestamp SoloDungeonTimeout;
+    UInt8 Unknown6[3];
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_MESSAGE_BROADCAST_HEADER,

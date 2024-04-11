@@ -226,6 +226,53 @@ typedef struct {
 	Bool Success;
 } IPC_DATA_WORLD_ACKVERIFYPASSWORD;
 
+typedef struct {
+	IPC_DATA_SIGNATURE_EXTENDED;
+
+	struct {
+		UInt32 CharacterIndex;
+		UInt8 WorldServerID;
+		UInt8 CharacterType;
+		Int32 Level;
+		UInt8 NameLength;
+		Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH];
+	} Source;
+
+	struct {
+		UInt32 CharacterIndex;
+		UInt8 WorldServerID;
+		UInt8 CharacterType;
+		Int32 Level;
+		UInt8 NameLength;
+		Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH];
+	} Target;
+
+} IPC_DATA_WORLD_REQPARTYINVITE;
+
+typedef struct {
+	IPC_DATA_SIGNATURE_EXTENDED;
+	Bool Success;
+
+	struct {
+		UInt32 CharacterIndex;
+		UInt8 WorldServerID;
+		UInt8 CharacterType;
+		Int32 Level;
+		UInt8 NameLength;
+		Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH];
+	} Source;
+
+	struct {
+		UInt32 CharacterIndex;
+		UInt8 WorldServerID;
+		UInt8 CharacterType;
+		Int32 Level;
+		UInt8 NameLength;
+		Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH];
+	} Target;
+
+} IPC_DATA_WORLD_ACKPARTYINVITE;
+
 #pragma pack(pop)
 
 EXTERN_C_END

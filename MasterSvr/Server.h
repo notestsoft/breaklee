@@ -12,6 +12,8 @@ struct _ServerContext {
     DatabaseRef Database;
     Timestamp WorldListBroadcastTimestamp;
     Timestamp WorldListUpdateTimestamp;
+    MemoryPoolRef PartyPool;
+    DictionaryRef PartyTable;
 };
 typedef struct _ServerContext* ServerContextRef;
 

@@ -36,8 +36,6 @@ struct _RTRuntime {
     RTEntityID Entities[RUNTIME_MEMORY_MAX_ENTITY_COUNT];
     Int32 EntityToCharacter[RUNTIME_MEMORY_MAX_CHARACTER_COUNT];
 
-    struct _RTParty Parties[RUNTIME_MEMORY_MAX_PARTY_COUNT];
-
     Int32 SlopeFormulaDataCount;
     Int32 ItemDataCount;
     Int32 MobDataCount;

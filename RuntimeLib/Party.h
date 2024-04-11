@@ -14,7 +14,8 @@ enum {
 
 struct _RTPartySlot {
 	Int32 SlotIndex;
-	RTEntityID MemberID;
+    Index CharacterIndex;
+    RTEntityID MemberID;
 };
 
 struct _RTParty {

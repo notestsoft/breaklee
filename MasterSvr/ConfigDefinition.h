@@ -18,6 +18,7 @@ CONFIG_BEGIN(MasterSvr)
 CONFIG_PARAMETER(UInt8, ServerID, "MasterSvr.ServerID", 1)
 CONFIG_PARAMETER(UInt16, Port, "MasterSvr.Port", 38181)
 CONFIG_PARAMETER(UInt32, MaxWorldCount, "MasterSvr.MaxWorldCount", 32)
+CONFIG_PARAMETER(UInt32, MaxPartyCount, "MasterSvr.MaxPartyCount", 4096)
 CONFIG_END(MasterSvr)
 
 CONFIG_BEGIN(MasterDB)
