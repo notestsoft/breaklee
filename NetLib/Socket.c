@@ -445,7 +445,7 @@ Index SocketGetConnectionCount(
 
 SocketConnectionRef SocketGetConnection(
     SocketRef Socket,
-    Int32 ConnectionID
+    Index ConnectionID
 ) {
     IndexSetIteratorRef Iterator = IndexSetGetIterator(Socket->ConnectionIndices);
     while (Iterator) {

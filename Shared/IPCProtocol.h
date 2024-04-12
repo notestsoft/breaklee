@@ -10,6 +10,9 @@ EXTERN_C_BEGIN
 #pragma pack(push, 1)
 
 enum {
+	IPC_CONNECT = 1,
+	IPC_ROUTE	= 2,
+
 #define IPC_AUTH_COMMAND(__NAME__, __COMMAND__) \
 	__NAME__ = __COMMAND__,
 
@@ -18,6 +21,44 @@ enum {
    
 #include "IPCCommands.h"
 };
+
+enum {
+	IPC_TYPE_NONE		= 0,
+    IPC_TYPE_AUCTION    = 1,
+    IPC_TYPE_AUTH       = 2,
+    IPC_TYPE_CHAT       = 3,
+    IPC_TYPE_MASTER     = 4,
+    IPC_TYPE_PARTY      = 5,
+    IPC_TYPE_WORLD      = 6,
+
+    IPC_TYPE_COUNT,
+};
+
+struct _IPCRouteIndex {
+	union {
+		struct {
+			UInt16 Index;
+			UInt8 Group;
+			UInt8 Type;
+		};
+		Index Serial;
+	};
+};
+typedef struct _IPCRouteIndex IPCRouteIndex;
+
+typedef struct {
+	IPC_DATA_SIGNATURE_EXTENDED;
+	IPCRouteIndex Source;
+} IPC_DATA_CONNECT;
+
+typedef struct {
+	IPC_DATA_SIGNATURE_EXTENDED;
+	IPCRouteIndex Source;
+	IPCRouteIndex Target;
+	Bool Broadcast;
+	Index DataLength;
+	UInt8 Data[0];
+} IPC_DATA_ROUTE;
 
 /* --- AUTH <> MASTER --- */
 

@@ -9,9 +9,11 @@ struct _ServerContext {
     ServerConfig Config;
     SocketRef AuthSocket;
     SocketRef WorldSocket;
+    SocketRef RouterSocket;
     DatabaseRef Database;
     Timestamp WorldListBroadcastTimestamp;
     Timestamp WorldListUpdateTimestamp;
+    DictionaryRef RouteTable;
     MemoryPoolRef PartyPool;
     DictionaryRef PartyTable;
 };

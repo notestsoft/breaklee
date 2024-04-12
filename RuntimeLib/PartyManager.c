@@ -31,6 +31,7 @@ Void RTPartyManagerUpdate(
     
 }
 
+/*
 RTEntityID RTPartyManagerCreateParty(
     RTPartyManagerRef PartyManager,
     Index CharacterIndex,
@@ -86,4 +87,4 @@ Bool RTPartyManagerExpelMember(
     RTEntityID CharacterID
 ) {
     return RTPartyRemoveMember(Party, CharacterIndex, CharacterID);
-}
+}*/

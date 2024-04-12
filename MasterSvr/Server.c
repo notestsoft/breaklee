@@ -1,6 +1,5 @@
-#include "AuthSocket.h"
-#include "WorldSocket.h"
 #include "IPCProtocol.h"
+#include "IPCSocket.h"
 #include "MasterDB.h"
 #include "Server.h"
 

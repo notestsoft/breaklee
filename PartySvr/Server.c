@@ -1,5 +1,5 @@
 #include "ClientSocket.h"
-#include "WorldSocket.h"
+#include "IPCSocket.h"
 #include "Notification.h"
 #include "Server.h"
 #include "IPCCommands.h"

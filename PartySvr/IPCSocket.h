@@ -5,7 +5,7 @@
 
 EXTERN_C_BEGIN
 
-Void WorldSocketOnConnect(
+Void IPCSocketOnConnect(
     ServerRef Server,
     Void *ServerContext,
     SocketRef Socket,
@@ -13,7 +13,7 @@ Void WorldSocketOnConnect(
     Void *ConnectionContext
 );
 
-Void WorldSocketOnDisconnect(
+Void IPCSocketOnDisconnect(
     ServerRef Server,
     Void *ServerContext,
     SocketRef Socket,

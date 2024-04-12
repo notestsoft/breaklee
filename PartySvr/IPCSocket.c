@@ -1,8 +1,7 @@
-#include "AuthSocket.h"
 #include "IPCProtocol.h"
-#include "IPCProcs.h"
+#include "Server.h"
 
-Void AuthSocketOnConnect(
+Void IPCSocketOnConnect(
     ServerRef Server,
     Void *ServerContext,
     SocketRef Socket,
@@ -10,16 +9,17 @@ Void AuthSocketOnConnect(
     Void *ConnectionContext
 ) {
     ServerContextRef Context = (ServerContextRef)ServerContext;
-    ClientContextRef Client = (ClientContextRef)ConnectionContext;
+    IPCContextRef IPCContext = (IPCContextRef)ConnectionContext;
 
-    Client->Auth.Connection = Connection;
-
-    IPC_DATA_AUTH_REQCONNECT* Request = PacketBufferInitExtended(Connection->PacketBuffer, IPC, AUTH_REQCONNECT);
-    Request->ServerID = Context->Config.MasterSvr.ServerID;
+    Int32 Seed = GetTickCount();
+    IPC_DATA_CONNECT* Request = PacketBufferInitExtended(Connection->PacketBuffer, IPC, CONNECT);
+    Request->Source.Index = Random(&Seed);
+    Request->Source.Group = 1;
+    Request->Source.Type = IPC_TYPE_PARTY;
     SocketSend(Socket, Connection, Request);
 }
 
-Void AuthSocketOnDisconnect(
+Void IPCSocketOnDisconnect(
     ServerRef Server,
     Void *ServerContext,
     SocketRef Socket,
@@ -27,5 +27,6 @@ Void AuthSocketOnDisconnect(
     Void *ConnectionContext
 ) {
     ServerContextRef Context = (ServerContextRef)ServerContext;
-    ClientContextRef Client = (ClientContextRef)ConnectionContext;
+    IPCContextRef IPCContext = (IPCContextRef)ConnectionContext;
+
 }

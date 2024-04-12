@@ -2,6 +2,7 @@
 
 #include "Base.h"
 #include "Config.h"
+#include "IPCProtocol.h"
 
 EXTERN_C_BEGIN
 
@@ -25,5 +26,11 @@ union _ClientContext {
     struct _WorldSocketClientContext World;
 };
 typedef union _ClientContext* ClientContextRef;
+
+struct _IPCContext {
+    IPCRouteIndex RouteIndex;
+    Index ConnectionID;
+};
+typedef struct _IPCContext* IPCContextRef;
 
 EXTERN_C_END

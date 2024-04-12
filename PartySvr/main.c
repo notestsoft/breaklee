@@ -1,9 +1,9 @@
 #include "Context.h"
 #include "Server.h"
 #include "ClientSocket.h"
-#include "WorldSocket.h"
 #include "ClientProcedures.h"
 #include "Notification.h"
+#include "IPCSocket.h"
 
 #define C2S_COMMAND(__NAME__, __COMMAND__)                                                                                       \
 Void SERVER_PROC_ ## __NAME__(                                                                                                   \
@@ -78,17 +78,17 @@ Int32 main(Int32 argc, CString* argv) {
     ServerContext.WorldSocket = ServerCreateSocket(
         Server,
         SOCKET_FLAGS_IPC,
-        NULL,
-        Config.WorldSvr.Port,
-        sizeof(struct _WorldContext),
+        Config.Router.Host,
+        Config.Router.Port,
+        sizeof(struct _IPCContext),
         Config.NetLib.ProtocolIdentifier,
         Config.NetLib.ProtocolVersion,
         Config.NetLib.ProtocolExtension,
         Config.NetLib.ReadBufferSize,
         Config.NetLib.WriteBufferSize,
-        Config.WorldSvr.MaxConnectionCount,
-        &WorldSocketOnConnect,
-        &WorldSocketOnDisconnect
+        1,
+        &IPCSocketOnConnect,
+        &IPCSocketOnDisconnect
     );
     /*
 #define IPC_MASTER_PROCEDURE(__NAME__, __COMMAND__, __PROTOCOL__) \
