@@ -2,42 +2,6 @@
 #include "IPCProcs.h"
 #include "IPCSocket.h"
 
-Void PrintRouteTable(
-    ServerContextRef Context
-) {
-    CString IPCTypeNames[] = {
-        "NONE",
-        "AUCTION",
-        "AUTH",
-        "CHAT",
-        "MASTER",
-        "PARTY",
-        "WORLD"
-    };
-
-#ifdef _WIN32
-    system("cls");
-#else
-    system("clear");
-#endif
-
-    printf("+-------+-------+---------------+\n");
-    printf("| Type  | Group |     Index     |\n");
-    printf("+-------+-------+---------------+\n");
-
-    DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(Context->RouteTable);
-    while (Iterator.Key) {
-        IPCRouteIndex RouteIndex = { 0 };
-        RouteIndex.Serial = *(Index*)Iterator.Key;
-
-        printf("|   %d   |   %d   | %08d      |\n", RouteIndex.Type, RouteIndex.Group, RouteIndex.Index);
-
-        Iterator = DictionaryKeyIteratorNext(Iterator);
-    }
-
-    printf("+-------+-------+---------------+\n");
-}
-
 Void AuthSocketOnConnect(
     ServerRef Server,
     Void *ServerContext,
@@ -89,7 +53,7 @@ Void WorldSocketOnDisconnect(
     ClientContextRef Client = (ClientContextRef)ConnectionContext;
     Context->WorldListUpdateTimestamp = ServerGetTimestamp(Server);
 }
-
+/*
 Void IPCSocketOnConnect(
     ServerRef Server,
     Void *ServerContext,
@@ -188,4 +152,4 @@ Void OnIPCRoute(
     next:
         Iterator = SocketConnectionIteratorNext(Socket, Iterator);
     }
-}
+}*/

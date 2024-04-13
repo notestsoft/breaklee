@@ -107,12 +107,23 @@ Int32 main(Int32 argc, CString* argv) {
     ServerContext.UserListBroadcastTimestamp = 0;
     ServerContext.UserListUpdateTimestamp = 0;
 
+    IPCNodeID NodeID = kIPCNodeIDNull;
+    NodeID.Group = 1;
+    NodeID.Index = 1;
+    NodeID.Type = IPC_TYPE_WORLD;
+
     ServerRef Server = ServerCreate(
         Allocator,
+        NodeID,
+        Config.MasterSvr.Host,
+        Config.MasterSvr.Port,
+        Config.MasterSvr.Timeout,
+        Config.NetLib.ReadBufferSize,
+        Config.NetLib.WriteBufferSize,
         &ServerOnUpdate,
         &ServerContext
     );
-    
+
     ServerContext.ClientSocket = ServerCreateSocket(
         Server,
         SOCKET_FLAGS_LISTENER | SOCKET_FLAGS_ENCRYPTED,

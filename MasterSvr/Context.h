@@ -27,10 +27,4 @@ union _ClientContext {
 };
 typedef union _ClientContext* ClientContextRef;
 
-struct _IPCContext {
-    IPCRouteIndex RouteIndex;
-    Index ConnectionID;
-};
-typedef struct _IPCContext* IPCContextRef;
-
 EXTERN_C_END

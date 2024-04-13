@@ -3,7 +3,6 @@
 #include "ClientSocket.h"
 #include "ClientProcedures.h"
 #include "Notification.h"
-#include "IPCSocket.h"
 
 #define C2S_COMMAND(__NAME__, __COMMAND__)                                                                                       \
 Void SERVER_PROC_ ## __NAME__(                                                                                                   \
@@ -33,7 +32,7 @@ Void ServerOnUpdate(
     Void *ServerContext
 ) {
     ServerContextRef Context = (ServerContextRef)ServerContext;
-    RTPartyManagerUpdate(Context->PartyManager);
+    // RTPartyManagerUpdate(Context->PartyManager);
 }
 
 Int32 main(Int32 argc, CString* argv) {
@@ -47,14 +46,25 @@ Int32 main(Int32 argc, CString* argv) {
     AllocatorRef Allocator = AllocatorGetSystemDefault();
     struct _ServerContext ServerContext = { 0 };
     ServerContext.Config = Config;
-    ServerContext.PartyManager = RTPartyManagerCreate(Allocator, Config.PartySvr.MaxPartyCount);
+    // ServerContext.PartyManager = RTPartyManagerCreate(Allocator, Config.PartySvr.MaxPartyCount);
+
+    IPCNodeID NodeID = kIPCNodeIDNull;
+    NodeID.Group = 1;
+    NodeID.Index = 1;
+    NodeID.Type = IPC_TYPE_PARTY;
 
     ServerRef Server = ServerCreate(
         Allocator,
+        NodeID,
+        Config.MasterSvr.Host,
+        Config.MasterSvr.Port,
+        Config.MasterSvr.Timeout,
+        Config.NetLib.ReadBufferSize,
+        Config.NetLib.WriteBufferSize,
         &ServerOnUpdate,
         &ServerContext
     );
-    
+
     ServerContext.ClientSocket = ServerCreateSocket(
         Server,
         SOCKET_FLAGS_LISTENER | SOCKET_FLAGS_ENCRYPTED,
@@ -74,7 +84,8 @@ Int32 main(Int32 argc, CString* argv) {
 #define C2S_COMMAND(__NAME__, __COMMAND__) \
     ServerSocketRegisterPacketCallback(Server, ServerContext.ClientSocket, __COMMAND__, &SERVER_PROC_ ## __NAME__);
 #include "ClientCommands.h"
-    
+
+    /*
     ServerContext.WorldSocket = ServerCreateSocket(
         Server,
         SOCKET_FLAGS_IPC,
@@ -90,7 +101,6 @@ Int32 main(Int32 argc, CString* argv) {
         &IPCSocketOnConnect,
         &IPCSocketOnDisconnect
     );
-    /*
 #define IPC_MASTER_PROCEDURE(__NAME__, __COMMAND__, __PROTOCOL__) \
     ServerSocketRegisterPacketCallback(Server, ServerContext.MasterSocket, __COMMAND__, &SERVER_ ## __NAME__);
 #include "IPCProcDefinition.h"
@@ -98,7 +108,7 @@ Int32 main(Int32 argc, CString* argv) {
     
     ServerRun(Server);
 
-    RTPartyManagerDestroy(ServerContext.PartyManager);
+    // RTPartyManagerDestroy(ServerContext.PartyManager);
     DiagnosticTeardown();
     
     return EXIT_SUCCESS;

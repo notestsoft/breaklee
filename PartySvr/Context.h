@@ -34,9 +34,4 @@ struct _WorldContext {
 };
 typedef struct _WorldContext* WorldContextRef;
 
-struct _IPCContext {
-    UInt8 ServerID;
-};
-typedef struct _IPCContext* IPCContextRef;
-
 EXTERN_C_END

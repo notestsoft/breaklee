@@ -90,8 +90,24 @@ Int32 main(Int32 argc, CString* argv) {
     ServerContext.Database = NULL;
     ServerContext.WorldListBroadcastTimestamp = 0;
     ServerContext.WorldListUpdateTimestamp = 0;
-    ServerRef Server = ServerCreate(Allocator, &ServerOnUpdate, &ServerContext);
-    
+
+    IPCNodeID NodeID = kIPCNodeIDNull;
+    NodeID.Group = 1;
+    NodeID.Index = 0;
+    NodeID.Type = IPC_TYPE_AUTH;
+
+    ServerRef Server = ServerCreate(
+        Allocator,
+        NodeID,
+        Config.MasterSvr.Host,
+        Config.MasterSvr.Port,
+        Config.MasterSvr.Timeout,
+        Config.NetLib.ReadBufferSize,
+        Config.NetLib.WriteBufferSize,
+        &ServerOnUpdate,
+        &ServerContext
+    );
+
     ServerContext.ClientSocket = ServerCreateSocket(
         Server,
         SOCKET_FLAGS_LISTENER | SOCKET_FLAGS_ENCRYPTED,
@@ -123,7 +139,7 @@ Int32 main(Int32 argc, CString* argv) {
         Config.NetLib.ProtocolExtension,
         Config.NetLib.ReadBufferSize,
         Config.NetLib.WriteBufferSize,
-        Config.MasterSvr.MaxServerCount,
+        8,
         &MasterSocketOnConnect,
         &MasterSocketOnDisconnect
     );

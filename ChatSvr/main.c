@@ -47,12 +47,23 @@ Int32 main(Int32 argc, CString* argv) {
     struct _ServerContext ServerContext = { 0 };
     ServerContext.Config = Config;
 
+    IPCNodeID NodeID = kIPCNodeIDNull;
+    NodeID.Group = 1;
+    NodeID.Index = 1;
+    NodeID.Type = IPC_TYPE_CHAT;
+
     ServerRef Server = ServerCreate(
         Allocator,
+        NodeID,
+        Config.MasterSvr.Host,
+        Config.MasterSvr.Port,
+        Config.MasterSvr.Timeout,
+        Config.NetLib.ReadBufferSize,
+        Config.NetLib.WriteBufferSize,
         &ServerOnUpdate,
         &ServerContext
     );
-    
+
     ServerContext.ClientSocket = ServerCreateSocket(
         Server,
         SOCKET_FLAGS_LISTENER | SOCKET_FLAGS_ENCRYPTED,

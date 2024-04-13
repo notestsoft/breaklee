@@ -17,6 +17,12 @@ Void _ServerSocketOnReceived(
     Void *Packet
 );
 
+Void _ServerIPCSocketOnReceived(
+    IPCSocketRef Socket,
+    IPCSocketConnectionRef Connection,
+    IPCPacketRef Packet
+);
+
 typedef UInt16 (*PacketGetCommandCallback)(
     UInt16 ProtocolIdentifier,
     UInt16 ProtocolVersion,
@@ -39,7 +45,8 @@ typedef struct _ServerSocketContext* ServerSocketContextRef;
 
 struct _Server {
     AllocatorRef Allocator;
-    ArrayRef Sockets;
+    ArrayRef Sockets; // TODO: Replace this with client socket there is no usecase for having many of them..
+    IPCSocketRef IPCSocket;
     ServerUpdateCallback OnUpdate;
     Bool IsRunning;
     Timestamp Timestamp;
@@ -48,6 +55,12 @@ struct _Server {
 
 ServerRef ServerCreate(
     AllocatorRef Allocator,
+    IPCNodeID NodeID,
+    CString Host,
+    UInt16 Port,
+    Timestamp Timeout,
+    Index ReadBufferSize,
+    Index WriteBufferSize,
     ServerUpdateCallback OnUpdate,
     Void *ServerContext
 ) {
@@ -58,6 +71,22 @@ ServerRef ServerCreate(
 
     Server->Allocator = Allocator;
     Server->Sockets = ArrayCreateEmpty(Allocator, sizeof(struct _ServerSocketContext), 8);
+    Server->IPCSocket = IPCSocketCreate(
+        Allocator,
+        NodeID,
+        (Host) ? 0 : IPC_SOCKET_FLAGS_LISTENER,
+        ReadBufferSize,
+        WriteBufferSize,
+        Host,
+        Port,
+        Timeout,
+        (Host) ? 1 : IPC_SOCKET_MAX_CONNECTION_COUNT,
+        NULL,
+        NULL,
+        NULL,
+        &_ServerIPCSocketOnReceived,
+        Server
+    );
     Server->OnUpdate = OnUpdate;
     Server->IsRunning = false;
     Server->Timestamp = GetTimestamp();
@@ -178,6 +207,8 @@ Void ServerRun(
             
             SocketUpdate(SocketContext->Socket);
         }
+
+        IPCSocketUpdate(Server->IPCSocket);
     }
 }
 
@@ -244,4 +275,18 @@ Void _ServerSocketOnReceived(
             Packet
         );
     }
+}
+
+Void _ServerIPCSocketOnReceived(
+    IPCSocketRef Socket,
+    IPCSocketConnectionRef Connection,
+    IPCPacketRef Packet
+) {
+    LogMessageFormat(LOG_LEVEL_WARNING, "Received packet: %d", Packet->Command);
+    PacketLogBytes(
+        Socket->ProtocolIdentifier,
+        Socket->ProtocolVersion,
+        Socket->ProtocolExtension,
+        Packet
+    );
 }

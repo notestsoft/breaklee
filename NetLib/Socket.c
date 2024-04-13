@@ -122,7 +122,7 @@ Void SocketConnect(
         Socket->NextConnectionID += 1;
         Socket->Flags &= ~SOCKET_FLAGS_CONNECTING;
         Socket->Flags |= SOCKET_FLAGS_CONNECTED;
-        Socket->OnConnect(Socket, Connection);
+        if (Socket->OnConnect)  Socket->OnConnect(Socket, Connection);
         LogMessage(LOG_LEVEL_INFO, "Socket connection established");
     } else if (Result == -1) {
         FatalError("Socket connection failed");
@@ -332,7 +332,7 @@ Void SocketReleaseConnections(
         if (Connection->Flags & SOCKET_CONNECTION_FLAGS_DISCONNECTED && !(Connection->Flags & SOCKET_CONNECTION_FLAGS_DISCONNECTED_END)) {
             Connection->Flags &= ~SOCKET_CONNECTION_FLAGS_DISCONNECTED_END;
             SocketFlushWriteBuffer(Socket, Connection);
-            Socket->OnDisconnect(Socket, Connection);
+            if (Socket->OnDisconnect) Socket->OnDisconnect(Socket, Connection);
             Socket->Flags &= ~SOCKET_FLAGS_CONNECTED;
             PlatformSocketClose(Connection->Handle);
             SocketReleaseConnection(Socket, Connection);
@@ -361,7 +361,7 @@ Void SocketUpdate(
                 }
 
                 Socket->NextConnectionID += 1;
-                Socket->OnConnect(Socket, Connection);
+                if (Socket->OnConnect) Socket->OnConnect(Socket, Connection);
             }
         }
     }
@@ -379,7 +379,7 @@ Void SocketUpdate(
             Socket->NextConnectionID += 1;
             Socket->Flags &= ~SOCKET_FLAGS_CONNECTING;
             Socket->Flags |= SOCKET_FLAGS_CONNECTED;
-            Socket->OnConnect(Socket, Connection);
+            if (Socket->OnConnect) Socket->OnConnect(Socket, Connection);
             LogMessage(LOG_LEVEL_INFO, "Socket connection established");
         } else {
             PlatformSocketConnect(Socket->Handle, (struct sockaddr*)&Socket->Address, sizeof(Socket->Address));

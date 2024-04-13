@@ -73,10 +73,25 @@ Int32 main(Int32 argc, CString* argv) {
     ServerContext.Database = NULL;
     ServerContext.WorldListBroadcastTimestamp = 0;
     ServerContext.WorldListUpdateTimestamp = 0;
-    ServerContext.RouteTable = IndexDictionaryCreate(Allocator, Config.MasterSvr.MaxRouteCount);
     ServerContext.PartyPool = MemoryPoolCreate(Allocator, sizeof(struct _RTParty), Config.MasterSvr.MaxPartyCount);
     ServerContext.PartyTable = EntityDictionaryCreate(Allocator, Config.MasterSvr.MaxPartyCount);
-    ServerRef Server = ServerCreate(Allocator, &ServerOnUpdate, &ServerContext);
+
+    IPCNodeID NodeID = kIPCNodeIDNull;
+    NodeID.Group = Config.MasterSvr.ServerID;
+    NodeID.Index = 0;
+    NodeID.Type = IPC_TYPE_MASTER;
+
+    ServerRef Server = ServerCreate(
+        Allocator,
+        NodeID,
+        NULL,
+        Config.MasterSvr.Port,
+        0,
+        Config.NetLib.ReadBufferSize,
+        Config.NetLib.WriteBufferSize,
+        &ServerOnUpdate, 
+        &ServerContext
+    );
 
     ServerContext.AuthSocket = ServerCreateSocket(
         Server,
@@ -109,23 +124,7 @@ Int32 main(Int32 argc, CString* argv) {
         &WorldSocketOnConnect,
         &WorldSocketOnDisconnect
     );
-    
-    ServerContext.RouterSocket = ServerCreateSocket(
-        Server,
-        SOCKET_FLAGS_LISTENER | SOCKET_FLAGS_IPC,
-        NULL,
-        Config.MasterSvr.RouterPort,
-        sizeof(struct _IPCContext),
-        Config.NetLib.ProtocolIdentifier,
-        Config.NetLib.ProtocolVersion,
-        Config.NetLib.ProtocolExtension,
-        Config.NetLib.ReadBufferSize,
-        Config.NetLib.WriteBufferSize,
-        Config.MasterSvr.MaxRouteCount,
-        &IPCSocketOnConnect,
-        &IPCSocketOnDisconnect
-    );
-    
+
     ServerContext.Database = DatabaseConnect(
         Config.MasterDB.Host,
         Config.MasterDB.Username,
@@ -148,9 +147,6 @@ Int32 main(Int32 argc, CString* argv) {
     ServerSocketRegisterPacketCallback(Server, ServerContext.WorldSocket, __COMMAND__, &SERVER_WORLD_ ## __NAME__);
 
 #include "IPCProcDefinition.h"
-
-    ServerSocketRegisterPacketCallback(Server, ServerContext.RouterSocket, IPC_CONNECT, &OnIPCConnect);
-    ServerSocketRegisterPacketCallback(Server, ServerContext.RouterSocket, IPC_ROUTE, &OnIPCRoute);
 
     ServerRun(Server);
     ServerDestroy(Server);

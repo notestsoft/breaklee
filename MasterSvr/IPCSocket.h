@@ -37,38 +37,4 @@ Void WorldSocketOnDisconnect(
     Void *ConnectionContext
 );
 
-Void IPCSocketOnConnect(
-    ServerRef Server,
-    Void *ServerContext,
-    SocketRef Socket,
-    SocketConnectionRef Connection,
-    Void *ConnectionContext
-);
-
-Void IPCSocketOnDisconnect(
-    ServerRef Server,
-    Void *ServerContext,
-    SocketRef Socket,
-    SocketConnectionRef Connection,
-    Void *ConnectionContext
-);
-
-Void OnIPCConnect(
-    ServerRef Server,
-    Void* ServerContext,
-    SocketRef Socket,
-    SocketConnectionRef Connection,
-    Void* ConnectionContext,
-    Void* Data
-);
-
-Void OnIPCRoute(
-    ServerRef Server,
-    Void* ServerContext,
-    SocketRef Socket,
-    SocketConnectionRef Connection,
-    Void* ConnectionContext,
-    Void* Data
-);
-
 EXTERN_C_END

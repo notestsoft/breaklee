@@ -47,12 +47,23 @@ Int32 main(Int32 argc, CString* argv) {
     struct _ServerContext ServerContext = { 0 };
     ServerContext.Config = Config;
 
+    IPCNodeID NodeID = kIPCNodeIDNull;
+    NodeID.Group = 1;
+    NodeID.Index = 0;
+    NodeID.Type = IPC_TYPE_AUCTION;
+
     ServerRef Server = ServerCreate(
         Allocator,
+        NodeID,
+        Config.MasterSvr.Host,
+        Config.MasterSvr.Port,
+        Config.MasterSvr.Timeout,
+        Config.NetLib.ReadBufferSize,
+        Config.NetLib.WriteBufferSize,
         &ServerOnUpdate,
         &ServerContext
     );
-    
+
     ServerContext.ClientSocket = ServerCreateSocket(
         Server,
         SOCKET_FLAGS_LISTENER | SOCKET_FLAGS_ENCRYPTED,
@@ -96,7 +107,6 @@ Int32 main(Int32 argc, CString* argv) {
     
     ServerRun(Server);
 
-    RTPartyManagerDestroy(ServerContext.PartyManager);
     DiagnosticTeardown();
     
     return EXIT_SUCCESS;

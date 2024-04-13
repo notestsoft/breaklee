@@ -1,5 +1,4 @@
 #include "ClientSocket.h"
-#include "IPCSocket.h"
 #include "Notification.h"
 #include "Server.h"
 #include "IPCCommands.h"

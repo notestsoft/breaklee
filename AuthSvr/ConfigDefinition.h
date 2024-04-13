@@ -39,8 +39,9 @@ CONFIG_PARAMETER(Bool, AutoReconnect, "AuthDB.AutoReconnect", 1)
 CONFIG_END(AuthDB)
 
 CONFIG_BEGIN(MasterSvr)
-CONFIG_PARAMETER(UInt16, Port, "MasterSvr.Port", 38180)
-CONFIG_PARAMETER(UInt32, MaxServerCount, "MasterSvr.MaxServerCount", 8)
+CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, Host, "MasterSvr.Host", 127.0.0.1)
+CONFIG_PARAMETER(UInt16, Port, "MasterSvr.Port", 38161)
+CONFIG_PARAMETER(UInt64, Timeout, "MasterSvr.Timeout", 1000)
 CONFIG_END(MasterSvr)
 
 CONFIG_BEGIN(Links)
