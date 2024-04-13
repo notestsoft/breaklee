@@ -19,6 +19,8 @@ Index NextPowerOfTwo(
 
 Timestamp GetTimestamp();
 
+Timestamp GetTimestampMs();
+
 Bool GetPlatformErrorMessage(
 	CString Buffer,
 	Int32 Length

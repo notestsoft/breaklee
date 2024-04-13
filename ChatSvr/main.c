@@ -83,7 +83,8 @@ Int32 main(Int32 argc, CString* argv) {
 #define C2S_COMMAND(__NAME__, __COMMAND__) \
     ServerSocketRegisterPacketCallback(Server, ServerContext.ClientSocket, __COMMAND__, &SERVER_PROC_ ## __NAME__);
 #include "ClientCommands.h"
-    
+
+    /*
     ServerContext.WorldSocket = ServerCreateSocket(
         Server,
         SOCKET_FLAGS_IPC,
@@ -99,7 +100,6 @@ Int32 main(Int32 argc, CString* argv) {
         &WorldSocketOnConnect,
         &WorldSocketOnDisconnect
     );
-    /*
 #define IPC_MASTER_PROCEDURE(__NAME__, __COMMAND__, __PROTOCOL__) \
     ServerSocketRegisterPacketCallback(Server, ServerContext.MasterSocket, __COMMAND__, &SERVER_ ## __NAME__);
 #include "IPCProcDefinition.h"

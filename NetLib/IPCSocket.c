@@ -1,8 +1,9 @@
 #include "IPCSocket.h"
 
 enum {
-    IPC_COMMAND_REGISTER = 0,
-    IPC_COMMAND_ROUTE   = 1,
+    IPC_COMMAND_REGISTER    = 0,
+    IPC_COMMAND_ROUTE       = 1,
+    IPC_COMMAND_HEARTBEAT   = 2,
 };
 
 Void PrintNodeTable(
@@ -57,6 +58,7 @@ Void IPCSocketOnConnect(
     IPCSocketRef Socket,
     IPCSocketConnectionRef Connection
 ) {
+    Connection->HeartbeatTimestamp = GetTimestampMs() + IPC_SOCKET_HEARTBEAT_TIMEOUT;
     Connection->Userdata = MemoryPoolReserve(Socket->ConnectionContextPool, Connection->ConnectionPoolIndex);
     
     IPCNodeContextRef NodeContext = (IPCNodeContextRef)Connection->Userdata;
@@ -139,6 +141,11 @@ Void IPCSocketOnReceived(
         }
     }
 
+    if (Packet->Command == IPC_COMMAND_HEARTBEAT) {
+        Socket->HeartbeatPacket.Target = NodeContext->NodeID;
+        IPCSocketSend(Socket, Connection, &Socket->HeartbeatPacket);
+    }
+
     return;
 
 error:
@@ -190,6 +197,16 @@ IPCSocketRef IPCSocketCreate(
     Socket->ConnectionContextPool = MemoryPoolCreate(Allocator, sizeof(struct _IPCNodeContext), MaxConnectionCount);
     Socket->NodeTable = IndexDictionaryCreate(Allocator, MaxConnectionCount);
     Socket->Userdata = Userdata;
+
+    Socket->HeartbeatPacket.Magic = IPC_PROTOCOL_IDENTIFIER + IPC_PROTOCOL_VERSION + IPC_PROTOCOL_EXTENSION;
+    Socket->HeartbeatPacket.Length = sizeof(struct _IPCPacket);
+    Socket->HeartbeatPacket.Command = IPC_COMMAND_HEARTBEAT;
+    Socket->HeartbeatPacket.RouteType = IPC_ROUTE_TYPE_UNICAST;
+    Socket->HeartbeatPacket.Source = NodeID;
+    Socket->HeartbeatPacket.SourceConnectionID = 0;
+    Socket->HeartbeatPacket.Target = kIPCNodeIDNull;
+    Socket->HeartbeatPacket.TargetConnectionID = 0;
+    Socket->HeartbeatPacket.DataLength = 0;
 
     if (Host) {
         IPCSocketConnect(Socket, Host, Port, Timeout);
@@ -252,6 +269,8 @@ Void IPCSocketConnect(
 ) {
     assert(!(Socket->Flags & (IPC_SOCKET_FLAGS_LISTENING | IPC_SOCKET_FLAGS_CONNECTING | IPC_SOCKET_FLAGS_CONNECTED)));
 
+    Socket->Host = Host;
+    Socket->Port = Port;
     Socket->Timeout = Timeout;
     Socket->Handle = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (Socket->Handle < 0) FatalError("Socket creation failed");
@@ -293,6 +312,8 @@ Void IPCSocketListen(
 ) {
     assert(!(Socket->Flags & (IPC_SOCKET_FLAGS_LISTENING | IPC_SOCKET_FLAGS_CONNECTING | IPC_SOCKET_FLAGS_CONNECTED)));
 
+    Socket->Host = NULL;
+    Socket->Port = Port;
     Socket->Handle = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (Socket->Handle < 0) FatalError("Socket creation failed");
 
@@ -483,12 +504,12 @@ Void IPCSocketReleaseConnections(
 Void IPCSocketUpdate(
     IPCSocketRef Socket
 ) {
-    if (!(Socket->Flags & (IPC_SOCKET_FLAGS_LISTENING | IPC_SOCKET_FLAGS_CONNECTING | IPC_SOCKET_FLAGS_CONNECTED))) return;
-
-    if (Socket->Flags & IPC_SOCKET_FLAGS_LISTENING) {
+    Bool IsListening = (Socket->Flags & IPC_SOCKET_FLAGS_LISTENING);
+    Bool IsConnected = (Socket->Flags & (IPC_SOCKET_FLAGS_CONNECTING | IPC_SOCKET_FLAGS_CONNECTED));
+    if (IsListening) {
         if (!MemoryPoolIsFull(Socket->ConnectionPool)) {
-            SocketAddress ClientAddress;
-            SocketHandle Client;
+            SocketAddress ClientAddress = { 0 };
+            SocketHandle Client = 0;
             if (PlatformSocketAccept(Socket->Handle, (struct sockaddr*)&ClientAddress, sizeof(ClientAddress), &Client)) {
                 IPCSocketConnectionRef Connection = IPCSocketReserveConnection(Socket);
                 Connection->ID = Socket->NextConnectionID;
@@ -500,6 +521,14 @@ Void IPCSocketUpdate(
                 IPCSocketOnConnect(Socket, Connection);
             }
         }
+    }
+    else if (!IsConnected) {
+        if (Socket->ReconnectCount >= IPC_SOCKET_MAX_RECONNECT_COUNT) {
+            FatalError("IPC connection couldn't be established!");
+        }
+
+        Socket->ReconnectCount += 1;
+        IPCSocketConnect(Socket, Socket->Host, Socket->Port, Socket->Timeout);
     }
 
     if ((Socket->Flags & IPC_SOCKET_FLAGS_CONNECTING) && !(Socket->Flags & IPC_SOCKET_FLAGS_CONNECTED)) {
@@ -522,7 +551,8 @@ Void IPCSocketUpdate(
 
     Int64 RecvLength = 0;
     UInt8 RecvBuffer[IPC_SOCKET_RECV_BUFFER_SIZE] = { 0 };
-    
+
+    Timestamp CurrentTimestamp = GetTimestampMs();
     IndexSetIteratorRef Iterator = IndexSetGetIterator(Socket->ConnectionIndices);
     while (Iterator) {
         Index ConnectionPoolIndex = Iterator->Value;
@@ -544,6 +574,14 @@ Void IPCSocketUpdate(
         
         MemoryBufferAppendCopy(Connection->ReadBuffer, RecvBuffer, RecvLength);
         IPCSocketFetchReadBuffer(Socket, Connection);
+
+        if (Connection->HeartbeatTimestamp < CurrentTimestamp) {
+            Connection->HeartbeatTimestamp = CurrentTimestamp + IPC_SOCKET_HEARTBEAT_TIMEOUT;
+
+            IPCNodeContextRef NodeContext = (IPCNodeContextRef)Connection->Userdata;
+            Socket->HeartbeatPacket.Target = NodeContext->NodeID;
+            IPCSocketSend(Socket, Connection, &Socket->HeartbeatPacket);
+        }
     }
 
     IPCSocketReleaseConnections(Socket);

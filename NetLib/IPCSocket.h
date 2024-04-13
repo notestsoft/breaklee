@@ -12,7 +12,9 @@ EXTERN_C_BEGIN
 #define IPC_PROTOCOL_VERSION            0x10
 #define IPC_PROTOCOL_EXTENSION          0x1111
 #define IPC_SOCKET_MAX_CONNECTION_COUNT 512
+#define IPC_SOCKET_MAX_RECONNECT_COUNT  3
 #define IPC_SOCKET_RECV_BUFFER_SIZE     4096
+#define IPC_SOCKET_HEARTBEAT_TIMEOUT    1000
 
 enum {
     IPC_TYPE_ALL        = 0,
@@ -56,7 +58,7 @@ struct _IPCPacket {
     IPCNodeID Target;
     Index TargetConnectionID;
     UInt32 DataLength;
-    UInt8 Data[0];
+    // UInt8 Data[0];
 };
 typedef struct _IPCPacket* IPCPacketRef;
 typedef struct _IPCSocket* IPCSocketRef;
@@ -101,7 +103,11 @@ struct _IPCSocket {
     Index WriteBufferSize;
     Index MaxConnectionCount;
     Index NextConnectionID;
+    CString Host;
+    UInt16 Port;
+    Int32 ReconnectCount;
     Timestamp Timeout;
+    struct _IPCPacket HeartbeatPacket;
     PacketBufferRef PacketBuffer;
     IPCSocketConnectionCallback OnConnect;
     IPCSocketConnectionCallback OnDisconnect;
@@ -124,6 +130,7 @@ struct _IPCSocketConnection {
     PacketBufferRef PacketBuffer;
     MemoryBufferRef ReadBuffer;
     MemoryBufferRef WriteBuffer;
+    Timestamp HeartbeatTimestamp;
     Void* Userdata;
 };
 
@@ -186,13 +193,6 @@ Index IPCSocketGetConnectionCount(
 IPCSocketConnectionRef IPCSocketGetConnection(
     IPCSocketRef Socket,
     Index ConnectionID
-);
-
-Void IPCSocketConnectionKeychainSeed(
-    IPCSocketRef Socket,
-    IPCSocketConnectionRef Connection,
-    UInt32 Key,
-    UInt32 Step
 );
 
 IPCSocketConnectionIteratorRef IPCSocketGetConnectionIterator(
