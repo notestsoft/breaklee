@@ -20,6 +20,17 @@ Void SERVER_PROC_ ## __NAME__(                                                  
 }
 #include "ClientCommands.h"
 
+Void ServerOnIPCPacketReceived(
+    ServerRef Server,
+    Void* ServerContext,
+    IPCSocketRef Socket,
+    IPCSocketConnectionRef Connection,
+    Void* ConnectionContext,
+    IPCPacketRef Packet
+) {
+
+}
+
 // TODO: This is not a good solution considering the connection id is being reused
 Index PacketGetConnectionID(
     Void* Packet
@@ -62,6 +73,7 @@ Int32 main(Int32 argc, CString* argv) {
         Config.NetLib.ReadBufferSize,
         Config.NetLib.WriteBufferSize,
         &ServerOnUpdate,
+        &ServerOnIPCPacketReceived,
         &ServerContext
     );
 
@@ -85,27 +97,6 @@ Int32 main(Int32 argc, CString* argv) {
     ServerSocketRegisterPacketCallback(Server, ServerContext.ClientSocket, __COMMAND__, &SERVER_PROC_ ## __NAME__);
 #include "ClientCommands.h"
 
-    /*
-    ServerContext.WorldSocket = ServerCreateSocket(
-        Server,
-        SOCKET_FLAGS_IPC,
-        Config.Router.Host,
-        Config.Router.Port,
-        sizeof(struct _IPCContext),
-        Config.NetLib.ProtocolIdentifier,
-        Config.NetLib.ProtocolVersion,
-        Config.NetLib.ProtocolExtension,
-        Config.NetLib.ReadBufferSize,
-        Config.NetLib.WriteBufferSize,
-        1,
-        &IPCSocketOnConnect,
-        &IPCSocketOnDisconnect
-    );
-#define IPC_MASTER_PROCEDURE(__NAME__, __COMMAND__, __PROTOCOL__) \
-    ServerSocketRegisterPacketCallback(Server, ServerContext.MasterSocket, __COMMAND__, &SERVER_ ## __NAME__);
-#include "IPCProcDefinition.h"
-    */
-    
     ServerRun(Server);
 
     // RTPartyManagerDestroy(ServerContext.PartyManager);

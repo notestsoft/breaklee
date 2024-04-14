@@ -85,6 +85,8 @@ IndexSetRef IndexSetUnion(
         Index Element = *((Index*)ArrayGetElementAtIndex(Rhs->Indices, ElementIndex));
         IndexSetInsert(Result, Element);
     }
+
+    return Result;
 }
 
 IndexSetRef IndexSetIntersection(

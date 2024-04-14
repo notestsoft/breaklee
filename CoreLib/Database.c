@@ -271,12 +271,12 @@ StatementRef DatabaseCreateStatement(
 				assert(Buffer->Value.Buffer);
 				Result->buffer = Buffer->Value.Buffer;
 				Result->buffer_length = MIN(Fields[Index].length, DATABASE_RESULT_BUFFER_SIZE);
-				Result->length = &Buffer->Length;
+				Result->length = (unsigned long*)&Buffer->Length;
 			}
 			else {
 				Result->buffer = &Buffer->Value;
 				Result->buffer_length = sizeof(Buffer->Value);
-				Result->length = &Buffer->Length;
+				Result->length = (unsigned long*)&Buffer->Length;
 			}
 		}
 

@@ -2,29 +2,29 @@
 
 #include "Base.h"
 #include "Config.h"
-#include "IPCProtocol.h"
+#include "MasterDBProtocol.h"
 
 EXTERN_C_BEGIN
 
-struct _AuthSocketClientContext {
-    SocketConnectionRef Connection;
-};
-
-struct _WorldSocketClientContext {
-    SocketConnectionRef Connection;
-    Bool IsWorldInitialized;
-    UInt8 WorldID;
-    Char WorldHost[65];
-    UInt16 WorldPort;
-    UInt32 WorldType;
+struct _WorldInfo {
+    IPCNodeID NodeID;
     UInt16 PlayerCount;
     UInt16 MaxPlayerCount;
+    Char Host[64];
+    UInt16 Port;
+    UInt32 Type;
 };
+typedef struct _WorldInfo* WorldInfoRef;
 
-union _ClientContext {
-    struct _AuthSocketClientContext Auth;
-    struct _WorldSocketClientContext World;
+struct _ServerContext {
+    ServerConfig Config;
+    DatabaseRef Database;
+    MemoryPoolRef IPCCallbackPool;
+    DictionaryRef WorldInfoTable;
+
+    MASTERDB_DATA_ACCOUNT TempAccount;
+    MASTERDB_DATA_CHARACTER TempCharacter;
 };
-typedef union _ClientContext* ClientContextRef;
+typedef struct _ServerContext* ServerContextRef;
 
 EXTERN_C_END

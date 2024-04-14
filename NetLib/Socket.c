@@ -144,8 +144,8 @@ Void SocketListen(
     Socket->Address.sin_addr.s_addr = htonl(INADDR_ANY);
     Socket->Address.sin_port = htons(Port);
 
-    Int32 enable = 1;
-    if (setsockopt(Socket->Handle, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) != 0)
+    Int32 Enabled = 1;
+    if (setsockopt(Socket->Handle, SOL_SOCKET, SO_REUSEADDR, (Char*)&Enabled, sizeof(Enabled)) != 0)
         FatalError("Socket re-use address set failed");
 
     if ((bind(Socket->Handle, (struct sockaddr*)&Socket->Address, sizeof(Socket->Address))) != 0)

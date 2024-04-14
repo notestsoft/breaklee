@@ -15,11 +15,10 @@
 #endif
 
 CONFIG_BEGIN(MasterSvr)
-CONFIG_PARAMETER(UInt8, ServerID, "MasterSvr.ServerID", 1)
+CONFIG_PARAMETER(UInt8, GroupIndex, "MasterSvr.GroupIndex", 1)
 CONFIG_PARAMETER(UInt16, Port, "MasterSvr.Port", 38161)
 CONFIG_PARAMETER(UInt32, MaxRouteCount, "MasterSvr.MaxRouteCount", 512)
 CONFIG_PARAMETER(UInt32, MaxWorldCount, "MasterSvr.MaxWorldCount", 32)
-CONFIG_PARAMETER(UInt32, MaxPartyCount, "MasterSvr.MaxPartyCount", 4096)
 CONFIG_END(MasterSvr)
 
 CONFIG_BEGIN(MasterDB)
@@ -30,11 +29,6 @@ CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, Database, "MasterDB.Database", master)
 CONFIG_PARAMETER(UInt16, Port, "MasterDB.Port", 3312)
 CONFIG_PARAMETER(Bool, AutoReconnect, "MasterDB.AutoReconnect", 1)
 CONFIG_END(MasterDB)
-
-CONFIG_BEGIN(AuthSvr)
-CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, Host, "AuthSvr.Host", 127.0.0.1)
-CONFIG_PARAMETER(UInt16, Port, "AuthSvr.Port", 38180)
-CONFIG_END(AuthSvr)
 
 CONFIG_BEGIN(NetLib)
 CONFIG_PARAMETER(UInt16, ProtocolIdentifier, "NetLib.ProtocolIdentifier", 0xB7D9)

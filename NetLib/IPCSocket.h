@@ -2,15 +2,12 @@
 
 #include "Base.h"
 #include "Platform.h"
-#include "PacketBuffer.h"
+#include "IPCPacketBuffer.h"
 
 EXTERN_C_BEGIN
 
 #pragma pack(push, 1)
 
-#define IPC_PROTOCOL_IDENTIFIER         0xD1A6
-#define IPC_PROTOCOL_VERSION            0x10
-#define IPC_PROTOCOL_EXTENSION          0x1111
 #define IPC_SOCKET_MAX_CONNECTION_COUNT 512
 #define IPC_SOCKET_MAX_RECONNECT_COUNT  3
 #define IPC_SOCKET_RECV_BUFFER_SIZE     4096
@@ -19,11 +16,17 @@ EXTERN_C_BEGIN
 enum {
     IPC_TYPE_ALL        = 0,
     IPC_TYPE_AUCTION    = 1,
-    IPC_TYPE_AUTH       = 2,
+    IPC_TYPE_LOGIN      = 2,
     IPC_TYPE_CHAT       = 3,
     IPC_TYPE_MASTER     = 4,
     IPC_TYPE_PARTY      = 5,
     IPC_TYPE_WORLD      = 6,
+};
+
+enum {
+    IPC_COMMAND_REGISTER    = 0,
+    IPC_COMMAND_ROUTE       = 1,
+    IPC_COMMAND_HEARTBEAT   = 2,
 };
 
 enum {
@@ -35,7 +38,7 @@ struct _IPCNodeID {
     union {
         struct { UInt32 Index; UInt16 Group; UInt16 Type; };
 
-        Index Serial;
+        UInt64 Serial;
     };
 };
 typedef struct _IPCNodeID IPCNodeID;
@@ -49,15 +52,14 @@ struct _IPCNodeContext {
 typedef struct _IPCNodeContext* IPCNodeContextRef;
 
 struct _IPCPacket {
-    UInt16 Magic;
     UInt32 Length;
     UInt16 Command;
+    UInt16 SubCommand;
     UInt8 RouteType;
     IPCNodeID Source;
     Index SourceConnectionID;
     IPCNodeID Target;
     Index TargetConnectionID;
-    UInt32 DataLength;
     // UInt8 Data[0];
 };
 typedef struct _IPCPacket* IPCPacketRef;
@@ -105,10 +107,9 @@ struct _IPCSocket {
     Index NextConnectionID;
     CString Host;
     UInt16 Port;
-    Int32 ReconnectCount;
     Timestamp Timeout;
     struct _IPCPacket HeartbeatPacket;
-    PacketBufferRef PacketBuffer;
+    IPCPacketBufferRef PacketBuffer;
     IPCSocketConnectionCallback OnConnect;
     IPCSocketConnectionCallback OnDisconnect;
     IPCSocketPacketCallback OnSend;
@@ -127,7 +128,7 @@ struct _IPCSocketConnection {
     Char AddressIP[16];
     Index ID;
     UInt32 Flags;
-    PacketBufferRef PacketBuffer;
+    IPCPacketBufferRef PacketBuffer;
     MemoryBufferRef ReadBuffer;
     MemoryBufferRef WriteBuffer;
     Timestamp HeartbeatTimestamp;
@@ -165,12 +166,12 @@ Void IPCSocketSend(
 
 Void IPCSocketUnicast(
     IPCSocketRef Socket,
-    IPCPacketRef Packet
+    Void* Packet
 );
 
 Void IPCSocketBroadcast(
     IPCSocketRef Socket,
-    IPCPacketRef Packet
+    Void* Packet
 );
 
 Void IPCSocketUpdate(

@@ -20,10 +20,13 @@ jobs:
     - name: Prepare to upload binaries
       run: |
         New-Item -ItemType Directory -Force -Path bin
-        Copy-Item ./build/Release/AuthSvr.exe bin
+        Copy-Item ./build/Release/AuctionSvr.exe bin
+        Copy-Item ./build/Release/ChatSvr.exe bin
         Copy-Item ./build/Release/CoreLib.lib bin
+        Copy-Item ./build/Release/LoginSvr.exe bin
         Copy-Item ./build/Release/MasterSvr.exe bin
         Copy-Item ./build/Release/NetLib.lib bin
+        Copy-Item ./build/Release/PartySvr.exe bin
         Copy-Item ./build/Release/RuntimeDataLib.lib bin
         Copy-Item ./build/Release/RuntimeLib.lib bin
         Copy-Item ./build/Release/WorldSvr.exe bin

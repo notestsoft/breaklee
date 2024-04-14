@@ -59,9 +59,10 @@ By accessing and using this software, you agree to abide by these terms and ackn
 2. **Configuration Settings**:
    - Update the `RuntimeDataPath` setting in your `WorldSvr.ini` file to point to the `Data` folder of your client.
    - Update the `ServerDataPath` setting in your `WorldSvr.ini` file to point to the `ServerData` folder located in the project source.
+   - Update the `ScriptDataPath` setting in your `WorldSvr.ini` file to point to the `Scripts` folder located in the project source.
 
 3. **Connection Configuration**:
-   - Configure your database connection settings in the `[AuthDB]` section of `AuthSvr.ini` config file.
+   - Configure your database connection settings in the `[AuthDB]` section of `LoginSvr.ini` config file.
    - Configure your database connection settings in the `[MasterDB]` section of `MasterSvr.ini` config file.
 
 ## Accounts

@@ -1,19 +1,13 @@
 #include "IPCSocket.h"
 
-enum {
-    IPC_COMMAND_REGISTER    = 0,
-    IPC_COMMAND_ROUTE       = 1,
-    IPC_COMMAND_HEARTBEAT   = 2,
-};
-
 Void PrintNodeTable(
     IPCSocketRef Socket
 ) {
     CString IPCTypeNames[] = {
         "NONE",
         "AUCTION",
-        "AUTH",
         "CHAT",
+        "LOGIN",
         "MASTER",
         "PARTY",
         "WORLD"
@@ -64,13 +58,19 @@ Void IPCSocketOnConnect(
     IPCNodeContextRef NodeContext = (IPCNodeContextRef)Connection->Userdata;
     NodeContext->ConnectionID = Connection->ID;
 
-    IPCPacketRef Packet = _PacketBufferInit(Connection->PacketBuffer, true, sizeof(struct _IPCPacket), IPC_COMMAND_REGISTER);
-    Packet->Source = Socket->NodeID;
-    IPCSocketSend(Socket, Connection, Packet);
+    struct _IPCPacket Packet = { 0 };
+    Packet.Length = sizeof(struct _IPCPacket);
+    Packet.Command = IPC_COMMAND_REGISTER;
+    Packet.RouteType = IPC_ROUTE_TYPE_UNICAST;
+    Packet.Source = Socket->NodeID;
+    Packet.SourceConnectionID = 0;
+    Packet.Target = NodeContext->NodeID;
+    Packet.TargetConnectionID = 0;
+    IPCSocketSend(Socket, Connection, &Packet);
 
     if (Socket->OnConnect) Socket->OnConnect(Socket, Connection);
 
-    PrintNodeTable(Socket);
+    // PrintNodeTable(Socket);
 }
 
 Void IPCSocketOnDisconnect(
@@ -88,7 +88,7 @@ Void IPCSocketOnDisconnect(
     MemoryPoolRelease(Socket->ConnectionContextPool, Connection->ConnectionPoolIndex);
     Connection->Userdata = NULL;
 
-    PrintNodeTable(Socket);
+    // PrintNodeTable(Socket);
 }
 
 Void IPCSocketOnReceived(
@@ -105,7 +105,7 @@ Void IPCSocketOnReceived(
 
         NodeContext->NodeID = Packet->Source;
         DictionaryInsert(Socket->NodeTable, &Packet->Source.Serial, &Connection->ID, sizeof(Index));
-        PrintNodeTable(Socket);
+        // PrintNodeTable(Socket);
     }
 
     if (Packet->Command == IPC_COMMAND_ROUTE) {
@@ -179,15 +179,12 @@ IPCSocketRef IPCSocketCreate(
     Socket->NodeID = NodeID;
     Socket->Handle = -1;
     Socket->Flags = Flags;
-    Socket->ProtocolIdentifier = IPC_PROTOCOL_IDENTIFIER;
-    Socket->ProtocolVersion = IPC_PROTOCOL_VERSION;
-    Socket->ProtocolExtension = IPC_PROTOCOL_EXTENSION;
     Socket->ReadBufferSize = ReadBufferSize;
     Socket->WriteBufferSize = WriteBufferSize;
     Socket->MaxConnectionCount = MaxConnectionCount;
     Socket->NextConnectionID = 1;
     Socket->Timeout = Timeout;
-    Socket->PacketBuffer = PacketBufferCreate(Allocator, IPC_PROTOCOL_IDENTIFIER, IPC_PROTOCOL_VERSION, IPC_PROTOCOL_EXTENSION, 4, WriteBufferSize);
+    Socket->PacketBuffer = IPCPacketBufferCreate(Allocator, 4, WriteBufferSize);
     Socket->OnConnect = OnConnect;
     Socket->OnDisconnect = OnDisconnect;
     Socket->OnSend = OnSend;
@@ -198,7 +195,6 @@ IPCSocketRef IPCSocketCreate(
     Socket->NodeTable = IndexDictionaryCreate(Allocator, MaxConnectionCount);
     Socket->Userdata = Userdata;
 
-    Socket->HeartbeatPacket.Magic = IPC_PROTOCOL_IDENTIFIER + IPC_PROTOCOL_VERSION + IPC_PROTOCOL_EXTENSION;
     Socket->HeartbeatPacket.Length = sizeof(struct _IPCPacket);
     Socket->HeartbeatPacket.Command = IPC_COMMAND_HEARTBEAT;
     Socket->HeartbeatPacket.RouteType = IPC_ROUTE_TYPE_UNICAST;
@@ -206,7 +202,6 @@ IPCSocketRef IPCSocketCreate(
     Socket->HeartbeatPacket.SourceConnectionID = 0;
     Socket->HeartbeatPacket.Target = kIPCNodeIDNull;
     Socket->HeartbeatPacket.TargetConnectionID = 0;
-    Socket->HeartbeatPacket.DataLength = 0;
 
     if (Host) {
         IPCSocketConnect(Socket, Host, Port, Timeout);
@@ -223,7 +218,7 @@ Void IPCSocketDestroy(
 ) {
     assert(Socket);
     DictionaryDestroy(Socket->NodeTable);
-    PacketBufferDestroy(Socket->PacketBuffer);
+    IPCPacketBufferDestroy(Socket->PacketBuffer);
     IndexSetDestroy(Socket->ConnectionIndices);
     MemoryPoolDestroy(Socket->ConnectionPool);
     AllocatorDeallocate(Socket->Allocator, Socket);
@@ -237,11 +232,8 @@ IPCSocketConnectionRef IPCSocketReserveConnection(
     IndexSetInsert(Socket->ConnectionIndices, ConnectionPoolIndex);
     memset(Connection, 0, sizeof(struct _IPCSocketConnection));
     Connection->ConnectionPoolIndex = ConnectionPoolIndex;
-    Connection->PacketBuffer = PacketBufferCreate(
+    Connection->PacketBuffer = IPCPacketBufferCreate(
         Socket->Allocator,
-        Socket->ProtocolIdentifier,
-        Socket->ProtocolVersion,
-        Socket->ProtocolExtension,
         4,
         Socket->WriteBufferSize
     );
@@ -254,7 +246,7 @@ Void IPCSocketReleaseConnection(
     IPCSocketRef Socket,
     IPCSocketConnectionRef Connection
 ) {
-    PacketBufferDestroy(Connection->PacketBuffer);
+    IPCPacketBufferDestroy(Connection->PacketBuffer);
     MemoryBufferDestroy(Connection->ReadBuffer);
     MemoryBufferDestroy(Connection->WriteBuffer);
     IndexSetRemove(Socket->ConnectionIndices, Connection->ConnectionPoolIndex);
@@ -323,8 +315,8 @@ Void IPCSocketListen(
     Socket->Address.sin_addr.s_addr = htonl(INADDR_ANY);
     Socket->Address.sin_port = htons(Port);
 
-    Int32 enable = 1;
-    if (setsockopt(Socket->Handle, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) != 0)
+    Int32 Enabled = 1;
+    if (setsockopt(Socket->Handle, SOL_SOCKET, SO_REUSEADDR, (Char*)&Enabled, sizeof(Enabled)) != 0)
         FatalError("Socket re-use address set failed");
 
     if ((bind(Socket->Handle, (struct sockaddr*)&Socket->Address, sizeof(Socket->Address))) != 0)
@@ -343,18 +335,6 @@ Void IPCSocketSend(
     IPCSocketConnectionRef Connection,
     IPCPacketRef Packet
 ) {
-    UInt16 PacketMagic = *((UInt16*)Packet);
-    PacketMagic -= Socket->ProtocolIdentifier;
-    PacketMagic -= Socket->ProtocolVersion;
-
-    UInt32 PacketLength = 0;
-    if (PacketMagic == Socket->ProtocolExtension) {
-        PacketLength = *((UInt32*)((UInt8*)Packet + sizeof(UInt16)));
-    }
-    else {
-        PacketLength = *((UInt16*)((UInt8*)Packet + sizeof(UInt16)));
-    }
-
     if (!(Socket->Flags & (IPC_SOCKET_FLAGS_LISTENING | IPC_SOCKET_FLAGS_CONNECTED))) return;
 
     MemoryBufferAppendCopy(Connection->WriteBuffer, Packet, Packet->Length);
@@ -362,38 +342,33 @@ Void IPCSocketSend(
 
 Void IPCSocketUnicast(
     IPCSocketRef Socket,
-    IPCPacketRef Packet
+    Void* Packet
 ) {
     if (!(Socket->Flags & (IPC_SOCKET_FLAGS_LISTENING | IPC_SOCKET_FLAGS_CONNECTED))) return;
-    
-    UInt16 PacketMagic = *((UInt16*)Packet);
-    PacketMagic -= Socket->ProtocolIdentifier;
-    PacketMagic -= Socket->ProtocolVersion;
 
-    UInt32 PacketLength = 0;
-    if (PacketMagic == Socket->ProtocolExtension) {
-        PacketLength = *((UInt32*)((UInt8*)Packet + sizeof(UInt16)));
-    } else {
-        PacketLength = *((UInt16*)((UInt8*)Packet + sizeof(UInt16)));
-    }
+    IPCPacketRef IPCPacket = (IPCPacketRef)Packet;
+    IPCPacket->RouteType = IPC_ROUTE_TYPE_UNICAST;
 
-    Index* ConnectionID = DictionaryLookup(Socket->NodeTable, &Packet->Target.Serial);
+    Index* ConnectionID = DictionaryLookup(Socket->NodeTable, &IPCPacket->Target.Serial);
     if (ConnectionID) {
         IPCSocketConnectionRef Connection = IPCSocketGetConnection(Socket, *ConnectionID);
         if (Connection) {
-            MemoryBufferAppendCopy(Connection->WriteBuffer, Packet, Packet->Length);
+            MemoryBufferAppendCopy(Connection->WriteBuffer, IPCPacket, IPCPacket->Length);
         }
         else if (!(Socket->Flags & IPC_SOCKET_FLAGS_LISTENER)) {
-            IPCSocketBroadcast(Socket, Packet);
+            IPCSocketBroadcast(Socket, IPCPacket);
         }
     }
 }
 
 Void IPCSocketBroadcast(
     IPCSocketRef Socket,
-    IPCPacketRef Packet
+    Void* Packet
 ) {
     if (!(Socket->Flags & (IPC_SOCKET_FLAGS_LISTENING | IPC_SOCKET_FLAGS_CONNECTED))) return;
+
+    IPCPacketRef IPCPacket = (IPCPacketRef)Packet;
+    IPCPacket->RouteType = IPC_ROUTE_TYPE_BROADCAST;
 
     IndexSetIteratorRef Iterator = IndexSetGetIterator(Socket->ConnectionIndices);
     while (Iterator) {
@@ -409,36 +384,13 @@ Bool IPCSocketFetchReadBuffer(
     IPCSocketRef Socket,
     IPCSocketConnectionRef Connection
 ) {
-    while (MemoryBufferGetOffset(Connection->ReadBuffer) >= 6) {
-        UInt32 PacketLength = 0;
-    
-        Void* Packet = MemoryBufferGetMemory(Connection->ReadBuffer, 0);
-        UInt16 PacketMagic = *((UInt16*)Packet);
-        PacketMagic -= Socket->ProtocolIdentifier;
-        PacketMagic -= Socket->ProtocolVersion;
-        
-        if (PacketMagic == Socket->ProtocolExtension) {
-            PacketLength = *((UInt32*)((UInt8*)Packet + sizeof(UInt16)));
-        } else if (PacketMagic == 0) {
-            PacketLength = *((UInt16*)((UInt8*)Packet + sizeof(UInt16)));
-        } else {
-            IPCSocketDisconnect(Socket, Connection);
-            break;
-        }
-        
-        // TODO: Add error handling when packet is dropped or not fully received to meet the desired PacketLength
-        if (MemoryBufferGetOffset(Connection->ReadBuffer) >= PacketLength) {
-            Void* Packet = MemoryBufferGetMemory(Connection->ReadBuffer, 0);
-            UInt16 PacketMagic = *((UInt16*)Packet);
-            PacketMagic -= Socket->ProtocolIdentifier;
-            PacketMagic -= Socket->ProtocolVersion;
-            if (PacketMagic != 0 && PacketMagic != Socket->ProtocolExtension) {
-                IPCSocketDisconnect(Socket, Connection);
-                break;
-            }
+    while (MemoryBufferGetOffset(Connection->ReadBuffer) >= sizeof(struct _IPCPacket)) {
+        IPCPacketRef Packet = (IPCPacketRef)MemoryBufferGetMemory(Connection->ReadBuffer, 0);
 
-            IPCSocketOnReceived(Socket, Connection, (IPCSocketRef)Packet);
-            MemoryBufferPopFront(Connection->ReadBuffer, PacketLength);
+        // TODO: Add error handling when packet is dropped or not fully received to meet the desired PacketLength
+        if (MemoryBufferGetOffset(Connection->ReadBuffer) >= Packet->Length) {
+            IPCSocketOnReceived(Socket, Connection, Packet);
+            MemoryBufferPopFront(Connection->ReadBuffer, Packet->Length);
         }
         else {
             break;
@@ -453,26 +405,16 @@ Bool IPCSocketFlushWriteBuffer(
     IPCSocketConnectionRef Connection
 ) {
     while (MemoryBufferGetOffset(Connection->WriteBuffer) > 0) {
-        Void* Packet = MemoryBufferGetMemory(Connection->WriteBuffer, 0);
-        UInt16 PacketMagic = *((UInt16*)Packet);
-        PacketMagic -= Socket->ProtocolIdentifier;
-        PacketMagic -= Socket->ProtocolVersion;
-        
-        UInt32 PacketLength = 0;
-        if (PacketMagic == Socket->ProtocolExtension) {
-            PacketLength = *((UInt32*)((UInt8*)Packet + sizeof(UInt16)));
-        } else {
-            PacketLength = *((UInt16*)((UInt8*)Packet + sizeof(UInt16)));
-        }
-        
+        IPCPacketRef Packet = (IPCPacketRef)MemoryBufferGetMemory(Connection->WriteBuffer, 0);
+       
         if (Socket->OnSend) Socket->OnSend(Socket, Connection, Packet);
 
-        if (send(Connection->Handle, Packet, PacketLength, 0) == -1) {
+        if (send(Connection->Handle, (Char*)Packet, Packet->Length, 0) == -1) {
             IPCSocketDisconnect(Socket, Connection);
             break;
         }
         
-        MemoryBufferPopFront(Connection->WriteBuffer, PacketLength);
+        MemoryBufferPopFront(Connection->WriteBuffer, Packet->Length);
     }
 
     return true;
@@ -523,11 +465,6 @@ Void IPCSocketUpdate(
         }
     }
     else if (!IsConnected) {
-        if (Socket->ReconnectCount >= IPC_SOCKET_MAX_RECONNECT_COUNT) {
-            FatalError("IPC connection couldn't be established!");
-        }
-
-        Socket->ReconnectCount += 1;
         IPCSocketConnect(Socket, Socket->Host, Socket->Port, Socket->Timeout);
     }
 

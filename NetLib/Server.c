@@ -23,36 +23,6 @@ Void _ServerIPCSocketOnReceived(
     IPCPacketRef Packet
 );
 
-typedef UInt16 (*PacketGetCommandCallback)(
-    UInt16 ProtocolIdentifier,
-    UInt16 ProtocolVersion,
-    UInt16 ProtocolExtension,
-    Void *Packet
-);
-
-struct _ServerSocketContext {
-    ServerRef Server;
-    SocketRef Socket;
-    CString SocketHost;
-    UInt16 SocketPort;
-    MemoryPoolRef ConnectionContextPool;
-    DictionaryRef CommandRegistry;
-    ServerConnectionCallback OnConnect;
-    ServerConnectionCallback OnDisconnect;
-    PacketGetCommandCallback PacketGetCommandCallback;
-};
-typedef struct _ServerSocketContext* ServerSocketContextRef;
-
-struct _Server {
-    AllocatorRef Allocator;
-    ArrayRef Sockets; // TODO: Replace this with client socket there is no usecase for having many of them..
-    IPCSocketRef IPCSocket;
-    ServerUpdateCallback OnUpdate;
-    Bool IsRunning;
-    Timestamp Timestamp;
-    Void *Userdata;
-};
-
 ServerRef ServerCreate(
     AllocatorRef Allocator,
     IPCNodeID NodeID,
@@ -62,6 +32,7 @@ ServerRef ServerCreate(
     Index ReadBufferSize,
     Index WriteBufferSize,
     ServerUpdateCallback OnUpdate,
+    ServerIPCPacketCallback OnIPCPacket,
     Void *ServerContext
 ) {
     PlatformLoadSocketLibrary();
@@ -86,8 +57,10 @@ ServerRef ServerCreate(
         NULL,
         &_ServerIPCSocketOnReceived,
         Server
-    );
+    ); 
+
     Server->OnUpdate = OnUpdate;
+    Server->OnIPCPacket = OnIPCPacket;
     Server->IsRunning = false;
     Server->Timestamp = GetTimestamp();
     Server->Userdata = ServerContext;
@@ -282,11 +255,13 @@ Void _ServerIPCSocketOnReceived(
     IPCSocketConnectionRef Connection,
     IPCPacketRef Packet
 ) {
-    LogMessageFormat(LOG_LEVEL_WARNING, "Received packet: %d", Packet->Command);
-    PacketLogBytes(
-        Socket->ProtocolIdentifier,
-        Socket->ProtocolVersion,
-        Socket->ProtocolExtension,
+    ServerRef Server = (ServerRef)Socket->Userdata;
+    if (Server->OnIPCPacket) Server->OnIPCPacket(
+        Server,
+        Server->Userdata,
+        Socket,
+        Connection,
+        Connection->Userdata,
         Packet
     );
 }

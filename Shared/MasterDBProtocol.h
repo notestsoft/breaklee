@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Constants.h"
-#include "Enumerations.h"
 #include "GameProtocol.h"
 
 EXTERN_C_BEGIN
