@@ -62,9 +62,9 @@ struct _ServerSocketContext {
 struct _Server {
     AllocatorRef Allocator;
     ArrayRef Sockets; // TODO: Replace this with client socket there is no usecase for having many of them..
+    SocketRef ClientSocket;
     IPCSocketRef IPCSocket;
     ServerUpdateCallback OnUpdate;
-    ServerIPCPacketCallback OnIPCPacket;
     Bool IsRunning;
     Timestamp Timestamp;
     Void* Userdata;
@@ -79,7 +79,6 @@ ServerRef ServerCreate(
     Index ReadBufferSize,
     Index WriteBufferSize,
     ServerUpdateCallback OnUpdate,
-    ServerIPCPacketCallback OnIPCPacket,
     Void* ServerContext
 );
 

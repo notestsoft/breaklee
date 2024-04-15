@@ -90,6 +90,12 @@ typedef Void (*IPCSocketPacketCallback)(
     IPCPacketRef Packet
 );
 
+typedef Void (*IPCSocketCommandCallback)(
+    IPCSocketRef Socket,
+    IPCSocketConnectionRef Connection,
+    IPCPacketRef Packet
+);
+
 typedef Void* IPCSocketConnectionIteratorRef;
 
 struct _IPCSocket {
@@ -110,13 +116,10 @@ struct _IPCSocket {
     Timestamp Timeout;
     struct _IPCPacket HeartbeatPacket;
     IPCPacketBufferRef PacketBuffer;
-    IPCSocketConnectionCallback OnConnect;
-    IPCSocketConnectionCallback OnDisconnect;
-    IPCSocketPacketCallback OnSend;
-    IPCSocketPacketCallback OnReceived;
     IndexSetRef ConnectionIndices;
     MemoryPoolRef ConnectionPool; 
     MemoryPoolRef ConnectionContextPool;
+    DictionaryRef CommandRegistry;
     DictionaryRef NodeTable;
     Void* Userdata;
 };
@@ -147,15 +150,17 @@ IPCSocketRef IPCSocketCreate(
     UInt16 Port,
     Timestamp Timeout,
     Index MaxConnectionCount,
-    IPCSocketConnectionCallback OnConnect,
-    IPCSocketConnectionCallback OnDisconnect,
-    IPCSocketPacketCallback OnSend,
-    IPCSocketPacketCallback OnReceived,
     Void* Userdata
 );
 
 Void IPCSocketDestroy(
     IPCSocketRef Socket
+);
+
+Void IPCSocketRegisterCommandCallback(
+    IPCSocketRef Socket,
+    Index Command,
+    IPCSocketCommandCallback Callback
 );
 
 Void IPCSocketSend(

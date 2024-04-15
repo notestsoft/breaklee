@@ -17,12 +17,6 @@ Void _ServerSocketOnReceived(
     Void *Packet
 );
 
-Void _ServerIPCSocketOnReceived(
-    IPCSocketRef Socket,
-    IPCSocketConnectionRef Connection,
-    IPCPacketRef Packet
-);
-
 ServerRef ServerCreate(
     AllocatorRef Allocator,
     IPCNodeID NodeID,
@@ -32,7 +26,6 @@ ServerRef ServerCreate(
     Index ReadBufferSize,
     Index WriteBufferSize,
     ServerUpdateCallback OnUpdate,
-    ServerIPCPacketCallback OnIPCPacket,
     Void *ServerContext
 ) {
     PlatformLoadSocketLibrary();
@@ -52,15 +45,10 @@ ServerRef ServerCreate(
         Port,
         Timeout,
         (Host) ? 1 : IPC_SOCKET_MAX_CONNECTION_COUNT,
-        NULL,
-        NULL,
-        NULL,
-        &_ServerIPCSocketOnReceived,
         Server
     ); 
 
     Server->OnUpdate = OnUpdate;
-    Server->OnIPCPacket = OnIPCPacket;
     Server->IsRunning = false;
     Server->Timestamp = GetTimestamp();
     Server->Userdata = ServerContext;
@@ -248,20 +236,4 @@ Void _ServerSocketOnReceived(
             Packet
         );
     }
-}
-
-Void _ServerIPCSocketOnReceived(
-    IPCSocketRef Socket,
-    IPCSocketConnectionRef Connection,
-    IPCPacketRef Packet
-) {
-    ServerRef Server = (ServerRef)Socket->Userdata;
-    if (Server->OnIPCPacket) Server->OnIPCPacket(
-        Server,
-        Server->Userdata,
-        Socket,
-        Connection,
-        Connection->Userdata,
-        Packet
-    );
 }

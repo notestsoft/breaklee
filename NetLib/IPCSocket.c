@@ -68,8 +68,6 @@ Void IPCSocketOnConnect(
     Packet.TargetConnectionID = 0;
     IPCSocketSend(Socket, Connection, &Packet);
 
-    if (Socket->OnConnect) Socket->OnConnect(Socket, Connection);
-
     // PrintNodeTable(Socket);
 }
 
@@ -77,8 +75,6 @@ Void IPCSocketOnDisconnect(
     IPCSocketRef Socket,
     IPCSocketConnectionRef Connection
 ) {
-    if (Socket->OnDisconnect) Socket->OnDisconnect(Socket, Connection);
-
     IPCNodeContextRef NodeContext = (IPCNodeContextRef)Connection->Userdata;
 
     if (NodeContext->NodeID.Serial) {
@@ -110,7 +106,13 @@ Void IPCSocketOnReceived(
 
     if (Packet->Command == IPC_COMMAND_ROUTE) {
         if (Packet->Target.Serial == Socket->NodeID.Serial) {
-            if (Socket->OnReceived) Socket->OnReceived(Socket, Connection, Packet);
+            Index Command = Packet->SubCommand;
+            IPCSocketCommandCallback* CommandCallback = (IPCSocketCommandCallback*)DictionaryLookup(Socket->CommandRegistry, &Command);
+            if (CommandCallback) (*CommandCallback)(
+                Socket,
+                Connection,
+                Packet
+            );
         }
         else if (Packet->RouteType == IPC_ROUTE_TYPE_UNICAST) {
             Index* TargetConnectionID = DictionaryLookup(Socket->NodeTable, &Packet->Target.Serial);
@@ -162,10 +164,6 @@ IPCSocketRef IPCSocketCreate(
     UInt16 Port,
     Timestamp Timeout,
     Index MaxConnectionCount,
-    IPCSocketConnectionCallback OnConnect,
-    IPCSocketConnectionCallback OnDisconnect,
-    IPCSocketPacketCallback OnSend,
-    IPCSocketPacketCallback OnReceived,
     Void* Userdata
 ) {
     if (MaxConnectionCount < 1) {
@@ -185,13 +183,10 @@ IPCSocketRef IPCSocketCreate(
     Socket->NextConnectionID = 1;
     Socket->Timeout = Timeout;
     Socket->PacketBuffer = IPCPacketBufferCreate(Allocator, 4, WriteBufferSize);
-    Socket->OnConnect = OnConnect;
-    Socket->OnDisconnect = OnDisconnect;
-    Socket->OnSend = OnSend;
-    Socket->OnReceived = OnReceived;
     Socket->ConnectionIndices = IndexSetCreate(Allocator, MaxConnectionCount);
     Socket->ConnectionPool = MemoryPoolCreate(Allocator, sizeof(struct _IPCSocketConnection), MaxConnectionCount);
     Socket->ConnectionContextPool = MemoryPoolCreate(Allocator, sizeof(struct _IPCNodeContext), MaxConnectionCount);
+    Socket->CommandRegistry = IndexDictionaryCreate(Allocator, 8);
     Socket->NodeTable = IndexDictionaryCreate(Allocator, MaxConnectionCount);
     Socket->Userdata = Userdata;
 
@@ -217,11 +212,21 @@ Void IPCSocketDestroy(
     IPCSocketRef Socket
 ) {
     assert(Socket);
+    DictionaryDestroy(Socket->CommandRegistry);
     DictionaryDestroy(Socket->NodeTable);
     IPCPacketBufferDestroy(Socket->PacketBuffer);
     IndexSetDestroy(Socket->ConnectionIndices);
     MemoryPoolDestroy(Socket->ConnectionPool);
     AllocatorDeallocate(Socket->Allocator, Socket);
+}
+
+Void IPCSocketRegisterCommandCallback(
+    IPCSocketRef Socket,
+    Index Command,
+    IPCSocketCommandCallback Callback
+) {
+    assert(!DictionaryLookup(Socket->CommandRegistry, &Command));
+    DictionaryInsert(Socket->CommandRegistry, &Command, &Callback, sizeof(IPCSocketCommandCallback));
 }
 
 IPCSocketConnectionRef IPCSocketReserveConnection(
@@ -407,8 +412,6 @@ Bool IPCSocketFlushWriteBuffer(
     while (MemoryBufferGetOffset(Connection->WriteBuffer) > 0) {
         IPCPacketRef Packet = (IPCPacketRef)MemoryBufferGetMemory(Connection->WriteBuffer, 0);
        
-        if (Socket->OnSend) Socket->OnSend(Socket, Connection, Packet);
-
         if (send(Connection->Handle, (Char*)Packet, Packet->Length, 0) == -1) {
             IPCSocketDisconnect(Socket, Connection);
             break;

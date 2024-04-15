@@ -19,7 +19,6 @@ typedef struct _WorldInfo* WorldInfoRef;
 struct _ServerContext {
     ServerConfig Config;
     DatabaseRef Database;
-    MemoryPoolRef IPCCallbackPool;
     DictionaryRef WorldInfoTable;
 
     MASTERDB_DATA_ACCOUNT TempAccount;

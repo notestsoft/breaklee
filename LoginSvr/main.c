@@ -25,39 +25,42 @@ Void SERVER_PROC_ ## __NAME__(                              \
 }
 #include "ClientCommands.h"
 
-Void ServerOnIPCPacketReceived(
-    ServerRef Server,
-    Void* ServerContext,
-    IPCSocketRef Socket,
-    IPCSocketConnectionRef Connection,
-    Void* ConnectionContext,
-    IPCPacketRef Packet
-) {
-    assert(Packet->SubCommand < IPC_COMMAND_COUNT);
-
-    ServerContextRef Context = (ServerContextRef)ServerContext;
-    IPCProcedureCallback* Callback = (IPCProcedureCallback*)MemoryPoolFetch(Context->IPCCallbackPool, Packet->SubCommand);
-
-    SocketConnectionRef ClientConnection = NULL;
-    ClientContextRef Client = NULL;
-
-    if (Packet->TargetConnectionID > 0) {
-        ClientConnection = SocketGetConnection(Context->ClientSocket, Packet->TargetConnectionID);
-        if (!ClientConnection) return;
-
-        Client = (ClientContextRef)ClientConnection->Userdata;
-    }
-    
-    if (Callback) (*Callback)(
-        Server,
-        Context,
-        Socket,
-        Connection,
-        ClientConnection,
-        Client,
-        Packet
-    );
+#define IPC_COMMAND_CALLBACK(__NAMESPACE__, __NAME__)               \
+Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(            \
+    IPCSocketRef Socket,                                            \
+    IPCSocketConnectionRef Connection,                              \
+    IPCPacketRef Packet                                             \
+) {                                                                 \
+    ServerRef Server = (ServerRef)Socket->Userdata;                 \
+    ServerContextRef Context = (ServerContextRef)Server->Userdata;  \
+    SocketConnectionRef ClientConnection = NULL;                    \
+    ClientContextRef Client = NULL;                                 \
+                                                                    \
+    if (Packet->TargetConnectionID > 0) {                           \
+        ClientConnection = SocketGetConnection(                     \
+            Context->ClientSocket,                                  \
+            Packet->TargetConnectionID                              \
+        );                                                          \
+        if (!ClientConnection) return;                              \
+        Client = (ClientContextRef)ClientConnection->Userdata;      \
+    }                                                               \
+                                                                    \
+    IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                    \
+        Server,                                                     \
+        Context,                                                    \
+        Socket,                                                     \
+        Connection,                                                 \
+        ClientConnection,                                           \
+        Client,                                                     \
+        (IPC_ ## __NAMESPACE__ ## _DATA_ ## __NAME__ *)Packet       \
+    );                                                              \
 }
+
+#define IPC_M2L_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(M2L, __NAME__)
+#include "IPCCommands.h"
+
+#define IPC_W2L_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(W2L, __NAME__)
+#include "IPCCommands.h"
 
 Void ServerOnUpdate(
     ServerRef Server,
@@ -105,22 +108,7 @@ Int32 main(Int32 argc, CString* argv) {
     ServerContext.ClientSocket = NULL;
     ServerContext.Database = NULL;
     ServerContext.WorldListBroadcastTimestamp = 0;
-    ServerContext.IPCCallbackPool = MemoryPoolCreate(Allocator, sizeof(IPCProcedureCallback), IPC_COMMAND_COUNT);
     ServerContext.WorldServerTable = IndexDictionaryCreate(Allocator, 256);
-
-#define IPC_W2L_COMMAND(__NAME__) \
-    { \
-        IPCProcedureCallback* Callback = (IPCProcedureCallback*)MemoryPoolReserve(ServerContext.IPCCallbackPool, IPC_W2L_ ## __NAME__); \
-        *Callback = &IPC_W2L_PROC_ ## __NAME__; \
-    }
-#include "IPCCommands.h"
-
-#define IPC_M2L_COMMAND(__NAME__) \
-    { \
-        IPCProcedureCallback* Callback = (IPCProcedureCallback*)MemoryPoolReserve(ServerContext.IPCCallbackPool, IPC_M2L_ ## __NAME__); \
-        *Callback = &IPC_M2L_PROC_ ## __NAME__; \
-    }
-#include "IPCCommands.h"
 
     IPCNodeID NodeID = kIPCNodeIDNull;
     NodeID.Group = 1;
@@ -136,7 +124,6 @@ Int32 main(Int32 argc, CString* argv) {
         Config.NetLib.ReadBufferSize,
         Config.NetLib.WriteBufferSize,
         &ServerOnUpdate,
-        &ServerOnIPCPacketReceived,
         &ServerContext
     );
 
@@ -160,6 +147,14 @@ Int32 main(Int32 argc, CString* argv) {
     ServerSocketRegisterPacketCallback(Server, ServerContext.ClientSocket, __COMMAND__, &SERVER_PROC_ ## __NAME__);
 #include "ClientCommands.h"
 
+#define IPC_M2L_COMMAND(__NAME__) \
+    IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_M2L_ ## __NAME__, &SERVER_IPC_M2L_PROC_ ## __NAME__);
+#include "IPCCommands.h"
+
+#define IPC_W2L_COMMAND(__NAME__) \
+    IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_W2L_ ## __NAME__, &SERVER_IPC_W2L_PROC_ ## __NAME__);
+#include "IPCCommands.h"
+
     ServerContext.Database = DatabaseConnect(
         Config.AuthDB.Host,
         Config.AuthDB.Username,
@@ -174,7 +169,6 @@ Int32 main(Int32 argc, CString* argv) {
     ServerRun(Server);
     ServerDestroy(Server);
     DatabaseDisconnect(ServerContext.Database);
-    MemoryPoolDestroy(ServerContext.IPCCallbackPool);
     DiagnosticTeardown();
 
     return EXIT_SUCCESS;

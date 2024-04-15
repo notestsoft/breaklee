@@ -32,7 +32,6 @@ struct _ServerContext {
     ServerConfig Config;
     SocketRef ClientSocket;
     DatabaseRef Database;
-    MemoryPoolRef IPCCallbackPool;
     Timestamp WorldListBroadcastTimestamp;
     DictionaryRef WorldServerTable;
 };
