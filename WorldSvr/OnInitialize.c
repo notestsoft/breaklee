@@ -1,7 +1,7 @@
 #include "ClientProtocol.h"
 #include "ClientProcedures.h"
 #include "ClientSocket.h"
-#include "IPCProcs.h"
+#include "IPCProcedures.h"
 #include "Notification.h"
 #include "Server.h"
 
@@ -73,19 +73,23 @@ CLIENT_PROCEDURE_BINDING(INITIALIZE) {
     if (Character) goto error;
 	
     if (!(Client->Flags & CLIENT_FLAGS_CHARACTER_INDEX_LOADED) || Client->Account.AccountID < 1) goto error;
-   
-	IPC_DATA_WORLD_REQGETCHARACTER* Request = PacketBufferInitExtended(Context->MasterSocket->PacketBuffer, IPC, WORLD_REQGETCHARACTER);
-	Request->ConnectionID = Connection->ID;
+
+    IPC_W2M_DATA_GET_CHARACTER* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2M, GET_CHARACTER);
+    Request->Header.SourceConnectionID = Connection->ID;
+    Request->Header.Source = Server->IPCSocket->NodeID;
+    Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+    Request->Header.Target.Type = IPC_TYPE_MASTER;
 	Request->AccountID = Client->Account.AccountID;
     Request->CharacterID = (Packet->CharacterIndex - Packet->CharacterIndex % MAX_CHARACTER_COUNT) / MAX_CHARACTER_COUNT;
     Request->CharacterIndex = Packet->CharacterIndex;
-	return SocketSendAll(Context->MasterSocket, Request);
+    IPCSocketUnicast(Server->IPCSocket, Request);
+    return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
-IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_WORLD_ACKGETCHARACTER) {
+IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER) {
     if (!ClientConnection || !Client) goto error;
     if (!Packet->Success) goto error;
 
@@ -125,8 +129,8 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
 
     /* Server Info */
     Response->WorldType = Context->Config.WorldSvr.WorldType;
-    Response->Server.ServerID = Master->ServerID;
-    Response->Server.WorldServerID = Context->Config.WorldSvr.WorldID;
+    Response->Server.ServerID = Context->Config.WorldSvr.GroupIndex;
+    Response->Server.WorldServerID = Context->Config.WorldSvr.NodeIndex;
     Response->Server.PlayerCount = SocketGetConnectionCount(Context->ClientSocket);
     Response->Server.MaxPlayerCount = Context->Config.WorldSvr.MaxConnectionCount;
     memcpy(Response->Server.Address.Host, Context->Config.WorldSvr.Host, strlen(Context->Config.WorldSvr.Host));
@@ -487,7 +491,7 @@ IPC_PROCEDURE_BINDING(OnWorldGetCharacter, IPC_WORLD_ACKGETCHARACTER, IPC_DATA_W
 
     S2C_DATA_NFY_PARTY_INIT* Notification = PacketBufferInit(ClientConnection->PacketBuffer, S2C, NFY_PARTY_INIT);
     SocketSend(Context->ClientSocket, ClientConnection, Notification);
-
+    BroadcastUserList(Server, Context);
     return;
 
 error:

@@ -30,12 +30,10 @@ typedef struct _RuntimeData* RuntimeDataRef;
 
 struct _ServerContext {
     SocketRef ClientSocket;
-    SocketRef MasterSocket;
     ServerConfig Config;
     RuntimeDataRef RuntimeData;
     RTRuntimeRef Runtime;
     Timestamp UserListBroadcastTimestamp;
-    Timestamp UserListUpdateTimestamp;
 };
 typedef struct _ServerContext* ServerContextRef;
 
@@ -62,10 +60,5 @@ struct _ClientContext {
     Char CharacterName[MAX_CHARACTER_NAME_LENGTH + 1];
 };
 typedef struct _ClientContext* ClientContextRef;
-
-struct _MasterContext {
-    UInt8 ServerID;
-};
-typedef struct _MasterContext* MasterContextRef;
 
 EXTERN_C_END

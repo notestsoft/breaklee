@@ -28,8 +28,8 @@ CLIENT_PROCEDURE_BINDING(VERIFY_LINKS) {
     // TODO: Add account premium service info
 
     IPC_L2W_DATA_VERIFY_LINKS* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, L2W, VERIFY_LINKS);
-    Request->Header.SourceConnectionID = Connection->ID;
     Request->Header.Source = Server->IPCSocket->NodeID;
+    Request->Header.SourceConnectionID = Connection->ID;
     Request->Header.Target.Group = Packet->ServerID;
     Request->Header.Target.Index = Packet->WorldID;
     Request->Header.Target.Type = IPC_TYPE_WORLD;
@@ -46,8 +46,8 @@ error:
 
 IPC_PROCEDURE_BINDING(W2L, VERIFY_LINKS) {
 	S2C_DATA_VERIFY_LINKS* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, VERIFY_LINKS);
-	Response->WorldID = Packet->WorldID;
-	Response->ServerID = Packet->ServerID;
+	Response->WorldID = Packet->Header.Source.Index;
+	Response->ServerID = Packet->Header.Source.Group;
     Response->Status = Packet->Status;
 	SocketSend(Context->ClientSocket, ClientConnection, Response);
 	SocketDisconnect(Context->ClientSocket, ClientConnection);

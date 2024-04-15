@@ -32,6 +32,8 @@ IPC_PROCEDURE_BINDING(L2M, GET_WORLD_LIST) {
         CStringCopySafe(ServerGroupNode->Host, 64, WorldInfo->Host);
         ServerGroupNode->Port = WorldInfo->Port;
         ServerGroupNode->Type = WorldInfo->Type;
+
+        ServerGroup->NodeCount += 1;
     }
 
     IPCSocketUnicast(Socket, Response);

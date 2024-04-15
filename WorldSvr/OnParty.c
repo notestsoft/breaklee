@@ -1,7 +1,7 @@
 #include "ClientProtocol.h"
 #include "ClientProcedures.h"
 #include "ClientSocket.h"
-#include "IPCProcs.h"
+#include "IPCProcedures.h"
 #include "Notification.h"
 #include "Server.h"
 
@@ -10,10 +10,13 @@ CLIENT_PROCEDURE_BINDING(PARTY_INVITE) {
 	if (!RTEntityIsNull(Character->PartyID)) goto error;
 	if (Packet->NameLength > MAX_CHARACTER_NAME_LENGTH) goto error;
 
-	IPC_DATA_WORLD_REQPARTYINVITE* Request = PacketBufferInitExtended(Context->MasterSocket->PacketBuffer, IPC, WORLD_REQPARTYINVITE);
-	Request->ConnectionID = Connection->ID;
+	IPC_W2P_DATA_PARTY_INVITE* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2P, PARTY_INVITE);
+	Request->Header.SourceConnectionID = Connection->ID;
+	Request->Header.Source = Server->IPCSocket->NodeID;
+	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+	Request->Header.Target.Type = IPC_TYPE_PARTY;
 	Request->Source.CharacterIndex = Character->CharacterIndex;
-	Request->Source.WorldServerID = Context->Config.WorldSvr.WorldID;
+	Request->Source.WorldServerID = Context->Config.WorldSvr.NodeIndex;
 	Request->Source.CharacterType = 0;
 	Request->Source.Level = Character->Info.Basic.Level;
 	Request->Source.NameLength = strlen(Client->CharacterName);
@@ -26,13 +29,14 @@ CLIENT_PROCEDURE_BINDING(PARTY_INVITE) {
 	Request->Target.NameLength = Packet->NameLength;
 	memcpy(Request->Target.Name, Packet->Name, MAX_CHARACTER_NAME_LENGTH);
 
-	return SocketSendAll(Context->MasterSocket, Request);
+	IPCSocketUnicast(Server->IPCSocket, Request);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
-IPC_PROCEDURE_BINDING(OnWorldRequestPartyInvite, IPC_WORLD_REQPARTYINVITE, IPC_DATA_WORLD_REQPARTYINVITE) {
+IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE) {
 	ClientContextRef TargetClient = ServerGetClientByIndex(Context, Packet->Target.CharacterIndex, Packet->Target.Name, Packet->Target.NameLength);
 	if (!TargetClient) return;
 

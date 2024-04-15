@@ -1,7 +1,7 @@
 #include "ClientProtocol.h"
 #include "ClientProcedures.h"
 #include "ClientSocket.h"
-#include "IPCProcs.h"
+#include "IPCProcedures.h"
 #include "Notification.h"
 #include "Server.h"
 
@@ -10,17 +10,20 @@ CLIENT_PROCEDURE_BINDING(GET_CHARACTERS) {
 
     // TODO: Check if is entering premium channel and check service expiration!
 
-    IPC_DATA_WORLD_REQGETCHARACTERS* Request = PacketBufferInitExtended(Context->MasterSocket->PacketBuffer, IPC, WORLD_REQGETCHARACTERS);
-    Request->ConnectionID = Connection->ID;
+    IPC_W2M_DATA_GET_CHARACTER_LIST* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2M, GET_CHARACTER_LIST);
+    Request->Header.SourceConnectionID = Connection->ID;
+    Request->Header.Source = Server->IPCSocket->NodeID;
+    Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+    Request->Header.Target.Type = IPC_TYPE_MASTER;
     Request->AccountID = Client->Account.AccountID;
-    memcpy(Request->SessionIP, Connection->AddressIP, MAX_ADDRESSIP_LENGTH);
-    return SocketSendAll(Context->MasterSocket, Request);
+    IPCSocketUnicast(Server->IPCSocket, Request);
+    return;
 
 error:
     SocketDisconnect(Socket, Connection);
 }
 
-IPC_PROCEDURE_BINDING(OnWorldGetCharacters, IPC_WORLD_ACKGETCHARACTERS, IPC_DATA_WORLD_ACKGETCHARACTERS) {
+IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER_LIST) {
     if (!ClientConnection || !Client) goto error;
 
     memcpy(Client->Characters, Packet->Characters, sizeof(Packet->Characters));

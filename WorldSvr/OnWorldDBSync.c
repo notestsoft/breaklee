@@ -1,7 +1,7 @@
 #include "ClientProtocol.h"
 #include "ClientProcedures.h"
 #include "ClientSocket.h"
-#include "IPCProcs.h"
+#include "IPCProcedures.h"
 #include "Notification.h"
 #include "Server.h"
 
@@ -36,8 +36,11 @@ Void ServerSyncDB(
 		if (PerformSync) {
 			Character->SyncTimestamp = Timestamp;
 
-			IPC_DATA_WORLD_REQDBSYNC* Request = PacketBufferInitExtended(Context->MasterSocket->PacketBuffer, IPC, WORLD_REQDBSYNC);
-			Request->ConnectionID = Connection->ID;
+			IPC_W2M_DATA_DBSYNC* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2M, DBSYNC);
+			Request->Header.SourceConnectionID = Connection->ID;
+			Request->Header.Source = Server->IPCSocket->NodeID;
+			Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+			Request->Header.Target.Type = IPC_TYPE_MASTER;
 			Request->AccountID = Client->Account.AccountID;
 			Request->CharacterID = Client->CharacterDatabaseID;
 			Request->SyncMask = Character->SyncMask;
@@ -48,66 +51,66 @@ Void ServerSyncDB(
 				Character->Info.Position.X = Character->Movement.PositionCurrent.X;
 				Character->Info.Position.Y = Character->Movement.PositionCurrent.Y;
 
-                PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->Info, sizeof(struct _RTCharacterInfo));
+                IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Info, sizeof(struct _RTCharacterInfo));
 			}
 
 			if (Character->SyncMask.EquipmentInfo) {
-				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->EquipmentInfo, sizeof(struct _RTCharacterEquipmentInfo));
+				IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->EquipmentInfo, sizeof(struct _RTCharacterEquipmentInfo));
 			}
 
 			if (Character->SyncMask.InventoryInfo) {
-				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
+				IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
 			}
 
 			if (Character->SyncMask.SkillSlotInfo) {
-				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->SkillSlotInfo, sizeof(struct _RTCharacterSkillSlotInfo));
+				IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->SkillSlotInfo, sizeof(struct _RTCharacterSkillSlotInfo));
 			}
 
 			if (Character->SyncMask.QuickSlotInfo) {
-				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->QuickSlotInfo, sizeof(struct _RTCharacterQuickSlotInfo));
+				IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->QuickSlotInfo, sizeof(struct _RTCharacterQuickSlotInfo));
 			}
 
 			if (Character->SyncMask.QuestSlotInfo) {
-				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->QuestSlotInfo, sizeof(struct _RTCharacterQuestSlotInfo));
+				IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->QuestSlotInfo, sizeof(struct _RTCharacterQuestSlotInfo));
 			}
 
 			if (Character->SyncMask.QuestFlagInfo) {
-				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->QuestFlagInfo, sizeof(struct _RTCharacterQuestFlagInfo));
+				IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->QuestFlagInfo, sizeof(struct _RTCharacterQuestFlagInfo));
 			}
 
             if (Character->SyncMask.DungeonQuestFlagInfo) {
-                PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->DungeonQuestFlagInfo, sizeof(struct _RTCharacterDungeonQuestFlagInfo));
+				IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->DungeonQuestFlagInfo, sizeof(struct _RTCharacterDungeonQuestFlagInfo));
             }
 
 			if (Character->SyncMask.EssenceAbilityInfo) {
-				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->EssenceAbilityInfo, sizeof(struct _RTCharacterEssenceAbilityInfo));
+				IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->EssenceAbilityInfo, sizeof(struct _RTCharacterEssenceAbilityInfo));
 			}
 
 			if (Character->SyncMask.OverlordMasteryInfo) {
-				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->OverlordMasteryInfo, sizeof(struct _RTCharacterOverlordMasteryInfo));
+				IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->OverlordMasteryInfo, sizeof(struct _RTCharacterOverlordMasteryInfo));
 			}
 
 			if (Character->SyncMask.ForceWingInfo) {
-				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->ForceWingInfo, sizeof(struct _RTCharacterForceWingInfo));
+				IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->ForceWingInfo, sizeof(struct _RTCharacterForceWingInfo));
 			}
 
 			if (Character->SyncMask.CollectionInfo) {
-				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->CollectionInfo, sizeof(struct _RTCharacterCollectionInfo));
+				IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->CollectionInfo, sizeof(struct _RTCharacterCollectionInfo));
 			}
 
 			if (Character->SyncMask.NewbieSupportInfo) {
-				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->NewbieSupportInfo, sizeof(struct _RTCharacterNewbieSupportInfo));
+				IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->NewbieSupportInfo, sizeof(struct _RTCharacterNewbieSupportInfo));
 			}
 
 			if (Character->SyncMask.WarehouseInfo) {
-				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
+				IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
 			}
 
 			if (Character->SyncMask.RequestCraftInfo) {
-				PacketBufferAppendCopy(Context->MasterSocket->PacketBuffer, &Character->RequestCraftInfo, sizeof(struct _RTCharacterRequestCraftInfo));
+				IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->RequestCraftInfo, sizeof(struct _RTCharacterRequestCraftInfo));
 			}
 
-			SocketSendAll(Context->MasterSocket, Request);
+			IPCSocketUnicast(Server->IPCSocket->PacketBuffer, Request);
 
 			Character->SyncMask.RawValue = 0;
 			Character->SyncPriority.RawValue = 0;
@@ -115,7 +118,7 @@ Void ServerSyncDB(
 	}
 }
 
-IPC_PROCEDURE_BINDING(OnWorldDBSync, IPC_WORLD_ACKDBSYNC, IPC_DATA_WORLD_ACKDBSYNC) {
+IPC_PROCEDURE_BINDING(M2W, DBSYNC) {
 	if (!Client || !Character) return;
 
 	if (Packet->SyncMaskFailed.RawValue) {

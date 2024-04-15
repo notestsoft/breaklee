@@ -15,6 +15,7 @@ CLIENT_PROCEDURE_BINDING(DEINITIALIZE) {
     }
 
     SocketSend(Socket, Connection, Response);
+    BroadcastUserList(Server, Context);
     return;
     
 error:

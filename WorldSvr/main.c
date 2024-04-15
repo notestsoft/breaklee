@@ -2,9 +2,8 @@
 #include "Server.h"
 #include "ServerDataLoader.h"
 #include "ClientSocket.h"
-#include "MasterSocket.h"
 #include "ClientProcedures.h"
-#include "IPCProcs.h"
+#include "IPCProcedures.h"
 #include "Notification.h"
 
 #define C2S_COMMAND(__NAME__, __COMMAND__)                                                                                       \
@@ -23,17 +22,6 @@ Void SERVER_PROC_ ## __NAME__(                                                  
 }
 #include "ClientCommands.h"
 
-Void ServerOnIPCPacketReceived(
-    ServerRef Server,
-    Void* ServerContext,
-    IPCSocketRef Socket,
-    IPCSocketConnectionRef Connection,
-    Void* ConnectionContext,
-    IPCPacketRef Packet
-) {
-
-}
-
 // TODO: This is not a good solution considering the connection id is being reused
 Index PacketGetConnectionID(
     Void* Packet
@@ -41,44 +29,61 @@ Index PacketGetConnectionID(
     return *(Index*)((UInt8*)Packet + 8);
 }
 
-#define IPC_MASTER_PROCEDURE(__NAME__, __COMMAND__, __PROTOCOL__)                                               \
-Void SERVER_ ## __NAME__(                                                                                       \
-    ServerRef Server,                                                                                           \
-    Void *ServerContext,                                                                                        \
-    SocketRef Socket,                                                                                           \
-    SocketConnectionRef Connection,                                                                             \
-    Void *ConnectionContext,                                                                                    \
-    Void *Packet                                                                                                \
-) {                                                                                                             \
-    ServerContextRef Context = (ServerContextRef)ServerContext;                                                 \
-    MasterContextRef Master = (MasterContextRef)ConnectionContext;                                              \
-    Index ConnectionID = PacketGetConnectionID(Packet);                                                         \
-    SocketConnectionRef ClientConnection = SocketGetConnection(Context->ClientSocket, ConnectionID);            \
-    ClientContextRef Client = NULL;                                                                             \
-    RTCharacterRef Character = NULL;                                                                            \
-                                                                                                                \
-    if (ClientConnection) {                                                                                     \
-        Client = (ClientContextRef)ClientConnection->Userdata;                                                  \
-    }                                                                                                           \
-                                                                                                                \
-    if (Client && Client->CharacterIndex > 0) {                                                                 \
-        Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Client->CharacterIndex);  \
-    }                                                                                                           \
-                                                                                                                \
-    __NAME__(                                                                                                   \
-        Server,                                                                                                 \
-        Context,                                                                                                \
-        Socket,                                                                                                 \
-        Connection,                                                                                             \
-        Master,                                                                                                 \
-        ClientConnection,                                                                                       \
-        Client,                                                                                                 \
-        Context->Runtime,                                                                                       \
-        Character,                                                                                              \
-        (__PROTOCOL__*)Packet                                                                                   \
-    );                                                                                                          \
+#define IPC_COMMAND_CALLBACK(__NAMESPACE__, __NAME__)               \
+Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(            \
+    IPCSocketRef Socket,                                            \
+    IPCSocketConnectionRef Connection,                              \
+    IPCPacketRef Packet                                             \
+) {                                                                 \
+    ServerRef Server = (ServerRef)Socket->Userdata;                 \
+    ServerContextRef Context = (ServerContextRef)Server->Userdata;  \
+    SocketConnectionRef ClientConnection = NULL;                    \
+    ClientContextRef Client = NULL;                                 \
+    RTCharacterRef Character = NULL;                                \
+                                                                    \
+    if (Packet->TargetConnectionID > 0) {                           \
+        ClientConnection = SocketGetConnection(                     \
+            Context->ClientSocket,                                  \
+            Packet->TargetConnectionID                              \
+        );                                                          \
+        if (!ClientConnection) return;                              \
+        Client = (ClientContextRef)ClientConnection->Userdata;      \
+    }                                                               \
+                                                                    \
+    if (Client && Client->CharacterIndex > 0) {                     \
+        Character = RTWorldManagerGetCharacterByIndex(              \
+            Context->Runtime->WorldManager,                         \
+            Client->CharacterIndex                                  \
+        );                                                          \
+    }                                                               \
+                                                                    \
+    IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                    \
+        Server,                                                     \
+        Context,                                                    \
+        Socket,                                                     \
+        Connection,                                                 \
+        ClientConnection,                                           \
+        Client,                                                     \
+        Context->Runtime,                                           \
+        Character,                                                  \
+        (IPC_ ## __NAMESPACE__ ## _DATA_ ## __NAME__ *)Packet       \
+    );                                                              \
 }
-#include "IPCProcDefinition.h"
+
+#define IPC_A2W_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(A2W, __NAME__)
+#include "IPCCommands.h"
+
+#define IPC_C2W_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(C2W, __NAME__)
+#include "IPCCommands.h"
+
+#define IPC_L2W_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(L2W, __NAME__)
+#include "IPCCommands.h"
+
+#define IPC_M2W_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(M2W, __NAME__)
+#include "IPCCommands.h"
+
+#define IPC_P2W_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(P2W, __NAME__)
+#include "IPCCommands.h"
 
 Void ServerOnUpdate(
     ServerRef Server,
@@ -86,15 +91,13 @@ Void ServerOnUpdate(
 ) {
     ServerContextRef Context = (ServerContextRef)ServerContext;
     RTRuntimeUpdate(Context->Runtime);
-
-    Bool IsMasterConnected = Context->MasterSocket->Flags & SOCKET_FLAGS_CONNECTED;
-    if (Context->UserListBroadcastTimestamp < Context->UserListUpdateTimestamp && IsMasterConnected) {
-        Context->UserListBroadcastTimestamp = ServerGetTimestamp(Server);
-        Context->UserListUpdateTimestamp = Context->UserListBroadcastTimestamp;
-        BroadcastUserList(Context);
-    }
-
     ServerSyncDB(Server, Context, false);
+
+    Timestamp CurrentTimestamp = GetTimestampMs();
+    if (Context->UserListBroadcastTimestamp < CurrentTimestamp) {
+        Context->UserListBroadcastTimestamp = CurrentTimestamp + Context->Config.WorldSvr.UserListBroadcastInterval;
+        BroadcastUserList(Server, Context);
+    }
 }
 
 Int32 main(Int32 argc, CString* argv) {
@@ -115,12 +118,10 @@ Int32 main(Int32 argc, CString* argv) {
     ServerContext.Runtime = RTRuntimeCreate(Allocator, &ServerRuntimeOnEvent, &ServerContext);
     ServerContext.Runtime->Config.ExpMultiplier = Config.WorldSvr.ExpMultiplier;
     ServerContext.Runtime->Config.SkillExpMultiplier = Config.WorldSvr.SkillExpMultiplier;
-    ServerContext.UserListBroadcastTimestamp = 0;
-    ServerContext.UserListUpdateTimestamp = 0;
 
     IPCNodeID NodeID = kIPCNodeIDNull;
-    NodeID.Group = 1;
-    NodeID.Index = 1;
+    NodeID.Group = Config.WorldSvr.GroupIndex;
+    NodeID.Index = Config.WorldSvr.NodeIndex;
     NodeID.Type = IPC_TYPE_WORLD;
 
     ServerRef Server = ServerCreate(
@@ -132,7 +133,6 @@ Int32 main(Int32 argc, CString* argv) {
         Config.NetLib.ReadBufferSize,
         Config.NetLib.WriteBufferSize,
         &ServerOnUpdate,
-        &ServerOnIPCPacketReceived,
         &ServerContext
     );
 
@@ -155,26 +155,26 @@ Int32 main(Int32 argc, CString* argv) {
 #define C2S_COMMAND(__NAME__, __COMMAND__) \
     ServerSocketRegisterPacketCallback(Server, ServerContext.ClientSocket, __COMMAND__, &SERVER_PROC_ ## __NAME__);
 #include "ClientCommands.h"
-    
-    ServerContext.MasterSocket = ServerCreateSocket(
-        Server,
-        SOCKET_FLAGS_IPC,
-        Config.MasterSvr.Host,
-        Config.MasterSvr.Port,
-        sizeof(struct _MasterContext),
-        Config.NetLib.ProtocolIdentifier,
-        Config.NetLib.ProtocolVersion,
-        Config.NetLib.ProtocolExtension,
-        Config.NetLib.ReadBufferSize,
-        Config.NetLib.WriteBufferSize,
-        1,
-        &MasterSocketOnConnect,
-        &MasterSocketOnDisconnect
-    );
-    
-#define IPC_MASTER_PROCEDURE(__NAME__, __COMMAND__, __PROTOCOL__) \
-    ServerSocketRegisterPacketCallback(Server, ServerContext.MasterSocket, __COMMAND__, &SERVER_ ## __NAME__);
-#include "IPCProcDefinition.h"
+
+#define IPC_A2W_COMMAND(__NAME__) \
+    IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_A2W_ ## __NAME__, &SERVER_IPC_A2W_PROC_ ## __NAME__);
+#include "IPCCommands.h"
+
+#define IPC_C2W_COMMAND(__NAME__) \
+    IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_C2W_ ## __NAME__, &SERVER_IPC_C2W_PROC_ ## __NAME__);
+#include "IPCCommands.h"
+
+#define IPC_L2W_COMMAND(__NAME__) \
+    IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_L2W_ ## __NAME__, &SERVER_IPC_L2W_PROC_ ## __NAME__);
+#include "IPCCommands.h"
+
+#define IPC_M2W_COMMAND(__NAME__) \
+    IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_M2W_ ## __NAME__, &SERVER_IPC_M2W_PROC_ ## __NAME__);
+#include "IPCCommands.h"
+
+#define IPC_P2W_COMMAND(__NAME__) \
+    IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_P2W_ ## __NAME__, &SERVER_IPC_P2W_PROC_ ## __NAME__);
+#include "IPCCommands.h"
 
     RTRuntimeLoadData(ServerContext.Runtime, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
     ServerLoadRuntimeData(Config, &ServerContext);

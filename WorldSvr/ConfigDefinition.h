@@ -15,10 +15,11 @@
 #endif
 
 CONFIG_BEGIN(WorldSvr)
+CONFIG_PARAMETER(UInt8, GroupIndex, "WorldSvr.GroupIndex", 1)
+CONFIG_PARAMETER(UInt8, NodeIndex, "WorldSvr.NodeIndex", 1)
 CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, Host, "WorldSvr.Host", 127.0.0.1)
 CONFIG_PARAMETER(UInt16, Port, "WorldSvr.Port", 38121)
 CONFIG_PARAMETER(Int32, MaxConnectionCount, "WorldSvr.MaxConnectionCount", 256)
-CONFIG_PARAMETER(UInt8, WorldID, "WorldSvr.WorldID", 1)
 CONFIG_PARAMETER(UInt32, WorldType, "WorldSvr.WorldType", 0x0400)
 CONFIG_PARAMETER(UInt8, MaxSubpasswordFailureCount, "WorldSvr.MaxSubpasswordFailureCount", 5)
 CONFIG_PARAMETER(UInt64, SubpasswordBanDuration, "WorldSvr.SubpasswordBanDuration", 0)
@@ -33,6 +34,7 @@ CONFIG_PARAMETER(UInt32, DebugCharacter, "WorldSvr.DebugCharacter", 1)
 CONFIG_PARAMETER(Bool, DebugSetQuestFlags, "WorldSvr.DebugSetQuestFlags", 0)
 CONFIG_PARAMETER(Bool, DBSyncTimerPriorityLow, "WorldSvr.DBSyncTimerPriorityLow", 1000)
 CONFIG_PARAMETER(Bool, DBSyncTimerPriorityHigh, "WorldSvr.DBSyncTimerPriorityHigh", 1000)
+CONFIG_PARAMETER(UInt64, UserListBroadcastInterval, "WorldSvr.UserListBroadcastInterval", 1000)
 CONFIG_END(WorldSvr)
 
 CONFIG_BEGIN(Environment)

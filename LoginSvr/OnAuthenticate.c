@@ -4,6 +4,7 @@
 #include "ClientProcedures.h"
 #include "ClientSocket.h"
 #include "Enumerations.h"
+#include "IPCProcedures.h"
 
 Void StartAuthTimer(
     ServerRef Server,
@@ -233,10 +234,15 @@ CLIENT_PROCEDURE_BINDING(AUTHENTICATE) {
 
     StartAuthTimer(Server, Context, Socket, Connection, Client, Context->Config.Login.AutoDisconnectDelay);
     SendMessageLoginSuccess(Server, Context, Socket, Connection, Client);
-    // BroadcastWorldListToConnection(Server, Context, Connection, Client);
-    
+
     // Just clearing the payload buffer to avoid keeping sensitive data in memory!
     memset(Client->RSAPayloadBuffer, 0, sizeof(Client->RSAPayloadBuffer));
+
+    IPC_L2M_DATA_GET_WORLD_LIST* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, L2M, GET_WORLD_LIST);
+    Request->Header.Source = Server->IPCSocket->NodeID;
+    Request->Header.Target.Group = 1;
+    Request->Header.Target.Type = IPC_TYPE_MASTER;
+    IPCSocketUnicast(Server->IPCSocket, Request);
     return;
 
 error:

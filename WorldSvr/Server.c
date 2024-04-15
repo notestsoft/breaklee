@@ -1,5 +1,4 @@
 #include "ClientSocket.h"
-#include "MasterSocket.h"
 #include "Notification.h"
 #include "Server.h"
 #include "ServerDataLoader.h"

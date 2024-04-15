@@ -1,7 +1,7 @@
 #include "ClientProtocol.h"
 #include "ClientProcedures.h"
 #include "ClientSocket.h"
-#include "IPCProcs.h"
+#include "IPCProcedures.h"
 #include "Notification.h"
 #include "Server.h"
 
@@ -17,7 +17,6 @@ CLIENT_PROCEDURE_BINDING(SET_QUICKSLOT) {
         Success |= RTCharacterRemoveQuickSlot(Runtime, Character, Packet->QuickSlotIndex);
     }
     
-
     S2C_DATA_SET_QUICKSLOT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SET_QUICKSLOT);
     Response->Success = Success ? 1 : 0;
     return SocketSend(Socket, Connection, Response);

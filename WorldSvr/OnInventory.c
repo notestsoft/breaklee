@@ -1,6 +1,7 @@
 #include "ClientProtocol.h"
 #include "ClientProcedures.h"
 #include "ClientSocket.h"
+#include "Enumerations.h"
 #include "Notification.h"
 #include "Server.h"
 #include "IPCCommands.h"

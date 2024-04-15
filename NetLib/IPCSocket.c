@@ -143,11 +143,6 @@ Void IPCSocketOnReceived(
         }
     }
 
-    if (Packet->Command == IPC_COMMAND_HEARTBEAT) {
-        Socket->HeartbeatPacket.Target = NodeContext->NodeID;
-        IPCSocketSend(Socket, Connection, &Socket->HeartbeatPacket);
-    }
-
     return;
 
 error:

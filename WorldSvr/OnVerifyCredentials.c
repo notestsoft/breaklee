@@ -1,7 +1,8 @@
 #include "ClientProtocol.h"
 #include "ClientProcedures.h"
 #include "ClientSocket.h"
-#include "IPCProcs.h"
+#include "Enumerations.h"
+#include "IPCProcedures.h"
 #include "Notification.h"
 #include "Server.h"
 
@@ -25,25 +26,29 @@ Void OnVerifyCharacterSubpassword(
         Response->Success = 0;
         Response->FailureCount = Client->SubpasswordFailureCount;
         Response->Type = CHARACTER_SUBPASSWORD_TYPE_CHARACTER;
-        return SocketSend(Socket, Connection, Response);
+        SocketSend(Socket, Connection, Response);
+		return;
     }
 
     Client->SubpasswordFailureCount = 0;
     memcpy(Client->Account.SessionIP, Connection->AddressIP, MAX_ADDRESSIP_LENGTH);
     Client->Account.SessionTimeout = time(NULL) + (time_t)Packet->ExpirationInHours * 60 * 60;
 
-    IPC_DATA_WORLD_UPDATE_ACCOUNT_SESSION_DATA* Request = PacketBufferInitExtended(Context->MasterSocket->PacketBuffer, IPC, WORLD_UPDATE_ACCOUNT_SESSION_DATA);
-    Request->ConnectionID = Connection->ID;
+	IPC_W2M_DATA_UPDATE_ACCOUNT_SESSION* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2M, UPDATE_ACCOUNT_SESSION);
+	Request->Header.SourceConnectionID = Connection->ID;
+	Request->Header.Source = Server->IPCSocket->NodeID;
+	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+	Request->Header.Target.Type = IPC_TYPE_MASTER;
     Request->AccountID = Client->Account.AccountID;
     memcpy(Request->SessionIP, Client->Account.SessionIP, MAX_ADDRESSIP_LENGTH);
     Request->SessionTimeout = Client->Account.SessionTimeout;
-    SocketSendAll(Context->MasterSocket, Request);
+	IPCSocketUnicast(Server->IPCSocket, Request);
 
     S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_SUBPASSWORD);
     Response->Success = 1;
     Response->FailureCount = Client->SubpasswordFailureCount;
     Response->Type = CHARACTER_SUBPASSWORD_TYPE_CHARACTER;
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
 }
 
 CLIENT_PROCEDURE_BINDING(VERIFY_CREDENTIALS) {
@@ -53,26 +58,29 @@ CLIENT_PROCEDURE_BINDING(VERIFY_CREDENTIALS) {
 	}
 
 	if (Packet->CredentialsType == C2S_DATA_VERIFY_CREDENTIALS_TYPE_PASSWORD) {
-		IPC_DATA_WORLD_REQVERIFYPASSWORD* Request = PacketBufferInitExtended(Context->MasterSocket->PacketBuffer, IPC, WORLD_REQVERIFYPASSWORD);
-		Request->ConnectionID = Connection->ID;
+		IPC_W2L_DATA_VERIFY_PASSWORD* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2L, VERIFY_PASSWORD);
+		Request->Header.SourceConnectionID = Connection->ID;
+		Request->Header.Source = Server->IPCSocket->NodeID;
+		Request->Header.Target.Type = IPC_TYPE_LOGIN;
 		Request->AccountID = Client->Account.AccountID;
 		memcpy(Request->Credentials, Packet->Credentials, MAX_CREDENTIALS_LENGTH);
-		return SocketSendAll(Context->MasterSocket, Request);
+		IPCSocketUnicast(Server->IPCSocket, Request);
+		return;
 	}
 
 error: 
 	{
 		S2C_DATA_VERIFY_CREDENTIALS* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_CREDENTIALS);
 		Response->Success = false;
-		return SocketSend(Socket, Connection, Response);
+		SocketSend(Socket, Connection, Response);
 	}
 }
 
-IPC_PROCEDURE_BINDING(OnWorldVerifyPassword, IPC_WORLD_ACKVERIFYPASSWORD, IPC_DATA_WORLD_ACKVERIFYPASSWORD) {
+IPC_PROCEDURE_BINDING(L2W, VERIFY_PASSWORD) {
 	if (!ClientConnection || !Client) goto error;
 
 	if (Packet->Success) {
-		Client->PasswordVerificationTimestamp = GetTimestamp();
+		Client->PasswordVerificationTimestamp = GetTimestampMs();
 	}
 
 	S2C_DATA_VERIFY_CREDENTIALS* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, VERIFY_CREDENTIALS);
