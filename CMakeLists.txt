@@ -39,8 +39,9 @@ if(WIN32)
 	)
 
 	file(GLOB RUNTIME_LIBRARIES ${PLATFORM_LIBRARY_DIR}/MariaDB/lib/*.dll
-								  ${PLATFORM_LIBRARY_DIR}/OpenSSL/lib/*.dll
-								  ${PLATFORM_LIBRARY_DIR}/Zlib/lib/*.dll)
+								${PLATFORM_LIBRARY_DIR}/OpenSSL/lib/*.dll
+								${PLATFORM_LIBRARY_DIR}/Zlib/lib/*.dll
+                                ${PLATFORM_LIBRARY_DIR}/Lua/*.dll)
 
 	file(COPY ${RUNTIME_LIBRARIES} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/)
 else()
