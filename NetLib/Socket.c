@@ -334,8 +334,8 @@ Void SocketReleaseConnections(
             SocketFlushWriteBuffer(Socket, Connection);
             if (Socket->OnDisconnect) Socket->OnDisconnect(Socket, Connection);
             Socket->Flags &= ~SOCKET_FLAGS_CONNECTED;
-            PlatformSocketClose(Connection->Handle);
             SocketReleaseConnection(Socket, Connection);
+            PlatformSocketClose(Connection->Handle);
         }
     }
 }

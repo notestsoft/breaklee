@@ -25,7 +25,7 @@ RUNTIME_DATA_TYPE_INDEX_SINGLE(CollectionQuest)
 
 RUNTIME_DATA_TYPE_BEGIN(CollectionKind, "Collection.Collection_type.collection_kind", 8)
 	RUNTIME_DATA_PROPERTY(Int32, Type, "type")
-	RUNTIME_DATA_TYPE_BEGIN_CHILD(CollectionKindInfo, "collection_info", 128)
+	RUNTIME_DATA_TYPE_BEGIN_CHILD(CollectionKindInfo, "collection_info", 256)
 		RUNTIME_DATA_PROPERTY(Int32, ID, "c_id")
 		RUNTIME_DATA_PROPERTY(Int32, RewardID, "c_reward_id")
 		RUNTIME_DATA_PROPERTY(Int32, Order, "order")
@@ -34,7 +34,7 @@ RUNTIME_DATA_TYPE_BEGIN(CollectionKind, "Collection.Collection_type.collection_k
 			RUNTIME_DATA_PROPERTY(Int32, RewardType, "m_reward_type")
 			RUNTIME_DATA_PROPERTY(Int32, RewardID, "m_reward_id")
 		RUNTIME_DATA_TYPE_END_CHILD(CollectionKindInfoDetail, 1024)
-	RUNTIME_DATA_TYPE_END_CHILD(CollectionKindInfo, 128)
+	RUNTIME_DATA_TYPE_END_CHILD(CollectionKindInfo, 256)
 RUNTIME_DATA_TYPE_END(CollectionKind)
 RUNTIME_DATA_TYPE_INDEX(CollectionKind, Int32, Type)
 

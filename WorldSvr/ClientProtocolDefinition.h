@@ -90,6 +90,20 @@ CLIENT_PROTOCOL(S2C, CONNECT, DEFAULT, 140,
     UInt32 Unknown2;
 )
 
+CLIENT_PROTOCOL(C2S, VERIFY_LINKS, DEFAULT, 141,
+    UInt32 AuthKey;
+    UInt16 EntityID;
+    UInt8 Unknown1;
+    UInt8 Unknown2;
+    UInt32 Unknown3;
+)
+
+CLIENT_PROTOCOL(S2C, VERIFY_LINKS, DEFAULT, 141,
+    UInt8 WorldID;
+    UInt8 ServerID;
+    UInt8 Status;
+)
+
 CLIENT_PROTOCOL(C2S, INITIALIZE, DEFAULT, 142,
     UInt32 CharacterIndex;
 )

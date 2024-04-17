@@ -1,8 +1,13 @@
 #include "IPCSocket.h"
 
+static Index PacketLogIndex = 0;
+static struct _IPCPacket PacketLog[10000] = { 0 };
+
 Void PrintNodeTable(
     IPCSocketRef Socket
 ) {
+    if (Socket->NodeID.Type != IPC_TYPE_MASTER) return;
+
     CString IPCTypeNames[] = {
         "NONE",
         "AUCTION",
@@ -34,6 +39,27 @@ Void PrintNodeTable(
     }
 
     printf("+-------+-------+---------------+\n");
+    /*
+    for (Index Index = 0; Index < PacketLogIndex; Index += 1) {
+        IPCPacketRef Packet = &PacketLog[Index];
+
+        printf(
+            "| %06d | %04d | %04d | %02d | %02d | %02d | %02d | %02d | %02d | %02d | %02d | %02d |\n",
+            (Int32)Packet->Length,
+            (Int32)Packet->Command,
+            (Int32)Packet->SubCommand,
+            (Int32)Packet->RouteType,
+            (Int32)Packet->Source.Index,
+            (Int32)Packet->Source.Group,
+            (Int32)Packet->Source.Type,
+            (Int32)Packet->SourceConnectionID,
+            (Int32)Packet->Target.Index,
+            (Int32)Packet->Target.Group,
+            (Int32)Packet->Target.Type,
+            (Int32)Packet->TargetConnectionID
+        );
+    }
+    */
 }
 
 Void IPCSocketConnect(
@@ -68,7 +94,7 @@ Void IPCSocketOnConnect(
     Packet.TargetConnectionID = 0;
     IPCSocketSend(Socket, Connection, &Packet);
 
-    // PrintNodeTable(Socket);
+    PrintNodeTable(Socket);
 }
 
 Void IPCSocketOnDisconnect(
@@ -84,7 +110,7 @@ Void IPCSocketOnDisconnect(
     MemoryPoolRelease(Socket->ConnectionContextPool, Connection->ConnectionPoolIndex);
     Connection->Userdata = NULL;
 
-    // PrintNodeTable(Socket);
+    PrintNodeTable(Socket);
 }
 
 Void IPCSocketOnReceived(
@@ -93,15 +119,42 @@ Void IPCSocketOnReceived(
     IPCPacketRef Packet
 ) {
     IPCNodeContextRef NodeContext = (IPCNodeContextRef)Connection->Userdata;
+    /*
+    memcpy(&PacketLog[PacketLogIndex], Packet, sizeof(struct _IPCPacket));
+    PacketLogIndex++;
+    */
+    if (Socket->NodeID.Type == IPC_TYPE_MASTER)
+    printf(
+        "| %06d | %04d | %04d | %02d | %02d | %02d | %02d | %02d | %02d | %02d | %02d | %02d |\n",
+        (Int32)Packet->Length,
+        (Int32)Packet->Command,
+        (Int32)Packet->SubCommand,
+        (Int32)Packet->RouteType,
+        (Int32)Packet->Source.Index,
+        (Int32)Packet->Source.Group,
+        (Int32)Packet->Source.Type,
+        (Int32)Packet->SourceConnectionID,
+        (Int32)Packet->Target.Index,
+        (Int32)Packet->Target.Group,
+        (Int32)Packet->Target.Type,
+        (Int32)Packet->TargetConnectionID
+    );
 
     if (Packet->Command == IPC_COMMAND_REGISTER) {
-        if (Packet->Source.Group != Socket->NodeID.Group) goto error;
-        if (DictionaryContains(Socket->NodeTable, &Packet->Source.Serial)) goto error;
         // TODO: Validate Packet->Source for integrity..
+
+        if (Packet->Source.Group != Socket->NodeID.Group) goto error;
+        if (DictionaryContains(Socket->NodeTable, &Packet->Source.Serial)) {
+            Index* ConnectionID = DictionaryLookup(Socket->NodeTable, &Packet->Source.Serial);
+            if (ConnectionID) {
+                IPCSocketConnectionRef Connection = IPCSocketGetConnection(Socket, *ConnectionID);
+                if (Connection) IPCSocketDisconnect(Socket, Connection);
+            }
+        }
 
         NodeContext->NodeID = Packet->Source;
         DictionaryInsert(Socket->NodeTable, &Packet->Source.Serial, &Connection->ID, sizeof(Index));
-        // PrintNodeTable(Socket);
+        PrintNodeTable(Socket);
     }
 
     if (Packet->Command == IPC_COMMAND_ROUTE) {
@@ -349,14 +402,22 @@ Void IPCSocketUnicast(
     IPCPacketRef IPCPacket = (IPCPacketRef)Packet;
     IPCPacket->RouteType = IPC_ROUTE_TYPE_UNICAST;
 
+    Bool IsHost = Socket->Host == NULL;
     Index* ConnectionID = DictionaryLookup(Socket->NodeTable, &IPCPacket->Target.Serial);
     if (ConnectionID) {
         IPCSocketConnectionRef Connection = IPCSocketGetConnection(Socket, *ConnectionID);
         if (Connection) {
             MemoryBufferAppendCopy(Connection->WriteBuffer, IPCPacket, IPCPacket->Length);
         }
-        else if (!(Socket->Flags & IPC_SOCKET_FLAGS_LISTENER)) {
-            IPCSocketBroadcast(Socket, IPCPacket);
+    }
+    else if (!IsHost) {
+        IndexSetIteratorRef Iterator = IndexSetGetIterator(Socket->ConnectionIndices);
+        while (Iterator) {
+            Index ConnectionPoolIndex = Iterator->Value;
+            Iterator = IndexSetIteratorNext(Socket->ConnectionIndices, Iterator);
+
+            IPCSocketConnectionRef Connection = (IPCSocketConnectionRef)MemoryPoolFetch(Socket->ConnectionPool, ConnectionPoolIndex);
+            IPCSocketSend(Socket, Connection, Packet);
         }
     }
 }
@@ -515,7 +576,7 @@ Void IPCSocketUpdate(
 
             IPCNodeContextRef NodeContext = (IPCNodeContextRef)Connection->Userdata;
             Socket->HeartbeatPacket.Target = NodeContext->NodeID;
-            IPCSocketSend(Socket, Connection, &Socket->HeartbeatPacket);
+            //IPCSocketSend(Socket, Connection, &Socket->HeartbeatPacket);
         }
     }
 

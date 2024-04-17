@@ -8,6 +8,7 @@ IPC_PROCEDURE_BINDING(W2M, GET_ACCOUNT) {
 	Response->Header.Target = Packet->Header.Source;
 	Response->Header.TargetConnectionID = Packet->Header.SourceConnectionID;
 	Response->AccountID = Packet->AccountID;
+	Response->LinkConnectionID = Packet->LinkConnectionID;
 
 	Context->TempAccount.AccountID = Packet->AccountID;
 	if (MasterDBGetOrCreateAccount(Context->Database, &Context->TempAccount)) {

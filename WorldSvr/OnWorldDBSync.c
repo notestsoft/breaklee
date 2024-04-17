@@ -110,7 +110,7 @@ Void ServerSyncDB(
 				IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->RequestCraftInfo, sizeof(struct _RTCharacterRequestCraftInfo));
 			}
 
-			IPCSocketUnicast(Server->IPCSocket->PacketBuffer, Request);
+			IPCSocketUnicast(Server->IPCSocket, Request);
 
 			Character->SyncMask.RawValue = 0;
 			Character->SyncPriority.RawValue = 0;

@@ -46,6 +46,13 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE) {
 	// Result 14 
 	if (!RTEntityIsNull(TargetCharacter->PartyID)) return;
 
+	/*
+	IPC_W2P_DATA_PARTY_INVITE* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2P, PARTY_INVITE);
+	Request->Header.SourceConnectionID = Connection->ID;
+	Request->Header.Source = Server->IPCSocket->NodeID;
+	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+	Request->Header.Target.Type = IPC_TYPE_PARTY;
+	
 	IPC_DATA_WORLD_ACKPARTYINVITE* Response = PacketBufferInitExtended(Context->MasterSocket->PacketBuffer, IPC, WORLD_ACKPARTYINVITE);
 	Response->Success = true;
 	Response->Source.CharacterIndex = Packet->Source.CharacterIndex;
@@ -62,7 +69,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE) {
 	Response->Target.NameLength = strlen(TargetClient->CharacterName);
 	memcpy(Response->Target.Name, TargetClient->CharacterName, MAX_CHARACTER_NAME_LENGTH);
 	SocketSendAll(Context->MasterSocket, Response);
-	
+	*/
 	S2C_DATA_NFY_PARTY_INVITE* Notification = PacketBufferInit(TargetClient->Connection->PacketBuffer, S2C, NFY_PARTY_INVITE);
 	Notification->CharacterIndex = Packet->Source.CharacterIndex;
 	Notification->WorldServerID = Packet->Source.WorldServerID;
@@ -72,7 +79,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE) {
 	memcpy(Notification->Name, Packet->Source.Name, MAX_CHARACTER_NAME_LENGTH);
 	SocketSend(Context->ClientSocket, TargetClient->Connection, Notification);
 }
-
+/*
 IPC_PROCEDURE_BINDING(OnWorldRespondPartyInvite, IPC_WORLD_ACKPARTYINVITE, IPC_DATA_WORLD_ACKPARTYINVITE) {
 	if (!ClientConnection || !Client) return;
 
@@ -83,7 +90,7 @@ IPC_PROCEDURE_BINDING(OnWorldRespondPartyInvite, IPC_WORLD_ACKPARTYINVITE, IPC_D
 	memcpy(Response->Name, Packet->Target.Name, MAX_CHARACTER_NAME_LENGTH);
 	SocketSend(Context->ClientSocket, ClientConnection, Response);
 }
-
+*/
 CLIENT_PROCEDURE_BINDING(PARTY_INVITE_CONFIRM) {
 	if (!Character) goto error;
 

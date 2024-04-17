@@ -41,6 +41,7 @@ struct _ClientContext {
     SocketConnectionRef Connection;
     UInt32 ClientVersion;
     UInt32 Flags;
+    UInt32 AuthKey;
     Timestamp DisconnectTimestamp;
     RSA* RSA;
     UInt8 RSAPayloadBuffer[CLIENT_RSA_PAYLOAD_LENGTH];
