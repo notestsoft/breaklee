@@ -46,6 +46,10 @@
 #define IPC_W2M_COMMAND(__NAME__)
 #endif
 
+#ifndef IPC_W2W_COMMAND
+#define IPC_W2W_COMMAND(__NAME__)
+#endif
+
 #define IPC_PROTOCOL(__NAMESPACE__, __NAME__, __BODY__) \
 IPC_ ## __NAMESPACE__ ## _COMMAND(__NAME__)
 #include "IPCProtocolDefinition.h"
@@ -62,3 +66,4 @@ IPC_ ## __NAMESPACE__ ## _COMMAND(__NAME__)
 #undef IPC_W2L_COMMAND
 #undef IPC_W2P_COMMAND
 #undef IPC_W2M_COMMAND
+#undef IPC_W2W_COMMAND

@@ -82,6 +82,9 @@ Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(            \
 #define IPC_M2W_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(M2W, __NAME__)
 #include "IPCCommands.h"
 
+#define IPC_W2W_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(W2W, __NAME__)
+#include "IPCCommands.h"
+
 #define IPC_P2W_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(P2W, __NAME__)
 #include "IPCCommands.h"
 
@@ -100,14 +103,20 @@ Void ServerOnUpdate(
     }
 }
 
-Int32 main(Int32 argc, CString* argv) {
+Int32 main(Int32 ArgumentCount, CString* Arguments) {
+    CString ConfigFileName = "WorldSvr.ini";
+    if (ArgumentCount > 1) {
+        ConfigFileName = Arguments[1];
+    }
+
     DiagnosticCreateLogFile("WorldSvr");
+    LogMessageFormat(LOG_LEVEL_INFO, "ConfigFile: %s", ConfigFileName);
 
     if (!EncryptionLoadLibrary()) FatalError("Error loading zlib library...\n");
 
     Char Buffer[MAX_PATH] = { 0 };
     CString WorkingDirectory = PathGetCurrentDirectory(Buffer, MAX_PATH);
-    CString ConfigFilePath = PathCombineNoAlloc(WorkingDirectory, "WorldSvr.ini");
+    CString ConfigFilePath = PathCombineNoAlloc(WorkingDirectory, ConfigFileName);
     ServerConfig Config = ServerConfigLoad(ConfigFilePath);
 
     AllocatorRef Allocator = AllocatorGetSystemDefault();
@@ -123,6 +132,8 @@ Int32 main(Int32 argc, CString* argv) {
     NodeID.Group = Config.WorldSvr.GroupIndex;
     NodeID.Index = Config.WorldSvr.NodeIndex;
     NodeID.Type = IPC_TYPE_WORLD;
+
+    LogMessageFormat(LOG_LEVEL_INFO, "Node(%d, %d, %d)", NodeID.Group, NodeID.Index, NodeID.Type);
 
     ServerRef Server = ServerCreate(
         Allocator,
@@ -170,6 +181,10 @@ Int32 main(Int32 argc, CString* argv) {
 
 #define IPC_M2W_COMMAND(__NAME__) \
     IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_M2W_ ## __NAME__, &SERVER_IPC_M2W_PROC_ ## __NAME__);
+#include "IPCCommands.h"
+
+#define IPC_W2W_COMMAND(__NAME__) \
+    IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_W2W_ ## __NAME__, &SERVER_IPC_W2W_PROC_ ## __NAME__);
 #include "IPCCommands.h"
 
 #define IPC_P2W_COMMAND(__NAME__) \

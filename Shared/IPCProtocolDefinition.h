@@ -14,11 +14,15 @@ IPC_PROTOCOL(L2W, VERIFY_LINKS,
     Int32 AccountID;
 	UInt32 AuthKey;
 	UInt16 EntityID;
+	UInt8 NodeIndex;
+	UInt8 GroupIndex;
 	Char SessionIP[MAX_ADDRESSIP_LENGTH];
 )
 
 IPC_PROTOCOL(W2L, VERIFY_LINKS,
     Int32 AccountID;
+	UInt8 NodeIndex;
+	UInt8 GroupIndex;
 	UInt8 Status;
 )
 
@@ -30,11 +34,32 @@ IPC_PROTOCOL(W2L, WORLD_VERIFY_LINKS,
     Int32 AccountID;
 	UInt32 AuthKey;
 	UInt16 EntityID;
+	UInt8 NodeIndex;
+	UInt8 GroupIndex;
+	UInt32 ClientMagicKey;
 	Char SessionIP[MAX_ADDRESSIP_LENGTH];
 )
 
+IPC_PROTOCOL(W2W, REQUEST_VERIFY_LINKS,
+	Int32 AccountID;
+	UInt32 AuthKey;
+	UInt16 EntityID;
+	UInt8 NodeIndex;
+	UInt8 GroupIndex;
+	Char SessionIP[MAX_ADDRESSIP_LENGTH];
+	GAME_DATA_ACCOUNT Account;
+	GAME_DATA_CHARACTER_INDEX Characters[MAX_CHARACTER_COUNT];
+)
+
+IPC_PROTOCOL(W2W, RESPONSE_VERIFY_LINKS,
+	Int32 AccountID;
+	UInt8 NodeIndex;
+	UInt8 GroupIndex;
+	UInt8 Status;
+)
+
 IPC_PROTOCOL(L2W, WORLD_VERIFY_LINKS,
-    Bool Success;
+	Bool Success;
 )
 
 IPC_PROTOCOL(L2M, GET_WORLD_LIST,
@@ -58,6 +83,23 @@ IPC_PROTOCOL_STRUCT(IPC_M2L_DATA_SERVER_GROUP,
 IPC_PROTOCOL(M2L, GET_WORLD_LIST,
     UInt8 GroupCount;
     // IPC_M2L_DATA_SERVER_GROUP Groups[0];
+)
+
+IPC_PROTOCOL(W2M, GET_WORLD_LIST,
+)
+
+IPC_PROTOCOL_STRUCT(IPC_M2W_DATA_SERVER_GROUP_NODE,
+	UInt8 NodeIndex;
+	UInt16 PlayerCount;
+	UInt16 MaxPlayerCount;
+	Char Host[64];
+	UInt16 Port;
+	UInt32 Type;
+)
+
+IPC_PROTOCOL(M2W, GET_WORLD_LIST,
+    UInt8 NodeCount;
+    // IPC_M2L_DATA_SERVER_GROUP_NODE Nodes[0];
 )
 
 IPC_PROTOCOL(W2M, NFY_WORLD_INFO,
@@ -133,11 +175,15 @@ IPC_PROTOCOL(W2M, UPDATE_SUBPASSWORD,
 
 IPC_PROTOCOL(W2M, GET_ACCOUNT,
 	Int64 AccountID;
+	UInt8 NodeIndex;
+	UInt8 GroupIndex;
 	Index LinkConnectionID;
 )
 
 IPC_PROTOCOL(M2W, GET_ACCOUNT,
 	Int64 AccountID;
+	UInt8 NodeIndex;
+	UInt8 GroupIndex;
 	Index LinkConnectionID;
 	Bool Success;
     GAME_DATA_ACCOUNT Account;
@@ -184,6 +230,16 @@ IPC_PROTOCOL(M2W, GET_CHARACTER,
     } Character;
 )
 
+IPC_PROTOCOL(W2M, DELETE_CHARACTER,
+	Int64 AccountID;
+	Int32 CharacterID;
+)
+
+IPC_PROTOCOL(M2W, DELETE_CHARACTER,
+	Int32 CharacterID;
+	Bool Success;
+)
+
 IPC_PROTOCOL(W2M, DBSYNC,
 	Int64 AccountID;
 	Int32 CharacterID;
@@ -197,6 +253,13 @@ IPC_PROTOCOL(M2W, DBSYNC,
 	Int32 CharacterID;
 	union _RTCharacterSyncMask SyncMaskFailed;
 	union _RTCharacterSyncPriority SyncPriority;
+)
+
+IPC_PROTOCOL(W2W, REQUEST_SERVER_STATUS,
+)
+
+IPC_PROTOCOL(W2W, RESPONSE_SERVER_STATUS,
+	Int32 Status;
 )
 
 IPC_PROTOCOL(W2P, PARTY_INVITE,

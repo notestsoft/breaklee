@@ -61,6 +61,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_CREDENTIALS) {
 		IPC_W2L_DATA_VERIFY_PASSWORD* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2L, VERIFY_PASSWORD);
 		Request->Header.SourceConnectionID = Connection->ID;
 		Request->Header.Source = Server->IPCSocket->NodeID;
+		Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
 		Request->Header.Target.Type = IPC_TYPE_LOGIN;
 		Request->AccountID = Client->Account.AccountID;
 		memcpy(Request->Credentials, Packet->Credentials, MAX_CREDENTIALS_LENGTH);
@@ -136,6 +137,9 @@ CLIENT_PROCEDURE_BINDING(VERIFY_CREDENTIALS_SUBPASSWORD) {
 
 	if (!(Client->Flags & CLIENT_FLAGS_CHARACTER_INDEX_LOADED) || Client->Account.AccountID < 1) goto error;
 
+	S2C_DATA_VERIFY_CREDENTIALS_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_CREDENTIALS_SUBPASSWORD);
+	Response->Success = 1;
+
 	Bool IsSubpasswordSet = strlen(Client->Account.CharacterPassword) > 0;
 	if (!IsSubpasswordSet || strlen(Packet->Password) < MIN_SUBPASSWORD_LENGTH ||
 		memcmp(Client->Account.CharacterPassword, Packet->Password, MAX_SUBPASSWORD_LENGTH) != 0) {
@@ -144,11 +148,10 @@ CLIENT_PROCEDURE_BINDING(VERIFY_CREDENTIALS_SUBPASSWORD) {
 			// TODO: Ban account based on configuration due to max failure count reach!
 		}
 
-		S2C_DATA_VERIFY_CREDENTIALS_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_CREDENTIALS_SUBPASSWORD);
 		Response->Success = 0;
-		return SocketSend(Socket, Connection, Response);
 	}
 
+	/*
 	return OnVerifyCharacterSubpassword(
 		Server,
         Context,
@@ -157,10 +160,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_CREDENTIALS_SUBPASSWORD) {
 		Connection,
 		Packet // TODO: Verify wrong packet is begin passed here...
 	);
-
-	S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_SUBPASSWORD);
-	Response->Success = 0;
-	Response->FailureCount = 0;
+	*/
 	return SocketSend(Socket, Connection, Response);
 
 error:

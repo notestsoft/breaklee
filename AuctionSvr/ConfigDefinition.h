@@ -17,7 +17,7 @@
 CONFIG_BEGIN(AuctionSvr)
 CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, Host, "AuctionSvr.Host", 127.0.0.1)
 CONFIG_PARAMETER(UInt16, Port, "AuctionSvr.Port", 38160)
-CONFIG_PARAMETER(Int32, MaxConnectionCount, "AuctionSvr.MaxConnectionCount", 8192)
+CONFIG_PARAMETER(Int32, MaxConnectionCount, "AuctionSvr.MaxConnectionCount", 64)
 CONFIG_END(AuctionSvr)
 
 CONFIG_BEGIN(MasterSvr)

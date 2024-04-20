@@ -344,7 +344,7 @@ Int64 ArchiveAddNode(
 
     assert(0 <= Node->NameIndex);
     
-    Node->AttributeIndices = ArrayCreateEmpty(Archive->Allocator, sizeof(Int64), 0);
+    Node->AttributeIndices = ArrayCreateEmpty(Archive->Allocator, sizeof(Int64), 64);
 
     return Node->Index;
 }

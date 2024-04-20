@@ -17,7 +17,7 @@
 CONFIG_BEGIN(ChatSvr)
 CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, Host, "ChatSvr.Host", 127.0.0.1)
 CONFIG_PARAMETER(UInt16, Port, "ChatSvr.Port", 38170)
-CONFIG_PARAMETER(Int32, MaxConnectionCount, "ChatSvr.MaxConnectionCount", 8192)
+CONFIG_PARAMETER(Int32, MaxConnectionCount, "ChatSvr.MaxConnectionCount", 64)
 CONFIG_END(ChatSvr)
 
 CONFIG_BEGIN(MasterSvr)

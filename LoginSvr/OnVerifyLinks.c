@@ -39,6 +39,8 @@ CLIENT_PROCEDURE_BINDING(VERIFY_LINKS) {
     Request->AccountID = Client->AccountID;
     Request->AuthKey = Packet->AuthKey;
     Request->EntityID = Packet->EntityID;
+    Request->NodeIndex = Packet->WorldID;
+    Request->GroupIndex = Packet->ServerID;
     memcpy(Request->SessionIP, Connection->AddressIP, MAX_ADDRESSIP_LENGTH);
     IPCSocketUnicast(Server->IPCSocket, Request);
     return;
@@ -48,12 +50,12 @@ error:
 }
 
 IPC_PROCEDURE_BINDING(W2L, VERIFY_LINKS) {
-	S2C_DATA_VERIFY_LINKS* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, VERIFY_LINKS);
-	Response->WorldID = Packet->Header.Source.Index;
-	Response->ServerID = Packet->Header.Source.Group;
+    S2C_DATA_VERIFY_LINKS* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, VERIFY_LINKS);
+    Response->WorldID = Packet->Header.Source.Index;
+    Response->ServerID = Packet->Header.Source.Group;
     Response->Status = Packet->Status;
-	SocketSend(Context->ClientSocket, ClientConnection, Response);
-	SocketDisconnect(Context->ClientSocket, ClientConnection);
+    SocketSend(Context->ClientSocket, ClientConnection, Response);
+    SocketDisconnect(Context->ClientSocket, ClientConnection);
 }
 
 IPC_PROCEDURE_BINDING(W2L, WORLD_VERIFY_LINKS) {
@@ -82,6 +84,7 @@ IPC_PROCEDURE_BINDING(W2L, WORLD_VERIFY_LINKS) {
     Request->Header.Target.Group = 1;
     Request->Header.Target.Type = IPC_TYPE_MASTER;
     IPCSocketUnicast(Socket, Request);
+
     return;
 
 error:

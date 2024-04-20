@@ -13,7 +13,7 @@ IPC_PROCEDURE_BINDING(M2L, GET_WORLD_LIST) {
         Iterator = SocketConnectionIteratorNext(Context->ClientSocket, Iterator);
 
         ClientContextRef Client = (ClientContextRef)Connection->Userdata;
-        Bool IsLocalHost = strcmp(Client->Connection->AddressIP, "127.0.0.1") == 0;
+        Bool IsLocalHost = strcmp(Client->Connection->AddressIP, LocalHost) == 0;
         Bool IsAuthorized = (
             (Client->Flags & CLIENT_FLAGS_AUTHENTICATED) &&
             !(Connection->Flags & SOCKET_CONNECTION_FLAGS_DISCONNECTED)

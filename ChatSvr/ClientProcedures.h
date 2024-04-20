@@ -14,8 +14,6 @@ Void PROC_ ## __NAME__(                     \
     SocketRef Socket,                       \
     SocketConnectionRef Connection,         \
     ClientContextRef Client,                \
-    RTRuntimeRef Runtime,                   \
-    RTCharacterRef Character,               \
     C2S_DATA_ ## __NAME__* Packet           \
 )
 #endif

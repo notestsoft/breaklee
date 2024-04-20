@@ -45,7 +45,6 @@ struct _ClientContext {
     UInt8 SubpasswordFailureCount;
     GAME_DATA_ACCOUNT Account;
     GAME_DATA_CHARACTER_INDEX Characters[MAX_CHARACTER_COUNT];
-
     // TODO: Store upgrade point & expiration time in temp memory
     Int32 UpgradePoint;
     Int32 DiceSeed;

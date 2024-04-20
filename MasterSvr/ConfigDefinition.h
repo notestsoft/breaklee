@@ -17,7 +17,7 @@
 CONFIG_BEGIN(MasterSvr)
 CONFIG_PARAMETER(UInt8, GroupIndex, "MasterSvr.GroupIndex", 1)
 CONFIG_PARAMETER(UInt16, Port, "MasterSvr.Port", 38161)
-CONFIG_PARAMETER(UInt32, MaxRouteCount, "MasterSvr.MaxRouteCount", 512)
+CONFIG_PARAMETER(UInt32, MaxRouteCount, "MasterSvr.MaxRouteCount", 32)
 CONFIG_PARAMETER(UInt32, MaxWorldCount, "MasterSvr.MaxWorldCount", 32)
 CONFIG_END(MasterSvr)
 

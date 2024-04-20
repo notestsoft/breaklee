@@ -157,14 +157,12 @@ IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER) {
     Response->RestExp = 0;
     Response->HonorPoint = Packet->Character.CharacterData.Honor.Point;
 
-    /* TODO: Populate Server host data */
-    CString DummyHost = "127.0.0.1";
-    memcpy(Response->ChatServerAddress.Host, DummyHost, strlen(DummyHost));
-    Response->ChatServerAddress.Port = 0;
-    memcpy(Response->AuctionServerAddress.Host, DummyHost, strlen(DummyHost));
-    Response->AuctionServerAddress.Port = 0;
-    memcpy(Response->PartyServerAddress.Host, DummyHost, strlen(DummyHost));
-    Response->PartyServerAddress.Port = 0;
+    memcpy(Response->ChatServerAddress.Host, Context->Config.ChatSvr.Host, strlen(Context->Config.ChatSvr.Host));
+    Response->ChatServerAddress.Port = Context->Config.ChatSvr.Port;
+    memcpy(Response->AuctionServerAddress.Host, Context->Config.AuctionSvr.Host, strlen(Context->Config.AuctionSvr.Host));
+    Response->AuctionServerAddress.Port = Context->Config.AuctionSvr.Port;
+    memcpy(Response->PartyServerAddress.Host, Context->Config.PartySvr.Host, strlen(Context->Config.PartySvr.Host));
+    Response->PartyServerAddress.Port = Context->Config.PartySvr.Port;
 
     Response->Nation = Packet->Character.CharacterData.Profile.Nation;
     Response->WarpMask = Packet->Character.CharacterData.Profile.WarpMask;

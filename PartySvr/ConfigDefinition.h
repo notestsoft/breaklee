@@ -17,8 +17,8 @@
 CONFIG_BEGIN(PartySvr)
 CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, Host, "PartySvr.Host", 127.0.0.1)
 CONFIG_PARAMETER(UInt16, Port, "PartySvr.Port", 38190)
-CONFIG_PARAMETER(Int32, MaxConnectionCount, "PartySvr.MaxConnectionCount", 8192)
-CONFIG_PARAMETER(Int32, MaxPartyCount, "PartySvr.MaxPartyCount", 4096)
+CONFIG_PARAMETER(Int32, MaxConnectionCount, "PartySvr.MaxConnectionCount", 64)
+CONFIG_PARAMETER(Int32, MaxPartyCount, "PartySvr.MaxPartyCount", 64)
 CONFIG_END(PartySvr)
 
 CONFIG_BEGIN(MasterSvr)

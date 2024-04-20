@@ -23,6 +23,7 @@ typedef struct _ServerContext* ServerContextRef;
 struct _ClientContext {
     SocketConnectionRef Connection;
     UInt32 Flags;
+    UInt32 AuthKey;
     Index CharacterIndex;
     Char CharacterName[MAX_CHARACTER_NAME_LENGTH + 1];
 };

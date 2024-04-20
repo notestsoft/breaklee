@@ -13,7 +13,9 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /ZI /Od")
 set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /ZI")
 
 if(WIN32)
-	if(CMAKE_CL_64)
+    enable_language("RC")
+    
+    if(CMAKE_CL_64)
 		set(PLATFORM_LIBRARY_DIR ${PROJECT_SOURCE_DIR}/Libraries/Win64)
 	else()
 		set(PLATFORM_LIBRARY_DIR ${PROJECT_SOURCE_DIR}/Libraries/Win32)
@@ -158,3 +160,12 @@ if(NOT WIN32)
 endif()
 
 target_link_libraries(WorldSvr NetLib CoreLib RuntimeLib RuntimeDataLib)
+
+if(WIN32)
+    target_link_libraries(AuctionSvr ${AUCTION_SVR_DIR}/main.res)
+    target_link_libraries(ChatSvr ${CHAT_SVR_DIR}/main.res)
+    target_link_libraries(LoginSvr ${LOGIN_SVR_DIR}/main.res)
+    target_link_libraries(MasterSvr ${MASTER_SVR_DIR}/main.res)
+    target_link_libraries(PartySvr ${PARTY_SVR_DIR}/main.res)
+    target_link_libraries(WorldSvr ${WORLD_SVR_DIR}/main.res)
+endif()

@@ -6,6 +6,7 @@
 
 CLIENT_PROCEDURE_BINDING(DEINITIALIZE) {
     S2C_DATA_DEINITIALIZE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DEINITIALIZE);
+    Response->Reason = Packet->Reason;
 
     if (Character) {
         RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Context->Runtime, Character);
