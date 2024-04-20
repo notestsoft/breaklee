@@ -1,61 +1,38 @@
 #include "Context.h"
-#include "Server.h"
-#include "AuthSocket.h"
-#include "WorldSocket.h"
 #include "MasterDB.h"
-#include "IPCProcs.h"
+#include "IPCProcedures.h"
 
-#define IPC_AUTH_PROCEDURE(__NAME__, __COMMAND__, __PROTOCOL__) \
-Void SERVER_AUTH_ ## __NAME__(                                  \
-    ServerRef Server,                                           \
-    Void *ServerContext,                                        \
-    SocketRef Socket,                                           \
-    SocketConnectionRef Connection,                             \
-    Void *ConnectionContext,                                    \
-    Void *Packet                                                \
-) {                                                             \
-    __NAME__(                                                   \
-        Server,                                                 \
-        (ServerContextRef)ServerContext,                        \
-        Socket,                                                 \
-        Connection,                                             \
-        (ClientContextRef)ConnectionContext,                    \
-        (__PROTOCOL__*)Packet                                   \
-    );                                                          \
+#define IPC_COMMAND_CALLBACK(__NAMESPACE__, __NAME__)                       \
+Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                    \
+    IPCSocketRef Socket,                                                    \
+    IPCSocketConnectionRef Connection,                                      \
+    IPCPacketRef Packet                                                     \
+) {                                                                         \
+    ServerRef Server = (ServerRef)Socket->Userdata;                         \
+    ServerContextRef Context = (ServerContextRef)Server->Userdata;          \
+    IPCNodeContextRef NodeContext = (IPCNodeContextRef)Connection->Userdata;\
+                                                                            \
+    IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                            \
+        Server,                                                             \
+        Context,                                                            \
+        Socket,                                                             \
+        Connection,                                                         \
+        NodeContext,                                                        \
+        (IPC_ ## __NAMESPACE__ ## _DATA_ ## __NAME__ *)Packet               \
+    );                                                                      \
 }
-#include "IPCProcDefinition.h"
 
-#define IPC_WORLD_PROCEDURE(__NAME__, __COMMAND__, __PROTOCOL__) \
-Void SERVER_WORLD_ ## __NAME__(                                  \
-    ServerRef Server,                                            \
-    Void *ServerContext,                                         \
-    SocketRef Socket,                                            \
-    SocketConnectionRef Connection,                              \
-    Void *ConnectionContext,                                     \
-    Void *Packet                                                 \
-) {                                                              \
-    __NAME__(                                                    \
-        Server,                                                  \
-        (ServerContextRef)ServerContext,                         \
-        Socket,                                                  \
-        Connection,                                              \
-        (ClientContextRef)ConnectionContext,                     \
-        (__PROTOCOL__*)Packet                                    \
-    );                                                           \
-}
-#include "IPCProcDefinition.h"
+#define IPC_L2M_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(L2M, __NAME__)
+#include "IPCCommands.h"
+
+#define IPC_W2M_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(W2M, __NAME__)
+#include "IPCCommands.h"
 
 Void ServerOnUpdate(
     ServerRef Server,
-    Void *ServerContext
+    Void* ServerContext
 ) {
     ServerContextRef Context = (ServerContextRef)ServerContext;
-    Bool IsAuthSocketConnected = Context->AuthSocket->Flags & SOCKET_FLAGS_CONNECTED;
-    if (Context->WorldListBroadcastTimestamp < Context->WorldListUpdateTimestamp && IsAuthSocketConnected) {
-        Context->WorldListBroadcastTimestamp = ServerGetTimestamp(Server);
-        Context->WorldListUpdateTimestamp = Context->WorldListBroadcastTimestamp;
-        ServerBroadcastWorldList(Server, Context);
-    }
 }
 
 Int32 main(Int32 argc, CString* argv) {
@@ -69,45 +46,25 @@ Int32 main(Int32 argc, CString* argv) {
     AllocatorRef Allocator = AllocatorGetSystemDefault();
     struct _ServerContext ServerContext = { 0 };
     ServerContext.Config = Config;
-    ServerContext.AuthSocket = NULL;
-    ServerContext.WorldSocket = NULL;
     ServerContext.Database = NULL;
-    ServerContext.WorldListBroadcastTimestamp = 0;
-    ServerContext.WorldListUpdateTimestamp = 0;
-    ServerRef Server = ServerCreate(Allocator, &ServerOnUpdate, &ServerContext);
+    ServerContext.WorldInfoTable = IndexDictionaryCreate(Allocator, Config.MasterSvr.MaxWorldCount);
 
-    ServerContext.AuthSocket = ServerCreateSocket(
-        Server,
-        SOCKET_FLAGS_IPC,
-        Config.AuthSvr.Host,
-        Config.AuthSvr.Port,
-        sizeof(union _ClientContext),
-        Config.NetLib.ProtocolIdentifier,
-        Config.NetLib.ProtocolVersion,
-        Config.NetLib.ProtocolExtension,
-        Config.NetLib.ReadBufferSize,
-        Config.NetLib.WriteBufferSize,
-        1,
-        &AuthSocketOnConnect,
-        &AuthSocketOnDisconnect
-    );
-    
-    ServerContext.WorldSocket = ServerCreateSocket(
-        Server,
-        SOCKET_FLAGS_LISTENER | SOCKET_FLAGS_IPC,
+    IPCNodeID NodeID = kIPCNodeIDNull;
+    NodeID.Group = Config.MasterSvr.GroupIndex;
+    NodeID.Type = IPC_TYPE_MASTER;
+
+    ServerRef Server = ServerCreate(
+        Allocator,
+        NodeID,
         NULL,
         Config.MasterSvr.Port,
-        sizeof(union _ClientContext),
-        Config.NetLib.ProtocolIdentifier,
-        Config.NetLib.ProtocolVersion,
-        Config.NetLib.ProtocolExtension,
+        0,
         Config.NetLib.ReadBufferSize,
         Config.NetLib.WriteBufferSize,
-        Config.MasterSvr.MaxWorldCount,
-        &WorldSocketOnConnect,
-        &WorldSocketOnDisconnect
+        &ServerOnUpdate,
+        &ServerContext
     );
-    
+
     ServerContext.Database = DatabaseConnect(
         Config.MasterDB.Host,
         Config.MasterDB.Username,
@@ -116,24 +73,22 @@ Int32 main(Int32 argc, CString* argv) {
         Config.MasterDB.Port,
         Config.MasterDB.AutoReconnect
     );
-    
-    if (!ServerContext.Database) {
-        FatalError("Database connection failed");
-    }
+    if (!ServerContext.Database) FatalError("Database connection failed");
+
+#define IPC_L2M_COMMAND(__NAME__) \
+    IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_L2M_ ## __NAME__, &SERVER_IPC_L2M_PROC_ ## __NAME__);
+#include "IPCCommands.h"
+
+#define IPC_W2M_COMMAND(__NAME__) \
+    IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_W2M_ ## __NAME__, &SERVER_IPC_W2M_PROC_ ## __NAME__);
+#include "IPCCommands.h"
 
     MasterDBPrepareStatements(ServerContext.Database);
-
-#define IPC_AUTH_PROCEDURE(__NAME__, __COMMAND__, __PROTOCOL__) \
-    ServerSocketRegisterPacketCallback(Server, ServerContext.AuthSocket, __COMMAND__, &SERVER_AUTH_ ## __NAME__);
-
-#define IPC_WORLD_PROCEDURE(__NAME__, __COMMAND__, __PROTOCOL__) \
-    ServerSocketRegisterPacketCallback(Server, ServerContext.WorldSocket, __COMMAND__, &SERVER_WORLD_ ## __NAME__);
-
-#include "IPCProcDefinition.h"
 
     ServerRun(Server);
     ServerDestroy(Server);
     DatabaseDisconnect(ServerContext.Database);
+    DictionaryDestroy(ServerContext.WorldInfoTable);
     DiagnosticTeardown();
 
     return EXIT_SUCCESS;

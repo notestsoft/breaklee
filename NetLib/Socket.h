@@ -153,7 +153,7 @@ Index SocketGetConnectionCount(
 
 SocketConnectionRef SocketGetConnection(
     SocketRef Socket,
-    Int32 ConnectionID
+    Index ConnectionID
 );
 
 Void SocketConnectionKeychainSeed(

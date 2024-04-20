@@ -197,7 +197,6 @@ static inline Bool TryParseAttribute(
     Bool Append
 ) {
     ParseState CurrentState = *State;
-
     Char* AttributeStart = CurrentState.TokenStart;
     Char* AttributeEnd = CurrentState.TokenEnd;
 

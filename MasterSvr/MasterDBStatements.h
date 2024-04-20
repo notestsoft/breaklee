@@ -169,7 +169,7 @@ STATEMENT(
 
 STATEMENT(
     MASTERDB_DELETE_CHARACTER,
-    "DELETE FROM `characters` WHERE `id` = ?;"
+    "DELETE FROM `characters` WHERE `account_id` = ? AND `id` = ?;"
 )
 
 STATEMENT(

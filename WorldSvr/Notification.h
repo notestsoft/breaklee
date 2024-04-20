@@ -11,6 +11,7 @@ Void BroadcastMessage(
 );
 
 Void BroadcastUserList(
+    ServerRef Server,
     ServerContextRef Context
 );
 

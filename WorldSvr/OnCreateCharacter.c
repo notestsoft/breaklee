@@ -1,10 +1,10 @@
 #include "ClientProtocol.h"
 #include "ClientProcedures.h"
 #include "ClientSocket.h"
-#include "IPCProcs.h"
+#include "Enumerations.h"
+#include "IPCProcedures.h"
 #include "Notification.h"
 #include "Server.h"
-#include "Util.h"
 
 CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 	S2C_DATA_CREATE_CHARACTER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CREATE_CHARACTER);
@@ -51,8 +51,11 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 		Style.BattleRank = 10;
 	}
 
-	IPC_DATA_WORLD_REQCREATECHARACTER* Request = PacketBufferInitExtended(Context->MasterSocket->PacketBuffer, IPC, WORLD_REQCREATECHARACTER);
-	Request->ConnectionID = Connection->ID;
+	IPC_W2M_DATA_CREATE_CHARACTER* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2M, CREATE_CHARACTER);
+	Request->Header.SourceConnectionID = Connection->ID;
+	Request->Header.Source = Server->IPCSocket->NodeID;
+	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+	Request->Header.Target.Type = IPC_TYPE_MASTER;
 	Request->AccountID = Client->Account.AccountID;
 	Request->SlotIndex = Packet->SlotIndex;
 	Request->NameLength = Packet->NameLength;
@@ -148,10 +151,10 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 		Request->CharacterData.Honor.Exp = HonorLevelFormula->MaxPoint;
 	}
 
-	SocketSendAll(Context->MasterSocket, Request);
+	IPCSocketUnicast(Server->IPCSocket, Request);
 }
 
-IPC_PROCEDURE_BINDING(OnWorldCreateCharacter, IPC_WORLD_ACKCREATECHARACTER, IPC_DATA_WORLD_ACKCREATECHARACTER) {
+IPC_PROCEDURE_BINDING(M2W, CREATE_CHARACTER) {
 	if (!ClientConnection || !Client) goto error;
 
 	if (Packet->Status == CREATE_CHARACTER_STATUS_SUCCESS) {

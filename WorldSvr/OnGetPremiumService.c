@@ -1,20 +1,24 @@
 #include "ClientProtocol.h"
 #include "ClientProcedures.h"
 #include "ClientSocket.h"
-#include "IPCProcs.h"
+#include "IPCProcedures.h"
 #include "Notification.h"
 #include "Server.h"
 
 CLIENT_PROCEDURE_BINDING(GET_PREMIUM_SERVICE) {
 	if (!(Client->Flags & CLIENT_FLAGS_VERIFIED) || Client->Account.AccountID < 1) goto error;
 
-	IPC_DATA_WORLD_REQPREMIUMSERVICE* Request = PacketBufferInitExtended(Context->MasterSocket->PacketBuffer, IPC, WORLD_REQPREMIUMSERVICE);
-	Request->ConnectionID = Connection->ID;
+	IPC_W2M_DATA_GET_PREMIUM_SERVICE* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2M, GET_PREMIUM_SERVICE);
+	Request->Header.SourceConnectionID = Connection->ID;
+	Request->Header.Source = Server->IPCSocket->NodeID;
+	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+	Request->Header.Target.Type = IPC_TYPE_MASTER;
 	Request->AccountID = Client->Account.AccountID;
-	return SocketSendAll(Context->MasterSocket, Request);
+	IPCSocketUnicast(Server->IPCSocket, Request);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(PREMIUM_BENEFIT_INFO) {
@@ -24,10 +28,10 @@ CLIENT_PROCEDURE_BINDING(PREMIUM_BENEFIT_INFO) {
 	return SocketSend(Context->ClientSocket, Connection, Response);
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
-IPC_PROCEDURE_BINDING(OnWorldGetPremiumService, IPC_WORLD_ACKPREMIUMSERVICE, IPC_DATA_WORLD_ACKPREMIUMSERVICE) {
+IPC_PROCEDURE_BINDING(M2W, GET_PREMIUM_SERVICE) {
 	if (!ClientConnection || !Client) goto error;
 
     S2C_DATA_GET_PREMIUM_SERVICE* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, GET_PREMIUM_SERVICE);
@@ -53,5 +57,5 @@ IPC_PROCEDURE_BINDING(OnWorldGetPremiumService, IPC_WORLD_ACKPREMIUMSERVICE, IPC
 	return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }

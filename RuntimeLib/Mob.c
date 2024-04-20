@@ -379,7 +379,8 @@ Void RTMobUpdate(
 	if (!RTMobIsAlive(Mob) && Mob->IsSpawned) {
 		Mob->IsSpawned = false;
 		Mob->NextTimestamp = Timestamp + Mob->Spawn.SpawnInterval;
-		return RTWorldDespawnMob(Runtime, WorldContext, Mob);
+		RTWorldDespawnMob(Runtime, WorldContext, Mob);
+		return;
 	}
 
 	if (!RTMobIsAlive(Mob)) {

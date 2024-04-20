@@ -31,12 +31,19 @@ Void BroadcastMessage(
 }
 
 Void BroadcastUserList(
+    ServerRef Server,
     ServerContextRef Context
-) {
-    IPC_DATA_WORLD_NFYUSERLIST* Notification = PacketBufferInitExtended(Context->MasterSocket->PacketBuffer, IPC, WORLD_NFYUSERLIST);
+) { 
+    IPC_W2M_DATA_NFY_WORLD_INFO* Notification = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2M, NFY_WORLD_INFO);
+    Notification->Header.Source = Server->IPCSocket->NodeID;
+    Notification->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+    Notification->Header.Target.Type = IPC_TYPE_MASTER;
     Notification->PlayerCount = SocketGetConnectionCount(Context->ClientSocket);
     Notification->MaxPlayerCount = Context->Config.WorldSvr.MaxConnectionCount;
-    SocketSendAll(Context->MasterSocket, Notification);
+    CStringCopySafe(Notification->Host, 64, Context->Config.WorldSvr.Host);
+    Notification->Port = Context->Config.WorldSvr.Port;
+    Notification->Type = Context->Config.WorldSvr.WorldType;
+    IPCSocketUnicast(Server->IPCSocket, Notification);
 }
 
 struct _AppendMobToMobSpawnIndexArguments {

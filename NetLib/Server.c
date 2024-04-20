@@ -17,37 +17,14 @@ Void _ServerSocketOnReceived(
     Void *Packet
 );
 
-typedef UInt16 (*PacketGetCommandCallback)(
-    UInt16 ProtocolIdentifier,
-    UInt16 ProtocolVersion,
-    UInt16 ProtocolExtension,
-    Void *Packet
-);
-
-struct _ServerSocketContext {
-    ServerRef Server;
-    SocketRef Socket;
-    CString SocketHost;
-    UInt16 SocketPort;
-    MemoryPoolRef ConnectionContextPool;
-    DictionaryRef CommandRegistry;
-    ServerConnectionCallback OnConnect;
-    ServerConnectionCallback OnDisconnect;
-    PacketGetCommandCallback PacketGetCommandCallback;
-};
-typedef struct _ServerSocketContext* ServerSocketContextRef;
-
-struct _Server {
-    AllocatorRef Allocator;
-    ArrayRef Sockets;
-    ServerUpdateCallback OnUpdate;
-    Bool IsRunning;
-    Timestamp Timestamp;
-    Void *Userdata;
-};
-
 ServerRef ServerCreate(
     AllocatorRef Allocator,
+    IPCNodeID NodeID,
+    CString Host,
+    UInt16 Port,
+    Timestamp Timeout,
+    Index ReadBufferSize,
+    Index WriteBufferSize,
     ServerUpdateCallback OnUpdate,
     Void *ServerContext
 ) {
@@ -58,6 +35,19 @@ ServerRef ServerCreate(
 
     Server->Allocator = Allocator;
     Server->Sockets = ArrayCreateEmpty(Allocator, sizeof(struct _ServerSocketContext), 8);
+    Server->IPCSocket = IPCSocketCreate(
+        Allocator,
+        NodeID,
+        (Host) ? 0 : IPC_SOCKET_FLAGS_LISTENER,
+        ReadBufferSize,
+        WriteBufferSize,
+        Host,
+        Port,
+        Timeout,
+        (Host) ? 1 : IPC_SOCKET_MAX_CONNECTION_COUNT,
+        Server
+    ); 
+
     Server->OnUpdate = OnUpdate;
     Server->IsRunning = false;
     Server->Timestamp = GetTimestamp();
@@ -178,6 +168,8 @@ Void ServerRun(
             
             SocketUpdate(SocketContext->Socket);
         }
+
+        IPCSocketUpdate(Server->IPCSocket);
     }
 }
 

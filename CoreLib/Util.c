@@ -34,8 +34,13 @@ Index NextPowerOfTwo(Index Value) {
     return Value;
 }
 
+// TODO: This is returning the timestamp in seconds but we mostly depend on milliseconds!
 Timestamp GetTimestamp() {
 	return (Timestamp)time(NULL);
+}
+
+Timestamp GetTimestampMs() {
+    return (Timestamp)time(NULL) * 1000;
 }
 
 Bool GetPlatformErrorMessage(

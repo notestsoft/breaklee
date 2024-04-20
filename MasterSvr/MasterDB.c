@@ -569,10 +569,12 @@ Bool MasterDBUpdateCharacterNewbieSupportData(
 
 Bool MasterDBDeleteCharacter(
     DatabaseRef Database,
-    MASTERDB_DATA_CHARACTER* Data
+    Int64 AccountID,
+    Int32 CharacterID
 ) {
     StatementRef Statement = MasterDBGetStatement(Database, MASTERDB_DELETE_CHARACTER);
-    StatementBindParameterInt32(Statement, 0, Data->CharacterID);
+    StatementBindParameterInt64(Statement, 0, AccountID);
+    StatementBindParameterInt32(Statement, 1, CharacterID);
 
     return StatementExecute(Statement);
 }

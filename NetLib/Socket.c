@@ -122,7 +122,7 @@ Void SocketConnect(
         Socket->NextConnectionID += 1;
         Socket->Flags &= ~SOCKET_FLAGS_CONNECTING;
         Socket->Flags |= SOCKET_FLAGS_CONNECTED;
-        Socket->OnConnect(Socket, Connection);
+        if (Socket->OnConnect)  Socket->OnConnect(Socket, Connection);
         LogMessage(LOG_LEVEL_INFO, "Socket connection established");
     } else if (Result == -1) {
         FatalError("Socket connection failed");
@@ -144,8 +144,8 @@ Void SocketListen(
     Socket->Address.sin_addr.s_addr = htonl(INADDR_ANY);
     Socket->Address.sin_port = htons(Port);
 
-    Int32 enable = 1;
-    if (setsockopt(Socket->Handle, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) != 0)
+    Int32 Enabled = 1;
+    if (setsockopt(Socket->Handle, SOL_SOCKET, SO_REUSEADDR, (Char*)&Enabled, sizeof(Enabled)) != 0)
         FatalError("Socket re-use address set failed");
 
     if ((bind(Socket->Handle, (struct sockaddr*)&Socket->Address, sizeof(Socket->Address))) != 0)
@@ -332,10 +332,10 @@ Void SocketReleaseConnections(
         if (Connection->Flags & SOCKET_CONNECTION_FLAGS_DISCONNECTED && !(Connection->Flags & SOCKET_CONNECTION_FLAGS_DISCONNECTED_END)) {
             Connection->Flags &= ~SOCKET_CONNECTION_FLAGS_DISCONNECTED_END;
             SocketFlushWriteBuffer(Socket, Connection);
-            Socket->OnDisconnect(Socket, Connection);
+            if (Socket->OnDisconnect) Socket->OnDisconnect(Socket, Connection);
             Socket->Flags &= ~SOCKET_FLAGS_CONNECTED;
-            PlatformSocketClose(Connection->Handle);
             SocketReleaseConnection(Socket, Connection);
+            PlatformSocketClose(Connection->Handle);
         }
     }
 }
@@ -361,7 +361,7 @@ Void SocketUpdate(
                 }
 
                 Socket->NextConnectionID += 1;
-                Socket->OnConnect(Socket, Connection);
+                if (Socket->OnConnect) Socket->OnConnect(Socket, Connection);
             }
         }
     }
@@ -379,7 +379,7 @@ Void SocketUpdate(
             Socket->NextConnectionID += 1;
             Socket->Flags &= ~SOCKET_FLAGS_CONNECTING;
             Socket->Flags |= SOCKET_FLAGS_CONNECTED;
-            Socket->OnConnect(Socket, Connection);
+            if (Socket->OnConnect) Socket->OnConnect(Socket, Connection);
             LogMessage(LOG_LEVEL_INFO, "Socket connection established");
         } else {
             PlatformSocketConnect(Socket->Handle, (struct sockaddr*)&Socket->Address, sizeof(Socket->Address));
@@ -445,7 +445,7 @@ Index SocketGetConnectionCount(
 
 SocketConnectionRef SocketGetConnection(
     SocketRef Socket,
-    Int32 ConnectionID
+    Index ConnectionID
 ) {
     IndexSetIteratorRef Iterator = IndexSetGetIterator(Socket->ConnectionIndices);
     while (Iterator) {

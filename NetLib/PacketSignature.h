@@ -22,12 +22,6 @@ UInt16 Magic;                       \
 UInt32 Length;                      \
 UInt16 Command
 
-#define IPC_DATA_SIGNATURE_EXTENDED	\
-UInt16 Magic;                       \
-UInt32 Length;                      \
-UInt16 Command;                     \
-Index ConnectionID
-
 #pragma pack(pop)
 
 EXTERN_C_END

@@ -17,6 +17,4 @@ CLIENT_PROCEDURE_BINDING(CONNECT) {
     
     SocketConnectionKeychainSeed(Socket, Connection, Response->XorKey, Response->XorKeyIndex);
 	SocketSend(Socket, Connection, Response);
-
-    Context->UserListUpdateTimestamp = ServerGetTimestamp(Server);
 }

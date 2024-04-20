@@ -1,7 +1,8 @@
 #include "ClientProtocol.h"
 #include "ClientProcedures.h"
 #include "ClientSocket.h"
-#include "IPCProcs.h"
+#include "Enumerations.h"
+#include "IPCProcedures.h"
 #include "Notification.h"
 #include "Server.h"
 
@@ -24,13 +25,16 @@ Void OnCreateCharacterSubpassword(
 	Client->Account.CharacterQuestion = Packet->Question;
 	memcpy(Client->Account.CharacterAnswer, Packet->Answer, MAX_SUBPASSWORD_ANSWER_LENGTH);
 
-	IPC_DATA_WORLD_UPDATE_ACCOUNT_SUBPASSWORD_DATA* Request = PacketBufferInitExtended(Context->MasterSocket->PacketBuffer, IPC, WORLD_UPDATE_ACCOUNT_SUBPASSWORD_DATA);
-	Request->ConnectionID = Connection->ID;
+	IPC_W2M_DATA_UPDATE_SUBPASSWORD* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2M, UPDATE_SUBPASSWORD);
+	Request->Header.SourceConnectionID = Connection->ID;
+	Request->Header.Source = Server->IPCSocket->NodeID;
+	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+	Request->Header.Target.Type = IPC_TYPE_MASTER;
 	Request->AccountID = Client->Account.AccountID;
 	memcpy(Request->CharacterPassword, Client->Account.CharacterPassword, MAX_SUBPASSWORD_LENGTH);
 	Request->CharacterQuestion = Client->Account.CharacterQuestion;
 	memcpy(Request->CharacterAnswer, Client->Account.CharacterAnswer, MAX_SUBPASSWORD_ANSWER_LENGTH);
-	SocketSendAll(Context->MasterSocket, Request);
+	IPCSocketUnicast(Server->IPCSocket, Request);
 
 	S2C_DATA_CREATE_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CREATE_SUBPASSWORD);
 	Response->Success = 1;
@@ -88,13 +92,16 @@ Void OnDeleteCharacterSubpassword(
 	Client->Account.CharacterQuestion = 0;
 	memset(Client->Account.CharacterAnswer, 0, MAX_SUBPASSWORD_ANSWER_LENGTH);
 
-	IPC_DATA_WORLD_UPDATE_ACCOUNT_SUBPASSWORD_DATA* Request = PacketBufferInitExtended(Context->MasterSocket->PacketBuffer, IPC, WORLD_UPDATE_ACCOUNT_SUBPASSWORD_DATA);
-	Request->ConnectionID = Connection->ID;
+	IPC_W2M_DATA_UPDATE_SUBPASSWORD* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2M, UPDATE_SUBPASSWORD);
+	Request->Header.SourceConnectionID = Connection->ID;
+	Request->Header.Source = Server->IPCSocket->NodeID;
+	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+	Request->Header.Target.Type = IPC_TYPE_MASTER;
 	Request->AccountID = Client->Account.AccountID;
 	memcpy(Request->CharacterPassword, Client->Account.CharacterPassword, MAX_SUBPASSWORD_LENGTH);
 	Request->CharacterQuestion = Client->Account.CharacterQuestion;
 	memcpy(Request->CharacterAnswer, Client->Account.CharacterAnswer, MAX_SUBPASSWORD_ANSWER_LENGTH);
-	SocketSendAll(Context->MasterSocket, Request);
+	IPCSocketUnicast(Server->IPCSocket, Request);
 
 	S2C_DATA_DELETE_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DELETE_SUBPASSWORD);
 	Response->Success = 1;

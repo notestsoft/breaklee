@@ -1,10 +1,9 @@
 #include "ClientProtocol.h"
 #include "ClientProcedures.h"
 #include "ClientSocket.h"
-#include "IPCProcs.h"
+#include "IPCProcedures.h"
 #include "Notification.h"
 #include "Server.h"
-#include "Util.h"
 
 RTDataCollectionKindInfoRef RTRuntimeDataCollectionKindInfoGet(RTDataCollectionKindRef Parent, Int32 Key) {
     for (Int32 Index = 0; Index < Parent->CollectionKindInfoCount; Index += 1) {

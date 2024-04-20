@@ -219,7 +219,8 @@ Bool MasterDBUpdateCharacterNewbieSupportData(
 
 Bool MasterDBDeleteCharacter(
     DatabaseRef Database,
-    MASTERDB_DATA_CHARACTER* Data
+    Int64 AccountID,
+    Int32 CharacterID
 );
 
 Bool MasterDBInsertSubpassword(

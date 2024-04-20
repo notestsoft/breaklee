@@ -1,10 +1,12 @@
 #pragma once
 
 #include "Base.h"
+#include "IPCSocket.h"
 #include "Socket.h"
 
 EXTERN_C_BEGIN
 
+typedef struct _ServerSocketContext* ServerSocketContextRef;
 typedef struct _Server* ServerRef;
 
 typedef Void (*ServerUpdateCallback)(
@@ -29,10 +31,55 @@ typedef Void (*ServerPacketCallback)(
     Void *Packet
 );
 
+typedef Void(*ServerIPCPacketCallback)(
+    ServerRef Server,
+    Void* ServerContext,
+    IPCSocketRef Socket,
+    IPCSocketConnectionRef Connection,
+    Void* ConnectionContext,
+    IPCPacketRef Packet
+);
+
+typedef UInt16(*PacketGetCommandCallback)(
+    UInt16 ProtocolIdentifier,
+    UInt16 ProtocolVersion,
+    UInt16 ProtocolExtension,
+    Void* Packet
+);
+
+struct _ServerSocketContext {
+    ServerRef Server;
+    SocketRef Socket;
+    CString SocketHost;
+    UInt16 SocketPort;
+    MemoryPoolRef ConnectionContextPool;
+    DictionaryRef CommandRegistry;
+    ServerConnectionCallback OnConnect;
+    ServerConnectionCallback OnDisconnect;
+    PacketGetCommandCallback PacketGetCommandCallback;
+};
+
+struct _Server {
+    AllocatorRef Allocator;
+    ArrayRef Sockets; // TODO: Replace this with client socket there is no usecase for having many of them..
+    SocketRef ClientSocket;
+    IPCSocketRef IPCSocket;
+    ServerUpdateCallback OnUpdate;
+    Bool IsRunning;
+    Timestamp Timestamp;
+    Void* Userdata;
+};
+
 ServerRef ServerCreate(
     AllocatorRef Allocator,
+    IPCNodeID NodeID,
+    CString Host,
+    UInt16 Port,
+    Timestamp Timeout,
+    Index ReadBufferSize,
+    Index WriteBufferSize,
     ServerUpdateCallback OnUpdate,
-    Void *ServerContext
+    Void* ServerContext
 );
 
 Void ServerDestroy(
