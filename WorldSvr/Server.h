@@ -5,6 +5,13 @@
 
 EXTERN_C_BEGIN
 
+Void ServerSyncCharacter(
+    ServerRef Server,
+    ServerContextRef Context,
+    ClientContextRef Client,
+    RTCharacterRef Character
+);
+
 Void ServerSyncDB(
     ServerRef Server,
     ServerContextRef Context,

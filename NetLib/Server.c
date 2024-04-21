@@ -170,6 +170,8 @@ Void ServerRun(
         }
 
         IPCSocketUpdate(Server->IPCSocket);
+
+        Sleep(1);
     }
 }
 

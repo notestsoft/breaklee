@@ -104,7 +104,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_SPAWN) {
         // RTWorldContextUpdate(Runtime, World);
 
         S2C_DATA_NFY_QUEST_DUNGEON_SPAWN* Response = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_QUEST_DUNGEON_SPAWN);
-        Response->DungeonTimeout1 = (UInt32)(World->DungeonTimeout - GetTimestamp()) * 1000;
+        Response->DungeonTimeout1 = (UInt32)(World->DungeonTimeout * 1000) - GetTimestampMs();
         Response->DungeonTimeout2 = DungeonData->MissionTimeout * 1000;
         SocketSend(Socket, Connection, Response);
     }

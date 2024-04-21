@@ -9,6 +9,8 @@ CLIENT_PROCEDURE_BINDING(DEINITIALIZE) {
     Response->Reason = Packet->Reason;
 
     if (Character) {
+        ServerSyncCharacter(Server, Context, Client, Character);
+
         RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Context->Runtime, Character);
         // TODO: Pass despawn reason 12 for logout
         RTWorldDespawnCharacter(WorldContext->WorldManager->Runtime, WorldContext, Character->ID);

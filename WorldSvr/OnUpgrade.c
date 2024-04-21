@@ -199,9 +199,9 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 	Character->SyncMask.InventoryInfo = true;
 	Character->SyncPriority.High = true;
 
-	S2C_DATA_UPDATE_UPGRAGE_POINTS* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, UPDATE_UPGRAGE_POINTS);
+	S2C_DATA_UPDATE_UPGRADE_POINTS* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, UPDATE_UPGRADE_POINTS);
 	Notification->UpgradePoint = Client->UpgradePoint;
-	Notification->Timestamp = (UInt32)GetTimestamp() + 1000 * 60 * 60;
+	Notification->Timestamp = (UInt32)GetTimestampMs() + 1000 * 60 * 60;
 	SocketSend(Socket, Connection, Notification);
 
 	S2C_DATA_UPGRADE_ITEM_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPGRADE_ITEM_LEVEL);

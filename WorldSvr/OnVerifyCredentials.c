@@ -14,9 +14,10 @@ Void OnVerifyCharacterSubpassword(
     SocketConnectionRef Connection,
     C2S_DATA_VERIFY_SUBPASSWORD* Packet
 ) {
-    Bool IsSubpasswordSet = strlen(Client->Account.CharacterPassword) > 0;
-    if (!IsSubpasswordSet || strlen(Packet->Password) < MIN_SUBPASSWORD_LENGTH ||
-        memcmp(Client->Account.CharacterPassword, Packet->Password, MAX_SUBPASSWORD_LENGTH) != 0) {
+	Int32 SubpasswordLength = strlen(Client->Account.CharacterPassword);
+    Bool IsSubpasswordSet = SubpasswordLength > 0;
+    if (!IsSubpasswordSet || strlen(Packet->Password) != SubpasswordLength ||
+        memcmp(Client->Account.CharacterPassword, Packet->Password, SubpasswordLength) != 0) {
         Client->SubpasswordFailureCount += 1;
         if (Client->SubpasswordFailureCount >= Context->Config.WorldSvr.MaxSubpasswordFailureCount) {
             // TODO: Ban account based on configuration due to max failure count reach!
@@ -140,9 +141,10 @@ CLIENT_PROCEDURE_BINDING(VERIFY_CREDENTIALS_SUBPASSWORD) {
 	S2C_DATA_VERIFY_CREDENTIALS_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_CREDENTIALS_SUBPASSWORD);
 	Response->Success = 1;
 
-	Bool IsSubpasswordSet = strlen(Client->Account.CharacterPassword) > 0;
-	if (!IsSubpasswordSet || strlen(Packet->Password) < MIN_SUBPASSWORD_LENGTH ||
-		memcmp(Client->Account.CharacterPassword, Packet->Password, MAX_SUBPASSWORD_LENGTH) != 0) {
+	Int32 SubpasswordLength = strlen(Client->Account.CharacterPassword);
+	Bool IsSubpasswordSet = SubpasswordLength > 0;
+	if (!IsSubpasswordSet || strlen(Packet->Password) != SubpasswordLength ||
+		memcmp(Client->Account.CharacterPassword, Packet->Password, SubpasswordLength) != 0) {
 		Client->SubpasswordFailureCount += 1;
 		if (Client->SubpasswordFailureCount >= Context->Config.WorldSvr.MaxSubpasswordFailureCount) {
 			// TODO: Ban account based on configuration due to max failure count reach!
