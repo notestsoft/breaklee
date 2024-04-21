@@ -953,3 +953,17 @@ Bool RTCharacterHasPartyQuestDungeon(
 
 	return false;
 }
+
+Void RTPartyAddMember(
+	RTPartyRef Party,
+	Index CharacterIndex,
+	RTEntityID CharacterID
+) {
+	assert(Party->MemberCount < RUNTIME_PARTY_MAX_MEMBER_COUNT);
+
+	RTPartySlotRef Slot = &Party->Members[Party->MemberCount];
+	Slot->CharacterIndex = CharacterIndex;
+	Slot->MemberID = CharacterID;
+	Slot->SlotIndex = Party->MemberCount;
+	Party->MemberCount += 1;
+}

@@ -23,3 +23,51 @@ ClientContextRef ServerGetClientByIndex(
 
     return NULL;
 }
+
+RTPartyRef ServerCreateParty(
+    ServerContextRef Context,
+    Index CharacterIndex,
+    RTEntityID CharacterID,
+    Int32 PartyType
+) {
+    assert(!DictionaryLookup(Context->CharacterToPartyEntity, &CharacterIndex));
+
+    Index PartyPoolIndex = 0;
+    RTPartyRef Party = (RTPartyRef)MemoryPoolReserveNext(Context->PartyPool, &PartyPoolIndex);
+    Party->ID.EntityIndex = (UInt16)PartyPoolIndex;
+    Party->ID.EntityType = RUNTIME_ENTITY_TYPE_PARTY;
+    Party->LeaderID = CharacterID;
+    Party->LeaderCharacterIndex = CharacterIndex;
+    Party->PartyType = PartyType;
+    RTPartyAddMember(Party, CharacterIndex, CharacterID);
+
+    RTEntityID PartyID = { 0 };
+    PartyID.EntityIndex = (UInt16)PartyPoolIndex;
+    PartyID.EntityType = RUNTIME_ENTITY_TYPE_PARTY;
+    DictionaryInsert(Context->CharacterToPartyEntity, &CharacterIndex, &PartyID, sizeof(struct _RTEntityID));
+
+    return (RTPartyRef)MemoryPoolFetch(Context->PartyPool, PartyPoolIndex);
+}
+
+RTPartyRef ServerGetPartyByCharacter(
+    ServerContextRef Context,
+    Index CharacterIndex
+) {
+    RTEntityID* PartyID = (RTEntityID*)DictionaryLookup(Context->CharacterToPartyEntity, &CharacterIndex);
+    if (!PartyID) return NULL;
+
+    Index PartyPoolIndex = PartyID->EntityIndex;
+    return (RTPartyRef)MemoryPoolFetch(Context->PartyPool, PartyPoolIndex);
+}
+
+RTPartyRef ServerGetParty(
+    ServerContextRef Context,
+    RTEntityID PartyID
+) {
+    assert(PartyID.EntityType == RUNTIME_ENTITY_TYPE_PARTY);
+
+    Index PartyPoolIndex = PartyID.EntityIndex;
+    if (!MemoryPoolIsReserved(Context->PartyPool, PartyPoolIndex)) return NULL;
+
+    return (RTPartyRef)MemoryPoolReserveNext(Context->PartyPool, &PartyPoolIndex);
+}

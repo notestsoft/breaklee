@@ -156,7 +156,9 @@ ClientContextRef ServerGetClientByIndex(
         Iterator = SocketConnectionIteratorNext(Context->ClientSocket, Iterator);
 
         ClientContextRef Client = (ClientContextRef)Connection->Userdata;
-        if (Client && Client->CharacterIndex == CharacterIndex && memcmp(Client->CharacterName, CharacterName, CharacterNameLength) == 0) {
+        if (Client && Client->CharacterIndex == CharacterIndex) {
+            if (CharacterName && memcmp(Client->CharacterName, CharacterName, CharacterNameLength) != 0) continue;
+
             return Client;
         }
     }

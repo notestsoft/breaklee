@@ -12,18 +12,18 @@ IPC_PROCEDURE_BINDING(W2M, GET_ACCOUNT) {
 	Response->NodeIndex = Packet->NodeIndex;
 	Response->LinkConnectionID = Packet->LinkConnectionID;
 
-	Context->TempAccount.AccountID = Packet->AccountID;
-	if (MasterDBGetOrCreateAccount(Context->Database, &Context->TempAccount)) {
+	Account->AccountID = Packet->AccountID;
+	if (MasterDBGetOrCreateAccount(Context->Database, Account)) {
 		Response->Success = true;
-		Response->Account.AccountID = Context->TempAccount.AccountID;
-		memcpy(Response->Account.SessionIP, Context->TempAccount.SessionIP, MAX_ADDRESSIP_LENGTH);
-		Response->Account.SessionTimeout = Context->TempAccount.SessionTimeout;
-		Response->Account.CharacterSlotID = Context->TempAccount.CharacterSlotID;
-		Response->Account.CharacterSlotOrder = Context->TempAccount.CharacterSlotOrder;
-		Response->Account.CharacterSlotFlags = Context->TempAccount.CharacterSlotFlags;
-		memcpy(Response->Account.CharacterPassword, Context->TempAccount.CharacterPassword, MAX_SUBPASSWORD_LENGTH);
+		Response->Account.AccountID = Account->AccountID;
+		memcpy(Response->Account.SessionIP, Account->SessionIP, MAX_ADDRESSIP_LENGTH);
+		Response->Account.SessionTimeout = Account->SessionTimeout;
+		Response->Account.CharacterSlotID = Account->CharacterSlotID;
+		Response->Account.CharacterSlotOrder = Account->CharacterSlotOrder;
+		Response->Account.CharacterSlotFlags = Account->CharacterSlotFlags;
+		CStringCopySafe(Response->Account.CharacterPassword, MAX_SUBPASSWORD_LENGTH, Account->CharacterPassword);
 		Response->Account.CharacterQuestion = Context->TempAccount.CharacterQuestion;
-		memcpy(Response->Account.CharacterAnswer, Context->TempAccount.CharacterAnswer, MAX_SUBPASSWORD_ANSWER_LENGTH);
+		CStringCopySafe(Response->Account.CharacterAnswer, MAX_SUBPASSWORD_ANSWER_LENGTH, Account->CharacterAnswer);
 	}
 
 	IPCSocketUnicast(Socket, Response);

@@ -262,46 +262,51 @@ IPC_PROTOCOL(W2W, RESPONSE_SERVER_STATUS,
 	Int32 Status;
 )
 
-IPC_PROTOCOL(W2P, PARTY_INVITE,
-	struct {
-		UInt32 CharacterIndex;
-		UInt8 WorldServerID;
-		UInt8 CharacterType;
-		Int32 Level;
-		UInt8 NameLength;
-		Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH];
-	} Source;
+IPC_PROTOCOL_STRUCT(IPC_DATA_PARTY_INVITE_MEMBER,
+	Index CharacterIndex;
+	RTEntityID CharacterID;
+	UInt8 WorldServerID;
+	UInt8 CharacterType;
+	Int32 Level;
+	UInt8 NameLength;
+	Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH];
+)
 
-	struct {
-		UInt32 CharacterIndex;
-		UInt8 WorldServerID;
-		UInt8 CharacterType;
-		Int32 Level;
-		UInt8 NameLength;
-		Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH];
-	} Target;
+IPC_PROTOCOL(W2P, PARTY_INVITE,
+	IPC_DATA_PARTY_INVITE_MEMBER Source;
+	IPC_DATA_PARTY_INVITE_MEMBER Target;
 )
 
 IPC_PROTOCOL(P2W, PARTY_INVITE,
     Bool Success;
+	IPC_DATA_PARTY_INVITE_MEMBER Source;
+	IPC_DATA_PARTY_INVITE_MEMBER Target;
+)
 
-	struct {
-		UInt32 CharacterIndex;
-		UInt8 WorldServerID;
-		UInt8 CharacterType;
-		Int32 Level;
-		UInt8 NameLength;
-		Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH];
-	} Source;
+IPC_PROTOCOL(W2W, PARTY_INVITE,
+	IPC_DATA_PARTY_INVITE_MEMBER Source;
+	IPC_DATA_PARTY_INVITE_MEMBER Target;
+)
 
-	struct {
-		UInt32 CharacterIndex;
-		UInt8 WorldServerID;
-		UInt8 CharacterType;
-		Int32 Level;
-		UInt8 NameLength;
-		Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH];
-	} Target;
+IPC_PROTOCOL(W2P, PARTY_INVITE_CONFIRM,
+	Index CharacterIndex;
+	RTEntityID CharacterID;
+	UInt8 WorldServerID;
+	Index TargetCharacterIndex;
+	UInt8 TargetWorldServerID;
+)
+
+IPC_PROTOCOL(P2W, PARTY_INVITE_CONFIRM,
+	Bool Success;
+	Index CharacterIndex;
+	RTEntityID CharacterID;
+	UInt8 WorldServerID;
+	Index TargetCharacterIndex;
+	UInt8 TargetWorldServerID;
+)
+
+IPC_PROTOCOL(P2W, PARTY_INFO,
+	struct _RTParty Party;
 )
 
 #undef IPC_PROTOCOL_ENUM

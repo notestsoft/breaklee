@@ -11,6 +11,8 @@ Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                    \
     ServerRef Server = (ServerRef)Socket->Userdata;                         \
     ServerContextRef Context = (ServerContextRef)Server->Userdata;          \
     IPCNodeContextRef NodeContext = (IPCNodeContextRef)Connection->Userdata;\
+    memset(&Context->TempAccount, 0, sizeof(MASTERDB_DATA_ACCOUNT));        \
+    memset(&Context->TempCharacter, 0, sizeof(MASTERDB_DATA_CHARACTER));    \
                                                                             \
     IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                            \
         Server,                                                             \
@@ -18,6 +20,8 @@ Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                    \
         Socket,                                                             \
         Connection,                                                         \
         NodeContext,                                                        \
+        &Context->TempAccount,                                              \
+        &Context->TempCharacter,                                            \
         (IPC_ ## __NAMESPACE__ ## _DATA_ ## __NAME__ *)Packet               \
     );                                                                      \
 }

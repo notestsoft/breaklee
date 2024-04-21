@@ -182,13 +182,12 @@ IPC_PROCEDURE_BINDING(W2M, DBSYNC) {
 		RTCharacterCollectionInfoRef CollectionInfo = (RTCharacterCollectionInfoRef)&Packet->Data[DataOffset];
 		DataOffset += sizeof(struct _RTCharacterCollectionInfo);
 
-		MASTERDB_DATA_ACCOUNT Account = { 0 };
-		Account.AccountID = Packet->AccountID;
-		memcpy(&Account.CollectionData, CollectionInfo, sizeof(struct _RTCharacterCollectionInfo));
+		Account->AccountID = Packet->AccountID;
+		memcpy(&Account->CollectionData, CollectionInfo, sizeof(struct _RTCharacterCollectionInfo));
 
 		Bool Success = MasterDBUpdateAccountCollectionData(
 			Context->Database,
-			&Account
+			Account
 		);
 
 		if (!Success) {
@@ -215,13 +214,12 @@ IPC_PROCEDURE_BINDING(W2M, DBSYNC) {
 		RTCharacterWarehouseInfoRef WarehouseInfo = (RTCharacterWarehouseInfoRef)&Packet->Data[DataOffset];
 		DataOffset += sizeof(struct _RTCharacterWarehouseInfo);
 
-		MASTERDB_DATA_ACCOUNT Account = { 0 };
-		Account.AccountID = Packet->AccountID;
-		memcpy(&Account.WarehouseData, WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
+		Account->AccountID = Packet->AccountID;
+		memcpy(&Account->WarehouseData, WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
 
 		Bool Success = MasterDBUpdateAccountWarehouseData(
 			Context->Database,
-			&Account
+			Account
 		);
 
 		if (!Success) {

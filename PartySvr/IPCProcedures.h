@@ -6,7 +6,7 @@
 
 EXTERN_C_BEGIN
 
-typedef Void (*IPCProcedureCallback)(
+typedef Void(*IPCProcedureCallback)(
     ServerRef Server,
     ServerContextRef Context,
     IPCSocketRef Socket,
@@ -23,18 +23,12 @@ Void IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(       \
     IPCSocketRef Socket,                                \
     IPCSocketConnectionRef Connection,                  \
     IPCNodeContextRef ConnectionContext,                \
-    MASTERDB_DATA_ACCOUNT* Account,                     \
-    MASTERDB_DATA_CHARACTER* Character,                 \
     IPC_ ## __NAMESPACE__ ## _DATA_ ## __NAME__* Packet \
 )
 #endif
 
-#define IPC_L2M_COMMAND(__NAME__) \
-IPC_PROCEDURE_BINDING(L2M, __NAME__);
-#include "IPCCommands.h"
-
-#define IPC_W2M_COMMAND(__NAME__) \
-IPC_PROCEDURE_BINDING(W2M, __NAME__);
+#define IPC_W2P_COMMAND(__NAME__) \
+IPC_PROCEDURE_BINDING(W2P, __NAME__);
 #include "IPCCommands.h"
 
 EXTERN_C_END

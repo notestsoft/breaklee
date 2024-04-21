@@ -22,19 +22,15 @@ IPC_PROCEDURE_BINDING(W2M, CREATE_CHARACTER) {
 		return;
 	}
 
-	MASTERDB_DATA_ACCOUNT Account = { 0 };
-	Account.AccountID = Packet->AccountID;
-	if (!MasterDBGetOrCreateAccount(Context->Database, &Account)) {
+	Account->AccountID = Packet->AccountID;
+	if (!MasterDBGetOrCreateAccount(Context->Database, Account)) {
 		Response->Status = CREATE_CHARACTER_STATUS_DBERROR;
 		IPCSocketUnicast(Socket, Response);
 		return;
 	}
 
-	MASTERDB_DATA_CHARACTER* Character = &Context->TempCharacter;
-	memset(Character, 0, sizeof(MASTERDB_DATA_CHARACTER));
-
-	Character->AccountID = Account.AccountID;
-	memcpy(Character->Name, Packet->Name, Packet->NameLength);
+	Character->AccountID = Account->AccountID;
+	CStringCopySafe(Character->Name, MAX_CHARACTER_NAME_LENGTH + 1, Packet->Name);
 	Character->Index = Packet->SlotIndex;
 	Character->CharacterData = Packet->CharacterData;
     Character->EquipmentData = Packet->CharacterEquipment;
@@ -63,7 +59,7 @@ IPC_PROCEDURE_BINDING(W2M, CREATE_CHARACTER) {
 	Response->Character.Level = Character->CharacterData.Basic.Level;
 	Response->Character.OverlordLevel = Character->CharacterData.Overlord.Level;
 	Response->Character.SkillRank = Character->CharacterData.Skill.Rank;
-	memcpy(Response->Character.Name, Character->Name, MAX_CHARACTER_NAME_LENGTH);
+	CStringCopySafe(Response->Character.Name, MAX_CHARACTER_NAME_LENGTH, Character->Name);
 	Response->Character.HonorPoint = Character->CharacterData.Honor.Point;
 	Response->Character.Alz = Character->CharacterData.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
 	Response->Character.MapID = Character->CharacterData.Position.WorldID;

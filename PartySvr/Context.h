@@ -17,7 +17,8 @@ struct _ServerContext {
     SocketRef ClientSocket;
     SocketRef WorldSocket;
     ServerConfig Config;
-    RTPartyManagerRef PartyManager;
+    MemoryPoolRef PartyPool;
+    DictionaryRef CharacterToPartyEntity;
 };
 typedef struct _ServerContext* ServerContextRef;
 
@@ -28,10 +29,5 @@ struct _ClientContext {
     Char CharacterName[MAX_CHARACTER_NAME_LENGTH + 1];
 };
 typedef struct _ClientContext* ClientContextRef;
-
-struct _WorldContext {
-    UInt8 ServerID;
-};
-typedef struct _WorldContext* WorldContextRef;
 
 EXTERN_C_END

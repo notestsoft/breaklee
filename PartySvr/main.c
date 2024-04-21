@@ -2,6 +2,7 @@
 #include "Server.h"
 #include "ClientSocket.h"
 #include "ClientProcedures.h"
+#include "IPCProcedures.h"
 #include "Notification.h"
 
 #define C2S_COMMAND(__NAME__, __COMMAND__)                                                                                       \
@@ -20,16 +21,28 @@ Void SERVER_PROC_ ## __NAME__(                                                  
 }
 #include "ClientCommands.h"
 
-Void ServerOnIPCPacketReceived(
-    ServerRef Server,
-    Void* ServerContext,
-    IPCSocketRef Socket,
-    IPCSocketConnectionRef Connection,
-    Void* ConnectionContext,
-    IPCPacketRef Packet
-) {
-
+#define IPC_COMMAND_CALLBACK(__NAMESPACE__, __NAME__)                       \
+Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                    \
+    IPCSocketRef Socket,                                                    \
+    IPCSocketConnectionRef Connection,                                      \
+    IPCPacketRef Packet                                                     \
+) {                                                                         \
+    ServerRef Server = (ServerRef)Socket->Userdata;                         \
+    ServerContextRef Context = (ServerContextRef)Server->Userdata;          \
+    IPCNodeContextRef NodeContext = (IPCNodeContextRef)Connection->Userdata;\
+                                                                            \
+    IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                            \
+        Server,                                                             \
+        Context,                                                            \
+        Socket,                                                             \
+        Connection,                                                         \
+        NodeContext,                                                        \
+        (IPC_ ## __NAMESPACE__ ## _DATA_ ## __NAME__ *)Packet               \
+    );                                                                      \
 }
+
+#define IPC_W2P_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(W2P, __NAME__)
+#include "IPCCommands.h"
 
 // TODO: This is not a good solution considering the connection id is being reused
 Index PacketGetConnectionID(
@@ -43,7 +56,7 @@ Void ServerOnUpdate(
     Void *ServerContext
 ) {
     ServerContextRef Context = (ServerContextRef)ServerContext;
-    // RTPartyManagerUpdate(Context->PartyManager);
+
 }
 
 Int32 main(Int32 argc, CString* argv) {
@@ -57,11 +70,12 @@ Int32 main(Int32 argc, CString* argv) {
     AllocatorRef Allocator = AllocatorGetSystemDefault();
     struct _ServerContext ServerContext = { 0 };
     ServerContext.Config = Config;
-    // ServerContext.PartyManager = RTPartyManagerCreate(Allocator, Config.PartySvr.MaxPartyCount);
+    ServerContext.PartyPool = MemoryPoolCreate(Allocator, sizeof(struct _RTParty), Config.PartySvr.MaxPartyCount);
+    ServerContext.CharacterToPartyEntity = IndexDictionaryCreate(Allocator, Config.PartySvr.MaxPartyCount);
+    MemoryPoolReserve(ServerContext.PartyPool, 0);
 
     IPCNodeID NodeID = kIPCNodeIDNull;
     NodeID.Group = 1;
-    NodeID.Index = 1;
     NodeID.Type = IPC_TYPE_PARTY;
 
     ServerRef Server = ServerCreate(
@@ -73,7 +87,6 @@ Int32 main(Int32 argc, CString* argv) {
         Config.NetLib.ReadBufferSize,
         Config.NetLib.WriteBufferSize,
         &ServerOnUpdate,
-        &ServerOnIPCPacketReceived,
         &ServerContext
     );
 
@@ -97,9 +110,14 @@ Int32 main(Int32 argc, CString* argv) {
     ServerSocketRegisterPacketCallback(Server, ServerContext.ClientSocket, __COMMAND__, &SERVER_PROC_ ## __NAME__);
 #include "ClientCommands.h"
 
+#define IPC_W2P_COMMAND(__NAME__) \
+    IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_W2P_ ## __NAME__, &SERVER_IPC_W2P_PROC_ ## __NAME__);
+#include "IPCCommands.h"
+
     ServerRun(Server);
 
-    // RTPartyManagerDestroy(ServerContext.PartyManager);
+    MemoryPoolDestroy(ServerContext.PartyPool);
+    DictionaryDestroy(ServerContext.CharacterToPartyEntity);
     DiagnosticTeardown();
     
     return EXIT_SUCCESS;
