@@ -316,9 +316,20 @@ IPC_PROTOCOL(P2W, PARTY_INVITE_CONFIRM,
 	UInt8 TargetNodeIndex;
 )
 
+IPC_PROTOCOL(W2P, PARTY_INVITE_CANCEL,
+	Index SourceCharacterIndex;
+	UInt8 SourceNodeIndex;
+	Index TargetCharacterIndex;
+	UInt8 TargetNodeIndex;
+)
+
+IPC_PROTOCOL(P2W, PARTY_INVITE_CANCEL,
+)
+
 IPC_PROTOCOL(P2W, PARTY_INVITE_TIMEOUT,
 	Index CharacterIndex;
 	Int32 IsAccept;
+	Bool IsCancel;
 )
 
 IPC_PROTOCOL(P2W, PARTY_INFO,

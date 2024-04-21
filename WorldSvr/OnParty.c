@@ -136,13 +136,27 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE_CONFIRM) {
 CLIENT_PROCEDURE_BINDING(PARTY_INVITE_CANCEL) {
 	if (!Character) goto error;
 
-	// TODO: Implementation missing
-
-	S2C_DATA_PARTY_INVITE_CANCEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_INVITE_CANCEL);
-	return SocketSend(Socket, Connection, Response);
+	IPC_W2P_DATA_PARTY_INVITE_CANCEL* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2P, PARTY_INVITE_CANCEL);
+	Request->Header.Source = Server->IPCSocket->NodeID;
+	Request->Header.SourceConnectionID = Client->Connection->ID;
+	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+	Request->Header.Target.Type = IPC_TYPE_PARTY;
+	Request->SourceCharacterIndex = Character->CharacterIndex;
+	Request->SourceNodeIndex = Context->Config.WorldSvr.NodeIndex;
+	Request->TargetCharacterIndex = Packet->CharacterIndex;
+	Request->TargetNodeIndex = Packet->WorldServerID;
+	IPCSocketUnicast(Server->IPCSocket, Request);
+	return;
 
 error:
 	return SocketDisconnect(Socket, Connection);
+}
+
+IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE_CANCEL) {
+	if (!ClientConnection) return;
+
+	S2C_DATA_PARTY_INVITE_CANCEL* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, PARTY_INVITE_CANCEL);
+	SocketSend(Context->ClientSocket, ClientConnection, Response);
 }
 
 CLIENT_PROCEDURE_BINDING(PARTY_LEAVE) {
@@ -185,9 +199,15 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE_TIMEOUT) {
 	ClientContextRef TargetClient = ServerGetClientByIndex(Context, Packet->CharacterIndex, NULL);
 	if (!TargetClient) return;
 
-	S2C_DATA_NFY_PARTY_INVITE_TIMEOUT* Notification = PacketBufferInit(TargetClient->Connection->PacketBuffer, S2C, NFY_PARTY_INVITE_TIMEOUT);
-	Notification->IsAccept = Packet->IsAccept;
-	SocketSend(Context->ClientSocket, TargetClient->Connection, Notification);
+	if (Packet->IsCancel) {
+		S2C_DATA_NFY_PARTY_INVITE_CANCEL* Notification = PacketBufferInit(TargetClient->Connection->PacketBuffer, S2C, NFY_PARTY_INVITE_CANCEL);
+		SocketSend(Context->ClientSocket, TargetClient->Connection, Notification);
+	}
+	else {
+		S2C_DATA_NFY_PARTY_INVITE_TIMEOUT* Notification = PacketBufferInit(TargetClient->Connection->PacketBuffer, S2C, NFY_PARTY_INVITE_TIMEOUT);
+		Notification->IsAccept = Packet->IsAccept;
+		SocketSend(Context->ClientSocket, TargetClient->Connection, Notification);
+	}
 }
 
 IPC_PROCEDURE_BINDING(P2W, PARTY_INFO) {
