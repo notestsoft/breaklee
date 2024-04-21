@@ -146,6 +146,7 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
         &ServerOnUpdate,
         &ServerContext
     );
+    ServerContext.IPCSocket = Server->IPCSocket;
 
     ServerContext.ClientSocket = ServerCreateSocket(
         Server,

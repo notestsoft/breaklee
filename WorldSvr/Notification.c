@@ -3,6 +3,33 @@
 #include "Notification.h"
 #include "Server.h"
 
+Void BroadcastPartyData(
+    ServerContextRef Context,
+    RTCharacterRef Character
+) {
+    IPC_W2P_DATA_PARTY_DATA* Request = IPCPacketBufferInit(Context->IPCSocket->PacketBuffer, W2P, PARTY_DATA);
+    Request->Header.Source = Context->IPCSocket->NodeID;
+    Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+    Request->Header.Target.Type = IPC_TYPE_PARTY;
+    Request->MemberInfo.CharacterIndex = Character->CharacterIndex;
+    Request->MemberInfo.Level = Character->Info.Basic.Level;
+    Request->MemberInfo.OverlordLevel = Character->Info.Overlord.Level;
+    Request->MemberInfo.MythRebirth = 0;
+    Request->MemberInfo.MythHolyPower = 0;
+    Request->MemberInfo.MythLevel = 0;
+    Request->MemberInfo.ForceWingGrade = Character->ForceWingInfo.Grade;
+    Request->MemberInfo.ForceWingLevel = Character->ForceWingInfo.Level;
+    Request->MemberData.MaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
+    Request->MemberData.CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+    Request->MemberData.MaxMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX];
+    Request->MemberData.CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+    Request->MemberData.PositionX = Character->Movement.PositionCurrent.X;
+    Request->MemberData.PositionY = Character->Movement.PositionCurrent.Y;
+    Request->MemberData.MaxSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX];
+    Request->MemberData.CurrentSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+    IPCSocketUnicast(Context->IPCSocket, Request);
+}
+
 Void BroadcastMessage(
     ServerContextRef Context,
     CString Message
@@ -398,6 +425,8 @@ Void ServerRuntimeOnEvent(
         if (!Client) return;
 
         RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Client->CharacterIndex);
+        BroadcastPartyData(Context, Character);
+
         {
             S2C_DATA_NFY_CHARACTER_DATA* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_CHARACTER_DATA);
             Notification->Type = S2C_DATA_CHARACTER_UPDATE_TYPE_LEVEL;
@@ -424,6 +453,8 @@ Void ServerRuntimeOnEvent(
         if (!Client) return;
 
         RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Client->CharacterIndex);
+        BroadcastPartyData(Context, Character);
+
         {
             S2C_DATA_NFY_CHARACTER_DATA* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_CHARACTER_DATA);
             Notification->Type = S2C_DATA_CHARACTER_UPDATE_TYPE_OVERLORD_LEVEL;
@@ -449,6 +480,8 @@ Void ServerRuntimeOnEvent(
         ClientContextRef Client = ServerGetClientByEntity(Context, Event->TargetID);
         if (Client) {
             RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Client->CharacterIndex);
+            BroadcastPartyData(Context, Character);
+            
             S2C_DATA_NFY_CHARACTER_DATA* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_CHARACTER_DATA);
             Notification->Type = Event->Data.CharacterData.Type;
             

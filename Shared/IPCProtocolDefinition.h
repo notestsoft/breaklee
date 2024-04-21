@@ -279,25 +279,25 @@ IPC_PROTOCOL_STRUCT(IPC_DATA_PARTY_INVITE_MEMBER,
 
 IPC_PROTOCOL(W2P, PARTY_INVITE,
 	UInt8 Result;
-	IPC_DATA_PARTY_INVITE_MEMBER Source;
-	IPC_DATA_PARTY_INVITE_MEMBER Target;
+	struct _RTPartySlot Source;
+	struct _RTPartySlot Target;
 )
 
 IPC_PROTOCOL(P2W, PARTY_INVITE,
-	IPC_DATA_PARTY_INVITE_MEMBER Source;
-	IPC_DATA_PARTY_INVITE_MEMBER Target;
+	struct _RTPartySlot Source;
+	struct _RTPartySlot Target;
 )
 
 IPC_PROTOCOL(W2P, PARTY_INVITE_ACK,
 	Bool Success;
-	IPC_DATA_PARTY_INVITE_MEMBER Source;
-	IPC_DATA_PARTY_INVITE_MEMBER Target;
+	struct _RTPartySlot Source;
+	struct _RTPartySlot Target;
 )
 
 IPC_PROTOCOL(P2W, PARTY_INVITE_ACK,
 	Bool Success;
-	IPC_DATA_PARTY_INVITE_MEMBER Source;
-	IPC_DATA_PARTY_INVITE_MEMBER Target;
+	struct _RTPartySlot Source;
+	struct _RTPartySlot Target;
 )
 
 IPC_PROTOCOL(W2P, PARTY_INVITE_CONFIRM,
@@ -340,18 +340,6 @@ IPC_PROTOCOL(W2P, PARTY_INIT,
 	Index CharacterIndex;
 )
 
-IPC_PROTOCOL_STRUCT(P2W_DATA_PARTY_INIT_MEMBER,
-	UInt32 CharacterIndex;
-	Int32 Level;
-	UInt16 OverlordLevel;
-	Int32 MythRebirth;
-	Int32 MythHolyPower;
-	Int32 MythLevel;
-	UInt8 ForceWingGrade;
-	UInt8 ForceWingLevel;
-	Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1];
-)
-
 IPC_PROTOCOL(P2W, PARTY_INIT,
 	Int32 Result;
 	UInt32 DungeonIndex;
@@ -359,9 +347,20 @@ IPC_PROTOCOL(P2W, PARTY_INIT,
 	Index PartyLeaderIndex;
 	UInt8 WorldServerIndex;
 	Int32 MemberCount;
-	P2W_DATA_PARTY_INIT_MEMBER Members[RUNTIME_PARTY_MAX_MEMBER_COUNT];
+	struct _RTPartyMemberInfo Members[RUNTIME_PARTY_MAX_MEMBER_COUNT];
 	UInt32 SoloDungeonIndex;
 	Timestamp SoloDungeonTimeout;
+)
+
+IPC_PROTOCOL(W2P, PARTY_DATA,
+	struct _RTPartyMemberInfo MemberInfo;
+	struct _RTPartyMemberData MemberData;
+)
+
+IPC_PROTOCOL(P2W, PARTY_DATA, 
+	UInt32 MemberCount;
+	struct _RTPartyMemberInfo MemberInfo[RUNTIME_PARTY_MAX_MEMBER_COUNT];
+	struct _RTPartyMemberData MemberData[RUNTIME_PARTY_MAX_MEMBER_COUNT];
 )
 
 #undef IPC_PROTOCOL_ENUM

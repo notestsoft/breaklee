@@ -56,7 +56,7 @@ Void ServerDestroyParty(
     // TODO: Cleanup also all invitations to this party!!!
 
     for (Index MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {
-        Index CharacterIndex = Party->Members[MemberIndex].CharacterIndex;
+        Index CharacterIndex = Party->Members[MemberIndex].Info.CharacterIndex;
         DictionaryRemove(Context->CharacterToPartyEntity, &CharacterIndex);
     }
 

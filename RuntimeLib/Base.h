@@ -59,6 +59,8 @@ typedef struct _RTMovement* RTMovementRef;
 typedef struct _RTNewbieSupportSlot* RTNewbieSupportSlotRef;
 typedef struct _RTCharacterNewbieSupportInfo* RTCharacterNewbieSupportInfoRef;
 typedef struct _RTNpc* RTNpcRef;
+typedef struct _RTPartyMemberInfo* RTPartyMemberInfoRef;
+typedef struct _RTPartyMemberData* RTPartyMemberDataRef;
 typedef struct _RTPartySlot* RTPartySlotRef;
 typedef struct _RTPartyInvitation* RTPartyInvitationRef;
 typedef struct _RTParty* RTPartyRef;

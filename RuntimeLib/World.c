@@ -404,7 +404,7 @@ Void RTWorldDespawnMob(
                     Drop
                 );
             }
-
+            /*
             if (!RTEntityIsNull(Character->PartyID)) {
                 RTPartyRef Party = RTRuntimeGetParty(Runtime, Character->PartyID);
                 assert(Party);
@@ -429,7 +429,7 @@ Void RTWorldDespawnMob(
                     );
                 }
             }
-
+            */
             if (!Success) {
                 Int32 Rate = RandomRange(&WorldContext->Seed, 0, 30000);
                 if (Rate <= 10000) {

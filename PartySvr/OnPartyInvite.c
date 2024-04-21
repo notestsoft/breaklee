@@ -3,27 +3,24 @@
 #include "Server.h"
 
 IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
-	Bool IsTargetInParty = DictionaryLookup(Context->CharacterToPartyEntity, &Packet->Target.CharacterIndex) != NULL;
+	RTPartySlotRef Source = &Packet->Source;
+	RTPartySlotRef Target = &Packet->Target;
+
+	Bool IsTargetInParty = DictionaryLookup(Context->CharacterToPartyEntity, &Target->Info.CharacterIndex) != NULL;
 	if (IsTargetInParty) goto error;
 
-	Bool HasTargetInvitation = DictionaryLookup(Context->CharacterToPartyInvite, &Packet->Target.CharacterIndex) != NULL;
+	Bool HasTargetInvitation = DictionaryLookup(Context->CharacterToPartyInvite, &Target->Info.CharacterIndex) != NULL;
 	if (HasTargetInvitation) goto error;
 
-	RTPartyRef Party = ServerGetPartyByCharacter(Context, Packet->Source.CharacterIndex);
+	RTPartyRef Party = ServerGetPartyByCharacter(Context, Source->Info.CharacterIndex);
 	if (!Party) {
-		Party = ServerCreateParty(Context, Packet->Source.CharacterIndex, Packet->Source.CharacterID, RUNTIME_PARTY_TYPE_TEMPORARY);
+		Party = ServerCreateParty(Context, Source->Info.CharacterIndex, kEntityIDNull, RUNTIME_PARTY_TYPE_TEMPORARY);
 		if (!Party) goto error;
 
-		RTPartySlotRef Member = RTPartyGetMember(Party, Packet->Source.CharacterIndex);
+		RTPartySlotRef Member = RTPartyGetMember(Party, Source->Info.CharacterIndex);
 		Member->NodeIndex = Packet->Source.NodeIndex;
-		Member->Level = Packet->Source.Level;
-		Member->OverlordLevel = Packet->Source.OverlordLevel;
-		Member->MythRebirth = Packet->Source.MythRebirth;
-		Member->MythHolyPower = Packet->Source.MythHolyPower;
-		Member->MythLevel = Packet->Source.MythLevel;
-		Member->ForceWingGrade = Packet->Source.ForceWingGrade;
-		Member->ForceWingLevel = Packet->Source.ForceWingLevel;
-		CStringCopySafe(Member->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->Source.Name);
+		memcpy(&Member->Info, &Source->Info, sizeof(struct _RTPartyMemberInfo));
+		memcpy(&Member->Data, &Source->Data, sizeof(struct _RTPartyMemberData));
 	}
 
 	assert(Party);
@@ -31,11 +28,11 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
 
 	Index PartyInvitationPoolIndex = 0;
 	RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolReserveNext(Context->PartyInvitationPool, &PartyInvitationPoolIndex);
-	DictionaryInsert(Context->CharacterToPartyInvite, &Packet->Target.CharacterIndex, &PartyInvitationPoolIndex, sizeof(Index));
+	DictionaryInsert(Context->CharacterToPartyInvite, &Target->Info.CharacterIndex, &PartyInvitationPoolIndex, sizeof(Index));
 
-	Invitation->Member.CharacterIndex = Packet->Target.CharacterIndex;
 	Invitation->Member.NodeIndex = Packet->Target.NodeIndex;
-	CStringCopySafe(Invitation->Member.Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->Target.Name);
+	memcpy(&Invitation->Member.Info, &Target->Info, sizeof(struct _RTPartyMemberInfo));
+	memcpy(&Invitation->Member.Data, &Target->Data, sizeof(struct _RTPartyMemberData));
 	Invitation->InvitationTimestamp = GetTimestampMs();
 
 	IPC_P2W_DATA_PARTY_INVITE* Request = IPCPacketBufferInit(Connection->PacketBuffer, P2W, PARTY_INVITE);
@@ -62,28 +59,26 @@ error:
 }
 
 IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_ACK) {
-	Index* PartyInvitationPoolIndex = DictionaryLookup(Context->CharacterToPartyInvite, &Packet->Target.CharacterIndex);
+	RTPartySlotRef Source = &Packet->Source;
+	RTPartySlotRef Target = &Packet->Target;
+
+	Index* PartyInvitationPoolIndex = DictionaryLookup(Context->CharacterToPartyInvite, &Source->Info.CharacterIndex);
 	if (!PartyInvitationPoolIndex) goto error;
 
 	RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolFetch(Context->PartyInvitationPool, *PartyInvitationPoolIndex);
 	if (!Invitation) goto error;
 
-	RTPartyRef Party = ServerGetPartyByCharacter(Context, Packet->Source.CharacterIndex);
+	RTPartyRef Party = ServerGetPartyByCharacter(Context, Source->Info.CharacterIndex);
 	if (!Party) goto error;
 
 	if (Packet->Success) {
 		Invitation->Member.NodeIndex = Packet->Target.NodeIndex;
-		Invitation->Member.Level = Packet->Target.Level;
-		Invitation->Member.OverlordLevel = Packet->Target.OverlordLevel;
-		Invitation->Member.MythRebirth = Packet->Target.MythRebirth;
-		Invitation->Member.MythHolyPower = Packet->Target.MythHolyPower;
-		Invitation->Member.MythLevel = Packet->Target.MythLevel;
-		Invitation->Member.ForceWingGrade = Packet->Target.ForceWingGrade;
-		Invitation->Member.ForceWingLevel = Packet->Target.ForceWingLevel;
+		memcpy(&Invitation->Member.Info, &Target->Info, sizeof(struct _RTPartyMemberInfo));
+		memcpy(&Invitation->Member.Data, &Target->Data, sizeof(struct _RTPartyMemberData));
 	}
 	else if (Party->PartyType == RUNTIME_PARTY_TYPE_TEMPORARY) {
 		MemoryPoolRelease(Context->PartyInvitationPool, *PartyInvitationPoolIndex);
-		DictionaryRemove(Context->CharacterToPartyInvite, &Packet->Target.CharacterIndex);
+		DictionaryRemove(Context->CharacterToPartyInvite, &Target->Info.CharacterIndex);
 		ServerDestroyParty(Context, Party);
 	}
 

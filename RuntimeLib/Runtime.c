@@ -212,7 +212,7 @@ RTWorldContextRef RTRuntimeGetWorldByCharacter(
 ) {
     if (!RTEntityIsNull(Character->PartyID)) {
         RTWorldContextRef WorldContext = RTWorldContextGetParty(Runtime->WorldManager, Character->PartyID);
-        if (WorldContext->WorldData->WorldIndex == Character->Info.Position.WorldID) return WorldContext;
+        if (WorldContext && WorldContext->WorldData->WorldIndex == Character->Info.Position.WorldID) return WorldContext;
     }
 
     return RTWorldContextGetGlobal(Runtime->WorldManager, Character->Info.Position.WorldID);

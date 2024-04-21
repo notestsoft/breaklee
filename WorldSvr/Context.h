@@ -30,6 +30,7 @@ typedef struct _RuntimeData* RuntimeDataRef;
 
 struct _ServerContext {
     SocketRef ClientSocket;
+    IPCSocketRef IPCSocket;
     ServerConfig Config;
     RuntimeDataRef RuntimeData;
     RTRuntimeRef Runtime;

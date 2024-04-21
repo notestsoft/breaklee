@@ -6,7 +6,7 @@ RTPartySlotRef RTPartyGetMember(
 ) {
     for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
         RTPartySlotRef PartySlot = &Party->Members[Index];
-        if (PartySlot->CharacterIndex != CharacterIndex) continue;
+        if (PartySlot->Info.CharacterIndex != CharacterIndex) continue;
 
         return PartySlot;
     }

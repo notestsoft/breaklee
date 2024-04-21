@@ -962,10 +962,11 @@ RTPartySlotRef RTPartyAddMember(
 	assert(Party->MemberCount < RUNTIME_PARTY_MAX_MEMBER_COUNT);
 
 	RTPartySlotRef Slot = &Party->Members[Party->MemberCount];
+	memset(Slot, 0, sizeof(struct _RTPartySlot));
 	Slot->SlotIndex = Party->MemberCount;
-	Slot->CharacterIndex = CharacterIndex;
+	Slot->Info.CharacterIndex = CharacterIndex;
 	Slot->MemberID = CharacterID;
-	CStringCopySafe(Slot->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, "test");
+	CStringCopySafe(Slot->Info.Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, "test");
 	Party->MemberCount += 1;
 	return Slot;
 }

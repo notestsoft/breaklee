@@ -2218,7 +2218,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_PARTY_MEMBER,
     Int32 Unknown1;
     Int32 Unknown2;
     UInt8 Unknown3;
-    UInt8 Unknown4;
+    UInt8 BattleStyleIndex;
     Int32 Unknown5;
     UInt16 OverlordLevel;
     Int32 MythRebirth;
@@ -2254,48 +2254,69 @@ CLIENT_PROTOCOL(S2C, NFY_PARTY_INVITE_CANCEL, DEFAULT, 2018,
 )
 
 CLIENT_PROTOCOL(C2S, PARTY_LEAVE, DEFAULT, 2019,
-    // TODO: Add packet structure
+// TODO: Add packet structure
 )
 
 CLIENT_PROTOCOL(S2C, PARTY_LEAVE, DEFAULT, 2019,
-    // TODO: Add packet structure
+// TODO: Add packet structure
 )
 
 CLIENT_PROTOCOL(S2C, PARTY_DISBAND, DEFAULT, 2020,
-    // TODO: Add packet structure
+// TODO: Add packet structure
 )
 
 CLIENT_PROTOCOL(C2S, PARTY_EXPEL_MEMBER, DEFAULT, 2021,
-    // TODO: Add packet structure
+// TODO: Add packet structure
 )
 
 CLIENT_PROTOCOL(S2C, PARTY_EXPEL_MEMBER, DEFAULT, 2021,
-    // TODO: Add packet structure
+// TODO: Add packet structure
 )
 
 CLIENT_PROTOCOL(S2C, NFY_PARTY_EXPEL_MEMBER, DEFAULT, 2022,
-    // TODO: Add packet structure
+// TODO: Add packet structure
 )
 
 CLIENT_PROTOCOL(C2S, PARTY_CHANGE_LEADER, DEFAULT, 2023,
-    // TODO: Add packet structure
+// TODO: Add packet structure
 )
 
 CLIENT_PROTOCOL(S2C, PARTY_CHANGE_LEADER, DEFAULT, 2023,
-    // TODO: Add packet structure
+// TODO: Add packet structure
 )
 
 CLIENT_PROTOCOL(S2C, NFY_PARTY_CHANGE_LEADER, DEFAULT, 2024,
-    // TODO: Add packet structure
+// TODO: Add packet structure
 )
 
 CLIENT_PROTOCOL(S2C, NFY_PARTY_INVITE_RULE, DEFAULT, 2026,
-    // TODO: Add packet structure
+// TODO: Add packet structure
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_PARTY_MEMBER_DATA,
+    Int32 Unknown1;
+    Int64 MaxHP;
+    Int64 CurrentHP;
+    Int32 MaxMP;
+    Int32 CurrentMP;
+    Int32 PositionX;
+    Int32 PositionY;
+    Int16 MaxSP;
+    Int16 CurrentSP;
+    Int32 Unknown2;
+    Int32 Unknown3;
+    UInt8 Unknown4[24];
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_PARTY_UPDATE_MEMBER,
+    S2C_DATA_PARTY_MEMBER Info;
+    S2C_DATA_PARTY_MEMBER_DATA Data;
 )
 
 CLIENT_PROTOCOL(S2C, NFY_PARTY_UPDATE, DEFAULT, 2028,
     UInt32 MemberCount;
-    S2C_DATA_PARTY_MEMBER Members[RUNTIME_PARTY_MAX_MEMBER_COUNT];
+    S2C_DATA_PARTY_UPDATE_MEMBER Members[RUNTIME_PARTY_MAX_MEMBER_COUNT];
+    UInt8 Unknown1[24];
 )
 
 CLIENT_PROTOCOL(S2C, NFY_PARTY_PICK_UP_CURRENCY, DEFAULT, 2035,

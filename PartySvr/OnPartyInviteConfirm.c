@@ -14,18 +14,12 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CONFIRM) {
     if (!Party) goto error;
 
     if (Packet->IsAccept) {
-        RTPartySlotRef Member = RTPartyAddMember(Party, Invitation->Member.CharacterIndex, kEntityIDNull);
-        DictionaryInsert(Context->CharacterToPartyEntity, &Invitation->Member.CharacterIndex, &Party->ID, sizeof(struct _RTEntityID));
+        RTPartySlotRef Member = RTPartyAddMember(Party, Invitation->Member.Info.CharacterIndex, kEntityIDNull);
+        DictionaryInsert(Context->CharacterToPartyEntity, &Invitation->Member.Info.CharacterIndex, &Party->ID, sizeof(struct _RTEntityID));
 
         Member->NodeIndex = Invitation->Member.NodeIndex;
-        Member->Level = Invitation->Member.Level;
-        Member->OverlordLevel = Invitation->Member.OverlordLevel;
-        Member->MythRebirth = Invitation->Member.MythRebirth;
-        Member->MythHolyPower = Invitation->Member.MythHolyPower;
-        Member->MythLevel = Invitation->Member.MythLevel;
-        Member->ForceWingGrade = Invitation->Member.ForceWingGrade;
-        Member->ForceWingLevel = Invitation->Member.ForceWingLevel;
-        CStringCopySafe(Member->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Invitation->Member.Name);
+        memcpy(&Member->Info, &Invitation->Member.Info, sizeof(struct _RTPartyMemberInfo));
+        memcpy(&Member->Data, &Invitation->Member.Data, sizeof(struct _RTPartyMemberData));
 
         if (Party->PartyType == RUNTIME_PARTY_TYPE_TEMPORARY) {
             Party->PartyType = RUNTIME_PARTY_TYPE_NORMAL;

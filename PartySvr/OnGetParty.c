@@ -21,15 +21,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INIT) {
         Response->MemberCount = Party->MemberCount;
 
         for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
-            Response->Members[Index].CharacterIndex = Party->Members[Index].CharacterIndex;
-            Response->Members[Index].Level = Party->Members[Index].Level;
-            Response->Members[Index].OverlordLevel = Party->Members[Index].OverlordLevel;
-            Response->Members[Index].MythRebirth = Party->Members[Index].MythRebirth;
-            Response->Members[Index].MythHolyPower = Party->Members[Index].MythHolyPower;
-            Response->Members[Index].MythLevel = Party->Members[Index].MythLevel;
-            Response->Members[Index].ForceWingGrade = Party->Members[Index].ForceWingGrade;
-            Response->Members[Index].ForceWingLevel = Party->Members[Index].ForceWingLevel;
-            CStringCopySafe(Response->Members[Index].Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Party->Members[Index].Name);
+            memcpy(&Response->Members[Index], &Party->Members[Index], sizeof(struct _RTPartyMemberInfo));
         }
 
         Response->SoloDungeonIndex = 0;

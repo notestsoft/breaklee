@@ -14,22 +14,20 @@ CLIENT_PROCEDURE_BINDING(PARTY_INVITE) {
 	Request->Header.Source = Server->IPCSocket->NodeID;
 	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
 	Request->Header.Target.Type = IPC_TYPE_PARTY;
-	Request->Source.CharacterIndex = Character->CharacterIndex;
-	Request->Source.CharacterID = Character->ID;
 	Request->Source.NodeIndex = Context->Config.WorldSvr.NodeIndex;
-	Request->Source.CharacterType = 0;
-	Request->Source.Level = Character->Info.Basic.Level;
-	Request->Source.OverlordLevel = Character->Info.Overlord.Level;
-	Request->Source.MythRebirth = 0;
-	Request->Source.MythHolyPower = 0;
-	Request->Source.MythLevel = 0;
-	Request->Source.ForceWingGrade = Character->ForceWingInfo.Grade;
-	Request->Source.ForceWingLevel = Character->ForceWingInfo.Level;
-	CStringCopySafe(Request->Source.Name, MAX_CHARACTER_NAME_LENGTH + 1, Client->CharacterName);
+	Request->Source.Info.CharacterIndex = Character->CharacterIndex;
+	Request->Source.Info.Level = Character->Info.Basic.Level;
+	Request->Source.Info.OverlordLevel = Character->Info.Overlord.Level;
+	Request->Source.Info.MythRebirth = 0;
+	Request->Source.Info.MythHolyPower = 0;
+	Request->Source.Info.MythLevel = 0;
+	Request->Source.Info.ForceWingGrade = Character->ForceWingInfo.Grade;
+	Request->Source.Info.ForceWingLevel = Character->ForceWingInfo.Level;
+	CStringCopySafe(Request->Source.Info.Name, MAX_CHARACTER_NAME_LENGTH + 1, Client->CharacterName);
 
-	Request->Target.CharacterIndex = Packet->CharacterIndex;
 	Request->Target.NodeIndex = Packet->WorldServerID;
-	CStringCopySafe(Request->Target.Name, MAX_CHARACTER_NAME_LENGTH + 1, Packet->Name);
+	Request->Target.Info.CharacterIndex = Packet->CharacterIndex;
+	CStringCopySafe(Request->Target.Info.Name, MAX_CHARACTER_NAME_LENGTH + 1, Packet->Name);
 
 	IPCSocketUnicast(Server->IPCSocket, Request);
 	return;
@@ -39,17 +37,17 @@ error:
 }
 
 IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE_ACK) {
-	ClientContextRef SourceClient = ServerGetClientByIndex(Context, Packet->Source.CharacterIndex, Packet->Source.Name);
+	ClientContextRef SourceClient = ServerGetClientByIndex(Context, Packet->Source.Info.CharacterIndex, Packet->Source.Info.Name);
 	if (!SourceClient) goto error;
 
 	S2C_DATA_PARTY_INVITE* Notification = PacketBufferInit(SourceClient->Connection->PacketBuffer, S2C, PARTY_INVITE);
 	Notification->Result = Packet->Success ? 0 : 1;
-	Notification->CharacterIndex = Packet->Target.CharacterIndex;
 	Notification->WorldServerID = Packet->Target.NodeIndex;
-	Notification->CharacterType = Packet->Target.CharacterType;
-	Notification->Level = Packet->Target.Level;
-	Notification->NameLength = strlen(Packet->Target.Name) + 1;
-	CStringCopySafe(Notification->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->Target.Name);
+	Notification->CharacterIndex = Packet->Target.Info.CharacterIndex;
+	Notification->CharacterType = 0;
+	Notification->Level = Packet->Target.Info.Level;
+	Notification->NameLength = strlen(Packet->Target.Info.Name) + 1;
+	CStringCopySafe(Notification->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->Target.Info.Name);
 	SocketSend(Context->ClientSocket, SourceClient->Connection, Notification);
 	return;
 
@@ -58,19 +56,19 @@ error:
 }
 
 IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE) {
-	ClientContextRef TargetClient = ServerGetClientByIndex(Context, Packet->Target.CharacterIndex, Packet->Target.Name);
+	ClientContextRef TargetClient = ServerGetClientByIndex(Context, Packet->Target.Info.CharacterIndex, Packet->Target.Info.Name);
 	if (!TargetClient) goto error;
 
-	RTCharacterRef TargetCharacter = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Packet->Target.CharacterIndex);
+	RTCharacterRef TargetCharacter = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Packet->Target.Info.CharacterIndex);
 	if (!TargetCharacter) goto error;
 
 	S2C_DATA_NFY_PARTY_INVITE* Notification = PacketBufferInit(TargetClient->Connection->PacketBuffer, S2C, NFY_PARTY_INVITE);
-	Notification->CharacterIndex = Packet->Source.CharacterIndex;
 	Notification->WorldServerID = Packet->Source.NodeIndex;
-	Notification->CharacterType = Packet->Source.CharacterType;
-	Notification->Level = Packet->Source.Level;
-	Notification->NameLength = strlen(Packet->Source.Name) + 1;
-	CStringCopySafe(Notification->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->Source.Name);
+	Notification->CharacterIndex = Packet->Source.Info.CharacterIndex;
+	Notification->CharacterType = 0;
+	Notification->Level = Packet->Source.Info.Level;
+	Notification->NameLength = strlen(Packet->Source.Info.Name) + 1;
+	CStringCopySafe(Notification->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->Source.Info.Name);
 	SocketSend(Context->ClientSocket, TargetClient->Connection, Notification);
 
 	IPC_W2P_DATA_PARTY_INVITE_ACK* Response = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2P, PARTY_INVITE_ACK);
@@ -80,13 +78,13 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE) {
 	Response->Header.Target.Type = IPC_TYPE_PARTY;
 	Response->Source = Packet->Source;
 	Response->Target = Packet->Target;
-	Response->Target.Level = TargetCharacter->Info.Basic.Level;
-	Response->Target.OverlordLevel = TargetCharacter->Info.Overlord.Level;
-	Response->Target.MythRebirth = 0;
-	Response->Target.MythHolyPower = 0;
-	Response->Target.MythLevel = 0;
-	Response->Target.ForceWingGrade = TargetCharacter->ForceWingInfo.Grade;
-	Response->Target.ForceWingLevel = TargetCharacter->ForceWingInfo.Level;
+	Response->Target.Info.Level = TargetCharacter->Info.Basic.Level;
+	Response->Target.Info.OverlordLevel = TargetCharacter->Info.Overlord.Level;
+	Response->Target.Info.MythRebirth = 0;
+	Response->Target.Info.MythHolyPower = 0;
+	Response->Target.Info.MythLevel = 0;
+	Response->Target.Info.ForceWingGrade = TargetCharacter->ForceWingInfo.Grade;
+	Response->Target.Info.ForceWingLevel = TargetCharacter->ForceWingInfo.Level;
 	Response->Success = true;
 	IPCSocketUnicast(Server->IPCSocket, Response);
 	return;
@@ -214,8 +212,14 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INFO) {
 	for (Int32 Index = 0; Index < Packet->Party.MemberCount; Index += 1) {
 		RTPartySlotRef Slot = &Packet->Party.Members[Index];
 
-		ClientContextRef Client = ServerGetClientByIndex(Context, Slot->CharacterIndex, NULL);
+		ClientContextRef Client = ServerGetClientByIndex(Context, Slot->Info.CharacterIndex, NULL);
 		if (!Client) continue;
+
+		// NOTE: This is just some bullshit to make other shit work clean it up...
+		RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Client->CharacterIndex);
+		if (Character) {
+			Character->PartyID = Packet->Party.ID;
+		}
 
 		S2C_DATA_NFY_PARTY_INFO* Notification = PacketBufferInit(Client->Connection->PacketBuffer, S2C, NFY_PARTY_INFO);
 		Notification->Result = 0;
@@ -224,16 +228,16 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INFO) {
 
 		for (Int32 MemberIndex = 0; MemberIndex < Packet->Party.MemberCount; MemberIndex += 1) {
 			S2C_DATA_PARTY_MEMBER* Member = &Notification->Members[MemberIndex];
-			Member->CharacterIndex = Packet->Party.Members[MemberIndex].CharacterIndex;
-			Member->Level = Packet->Party.Members[MemberIndex].Level;
-			Member->OverlordLevel = Packet->Party.Members[MemberIndex].OverlordLevel;
-			Member->MythRebirth = Packet->Party.Members[MemberIndex].MythRebirth;
-			Member->MythHolyPower = Packet->Party.Members[MemberIndex].MythHolyPower;
-			Member->MythLevel = Packet->Party.Members[MemberIndex].MythLevel;
-			Member->ForceWingGrade = Packet->Party.Members[MemberIndex].ForceWingGrade;
-			Member->ForceWingLevel = Packet->Party.Members[MemberIndex].ForceWingLevel;
-			Member->NameLength = strlen(Packet->Party.Members[MemberIndex].Name) + 1;
-			CStringCopySafe(Member->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->Party.Members[MemberIndex].Name);
+			Member->CharacterIndex = Packet->Party.Members[MemberIndex].Info.CharacterIndex;
+			Member->Level = Packet->Party.Members[MemberIndex].Info.Level;
+			Member->OverlordLevel = Packet->Party.Members[MemberIndex].Info.OverlordLevel;
+			Member->MythRebirth = Packet->Party.Members[MemberIndex].Info.MythRebirth;
+			Member->MythHolyPower = Packet->Party.Members[MemberIndex].Info.MythHolyPower;
+			Member->MythLevel = Packet->Party.Members[MemberIndex].Info.MythLevel;
+			Member->ForceWingGrade = Packet->Party.Members[MemberIndex].Info.ForceWingGrade;
+			Member->ForceWingLevel = Packet->Party.Members[MemberIndex].Info.ForceWingLevel;
+			Member->NameLength = strlen(Packet->Party.Members[MemberIndex].Info.Name) + 1;
+			CStringCopySafe(Member->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->Party.Members[MemberIndex].Info.Name);
 		}
 
 		SocketSend(Context->ClientSocket, Client->Connection, Notification);
@@ -283,4 +287,42 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INIT) {
 	Notification->Unknown6[1] = 0;
 	Notification->Unknown6[2] = 0;
 	SocketSend(Context->ClientSocket, ClientConnection, Notification);
+}
+
+IPC_PROCEDURE_BINDING(P2W, PARTY_DATA) {
+	S2C_DATA_NFY_PARTY_UPDATE* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_PARTY_UPDATE);
+	Notification->MemberCount = Packet->MemberCount;
+
+	for (Int32 MemberIndex = 0; MemberIndex < Packet->MemberCount; MemberIndex += 1) {
+		S2C_DATA_PARTY_UPDATE_MEMBER* Member = &Notification->Members[MemberIndex];
+		Member->Info.CharacterIndex = Packet->MemberInfo[MemberIndex].CharacterIndex;
+		Member->Info.Level = Packet->MemberInfo[MemberIndex].Level;
+		Member->Info.OverlordLevel = Packet->MemberInfo[MemberIndex].OverlordLevel;
+		Member->Info.MythRebirth = Packet->MemberInfo[MemberIndex].MythRebirth;
+		Member->Info.MythHolyPower = Packet->MemberInfo[MemberIndex].MythHolyPower;
+		Member->Info.MythLevel = Packet->MemberInfo[MemberIndex].MythLevel;
+		Member->Info.ForceWingGrade = Packet->MemberInfo[MemberIndex].ForceWingGrade;
+		Member->Info.ForceWingLevel = Packet->MemberInfo[MemberIndex].ForceWingLevel;
+		Member->Info.NameLength = strlen(Packet->MemberInfo[MemberIndex].Name) + 1;
+		CStringCopySafe(Member->Info.Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->MemberInfo[MemberIndex].Name);
+
+		Member->Data.MaxHP = Packet->MemberData[MemberIndex].MaxHP;
+		Member->Data.CurrentHP = Packet->MemberData[MemberIndex].CurrentHP;
+		Member->Data.MaxMP = Packet->MemberData[MemberIndex].MaxMP;
+		Member->Data.CurrentMP = Packet->MemberData[MemberIndex].CurrentMP;
+		Member->Data.PositionX = Packet->MemberData[MemberIndex].PositionX;
+		Member->Data.PositionY = Packet->MemberData[MemberIndex].PositionY;
+		Member->Data.MaxSP = Packet->MemberData[MemberIndex].MaxSP;
+		Member->Data.CurrentSP = Packet->MemberData[MemberIndex].CurrentSP;
+
+		// TODO: Resolve all unknown fields...
+		Member->Info.BattleStyleIndex = 9;
+	}
+
+	for (Int32 Index = 0; Index < Packet->MemberCount; Index += 1) {
+		ClientContextRef Client = ServerGetClientByIndex(Context, Packet->MemberInfo[Index].CharacterIndex, NULL);
+		if (!Client) continue;
+
+		SocketSend(Context->ClientSocket, Client->Connection, Notification);
+	}
 }
