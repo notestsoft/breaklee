@@ -59,7 +59,7 @@ IPC_PROCEDURE_BINDING(W2M, CREATE_CHARACTER) {
 	Response->Character.Level = Character->CharacterData.Basic.Level;
 	Response->Character.OverlordLevel = Character->CharacterData.Overlord.Level;
 	Response->Character.SkillRank = Character->CharacterData.Skill.Rank;
-	CStringCopySafe(Response->Character.Name, MAX_CHARACTER_NAME_LENGTH, Character->Name);
+	CStringCopySafe(Response->Character.Name, MAX_CHARACTER_NAME_LENGTH + 1, Character->Name);
 	Response->Character.HonorPoint = Character->CharacterData.Honor.Point;
 	Response->Character.Alz = Character->CharacterData.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
 	Response->Character.MapID = Character->CharacterData.Position.WorldID;

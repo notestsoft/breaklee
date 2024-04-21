@@ -19,6 +19,11 @@ RTPartyRef ServerCreateParty(
     Int32 PartyType
 );
 
+Void ServerDestroyParty(
+    ServerContextRef Context,
+    RTPartyRef Party
+);
+
 RTPartyRef ServerGetPartyByCharacter(
     ServerContextRef Context,
     Index CharacterIndex

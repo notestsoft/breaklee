@@ -22,7 +22,7 @@ IPC_PROCEDURE_BINDING(W2M, GET_CHARACTER) {
     Response->Character.Index = Character->Index;
     Response->Character.CreationDate = Character->CreatedAt;
 
-    CStringCopySafe(Response->Character.Name, MAX_CHARACTER_NAME_LENGTH, Character->Name);
+    CStringCopySafe(Response->Character.Name, MAX_CHARACTER_NAME_LENGTH + 1, Character->Name);
     memcpy(&Response->Character.CharacterData, &Character->CharacterData, sizeof(struct _RTCharacterInfo));
     memcpy(&Response->Character.EquipmentData, &Character->EquipmentData, sizeof(struct _RTCharacterEquipmentInfo));
     memcpy(&Response->Character.InventoryData, &Character->InventoryData, sizeof(struct _RTCharacterInventoryInfo));

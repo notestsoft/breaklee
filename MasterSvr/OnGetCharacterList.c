@@ -31,7 +31,7 @@ IPC_PROCEDURE_BINDING(W2M, GET_CHARACTER_LIST) {
 		Response->Characters[CharacterIndex.Index].OverlordLevel = CharacterIndex.CharacterData.Overlord.Level;
 		Response->Characters[CharacterIndex.Index].SkillRank = CharacterIndex.CharacterData.Skill.Rank;
 		Response->Characters[CharacterIndex.Index].NationMask = CharacterIndex.CharacterData.Profile.Nation;
-		CStringCopySafe(Response->Characters[CharacterIndex.Index].Name, MAX_CHARACTER_NAME_LENGTH, CharacterIndex.Name);
+		CStringCopySafe(Response->Characters[CharacterIndex.Index].Name, MAX_CHARACTER_NAME_LENGTH + 1, CharacterIndex.Name);
 		Response->Characters[CharacterIndex.Index].HonorPoint = CharacterIndex.CharacterData.Honor.Point;
 		Response->Characters[CharacterIndex.Index].Alz = CharacterIndex.CharacterData.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
 		Response->Characters[CharacterIndex.Index].MapID = CharacterIndex.CharacterData.Position.WorldID;

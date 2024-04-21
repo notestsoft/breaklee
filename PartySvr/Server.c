@@ -49,6 +49,21 @@ RTPartyRef ServerCreateParty(
     return (RTPartyRef)MemoryPoolFetch(Context->PartyPool, PartyPoolIndex);
 }
 
+Void ServerDestroyParty(
+    ServerContextRef Context,
+    RTPartyRef Party
+) {
+    // TODO: Cleanup also all invitations to this party!!!
+
+    for (Index MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {
+        Index CharacterIndex = Party->Members[MemberIndex].CharacterIndex;
+        DictionaryRemove(Context->CharacterToPartyEntity, &CharacterIndex);
+    }
+
+    Index PartyPoolIndex = Party->ID.EntityIndex;
+    MemoryPoolRelease(Context->PartyPool, PartyPoolIndex);
+}
+
 RTPartyRef ServerGetPartyByCharacter(
     ServerContextRef Context,
     Index CharacterIndex

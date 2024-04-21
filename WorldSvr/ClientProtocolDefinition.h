@@ -2180,7 +2180,7 @@ CLIENT_PROTOCOL(C2S, PARTY_INVITE, DEFAULT, 2011,
 )
 
 CLIENT_PROTOCOL(S2C, PARTY_INVITE, DEFAULT, 2011,
-    UInt8 Unknown1;
+    UInt8 Result;
     UInt32 CharacterIndex;
     UInt8 WorldServerID;
     UInt8 CharacterType;
@@ -2201,7 +2201,7 @@ CLIENT_PROTOCOL(S2C, NFY_PARTY_INVITE, DEFAULT, 2012,
 CLIENT_PROTOCOL(C2S, PARTY_INVITE_CONFIRM, DEFAULT, 2013,
     UInt32 CharacterIndex;
     UInt8 WorldServerID;
-    Int32 Unknown1;
+    Int32 IsAccept;
 )
 
 CLIENT_PROTOCOL(S2C, PARTY_INVITE_CONFIRM, DEFAULT, 2013,
@@ -2209,7 +2209,7 @@ CLIENT_PROTOCOL(S2C, PARTY_INVITE_CONFIRM, DEFAULT, 2013,
 )
 
 CLIENT_PROTOCOL(S2C, NFY_PARTY_INVITE_TIMEOUT, DEFAULT, 2014,
-    UInt32 Result;
+    UInt32 IsAccept;
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_PARTY_MEMBER,
@@ -2346,7 +2346,8 @@ CLIENT_PROTOCOL(S2C, NFY_PARTY_INIT, DEFAULT, 2056,
     UInt32 DungeonIndex;
     UInt16 Unknown1;
     RTEntityID PartyID;
-    RTEntityID PartyLeaderID;
+    //RTEntityID PartyLeaderID;
+    UInt32 PartyLeaderIndex;
     Int32 Unknown2;
     UInt8 Unknown3;
     UInt8 WorldServerIndex;

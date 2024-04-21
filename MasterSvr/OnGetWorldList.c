@@ -29,7 +29,7 @@ IPC_PROCEDURE_BINDING(L2M, GET_WORLD_LIST) {
         ServerGroupNode->NodeIndex = Node.Index;
         ServerGroupNode->PlayerCount = WorldInfo->PlayerCount;
         ServerGroupNode->MaxPlayerCount = WorldInfo->MaxPlayerCount;
-        CStringCopySafe(ServerGroupNode->Host, 64, WorldInfo->Host);
+        CStringCopySafe(ServerGroupNode->Host, 64 + 1, WorldInfo->Host);
         ServerGroupNode->Port = WorldInfo->Port;
         ServerGroupNode->Type = WorldInfo->Type;
 
@@ -62,7 +62,7 @@ IPC_PROCEDURE_BINDING(W2M, GET_WORLD_LIST) {
         ServerGroupNode->NodeIndex = Node.Index;
         ServerGroupNode->PlayerCount = WorldInfo->PlayerCount;
         ServerGroupNode->MaxPlayerCount = WorldInfo->MaxPlayerCount;
-        CStringCopySafe(ServerGroupNode->Host, 64, WorldInfo->Host);
+        CStringCopySafe(ServerGroupNode->Host, 64 + 1, WorldInfo->Host);
         ServerGroupNode->Port = WorldInfo->Port;
         ServerGroupNode->Type = WorldInfo->Type;
 

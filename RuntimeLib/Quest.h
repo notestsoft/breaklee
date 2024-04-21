@@ -2,7 +2,6 @@
 
 #include "Base.h"
 #include "Constants.h"
-
 #include "Item.h"
 
 EXTERN_C_BEGIN
@@ -257,75 +256,6 @@ Bool RTCharacterHasQuestItemCounter(
 );
 
 Bool RTCharacterHasQuestDungeon(
-    RTRuntimeRef Runtime,
-    RTCharacterRef Character,
-    Int32 DungeonID
-);
-
-Void RTPartyQuestFlagClear(
-    RTPartyRef Party,
-    Int32 QuestIndex
-);
-
-Void RTPartyQuestFlagSet(
-    RTPartyRef Party,
-    Int32 QuestIndex
-);
-
-Bool RTPartyQuestFlagIsSet(
-    RTPartyRef Party,
-    Int32 QuestIndex
-);
-
-Bool RTCharacterPartyQuestBegin(
-    RTRuntimeRef Runtime,
-    RTCharacterRef Character,
-    Int32 QuestIndex,
-    Int32 SlotIndex,
-    Int16 QuestItemSlotIndex
-);
-
-Bool RTCharacterPartyQuestClear(
-    RTRuntimeRef Runtime,
-    RTCharacterRef Character,
-    Int32 QuestIndex,
-    Int32 QuestSlotIndex,
-    UInt16 InventorySlotIndices[RUNTIME_MAX_QUEST_COUNTER_COUNT],
-    Int32 RewardItemIndex,
-    UInt16 RewardItemSlotIndex
-);
-
-Bool RTCharacterPartyQuestCancel(
-    RTRuntimeRef Runtime,
-    RTCharacterRef Character,
-    Int32 QuestIndex,
-    Int32 SlotIndex
-);
-
-Bool RTCharacterPartyQuestAction(
-    RTRuntimeRef Runtime,
-    RTCharacterRef Character,
-    Int32 QuestIndex,
-    Int32 NpcSetIndex,
-    Int32 SlotIndex,
-    Int32 ActionIndex,
-    Int32 ActionSlotIndex
-);
-
-Bool RTPartyIncrementQuestMobCounter(
-    RTRuntimeRef Runtime,
-    RTEntityID PartyID,
-    Index MobSpeciesIndex
-);
-
-Bool RTPartyHasQuestItemCounter(
-    RTRuntimeRef Runtime,
-    RTPartyRef Party,
-    RTItem Item,
-    UInt64 ItemOptions
-);
-
-Bool RTCharacterHasPartyQuestDungeon(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     Int32 DungeonID

@@ -18,7 +18,9 @@ struct _ServerContext {
     SocketRef WorldSocket;
     ServerConfig Config;
     MemoryPoolRef PartyPool;
+    MemoryPoolRef PartyInvitationPool;
     DictionaryRef CharacterToPartyEntity;
+    DictionaryRef CharacterToPartyInvite;
 };
 typedef struct _ServerContext* ServerContextRef;
 

@@ -486,10 +486,15 @@ IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER) {
     // TODO: Move event data to database and trigger request on init
     SendEventInfo(Context, Client);
     SendEventList(Context, Client);
-
-    S2C_DATA_NFY_PARTY_INIT* Notification = PacketBufferInit(ClientConnection->PacketBuffer, S2C, NFY_PARTY_INIT);
-    SocketSend(Context->ClientSocket, ClientConnection, Notification);
     BroadcastUserList(Server, Context);
+
+    IPC_W2P_DATA_PARTY_INIT* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2P, PARTY_INIT);
+    Request->Header.Source = Server->IPCSocket->NodeID;
+    Request->Header.SourceConnectionID = Client->Connection->ID;
+    Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+    Request->Header.Target.Type = IPC_TYPE_PARTY;
+    Request->CharacterIndex = Character->CharacterIndex;
+    IPCSocketUnicast(Server->IPCSocket, Request);
     return;
 
 error:

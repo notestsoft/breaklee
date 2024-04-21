@@ -17,7 +17,7 @@ IPC_PROCEDURE_BINDING(W2M, NFY_WORLD_INFO) {
 
 	WorldInfo->PlayerCount = Packet->PlayerCount;
 	WorldInfo->MaxPlayerCount = Packet->MaxPlayerCount;
-	CStringCopySafe(WorldInfo->Host, 64, Packet->Host);
+	CStringCopySafe(WorldInfo->Host, 64 + 1, Packet->Host);
 	WorldInfo->Port = Packet->Port;
 	WorldInfo->Type = Packet->Type;
 }

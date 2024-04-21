@@ -21,9 +21,9 @@ IPC_PROCEDURE_BINDING(W2M, GET_ACCOUNT) {
 		Response->Account.CharacterSlotID = Account->CharacterSlotID;
 		Response->Account.CharacterSlotOrder = Account->CharacterSlotOrder;
 		Response->Account.CharacterSlotFlags = Account->CharacterSlotFlags;
-		CStringCopySafe(Response->Account.CharacterPassword, MAX_SUBPASSWORD_LENGTH, Account->CharacterPassword);
+		CStringCopySafe(Response->Account.CharacterPassword, MAX_SUBPASSWORD_LENGTH + 1, Account->CharacterPassword);
 		Response->Account.CharacterQuestion = Context->TempAccount.CharacterQuestion;
-		CStringCopySafe(Response->Account.CharacterAnswer, MAX_SUBPASSWORD_ANSWER_LENGTH, Account->CharacterAnswer);
+		CStringCopySafe(Response->Account.CharacterAnswer, MAX_SUBPASSWORD_ANSWER_LENGTH + 1, Account->CharacterAnswer);
 	}
 
 	IPCSocketUnicast(Socket, Response);

@@ -40,7 +40,7 @@ Void BroadcastUserList(
     Notification->Header.Target.Type = IPC_TYPE_MASTER;
     Notification->PlayerCount = SocketGetConnectionCount(Context->ClientSocket);
     Notification->MaxPlayerCount = Context->Config.WorldSvr.MaxConnectionCount;
-    CStringCopySafe(Notification->Host, 64, Context->Config.WorldSvr.Host);
+    CStringCopySafe(Notification->Host, 64 + 1, Context->Config.WorldSvr.Host);
     Notification->Port = Context->Config.WorldSvr.Port;
     Notification->Type = Context->Config.WorldSvr.WorldType;
     IPCSocketUnicast(Server->IPCSocket, Notification);

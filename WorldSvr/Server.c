@@ -147,8 +147,7 @@ ClientContextRef ServerGetClientByEntity(
 ClientContextRef ServerGetClientByIndex(
     ServerContextRef Context,
     UInt32 CharacterIndex,
-    CString CharacterName,
-    Int32 CharacterNameLength
+    CString CharacterName
 ) {
     SocketConnectionIteratorRef Iterator = SocketGetConnectionIterator(Context->ClientSocket);
     while (Iterator) {
@@ -157,8 +156,8 @@ ClientContextRef ServerGetClientByIndex(
 
         ClientContextRef Client = (ClientContextRef)Connection->Userdata;
         if (Client && Client->CharacterIndex == CharacterIndex) {
-            if (CharacterName && memcmp(Client->CharacterName, CharacterName, CharacterNameLength) != 0) continue;
-
+            if (CharacterName && !CStringIsEqual(Client->CharacterName, CharacterName)) continue;
+            
             return Client;
         }
     }

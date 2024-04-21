@@ -38,8 +38,7 @@ ClientContextRef ServerGetClientByEntity(
 ClientContextRef ServerGetClientByIndex(
     ServerContextRef Context,
     UInt32 CharacterIndex,
-    CString CharacterName,
-    Int32 CharacterNameLength
+    CString CharacterName
 );
 
 EXTERN_C_END

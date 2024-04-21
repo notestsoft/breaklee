@@ -26,3 +26,18 @@ Void BroadcastToParty(
     }
     */
 }
+
+Void BroadcastPartyInfo(
+    ServerRef Server,
+    ServerContextRef Context,
+    IPCSocketRef Socket,
+    IPCSocketConnectionRef Connection,
+    RTPartyRef Party
+) {
+    IPC_P2W_DATA_PARTY_INFO* Notification = IPCPacketBufferInit(Connection->PacketBuffer, P2W, PARTY_INFO);
+    Notification->Header.Source = Server->IPCSocket->NodeID;
+    Notification->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
+    Notification->Header.Target.Type = IPC_TYPE_WORLD;
+    memcpy(&Notification->Party, Party, sizeof(struct _RTParty));
+    IPCSocketBroadcast(Socket, Notification);
+}

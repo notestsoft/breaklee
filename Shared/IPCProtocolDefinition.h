@@ -265,48 +265,92 @@ IPC_PROTOCOL(W2W, RESPONSE_SERVER_STATUS,
 IPC_PROTOCOL_STRUCT(IPC_DATA_PARTY_INVITE_MEMBER,
 	Index CharacterIndex;
 	RTEntityID CharacterID;
-	UInt8 WorldServerID;
+	UInt8 NodeIndex;
 	UInt8 CharacterType;
 	Int32 Level;
-	UInt8 NameLength;
-	Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH];
+	UInt16 OverlordLevel;
+	Int32 MythRebirth;
+	Int32 MythHolyPower;
+	Int32 MythLevel;
+	UInt8 ForceWingGrade;
+	UInt8 ForceWingLevel;
+	Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1];
 )
 
 IPC_PROTOCOL(W2P, PARTY_INVITE,
+	UInt8 Result;
 	IPC_DATA_PARTY_INVITE_MEMBER Source;
 	IPC_DATA_PARTY_INVITE_MEMBER Target;
 )
 
 IPC_PROTOCOL(P2W, PARTY_INVITE,
-    Bool Success;
 	IPC_DATA_PARTY_INVITE_MEMBER Source;
 	IPC_DATA_PARTY_INVITE_MEMBER Target;
 )
 
-IPC_PROTOCOL(W2W, PARTY_INVITE,
+IPC_PROTOCOL(W2P, PARTY_INVITE_ACK,
+	Bool Success;
+	IPC_DATA_PARTY_INVITE_MEMBER Source;
+	IPC_DATA_PARTY_INVITE_MEMBER Target;
+)
+
+IPC_PROTOCOL(P2W, PARTY_INVITE_ACK,
+	Bool Success;
 	IPC_DATA_PARTY_INVITE_MEMBER Source;
 	IPC_DATA_PARTY_INVITE_MEMBER Target;
 )
 
 IPC_PROTOCOL(W2P, PARTY_INVITE_CONFIRM,
-	Index CharacterIndex;
-	RTEntityID CharacterID;
-	UInt8 WorldServerID;
+	Bool IsAccept;
+	Index SourceCharacterIndex;
+	UInt8 SourceNodeIndex;
 	Index TargetCharacterIndex;
-	UInt8 TargetWorldServerID;
+	UInt8 TargetNodeIndex;
 )
 
 IPC_PROTOCOL(P2W, PARTY_INVITE_CONFIRM,
 	Bool Success;
-	Index CharacterIndex;
-	RTEntityID CharacterID;
-	UInt8 WorldServerID;
+	Index SourceCharacterIndex;
+	UInt8 SourceNodeIndex;
 	Index TargetCharacterIndex;
-	UInt8 TargetWorldServerID;
+	UInt8 TargetNodeIndex;
+)
+
+IPC_PROTOCOL(P2W, PARTY_INVITE_TIMEOUT,
+	Index CharacterIndex;
+	Int32 IsAccept;
 )
 
 IPC_PROTOCOL(P2W, PARTY_INFO,
 	struct _RTParty Party;
+)
+
+IPC_PROTOCOL(W2P, PARTY_INIT,
+	Index CharacterIndex;
+)
+
+IPC_PROTOCOL_STRUCT(P2W_DATA_PARTY_INIT_MEMBER,
+	UInt32 CharacterIndex;
+	Int32 Level;
+	UInt16 OverlordLevel;
+	Int32 MythRebirth;
+	Int32 MythHolyPower;
+	Int32 MythLevel;
+	UInt8 ForceWingGrade;
+	UInt8 ForceWingLevel;
+	Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1];
+)
+
+IPC_PROTOCOL(P2W, PARTY_INIT,
+	Int32 Result;
+	UInt32 DungeonIndex;
+	RTEntityID PartyID;
+	Index PartyLeaderIndex;
+	UInt8 WorldServerIndex;
+	Int32 MemberCount;
+	P2W_DATA_PARTY_INIT_MEMBER Members[RUNTIME_PARTY_MAX_MEMBER_COUNT];
+	UInt32 SoloDungeonIndex;
+	Timestamp SoloDungeonTimeout;
 )
 
 #undef IPC_PROTOCOL_ENUM

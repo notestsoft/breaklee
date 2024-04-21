@@ -12,7 +12,7 @@ CLIENT_PROCEDURE_BINDING(ROLL_DICE) {
 	Notification->MessageType = 10;
 	Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
 	Notification->NameLength = strlen(Client->CharacterName) + 1;
-	CStringCopySafe(Notification->Name, MAX_CHARACTER_NAME_LENGTH, Client->CharacterName);
+	CStringCopySafe(Notification->Name, MAX_CHARACTER_NAME_LENGTH + 1, Client->CharacterName);
 
 	S2C_DATA_NFY_USER_MESSAGE_ROLL_DICE* RollDice = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_USER_MESSAGE_ROLL_DICE);
 	RollDice->Value = RandomRange(

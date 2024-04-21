@@ -11,4 +11,12 @@ Void BroadcastToParty(
     Void *Notification
 );
 
+Void BroadcastPartyInfo(
+    ServerRef Server,
+    ServerContextRef Context,
+    IPCSocketRef Socket,
+    IPCSocketConnectionRef Connection,
+    RTPartyRef Party
+);
+
 EXTERN_C_END

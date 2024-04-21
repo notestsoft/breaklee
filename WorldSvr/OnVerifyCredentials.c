@@ -185,7 +185,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_SUBPASSWORD) {
 
     S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_SUBPASSWORD);
     Response->Success = 0;
-    Response->FailureCount = 0;
+    Response->FailureCount = 0; 
     Response->Type = Packet->Type;
     return SocketSend(Socket, Connection, Response);
 
