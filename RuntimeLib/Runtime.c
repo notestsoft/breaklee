@@ -67,13 +67,6 @@ Void RTRuntimeUpdate(
         RTCharacterRef Character = (RTCharacterRef)ArrayGetElementAtIndex(&Runtime->Characters, Index);
         if (Character->Movement.Flags & RUNTIME_MOVEMENT_IS_DEAD_RECKONING) {
             RTMovementUpdateDeadReckoning(Runtime, &Character->Movement);
-
-            LogMessageFormat(
-                LOG_LEVEL_INFO,
-                "(%d, %d)",
-                Character->Movement.PositionCurrent.X,
-                Character->Movement.PositionCurrent.Y
-            );
         }
     }
     */

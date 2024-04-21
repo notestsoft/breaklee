@@ -65,13 +65,6 @@ CLIENT_PROCEDURE_BINDING(MOVEMENT_END) {
 	Notification->Position.X = Packet->Position.X;
 	Notification->Position.Y = Packet->Position.Y;
 
-	LogMessageFormat(
-		LOG_LEVEL_INFO,
-		"(%d, %d)",
-		Character->Movement.PositionCurrent.X,
-		Character->Movement.PositionCurrent.Y
-	);
-
 	return BroadcastToWorld(
 		Context,
 		World,
@@ -243,13 +236,6 @@ CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_END) {
 	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 	Notification->PositionCurrentX = Packet->PositionCurrentX;
 	Notification->PositionCurrentY = Packet->PositionCurrentY;
-
-	LogMessageFormat(
-		LOG_LEVEL_INFO,
-		"(%d, %d)",
-		Character->Movement.PositionCurrent.X,
-		Character->Movement.PositionCurrent.Y
-	);
 
 	return BroadcastToWorld(
 		Context,

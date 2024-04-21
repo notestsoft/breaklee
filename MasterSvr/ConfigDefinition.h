@@ -36,6 +36,7 @@ CONFIG_PARAMETER(UInt16, ProtocolVersion, "NetLib.ProtocolVersion", 0x0009)
 CONFIG_PARAMETER(UInt16, ProtocolExtension, "NetLib.ProtocolExtension", 0x1111)
 CONFIG_PARAMETER(Index, ReadBufferSize, "NetLib.ReadBufferSize", 0x1FFFF)
 CONFIG_PARAMETER(Index, WriteBufferSize, "NetLib.WriteBufferSize", 0x1FFFF)
+CONFIG_PARAMETER(Bool, LogPackets, "NetLib.LogPackets", 0)
 CONFIG_END(NetLib)
 
 #undef CONFIG_BEGIN

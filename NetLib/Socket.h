@@ -49,6 +49,7 @@ struct _Socket {
     UInt16 ProtocolIdentifier;
     UInt16 ProtocolVersion;
     UInt16 ProtocolExtension;
+    Bool LogPackets;
     Index ReadBufferSize;
     Index WriteBufferSize;
     Index MaxConnectionCount;
@@ -87,6 +88,7 @@ SocketRef SocketCreate(
     Index ReadBufferSize,
     Index WriteBufferSize,
     Index MaxConnectionCount,
+    Bool LogPackets,
     SocketConnectionCallback OnConnect,
     SocketConnectionCallback OnDisconnect,
     SocketPacketCallback OnSend,

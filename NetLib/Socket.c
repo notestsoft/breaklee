@@ -9,6 +9,7 @@ SocketRef SocketCreate(
     Index ReadBufferSize,
     Index WriteBufferSize,
     Index MaxConnectionCount,
+    Bool LogPackets,
     SocketConnectionCallback OnConnect,
     SocketConnectionCallback OnDisconnect,
     SocketPacketCallback OnSend,
@@ -28,6 +29,7 @@ SocketRef SocketCreate(
     Socket->ProtocolIdentifier = ProtocolIdentifier;
     Socket->ProtocolVersion = ProtocolVersion;
     Socket->ProtocolExtension = ProtocolExtension;
+    Socket->LogPackets = LogPackets;
     Socket->ReadBufferSize = ReadBufferSize;
     Socket->WriteBufferSize = WriteBufferSize;
     Socket->MaxConnectionCount = MaxConnectionCount;
@@ -272,6 +274,7 @@ Bool SocketFetchReadBuffer(
             }
 
             if (Socket->OnReceived) Socket->OnReceived(Socket, Connection, Packet);
+            if (Socket->LogPackets) PacketLogBytes(Socket->ProtocolIdentifier, Socket->ProtocolVersion, Socket->ProtocolExtension, Packet);
 
             MemoryBufferPopFront(Connection->ReadBuffer, PacketLength);
         }
@@ -301,6 +304,7 @@ Bool SocketFlushWriteBuffer(
         }
         
         if (Socket->OnSend) Socket->OnSend(Socket, Connection, Packet);
+        if (Socket->LogPackets) PacketLogBytes(Socket->ProtocolIdentifier, Socket->ProtocolVersion, Socket->ProtocolExtension, Packet);
 
         if (Socket->Flags & SOCKET_FLAGS_ENCRYPTED) {
             KeychainEncryptPacket(&Connection->Keychain, Packet, PacketLength);

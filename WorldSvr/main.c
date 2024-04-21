@@ -159,6 +159,7 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
         Config.NetLib.ReadBufferSize,
         Config.NetLib.WriteBufferSize,
         Config.WorldSvr.MaxConnectionCount,
+        Config.NetLib.LogPackets,
         &ClientSocketOnConnect,
         &ClientSocketOnDisconnect
     );

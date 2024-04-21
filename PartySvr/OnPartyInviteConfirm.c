@@ -58,7 +58,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CONFIRM) {
     Response->SourceNodeIndex = Packet->SourceNodeIndex;
     Response->TargetCharacterIndex = Packet->TargetCharacterIndex;
     Response->TargetNodeIndex = Packet->TargetNodeIndex;
-    Response->Success = true;
+    Response->Success = Packet->IsAccept;
     IPCSocketUnicast(Socket, Response);
     return;
 

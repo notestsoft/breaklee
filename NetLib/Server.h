@@ -102,6 +102,7 @@ SocketRef ServerCreateSocket(
     Index ReadBufferSize,
     Index WriteBufferSize,
     Index MaxConnectionCount,
+    Bool LogPackets,
     ServerConnectionCallback OnConnect,
     ServerConnectionCallback OnDisconnect
 );
