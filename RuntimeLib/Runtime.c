@@ -550,7 +550,7 @@ RTWorldContextRef RTRuntimeOpenDungeon(
         RTPartyRef Party = RTRuntimeCreateParty(Runtime, Character, RUNTIME_PARTY_TYPE_SOLO_DUNGEON);
         Character->PartyID = Party->ID;
     }
-    
+
     RTWorldContextRef PartyWorld = RTWorldContextCreateParty(Runtime->WorldManager, WorldIndex, DungeonIndex, Character->PartyID);
     return PartyWorld;
 }

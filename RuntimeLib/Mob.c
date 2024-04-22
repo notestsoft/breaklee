@@ -316,6 +316,7 @@ Void RTMobAttackTarget(
 
 struct _RTMobFindNearbyTargetArguments {
 	RTWorldManagerRef WorldManager;
+	RTWorldContextRef WorldContext;
 	RTMobRef Mob;
 	Int32 Distance;
 	RTEntityID Target;
@@ -335,7 +336,8 @@ Void _RTMobFindNearbyTargetProc(
 		);
 
 		Int32 LevelDifference = Character->Info.Basic.Level - Arguments->Mob->SpeciesData->Level;
-		if (LevelDifference > RUNTIME_MOB_MAX_FIND_LEVEL_DIFFERENCE) {
+		if (Arguments->WorldContext->WorldData->Type == RUNTIME_WORLD_TYPE_GLOBAL &&
+			LevelDifference > RUNTIME_MOB_MAX_FIND_LEVEL_DIFFERENCE) {
 			return;
 		}
 	}
@@ -438,6 +440,7 @@ Void RTMobUpdate(
 		if (RTMobIsAggressive(Mob)) {
 			struct _RTMobFindNearbyTargetArguments Arguments = { 0 };
 			Arguments.WorldManager = WorldContext->WorldManager;
+			Arguments.WorldContext = WorldContext;
 			Arguments.Mob = Mob;
 			Arguments.Distance = Mob->SpeciesData->AlertRange;
 			Arguments.Target = kEntityIDNull;

@@ -326,3 +326,10 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_DATA) {
 		SocketSend(Context->ClientSocket, Client->Connection, Notification);
 	}
 }
+
+IPC_PROCEDURE_BINDING(P2W, BROADCAST_TO_CHARACTER) {
+	ClientContextRef SourceClient = ServerGetClientByIndex(Context, Packet->CharacterIndex, NULL);
+	if (!SourceClient) return;
+
+	SocketSend(Context->ClientSocket, SourceClient->Connection, Packet->Data);
+}

@@ -233,21 +233,19 @@ Void BroadcastToParty(
     RTEntityID PartyID,
     Void *Notification
 ) {
-    RTPartyRef Party = RTRuntimeGetParty(Context->Runtime, PartyID);
-    if (!Party) return;
-
-    for (Int32 Index = 0; Index < Party->MemberCount; Index += 1) {
-        RTPartySlotRef Slot = &Party->Members[Index];
-        if (RTEntityIsNull(Slot->MemberID)) continue;
-
-        RTCharacterRef Character = RTWorldManagerGetCharacter(Context->Runtime->WorldManager, Slot->MemberID);
-        if (!Character) continue;
-
-        ClientContextRef Client = ServerGetClientByEntity(Context, Character->ID);
-        if (!Client) continue;
-
-        SocketSend(Context->ClientSocket, Client->Connection, Notification);
-    }
+    IPC_W2P_DATA_BROADCAST_TO_PARTY* Request = IPCPacketBufferInit(Context->IPCSocket, W2P, BROADCAST_TO_PARTY);
+    Request->Header.Source = Context->IPCSocket->NodeID;
+    Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+    Request->Header.Target.Type = IPC_TYPE_PARTY;
+    Request->PartyID = PartyID;
+    Request->Length = PacketGetLength(
+        Context->ClientSocket->ProtocolIdentifier,
+        Context->ClientSocket->ProtocolVersion,
+        Context->ClientSocket->ProtocolExtension,
+        Notification
+    );
+    IPCPacketBufferAppendCopy(Context->IPCSocket, Notification, Request->Length);
+    IPCSocketUnicast(Context->IPCSocket, Request);
 }
 
 struct _BroadcastToWorldArguments {

@@ -210,6 +210,12 @@ RTWorldContextRef RTWorldContextCreateParty(
     RTEntityID Party
 ) {
     assert(!RTEntityIsNull(Party));
+
+    Index* WorldPoolIndexPtr = DictionaryLookup(WorldManager->PartyToWorldContextPoolIndex, &Party);
+    if (WorldPoolIndexPtr) {
+        return (RTWorldContextRef)MemoryPoolFetch(WorldManager->PartyWorldContextPool, *WorldPoolIndexPtr);
+    }
+
     assert(!DictionaryLookup(WorldManager->PartyToWorldContextPoolIndex, &Party));
 
     Index WorldPoolIndex = 0;

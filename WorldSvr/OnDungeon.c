@@ -99,10 +99,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_SPAWN) {
     // TODO: Character is joining the dungeon which doesn't mean that it is a start command,
     //       because a party member could have had already started it!
 
-    if (!World->Active) {
-        RTDungeonStart(World);
-        // RTWorldContextUpdate(Runtime, World);
-
+    if (RTDungeonStart(World)) {
         S2C_DATA_NFY_QUEST_DUNGEON_SPAWN* Response = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_QUEST_DUNGEON_SPAWN);
         Response->DungeonTimeout1 = (UInt32)(World->DungeonTimeout * 1000) - GetTimestampMs();
         Response->DungeonTimeout2 = DungeonData->MissionTimeout * 1000;

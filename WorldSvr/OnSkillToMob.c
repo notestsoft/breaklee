@@ -144,7 +144,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 		// TODO: This should be calculated globally inside the mob logic when it dies by a bfx effect and no active attack!
 		if (Result.IsDead) {
 			if (RTCharacterIncrementQuestMobCounter(Runtime, Character, Mob->Spawn.MobSpeciesIndex)) {
-				S2C_DATA_NFY_QUEST_MOB_KILL* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_QUEST_MOB_KILL);
+				S2C_DATA_NFY_QUEST_MOB_KILL* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_QUEST_MOB_KILL);
 				Notification->MobSpeciesIndex = Mob->Spawn.MobSpeciesIndex;
 				Notification->SkillIndex = 0;
 				Notification->Unknown1 = 0;

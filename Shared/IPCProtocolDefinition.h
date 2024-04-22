@@ -363,6 +363,18 @@ IPC_PROTOCOL(P2W, PARTY_DATA,
 	struct _RTPartyMemberData MemberData[RUNTIME_PARTY_MAX_MEMBER_COUNT];
 )
 
+IPC_PROTOCOL(W2P, BROADCAST_TO_PARTY,
+	RTEntityID PartyID;
+	Int32 Length;
+	UInt8 Data[0];
+)
+
+IPC_PROTOCOL(P2W, BROADCAST_TO_CHARACTER,
+	Index CharacterIndex;
+	Int32 Length;
+	UInt8 Data[0];
+)
+
 #undef IPC_PROTOCOL_ENUM
 #undef IPC_PROTOCOL_STRUCT
 #undef IPC_PROTOCOL
