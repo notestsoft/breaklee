@@ -41,7 +41,7 @@ SERVER_PROCEDURE_BINDING(PUBLIC_KEY_LOGIN) {
 
     if (RSA_generate_key_ex(Client->RSA, 2048, Exponent, NULL) != 1) goto error;
 
-    i2d_RSAPublicKey_bio(BIO, Client->RSA, );
+    // i2d_RSAPublicKey_bio(BIO, Client->RSA, );
 
     UInt8* Key = NULL;
     Int64 Length = BIO_get_mem_data(BIO, &Key);

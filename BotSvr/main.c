@@ -77,13 +77,13 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     );
 
 #define S2C_COMMAND(__NAME__, __COMMAND__) \
-    ServerSocketRegisterPacketCallback(Server, LoginSocket, __COMMAND__, &SERVER_PROC_ ## __NAME__ ## _LOGIN);
+    ServerSocketRegisterPacketCallback(Server, ServerContext.LoginSocket, __COMMAND__, &SERVER_PROC_ ## __NAME__ ## _LOGIN);
 #include "LoginCommands.h"
-
+    /*
 #define S2C_COMMAND(__NAME__, __COMMAND__) \
-    ServerSocketRegisterPacketCallback(Server, LoginSocket, __COMMAND__, &SERVER_PROC_ ## __NAME__ ## _WORLD);
+    ServerSocketRegisterPacketCallback(Server, ServerContext.WorldSocket, __COMMAND__, &SERVER_PROC_ ## __NAME__ ## _WORLD);
 #include "WorldCommands.h"
-
+    */
     ServerRun(Server);
 
     EncryptionUnloadLibrary();
