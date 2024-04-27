@@ -44,13 +44,6 @@ Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                    \
 #define IPC_W2P_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(W2P, __NAME__)
 #include "IPCCommands.h"
 
-// TODO: This is not a good solution considering the connection id is being reused
-Index PacketGetConnectionID(
-    Void* Packet
-) {
-    return *(Index*)((UInt8*)Packet + 8);
-}
-
 Void ServerOnUpdate(
     ServerRef Server,
     Void *ServerContext

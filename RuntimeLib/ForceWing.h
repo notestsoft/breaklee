@@ -13,7 +13,6 @@ struct _RTForceWingArrivalSkillSlot {
     UInt8 ForceEffectGrade[RUNTIME_CHARACTER_MAX_FORCE_WING_ARRIVAL_STATS_COUNT];
 };
 
-// TODO: Swap names of preset and training or even use ability as thats the original term..
 struct _RTForceWingPresetSlot {
     UInt8 PresetPageIndex;
     UInt8 SlotIndex;

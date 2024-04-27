@@ -22,13 +22,6 @@ Void SERVER_PROC_ ## __NAME__(                                                  
 }
 #include "ClientCommands.h"
 
-// TODO: This is not a good solution considering the connection id is being reused
-Index PacketGetConnectionID(
-    Void* Packet
-) {
-    return *(Index*)((UInt8*)Packet + 8);
-}
-
 #define IPC_COMMAND_CALLBACK(__NAMESPACE__, __NAME__)               \
 Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(            \
     IPCSocketRef Socket,                                            \

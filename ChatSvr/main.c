@@ -31,13 +31,6 @@ Void ServerOnIPCPacketReceived(
 
 }
 
-// TODO: This is not a good solution considering the connection id is being reused
-Index PacketGetConnectionID(
-    Void* Packet
-) {
-    return *(Index*)((UInt8*)Packet + 8);
-}
-
 Void ServerOnUpdate(
     ServerRef Server,
     Void *ServerContext
