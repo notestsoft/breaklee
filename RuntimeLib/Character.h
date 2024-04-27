@@ -3,26 +3,44 @@
 
 #include "Base.h"
 
+#include "Achievement.h"
+#include "Appearance.h"
 #include "BattleSystem.h"
 #include "BlendedAbility.h"
+#include "BlessingBead.h"
+#include "Buff.h"
 #include "Collection.h"
+#include "Costume.h"
+#include "DailyQuest.h"
 #include "Warehouse.h"
 #include "Entity.h"
 #include "Equipment.h"
 #include "EssenceAbility.h"
+#include "EventPass.h"
 #include "ForceWing.h"
+#include "GiftBox.h"
+#include "HonorMedal.h"
 #include "Inventory.h"
 #include "Item.h"
 #include "KarmaAbility.h"
+#include "Mercenary.h"
+#include "MeritMastery.h"
 #include "Movement.h"
+#include "MythMastery.h"
 #include "NewbieSupport.h"
 #include "OverlordMastery.h"
+#include "PremiumService.h"
 #include "Quest.h"
 #include "Quickslot.h"
 #include "Recovery.h"
 #include "RequestCraft.h"
 #include "Skill.h"
 #include "SkillSlot.h"
+#include "StellarMastery.h"
+#include "Transcendence.h"
+#include "Transform.h"
+#include "VehicleInventory.h"
+#include "WarpService.h"
 
 EXTERN_C_BEGIN
 
@@ -239,42 +257,40 @@ struct _RTCharacter {
 //    Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1];
     struct _RTCharacterInfo Info;
     struct _RTCharacterEquipmentInfo EquipmentInfo;
-    // struct _RTCharacterEquipmentLockInfo EquipmentLockInfo;
+    struct _RTCharacterEquipmentLockInfo EquipmentLockInfo;
     struct _RTCharacterInventoryInfo InventoryInfo;
     struct _RTCharacterSkillSlotInfo SkillSlotInfo;
     struct _RTCharacterQuickSlotInfo QuickSlotInfo;
     struct _RTCharacterEssenceAbilityInfo EssenceAbilityInfo;
-    // struct _RTCharacterBlendedAbilityInfo BlendedAbilityInfo;
-    // struct _RTCharacterKarmaAbilityInfo KarmaAbilityInfo;
-    // struct _RTCharacterBlessingBeadInfo BlessingBeadInfo;
-    // struct _RTCharacterPremiumServiceInfo PremiumServiceInfo;
+    struct _RTCharacterBlendedAbilityInfo BlendedAbilityInfo;
+    struct _RTCharacterKarmaAbilityInfo KarmaAbilityInfo;
+    struct _RTCharacterBlessingBeadInfo BlessingBeadInfo;
+    struct _RTCharacterPremiumServiceInfo PremiumServiceInfo;
     struct _RTCharacterQuestSlotInfo QuestSlotInfo;
     struct _RTCharacterQuestFlagInfo QuestFlagInfo;
     struct _RTCharacterDungeonQuestFlagInfo DungeonQuestFlagInfo;
-    // struct _RTCharacterDailyQuestInfo DailyQuestInfo;
-    // struct _RTCharacterMercenaryInfo MercenaryInfo;
-    // struct _RTCharacterEquipmentAppearanceInfo EquipmentAppearanceInfo;
-    // struct _RTCharacterInventoryAppearanceInfo InventoryAppearanceInfo;
-    // struct _RTCharacterAchievementInfo AchievementInfo;
-    // struct _RTCharacterAchievementRewardInfo AchievementRewardInfo;
+    struct _RTCharacterDailyQuestInfo DailyQuestInfo;
+    struct _RTCharacterMercenaryInfo MercenaryInfo;
+    struct _RTCharacterEquipmentAppearanceInfo EquipmentAppearanceInfo;
+    struct _RTCharacterInventoryAppearanceInfo InventoryAppearanceInfo;
+    struct _RTCharacterAchievementInfo AchievementInfo;
     struct _RTCharacterRequestCraftInfo RequestCraftInfo;
-    // struct _RTCharacterBuffInfo BuffInfo;
-    // struct _RTCharacterVehicleInventoryInfo VehicleInventoryInfo;
-    // struct _RTCharacterMeritMasteryInfo MeritMasteryInfo;
+    struct _RTCharacterBuffInfo BuffInfo;
+    struct _RTCharacterVehicleInventoryInfo VehicleInventoryInfo;
+    struct _RTCharacterGoldMeritMasteryInfo GoldMeritMasteryInfo;
     // struct _RTCharacterPlatinumMeritMasteryInfo PlatinumMeritMasteryInfo;
     struct _RTCharacterOverlordMasteryInfo OverlordMasteryInfo;
-    // struct _RTCharacterHonorMedalInfo HonorMedalInfo;
+    struct _RTCharacterHonorMedalInfo HonorMedalInfo;
     struct _RTCharacterForceWingInfo ForceWingInfo;
-    // struct _RTCharacterGiftboxInfo GiftboxInfo;
+    struct _RTCharacterGiftboxInfo GiftboxInfo;
     struct _RTCharacterCollectionInfo CollectionInfo;
-    // struct _RTCharacterTransformInfo TransformInfo;
-    // struct _RTCharacterTranscendenceInfo TranscendenceInfo;
-    // struct _RTCharacterStellarMasteryInfo StellarMasteryInfo;
-    // struct _RTCharacterMythMasteryInfo MythMasteryInfo;
+    struct _RTCharacterTransformInfo TransformInfo;
+    struct _RTCharacterTranscendenceInfo TranscendenceInfo;
+    struct _RTCharacterStellarMasteryInfo StellarMasteryInfo;
+    struct _RTCharacterMythMasteryInfo MythMasteryInfo;
     struct _RTCharacterNewbieSupportInfo NewbieSupportInfo;
-    // struct _RTCharacterEventPassInfo EventPassInfo;
-    // struct _RTCharacterCostumeInfo CostumeInfo;
-
+    struct _RTCharacterEventPassInfo EventPassInfo;
+    struct _RTCharacterCostumeInfo CostumeInfo;
     struct _RTCharacterWarehouseInfo WarehouseInfo;
     struct _RTCharacterInventoryInfo TemporaryInventoryInfo;
     struct _RTCharacterRecoveryInfo RecoveryInfo;

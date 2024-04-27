@@ -65,6 +65,16 @@ struct _RTCharacterEquipmentInfo {
     struct _RTItemSlot Slots[RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT];
 };
 
+struct _RTEquipmentLockSlot {
+    UInt8 SlotIndex;
+    UInt8 SlotFlags;
+};
+
+struct _RTCharacterEquipmentLockInfo {
+    UInt32 Count;
+    struct _RTEquipmentLockSlot Slots[RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT];
+};
+
 #pragma pack(pop)
 
 UInt32 RTEquipmentSlotIndexGetItemType(
