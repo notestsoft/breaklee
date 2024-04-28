@@ -14,10 +14,15 @@ CLIENT_PROCEDURE_BINDING(GET_WAREHOUSE) {
 	Response->Count = Character->WarehouseInfo.Count;
 	Response->Currency = Character->WarehouseInfo.Currency;
 
-	for (Int32 Index = 0; Index < Character->WarehouseInfo.Count; Index++) {
-		S2C_DATA_GET_WAREHOUSE_SLOT_INDEX* Slots = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_GET_WAREHOUSE_SLOT_INDEX);
-
-		Slots->Item.Serial = Character->WarehouseInfo.Slots[Index].Item.Serial;
+	for (Int32 Index = 0; Index < Character->WarehouseInfo.Count; Index += 1) {
+		RTItemSlotRef ItemSlot = &Character->WarehouseInfo.Slots[Index];
+		
+		S2C_DATA_GET_WAREHOUSE_SLOT_INDEX* ResponseSlot = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_GET_WAREHOUSE_SLOT_INDEX);
+		ResponseSlot->Item.Serial = ItemSlot->Item.Serial;
+		ResponseSlot->Unknown1 = ItemSlot->ItemSerial;
+		ResponseSlot->ItemOptions = ItemSlot->ItemOptions;
+		ResponseSlot->SlotIndex = ItemSlot->SlotIndex;
+		ResponseSlot->ItemDuration = ItemSlot->ItemDuration;
 	}
 
 	return SocketSend(Socket, Connection, Response);
@@ -33,7 +38,7 @@ CLIENT_PROCEDURE_BINDING(WAREHOUSE_CURRENCY_DEPOSIT) {
 
 	Response->Result = 1;
 
-	//TODO: Calculate the tax for the deposit
+	// TODO: Calculate the tax for the deposit
 
 	if (Packet->Amount > 0) {
 		if (Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < Packet->Amount) {
@@ -63,4 +68,58 @@ error:
 	memcpy(&Character->InventoryInfo, &kInventoryInfoBackup, sizeof(struct _RTCharacterInventoryInfo));
 	memcpy(&Character->WarehouseInfo, &kWarehouseInfoBackup, sizeof(struct _RTCharacterWarehouseInfo));
 	return SocketDisconnect(Socket, Connection);
+}
+
+CLIENT_PROCEDURE_BINDING(SORT_WAREHOUSE) {
+	if (!Character) {
+		return SocketDisconnect(Socket, Connection);
+	}
+
+	struct _RTCharacterWarehouseInfo TempWarehouseMemory = { 0 };
+	RTCharacterWarehouseInfoRef TempWarehouse = &TempWarehouseMemory;
+	memcpy(TempWarehouse, &Character->WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
+
+	Bool WarehouseOccupancyMask[RUNTIME_WAREHOUSE_TOTAL_SIZE] = { 0 };
+	memset(WarehouseOccupancyMask, 0, sizeof(Bool) * RUNTIME_WAREHOUSE_TOTAL_SIZE);
+	for (Int32 Index = 0; Index < Character->WarehouseInfo.Count; Index += 1) {
+		WarehouseOccupancyMask[Character->WarehouseInfo.Slots[Index].SlotIndex] = true;
+	}
+
+	for (Int32 Index = 0; Index < Packet->Count; Index += 1) {
+		WarehouseOccupancyMask[Packet->WarehouseSlots[Index]] = false;
+	}
+
+	for (Int32 Index = 0; Index < Packet->Count; Index += 1) {
+		Int32 SlotIndex = RTWarehouseGetSlotIndex(Runtime, &Character->WarehouseInfo, Packet->WarehouseSlots[Index]);
+		if (SlotIndex < 0) goto error;
+
+		RTItemSlotRef Slot = &TempWarehouse->Slots[SlotIndex];
+
+		Bool Found = false;
+		for (Int32 SlotIndex = 0; SlotIndex < RUNTIME_WAREHOUSE_TOTAL_SIZE; SlotIndex += 1) {
+			if (!WarehouseOccupancyMask[SlotIndex]) {
+				WarehouseOccupancyMask[SlotIndex] = true;
+				Slot->SlotIndex = SlotIndex;
+				Found = true;
+				break;
+			}
+		}
+		assert(Found);
+	}
+
+	memcpy(&Character->WarehouseInfo, TempWarehouse, sizeof(struct _RTCharacterWarehouseInfo));
+
+	Character->SyncMask.WarehouseInfo = true;
+	Character->SyncPriority.High = true;
+
+	S2C_DATA_SORT_WAREHOUSE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SORT_WAREHOUSE);
+	Response->Success = 1;
+	return SocketSend(Socket, Connection, Response);
+
+error:
+	{
+		S2C_DATA_SORT_WAREHOUSE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SORT_WAREHOUSE);
+		Response->Success = 0;
+		return SocketSend(Socket, Connection, Response);
+	}
 }
