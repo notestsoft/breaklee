@@ -82,6 +82,12 @@ UInt32 RTEquipmentSlotIndexGetItemType(
     UInt32 SlotIndex
 );
 
+Bool RTEquipmentIsSlotEmpty(
+    RTRuntimeRef Runtime,
+    RTCharacterEquipmentInfoRef Equipment,
+    Int32 SlotIndex
+);
+
 RTItemSlotRef RTEquipmentGetSlot(
     RTRuntimeRef Runtime,
     RTCharacterEquipmentInfoRef Equipment,

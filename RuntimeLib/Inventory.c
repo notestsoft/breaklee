@@ -23,6 +23,66 @@ Int32 RTInventoryGetNextFreeSlotIndex(
 	return Inventory->Count;
 }
 
+Void RTInventorySort(
+	RTRuntimeRef Runtime,
+	RTCharacterInventoryInfoRef Inventory
+) {
+	for (Int32 Offset = 1; Offset < Inventory->Count; Offset += 1) {
+		Int32 Index = Offset;
+		while (Index > 0 && Inventory->Slots[Index].SlotIndex <= Inventory->Slots[Index - 1].SlotIndex) {
+			struct _RTItemSlot TempSlot = Inventory->Slots[Index];
+			Inventory->Slots[Index] = Inventory->Slots[Index - 1];
+			Inventory->Slots[Index - 1] = TempSlot;
+			Index -= 1;
+		}
+	}
+}
+
+Bool RTInventoryInsertSlot(
+	RTRuntimeRef Runtime,
+	RTCharacterInventoryInfoRef Inventory,
+	RTItemSlotRef Slot
+) {
+	if (Inventory->Count >= RUNTIME_INVENTORY_TOTAL_SIZE) 
+		return false;
+
+	Int32 InsertionIndex = -1;
+	for (Int32 Offset = 0; Offset < Inventory->Count; Offset += 1) {
+		if (Inventory->Slots[Offset].SlotIndex < Slot->SlotIndex) continue;
+
+		InsertionIndex = Offset;
+
+		if (Inventory->Slots[Offset].SlotIndex > Slot->SlotIndex) {
+			break;
+		}
+
+		Int32 SlotIndex = Slot->SlotIndex + 1;
+		for (Int32 Index = Offset; Index < Inventory->Count - 1; Index += 1) {
+			Inventory->Slots[Index].SlotIndex = SlotIndex;
+
+			SlotIndex += 1;
+			if (Inventory->Slots[Index + 1].SlotIndex >= SlotIndex) {
+				break;
+			}
+		}
+	}
+
+	if (InsertionIndex < 0) {
+		Bool Success = RTInventorySetSlot(Runtime, Inventory, Slot);
+		assert(Success);
+		return true;
+	}
+
+	Int32 TailLength = Inventory->Count - InsertionIndex;
+	if (TailLength > 0) {
+		memmove(&Inventory->Slots[InsertionIndex + 1], &Inventory->Slots[InsertionIndex], sizeof(struct _RTItemSlot) * TailLength);
+	}
+
+	memcpy(&Inventory->Slots[InsertionIndex], Slot, sizeof(struct _RTItemSlot));
+	Inventory->Count += 1;
+	return true;
+}
+
 Bool RTInventoryIsSlotEmpty(
 	RTRuntimeRef Runtime,
 	RTCharacterInventoryInfoRef Inventory,
@@ -136,7 +196,8 @@ Bool RTInventoryRemoveSlot(
 ) {
 	LogMessageFormat(LOG_LEVEL_INFO, "InventoryRemoveSlot(%d)", SlotIndex);
 	RTItemSlotRef Slot = RTInventoryGetSlot(Runtime, Inventory, SlotIndex);
-	if (!Slot) return false;
+	if (!Slot) 
+		return false;
 
 	memcpy(Result, Slot, sizeof(struct _RTItemSlot));
 

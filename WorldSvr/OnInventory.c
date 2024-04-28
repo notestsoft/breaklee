@@ -78,6 +78,35 @@ error:
     return false;
 }
 
+Bool CanSwapInventoryItem(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 SourceSlotIndex,
+    Int32 TargetSlotIndex
+) {
+    RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, SourceSlotIndex);
+    RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, TargetSlotIndex);
+    if (!SourceSlot || !TargetSlot) return false;
+
+    return true;
+}
+
+Bool SwapInventoryItem(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 SourceSlotIndex,
+    Int32 TargetSlotIndex
+) {
+    RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, SourceSlotIndex);
+    RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, TargetSlotIndex);
+    if (!SourceSlot || !TargetSlot) return false;
+
+    SourceSlot->SlotIndex = TargetSlotIndex;
+    TargetSlot->SlotIndex = SourceSlotIndex;
+
+    return true;
+}
+
 CLIENT_PROCEDURE_BINDING(PUSH_EQUIPMENT_ITEM) {
     if (!Character) goto error;
 
@@ -252,14 +281,79 @@ error:
     return SocketDisconnect(Socket, Connection);
 }
 
+CLIENT_PROCEDURE_BINDING(MERGE_INVENTORY) {
+
+    /*
+    CLIENT_PROTOCOL_STRUCT(C2S_DATA_MERGE_INVENTORY_SLOT_RESULT,
+        UInt16 SlotIndex;
+        UInt32 StackSize;
+    )
+
+        CLIENT_PROTOCOL(C2S, MERGE_INVENTORY, DEFAULT, 2501,
+            UInt16 MergeInventorySlotCount;
+            UInt16 ResultInventorySlotCount;
+            UInt16 Unknown1;
+            UInt16 MergeInventorySlotIndex[0]; // MergeSlotCount
+            // C2S_DATA_MERGE_INVENTORY_SLOT_RESULT ResultInventorySlots[ResultInventorySlotCount];
+        )
+
+    RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, SourceSlot->Item.ID);
+    if (!ItemData || ItemData->MaxStackSize <= 1) return false;
+    */
+}
+
 CLIENT_PROCEDURE_BINDING(SORT_INVENTORY) {
     if (!Character) {
         return SocketDisconnect(Socket, Connection);
     }
 
+    struct _RTCharacterInventoryInfo TempInventoryMemory = { 0 };
+    RTCharacterInventoryInfoRef TempInventory = &TempInventoryMemory;
+    memcpy(TempInventory, &Character->InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
+
+    Bool InventoryOccupancyMask[RUNTIME_INVENTORY_TOTAL_SIZE] = { 0 };
+    memset(InventoryOccupancyMask, 0, sizeof(Bool) * RUNTIME_INVENTORY_TOTAL_SIZE);
+    for (Int32 Index = 0; Index < Character->InventoryInfo.Count; Index += 1) {
+        InventoryOccupancyMask[Character->InventoryInfo.Slots[Index].SlotIndex] = true;
+    }
+
+    for (Int32 Index = 0; Index < Packet->Count; Index += 1) {
+        InventoryOccupancyMask[Packet->InventorySlots[Index]] = false;
+    }
+
+    for (Int32 Index = 0; Index < Packet->Count; Index += 1) {
+        Int32 SlotIndex = RTInventoryGetSlotIndex(Runtime, &Character->InventoryInfo, Packet->InventorySlots[Index]);
+        if (SlotIndex < 0) goto error;
+
+        RTItemSlotRef Slot = &TempInventory->Slots[SlotIndex];
+
+        Bool Found = false;
+        for (Int32 SlotIndex = 0; SlotIndex < RUNTIME_INVENTORY_TOTAL_SIZE; SlotIndex += 1) {
+            if (!InventoryOccupancyMask[SlotIndex]) {
+                InventoryOccupancyMask[SlotIndex] = true;
+                Slot->SlotIndex = SlotIndex;
+                Found = true;
+                break;
+            }
+        }
+        assert(Found);
+    }
+
+    memcpy(&Character->InventoryInfo, TempInventory, sizeof(struct _RTCharacterInventoryInfo));
+
+    Character->SyncMask.InventoryInfo = true;
+    Character->SyncPriority.High = true;
+
     S2C_DATA_SORT_INVENTORY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SORT_INVENTORY);
-    Response->Success = 0;
+    Response->Success = 1;
     return SocketSend(Socket, Connection, Response);
+
+error: 
+    {
+        S2C_DATA_SORT_INVENTORY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SORT_INVENTORY);
+        Response->Success = 0;
+        return SocketSend(Socket, Connection, Response);
+    }
 }
 
 CLIENT_PROCEDURE_BINDING(MOVE_INVENTORY_ITEM_LIST) {

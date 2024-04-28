@@ -21,7 +21,25 @@ Int32 RTInventoryGetNextFreeSlotIndex(
 	RTCharacterInventoryInfoRef Inventory
 );
 
+Void RTInventorySort(
+	RTRuntimeRef Runtime,
+	RTCharacterInventoryInfoRef Inventory
+);
+
+// NOTE: This function assumes that the inventory is already sorted by slot index!
+Bool RTInventoryInsertSlot(
+	RTRuntimeRef Runtime,
+	RTCharacterInventoryInfoRef Inventory,
+	RTItemSlotRef Slot
+);
+
 Bool RTInventoryIsSlotEmpty(
+	RTRuntimeRef Runtime,
+	RTCharacterInventoryInfoRef Inventory,
+	Int32 SlotIndex
+);
+
+Int32 RTInventoryGetSlotIndex(
 	RTRuntimeRef Runtime,
 	RTCharacterInventoryInfoRef Inventory,
 	Int32 SlotIndex
