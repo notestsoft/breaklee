@@ -30,6 +30,7 @@ struct CONCAT(_RTData, __NAME__) {
 	__TYPE__ __NAME__;
 
 #define RUNTIME_DATA_PROPERTY_ARRAY(__TYPE__, __NAME__, __QUERY__, __COUNT__, __SEPARATOR__) \
+	Int32 CONCAT(__NAME__, Count);															 \
 	__TYPE__ __NAME__[__COUNT__];
 
 #define RUNTIME_DATA_TYPE_END(__NAME__) \

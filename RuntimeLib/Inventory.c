@@ -61,6 +61,7 @@ Bool RTInventorySetSlot(
 	RTCharacterInventoryInfoRef Inventory,
 	RTItemSlotRef Slot
 ) {
+	LogMessageFormat(LOG_LEVEL_INFO, "InventorySetSlot(%llu, %llu, %d, %d)", Slot->Item.Serial, Slot->ItemOptions, Slot->ItemDuration, Slot->SlotIndex);
     assert(Inventory);
 	assert(0 <= Slot->SlotIndex && Slot->SlotIndex < RUNTIME_INVENTORY_TOTAL_SIZE);
 
@@ -104,6 +105,7 @@ Bool RTInventoryClearSlot(
 	RTCharacterInventoryInfoRef Inventory,
 	Int32 SlotIndex
 ) {
+	LogMessageFormat(LOG_LEVEL_INFO, "InventoryClearSlot(%d)", SlotIndex);
 	assert(0 <= SlotIndex && SlotIndex < RUNTIME_INVENTORY_TOTAL_SIZE);
 
 	Int32 InventoryIndex = RTInventoryGetSlotIndex(
@@ -132,6 +134,7 @@ Bool RTInventoryRemoveSlot(
 	Int32 SlotIndex,
 	RTItemSlotRef Result
 ) {
+	LogMessageFormat(LOG_LEVEL_INFO, "InventoryRemoveSlot(%d)", SlotIndex);
 	RTItemSlotRef Slot = RTInventoryGetSlot(Runtime, Inventory, SlotIndex);
 	if (!Slot) return false;
 
@@ -147,6 +150,7 @@ Bool RTInventoryMoveSlot(
 	Int32 SourceSlotIndex,
 	Int32 TargetSlotIndex
 ) {
+	LogMessageFormat(LOG_LEVEL_INFO, "InventoryMoveSlot(%d, %d)", SourceSlotIndex, TargetSlotIndex);
 	RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, SourceInventory, SourceSlotIndex);
 	if (!SourceSlot) return false;
 
@@ -155,14 +159,36 @@ Bool RTInventoryMoveSlot(
 		RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, SourceSlot->Item.ID);
 		if (!ItemData || ItemData->MaxStackSize <= 1) return false;
 		
-		// TODO: Check if item is quest item and calculate count accordingly
+		// TODO: The stack size bit mask is only applying to a few items based on itemtype...
+		// NOTE: Find a better way on how to check this!
+		UInt8 CompactStackSize = 0x7F;
+		if (ItemData->MaxStackSize == CompactStackSize) {
+			UInt64 SourceItemOptions = RTQuestItemGetOptions(SourceSlot->ItemOptions);
+			UInt64 SourceItemCount = RTQuestItemGetCount(SourceSlot->ItemOptions);
+			UInt64 TargetItemOptions = RTQuestItemGetOptions(TargetSlot->ItemOptions);
+			UInt64 TargetItemCount = RTQuestItemGetCount(TargetSlot->ItemOptions);
 
-		Int32 TotalStackSize = (Int32)(SourceSlot->ItemOptions + TargetSlot->ItemOptions);
-		TargetSlot->ItemOptions = MIN(ItemData->MaxStackSize, TotalStackSize);
-		SourceSlot->ItemOptions = MAX(0, TotalStackSize - TargetSlot->ItemOptions);
+			if (SourceItemOptions != TargetItemOptions) return false;
 
-		if (SourceSlot->ItemOptions < 1) {
-			if (!RTInventoryClearSlot(Runtime, SourceInventory, SourceSlotIndex)) return false;
+			Int32 TotalStackSize = (Int32)(SourceItemCount + TargetItemCount);
+			TargetItemCount = MIN(ItemData->MaxStackSize, TotalStackSize);
+			SourceItemCount = MAX(0, TotalStackSize - TargetItemCount);
+
+			TargetSlot->ItemOptions = RTQuestItemOptions(TargetItemOptions, TargetItemCount);
+			SourceSlot->ItemOptions = RTQuestItemOptions(SourceItemOptions, SourceItemCount);
+
+			if (SourceItemCount < 1) {
+				if (!RTInventoryClearSlot(Runtime, SourceInventory, SourceSlotIndex)) return false;
+			}
+		}
+		else {
+			Int32 TotalStackSize = (Int32)(SourceSlot->ItemOptions + TargetSlot->ItemOptions);
+			TargetSlot->ItemOptions = MIN(ItemData->MaxStackSize, TotalStackSize);
+			SourceSlot->ItemOptions = MAX(0, TotalStackSize - TargetSlot->ItemOptions);
+
+			if (SourceSlot->ItemOptions < 1) {
+				if (!RTInventoryClearSlot(Runtime, SourceInventory, SourceSlotIndex)) return false;
+			}
 		}
 	}
 	else if (SourceSlot && !TargetSlot) {

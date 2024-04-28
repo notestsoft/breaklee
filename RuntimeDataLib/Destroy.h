@@ -1,3 +1,4 @@
+RUNTIME_DATA_FILE_BEGIN(destroy.enc)
 
 RUNTIME_DATA_TYPE_BEGIN(DestroyItem, "destroy.list.destroy_list", 32768)
 	RUNTIME_DATA_PROPERTY(UInt32, ItemIndex, "item_index")
@@ -22,3 +23,18 @@ RUNTIME_DATA_TYPE_BEGIN(DestroyItemPool, "destroy.pool.destroy_pool", 1024)
 	RUNTIME_DATA_TYPE_END_CHILD(DestroyItemPoolResult, 32)
 RUNTIME_DATA_TYPE_END(DestroyItemPool)
 RUNTIME_DATA_TYPE_INDEX(DestroyItemPool, UInt32, PoolID)
+
+RUNTIME_DATA_FILE_END
+
+RUNTIME_DATA_FILE_BEGIN(DestroyOptionPool.xml)
+
+RUNTIME_DATA_TYPE_BEGIN(DestroyItemOptionPool, "DestroyOptionPool.Pool", 32)
+	RUNTIME_DATA_PROPERTY(UInt64, ItemID, "item_id")
+	RUNTIME_DATA_TYPE_BEGIN_CHILD(DestroyItemOptionPoolOption, "Option", 32)
+		RUNTIME_DATA_PROPERTY(UInt64, Option, "option")
+		RUNTIME_DATA_PROPERTY(Int32, Rate, "rate")
+	RUNTIME_DATA_TYPE_END_CHILD(DestroyItemOptionPoolOption, 32)
+RUNTIME_DATA_TYPE_END(DestroyItemOptionPool)
+RUNTIME_DATA_TYPE_INDEX(DestroyItemOptionPool, UInt64, ItemID)
+
+RUNTIME_DATA_FILE_END

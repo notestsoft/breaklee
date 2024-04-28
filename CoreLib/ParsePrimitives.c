@@ -511,6 +511,29 @@ error:
     return false;
 }
 
+Int32 ParseAttributeCharArrayCounted(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    Char* Result,
+    Int64 Count,
+    Char Separator
+) {
+    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    if (AttributeIndex < 0) goto error;
+
+    ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
+    if (!Data) goto error;
+
+    Int64 Length = MIN(Count, Data->Length);
+    memcpy(Result, Data->Data, Length);
+    if (Length > 0) Result[strlen(Result)] = '\0';
+    return strlen(Result);
+
+error:
+    return 0;
+}
+
 Bool ParseAttributeString(
     ArchiveRef Object,
     Int64 NodeIndex,

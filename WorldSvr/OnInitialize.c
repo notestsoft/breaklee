@@ -335,7 +335,7 @@ IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER) {
 
     Response->SpecialGiftboxCount = 5;
     for (Int32 Index = 0; Index < 5; Index += 1) {
-        RTGiftBoxInfoRef GiftBox = PacketBufferAppendStruct(ClientConnection->PacketBuffer, struct _RTGiftBoxInfo);
+        RTGiftBoxSlotRef GiftBox = PacketBufferAppendStruct(ClientConnection->PacketBuffer, struct _RTGiftBoxSlot);
         GiftBox->Index = Index;
         GiftBox->ReceivedCount = 333;
         GiftBox->ElapsedTime = 0;

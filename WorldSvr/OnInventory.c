@@ -267,8 +267,8 @@ CLIENT_PROCEDURE_BINDING(MOVE_INVENTORY_ITEM_LIST) {
         return SocketDisconnect(Socket, Connection);
     }
 
-    S2C_DATA_SORT_INVENTORY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SORT_INVENTORY);
-    Response->Success = 0;
+    S2C_DATA_MOVE_INVENTORY_ITEM_LIST* Response = PacketBufferInit(Connection->PacketBuffer, S2C, MOVE_INVENTORY_ITEM_LIST);
+    Response->Count = Packet->ItemCount;
 
     Int32 TailLength = Packet->ItemCount * sizeof(CSC_DATA_ITEM_SLOT_INDEX) * 2;
     if (Packet->Length != sizeof(C2S_DATA_MOVE_INVENTORY_ITEM_LIST) + TailLength) goto error;
@@ -304,10 +304,9 @@ CLIENT_PROCEDURE_BINDING(MOVE_INVENTORY_ITEM_LIST) {
     Character->SyncMask.InventoryInfo = true;
     Character->SyncPriority.Low = true;
 
-    Response->Success = 1;
     return SocketSend(Socket, Connection, Response);
 
 error:
-    Response->Success = 0;
+    Response->Count = 0;
     return SocketSend(Socket, Connection, Response);
 }
