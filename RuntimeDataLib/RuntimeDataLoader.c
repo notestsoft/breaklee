@@ -273,6 +273,19 @@ RTDataNewbieSupportCategoryRewardRef RTRuntimeDataNewbieSupportCategoryRewardGet
     return NULL;
 }
 
+RTDataDivineUpgradeMainRef RTRuntimeDataDivineUpgradeMainGet(
+    RTRuntimeDataContextRef Context,
+    Int32 ItemGrade,
+    Int32 ItemType
+) {
+    for (Index Index = 0; Index < Context->DivineUpgradeMainCount; Index += 1) {
+        RTDataDivineUpgradeMainRef Main = &Context->DivineUpgradeMainList[Index];
+        if (Main->ItemGrade == ItemGrade && Main->ItemType == ItemType) return Main;
+    }
+
+    return NULL;
+}
+
 // TODO: "MG" is not inside of forcecore_option so force controller weapons will not work!
 Bool ParseAttributeRTDataItemType(
     ArchiveRef Object,
@@ -339,6 +352,7 @@ Bool ParseAttributeRTDataItemType(
         { "EPULET", RUNTIME_ITEM_TYPE_EPAULET },
         { "RING", RUNTIME_ITEM_TYPE_RING },
         { "UNIQUEEMBLEM", 0 },
+        { "DivineToken", 0 },
     };
 
     Int32 Count = sizeof(Dictionary) / sizeof(Dictionary[0]);

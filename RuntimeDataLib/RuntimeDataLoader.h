@@ -83,4 +83,10 @@ RTDataNewbieSupportCategoryRewardRef RTRuntimeDataNewbieSupportCategoryRewardGet
 	Int32 ConditionValue2
 );
 
+RTDataDivineUpgradeMainRef RTRuntimeDataDivineUpgradeMainGet(
+	RTRuntimeDataContextRef Context,
+	Int32 ItemGrade,
+	Int32 ItemType
+);
+
 EXTERN_C_END

@@ -20,7 +20,7 @@ RUNTIME_DATA_TYPE_BEGIN(DestroyItemPool, "destroy.pool.destroy_pool", 1024)
 		RUNTIME_DATA_PROPERTY(UInt32, ItemKind, "item_kind")
 		RUNTIME_DATA_PROPERTY(Int32, MinCount, "min_count")
 		RUNTIME_DATA_PROPERTY(Int32, MaxCount, "max_count")
-	RUNTIME_DATA_TYPE_END_CHILD(DestroyItemPoolResult, 32)
+	RUNTIME_DATA_TYPE_END_CHILD(DestroyItemPoolResult, 4)
 RUNTIME_DATA_TYPE_END(DestroyItemPool)
 RUNTIME_DATA_TYPE_INDEX(DestroyItemPool, UInt32, PoolID)
 

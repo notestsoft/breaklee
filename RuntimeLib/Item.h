@@ -398,6 +398,13 @@ struct _RTItemEpicConverterPayload {
 };
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpicConverter);
+
+struct _RTItemDivineConverterPayload {
+	UInt16 TargetSlotIndex;
+};
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemDivineConverter);
+
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHolyWater);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion);
 

@@ -697,6 +697,46 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpicConverter) {
 	return (Success) ? RUNTIME_ITEM_USE_RESULT_SUCCESS : RUNTIME_ITEM_USE_RESULT_SUCCESS_SAFEGUARD_ITEM;
 }
 
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemDivineConverter) {
+	struct _RTItemDivineConverterPayload* Data = Payload;
+
+	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Data->TargetSlotIndex);
+	if (!TargetItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	RTItemDataRef TargetItemData = RTRuntimeGetItemDataByIndex(Runtime, TargetItemSlot->Item.ID);
+	if (!TargetItemData) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	// TODO: Check divine converter subtype from Options[0]
+	//	1 = Weapon
+	//	2 = Armor
+	//	3 = Bike
+
+	RTDataDivineUpgradeMainRef UpgradeMain = RTRuntimeDataDivineUpgradeMainGet(
+		Runtime->Context,
+		TargetItemData->ItemGrade,
+		TargetItemData->ItemType
+	);
+	if (!UpgradeMain) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	RTDataDivineUpgradeGroupCostRef UpgradeGroupCost = RTRuntimeDataDivineUpgradeGroupCostGet(
+		Runtime->Context,
+		UpgradeMain->Group
+	);
+	if (!UpgradeGroupCost) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	RTDataDivineUpgradeGroupCostLevelRef UpgradeGroupCostLevel = RTRuntimeDataDivineUpgradeGroupCostLevelGet(
+		UpgradeGroupCost,
+		TargetItemSlot->Item.DivineLevel
+	);
+	if (!UpgradeGroupCostLevel) return RUNTIME_ITEM_USE_RESULT_FAILED;
+	if (UpgradeGroupCostLevel->RequiredCoreCount > 0 || UpgradeGroupCostLevel->RequiredSafeCount > 0) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	TargetItemSlot->Item.DivineLevel += 1;
+	RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+}
+
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHolyWater) {
 	if (!RTCharacterEnableForceWing(Runtime, Character)) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
