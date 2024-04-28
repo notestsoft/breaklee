@@ -5,6 +5,8 @@
 #include "Notification.h"
 #include "Server.h"
 
+// TODO: Sync vehicle inventory to database!
+
 Void ServerSyncCharacter(
 	ServerRef Server,
 	ServerContextRef Context,

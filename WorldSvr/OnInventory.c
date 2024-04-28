@@ -13,6 +13,7 @@
 static struct _RTCharacterEquipmentInfo kEquipmentInfoBackup;
 static struct _RTCharacterInventoryInfo kInventoryInfoBackup;
 static struct _RTCharacterWarehouseInfo kWarehouseInfoBackup;
+static struct _RTCharacterVehicleInventoryInfo kVehicleInventoryInfoBackup;
 
 Bool MoveInventoryItem(
     RTRuntimeRef Runtime,
@@ -26,6 +27,7 @@ Bool MoveInventoryItem(
     memcpy(&kEquipmentInfoBackup, &Character->EquipmentInfo, sizeof(struct _RTCharacterEquipmentInfo));
     memcpy(&kInventoryInfoBackup, &Character->InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
     memcpy(&kWarehouseInfoBackup, &Character->WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
+    memcpy(&kVehicleInventoryInfoBackup, &Character->VehicleInventoryInfo, sizeof(struct _RTCharacterVehicleInventoryInfo));
 
     struct _RTItemSlot TempSlot = { 0 };
     if (SourceStorageType == STORAGE_TYPE_INVENTORY) {
@@ -33,10 +35,29 @@ Bool MoveInventoryItem(
     }
     else if (SourceStorageType == STORAGE_TYPE_EQUIPMENT) {
         if (!RTEquipmentRemoveSlot(Runtime, &Character->EquipmentInfo, SourceSlotIndex, &TempSlot)) goto error;
+
+        if (TempSlot.SlotIndex == RUNTIME_EQUIPMENT_SLOT_INDEX_WEAPON_LEFT && DestinationStorageType != STORAGE_TYPE_EQUIPMENT) {
+            RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, TempSlot.Item.ID);
+            Bool IsOneHandedWeapon = (
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_WEAPON_ONE_HAND ||
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_WEAPON_FORCE_CONTROLLER ||
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_CHAKRAM
+            );
+            if (ItemData && IsOneHandedWeapon) {
+                struct _RTItemSlot TempSlot2 = { 0 };
+                if (RTEquipmentRemoveSlot(Runtime, &Character->EquipmentInfo, RUNTIME_EQUIPMENT_SLOT_INDEX_WEAPON_RIGHT, &TempSlot2)) {
+                    TempSlot2.SlotIndex = RUNTIME_EQUIPMENT_SLOT_INDEX_WEAPON_LEFT;
+                    RTEquipmentSetSlot(Runtime, &Character->EquipmentInfo, &TempSlot2);
+                }
+            }
+        }
     }
     else if (SourceStorageType == STORAGE_TYPE_WAREHOUSE) {
 		if (!RTWarehouseRemoveSlot(Runtime, &Character->WarehouseInfo, SourceSlotIndex, &TempSlot)) goto error;
 	}
+    else if (SourceStorageType == STORAGE_TYPE_VEHICLE_INVENTORY) {
+        if (!RTVehicleInventoryRemoveSlot(Runtime, &Character->VehicleInventoryInfo, SourceSlotIndex, &TempSlot)) goto error;
+    }
     else {
         goto error;
     }
@@ -50,6 +71,16 @@ Bool MoveInventoryItem(
     }
     else if (DestinationStorageType == STORAGE_TYPE_WAREHOUSE) {
         if (!RTWarehouseSetSlot(Runtime, &Character->WarehouseInfo, &TempSlot)) goto error;
+    }
+    else if (DestinationStorageType == STORAGE_TYPE_VEHICLE_INVENTORY) {
+        RTItemSlotRef VehicleSlot = RTEquipmentGetSlot(Runtime, &Character->EquipmentInfo, EQUIPMENT_SLOT_INDEX_VEHICLE);
+        if (!VehicleSlot) goto error;
+
+        RTItemDataRef VehicleData = RTRuntimeGetItemDataByIndex(Runtime, VehicleSlot->Item.ID);
+        if (!VehicleData) goto error;
+        if (VehicleData->ItemType != RUNTIME_ITEM_TYPE_VEHICLE_BIKE) goto error;
+
+        if (!RTVehicleInventorySetSlot(Runtime, &Character->VehicleInventoryInfo, &TempSlot)) goto error;
     }
     else {
         goto error;
@@ -67,6 +98,10 @@ Bool MoveInventoryItem(
         Character->SyncMask.WarehouseInfo = true;
     }
 
+    if (SourceStorageType == STORAGE_TYPE_VEHICLE_INVENTORY || DestinationStorageType == STORAGE_TYPE_VEHICLE_INVENTORY) {
+        Character->SyncMask.VehicleInventoryInfo = true;
+    }
+
     Character->SyncPriority.Low = true;
 
     return true;
@@ -75,6 +110,7 @@ error:
     memcpy(&Character->EquipmentInfo, &kEquipmentInfoBackup, sizeof(struct _RTCharacterEquipmentInfo));
     memcpy(&Character->InventoryInfo, &kInventoryInfoBackup, sizeof(struct _RTCharacterInventoryInfo));
     memcpy(&Character->WarehouseInfo, &kWarehouseInfoBackup, sizeof(struct _RTCharacterWarehouseInfo));
+    memcpy(&Character->VehicleInventoryInfo, &kVehicleInventoryInfoBackup, sizeof(struct _RTCharacterVehicleInventoryInfo));
     return false;
 }
 
@@ -107,8 +143,11 @@ Bool SwapInventoryItem(
     return true;
 }
 
+// TODO: Add proper error handling and unwind!
 CLIENT_PROCEDURE_BINDING(PUSH_EQUIPMENT_ITEM) {
     if (!Character) goto error;
+
+    LogMessageFormat(LOG_LEVEL_INFO, "PushEquipment:");
 
     RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->LeftSlotIndex);
     if (!ItemSlot) goto error;
@@ -116,86 +155,81 @@ CLIENT_PROCEDURE_BINDING(PUSH_EQUIPMENT_ITEM) {
     RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
     if (!ItemData) goto error;
 
-    RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
-    if (!World) goto error;
+    Int32 ItemType = ItemData->ItemType;
+    // if (ItemData->ItemType != Packet->LeftToRightItemType) goto error;
 
-    /*
     struct _RTItemSlot LeftSlot = { 0 };
     struct _RTItemSlot RightSlot = { 0 };
+    
+    Bool HasLeftSlot = false;
+    Bool HasRightSlot = false;
 
-    Int32 NextSlotIndex = RTCharacterFindNextEquipmentSlotIndex(Runtime, Character, 0, Packet->LeftToRightItemType);
-    if (NextSlotIndex >= 0) {
-        RTEquipmentRemoveSlot(Runtime, &Character->EquipmentInfo, NextSlotIndex, &LeftSlot);
+    Int32 FirstSlotIndex = RTCharacterFindNextEquipmentSlotIndex(Runtime, Character, 0, ItemType);
+    if (FirstSlotIndex < 0) goto error;
 
-        NextSlotIndex = RTCharacterFindNextEquipmentSlotIndex(Runtime, Character, NextSlotIndex + 1, Packet->LeftToRightItemType);
-    }
-
+    Int32 NextSlotIndex = FirstSlotIndex;
     while (NextSlotIndex >= 0) {
-        if (!RTEquipmentRemoveSlot(Runtime, &Character->EquipmentInfo, NextSlotIndex, &LeftSlot)) break;
-
-        S2C_DATA_NFY_UNEQUIP_ITEM* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_UNEQUIP_ITEM);
-        Notification->CharacterIndex = Character->CharacterIndex;
-        Notification->EquipmentSlotIndex = LeftSlot.SlotIndex;
-        BroadcastToWorld(
-            Server,
-            World,
-            Character->ID,
-            Character->Movement.PositionCurrent.X,
-            Character->Movement.PositionCurrent.Y,
-            Notification
-        );
-
-        NextSlotIndex = RTCharacterFindNextEquipmentSlotIndex(Runtime, Character, NextSlotIndex + 1, Packet->LeftToRightItemType);
-        if (NextSlotIndex < 0) break;
-
-        if (!RTEquipmentRemoveSlot(Runtime, &Character->EquipmentInfo, NextSlotIndex, &RightSlot)) {
-            LeftSlot.SlotIndex = NextSlotIndex;
-
-            if (!RTEquipmentSetSlot(Runtime, &Character->EquipmentInfo, &LeftSlot)) {
-                // TODO: Make a backup of equipment info and rollback
-                FatalError("Internal inconsistency!");
-            }
-
-            S2C_DATA_NFY_EQUIP_ITEM* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_EQUIP_ITEM);
-            Notification->CharacterIndex = Character->CharacterIndex;
-            Notification->Item = LeftSlot.Item;
-            Notification->ItemOptions = LeftSlot.ItemOptions;
-            Notification->EquipmentSlotIndex = LeftSlot.SlotIndex;
-            BroadcastToWorld(
-                Server,
-                World,
-                Character->ID,
-                Character->Movement.PositionCurrent.X,
-                Character->Movement.PositionCurrent.Y,
-                Notification
-            );
-
-            break;
+        Int32 RightSlotIndex = NextSlotIndex;
+        if (!HasLeftSlot) {
+            HasLeftSlot = RTEquipmentRemoveSlot(Runtime, &Character->EquipmentInfo, NextSlotIndex, &LeftSlot);
+            if (HasLeftSlot) RTCharacterBroadcastEquipmentUpdate(Runtime, Character, &LeftSlot, false);
+            if (HasLeftSlot) LogMessageFormat(LOG_LEVEL_INFO, "[E%d] -> [T1]", LeftSlot.SlotIndex);
+            RightSlotIndex = RTCharacterFindNextEquipmentSlotIndex(Runtime, Character, NextSlotIndex + 1, ItemType);
         }
+        if (!HasLeftSlot) break;
 
-        S2C_DATA_NFY_UNEQUIP_ITEM* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_UNEQUIP_ITEM);
-        Notification->CharacterIndex = Character->CharacterIndex;
-        Notification->EquipmentSlotIndex = RightSlot.SlotIndex;
-        BroadcastToWorld(
-            Server,
-            World,
-            Character->ID,
-            Character->Movement.PositionCurrent.X,
-            Character->Movement.PositionCurrent.Y,
-            Notification
-        );
+        HasRightSlot = RTEquipmentRemoveSlot(Runtime, &Character->EquipmentInfo, RightSlotIndex, &RightSlot);
+        if (HasRightSlot) RTCharacterBroadcastEquipmentUpdate(Runtime, Character, &RightSlot, false);
+        if (HasRightSlot) LogMessageFormat(LOG_LEVEL_INFO, "[E%d] -> [T2]", RightSlot.SlotIndex);
+        NextSlotIndex = RTCharacterFindNextEquipmentSlotIndex(Runtime, Character, RightSlotIndex + 1, ItemType);
 
-
+        if (HasLeftSlot && RightSlotIndex >= 0) {
+            LeftSlot.SlotIndex = RightSlotIndex;
+            Bool Success = RTEquipmentSetSlot(Runtime, &Character->EquipmentInfo, &LeftSlot);
+            assert(Success);
+            RTCharacterBroadcastEquipmentUpdate(Runtime, Character, &LeftSlot, true);
+            LogMessageFormat(LOG_LEVEL_INFO, "[T1] -> [E%d]", LeftSlot.SlotIndex);
+            memcpy(&LeftSlot, &RightSlot, sizeof(struct _RTItemSlot));
+            HasLeftSlot = HasRightSlot;
+            HasRightSlot = false;
+            LogMessageFormat(LOG_LEVEL_INFO, "[T2] -> [T1]");
+        }
     }
-    */
+
+    Bool Success = RTInventoryRemoveSlot(Runtime, &Character->InventoryInfo, Packet->LeftSlotIndex, &RightSlot);
+    assert(Success);
+
+    LogMessageFormat(LOG_LEVEL_INFO, "[I%d] -> [T2]", RightSlot.SlotIndex);
+
+    if (HasLeftSlot) {
+        LeftSlot.SlotIndex = Packet->RightSlotIndex;
+        Bool Success = RTInventorySetSlot(Runtime, &Character->InventoryInfo, &LeftSlot);
+        assert(Success);
+        LogMessageFormat(LOG_LEVEL_INFO, "[T1] -> [I%d]", LeftSlot.SlotIndex);
+    }
+
+    RightSlot.SlotIndex = FirstSlotIndex;
+    Success = RTEquipmentSetSlot(Runtime, &Character->EquipmentInfo, &RightSlot);
+    assert(Success);
+    RTCharacterBroadcastEquipmentUpdate(Runtime, Character, &RightSlot, true);
+    LogMessageFormat(LOG_LEVEL_INFO, "[T2] -> [E%d]", RightSlot.SlotIndex);
+
+    Character->SyncMask.EquipmentInfo = true;
+    Character->SyncMask.InventoryInfo = true;
+    Character->SyncPriority.High = true;
 
     S2C_DATA_PUSH_EQUIPMENT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PUSH_EQUIPMENT_ITEM);
-    Response->Result = 0;
-    // TODO: Add implementation!
-    return SocketSend(Socket, Connection, Response);
+    Response->Result = 1;
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    {
+        S2C_DATA_PUSH_EQUIPMENT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PUSH_EQUIPMENT_ITEM);
+        Response->Result = 0;
+        SocketSend(Socket, Connection, Response);
+        return;
+    }
 }
 
 CLIENT_PROCEDURE_BINDING(MOVE_INVENTORY_ITEM) {

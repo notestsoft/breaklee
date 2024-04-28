@@ -22,6 +22,8 @@ enum {
     RUNTIME_EVENT_CHARACTER_UPDATE_FORCE_WING_LEVEL_UP,
     RUNTIME_EVENT_CHARACTER_DATA,
     RUNTIME_EVENT_CHARACTER_DATA_BUFF,
+    RUNTIME_EVENT_CHARACTER_EQUIP_ITEM,
+    RUNTIME_EVENT_CHARACTER_UNEQUIP_ITEM,
     RUNTIME_EVENT_ATTACK_TO_MOB,
     RUNTIME_EVENT_MOB_SPAWN,
     RUNTIME_EVENT_MOB_UPDATE,
@@ -105,6 +107,18 @@ union _RTEventData {
         UInt32 Type;
         Int32 BuffResult;
     } CharacterDataBuff;
+
+    struct {
+        UInt32 CharacterIndex;
+        RTItem Item;
+        UInt64 ItemOptions;
+        UInt16 EquipmentSlotIndex;
+    } CharacterEquipItem;
+
+    struct {
+        UInt32 CharacterIndex;
+        UInt16 EquipmentSlotIndex;
+    } CharacterUnequipItem;
 
     struct {
         UInt32 TickCount;

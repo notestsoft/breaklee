@@ -92,6 +92,7 @@ typedef struct _RTDungeonTriggerActionData* RTDungeonTriggerActionDataRef;
 typedef struct _RTDungeonData* RTDungeonDataRef;
 typedef struct _RTMissionDungeonPatternPartData* RTMissionDungeonPatternPartDataRef;
 typedef struct _RTCharacterWarehouseInfo* RTCharacterWarehouseInfoRef;
+typedef struct _RTCharacterVehicleInventoryInfo* RTCharacterVehicleInventoryInfoRef;
 typedef struct _RTWorldItem* RTWorldItemRef;
 typedef struct _RTWorldData* RTWorldDataRef;
 typedef struct _RTWorldContext* RTWorldContextRef;

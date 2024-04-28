@@ -638,6 +638,38 @@ Void ServerRuntimeOnEvent(
         );
     }
 
+    if (Event->Type == RUNTIME_EVENT_CHARACTER_EQUIP_ITEM) {
+        S2C_DATA_NFY_EQUIP_ITEM* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_EQUIP_ITEM);
+        Notification->CharacterIndex = Event->Data.CharacterEquipItem.CharacterIndex;
+        Notification->Item = Event->Data.CharacterEquipItem.Item;
+        Notification->ItemOptions = Event->Data.CharacterEquipItem.ItemOptions;
+        Notification->EquipmentSlotIndex = Event->Data.CharacterEquipItem.EquipmentSlotIndex;
+
+        return BroadcastToWorld(
+            Context,
+            Event->World,
+            kEntityIDNull,
+            Event->X,
+            Event->Y,
+            Notification
+        );
+    }
+
+    if (Event->Type == RUNTIME_EVENT_CHARACTER_UNEQUIP_ITEM) {
+        S2C_DATA_NFY_UNEQUIP_ITEM* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_UNEQUIP_ITEM);
+        Notification->CharacterIndex = Event->Data.CharacterUnequipItem.CharacterIndex;
+        Notification->EquipmentSlotIndex = Event->Data.CharacterUnequipItem.EquipmentSlotIndex;
+
+        return BroadcastToWorld(
+            Context,
+            Event->World,
+            kEntityIDNull,
+            Event->X,
+            Event->Y,
+            Notification
+        );
+    }
+
     if (Event->Type == RUNTIME_EVENT_MOB_SPAWN || Event->Type == RUNTIME_EVENT_MOB_UPDATE) {
         S2C_DATA_MOBS_SPAWN* Notification = PacketBufferInit(PacketBuffer, S2C, MOBS_SPAWN);
         Notification->Count = 1;

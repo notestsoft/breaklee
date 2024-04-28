@@ -125,4 +125,11 @@ Void RTCharacterApplyEquipmentAttributes(
     RTCharacterRef Character
 );
 
+Void RTCharacterBroadcastEquipmentUpdate(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    RTItemSlotRef Slot,
+    Bool IsEquip
+);
+
 EXTERN_C_END
