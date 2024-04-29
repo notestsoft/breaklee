@@ -371,6 +371,10 @@ Bool RTItemOptionAppendSlot(
 	RTItemOptionSlot Slot
 );
 
+struct _RTItemConverterPayload {
+	UInt16 TargetSlotIndex;
+};
+
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStub);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemPotion);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSkillBook);
@@ -380,31 +384,11 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemArmor);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemAccessory);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEffector);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSpecialPotion);
-
-struct _RTItemSlotExtenderPayload {
-	UInt16 TargetSlotIndex;
-};
-
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotExtender);
-
-struct _RTItemSlotConverterPayload {
-	UInt16 TargetSlotIndex;
-};
-
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotConverter);
-
-struct _RTItemEpicConverterPayload {
-	UInt16 TargetSlotIndex;
-};
-
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpicConverter);
-
-struct _RTItemDivineConverterPayload {
-	UInt16 TargetSlotIndex;
-};
-
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemDivineConverter);
-
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemChaosConverter);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHolyWater);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion);
 

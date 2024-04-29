@@ -94,23 +94,14 @@ CLIENT_PROCEDURE_BINDING(CONVERT_ITEM) {
 
 		Response->Result = RUNTIME_ITEM_USE_RESULT_SUCCESS;
 	}
-	else if (SourceItemData->ItemType == RUNTIME_ITEM_TYPE_SLOT_EXTENDER) {
-		struct _RTItemSlotExtenderPayload Payload = { 0 };
-		Payload.TargetSlotIndex = Packet->TargetSlotIndex;
-		Response->Result = RTItemUseInternal(Runtime, Character, SourceItemSlot, SourceItemData, &Payload);
-	}
-	else if (SourceItemData->ItemType == RUNTIME_ITEM_TYPE_SLOT_CONVERTER) {
-		struct _RTItemSlotConverterPayload Payload = { 0 };
-		Payload.TargetSlotIndex = Packet->TargetSlotIndex;
-		Response->Result = RTItemUseInternal(Runtime, Character, SourceItemSlot, SourceItemData, &Payload);
-	}
-	else if (SourceItemData->ItemType == RUNTIME_ITEM_TYPE_EPIC_CONVERTER) {
-		struct _RTItemEpicConverterPayload Payload = { 0 };
-		Payload.TargetSlotIndex = Packet->TargetSlotIndex;
-		Response->Result = RTItemUseInternal(Runtime, Character, SourceItemSlot, SourceItemData, &Payload);
-	}
-	else if (SourceItemData->ItemType == RUNTIME_ITEM_TYPE_DIVINE_CONVERTER) {
-		struct _RTItemDivineConverterPayload Payload = { 0 };
+	else if (
+		SourceItemData->ItemType == RUNTIME_ITEM_TYPE_SLOT_EXTENDER ||
+		SourceItemData->ItemType == RUNTIME_ITEM_TYPE_SLOT_CONVERTER ||
+		SourceItemData->ItemType == RUNTIME_ITEM_TYPE_EPIC_CONVERTER ||
+		SourceItemData->ItemType == RUNTIME_ITEM_TYPE_DIVINE_CONVERTER ||
+		SourceItemData->ItemType == RUNTIME_ITEM_TYPE_CHAOS_CONVERTER
+	) {
+		struct _RTItemConverterPayload Payload = { 0 };
 		Payload.TargetSlotIndex = Packet->TargetSlotIndex;
 		Response->Result = RTItemUseInternal(Runtime, Character, SourceItemSlot, SourceItemData, &Payload);
 	}

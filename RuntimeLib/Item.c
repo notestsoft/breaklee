@@ -553,7 +553,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSpecialPotion) {
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotExtender) {
-	struct _RTItemSlotExtenderPayload* Data = Payload;
+	struct _RTItemConverterPayload* Data = Payload;
 
 	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Data->TargetSlotIndex);
 	if (!TargetItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
@@ -596,7 +596,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotExtender) {
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotConverter) {
-	struct _RTItemSlotConverterPayload* Data = Payload;
+	struct _RTItemConverterPayload* Data = Payload;
 
 	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Data->TargetSlotIndex);
 	if (!TargetItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
@@ -636,7 +636,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotConverter) {
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpicConverter) {
-	struct _RTItemEpicConverterPayload* Data = Payload;
+	struct _RTItemConverterPayload* Data = Payload;
 
 	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Data->TargetSlotIndex);
 	if (!TargetItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
@@ -698,7 +698,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpicConverter) {
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemDivineConverter) {
-	struct _RTItemDivineConverterPayload* Data = Payload;
+	struct _RTItemConverterPayload* Data = Payload;
 
 	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Data->TargetSlotIndex);
 	if (!TargetItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
@@ -735,6 +735,12 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemDivineConverter) {
 	RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
 
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+}
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemChaosConverter) {
+	struct _RTItemConverterPayload* Data = Payload;
+
+	return RUNTIME_ITEM_USE_RESULT_FAILED;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHolyWater) {

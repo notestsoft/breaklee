@@ -12,7 +12,7 @@ RUNTIME_DATA_TYPE_BEGIN(DivineUpgradeGroupCost, "divine_upgrade.divine_needs_cor
 		RUNTIME_DATA_PROPERTY(Int32, Level, "level")
 		RUNTIME_DATA_PROPERTY(Int32, RequiredCoreCount, "needs_core")
 		RUNTIME_DATA_PROPERTY(Int32, RequiredSafeCount, "needs_buffer")
-		RUNTIME_DATA_PROPERTY_ARRAY(Int32, Result, "result", 6, ',')
+		RUNTIME_DATA_PROPERTY_ARRAY(Int32, Results, "result", 6, ',')
 	RUNTIME_DATA_TYPE_END_CHILD(DivineUpgradeGroupCostLevel, 16)
 RUNTIME_DATA_TYPE_END(DivineUpgradeGroupCost)
 RUNTIME_DATA_TYPE_INDEX(DivineUpgradeGroupCost, Int32, Group)
