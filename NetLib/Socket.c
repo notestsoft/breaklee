@@ -17,11 +17,11 @@ SocketRef SocketCreate(
     Void* Userdata
 ) {
     if (MaxConnectionCount < 1) {
-        FatalError("[SOCKET] MaxConnection count has to be greater than 0");
+        Fatal("[SOCKET] MaxConnection count has to be greater than 0");
     }
 
     SocketRef Socket = (SocketRef)AllocatorAllocate(Allocator, sizeof(struct _Socket));
-    if (!Socket) FatalError("Memory allocation failed!");
+    if (!Socket) Fatal("Memory allocation failed!");
     memset(Socket, 0, sizeof(struct _Socket));
     Socket->Allocator = Allocator;
     Socket->Handle = -1;
@@ -98,12 +98,12 @@ Void SocketConnect(
 
     Socket->Timeout = Timeout;
     Socket->Handle = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (Socket->Handle < 0) FatalError("Socket creation failed");
+    if (Socket->Handle < 0) Fatal("Socket creation failed");
 
     PlatformSetSocketIOBlocking(Socket->Handle, false);
 
     struct hostent* Server = (struct hostent*)gethostbyname(Host);
-    if (!Server) FatalError("Socket creation failed");
+    if (!Server) Fatal("Socket creation failed");
 
     memset(&Socket->Address, 0, sizeof(Socket->Address));
     Socket->Address.sin_family = AF_INET;
@@ -113,7 +113,7 @@ Void SocketConnect(
 
     Socket->Flags |= SOCKET_FLAGS_CONNECTING;
 
-    LogMessageFormat(LOG_LEVEL_INFO, "Socket connecting to port: %d", Port);
+    Info("Socket connecting to port: %d", Port);
 
     Int32 Result = PlatformSocketConnect(Socket->Handle, (struct sockaddr*)&Socket->Address, sizeof(Socket->Address));
     if (Result == 0) {
@@ -125,9 +125,9 @@ Void SocketConnect(
         Socket->Flags &= ~SOCKET_FLAGS_CONNECTING;
         Socket->Flags |= SOCKET_FLAGS_CONNECTED;
         if (Socket->OnConnect)  Socket->OnConnect(Socket, Connection);
-        LogMessage(LOG_LEVEL_INFO, "Socket connection established");
+        Info("Socket connection established");
     } else if (Result == -1) {
-        FatalError("Socket connection failed");
+        Fatal("Socket connection failed");
     }
 }
 
@@ -138,7 +138,7 @@ Void SocketListen(
     assert(!(Socket->Flags & (SOCKET_FLAGS_LISTENING | SOCKET_FLAGS_CONNECTING | SOCKET_FLAGS_CONNECTED)));
 
     Socket->Handle = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (Socket->Handle < 0) FatalError("Socket creation failed");
+    if (Socket->Handle < 0) Fatal("Socket creation failed");
 
     PlatformSetSocketIOBlocking(Socket->Handle, false);
 
@@ -148,17 +148,17 @@ Void SocketListen(
 
     Int32 Enabled = 1;
     if (setsockopt(Socket->Handle, SOL_SOCKET, SO_REUSEADDR, (Char*)&Enabled, sizeof(Enabled)) != 0)
-        FatalError("Socket re-use address set failed");
+        Fatal("Socket re-use address set failed");
 
     if ((bind(Socket->Handle, (struct sockaddr*)&Socket->Address, sizeof(Socket->Address))) != 0)
-        FatalError("Socket binding failed");
+        Fatal("Socket binding failed");
 
     if ((listen(Socket->Handle, (Int32)Socket->MaxConnectionCount)) != 0)
-        FatalError("Socket listening failed");
+        Fatal("Socket listening failed");
 
     Socket->Flags |= SOCKET_FLAGS_LISTENING;
 
-    LogMessageFormat(LOG_LEVEL_INFO, "Socket started listening on port: %d", Port);
+    Info("Socket started listening on port: %d", Port);
 }
 
 Void SocketSendRaw(
@@ -384,7 +384,7 @@ Void SocketUpdate(
             Socket->Flags &= ~SOCKET_FLAGS_CONNECTING;
             Socket->Flags |= SOCKET_FLAGS_CONNECTED;
             if (Socket->OnConnect) Socket->OnConnect(Socket, Connection);
-            LogMessage(LOG_LEVEL_INFO, "Socket connection established");
+            Info("Socket connection established");
         } else {
             PlatformSocketConnect(Socket->Handle, (struct sockaddr*)&Socket->Address, sizeof(Socket->Address));
         }

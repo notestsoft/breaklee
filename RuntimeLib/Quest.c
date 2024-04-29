@@ -697,7 +697,7 @@ Bool RTCharacterPartyQuestClear(
 		Int32 ItemCount = RTQuestItemGetCount(ItemSlot->ItemOptions);
 		if (ItemCount < MissionData->Value[2]) return false;
 
-		LogMessageFormat(LOG_LEVEL_WARNING, "Take Slot (%d, %d, %d)", InventorySlotIndex, ItemSlot->Item.ID, ItemSlot->ItemOptions);
+		Warn("Take Slot (%d, %d, %d)", InventorySlotIndex, ItemSlot->Item.ID, ItemSlot->ItemOptions);
 
 		memset(ItemSlot, 0, sizeof(struct _RTItemSlot));
 	}
@@ -726,7 +726,7 @@ Bool RTCharacterPartyQuestClear(
 		ItemSlot->ItemOptions = RewardItem->ItemID[1];
 		ItemSlot->ItemDuration.DurationIndex = RewardItem->ItemDuration;
 
-		LogMessageFormat(LOG_LEVEL_WARNING, "Give Slot (%d, %d, %d)", RewardItemSlotIndex, ItemSlot->Item.ID, ItemSlot->ItemOptions);
+		Warn("Give Slot (%d, %d, %d)", RewardItemSlotIndex, ItemSlot->Item.ID, ItemSlot->ItemOptions);
 	}
 
 	memset(&Party->QuestSlot[QuestSlotIndex], 0, sizeof(struct _RTQuestSlot));
@@ -788,7 +788,7 @@ Bool RTCharacterPartyQuestAction(
 		ItemSlot->Item.ID = QuestNpc->Value[0];
 		ItemSlot->ItemOptions = QuestNpc->Value[1];
 
-		LogMessageFormat(LOG_LEVEL_WARNING, "Give item (%d, %d, %d)", ActionSlotIndex, ItemSlot->Item.ID, ItemSlot->ItemOptions);
+		Warn("Give item (%d, %d, %d)", ActionSlotIndex, ItemSlot->Item.ID, ItemSlot->ItemOptions);
 	}
 
 	if (QuestNpc->ActionType == RUNTIME_QUEST_ACTION_TYPE_TAKE) {
@@ -801,7 +801,7 @@ Bool RTCharacterPartyQuestAction(
 		// Int32 ItemOptions = RTQuestItemGetOptions(ItemSlot->ItemOptions);
 		if (ItemSlot->ItemOptions != QuestNpc->Value[1]) return false;
 
-		LogMessageFormat(LOG_LEVEL_WARNING, "Take item (%d, %d, %d)", ActionSlotIndex, ItemSlot->Item.ID, ItemSlot->ItemOptions);
+		Warn("Take item (%d, %d, %d)", ActionSlotIndex, ItemSlot->Item.ID, ItemSlot->ItemOptions);
 
 		memset(ItemSlot, 0, sizeof(struct _RTItemSlot));
 	}

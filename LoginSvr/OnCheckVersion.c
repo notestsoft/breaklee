@@ -10,7 +10,7 @@ CLIENT_PROCEDURE_BINDING(CHECK_VERSION) {
 
     S2C_DATA_CHECK_VERSION* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHECK_VERSION);
 
-    LogMessageFormat(LOG_LEVEL_INFO, "Client Version: %d", Packet->ClientVersion);
+    Info("Client Version: %d", Packet->ClientVersion);
 
     if (Context->Config.Login.CheckVersion) {
         Response->ClientVersion = Context->Config.Login.ClientVersion;

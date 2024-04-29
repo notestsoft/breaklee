@@ -2,7 +2,7 @@
 
 RTRuntimeDataContextRef RTRuntimeDataContextCreate() {
 	RTRuntimeDataContextRef Context = malloc(sizeof(struct _RTRuntimeDataContext));
-	if (!Context) FatalError("Memory allocation failed!");
+	if (!Context) Fatal("Memory allocation failed!");
 
 	memset(Context, 0, sizeof(struct _RTRuntimeDataContext));
 	return Context;
@@ -29,7 +29,7 @@ Bool RTRuntimeDataContextLoad(
     Bool Success = false;
 
 #define RUNTIME_DATA_FILE_BEGIN(__NAME__) \
-    LogMessageFormat(LOG_LEVEL_INFO, "Loading runtime data: %s", # __NAME__); \
+    Info("Loading runtime data: %s", # __NAME__); \
     if (CStringIsEqual(PathGetFileNameExtension(# __NAME__), "xml")) { \
         Success = ArchiveLoadFromFile( \
             Archive, \
@@ -45,7 +45,7 @@ Bool RTRuntimeDataContextLoad(
         ); \
     } \
     if (!Success) { \
-        LogMessageFormat(LOG_LEVEL_ERROR, "Error loading runtime data: %s", # __NAME__); \
+        Error("Error loading runtime data: %s", # __NAME__); \
         goto error; \
     } 
 
@@ -54,7 +54,7 @@ Bool RTRuntimeDataContextLoad(
 
 #define RUNTIME_DATA_TYPE_BEGIN(__NAME__, __QUERY__, __COUNT__) \
     { \
-        LogMessageFormat(LOG_LEVEL_INFO, "Data %s memory size %llu", #__NAME__, sizeof(struct CONCAT(_RTData, __NAME__))); \
+        Info("Data %s memory size %llu", #__NAME__, sizeof(struct CONCAT(_RTData, __NAME__))); \
         CString Query = __QUERY__; \
         CString PropertyQuery = NULL; \
         Iterator = ArchiveQueryNodeIteratorByPathFirst(Archive, -1, Query); \
@@ -65,7 +65,7 @@ Bool RTRuntimeDataContextLoad(
 #define RUNTIME_DATA_PROPERTY(__TYPE__, __NAME__, __QUERY__) \
             PropertyQuery = __QUERY__; \
             if (!CONCAT(ParseAttribute, __TYPE__)(Archive, Iterator->Index, PropertyQuery, &Data->__NAME__)) { \
-                LogMessageFormat(LOG_LEVEL_ERROR, "Couldn't parse attribute %s in %s\n", PropertyQuery, Query); \
+                Error("Couldn't parse attribute %s in %s\n", PropertyQuery, Query); \
             }
 
 #define RUNTIME_DATA_PROPERTY_PRECONDITION(__TYPE__, __NAME__, __QUERY__, __VALUE__) \
@@ -222,7 +222,7 @@ Int32 RTRuntimeDataCharacterRankUpConditionGet(
             return Context->CharacterRankUpConditionList[RankIndex].ConditionList[0].DM;
 
         default:
-            FatalError("Given BattleStyleIndex doesn't exist!");
+            Fatal("Given BattleStyleIndex doesn't exist!");
             return 0;
         }
     }

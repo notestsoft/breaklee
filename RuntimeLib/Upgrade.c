@@ -75,6 +75,6 @@ Int32 RTItemUpgradeNormal(
         return RUNTIME_UPGRADE_RESULT_DOWNGRADE_3;
     }
 
-    LogMessage(LOG_LEVEL_WARNING, "Random range calculation should always result in perfect ranged matches!");
+    Warn("Random range calculation should always result in perfect ranged matches!");
     return RUNTIME_UPGRADE_RESULT_ERROR;
 }

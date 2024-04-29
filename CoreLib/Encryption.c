@@ -136,7 +136,7 @@ Bool InflateDecryptBuffer(
             }
 
             UInt8* NewOutput = realloc(Output, OutputLength);
-            if (!NewOutput) FatalError("Memory allocation failed!");
+            if (!NewOutput) Fatal("Memory allocation failed!");
             Output = NewOutput;
 
             memcpy(&Output[OutputIndex], Out, Length);

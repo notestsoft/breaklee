@@ -22,7 +22,7 @@ MemoryBufferRef MemoryBufferCreate(
     Index TotalSize = HeaderSizeAligned + MemorySizeAligned;
     
     MemoryBufferRef MemoryBuffer = (MemoryBufferRef)AllocatorAllocate(Allocator, TotalSize);
-    if (!MemoryBuffer) FatalError("MemoryBuffer allocation failed!");
+    if (!MemoryBuffer) Fatal("MemoryBuffer allocation failed!");
     
     MemoryBuffer->Allocator = Allocator;
     MemoryBuffer->Alignment = Alignment;

@@ -92,7 +92,7 @@ ATTRIBUTE_NORETURN void __unreachable(const char* message, const char* file, siz
 #endif
 
 #ifndef UNIMPLEMENTED
-#define UNIMPLEMENTED FatalError("Implementation Missing!")
+#define UNIMPLEMENTED Fatal("Implementation Missing!")
 #endif
 
 #ifndef MIN

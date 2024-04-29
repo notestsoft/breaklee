@@ -30,7 +30,7 @@ Bool RTVehicleInventorySetSlot(
 	RTCharacterVehicleInventoryInfoRef Inventory,
 	RTItemSlotRef Slot
 ) {
-	LogMessageFormat(LOG_LEVEL_INFO, "VehicleInventorySetSlot(%llu, %llu, %d, %d)", Slot->Item.Serial, Slot->ItemOptions, Slot->ItemDuration, Slot->SlotIndex);
+	Info("VehicleInventorySetSlot(%llu, %llu, %d, %d)", Slot->Item.Serial, Slot->ItemOptions, Slot->ItemDuration, Slot->SlotIndex);
 	assert(Inventory);
 	assert(0 <= Slot->SlotIndex && Slot->SlotIndex < RUNTIME_CHARACTER_MAX_VEHICLE_INVENTORY_SLOT_COUNT);
 
@@ -73,7 +73,7 @@ Bool RTVehicleInventoryRemoveSlot(
 	Int32 SlotIndex,
 	RTItemSlotRef Result
 ) {
-	LogMessageFormat(LOG_LEVEL_INFO, "VehicleInventoryRemoveSlot(%d)", SlotIndex);
+	Info("VehicleInventoryRemoveSlot(%d)", SlotIndex);
 	RTItemSlotRef Slot = RTVehicleInventoryGetSlot(Runtime, Inventory, SlotIndex);
 	if (!Slot)
 		return false;
@@ -88,7 +88,7 @@ Bool RTVehicleInventoryClearSlot(
 	RTCharacterVehicleInventoryInfoRef Inventory,
 	Int32 SlotIndex
 ) {
-	LogMessageFormat(LOG_LEVEL_INFO, "VehicleInventoryClearSlot(%d)", SlotIndex);
+	Info("VehicleInventoryClearSlot(%d)", SlotIndex);
 	assert(0 <= SlotIndex && SlotIndex < RUNTIME_INVENTORY_TOTAL_SIZE);
 
 	Int32 InventoryIndex = RTVehicleInventoryGetSlotIndex(

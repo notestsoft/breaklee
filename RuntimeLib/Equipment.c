@@ -119,7 +119,7 @@ Bool RTEquipmentSetSlot(
     RTCharacterEquipmentInfoRef Equipment,
     RTItemSlotRef Slot
 ) {
-    LogMessageFormat(LOG_LEVEL_INFO, "RTEquipmentSetSlot(%d)", Slot->SlotIndex);
+    Info("RTEquipmentSetSlot(%d)", Slot->SlotIndex);
     if (Slot->SlotIndex < 0 || Slot->SlotIndex > RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT) return false;
     if (Equipment->Count >= RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT) return false;
 
@@ -137,7 +137,7 @@ Bool RTEquipmentClearSlot(
     RTCharacterEquipmentInfoRef Equipment,
     Int32 SlotIndex
 ) {
-    LogMessageFormat(LOG_LEVEL_INFO, "RTEquipmentClearSlot(%d)", SlotIndex);
+    Info("RTEquipmentClearSlot(%d)", SlotIndex);
     if (SlotIndex < 0 || SlotIndex > RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT) return false;
 
     for (Int32 Index = 0; Index < Equipment->Count; Index++) {
@@ -198,7 +198,7 @@ Void RTCharacterApplyEquipmentAttributes(
         RTItemSlotRef ItemSlot = &Character->EquipmentInfo.Slots[Index];
         RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
         if (!ItemData) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "No item data found for item id: %d", ItemSlot->Item.ID);
+            Warn("No item data found for item id: %d", ItemSlot->Item.ID);
             continue;
         }
 

@@ -94,7 +94,7 @@ Void ServerOnUpdate(
 }
 
 Int32 main(Int32 argc, CString* argv) {
-    DiagnosticCreateLogFile("LoginSvr");
+    DiagnosticSetupLogFile("LoginSvr", LOG_LEVEL_TRACE, NULL, NULL);
 
     Char Buffer[MAX_PATH] = { 0 };
     CString WorkingDirectory = PathGetCurrentDirectory(Buffer, MAX_PATH);
@@ -164,7 +164,7 @@ Int32 main(Int32 argc, CString* argv) {
         Config.AuthDB.Port,
         Config.AuthDB.AutoReconnect
     );
-    if (!ServerContext.Database) FatalError("Database connection failed");
+    if (!ServerContext.Database) Fatal("Database connection failed");
 
     AuthDBPrepareStatements(ServerContext.Database);
     ServerRun(Server);

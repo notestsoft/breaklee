@@ -3,122 +3,190 @@
 #include "FileIO.h"
 #include "Util.h"
 
-static FILE* kDiagnosticOutputStream = NULL;
+struct _DiagnosticEngine {
+    FILE* Output;
+    FILE* Error;
+    Int32 Level;
+    DiagnosticHandler Handler;
+    Void* Context;
+    FILE* Handle;
+    Char Colors[LOG_LEVEL_COUNT];
+    CString Labels[LOG_LEVEL_COUNT];
+    Char Buffer[4096];
+};
+
+static struct _DiagnosticEngine kDiagnosticEngine = {
+    .Output = NULL,
+    .Level = LOG_LEVEL_TRACE,
+    .Handler = NULL,
+    .Context = NULL,
+    .Handle = NULL,
+    .Colors = { 30, 41, 31, 33, 90, 46 },
+    .Labels = { "", "FATAL", "ERROR", "WARN", "INFO", "TRACE" },
+    .Buffer = { 0 }
+};
 
 Void _DefaultDiagnosticHandler(
-    UInt32 Level,
+    FILE* Output,
+    Int32 Level,
     CString Message,
     Void* Context
 ) {
-    FILE* Stream = kDiagnosticOutputStream;
-    if (!Stream) Stream = stdout;
+    time_t NowTime = time(NULL);
+    struct tm NowTm = { 0 };
+    gmtime_s(&NowTm, &NowTime);
 
-    switch (Level) {
-        case LOG_LEVEL_INFO:     fprintf(Stream, "\033[92m[INFO] %s\033[0m\n", Message); break;
-        case LOG_LEVEL_WARNING:  fprintf(Stream, "\033[33m[WARNING] %s\033[0m\n", Message); break;
-        case LOG_LEVEL_ERROR:    fprintf(Stream, "\033[31m[ERROR] %s\033[0m\n", Message); break;
-        default:                 fprintf(Stream, "\033[37m%s\033[0m\n", Message); break;
-    }
+    fprintf(
+        Output,
+        "\033[%dm[%d-%02d-%02d %02d:%02d:%02d] [%s] : %s\033[0m\n",
+        kDiagnosticEngine.Colors[Level],
+        NowTm.tm_year + 1900, 
+        NowTm.tm_mon + 1, 
+        NowTm.tm_mday,
+        NowTm.tm_hour, 
+        NowTm.tm_min,
+        NowTm.tm_sec,
+        kDiagnosticEngine.Labels[Level],
+        Message
+    );
 
-    if (Stream != stdout) {
-        switch (Level) {
-        case LOG_LEVEL_INFO:     fprintf(stdout, "\033[92m[INFO] %s\033[0m\n", Message); break;
-        case LOG_LEVEL_WARNING:  fprintf(stdout, "\033[33m[WARNING] %s\033[0m\n", Message); break;
-        case LOG_LEVEL_ERROR:    fprintf(stdout, "\033[31m[ERROR] %s\033[0m\n", Message); break;
-        default:                 fprintf(stdout, "\033[37m%s\033[0m\n", Message); break;
-        }
+    if (Output != stdout && Output != stderr) {
+        FILE* Stdout = (Level <= LOG_LEVEL_ERROR) ? stderr : stdout;
+
+        fprintf(
+            Stdout,
+            "\033[%dm[%d-%02d-%02d %02d:%02d:%02d] [%s] : %s\033[0m\n",
+            kDiagnosticEngine.Colors[Level],
+            NowTm.tm_year + 1900,
+            NowTm.tm_mon + 1,
+            NowTm.tm_mday,
+            NowTm.tm_hour,
+            NowTm.tm_min,
+            NowTm.tm_sec,
+            kDiagnosticEngine.Labels[Level],
+            Message
+        );
     }
 }
 
-static struct {
-    UInt32 LevelMask;
-    DiagnosticHandler Handler;
-    Void* Context;
-    Char FormatBuffer[0xFFFF];
-} kDiagnosticEngine = { 0xFFFFFFFF, &_DefaultDiagnosticHandler, NULL, 0 };
-
-Void DiagnosticSetDefaultHandler(
+Void DiagnosticSetup(
+    Int32 Level,
+    FILE* Output,
     DiagnosticHandler Handler,
     Void* Context
 ) {
-    if (Handler) {
-        kDiagnosticEngine.Handler = Handler;
-        kDiagnosticEngine.Context = NULL;
-    } else {
-        kDiagnosticEngine.Handler = &_DefaultDiagnosticHandler;
-        kDiagnosticEngine.Context = Context;
-    }
+    kDiagnosticEngine.Output = (Output) ? Output : stdout;
+    kDiagnosticEngine.Error = (Output) ? Output : stderr;
+    kDiagnosticEngine.Level = Level;
+    kDiagnosticEngine.Handler = (Handler) ? Handler : _DefaultDiagnosticHandler;
+    kDiagnosticEngine.Context = Context;
+    kDiagnosticEngine.Handle = NULL;
 }
 
-Void DiagnosticSetOutputStream(
-    FILE* Stream
-) {
-    kDiagnosticOutputStream = Stream;
-}
-
-Void DiagnosticCreateLogFile(
-    CString Namespace
+Void DiagnosticSetupLogFile(
+    CString Namespace,
+    Int32 Level,
+    DiagnosticHandler Handler,
+    Void* Context
 ) {
     Char Buffer[MAX_PATH] = { 0 };
     CString WorkingDirectory = PathGetCurrentDirectory(Buffer, MAX_PATH);
     CString FilePath = CStringFormat("%s\\Logs\\%s_%d.log", WorkingDirectory, Namespace, PlatformGetTickCount());
 
     if (!DirectoryCreate("Logs")) {
-        printf("Error creating directory!\n");
+        Error("Error creating directory!\n");
         return;
     }
 
-    FILE* FileStream = fopen(FilePath, "w+");
-    DiagnosticSetOutputStream(FileStream);
-}
-
-Void DiagnosticSetLevelFilter(
-    UInt32 LevelMask
-) {
-    kDiagnosticEngine.LevelMask = LevelMask;
+    FILE* Output = fopen(FilePath, "w+");
+    kDiagnosticEngine.Output = (Output) ? Output : stdout;
+    kDiagnosticEngine.Error = (Output) ? Output : stderr;
+    kDiagnosticEngine.Level = Level;
+    kDiagnosticEngine.Handler = (Handler) ? Handler : _DefaultDiagnosticHandler;
+    kDiagnosticEngine.Context = Context;
+    kDiagnosticEngine.Handle = Output;
 }
 
 Void DiagnosticTeardown() {
-    if (kDiagnosticOutputStream) fclose(kDiagnosticOutputStream);
+    if (!kDiagnosticEngine.Handle) return;
+
+    fclose(kDiagnosticEngine.Handle);
+    kDiagnosticEngine.Output = stdout;
+    kDiagnosticEngine.Handle = NULL;
 }
 
-Void LogMessage(
-    UInt32 Level,
+static inline Void _Log(
+    FILE* Output,
+    Int32 Level,
     CString Message
 ) {
-    if (!(Level & kDiagnosticEngine.LevelMask)) return;
+    if (kDiagnosticEngine.Level < Level) return;
 
-    kDiagnosticEngine.Handler(Level, Message, kDiagnosticEngine.Context);
+    kDiagnosticEngine.Handler(
+        Output,
+        Level,
+        Message,
+        kDiagnosticEngine.Context
+    );
 }
 
-Void LogMessageFormat(
-    UInt32 Level,
+Void Fatal(
     CString Format,
     ...
 ) {
     va_list ArgumentPointer;
     va_start(ArgumentPointer, Format);
-    vsprintf(&kDiagnosticEngine.FormatBuffer[0], Format, ArgumentPointer);
+    vsprintf(kDiagnosticEngine.Buffer, Format, ArgumentPointer);
     va_end(ArgumentPointer);
 
-    LogMessage(Level, kDiagnosticEngine.FormatBuffer);
-}
-
-Void FatalError(
-    CString Message
-) {
-    kDiagnosticEngine.Handler(LOG_LEVEL_ERROR, Message, kDiagnosticEngine.Context);
+    _Log(kDiagnosticEngine.Error, LOG_LEVEL_FATAL, kDiagnosticEngine.Buffer);
     exit(EXIT_FAILURE);
 }
 
-Void FatalErrorFormat(
+Void Error(
     CString Format,
     ...
 ) {
     va_list ArgumentPointer;
     va_start(ArgumentPointer, Format);
-    vsprintf(&kDiagnosticEngine.FormatBuffer[0], Format, ArgumentPointer);
+    vsprintf(kDiagnosticEngine.Buffer, Format, ArgumentPointer);
     va_end(ArgumentPointer);
 
-    FatalError(kDiagnosticEngine.FormatBuffer);
+    _Log(kDiagnosticEngine.Error, LOG_LEVEL_ERROR, kDiagnosticEngine.Buffer);
+}
+
+Void Warn(
+    CString Format,
+    ...
+) {
+    va_list ArgumentPointer;
+    va_start(ArgumentPointer, Format);
+    vsprintf(kDiagnosticEngine.Buffer, Format, ArgumentPointer);
+    va_end(ArgumentPointer);
+
+    _Log(kDiagnosticEngine.Output, LOG_LEVEL_WARN, kDiagnosticEngine.Buffer);
+}
+
+Void Info(
+    CString Format,
+    ...
+) {
+    va_list ArgumentPointer;
+    va_start(ArgumentPointer, Format);
+    vsprintf(kDiagnosticEngine.Buffer, Format, ArgumentPointer);
+    va_end(ArgumentPointer);
+
+    _Log(kDiagnosticEngine.Output, LOG_LEVEL_INFO, kDiagnosticEngine.Buffer);
+}
+
+Void Trace(
+    CString Format,
+    ...
+) {
+    va_list ArgumentPointer;
+    va_start(ArgumentPointer, Format);
+    vsprintf(kDiagnosticEngine.Buffer, Format, ArgumentPointer);
+    va_end(ArgumentPointer);
+
+    _Log(kDiagnosticEngine.Output, LOG_LEVEL_TRACE, kDiagnosticEngine.Buffer);
 }

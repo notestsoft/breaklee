@@ -39,7 +39,7 @@ ArchiveRef ArchiveCreateEmpty(
     AllocatorRef Allocator
 ) {
     ArchiveRef Archive = (ArchiveRef)AllocatorAllocate(Allocator, sizeof(struct _Archive));
-    if (!Archive) FatalError("Memory allocation failed!");
+    if (!Archive) Fatal("Memory allocation failed!");
 
     Archive->Allocator = Allocator;
     Archive->NameTable = ArrayCreateEmpty(Archive->Allocator, sizeof(UInt8), 0x1000);
@@ -80,7 +80,7 @@ Bool ArchiveLoadFromFileEncryptedNoAlloc(
     return true;
 
 error:
-    LogMessageFormat(LOG_LEVEL_ERROR, "Error loading archive: %s", FilePath);
+    Error("Error loading archive: %s", FilePath);
     if (Buffer) free(Buffer);
     return false;
 }
@@ -98,6 +98,8 @@ Bool ArchiveLoadFromFile(
     if (!File) goto error;
     if (!FileRead(File, &Source, &SourceLength)) goto error;
     
+    FileClose(File);
+
     if (!ArchiveParseFromSource(Archive, (CString)Source, SourceLength, IgnoreErrors)) {
         goto error;
     }

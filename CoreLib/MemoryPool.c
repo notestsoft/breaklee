@@ -23,7 +23,7 @@ MemoryPoolRef MemoryPoolCreate(
     Index BlockMemorySize = BlockCount * BlockSizeAligned;
     Index TotalSize = MemoryPoolSize + BlockFlagsSize + BlockMemorySize;
     MemoryPoolRef MemoryPool = (MemoryPoolRef)AllocatorAllocate(Allocator, TotalSize);
-    if (!MemoryPool) FatalError("MemoryPool allocation failed!");
+    if (!MemoryPool) Fatal("MemoryPool allocation failed!");
     
     MemoryPool->Allocator = Allocator;
     MemoryPool->BlockSize = BlockSize;

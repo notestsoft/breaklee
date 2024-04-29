@@ -12,7 +12,7 @@ IPCPacketBufferRef IPCPacketBufferCreate(
     Index Length
 ) {
     IPCPacketBufferRef PacketBuffer = (IPCPacketBufferRef)AllocatorAllocate(Allocator, sizeof(struct _IPCPacketBuffer));
-    if (!PacketBuffer) FatalError("PacketBuffer allocation failed!");
+    if (!PacketBuffer) Fatal("PacketBuffer allocation failed!");
     
     PacketBuffer->Allocator = Allocator;
     PacketBuffer->MemoryBuffer = MemoryBufferCreate(Allocator, Alignment, Length);

@@ -51,7 +51,7 @@ Void EncryptDecryptFile(
     if (!FileRead(File, &Source, &SourceLength)) goto cleanup;
 
     if (!InflateDecryptBuffer(Source, SourceLength, &Buffer, &BufferLength)) {
-        LogMessageFormat(LOG_LEVEL_ERROR, "Couldn't decrypt file `%s`", FileName);
+        Error("Couldn't decrypt file `%s`", FileName);
         goto cleanup;
     }
 
@@ -61,13 +61,13 @@ Void EncryptDecryptFile(
 
     DecryptedFile = FileCreate(OutputFilePath);
     if (!DecryptedFile) {
-        LogMessageFormat(LOG_LEVEL_ERROR, "Error creating file `%s`", OutputFilePath);
+        Error("Error creating file `%s`", OutputFilePath);
         goto cleanup;
     }
 
-    LogMessageFormat(LOG_LEVEL_INFO, "Writing file `%s`", OutputFilePath);
+    Info("Writing file `%s`", OutputFilePath);
     if (!FileWrite(DecryptedFile, Buffer, BufferLength, FALSE)) {
-        LogMessageFormat(LOG_LEVEL_ERROR, "Error writing file `%s`", OutputFilePath);
+        Error("Error writing file `%s`", OutputFilePath);
         goto cleanup;
     }
 
@@ -84,12 +84,12 @@ Int32 main(
     CString* Arguments
 ) {
     if (ArgumentCount < 2) {
-        LogMessage(LOG_LEVEL_ERROR, "Missing argument `pattern`");
+        Error("Missing argument `pattern`");
         goto error;
     }
 
     if (!EncryptionLoadLibrary()) {
-        LogMessage(LOG_LEVEL_ERROR, "Error loading zlib library");
+        Error("Error loading zlib library");
         goto error;
     }
 
@@ -101,7 +101,7 @@ Int32 main(
     );
 
     if (ProcessedFileCount < 1) {
-        LogMessageFormat(LOG_LEVEL_WARNING, "No files found for pattern `%s`", Pattern);
+        Warn("No files found for pattern `%s`", Pattern);
         goto error;
     }
 

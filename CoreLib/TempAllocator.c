@@ -26,7 +26,7 @@ MemoryRef _AllocatorTemp(
     switch (Mode) {
     case AllocatorModeAllocate: {
         Void *Memory = AllocatorAllocate(TempContext->Allocator, Capacity);
-        if (!Memory) FatalError("Memory allocation failed!");
+        if (!Memory) Fatal("Memory allocation failed!");
         ArrayAppendElement(TempContext->Allocations, &Memory);
         return Memory;
     }
@@ -57,7 +57,7 @@ MemoryRef _AllocatorTemp(
     }
 
     default:
-        FatalError("Invalid value for Mode!");
+        Fatal("Invalid value for Mode!");
     }
 }
 

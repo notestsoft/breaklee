@@ -35,5 +35,5 @@ Void ClientSocketOnDisconnect(
         Client->CharacterIndex = 0;
     }
     */
-    LogMessage(LOG_LEVEL_INFO, "Client disconnected...");
+    Info("Client disconnected...");
 }

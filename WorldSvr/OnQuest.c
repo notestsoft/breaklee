@@ -175,7 +175,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_CLOSE) {
 	}
 
 	if (Packet->Length != sizeof(C2S_DATA_PARTY_QUEST_CLOSE) + TailLength) {
-		LogMessageFormat("Packet length error for quest(%d) close!", Quest->ID);
+		Error("Packet length error for quest(%d) close!", Quest->ID);
 		goto error;
 	}
 	

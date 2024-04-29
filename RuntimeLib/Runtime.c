@@ -12,7 +12,7 @@ RTRuntimeRef RTRuntimeCreate(
     Void* UserData
 ) {
     RTRuntimeRef Runtime = (RTRuntimeRef)AllocatorAllocate(Allocator, sizeof(struct _RTRuntime));
-    if (!Runtime) FatalError("Memory allocation failed!");
+    if (!Runtime) Fatal("Memory allocation failed!");
     memset(Runtime, 0, sizeof(struct _RTRuntime));
 
     for (Int32 X = 0; X < RUNTIME_MOVEMENT_MAX_DISTANCE_LENGTH; X++) {
@@ -127,7 +127,7 @@ RTEntityID RTRuntimeCreateEntity(
         return Runtime->Entities[Index];
     }
 
-    FatalError("Maximum amount of entities reached!");
+    Fatal("Maximum amount of entities reached!");
     return kEntityIDNull;
 }
 

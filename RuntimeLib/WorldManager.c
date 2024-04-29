@@ -9,7 +9,7 @@ RTWorldManagerRef RTWorldManagerCreate(
     Index MaxCharacterCount
 ) {
     RTWorldManagerRef WorldManager = (RTWorldManagerRef)AllocatorAllocate(Runtime->Allocator, sizeof(struct _RTWorldManager));
-    if (!WorldManager) FatalError("Memory allocation failed");
+    if (!WorldManager) Fatal("Memory allocation failed");
 
     WorldManager->Allocator = Runtime->Allocator;
     WorldManager->Runtime = Runtime;

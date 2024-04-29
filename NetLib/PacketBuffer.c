@@ -18,7 +18,7 @@ PacketBufferRef PacketBufferCreate(
     Index Length
 ) {
     PacketBufferRef PacketBuffer = (PacketBufferRef)AllocatorAllocate(Allocator, sizeof(struct _PacketBuffer));
-    if (!PacketBuffer) FatalError("PacketBuffer allocation failed!");
+    if (!PacketBuffer) Fatal("PacketBuffer allocation failed!");
     
     PacketBuffer->Allocator = Allocator;
     PacketBuffer->MemoryBuffer = MemoryBufferCreate(Allocator, Alignment, Length);
@@ -68,13 +68,13 @@ Void* PacketBufferInitFromFile(
     MemoryBufferClear(PacketBuffer->MemoryBuffer);
 
     FileRef File = FileOpen(FilePath);
-    if (!File) FatalError("Error reading file!");
+    if (!File) Fatal("Error reading file!");
 
     UInt8* Buffer = NULL;
     Int32 BufferLength = 0;
     if (!FileRead(File, &Buffer, &BufferLength)) {
         FileClose(File);
-        FatalError("Error reading file!");
+        Fatal("Error reading file!");
     }
 
     Void* Packet = MemoryBufferAppendCopy(PacketBuffer->MemoryBuffer, Buffer, BufferLength);

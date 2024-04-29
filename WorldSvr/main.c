@@ -97,15 +97,16 @@ Void ServerOnUpdate(
 }
 
 Int32 main(Int32 ArgumentCount, CString* Arguments) {
+    DiagnosticSetupLogFile("WorldSvr", LOG_LEVEL_TRACE, NULL, NULL);
+
     CString ConfigFileName = "WorldSvr.ini";
     if (ArgumentCount > 1) {
         ConfigFileName = Arguments[1];
     }
 
-    DiagnosticCreateLogFile("WorldSvr");
-    LogMessageFormat(LOG_LEVEL_INFO, "ConfigFile: %s", ConfigFileName);
+    Info("Load config file: %s", ConfigFileName);
 
-    if (!EncryptionLoadLibrary()) FatalError("Error loading zlib library...\n");
+    if (!EncryptionLoadLibrary()) Fatal("Error loading zlib library...\n");
 
     Char Buffer[MAX_PATH] = { 0 };
     CString WorkingDirectory = PathGetCurrentDirectory(Buffer, MAX_PATH);
@@ -116,7 +117,7 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     struct _ServerContext ServerContext = { 0 };
     ServerContext.Config = Config;
     ServerContext.RuntimeData = AllocatorAllocate(Allocator, sizeof(struct _RuntimeData));
-    if (!ServerContext.RuntimeData) FatalError("Memory allocation failed");
+    if (!ServerContext.RuntimeData) Fatal("Memory allocation failed");
     ServerContext.Runtime = RTRuntimeCreate(Allocator, &ServerRuntimeOnEvent, &ServerContext);
     ServerContext.Runtime->Config.ExpMultiplier = Config.WorldSvr.ExpMultiplier;
     ServerContext.Runtime->Config.SkillExpMultiplier = Config.WorldSvr.SkillExpMultiplier;
@@ -125,8 +126,7 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     NodeID.Group = Config.WorldSvr.GroupIndex;
     NodeID.Index = Config.WorldSvr.NodeIndex;
     NodeID.Type = IPC_TYPE_WORLD;
-
-    LogMessageFormat(LOG_LEVEL_INFO, "Node(%d, %d, %d)", NodeID.Group, NodeID.Index, NodeID.Type);
+    Trace("Node(%d, %d, %d)", NodeID.Group, NodeID.Index, NodeID.Type);
 
     ServerRef Server = ServerCreate(
         Allocator,
@@ -186,8 +186,13 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_P2W_ ## __NAME__, &SERVER_IPC_P2W_PROC_ ## __NAME__);
 #include "IPCCommands.h"
 
-    RTRuntimeLoadData(ServerContext.Runtime, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
-    ServerLoadRuntimeData(Config, &ServerContext);
+    BENCHMARK("RTRuntimeLoadData") {
+        RTRuntimeLoadData(ServerContext.Runtime, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
+    }
+
+    BENCHMARK("ServerLoadRuntimeData") {
+        ServerLoadRuntimeData(Config, &ServerContext);
+    }
 
     ServerRun(Server);
 

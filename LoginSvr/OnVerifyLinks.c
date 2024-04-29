@@ -12,7 +12,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_LINKS) {
 
     if (Client->Flags & CLIENT_FLAGS_VERIFIED) goto error;
 
-    LogMessageFormat(LOG_LEVEL_INFO, "Client Magic Key: %d", Packet->ClientMagicKey);
+    Info("Client Magic Key: %d", Packet->ClientMagicKey);
 
     if (Context->Config.Login.ClientMagicKey != Packet->ClientMagicKey) goto error;
 

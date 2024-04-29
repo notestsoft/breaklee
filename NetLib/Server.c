@@ -31,7 +31,7 @@ ServerRef ServerCreate(
     PlatformLoadSocketLibrary();
 
     ServerRef Server = (ServerRef)AllocatorAllocate(Allocator, sizeof(struct _Server));
-    if (!Server) FatalError("Memory allocation failed!");
+    if (!Server) Fatal("Memory allocation failed!");
 
     Server->Allocator = Allocator;
     Server->Sockets = ArrayCreateEmpty(Allocator, sizeof(struct _ServerSocketContext), 8);
@@ -231,7 +231,7 @@ Void _ServerSocketOnReceived(
         Packet
     );
     else {
-        LogMessageFormat(LOG_LEVEL_WARNING, "Received unknown packet: %d", (Int32)Command);
+        Warn("Received unknown packet: %d", (Int32)Command);
         
         PacketLogBytes(
             Socket->ProtocolIdentifier,

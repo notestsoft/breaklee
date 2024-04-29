@@ -1,5 +1,5 @@
 <events>
-    <event id="1822" type="2" use_flags="11" world_id="1" npc_id="49" description="Basics">
+    <event id="1" type="2" use_flags="11" world_id="1" npc_id="49" description="Basics">
         <event_description content="Basics" />
         
         <event_shop>

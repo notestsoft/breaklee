@@ -6,7 +6,7 @@ Void AuthDBPrepareStatements(
 	DatabaseRef Database
 ) {
 #define STATEMENT(__NAME__, __QUERY__)										\
-	LogMessageFormat(LOG_LEVEL_INFO, "Create Statement: %s", #__NAME__);	\
+	Info("Create Statement: %s", #__NAME__);	\
 	kStatementTable[__NAME__] = DatabaseCreateStatement(					\
     	Database,															\
     	__QUERY__															\

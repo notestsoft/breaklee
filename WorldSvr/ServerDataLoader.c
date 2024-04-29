@@ -891,66 +891,66 @@ Bool ServerLoadMobData(
         AttackPatternUsage[ArchiveMobData->AttackPattern] += 1;
 
         if (ArchiveMobData->D[0]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) D[0]: %d", Index, ArchiveMobData->D[0]);
+            Warn("Mob (%d) D[0]: %d", Index, ArchiveMobData->D[0]);
         }
 
         if (ArchiveMobData->D[1]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) D[1]: %d", Index, ArchiveMobData->D[1]);
+            Warn("Mob (%d) D[1]: %d", Index, ArchiveMobData->D[1]);
         }
 
         if (ArchiveMobData->D[2]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) D[2]: %d", Index, ArchiveMobData->D[2]);
+            Warn("Mob (%d) D[2]: %d", Index, ArchiveMobData->D[2]);
         }
 
         if (ArchiveMobData->O[0]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) O[0]: %d", Index, ArchiveMobData->O[0]);
+            Warn("Mob (%d) O[0]: %d", Index, ArchiveMobData->O[0]);
         }
 
         if (ArchiveMobData->K[0]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) K[0]: %d", Index, ArchiveMobData->K[0]);
+            Warn("Mob (%d) K[0]: %d", Index, ArchiveMobData->K[0]);
         }
 
         if (ArchiveMobData->K[1]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) K[1]: %d", Index, ArchiveMobData->K[1]);
+            Warn("Mob (%d) K[1]: %d", Index, ArchiveMobData->K[1]);
         }
 
         if (ArchiveMobData->K[2]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) K[2]: %d", Index, ArchiveMobData->K[2]);
+            Warn("Mob (%d) K[2]: %d", Index, ArchiveMobData->K[2]);
         }
 
         if (ArchiveMobData->L[0]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[0]: %d", Index, ArchiveMobData->L[0]);
+            Warn("Mob (%d) L[0]: %d", Index, ArchiveMobData->L[0]);
         }
 
         if (ArchiveMobData->L[1]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[1]: %d", Index, ArchiveMobData->L[1]);
+            Warn("Mob (%d) L[1]: %d", Index, ArchiveMobData->L[1]);
         }
 
         if (ArchiveMobData->L[2]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[2]: %d", Index, ArchiveMobData->L[2]);
+            Warn("Mob (%d) L[2]: %d", Index, ArchiveMobData->L[2]);
         }
 
         if (ArchiveMobData->L[3]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[3]: %d", Index, ArchiveMobData->L[3]);
+            Warn("Mob (%d) L[3]: %d", Index, ArchiveMobData->L[3]);
         }
 
         if (ArchiveMobData->L[4]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[4]: %d", Index, ArchiveMobData->L[4]);
+            Warn("Mob (%d) L[4]: %d", Index, ArchiveMobData->L[4]);
         }
 
         if (ArchiveMobData->L[5]) {
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob (%d) L[5]: %d", Index, ArchiveMobData->L[5]);
+            Warn("Mob (%d) L[5]: %d", Index, ArchiveMobData->L[5]);
         }
     }
 
     for (Int32 Index = 0; Index < 50; Index += 1) {
         if (SkillGroupUsage[Index] > 0)
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob Skill Group: %d", Index);
+            Warn("Mob Skill Group: %d", Index);
     }
 
     for (Int32 Index = 0; Index < 50; Index += 1) {
         if (AttackPatternUsage[Index] > 0)
-            LogMessageFormat(LOG_LEVEL_WARNING, "Mob Attack Pattern: %d", Index);
+            Warn("Mob Attack Pattern: %d", Index);
     }
 
     FileClose(File);
@@ -1075,7 +1075,7 @@ Bool ServerLoadWorldData(
         ArchiveClear(Archive, true);
 
         if (!ArchiveLoadFromFileEncryptedNoAlloc(Archive, WorldFilePath, false)) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Loading world file %s failed!", WorldFilePath);
+            Error("Loading world file %s failed!", WorldFilePath);
             continue;
         }
 
@@ -1109,7 +1109,7 @@ Bool ServerLoadWorldData(
         if (strlen(MapFileName) > 0) {
             PathCombine(RuntimeDirectory, "Map", MapFilePath);
             PathCombine(MapFilePath, MapFileName, MapFilePath);
-            LogMessageFormat(LOG_LEVEL_INFO, "Loading map file: %s", MapFileName);
+            Info("Loading map file: %s", MapFileName);
 
             FileRef MapFile = FileOpen(MapFilePath);
             if (!MapFile) goto error;
@@ -1813,7 +1813,7 @@ Bool ServerLoadDungeonData(
 
         RTWorldDataRef WorldData = RTWorldDataGet(Runtime->WorldManager, DungeonData->WorldID);
         if (!WorldData) {
-            LogMessageFormat(LOG_LEVEL_INFO, "No world (%lld) found for dungeon (%lld)", DungeonData->WorldID, DungeonData->DungeonID);
+            Info("No world (%lld) found for dungeon (%lld)", DungeonData->WorldID, DungeonData->DungeonID);
             Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
             continue;
         }
@@ -1953,92 +1953,92 @@ Bool ServerLoadDungeonData(
         Mob->ID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
 
         if (!ParseAttributeUInt16(Archive, Iterator->Index, "MobIdx", &Mob->ID.EntityIndex)) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "MobIdx", "quest_dungeon_mobs.xml");
+            Error("Loading '%s' in '%s' failed!", "MobIdx", "quest_dungeon_mobs.xml");
             goto error;
         }
 
         if (!ParseAttributeIndex(Archive, Iterator->Index, "PPIdx", &Mob->Spawn.PatternPartIndex)) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "PPIdx", "quest_dungeon_mobs.xml");
+            Error("Loading '%s' in '%s' failed!", "PPIdx", "quest_dungeon_mobs.xml");
             goto error;
         }
 
         if (!ParseAttributeIndex(Archive, Iterator->Index, "SpeciesIdx", &Mob->Spawn.MobSpeciesIndex)) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "SpeciesIdx", "quest_dungeon_mobs.xml");
+            Error("Loading '%s' in '%s' failed!", "SpeciesIdx", "quest_dungeon_mobs.xml");
             goto error;
         }
 
         if (!ParseAttributeInt32(Archive, Iterator->Index, "PosX", &Mob->Spawn.AreaX)) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "PosX", "quest_dungeon_mobs.xml");
+            Error("Loading '%s' in '%s' failed!", "PosX", "quest_dungeon_mobs.xml");
             goto error;
         }
 
         if (!ParseAttributeInt32(Archive, Iterator->Index, "PosY", &Mob->Spawn.AreaY)) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "PosY", "quest_dungeon_mobs.xml");
+            Error("Loading '%s' in '%s' failed!", "PosY", "quest_dungeon_mobs.xml");
             goto error;
         }
 
         if (!ParseAttributeInt32(Archive, Iterator->Index, "Width", &Mob->Spawn.AreaWidth)) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Width", "quest_dungeon_mobs.xml");
+            Error("Loading '%s' in '%s' failed!", "Width", "quest_dungeon_mobs.xml");
             goto error;
         }
 
         if (!ParseAttributeInt32(Archive, Iterator->Index, "Height", &Mob->Spawn.AreaHeight)) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Height", "quest_dungeon_mobs.xml");
+            Error("Loading '%s' in '%s' failed!", "Height", "quest_dungeon_mobs.xml");
             goto error;
         }
 
         if (!ParseAttributeInt32(Archive, Iterator->Index, "SpwnInterval", &Mob->Spawn.SpawnInterval)) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "SpwnInterval", "quest_dungeon_mobs.xml");
+            Error("Loading '%s' in '%s' failed!", "SpwnInterval", "quest_dungeon_mobs.xml");
             goto error;
         }
 
         if (!ParseAttributeInt32(Archive, Iterator->Index, "SpwnCount", &Mob->Spawn.SpawnCount)) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "SpwnCount", "quest_dungeon_mobs.xml");
+            Error("Loading '%s' in '%s' failed!", "SpwnCount", "quest_dungeon_mobs.xml");
             goto error;
         }
 
         if (!ParseAttributeInt32(Archive, Iterator->Index, "SpawnDefault", &Mob->Spawn.SpawnDefault)) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "SpawnDefault", "quest_dungeon_mobs.xml");
+            Error("Loading '%s' in '%s' failed!", "SpawnDefault", "quest_dungeon_mobs.xml");
             goto error;
         }
 
         if (!ParseAttributeInt32(Archive, Iterator->Index, "Grade", &Mob->Spawn.Grade)) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Grade", "quest_dungeon_mobs.xml");
+            Error("Loading '%s' in '%s' failed!", "Grade", "quest_dungeon_mobs.xml");
             goto error;
         }
 
         if (!ParseAttributeInt32(Archive, Iterator->Index, "Lv", &Mob->Spawn.Level)) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Lv", "quest_dungeon_mobs.xml");
+            Error("Loading '%s' in '%s' failed!", "Lv", "quest_dungeon_mobs.xml");
             goto error;
         }
 
         if (!ParseAttributeInt32(Archive, Iterator->Index, "MissionGate", &Mob->Spawn.MissionGate)) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "MissionGate", "quest_dungeon_mobs.xml");
+            Error("Loading '%s' in '%s' failed!", "MissionGate", "quest_dungeon_mobs.xml");
             goto error;
         }
 
         if (!ParseAttributeInt32(Archive, Iterator->Index, "PerfectDrop", &Mob->Spawn.PerfectDrop)) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "PerfectDrop", "quest_dungeon_mobs.xml");
+            Error("Loading '%s' in '%s' failed!", "PerfectDrop", "quest_dungeon_mobs.xml");
             goto error;
         }
 
         if (!ParseAttributeInt32(Archive, Iterator->Index, "Type", &Mob->Spawn.Type)) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Type", "quest_dungeon_mobs.xml");
+            Error("Loading '%s' in '%s' failed!", "Type", "quest_dungeon_mobs.xml");
             goto error;
         }
 
         if (!ParseAttributeInt32(Archive, Iterator->Index, "Min", &Mob->Spawn.Min)) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Min", "quest_dungeon_mobs.xml");
+            Error("Loading '%s' in '%s' failed!", "Min", "quest_dungeon_mobs.xml");
             goto error;
         }
 
         if (!ParseAttributeInt32(Archive, Iterator->Index, "Max", &Mob->Spawn.Max)) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Max", "quest_dungeon_mobs.xml");
+            Error("Loading '%s' in '%s' failed!", "Max", "quest_dungeon_mobs.xml");
             goto error;
         }
 
         if (!ParseAttributeInt32(Archive, Iterator->Index, "Authority", &Mob->Spawn.Authority)) {
-            LogMessageFormat(LOG_LEVEL_ERROR, "Loading '%s' in '%s' failed!", "Authority", "quest_dungeon_mobs.xml");
+            Error("Loading '%s' in '%s' failed!", "Authority", "quest_dungeon_mobs.xml");
             goto error;
         }
 

@@ -71,8 +71,7 @@ DatabaseRef DatabaseConnect(
 	UInt16 Port,
 	Bool AutoReconnect
 ) {
-	LogMessageFormat(
-		LOG_LEVEL_INFO,
+	Info(
 		"Connecting to database...\n\n\thost = %s\n\tusername = %s\n\tpassword = ****\n\tdatabase = %s\n\tport = %d\n",
 		Host,
 		Username,
@@ -158,8 +157,7 @@ Bool DatabaseBeginTransaction(
 	DatabaseRef Database
 ) {	
 	if (mysql_query(Database->Connection, "START TRANSACTION;") != 0) {
-		LogMessageFormat(
-			LOG_LEVEL_ERROR, 
+		Error(
 			"Database start transaction failed: %s", 
 			mysql_error(Database->Connection)
 		);
@@ -173,8 +171,7 @@ Bool DatabaseCommitTransaction(
 	DatabaseRef Database
 ) {
 	if (mysql_query(Database->Connection, "COMMIT;") != 0) {
-		LogMessageFormat(
-			LOG_LEVEL_ERROR,
+		Error(
 			"Database commit transaction failed: %s",
 			mysql_error(Database->Connection)
 		);
@@ -188,8 +185,7 @@ Bool DatabaseRollbackTransaction(
 	DatabaseRef Database
 ) {
 	if (mysql_query(Database->Connection, "ROLLBACK;") != 0) {
-		LogMessageFormat(
-			LOG_LEVEL_ERROR,
+		Error(
 			"Database rollback transaction failed: %s",
 			mysql_error(Database->Connection)
 		);
@@ -289,8 +285,7 @@ StatementRef DatabaseCreateStatement(
 	return Statement;
 
 error:
-	LogMessageFormat(
-		LOG_LEVEL_ERROR,
+	Error(
 		"Database create Statement failed: %s", 
 		mysql_error(Database->Connection)
 	);
@@ -342,7 +337,7 @@ Void StatementBindParameter(
 			Buffer->Value.Buffer = malloc(Length);
 		}
 
-		if (!Buffer->Value.Buffer) FatalError("Memory allocation failed!");
+		if (!Buffer->Value.Buffer) Fatal("Memory allocation failed!");
 
 		memcpy(Buffer->Value.Buffer, Value, Length);	
 		Binding->buffer = Buffer->Value.Buffer;
@@ -459,8 +454,7 @@ Bool StatementExecute(
 ) {
 	if (Statement->Parameters) {
 		if (mysql_stmt_bind_param(Statement->Statement, Statement->Parameters)) {
-			LogMessageFormat(
-				LOG_LEVEL_ERROR,
+			Error(
 				"Database Statement parameter binding failed: %s", 
 				mysql_error(Statement->Database->Connection)
 			);
@@ -470,8 +464,7 @@ Bool StatementExecute(
 
 	if (Statement->Results) {
 		if (mysql_stmt_bind_result(Statement->Statement, Statement->Results)) {
-			LogMessageFormat(
-				LOG_LEVEL_ERROR,
+			Error(
 				"Database Statement result binding failed: %s",
 				mysql_error(Statement->Database->Connection)
 			);
@@ -480,8 +473,7 @@ Bool StatementExecute(
 	}
 
 	if (mysql_stmt_execute(Statement->Statement) != 0) {
-		LogMessageFormat(
-			LOG_LEVEL_ERROR,
+		Error(
 			"Database Statement execution failed: %s",
 			mysql_error(Statement->Database->Connection)
 		);
@@ -498,8 +490,7 @@ Bool StatementFetchResult(
 ) {
 	Int32 Result = mysql_stmt_fetch(Statement->Statement);
 	if (Result == 1) {
-		LogMessageFormat(
-			LOG_LEVEL_ERROR,
+		Error(
 			"Database error fetching data: %s",
 			mysql_error(Statement->Database->Connection)
 		);

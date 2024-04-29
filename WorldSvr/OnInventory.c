@@ -147,7 +147,7 @@ Bool SwapInventoryItem(
 CLIENT_PROCEDURE_BINDING(PUSH_EQUIPMENT_ITEM) {
     if (!Character) goto error;
 
-    LogMessageFormat(LOG_LEVEL_INFO, "PushEquipment:");
+    Info("PushEquipment:");
 
     RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->LeftSlotIndex);
     if (!ItemSlot) goto error;
@@ -173,14 +173,14 @@ CLIENT_PROCEDURE_BINDING(PUSH_EQUIPMENT_ITEM) {
         if (!HasLeftSlot) {
             HasLeftSlot = RTEquipmentRemoveSlot(Runtime, &Character->EquipmentInfo, NextSlotIndex, &LeftSlot);
             if (HasLeftSlot) RTCharacterBroadcastEquipmentUpdate(Runtime, Character, &LeftSlot, false);
-            if (HasLeftSlot) LogMessageFormat(LOG_LEVEL_INFO, "[E%d] -> [T1]", LeftSlot.SlotIndex);
+            if (HasLeftSlot) Info("[E%d] -> [T1]", LeftSlot.SlotIndex);
             RightSlotIndex = RTCharacterFindNextEquipmentSlotIndex(Runtime, Character, NextSlotIndex + 1, ItemType);
         }
         if (!HasLeftSlot) break;
 
         HasRightSlot = RTEquipmentRemoveSlot(Runtime, &Character->EquipmentInfo, RightSlotIndex, &RightSlot);
         if (HasRightSlot) RTCharacterBroadcastEquipmentUpdate(Runtime, Character, &RightSlot, false);
-        if (HasRightSlot) LogMessageFormat(LOG_LEVEL_INFO, "[E%d] -> [T2]", RightSlot.SlotIndex);
+        if (HasRightSlot) Info("[E%d] -> [T2]", RightSlot.SlotIndex);
         NextSlotIndex = RTCharacterFindNextEquipmentSlotIndex(Runtime, Character, RightSlotIndex + 1, ItemType);
 
         if (HasLeftSlot && RightSlotIndex >= 0) {
@@ -188,31 +188,31 @@ CLIENT_PROCEDURE_BINDING(PUSH_EQUIPMENT_ITEM) {
             Bool Success = RTEquipmentSetSlot(Runtime, &Character->EquipmentInfo, &LeftSlot);
             assert(Success);
             RTCharacterBroadcastEquipmentUpdate(Runtime, Character, &LeftSlot, true);
-            LogMessageFormat(LOG_LEVEL_INFO, "[T1] -> [E%d]", LeftSlot.SlotIndex);
+            Info("[T1] -> [E%d]", LeftSlot.SlotIndex);
             memcpy(&LeftSlot, &RightSlot, sizeof(struct _RTItemSlot));
             HasLeftSlot = HasRightSlot;
             HasRightSlot = false;
-            LogMessageFormat(LOG_LEVEL_INFO, "[T2] -> [T1]");
+            Info("[T2] -> [T1]");
         }
     }
 
     Bool Success = RTInventoryRemoveSlot(Runtime, &Character->InventoryInfo, Packet->LeftSlotIndex, &RightSlot);
     assert(Success);
 
-    LogMessageFormat(LOG_LEVEL_INFO, "[I%d] -> [T2]", RightSlot.SlotIndex);
+    Info("[I%d] -> [T2]", RightSlot.SlotIndex);
 
     if (HasLeftSlot) {
         LeftSlot.SlotIndex = Packet->RightSlotIndex;
         Bool Success = RTInventorySetSlot(Runtime, &Character->InventoryInfo, &LeftSlot);
         assert(Success);
-        LogMessageFormat(LOG_LEVEL_INFO, "[T1] -> [I%d]", LeftSlot.SlotIndex);
+        Info("[T1] -> [I%d]", LeftSlot.SlotIndex);
     }
 
     RightSlot.SlotIndex = FirstSlotIndex;
     Success = RTEquipmentSetSlot(Runtime, &Character->EquipmentInfo, &RightSlot);
     assert(Success);
     RTCharacterBroadcastEquipmentUpdate(Runtime, Character, &RightSlot, true);
-    LogMessageFormat(LOG_LEVEL_INFO, "[T2] -> [E%d]", RightSlot.SlotIndex);
+    Info("[T2] -> [E%d]", RightSlot.SlotIndex);
 
     Character->SyncMask.EquipmentInfo = true;
     Character->SyncMask.InventoryInfo = true;

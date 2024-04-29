@@ -40,7 +40,7 @@ Void ServerOnUpdate(
 }
 
 Int32 main(Int32 argc, CString* argv) {
-    DiagnosticCreateLogFile("MasterSvr");
+    DiagnosticSetupLogFile("MasterSvr", LOG_LEVEL_TRACE, NULL, NULL);
 
     Char Buffer[MAX_PATH] = { 0 };
     CString WorkingDirectory = PathGetCurrentDirectory(Buffer, MAX_PATH);
@@ -77,7 +77,7 @@ Int32 main(Int32 argc, CString* argv) {
         Config.MasterDB.Port,
         Config.MasterDB.AutoReconnect
     );
-    if (!ServerContext.Database) FatalError("Database connection failed");
+    if (!ServerContext.Database) Fatal("Database connection failed");
 
 #define IPC_L2M_COMMAND(__NAME__) \
     IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_L2M_ ## __NAME__, &SERVER_IPC_L2M_PROC_ ## __NAME__);

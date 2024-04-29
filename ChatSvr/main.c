@@ -39,7 +39,7 @@ Void ServerOnUpdate(
 }
 
 Int32 main(Int32 argc, CString* argv) {
-    DiagnosticCreateLogFile("ChatSvr");
+    DiagnosticSetupLogFile("ChatSvr", LOG_LEVEL_TRACE, NULL, NULL);
 
     Char Buffer[MAX_PATH] = { 0 };
     CString WorkingDirectory = PathGetCurrentDirectory(Buffer, MAX_PATH);

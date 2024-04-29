@@ -44,7 +44,7 @@ RTScriptManagerRef RTScriptManagerCreate(
     Index MaxScriptCount
 ) {
     RTScriptManagerRef ScriptManager = AllocatorAllocate(Runtime->Allocator, sizeof(struct _RTScriptManager));
-    if (!ScriptManager) FatalError("Memory allocation failed!");
+    if (!ScriptManager) Fatal("Memory allocation failed!");
 
     ScriptManager->Allocator = Runtime->Allocator;
     ScriptManager->Runtime = Runtime;
@@ -84,7 +84,7 @@ RTScriptRef RTScriptManagerLoadScript(
 
     Script->PoolIndex = MemoryPoolIndex;
     Script->State = luaL_newstate();
-    if (!Script->State) FatalError("Lua: State creation failed!");
+    if (!Script->State) Fatal("Lua: State creation failed!");
 
     luaL_openlibs(Script->State);
 
@@ -93,8 +93,8 @@ RTScriptRef RTScriptManagerLoadScript(
     lua_pushcfunction(Script->State, _DebugWorldSpawnMob);
     lua_setglobal(Script->State, "world_spawn_mob");
     
-    if (luaL_loadfile(Script->State, FilePath) != LUA_OK) FatalErrorFormat("Lua: %s", lua_tostring(Script->State, -1));
-    if (lua_pcall(Script->State, 0, 0, 0) != LUA_OK) FatalErrorFormat("Lua: %s", lua_tostring(Script->State, -1));
+    if (luaL_loadfile(Script->State, FilePath) != LUA_OK) Fatal("Lua: %s", lua_tostring(Script->State, -1));
+    if (lua_pcall(Script->State, 0, 0, 0) != LUA_OK) Fatal("Lua: %s", lua_tostring(Script->State, -1));
 
     return Script;
 }
@@ -124,7 +124,7 @@ Bool RTScriptCall(
 
     Result = lua_pcall(Script->State, ArgumentCount, 0, 0);
     if (Result != LUA_OK) {
-        LogMessageFormat(LOG_LEVEL_ERROR, "Lua: %s", lua_tostring(Script->State, -1));
+        Error("Lua: %s", lua_tostring(Script->State, -1));
         return false;
     }
 

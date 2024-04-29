@@ -34,6 +34,7 @@ FileRef FileOpen(
         return NULL;
     }
 
+    Info("FileOpen(%s, %d)", FilePath, Handle);
     return (FileRef)Handle;
 }
 
@@ -54,12 +55,14 @@ FileRef FileCreate(
         return NULL;
     }
 
+    Info("FileCreate(%s, %d)", FilePath, Handle);
     return (FileRef)Handle;
 }
 
 Void FileClose(
     FileRef File
 ) {
+    Info("FileClose(%d)", (HANDLE)File);
     assert(File);
     CloseHandle(File);
 }
@@ -76,7 +79,7 @@ Bool FileRead(
 
     LARGE_INTEGER FileSize;
     if (!GetFileSizeEx(File, &FileSize)) {
-        LogMessage(LOG_LEVEL_ERROR, "Error reading file size!\n");
+        Error("Error reading file size!\n");
         return false;
     }
 
@@ -84,7 +87,7 @@ Bool FileRead(
     *Length = (Int32)FileSize.QuadPart;
     *Destination = (UInt8*)malloc(*Length);
     if (*Destination == NULL) {
-        LogMessage(LOG_LEVEL_ERROR, "Memory allocation failed!\n");
+        Error("Memory allocation failed!\n");
         return false;
     }
 
@@ -92,7 +95,7 @@ Bool FileRead(
     FileTransferCompleted = false;
 
     if (!ReadFileEx(File, *Destination, *Length, &Overlapped, (LPOVERLAPPED_COMPLETION_ROUTINE)IOCompletionRoutine)) {
-        LogMessage(LOG_LEVEL_ERROR, "Error reading file!\n");
+        Error("Error reading file!\n");
 
         free(*Destination);
         *Destination = NULL;
@@ -125,7 +128,7 @@ Bool FileWrite(
     FileTransferCompleted = false;
 
     if (!WriteFileEx(File, Source, (DWORD)Length, &Overlapped, (LPOVERLAPPED_COMPLETION_ROUTINE)IOCompletionRoutine)) {
-        LogMessage(LOG_LEVEL_ERROR, "Error writing file!\n");
+        Error("Error writing file!\n");
         return false;
     }
 

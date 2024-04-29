@@ -17,7 +17,7 @@ Void PlatformLoadSocketLibrary() {
             strcpy(MessageBuffer, "Socket library loading failed!");
         }
 
-        FatalError(MessageBuffer);
+        Fatal(MessageBuffer);
     }
 #endif
 }
@@ -36,7 +36,7 @@ Void PlatformUnloadSocketLibrary() {
             strcpy(MessageBuffer, "Socket library loading failed!");
         }
 
-        FatalError(MessageBuffer);
+        Fatal(MessageBuffer);
     }
 #endif
 }
@@ -110,7 +110,7 @@ Bool PlatformSocketSelect(
     if (FD_ISSET(Handle, &Except)) {
         Char Message[MAX_PATH];
         if (GetPlatformErrorMessage(Message, MAX_PATH)) {
-            LogMessage(LOG_LEVEL_ERROR, Message);
+            Error(Message);
         }
 
         return false;

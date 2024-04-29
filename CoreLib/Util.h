@@ -4,6 +4,9 @@
 
 EXTERN_C_BEGIN
 
+#define BENCHMARK(__PROCESS__) \
+for (float startTime = (float)clock() / CLOCKS_PER_SEC, run = 1.0; run == 1.0; run = 0, Info("[%s] Time elapsed: %fs", __PROCESS__, (float)clock() / CLOCKS_PER_SEC - startTime))
+
 Index Align(
     Index Value,
     Index Alignment

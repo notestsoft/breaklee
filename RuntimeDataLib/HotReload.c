@@ -27,7 +27,7 @@ ArchiveRef RTRuntimeDataLoadArchive(
     } 
 
     if (!Success) {
-        LogMessageFormat(LOG_LEVEL_ERROR, "Error loading runtime data: %s", FileName);
+        Error("Error loading runtime data: %s", FileName);
         ArchiveDestroy(Archive);
         return NULL;
     }
@@ -48,7 +48,7 @@ Bool CONCAT(RTRuntimeData, __NAME__ ## HotReload)(                              
         ServerDataPath,                                                             \
         FileName                                                                    \
     );                                                                              \
-    LogMessageFormat(LOG_LEVEL_INFO, "Hot reloading runtime data: %s", # __NAME__); \
+    Info("Hot reloading runtime data: %s", # __NAME__); \
     if (!Archive) return false;                                                     \
                                                                                     \
     CString Query = __QUERY__;                                                      \
@@ -63,7 +63,7 @@ Bool CONCAT(RTRuntimeData, __NAME__ ## HotReload)(                              
 #define RUNTIME_DATA_PROPERTY(__TYPE__, __NAME__, __QUERY__) \
         PropertyQuery = __QUERY__; \
         if (!CONCAT(ParseAttribute, __TYPE__)(Archive, Iterator->Index, PropertyQuery, &Data->__NAME__)) { \
-            LogMessageFormat(LOG_LEVEL_ERROR, "Couldn't parse attribute %s in %s\n", PropertyQuery, Query); \
+            Error("Couldn't parse attribute %s in %s\n", PropertyQuery, Query); \
         }
 
 #define RUNTIME_DATA_PROPERTY_PRECONDITION(__TYPE__, __NAME__, __QUERY__, __VALUE__) \
@@ -104,7 +104,7 @@ Bool CONCAT(RTRuntimeData, __NAME__ ## HotReload)(                              
     return true;\
 \
 error:\
-    LogMessageFormat(LOG_LEVEL_ERROR, "Error reloading runtime data: %s", # __NAME__); \
+    Error("Error reloading runtime data: %s", # __NAME__); \
     ArchiveDestroy(Archive);\
     return false;\
 }

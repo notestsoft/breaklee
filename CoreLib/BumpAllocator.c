@@ -85,7 +85,7 @@ Void *_AllocatorBump(
     }
 
     case AllocatorModeReallocate:
-        FatalError("BumpAllocator doesn't support reallocation!");
+        Fatal("BumpAllocator doesn't support reallocation!");
         return NULL;
 
     case AllocatorModeDeallocate:
@@ -104,6 +104,6 @@ Void *_AllocatorBump(
     }
 
     default:
-        FatalError("Invalid value for Mode!");
+        Fatal("Invalid value for Mode!");
     }
 }

@@ -121,7 +121,7 @@ Bool RTInventorySetSlot(
 	RTCharacterInventoryInfoRef Inventory,
 	RTItemSlotRef Slot
 ) {
-	LogMessageFormat(LOG_LEVEL_INFO, "InventorySetSlot(%llu, %llu, %d, %d)", Slot->Item.Serial, Slot->ItemOptions, Slot->ItemDuration, Slot->SlotIndex);
+	Info("InventorySetSlot(%llu, %llu, %d, %d)", Slot->Item.Serial, Slot->ItemOptions, Slot->ItemDuration, Slot->SlotIndex);
     assert(Inventory);
 	assert(0 <= Slot->SlotIndex && Slot->SlotIndex < RUNTIME_INVENTORY_TOTAL_SIZE);
 
@@ -165,7 +165,7 @@ Bool RTInventoryClearSlot(
 	RTCharacterInventoryInfoRef Inventory,
 	Int32 SlotIndex
 ) {
-	LogMessageFormat(LOG_LEVEL_INFO, "InventoryClearSlot(%d)", SlotIndex);
+	Info("InventoryClearSlot(%d)", SlotIndex);
 	assert(0 <= SlotIndex && SlotIndex < RUNTIME_INVENTORY_TOTAL_SIZE);
 
 	Int32 InventoryIndex = RTInventoryGetSlotIndex(
@@ -194,7 +194,7 @@ Bool RTInventoryRemoveSlot(
 	Int32 SlotIndex,
 	RTItemSlotRef Result
 ) {
-	LogMessageFormat(LOG_LEVEL_INFO, "InventoryRemoveSlot(%d)", SlotIndex);
+	Info("InventoryRemoveSlot(%d)", SlotIndex);
 	RTItemSlotRef Slot = RTInventoryGetSlot(Runtime, Inventory, SlotIndex);
 	if (!Slot) 
 		return false;
@@ -211,7 +211,7 @@ Bool RTInventoryMoveSlot(
 	Int32 SourceSlotIndex,
 	Int32 TargetSlotIndex
 ) {
-	LogMessageFormat(LOG_LEVEL_INFO, "InventoryMoveSlot(%d, %d)", SourceSlotIndex, TargetSlotIndex);
+	Info("InventoryMoveSlot(%d, %d)", SourceSlotIndex, TargetSlotIndex);
 	RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, SourceInventory, SourceSlotIndex);
 	if (!SourceSlot) return false;
 

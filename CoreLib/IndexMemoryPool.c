@@ -15,7 +15,7 @@ IndexMemoryPoolRef IndexMemoryPoolCreate(
     Index BlockCount
 ) {
     IndexMemoryPoolRef IndexMemoryPool = (IndexMemoryPoolRef)AllocatorAllocate(Allocator, sizeof(struct _IndexMemoryPool));
-    if (!IndexMemoryPool) FatalError("Memory allocation failed!");
+    if (!IndexMemoryPool) Fatal("Memory allocation failed!");
 
     IndexMemoryPool->Allocator = Allocator;
     IndexMemoryPool->MemoryPool = MemoryPoolCreate(Allocator, BlockSize, BlockCount);

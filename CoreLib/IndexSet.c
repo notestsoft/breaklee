@@ -8,7 +8,7 @@ IndexSetRef IndexSetCreate(
     Index Capacity
 ) {
     IndexSetRef Set = (IndexSetRef)AllocatorAllocate(Allocator, sizeof(struct _IndexSet));
-    if (!Set) FatalError("Memory allocation failed!");
+    if (!Set) Fatal("Memory allocation failed!");
     
     Set->Allocator = Allocator;
     Set->Indices = ArrayCreateEmpty(Allocator, sizeof(Index), Capacity);

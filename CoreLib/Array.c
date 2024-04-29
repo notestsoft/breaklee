@@ -22,7 +22,7 @@ Void _ArrayReserveCapacity(
 
     if (Array->Capacity < Capacity) {
         MemoryRef Memory = AllocatorReallocate(Array->Allocator, Array->Memory, Array->Size * Capacity);
-        if (!Memory) FatalError("Memory allocation failed!");
+        if (!Memory) Fatal("Memory allocation failed!");
 
         Array->Capacity = Capacity;
         Array->Memory = Memory;
@@ -46,14 +46,14 @@ ArrayRef ArrayCreateEmpty(
     Index Capacity
 ) {
     ArrayRef Array = AllocatorAllocate(Allocator, sizeof(struct _Array));
-    if (!Array) FatalError("Memory allocation failed!");
+    if (!Array) Fatal("Memory allocation failed!");
     
     Array->Allocator = Allocator;
     Array->Size = Size;
     Array->Count = 0;
     Array->Capacity = MAX(ARRAY_MIN_CAPACITY, Capacity);
     Array->Memory = (UInt8 *)AllocatorAllocate(Allocator, Array->Capacity * Array->Size);
-    if (!Array->Memory) FatalError("Memory allocation failed!");
+    if (!Array->Memory) Fatal("Memory allocation failed!");
     
     return Array;
 }
@@ -252,7 +252,7 @@ Void ArrayRemoveAllElements(
     if (!KeepCapacity) {
         Index Capacity = MIN(ARRAY_MIN_CAPACITY, Array->Capacity);
         UInt8* Memory = realloc(Array->Memory, Capacity);
-        if (!Memory) FatalError("Memory allocation failed!");
+        if (!Memory) Fatal("Memory allocation failed!");
         Array->Capacity = Capacity;
         Array->Memory = Memory;
     }

@@ -5,52 +5,60 @@
 EXTERN_C_BEGIN
 
 enum {
-    LOG_LEVEL_INFO       = 1 << 0,
-    LOG_LEVEL_WARNING    = 1 << 1,
-    LOG_LEVEL_ERROR      = 1 << 2,
+    LOG_LEVEL_NONE  = 0,
+    LOG_LEVEL_FATAL = 1,
+    LOG_LEVEL_ERROR = 2,
+    LOG_LEVEL_WARN  = 3,
+    LOG_LEVEL_INFO  = 4,
+    LOG_LEVEL_TRACE = 5,
+
+    LOG_LEVEL_COUNT,
 };
 
 typedef Void (*DiagnosticHandler)(
-    UInt32 Level,
+    FILE* Output,
+    Int32 Level,
     CString Message,
     Void* Context
 );
 
-Void DiagnosticSetDefaultHandler(
+Void DiagnosticSetup(
+    FILE* Output,
+    Int32 Level,
     DiagnosticHandler Handler,
     Void* Context
 );
 
-Void DiagnosticSetOutputStream(
-    FILE *Stream
-);
-
-Void DiagnosticCreateLogFile(
-    CString Namespace
-);
-
-Void DiagnosticSetLevelFilter(
-    UInt32 LevelMask
+Void DiagnosticSetupLogFile(
+    CString Namespace,
+    Int32 Level,
+    DiagnosticHandler Handler,
+    Void* Context
 );
 
 Void DiagnosticTeardown();
 
-Void LogMessage(
-    UInt32 Level,
-    CString Message
-);
-
-Void LogMessageFormat(
-    UInt32 Level,
+ATTRIBUTE_NORETURN Void Fatal(
     PRINTFLIKE_PARAMETER(CString Format),
     ...
 ) PRINTFLIKE_ATTRIBUTE(2, 3);
 
-ATTRIBUTE_NORETURN Void FatalError(
-    CString Message
-);
+Void Error(
+    PRINTFLIKE_PARAMETER(CString Format),
+    ...
+) PRINTFLIKE_ATTRIBUTE(2, 3);
 
-Void FatalErrorFormat(
+Void Warn(
+    PRINTFLIKE_PARAMETER(CString Format),
+    ...
+) PRINTFLIKE_ATTRIBUTE(2, 3);
+
+Void Info(
+    PRINTFLIKE_PARAMETER(CString Format),
+    ...
+) PRINTFLIKE_ATTRIBUTE(2, 3);
+
+Void Trace(
     PRINTFLIKE_PARAMETER(CString Format),
     ...
 ) PRINTFLIKE_ATTRIBUTE(2, 3);

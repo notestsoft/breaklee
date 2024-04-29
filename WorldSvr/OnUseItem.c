@@ -25,7 +25,7 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM) {
 			Packet
 		);
 
-		LogMessageFormat(LOG_LEVEL_INFO, "Use Item ItemType: %d", ItemData->ItemType);
+		Info("Use Item ItemType: %d", ItemData->ItemType);
 		// TODO: Check if it is a general option of an item that it been consumed from the inventory
 
 		#define RUNTIME_ITEM_PROCEDURE(__NAME__, __TYPE__, __INTERNAL__)	\
