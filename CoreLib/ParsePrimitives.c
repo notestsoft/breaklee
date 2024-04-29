@@ -525,7 +525,8 @@ Int32 ParseAttributeCharArrayCounted(
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
     if (!Data) goto error;
 
-    Int64 Length = MIN(Count, Data->Length);
+//    Int64 Length = MIN(Count, Data->Length);
+    Int64 Length = Data->Length;
     memcpy(Result, Data->Data, Length);
     if (Length > 0) Result[strlen(Result)] = '\0';
     return strlen(Result);

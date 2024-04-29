@@ -30,6 +30,15 @@ Bool RTRuntimeDataContextLoad(
 	CString ServerDataPath
 );
 
+#define RUNTIME_DATA_TYPE_BEGIN(__NAME__, __QUERY__, __COUNT__)	\
+Bool CONCAT(RTRuntimeData, __NAME__ ## HotReload)(				\
+	RTRuntimeDataContextRef Context,							\
+    CString RuntimeDataPath,									\
+	CString ServerDataPath,										\
+	CString FileName											\
+);
+#include "Macro.h"
+
 #define RUNTIME_DATA_TYPE_INDEX(__NAME__, __TYPE__, __FIELD__)	        \
 CONCAT(RTData, __NAME__ ## Ref) CONCAT(RTRuntimeData, __NAME__ ## Get)( \
 	RTRuntimeDataContextRef Context,							        \
