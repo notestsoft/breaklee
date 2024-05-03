@@ -482,14 +482,14 @@ IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER) {
     }
 
     RTWorldSpawnCharacter(Runtime, World, Character->ID);
-    /*
+    
     RTRuntimeDataEventHotReload(
         Context->Runtime->Context,
         Context->Config.WorldSvr.RuntimeDataPath,
         Context->Config.WorldSvr.ServerDataPath,
-        "Events188.xml"
+        "Event.xml"
     );
-    */
+
     // TODO: Move event data to database and trigger request on init
     SendEventInfo(Context, Client);
     SendEventList(Context, Client);

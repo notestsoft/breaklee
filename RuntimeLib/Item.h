@@ -272,9 +272,17 @@ struct _RTItem {
 typedef struct _RTItem RTItem;
 
 struct _RTItemOptionSlot {
-	UInt8 ForceIndex : 4;
-	UInt8 ForceLevel : 3;
-	UInt8 IsEpic : 1;
+	union {
+		struct {
+			UInt8 ForceIndex : 4;
+			UInt8 ForceLevel : 3;
+			UInt8 IsEpic : 1;
+		};
+		struct {
+			UInt8 MasterIndex : 7;
+		};
+		UInt8 Serial;
+	};
 };
 typedef struct _RTItemOptionSlot RTItemOptionSlot;
 
@@ -283,6 +291,7 @@ struct _RTItemOptions {
 		struct { UInt64 Serial; };
 		struct {
 			RTItemOptionSlot Slots[RUNTIME_ITEM_MAX_OPTION_COUNT];
+
 			struct {
 				UInt8 ExtraForceIndex : 4;
 				UInt8 SlotCount : 3;

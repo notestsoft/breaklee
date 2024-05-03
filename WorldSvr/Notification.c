@@ -233,7 +233,7 @@ Void BroadcastToParty(
     RTEntityID PartyID,
     Void *Notification
 ) {
-    IPC_W2P_DATA_BROADCAST_TO_PARTY* Request = IPCPacketBufferInit(Context->IPCSocket, W2P, BROADCAST_TO_PARTY);
+    IPC_W2P_DATA_BROADCAST_TO_PARTY* Request = IPCPacketBufferInit(Context->IPCSocket->PacketBuffer, W2P, BROADCAST_TO_PARTY);
     Request->Header.Source = Context->IPCSocket->NodeID;
     Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
     Request->Header.Target.Type = IPC_TYPE_PARTY;
@@ -244,7 +244,7 @@ Void BroadcastToParty(
         Context->ClientSocket->ProtocolExtension,
         Notification
     );
-    IPCPacketBufferAppendCopy(Context->IPCSocket, Notification, Request->Length);
+    IPCPacketBufferAppendCopy(Context->IPCSocket->PacketBuffer, Notification, Request->Length);
     IPCSocketUnicast(Context->IPCSocket, Request);
 }
 
@@ -601,6 +601,32 @@ Void ServerRuntimeOnEvent(
 
         S2C_DATA_NFY_CHARACTER_EVENT* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_CHARACTER_EVENT);
         Notification->Type = S2C_DATA_CHARACTER_EVENT_TYPE_FORCEWING_LEVELUP;
+        Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
+
+        return BroadcastToWorld(
+            Context,
+            Event->World,
+            kEntityIDNull,
+            Event->X,
+            Event->Y,
+            Notification
+        );
+    }
+
+    if (Event->Type == RUNTIME_EVENT_CHARACTER_SKILL_RANK_UP) {
+        ClientContextRef Client = ServerGetClientByEntity(Context, Event->TargetID);
+        if (!Client) return;
+
+        RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Client->CharacterIndex);
+        {
+            S2C_DATA_NFY_CHARACTER_DATA* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_CHARACTER_DATA);
+            Notification->Type = S2C_DATA_CHARACTER_UPDATE_TYPE_RANK;
+            Notification->SkillRank = Character->Info.Skill.Rank;
+            SocketSend(Context->ClientSocket, Client->Connection, Notification);
+        }
+
+        S2C_DATA_NFY_CHARACTER_EVENT* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_CHARACTER_EVENT);
+        Notification->Type = S2C_DATA_CHARACTER_EVENT_TYPE_RANKUP;
         Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 
         return BroadcastToWorld(

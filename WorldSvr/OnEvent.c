@@ -44,6 +44,32 @@ CLIENT_PROCEDURE_BINDING(GET_EVENT_LIST) {
 				ShopItem->ItemOptions = ItemData->ItemOptions;
 				ShopItem->CurrencyPrice = ItemData->ItemPrice;
 
+				if (ItemData->ItemOptionForceCount > 0) {
+					RTDataItemOptionForceRef ForceData = &ItemData->ItemOptionForceList[0];
+					RTItemOptions Options = { 0 };
+					Options.Equipment.SlotCount = ForceData->SlotCount;
+
+					for (Int32 SlotIndex = 0; SlotIndex < ForceData->ItemOptionForceSlotCount; SlotIndex += 1) {
+						RTDataItemOptionForceSlotRef SlotData = &ForceData->ItemOptionForceSlotList[SlotIndex];
+
+						if (SlotData->Type == RUNTIME_ITEM_OPTION_TYPE_SLOT ||
+							SlotData->Type == RUNTIME_ITEM_OPTION_TYPE_EPIC) {
+							Options.Equipment.Slots[SlotData->Slot].ForceLevel = SlotData->Level;
+							Options.Equipment.Slots[SlotData->Slot].ForceIndex = SlotData->Option;
+						}
+						else if (SlotData->Type == RUNTIME_ITEM_OPTION_TYPE_MASTER) {
+							Options.Equipment.Slots[SlotData->Slot].MasterIndex = SlotData->Option;
+						}
+
+						Options.Equipment.Slots[SlotData->Slot].IsEpic = (
+							SlotData->Type == RUNTIME_ITEM_OPTION_TYPE_EPIC ||
+							SlotData->Type == RUNTIME_ITEM_OPTION_TYPE_MASTER
+						);
+					}
+
+					ShopItem->ItemOptions = Options.Serial;
+				}
+
 				/*
 				ShopItem->ItemPriceCount = 10;
 				for (Int32 Index = 0; Index < ShopItem->ItemPriceCount; Index += 1) {

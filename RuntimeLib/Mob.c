@@ -274,7 +274,7 @@ Void RTMobAttackTarget(
 	);
 
 	if (Mob->SpecialAttackSkill) {
-		assert(false && "Not Implemented!");
+		// assert(false && "Not Implemented!");
 	}
 
 	// TODO: Check SkillGroup for attack patterns: single, aoe, movement, heal, buff, debuff

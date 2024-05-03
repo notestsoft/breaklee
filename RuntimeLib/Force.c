@@ -110,14 +110,24 @@ Void RTCharacterApplyForceEffect(
 		if (!AttributeIndex) break;
 
 		switch (Formula->ForceEffectType) {
-		case RUNTIME_FORCE_EFFECT_TYPE_ADDITIVE:
+		case RUNTIME_FORCE_VALUE_TYPE_ADDITIVE:
 			Character->Attributes.Values[AttributeIndex] += ForceValue;
 			break;
 
-		case RUNTIME_FORCE_EFFECT_TYPE_MULTIPLICATIVE: // TODO: Is this even a thing at all?
+		case RUNTIME_FORCE_VALUE_TYPE_MULTIPLICATIVE: // TODO: Is this even a thing at all?
 			break;
 		}
 
 		assert(0 <= AttributeIndex && AttributeIndex < RUNTIME_ATTRIBUTE_COUNT);
 	}
+}
+
+Void RTCharacterCancelForceEffect(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 ForceEffect,
+	Int32 ForceValue,
+	Int32 ForceValueType
+) {
+
 }

@@ -214,6 +214,12 @@ enum {
 	RUNTIME_ITEM_GROUP_VEHICLE = 4,
 };
 
+enum {
+	RUNTIME_ITEM_OPTION_TYPE_SLOT	= 0,
+	RUNTIME_ITEM_OPTION_TYPE_EPIC	= 1,
+	RUNTIME_ITEM_OPTION_TYPE_MASTER = 2,
+};
+
 typedef UInt32 RTDataItemType;
 typedef Int32 RTDataItemTypeGrade;
 typedef UInt32 RTDataItemCategory;
