@@ -1,6 +1,6 @@
 # breaklee
 
-Copyright (c) 2021 Notestsoft (notestsoft@proton.me)
+Copyright (c) 2021 Notestsoft (notestsoft@proton.me).
 
 [LICENSE](LICENSE).
 
@@ -76,6 +76,6 @@ Please take the time to review existing issues before submitting your own to pre
 
 ## Copyright
 
-Copyright (c) 2021 Notestsoft (notestsoft@proton.me)
+Copyright (c) 2021 Notestsoft (notestsoft@proton.me).
 
 [LICENSE](LICENSE).
