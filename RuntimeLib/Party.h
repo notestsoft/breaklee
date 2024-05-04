@@ -17,6 +17,7 @@ enum {
 struct _RTPartyMemberInfo {
     UInt32 CharacterIndex;
     Int32 Level;
+    UInt8 BattleStyleIndex;
     UInt16 OverlordLevel;
     Int32 MythRebirth;
     Int32 MythHolyPower;
@@ -26,23 +27,11 @@ struct _RTPartyMemberInfo {
     Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1];
 };
 
-struct _RTPartyMemberData {
-    Int64 MaxHP;
-    Int64 CurrentHP;
-    Int32 MaxMP;
-    Int32 CurrentMP;
-    Int32 PositionX;
-    Int32 PositionY;
-    Int16 MaxSP;
-    Int16 CurrentSP;
-};
-
 struct _RTPartySlot {
 	Int32 SlotIndex;
     Index NodeIndex;
     RTEntityID MemberID; // TODO: Remove
     struct _RTPartyMemberInfo Info;
-    struct _RTPartyMemberData Data;
 };
 
 struct _RTPartyInvitation {

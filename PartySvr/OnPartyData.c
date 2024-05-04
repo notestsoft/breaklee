@@ -12,7 +12,6 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_DATA) {
         if (Party->Members[Index].Info.CharacterIndex != Packet->MemberInfo.CharacterIndex) continue;
 
         memcpy(&Party->Members[Index].Info, &Packet->MemberInfo, sizeof(struct _RTPartyMemberInfo));
-        memcpy(&Party->Members[Index].Data, &Packet->MemberData, sizeof(struct _RTPartyMemberData));
         break;
     }
 
@@ -24,7 +23,6 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_DATA) {
 
     for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
         memcpy(&Response->MemberInfo[Index], &Party->Members[Index].Info, sizeof(struct _RTPartyMemberInfo));
-        memcpy(&Response->MemberData[Index], &Party->Members[Index].Data, sizeof(struct _RTPartyMemberData));
     }
 
     IPCSocketBroadcast(Socket, Response);

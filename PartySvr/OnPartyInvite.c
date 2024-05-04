@@ -20,7 +20,6 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
 		RTPartySlotRef Member = RTPartyGetMember(Party, Source->Info.CharacterIndex);
 		Member->NodeIndex = Packet->Source.NodeIndex;
 		memcpy(&Member->Info, &Source->Info, sizeof(struct _RTPartyMemberInfo));
-		memcpy(&Member->Data, &Source->Data, sizeof(struct _RTPartyMemberData));
 	}
 
 	assert(Party);
@@ -32,7 +31,6 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
 
 	Invitation->Member.NodeIndex = Packet->Target.NodeIndex;
 	memcpy(&Invitation->Member.Info, &Target->Info, sizeof(struct _RTPartyMemberInfo));
-	memcpy(&Invitation->Member.Data, &Target->Data, sizeof(struct _RTPartyMemberData));
 	Invitation->InvitationTimestamp = GetTimestampMs();
 
 	IPC_P2W_DATA_PARTY_INVITE* Request = IPCPacketBufferInit(Connection->PacketBuffer, P2W, PARTY_INVITE);
@@ -74,7 +72,6 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_ACK) {
 	if (Packet->Success) {
 		Invitation->Member.NodeIndex = Packet->Target.NodeIndex;
 		memcpy(&Invitation->Member.Info, &Target->Info, sizeof(struct _RTPartyMemberInfo));
-		memcpy(&Invitation->Member.Data, &Target->Data, sizeof(struct _RTPartyMemberData));
 	}
 	else if (Party->PartyType == RUNTIME_PARTY_TYPE_TEMPORARY) {
 		MemoryPoolRelease(Context->PartyInvitationPool, *PartyInvitationPoolIndex);
@@ -93,6 +90,18 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_ACK) {
 	Response->Target = Packet->Target;
 	Response->Success = Packet->Success;
 	IPCSocketUnicast(Socket, Response);
+
+	IPC_P2W_DATA_PARTY_DATA* Notification = IPCPacketBufferInit(Connection->PacketBuffer, P2W, PARTY_DATA);
+	Notification->Header.Source = Server->IPCSocket->NodeID;
+	Notification->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
+	Notification->Header.Target.Type = IPC_TYPE_WORLD;
+	Notification->MemberCount = Party->MemberCount;
+
+	for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
+		memcpy(&Notification->MemberInfo[Index], &Party->Members[Index].Info, sizeof(struct _RTPartyMemberInfo));
+	}
+
+	IPCSocketBroadcast(Socket, Notification);
 	return;
 
 error:

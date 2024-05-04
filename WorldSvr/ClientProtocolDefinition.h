@@ -2353,7 +2353,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_PARTY_INIT_MEMBER,
     Int32 Unknown1;
     Int32 Unknown2;
     UInt8 Unknown3;
-    UInt8 Unknown4;
+    UInt8 BattleStyleIndex;
     Int32 Unknown5;
     UInt16 OverlordLevel;
     Int32 MythRebirth;

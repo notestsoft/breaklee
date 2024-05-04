@@ -277,6 +277,26 @@ IPC_PROTOCOL_STRUCT(IPC_DATA_PARTY_INVITE_MEMBER,
 	Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1];
 )
 
+IPC_PROTOCOL(W2P, CLIENT_CONNECT,
+	Index CharacterIndex;
+)
+
+IPC_PROTOCOL(P2W, CLIENT_CONNECT,
+	Int32 Result;
+	UInt32 DungeonIndex;
+	RTEntityID PartyID;
+	Index PartyLeaderIndex;
+	UInt8 WorldServerIndex;
+	Int32 MemberCount;
+	struct _RTPartyMemberInfo Members[RUNTIME_PARTY_MAX_MEMBER_COUNT];
+	UInt32 SoloDungeonIndex;
+	Timestamp SoloDungeonTimeout;
+)
+
+IPC_PROTOCOL(W2P, CLIENT_DISCONNECT,
+	Index CharacterIndex;
+)
+
 IPC_PROTOCOL(W2P, PARTY_INVITE,
 	UInt8 Result;
 	struct _RTPartySlot Source;
@@ -336,31 +356,13 @@ IPC_PROTOCOL(P2W, PARTY_INFO,
 	struct _RTParty Party;
 )
 
-IPC_PROTOCOL(W2P, PARTY_INIT,
-	Index CharacterIndex;
-)
-
-IPC_PROTOCOL(P2W, PARTY_INIT,
-	Int32 Result;
-	UInt32 DungeonIndex;
-	RTEntityID PartyID;
-	Index PartyLeaderIndex;
-	UInt8 WorldServerIndex;
-	Int32 MemberCount;
-	struct _RTPartyMemberInfo Members[RUNTIME_PARTY_MAX_MEMBER_COUNT];
-	UInt32 SoloDungeonIndex;
-	Timestamp SoloDungeonTimeout;
-)
-
 IPC_PROTOCOL(W2P, PARTY_DATA,
 	struct _RTPartyMemberInfo MemberInfo;
-	struct _RTPartyMemberData MemberData;
 )
 
 IPC_PROTOCOL(P2W, PARTY_DATA, 
 	UInt32 MemberCount;
 	struct _RTPartyMemberInfo MemberInfo[RUNTIME_PARTY_MAX_MEMBER_COUNT];
-	struct _RTPartyMemberData MemberData[RUNTIME_PARTY_MAX_MEMBER_COUNT];
 )
 
 IPC_PROTOCOL(W2P, BROADCAST_TO_PARTY,

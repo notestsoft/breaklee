@@ -495,7 +495,7 @@ IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER) {
     SendEventList(Context, Client);
     BroadcastUserList(Server, Context);
 
-    IPC_W2P_DATA_PARTY_INIT* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2P, PARTY_INIT);
+    IPC_W2P_DATA_CLIENT_CONNECT* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2P, CLIENT_CONNECT);
     Request->Header.Source = Server->IPCSocket->NodeID;
     Request->Header.SourceConnectionID = Client->Connection->ID;
     Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;

@@ -8,6 +8,8 @@
 CLIENT_PROCEDURE_BINDING(PARTY_INVITE) {
     if (!Character) goto error;
 	if (Packet->NameLength > MAX_CHARACTER_NAME_LENGTH) goto error;
+	
+	UInt8 BattleStyleIndex = Character->Info.Style.BattleStyle | (Character->Info.Style.ExtendedBattleStyle << 3);
 
 	IPC_W2P_DATA_PARTY_INVITE* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2P, PARTY_INVITE);
 	Request->Header.SourceConnectionID = Connection->ID;
@@ -17,6 +19,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_INVITE) {
 	Request->Source.NodeIndex = Context->Config.WorldSvr.NodeIndex;
 	Request->Source.Info.CharacterIndex = Character->CharacterIndex;
 	Request->Source.Info.Level = Character->Info.Basic.Level;
+	Request->Source.Info.BattleStyleIndex = BattleStyleIndex;
 	Request->Source.Info.OverlordLevel = Character->Info.Overlord.Level;
 	Request->Source.Info.MythRebirth = 0;
 	Request->Source.Info.MythHolyPower = 0;
@@ -71,6 +74,8 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE) {
 	CStringCopySafe(Notification->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->Source.Info.Name);
 	SocketSend(Context->ClientSocket, TargetClient->Connection, Notification);
 
+	UInt8 BattleStyleIndex = TargetCharacter->Info.Style.BattleStyle | (TargetCharacter->Info.Style.ExtendedBattleStyle << 3);
+
 	IPC_W2P_DATA_PARTY_INVITE_ACK* Response = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2P, PARTY_INVITE_ACK);
 	Response->Header.SourceConnectionID = TargetClient->Connection->ID;
 	Response->Header.Source = Server->IPCSocket->NodeID;
@@ -79,6 +84,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE) {
 	Response->Source = Packet->Source;
 	Response->Target = Packet->Target;
 	Response->Target.Info.Level = TargetCharacter->Info.Basic.Level;
+	Response->Target.Info.BattleStyleIndex = BattleStyleIndex;
 	Response->Target.Info.OverlordLevel = TargetCharacter->Info.Overlord.Level;
 	Response->Target.Info.MythRebirth = 0;
 	Response->Target.Info.MythHolyPower = 0;
@@ -230,6 +236,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INFO) {
 			S2C_DATA_PARTY_MEMBER* Member = &Notification->Members[MemberIndex];
 			Member->CharacterIndex = Packet->Party.Members[MemberIndex].Info.CharacterIndex;
 			Member->Level = Packet->Party.Members[MemberIndex].Info.Level;
+			Member->BattleStyleIndex = Packet->Party.Members[MemberIndex].Info.BattleStyleIndex;
 			Member->OverlordLevel = Packet->Party.Members[MemberIndex].Info.OverlordLevel;
 			Member->MythRebirth = Packet->Party.Members[MemberIndex].Info.MythRebirth;
 			Member->MythHolyPower = Packet->Party.Members[MemberIndex].Info.MythHolyPower;
@@ -244,7 +251,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INFO) {
 	}
 }
 
-IPC_PROCEDURE_BINDING(P2W, PARTY_INIT) {
+IPC_PROCEDURE_BINDING(P2W, CLIENT_CONNECT) {
 	if (!ClientConnection) return;
 
 	S2C_DATA_NFY_PARTY_INIT* Notification = PacketBufferInit(ClientConnection->PacketBuffer, S2C, NFY_PARTY_INIT);
@@ -265,7 +272,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INIT) {
 		Notification->Members[Index].Unknown1 = 0;
 		Notification->Members[Index].Unknown2 = 0;
 		Notification->Members[Index].Unknown3 = 0;
-		Notification->Members[Index].Unknown4 = 0;
+		Notification->Members[Index].BattleStyleIndex = Packet->Members[Index].BattleStyleIndex;
 		Notification->Members[Index].Unknown5 = 0;
 		Notification->Members[Index].OverlordLevel = Packet->Members[Index].OverlordLevel;
 		Notification->Members[Index].MythRebirth = Packet->Members[Index].MythRebirth;
@@ -275,7 +282,9 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INIT) {
 		Notification->Members[Index].ForceWingLevel = Packet->Members[Index].ForceWingLevel;
 		Notification->Members[Index].NameLength = strlen(Packet->Members[Index].Name) + 1;
 		CStringCopySafe(Notification->Members[Index].Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->Members[Index].Name);
-//		Notification->Members[Index].Unknown6[36]
+		
+		//for (Int32 I = 0; I < 36; I++)
+		//	Notification->Members[Index].Unknown6[I] = 2;
 	}
 
 	// Notification->Padding[100] = 0;
@@ -297,6 +306,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_DATA) {
 		S2C_DATA_PARTY_UPDATE_MEMBER* Member = &Notification->Members[MemberIndex];
 		Member->Info.CharacterIndex = Packet->MemberInfo[MemberIndex].CharacterIndex;
 		Member->Info.Level = Packet->MemberInfo[MemberIndex].Level;
+		Member->Info.BattleStyleIndex = Packet->MemberInfo[MemberIndex].BattleStyleIndex;
 		Member->Info.OverlordLevel = Packet->MemberInfo[MemberIndex].OverlordLevel;
 		Member->Info.MythRebirth = Packet->MemberInfo[MemberIndex].MythRebirth;
 		Member->Info.MythHolyPower = Packet->MemberInfo[MemberIndex].MythHolyPower;
@@ -306,17 +316,19 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_DATA) {
 		Member->Info.NameLength = strlen(Packet->MemberInfo[MemberIndex].Name) + 1;
 		CStringCopySafe(Member->Info.Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->MemberInfo[MemberIndex].Name);
 
-		Member->Data.MaxHP = Packet->MemberData[MemberIndex].MaxHP;
-		Member->Data.CurrentHP = Packet->MemberData[MemberIndex].CurrentHP;
-		Member->Data.MaxMP = Packet->MemberData[MemberIndex].MaxMP;
-		Member->Data.CurrentMP = Packet->MemberData[MemberIndex].CurrentMP;
-		Member->Data.PositionX = Packet->MemberData[MemberIndex].PositionX;
-		Member->Data.PositionY = Packet->MemberData[MemberIndex].PositionY;
-		Member->Data.MaxSP = Packet->MemberData[MemberIndex].MaxSP;
-		Member->Data.CurrentSP = Packet->MemberData[MemberIndex].CurrentSP;
+		RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Member->Info.CharacterIndex);
+		if (Character) {
+			Member->Data.MaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
+			Member->Data.CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+			Member->Data.MaxMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX];
+			Member->Data.CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+			Member->Data.PositionX = Character->Movement.PositionCurrent.X;
+			Member->Data.PositionY = Character->Movement.PositionCurrent.Y;
+			Member->Data.MaxSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX];
+			Member->Data.CurrentSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+		}
 
 		// TODO: Resolve all unknown fields...
-		Member->Info.BattleStyleIndex = 9;
 	}
 
 	for (Int32 Index = 0; Index < Packet->MemberCount; Index += 1) {

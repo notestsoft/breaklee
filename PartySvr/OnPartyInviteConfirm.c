@@ -19,7 +19,6 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CONFIRM) {
 
         Member->NodeIndex = Invitation->Member.NodeIndex;
         memcpy(&Member->Info, &Invitation->Member.Info, sizeof(struct _RTPartyMemberInfo));
-        memcpy(&Member->Data, &Invitation->Member.Data, sizeof(struct _RTPartyMemberData));
 
         if (Party->PartyType == RUNTIME_PARTY_TYPE_TEMPORARY) {
             Party->PartyType = RUNTIME_PARTY_TYPE_NORMAL;

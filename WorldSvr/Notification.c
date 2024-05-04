@@ -19,14 +19,6 @@ Void BroadcastPartyData(
     Request->MemberInfo.MythLevel = 0;
     Request->MemberInfo.ForceWingGrade = Character->ForceWingInfo.Grade;
     Request->MemberInfo.ForceWingLevel = Character->ForceWingInfo.Level;
-    Request->MemberData.MaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
-    Request->MemberData.CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-    Request->MemberData.MaxMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX];
-    Request->MemberData.CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
-    Request->MemberData.PositionX = Character->Movement.PositionCurrent.X;
-    Request->MemberData.PositionY = Character->Movement.PositionCurrent.Y;
-    Request->MemberData.MaxSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX];
-    Request->MemberData.CurrentSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
     IPCSocketUnicast(Context->IPCSocket, Request);
 }
 
