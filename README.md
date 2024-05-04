@@ -1,5 +1,9 @@
 # breaklee
 
+Copyright (c) 2021 Notestsoft (notestsoft@proton.me)
+
+[LICENSE](LICENSE).
+
 ![logo](https://raw.githubusercontent.com/notestsoft/breaklee/main/logo.png) 
 
 --------------
@@ -13,11 +17,6 @@
 * [Copyright](#copyright)
 
 ## Introduction
-
-breaklee is based mostly in C.
-
-It is completely open source; community involvement is highly encouraged.
-If you wish to contribute ideas or code, please read the [Contribution Guidelines](CONTRIBUTING.md).
 
 **Disclaimer:**
 
@@ -33,7 +32,7 @@ By accessing and using this software, you agree to abide by these terms and ackn
 |------------------|----------------|--------------------|
 | Build Tools      | CMake          | [CMake](https://cmake.org/) Version 3.21.0 |
 | Database         | MariaDB Server | [MariaDB Server](https://mariadb.org/) Version tested 11.3.2 |
-| Client           |                | Region NA v596     |
+| Client           |                | KR UTS             |
 
 ## Build
 
@@ -77,6 +76,6 @@ Please take the time to review existing issues before submitting your own to pre
 
 ## Copyright
 
-License: MIT
+Copyright (c) 2021 Notestsoft (notestsoft@proton.me)
 
-Read [LICENSE](LICENSE).
+[LICENSE](LICENSE).
