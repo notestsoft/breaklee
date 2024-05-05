@@ -6,10 +6,10 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
 	RTPartySlotRef Source = &Packet->Source;
 	RTPartySlotRef Target = &Packet->Target;
 
-	Bool IsTargetInParty = DictionaryLookup(Context->CharacterToPartyEntity, &Target->Info.CharacterIndex) != NULL;
+	Bool IsTargetInParty = DictionaryLookup(Context->PartyManager->CharacterToPartyEntity, &Target->Info.CharacterIndex) != NULL;
 	if (IsTargetInParty) goto error;
 
-	Bool HasTargetInvitation = DictionaryLookup(Context->CharacterToPartyInvite, &Target->Info.CharacterIndex) != NULL;
+	Bool HasTargetInvitation = DictionaryLookup(Context->PartyManager->CharacterToPartyInvite, &Target->Info.CharacterIndex) != NULL;
 	if (HasTargetInvitation) goto error;
 
 	RTPartyRef Party = ServerGetPartyByCharacter(Context, Source->Info.CharacterIndex);
@@ -26,8 +26,8 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
 	if (Party->MemberCount >= RUNTIME_PARTY_MAX_MEMBER_COUNT) goto error;
 
 	Index PartyInvitationPoolIndex = 0;
-	RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolReserveNext(Context->PartyInvitationPool, &PartyInvitationPoolIndex);
-	DictionaryInsert(Context->CharacterToPartyInvite, &Target->Info.CharacterIndex, &PartyInvitationPoolIndex, sizeof(Index));
+	RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolReserveNext(Context->PartyManager->PartyInvitationPool, &PartyInvitationPoolIndex);
+	DictionaryInsert(Context->PartyManager->CharacterToPartyInvite, &Target->Info.CharacterIndex, &PartyInvitationPoolIndex, sizeof(Index));
 
 	Invitation->Member.NodeIndex = Packet->Target.NodeIndex;
 	memcpy(&Invitation->Member.Info, &Target->Info, sizeof(struct _RTPartyMemberInfo));
@@ -60,10 +60,10 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_ACK) {
 	RTPartySlotRef Source = &Packet->Source;
 	RTPartySlotRef Target = &Packet->Target;
 
-	Index* PartyInvitationPoolIndex = DictionaryLookup(Context->CharacterToPartyInvite, &Source->Info.CharacterIndex);
+	Index* PartyInvitationPoolIndex = DictionaryLookup(Context->PartyManager->CharacterToPartyInvite, &Source->Info.CharacterIndex);
 	if (!PartyInvitationPoolIndex) goto error;
 
-	RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolFetch(Context->PartyInvitationPool, *PartyInvitationPoolIndex);
+	RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolFetch(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);
 	if (!Invitation) goto error;
 
 	RTPartyRef Party = ServerGetPartyByCharacter(Context, Source->Info.CharacterIndex);
@@ -74,8 +74,8 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_ACK) {
 		memcpy(&Invitation->Member.Info, &Target->Info, sizeof(struct _RTPartyMemberInfo));
 	}
 	else if (Party->PartyType == RUNTIME_PARTY_TYPE_TEMPORARY) {
-		MemoryPoolRelease(Context->PartyInvitationPool, *PartyInvitationPoolIndex);
-		DictionaryRemove(Context->CharacterToPartyInvite, &Target->Info.CharacterIndex);
+		MemoryPoolRelease(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);
+		DictionaryRemove(Context->PartyManager->CharacterToPartyInvite, &Target->Info.CharacterIndex);
 		ServerDestroyParty(Context, Party);
 	}
 

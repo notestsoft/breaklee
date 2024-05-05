@@ -45,7 +45,8 @@ struct _RTDungeonData {
 	Int32 PlayerType;
 	Int32 MaxPlayerCount;
 	Int32 ObjectCount;
-	RTItem EntryItem;
+	RTItem EntryItemID;
+	UInt32 EntryItemOption;
 	Int32 RemoveItem;
 	Int32 EntryConditionLevel;
 	Int32 EntryConditionClass[2];

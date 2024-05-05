@@ -22,6 +22,7 @@
 #include <RuntimeLib/Npc.h>
 #include <RuntimeLib/OverlordMastery.h>
 #include <RuntimeLib/Party.h>
+#include <RuntimeLib/PartyManager.h>
 #include <RuntimeLib/Quest.h>
 #include <RuntimeLib/Quickslot.h>
 #include <RuntimeLib/Recovery.h>

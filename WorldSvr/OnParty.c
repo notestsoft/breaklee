@@ -345,3 +345,7 @@ IPC_PROCEDURE_BINDING(P2W, BROADCAST_TO_CHARACTER) {
 
 	SocketSend(Context->ClientSocket, SourceClient->Connection, Packet->Data);
 }
+
+IPC_PROCEDURE_BINDING(P2W, CREATE_PARTY) {
+	RTPartyManagerCreatePartyRemote(Runtime->PartyManager, &Packet->Party);
+}

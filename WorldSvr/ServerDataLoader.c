@@ -1573,8 +1573,9 @@ Bool ServerLoadDungeonData(
         memset(DungeonData, 0, sizeof(struct _RTDungeonData));
 
         Int32 EntryItem[2];
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "enter_cd_item", EntryItem, 2, ':')) {
-            memset(&DungeonData->EntryItem, 0, sizeof(RTItem));
+        if (ParseAttributeInt32Array(Archive, Iterator->Index, "enter_cd_item", EntryItem, 2, ':')) {
+            DungeonData->EntryItemID.ID = EntryItem[0];
+            DungeonData->EntryItemOption = EntryItem[1];
         }
 
         ParseAttributeInt32(Archive, Iterator->Index, "create_type", &DungeonData->CreateType);
@@ -1674,8 +1675,9 @@ Bool ServerLoadDungeonData(
         memset(DungeonData, 0, sizeof(struct _RTDungeonData));
         
         Int32 EntryItem[2];
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "enter_cd_item", EntryItem, 2, ':')) {
-            memset(&DungeonData->EntryItem, 0, sizeof(RTItem));
+        if (ParseAttributeInt32Array(Archive, Iterator->Index, "enter_cd_item", EntryItem, 2, ':')) {
+            DungeonData->EntryItemID.ID = EntryItem[0];
+            DungeonData->EntryItemOption = EntryItem[1];
         }
 
         ParseAttributeInt32(Archive, Iterator->Index, "create_type", &DungeonData->CreateType);
@@ -1766,8 +1768,9 @@ Bool ServerLoadDungeonData(
         memset(DungeonData, 0, sizeof(struct _RTDungeonData));
 
         Int32 EntryItem[2];
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "enter_cd_item", EntryItem, 2, ':')) {
-            memset(&DungeonData->EntryItem, 0, sizeof(RTItem));
+        if (ParseAttributeInt32Array(Archive, Iterator->Index, "enter_cd_item", EntryItem, 2, ':')) {
+            DungeonData->EntryItemID.ID = EntryItem[0];
+            DungeonData->EntryItemOption = EntryItem[1];
         }
 
         ParseAttributeInt32(Archive, Iterator->Index, "create_type", &DungeonData->CreateType);

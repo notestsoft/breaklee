@@ -248,6 +248,7 @@ struct _RTCharacter {
     RTEntityID PartyID;
     RTEntityID TargetCharacterID;
     Index CharacterIndex;
+    Int32 DungeonEntryItemSlotIndex;
     union _RTCharacterSyncMask SyncMask;
     union _RTCharacterSyncPriority SyncPriority;
     Timestamp SyncTimestamp;

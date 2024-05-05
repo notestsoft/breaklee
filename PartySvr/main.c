@@ -63,12 +63,7 @@ Int32 main(Int32 argc, CString* argv) {
     AllocatorRef Allocator = AllocatorGetSystemDefault();
     struct _ServerContext ServerContext = { 0 };
     ServerContext.Config = Config;
-    ServerContext.PartyPool = MemoryPoolCreate(Allocator, sizeof(struct _RTParty), Config.PartySvr.MaxPartyCount);
-    ServerContext.PartyInvitationPool = MemoryPoolCreate(Allocator, sizeof(struct _RTPartyInvitation), Config.PartySvr.MaxPartyCount);
-    ServerContext.CharacterToPartyEntity = IndexDictionaryCreate(Allocator, Config.PartySvr.MaxPartyCount);
-    ServerContext.CharacterToPartyInvite = IndexDictionaryCreate(Allocator, Config.PartySvr.MaxPartyCount);
-    MemoryPoolReserve(ServerContext.PartyPool, 0);
-    MemoryPoolReserve(ServerContext.PartyInvitationPool, 0);
+    ServerContext.PartyManager = RTPartyManagerCreate(Allocator, Config.PartySvr.MaxPartyCount);
 
     IPCNodeID NodeID = kIPCNodeIDNull;
     NodeID.Group = Config.PartySvr.GroupIndex;
@@ -113,8 +108,7 @@ Int32 main(Int32 argc, CString* argv) {
 
     ServerRun(Server);
 
-    MemoryPoolDestroy(ServerContext.PartyPool);
-    DictionaryDestroy(ServerContext.CharacterToPartyEntity);
+    RTPartyManagerDestroy(ServerContext.PartyManager);
     DiagnosticTeardown();
     
     return EXIT_SUCCESS;

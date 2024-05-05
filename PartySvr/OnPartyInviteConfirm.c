@@ -4,10 +4,10 @@
 #include "Server.h"
 
 IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CONFIRM) {
-    Index* PartyInvitationPoolIndex = DictionaryLookup(Context->CharacterToPartyInvite, &Packet->SourceCharacterIndex);
+    Index* PartyInvitationPoolIndex = DictionaryLookup(Context->PartyManager->CharacterToPartyInvite, &Packet->SourceCharacterIndex);
     if (!PartyInvitationPoolIndex) goto error;
 
-    RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolFetch(Context->PartyInvitationPool, *PartyInvitationPoolIndex);
+    RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolFetch(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);
     if (!Invitation) goto error;
 
     RTPartyRef Party = ServerGetPartyByCharacter(Context, Packet->TargetCharacterIndex);
@@ -15,7 +15,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CONFIRM) {
 
     if (Packet->IsAccept) {
         RTPartySlotRef Member = RTPartyAddMember(Party, Invitation->Member.Info.CharacterIndex, kEntityIDNull);
-        DictionaryInsert(Context->CharacterToPartyEntity, &Invitation->Member.Info.CharacterIndex, &Party->ID, sizeof(struct _RTEntityID));
+        DictionaryInsert(Context->PartyManager->CharacterToPartyEntity, &Invitation->Member.Info.CharacterIndex, &Party->ID, sizeof(struct _RTEntityID));
 
         Member->NodeIndex = Invitation->Member.NodeIndex;
         memcpy(&Member->Info, &Invitation->Member.Info, sizeof(struct _RTPartyMemberInfo));
@@ -36,8 +36,8 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CONFIRM) {
     Notification->IsAccept = Packet->IsAccept;
     IPCSocketUnicast(Socket, Notification);
 
-    MemoryPoolRelease(Context->PartyInvitationPool, *PartyInvitationPoolIndex);
-    DictionaryRemove(Context->CharacterToPartyInvite, &Packet->SourceCharacterIndex);
+    MemoryPoolRelease(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);
+    DictionaryRemove(Context->PartyManager->CharacterToPartyInvite, &Packet->SourceCharacterIndex);
 
     if (!Packet->IsAccept && Party->PartyType == RUNTIME_PARTY_TYPE_TEMPORARY) {
         ServerDestroyParty(Context, Party);

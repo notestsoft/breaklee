@@ -99,6 +99,19 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_SPAWN) {
     // TODO: Character is joining the dungeon which doesn't mean that it is a start command,
     //       because a party member could have had already started it!
 
+    // TODO: Find a way to check if the character was already spawned into the dungeon before
+    if (DungeonData->RemoveItem) {
+        // TODO: The inventory slot should also be checked inside the warp command
+        RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Character->DungeonEntryItemSlotIndex);
+        if (!ItemSlot) goto error;
+        if (ItemSlot->Item.Serial != DungeonData->EntryItemID.Serial ||
+            ItemSlot->ItemOptions != DungeonData->EntryItemOption) goto error;
+
+        RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+        Character->SyncMask.InventoryInfo = true;
+        Character->SyncPriority.High = true;
+    }
+
     if (RTDungeonStart(World)) {
         S2C_DATA_NFY_QUEST_DUNGEON_SPAWN* Response = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_QUEST_DUNGEON_SPAWN);
         Response->DungeonTimeout1 = (UInt32)(World->DungeonTimeout * 1000) - GetTimestampMs();
@@ -173,6 +186,7 @@ error:
 CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_GATE_OPEN) {
     if (!Character) goto error;
     // TODO: Implementation missing!
+    return;
     
 error:
 	return SocketDisconnect(Socket, Connection);

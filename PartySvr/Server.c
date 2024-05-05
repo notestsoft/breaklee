@@ -30,59 +30,31 @@ RTPartyRef ServerCreateParty(
     RTEntityID CharacterID,
     Int32 PartyType
 ) {
-    assert(!DictionaryLookup(Context->CharacterToPartyEntity, &CharacterIndex));
-
-    Index PartyPoolIndex = 0;
-    RTPartyRef Party = (RTPartyRef)MemoryPoolReserveNext(Context->PartyPool, &PartyPoolIndex);
-    Party->ID.EntityIndex = (UInt16)PartyPoolIndex;
-    Party->ID.EntityType = RUNTIME_ENTITY_TYPE_PARTY;
-    Party->LeaderID = CharacterID;
-    Party->LeaderCharacterIndex = CharacterIndex;
-    Party->PartyType = PartyType;
-    RTPartyAddMember(Party, CharacterIndex, CharacterID);
-
-    RTEntityID PartyID = { 0 };
-    PartyID.EntityIndex = (UInt16)PartyPoolIndex;
-    PartyID.EntityType = RUNTIME_ENTITY_TYPE_PARTY;
-    DictionaryInsert(Context->CharacterToPartyEntity, &CharacterIndex, &PartyID, sizeof(struct _RTEntityID));
-
-    return (RTPartyRef)MemoryPoolFetch(Context->PartyPool, PartyPoolIndex);
+    return RTPartyManagerCreateParty(
+        Context->PartyManager,
+        CharacterIndex,
+        CharacterID,
+        PartyType
+    );
 }
 
 Void ServerDestroyParty(
     ServerContextRef Context,
     RTPartyRef Party
 ) {
-    // TODO: Cleanup also all invitations to this party!!!
-
-    for (Index MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {
-        Index CharacterIndex = Party->Members[MemberIndex].Info.CharacterIndex;
-        DictionaryRemove(Context->CharacterToPartyEntity, &CharacterIndex);
-    }
-
-    Index PartyPoolIndex = Party->ID.EntityIndex;
-    MemoryPoolRelease(Context->PartyPool, PartyPoolIndex);
+    return RTPartyManagerDestroyParty(Context->PartyManager, Party);
 }
 
 RTPartyRef ServerGetPartyByCharacter(
     ServerContextRef Context,
     Index CharacterIndex
 ) {
-    RTEntityID* PartyID = (RTEntityID*)DictionaryLookup(Context->CharacterToPartyEntity, &CharacterIndex);
-    if (!PartyID) return NULL;
-
-    Index PartyPoolIndex = PartyID->EntityIndex;
-    return (RTPartyRef)MemoryPoolFetch(Context->PartyPool, PartyPoolIndex);
+    return RTPartyManagerGetPartyByCharacter(Context->PartyManager, CharacterIndex);
 }
 
 RTPartyRef ServerGetParty(
     ServerContextRef Context,
     RTEntityID PartyID
 ) {
-    assert(PartyID.EntityType == RUNTIME_ENTITY_TYPE_PARTY);
-
-    Index PartyPoolIndex = PartyID.EntityIndex;
-    if (!MemoryPoolIsReserved(Context->PartyPool, PartyPoolIndex)) return NULL;
-
-    return (RTPartyRef)MemoryPoolReserveNext(Context->PartyPool, &PartyPoolIndex);
+    return RTPartyManagerGetParty(Context->PartyManager, PartyID);
 }

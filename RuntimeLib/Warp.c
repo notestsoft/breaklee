@@ -349,7 +349,8 @@ Bool RTRuntimeWarpCharacter(
         Character->Info.Position.Y = WarpPoint.Y;
         Character->Info.Position.WorldID = WarpPoint.WorldIndex;
         Character->Info.Position.DungeonIndex = DungeonWorld->DungeonIndex;
-        
+        Character->DungeonEntryItemSlotIndex = SlotIndex;
+
         RTMovementInitialize(
             Runtime,
             &Character->Movement,

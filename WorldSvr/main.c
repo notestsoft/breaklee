@@ -118,7 +118,7 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     ServerContext.Config = Config;
     ServerContext.RuntimeData = AllocatorAllocate(Allocator, sizeof(struct _RuntimeData));
     if (!ServerContext.RuntimeData) Fatal("Memory allocation failed");
-    ServerContext.Runtime = RTRuntimeCreate(Allocator, &ServerRuntimeOnEvent, &ServerContext);
+    ServerContext.Runtime = RTRuntimeCreate(Allocator, Config.WorldSvr.MaxPartyCount, &ServerRuntimeOnEvent, &ServerContext);
     ServerContext.Runtime->Config.ExpMultiplier = Config.WorldSvr.ExpMultiplier;
     ServerContext.Runtime->Config.SkillExpMultiplier = Config.WorldSvr.SkillExpMultiplier;
 

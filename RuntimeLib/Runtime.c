@@ -1,6 +1,7 @@
 #include "Character.h"
 #include "Force.h"
 #include "Mob.h"
+#include "PartyManager.h"
 #include "Runtime.h"
 #include "Script.h"
 #include "World.h"
@@ -8,6 +9,7 @@
 
 RTRuntimeRef RTRuntimeCreate(
     AllocatorRef Allocator,
+    Index MaxPartyCount,
     RTEventCallback Callback,
     Void* UserData
 ) {
@@ -23,6 +25,8 @@ RTRuntimeRef RTRuntimeCreate(
     }
 
     Runtime->Context = RTRuntimeDataContextCreate();
+    Runtime->PartyManager = RTPartyManagerCreate(Allocator, MaxPartyCount);
+    Runtime->ScriptManager = RTScriptManagerCreate(Runtime, RUNTIME_MEMORY_MAX_SCRIPT_COUNT);
     Runtime->WorldManager = RTWorldManagerCreate(
         Runtime,
         RUNTIME_MEMORY_MAX_WORLD_DATA_COUNT,
@@ -30,7 +34,6 @@ RTRuntimeRef RTRuntimeCreate(
         RUNTIME_MEMORY_MAX_PARTY_WORLD_CONTEXT_COUNT,
         RUNTIME_MEMORY_MAX_CHARACTER_COUNT
     );
-    Runtime->ScriptManager = RTScriptManagerCreate(Runtime, RUNTIME_MEMORY_MAX_SCRIPT_COUNT);
     Runtime->SkillDataPool = MemoryPoolCreate(Allocator, sizeof(struct _RTCharacterSkillData), RUNTIME_MEMORY_MAX_CHARACTER_SKILL_DATA_COUNT);
     Runtime->Callback = Callback;
     Runtime->UserData = UserData;

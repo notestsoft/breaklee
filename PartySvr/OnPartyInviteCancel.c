@@ -4,10 +4,10 @@
 #include "Server.h"
 
 IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CANCEL) {
-    Index* PartyInvitationPoolIndex = DictionaryLookup(Context->CharacterToPartyInvite, &Packet->TargetCharacterIndex);
+    Index* PartyInvitationPoolIndex = DictionaryLookup(Context->PartyManager->CharacterToPartyInvite, &Packet->TargetCharacterIndex);
     if (!PartyInvitationPoolIndex) goto error;
 
-    RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolFetch(Context->PartyInvitationPool, *PartyInvitationPoolIndex);
+    RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolFetch(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);
     if (!Invitation) goto error;
 
     RTPartyRef Party = ServerGetPartyByCharacter(Context, Packet->SourceCharacterIndex);
@@ -23,8 +23,8 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CANCEL) {
     Notification->IsCancel = true;
     IPCSocketUnicast(Socket, Notification);
 
-    MemoryPoolRelease(Context->PartyInvitationPool, *PartyInvitationPoolIndex);
-    DictionaryRemove(Context->CharacterToPartyInvite, &Packet->TargetCharacterIndex);
+    MemoryPoolRelease(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);
+    DictionaryRemove(Context->PartyManager->CharacterToPartyInvite, &Packet->TargetCharacterIndex);
 
     if (Party->PartyType == RUNTIME_PARTY_TYPE_TEMPORARY) {
         ServerDestroyParty(Context, Party);

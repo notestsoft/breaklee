@@ -27,8 +27,9 @@ struct _RTRuntime {
     AllocatorRef Allocator;
     struct _RTRuntimeConfig Config;
     RTRuntimeDataContextRef Context;
-    RTWorldManagerRef WorldManager;
+    RTPartyManagerRef PartyManager;
     RTScriptManagerRef ScriptManager;
+    RTWorldManagerRef WorldManager;
 
     Int32 EntityCount;
     Int32 PartyCount;
@@ -79,6 +80,7 @@ struct _RTRuntime {
 
 RTRuntimeRef RTRuntimeCreate(
     AllocatorRef Allocator,
+    Index MaxPartyCount,
     RTEventCallback Callback,
     Void* UserData
 );

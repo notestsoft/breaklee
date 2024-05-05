@@ -21,6 +21,7 @@ Void RTCharacterInitialize(
 	RTCharacterNewbieSupportInfoRef NewbieSupportInfo,
 	RTCharacterWarehouseInfoRef WarehouseInfo
 ) {
+	Character->DungeonEntryItemSlotIndex = -1;
 	Character->SyncMask.RawValue = 0;
 	Character->SyncPriority.RawValue = 0;
 	Character->SyncTimestamp = PlatformGetTickCount();

@@ -64,6 +64,7 @@ typedef struct _RTPartyMemberData* RTPartyMemberDataRef;
 typedef struct _RTPartySlot* RTPartySlotRef;
 typedef struct _RTPartyInvitation* RTPartyInvitationRef;
 typedef struct _RTParty* RTPartyRef;
+typedef struct _RTPartyManager* RTPartyManagerRef;
 typedef struct _RTPosition* RTPositionRef;
 typedef struct _RTQuestConditionData* RTQuestConditionDataRef;
 typedef struct _RTQuestNpcData* RTQuestNpcDataRef;
