@@ -20,10 +20,6 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CONFIRM) {
         Member->NodeIndex = Invitation->Member.NodeIndex;
         memcpy(&Member->Info, &Invitation->Member.Info, sizeof(struct _RTPartyMemberInfo));
 
-        if (Party->PartyType == RUNTIME_PARTY_TYPE_TEMPORARY) {
-            Party->PartyType = RUNTIME_PARTY_TYPE_NORMAL;
-        }
-
         BroadcastPartyInfo(Server, Context, Socket, Connection, Party);
     }
 
@@ -39,7 +35,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CONFIRM) {
     MemoryPoolRelease(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);
     DictionaryRemove(Context->PartyManager->CharacterToPartyInvite, &Packet->SourceCharacterIndex);
 
-    if (!Packet->IsAccept && Party->PartyType == RUNTIME_PARTY_TYPE_TEMPORARY) {
+    if (!Packet->IsAccept && Party->PartyType == RUNTIME_PARTY_TYPE_NORMAL && Party->MemberCount < 2) {
         ServerDestroyParty(Context, Party);
     }
 
@@ -53,6 +49,8 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CONFIRM) {
     Response->TargetNodeIndex = Packet->TargetNodeIndex;
     Response->Success = Packet->IsAccept;
     IPCSocketUnicast(Socket, Response);
+
+    BroadcastPartyData(Server, Context, Socket, Connection, Party);
     return;
 
 error:

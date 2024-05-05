@@ -68,7 +68,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE) {
 	S2C_DATA_NFY_PARTY_INVITE* Notification = PacketBufferInit(TargetClient->Connection->PacketBuffer, S2C, NFY_PARTY_INVITE);
 	Notification->WorldServerID = Packet->Source.NodeIndex;
 	Notification->CharacterIndex = Packet->Source.Info.CharacterIndex;
-	Notification->CharacterType = 0;
+	Notification->CharacterType = 1;
 	Notification->Level = Packet->Source.Info.Level;
 	Notification->NameLength = strlen(Packet->Source.Info.Name) + 1;
 	CStringCopySafe(Notification->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->Source.Info.Name);

@@ -34,6 +34,8 @@ struct _RTPartySlot {
 };
 
 struct _RTPartyInvitation {
+    RTEntityID PartyID;
+    Index InviterCharacterIndex;
     struct _RTPartySlot Member;
     Timestamp InvitationTimestamp;
 };

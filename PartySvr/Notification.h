@@ -19,4 +19,12 @@ Void BroadcastPartyInfo(
     RTPartyRef Party
 );
 
+Void BroadcastPartyData(
+    ServerRef Server,
+    ServerContextRef Context,
+    IPCSocketRef Socket,
+    IPCSocketConnectionRef Connection,
+    RTPartyRef Party
+);
+
 EXTERN_C_END

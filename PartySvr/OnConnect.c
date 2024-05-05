@@ -4,9 +4,13 @@
 #include "Server.h"
 
 IPC_PROCEDURE_BINDING(W2P, CLIENT_CONNECT) {
-    assert(!DictionaryLookup(Context->CharacterToWorldServer, &Packet->CharacterIndex));
-    
-    DictionaryInsert(Context->CharacterToWorldServer, &Packet->CharacterIndex, &Packet->Header.Source.Index, sizeof(Index));
+    Index* CharacterWorldServerIndex = DictionaryLookup(Context->CharacterToWorldServer, &Packet->CharacterIndex);
+    if (CharacterWorldServerIndex) {
+        *CharacterWorldServerIndex = Packet->CharacterIndex;
+    }
+    else {
+        DictionaryInsert(Context->CharacterToWorldServer, &Packet->CharacterIndex, &Packet->Header.Source.Index, sizeof(Index));
+    }
     
     IPC_P2W_DATA_CLIENT_CONNECT* Response = IPCPacketBufferInit(Connection->PacketBuffer, P2W, CLIENT_CONNECT);
     Response->Header.Source = Server->IPCSocket->NodeID;
@@ -34,7 +38,8 @@ IPC_PROCEDURE_BINDING(W2P, CLIENT_CONNECT) {
 }
 
 IPC_PROCEDURE_BINDING(W2P, CLIENT_DISCONNECT) {
-    assert(DictionaryLookup(Context->CharacterToWorldServer, &Packet->CharacterIndex));
+    if (!DictionaryLookup(Context->CharacterToWorldServer, &Packet->CharacterIndex)) return;
+
     DictionaryRemove(Context->CharacterToWorldServer, &Packet->CharacterIndex);
     
     RTPartyRef Party = ServerGetPartyByCharacter(Context, Packet->CharacterIndex);

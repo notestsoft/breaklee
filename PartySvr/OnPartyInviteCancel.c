@@ -26,7 +26,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CANCEL) {
     MemoryPoolRelease(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);
     DictionaryRemove(Context->PartyManager->CharacterToPartyInvite, &Packet->TargetCharacterIndex);
 
-    if (Party->PartyType == RUNTIME_PARTY_TYPE_TEMPORARY) {
+    if (Party->PartyType == RUNTIME_PARTY_TYPE_NORMAL && Party->MemberCount < 2) {
         ServerDestroyParty(Context, Party);
     }
 

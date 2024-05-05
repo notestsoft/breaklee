@@ -5,6 +5,9 @@
 #include "IPCProcedures.h"
 #include "Notification.h"
 
+// TODO: We need to ensure that under any circumstances the servers dont loose connection to master
+//       else everything will be fucked up due to lost packets
+
 #define C2S_COMMAND(__NAME__, __COMMAND__)                                                                                       \
 Void SERVER_PROC_ ## __NAME__(                                                                                                   \
     ServerRef Server,                                                                                                            \
@@ -49,7 +52,50 @@ Void ServerOnUpdate(
     Void *ServerContext
 ) {
     ServerContextRef Context = (ServerContextRef)ServerContext;
+    Timestamp CurrentTimestamp = GetTimestampMs();
     
+    DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(Context->PartyManager->PartyInvitationPool);
+    while (Iterator.Key) {
+        Index CharacterIndex = *(Index*)Iterator.Key;
+        Index PartyInvitationPoolIndex = *(Index*)Iterator.Value;
+        Iterator = DictionaryKeyIteratorNext(Iterator);
+
+        RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolReserveNext(Context->PartyManager->PartyInvitationPool, &PartyInvitationPoolIndex);
+        RTPartyRef Party = ServerGetParty(Context, Invitation->PartyID);
+        assert(Party);
+
+        if (Invitation->InvitationTimestamp + Context->Config.PartySvr.PartyInvitationTimeout < CurrentTimestamp) {
+            Index* InviterWorldIndex = (Index*)DictionaryLookup(Context->CharacterToWorldServer, &Invitation->InviterCharacterIndex);
+            if (InviterWorldIndex) {
+                IPC_P2W_DATA_PARTY_INVITE_TIMEOUT* Notification = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, P2W, PARTY_INVITE_TIMEOUT);
+                Notification->Header.Source = Server->IPCSocket->NodeID;
+                Notification->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
+                Notification->Header.Target.Index = *InviterWorldIndex;
+                Notification->Header.Target.Type = IPC_TYPE_WORLD;
+                Notification->CharacterIndex = Invitation->InviterCharacterIndex;
+                Notification->IsAccept = false;
+                IPCSocketUnicast(Server->IPCSocket, Notification);
+            }
+
+            Index* InvitedWorldIndex = (Index*)DictionaryLookup(Context->CharacterToWorldServer, &Invitation->Member.Info.CharacterIndex);
+            if (InvitedWorldIndex) {
+                IPC_P2W_DATA_PARTY_INVITE_TIMEOUT* Notification = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, P2W, PARTY_INVITE_TIMEOUT);
+                Notification->Header.Source = Server->IPCSocket->NodeID;
+                Notification->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
+                Notification->Header.Target.Index = *InvitedWorldIndex;
+                Notification->Header.Target.Type = IPC_TYPE_WORLD;
+                Notification->CharacterIndex = Invitation->Member.Info.CharacterIndex;
+                Notification->IsAccept = false;
+                IPCSocketUnicast(Server->IPCSocket, Notification);
+            }
+
+            if (Party->PartyType == RUNTIME_PARTY_TYPE_NORMAL && Party->MemberCount < 2) {
+                MemoryPoolRelease(Context->PartyManager->PartyInvitationPool, PartyInvitationPoolIndex);
+                DictionaryRemove(Context->PartyManager->CharacterToPartyInvite, &Invitation->Member.Info.CharacterIndex);
+                ServerDestroyParty(Context, Party);
+            }
+        }
+    }
 }
 
 Int32 main(Int32 argc, CString* argv) {

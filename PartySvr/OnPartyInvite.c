@@ -14,7 +14,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
 
 	RTPartyRef Party = ServerGetPartyByCharacter(Context, Source->Info.CharacterIndex);
 	if (!Party) {
-		Party = ServerCreateParty(Context, Source->Info.CharacterIndex, kEntityIDNull, RUNTIME_PARTY_TYPE_TEMPORARY);
+		Party = ServerCreateParty(Context, Source->Info.CharacterIndex, kEntityIDNull, RUNTIME_PARTY_TYPE_NORMAL);
 		if (!Party) goto error;
 
 		RTPartySlotRef Member = RTPartyGetMember(Party, Source->Info.CharacterIndex);
@@ -29,6 +29,8 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
 	RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolReserveNext(Context->PartyManager->PartyInvitationPool, &PartyInvitationPoolIndex);
 	DictionaryInsert(Context->PartyManager->CharacterToPartyInvite, &Target->Info.CharacterIndex, &PartyInvitationPoolIndex, sizeof(Index));
 
+	Invitation->InviterCharacterIndex = Packet->Source.Info.CharacterIndex;
+	Invitation->PartyID = Party->ID;
 	Invitation->Member.NodeIndex = Packet->Target.NodeIndex;
 	memcpy(&Invitation->Member.Info, &Target->Info, sizeof(struct _RTPartyMemberInfo));
 	Invitation->InvitationTimestamp = GetTimestampMs();
@@ -60,7 +62,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_ACK) {
 	RTPartySlotRef Source = &Packet->Source;
 	RTPartySlotRef Target = &Packet->Target;
 
-	Index* PartyInvitationPoolIndex = DictionaryLookup(Context->PartyManager->CharacterToPartyInvite, &Source->Info.CharacterIndex);
+	Index* PartyInvitationPoolIndex = DictionaryLookup(Context->PartyManager->CharacterToPartyInvite, &Target->Info.CharacterIndex);
 	if (!PartyInvitationPoolIndex) goto error;
 
 	RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolFetch(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);
@@ -73,7 +75,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_ACK) {
 		Invitation->Member.NodeIndex = Packet->Target.NodeIndex;
 		memcpy(&Invitation->Member.Info, &Target->Info, sizeof(struct _RTPartyMemberInfo));
 	}
-	else if (Party->PartyType == RUNTIME_PARTY_TYPE_TEMPORARY) {
+	else if (Party->PartyType == RUNTIME_PARTY_TYPE_NORMAL) {
 		MemoryPoolRelease(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);
 		DictionaryRemove(Context->PartyManager->CharacterToPartyInvite, &Target->Info.CharacterIndex);
 		ServerDestroyParty(Context, Party);

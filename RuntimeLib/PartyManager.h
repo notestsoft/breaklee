@@ -5,6 +5,7 @@
 
 EXTERN_C_BEGIN
 
+// TODO: Split memory of normal and solo parties to improve performance...
 struct _RTPartyManager {
     AllocatorRef Allocator;
     MemoryPoolRef PartyPool;

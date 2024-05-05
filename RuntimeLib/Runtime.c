@@ -148,54 +148,6 @@ Void RTRuntimeDeleteEntity(
     Runtime->EntityCount -= 1;
 }
 
-RTPartyRef RTRuntimeCreateParty(
-    RTRuntimeRef Runtime,
-    RTCharacterRef Character,
-    Int32 PartyType
-) {
-    assert(Runtime->PartyCount < RUNTIME_MEMORY_MAX_PARTY_COUNT);
-    assert(RTEntityIsNull(Character->PartyID));
-
-    RTEntityID Entity = RTRuntimeCreateEntity(Runtime, 0, RUNTIME_ENTITY_TYPE_PARTY);
-    Int32 Index = Entity.EntityIndex - 1;
-
-    RTPartyRef Party = &Runtime->Parties[Runtime->PartyCount];
-    memset(Party, 0, sizeof(struct _RTParty));
-    Party->ID = Entity;
-    Party->LeaderID = Character->ID;
-    Party->PartyType = PartyType;
-    Party->MemberCount = 1;
-    Party->Members[0].SlotIndex = 0;
-    Party->Members[0].MemberID = Character->ID;
-
-    Runtime->PartyCount += 1;
-    return Party;
-}
-
-Void RTRuntimeDestroyParty(
-    RTRuntimeRef Runtime,
-    RTPartyRef Party
-) {
-    assert(!RTEntityIsNull(Party->ID));
-
-    for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
-        RTEntityID MemberID = Party->Members[Index].MemberID;
-        if (!RTWorldManagerHasCharacter(Runtime->WorldManager, MemberID)) continue;
-
-        RTCharacterRef Member = RTWorldManagerGetCharacter(Runtime->WorldManager, MemberID);
-        if (!RTEntityIsEqual(Member->PartyID, Party->ID)) continue;
-
-        // TODO: Send event notifications...
-        Member->PartyID = kEntityIDNull;
-    }
-
-    assert(!RTWorldContextHasParty(Runtime->WorldManager, Party->ID));
-
-    RTRuntimeDeleteEntity(Runtime, Party->ID);
-    memset(Party, 0, sizeof(struct _RTParty));
-    // TODO: The party has to be removed from the memory!!!
-}
-
 RTWorldContextRef RTRuntimeGetWorldByID(
     RTRuntimeRef Runtime,
     Int32 WorldID
@@ -263,18 +215,7 @@ RTPartyRef RTRuntimeGetParty(
     RTRuntimeRef Runtime,
     RTEntityID Entity
 ) {
-    assert(Entity.EntityType == RUNTIME_ENTITY_TYPE_PARTY);
-    assert(Entity.EntityIndex > 0);
-
-    // TODO: Add an indexing solution for time & space efficiency
-    for (Int32 Index = 0; Index < Runtime->PartyCount; Index += 1) {
-        RTPartyRef Party = &Runtime->Parties[Index];
-        if (RTEntityIsEqual(Party->ID, Entity)) {
-            return Party;
-        }
-    }
-
-    return NULL;
+    return RTPartyManagerGetParty(Runtime->PartyManager, Entity);
 }
 
 RTWorldItemRef RTRuntimeGetItem(
@@ -551,8 +492,9 @@ RTWorldContextRef RTRuntimeOpenDungeon(
     if (RTWorldContextPartyIsFull(Runtime->WorldManager)) return NULL;
 
     if (RTEntityIsNull(Character->PartyID)) {
-        RTPartyRef Party = RTRuntimeCreateParty(Runtime, Character, RUNTIME_PARTY_TYPE_SOLO_DUNGEON);
-        Character->PartyID = Party->ID;
+        //RTPartyRef Party = RTRuntimeCreateParty(Runtime, Character, RUNTIME_PARTY_TYPE_SOLO_DUNGEON);
+        //Character->PartyID = Party->ID;
+        assert(false && "Implementation missing!");
     }
 
     RTWorldContextRef PartyWorld = RTWorldContextCreateParty(Runtime->WorldManager, WorldIndex, DungeonIndex, Character->PartyID);
@@ -575,7 +517,8 @@ Void RTRuntimeCloseDungeon(
         assert(WorldContext->DungeonIndex != Character->Info.Position.DungeonIndex);
 
         RTWorldContextDestroyParty(Runtime->WorldManager, Character->PartyID);
-        RTRuntimeDestroyParty(Runtime, Party);
+        //RTRuntimeDestroyParty(Runtime, Party);
+        assert(false && "Implementation missing!");
     }
     else {
         // TODO: Check if any party member is still in dungeon and do proper cleanup...
