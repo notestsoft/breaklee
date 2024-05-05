@@ -4,6 +4,10 @@
 #include "Server.h"
 
 IPC_PROCEDURE_BINDING(W2P, CLIENT_CONNECT) {
+    assert(!DictionaryLookup(Context->CharacterToWorldServer, &Packet->CharacterIndex));
+    
+    DictionaryInsert(Context->CharacterToWorldServer, &Packet->CharacterIndex, &Packet->Header.Source.Index, sizeof(Index));
+    
     IPC_P2W_DATA_CLIENT_CONNECT* Response = IPCPacketBufferInit(Connection->PacketBuffer, P2W, CLIENT_CONNECT);
     Response->Header.Source = Server->IPCSocket->NodeID;
     Response->Header.Target = Packet->Header.Source;
@@ -15,7 +19,7 @@ IPC_PROCEDURE_BINDING(W2P, CLIENT_CONNECT) {
         Response->DungeonIndex = 0;
         Response->PartyID = Party->ID;
         Response->PartyLeaderIndex = Party->LeaderCharacterIndex;
-        Response->WorldServerIndex = 0;
+        Response->WorldServerIndex = Party->WorldServerIndex;
         Response->MemberCount = Party->MemberCount;
 
         for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
@@ -30,8 +34,22 @@ IPC_PROCEDURE_BINDING(W2P, CLIENT_CONNECT) {
 }
 
 IPC_PROCEDURE_BINDING(W2P, CLIENT_DISCONNECT) {
+    assert(DictionaryLookup(Context->CharacterToWorldServer, &Packet->CharacterIndex));
+    DictionaryRemove(Context->CharacterToWorldServer, &Packet->CharacterIndex);
+    
     RTPartyRef Party = ServerGetPartyByCharacter(Context, Packet->CharacterIndex);
     if (!Party) return;
 
-    // TODO: Check if party has to be disbanded...
+    Index OnlineMemberCount = 0;
+    for (Index MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {
+        Index CharacterIndex = Party->Members[MemberIndex].Info.CharacterIndex;
+        if (DictionaryLookup(Context->CharacterToWorldServer, &CharacterIndex)) {
+            OnlineMemberCount += 1;
+        }
+    }
+    
+    if (OnlineMemberCount < 1) {
+        // TODO: Notify world to close the dungeon instance
+        RTPartyManagerDestroyParty(Context->PartyManager, Party);
+    }
 }

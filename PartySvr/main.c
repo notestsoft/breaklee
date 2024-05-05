@@ -64,6 +64,7 @@ Int32 main(Int32 argc, CString* argv) {
     struct _ServerContext ServerContext = { 0 };
     ServerContext.Config = Config;
     ServerContext.PartyManager = RTPartyManagerCreate(Allocator, Config.PartySvr.MaxPartyCount);
+    ServerContext.CharacterToWorldServer = IndexDictionaryCreate(Allocator, Config.PartySvr.MaxConnectionCount);
 
     IPCNodeID NodeID = kIPCNodeIDNull;
     NodeID.Group = Config.PartySvr.GroupIndex;

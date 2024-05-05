@@ -18,6 +18,7 @@ struct _ServerContext {
     SocketRef WorldSocket;
     ServerConfig Config;
     RTPartyManagerRef PartyManager;
+    DictionaryRef CharacterToWorldServer;
 };
 typedef struct _ServerContext* ServerContextRef;
 

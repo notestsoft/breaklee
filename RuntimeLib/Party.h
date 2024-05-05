@@ -11,7 +11,6 @@ EXTERN_C_BEGIN
 enum {
     RUNTIME_PARTY_TYPE_NORMAL       = 0,
     RUNTIME_PARTY_TYPE_SOLO_DUNGEON = 1,
-    RUNTIME_PARTY_TYPE_TEMPORARY    = 2,
 };
 
 struct _RTPartyMemberInfo {
@@ -43,6 +42,7 @@ struct _RTParty {
 	RTEntityID ID;
 	RTEntityID LeaderID; // TODO: Remove
     Index LeaderCharacterIndex;
+    Index WorldServerIndex;
 	Int32 PartyType;
 	Int32 MemberCount;
 	struct _RTPartySlot Members[RUNTIME_PARTY_MAX_MEMBER_COUNT];
