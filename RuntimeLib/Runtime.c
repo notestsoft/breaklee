@@ -35,6 +35,7 @@ RTRuntimeRef RTRuntimeCreate(
         RUNTIME_MEMORY_MAX_CHARACTER_COUNT
     );
     Runtime->SkillDataPool = MemoryPoolCreate(Allocator, sizeof(struct _RTCharacterSkillData), RUNTIME_MEMORY_MAX_CHARACTER_SKILL_DATA_COUNT);
+    Runtime->ForceEffectFormulaPool = MemoryPoolCreate(Allocator, sizeof(struct _RTForceEffectFormula), RUNTIME_FORCE_EFFECT_COUNT);
     Runtime->Callback = Callback;
     Runtime->UserData = UserData;
     return Runtime;
@@ -43,6 +44,7 @@ RTRuntimeRef RTRuntimeCreate(
 Void RTRuntimeDestroy(
     RTRuntimeRef Runtime
 ) {
+    MemoryPoolDestroy(Runtime->ForceEffectFormulaPool);
     MemoryPoolDestroy(Runtime->SkillDataPool);
     RTScriptManagerDestroy(Runtime->ScriptManager);
     RTRuntimeDataContextDestroy(Runtime->Context);
