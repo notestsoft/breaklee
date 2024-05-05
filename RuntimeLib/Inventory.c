@@ -293,7 +293,7 @@ Void RTInventoryFindItems(
 Bool RTInventoryCanConsumeStackableItems(
 	RTRuntimeRef Runtime,
 	RTCharacterInventoryInfoRef Inventory,
-	UInt32 RequiredItemID,
+	UInt64 RequiredItemID,
 	Int64 RequiredItemCount,
 	UInt16 InventorySlotCount,
 	UInt16* InventorySlotIndex
@@ -313,7 +313,7 @@ Bool RTInventoryCanConsumeStackableItems(
 Void RTInventoryConsumeStackableItems(
 	RTRuntimeRef Runtime,
 	RTCharacterInventoryInfoRef Inventory,
-	UInt32 RequiredItemID,
+	UInt64 RequiredItemID,
 	Int64 RequiredItemCount,
 	UInt16 InventorySlotCount,
 	UInt16* InventorySlotIndex

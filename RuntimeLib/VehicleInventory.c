@@ -1,3 +1,4 @@
+#include "Runtime.h"
 #include "VehicleInventory.h"
 
 Int32 RTVehicleInventoryGetSlotIndex(

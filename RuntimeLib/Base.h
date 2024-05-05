@@ -42,6 +42,7 @@ typedef struct _RTQuestDropItem* RTQuestDropItemRef;
 typedef struct _RTDropTable* RTDropTableRef;
 typedef struct _RTDropResult* RTDropResultRef;
 typedef struct _RTEvent* RTEventRef;
+typedef struct _RTForceEffectFormula* RTForceEffectFormulaRef;
 typedef struct _RTForceWingArrivalSkillSlot* RTForceWingArrivalSkillSlotRef;
 typedef struct _RTForceWingPresetSlot* RTForceWingPresetSlotRef;
 typedef struct _RTForceWingTrainingSlot* RTForceWingTrainingSlotRef;

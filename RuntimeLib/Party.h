@@ -15,7 +15,7 @@ enum {
 };
 
 struct _RTPartyMemberInfo {
-    UInt32 CharacterIndex;
+    Index CharacterIndex;
     Int32 Level;
     UInt8 BattleStyleIndex;
     UInt16 OverlordLevel;

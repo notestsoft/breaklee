@@ -69,7 +69,7 @@ Bool RTRuntimeWarpCharacter(
             RTWorldDespawnCharacter(Runtime, World, Entity);
 
             RTCharacterSetHP(Runtime, Character, Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX], false);
-            RTCharacterSetMP(Runtime, Character, Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX], false);
+            RTCharacterSetMP(Runtime, Character, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX], false);
             Character->Info.Position.X = WarpPoint.X;
             Character->Info.Position.Y = WarpPoint.Y;
             Character->Info.Position.WorldID = WarpPoint.WorldIndex;
@@ -159,7 +159,7 @@ Bool RTRuntimeWarpCharacter(
                 WarpNpcID = QuestDungeonData->DeadWarpID;
 
                 RTCharacterSetHP(Runtime, Character, Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX], false);
-                RTCharacterSetMP(Runtime, Character, Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX], false);
+                RTCharacterSetMP(Runtime, Character, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX], false);
                 RTCharacterInitializeAttributes(Runtime, Character);
             }
 

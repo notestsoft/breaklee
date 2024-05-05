@@ -34,7 +34,11 @@ Void _DefaultDiagnosticHandler(
 ) {
     time_t NowTime = time(NULL);
     struct tm NowTm = { 0 };
+#ifdef _WIN32
     gmtime_s(&NowTm, &NowTime);
+#else
+    gmtime_r(&NowTime, &NowTm);
+#endif
 
     fprintf(
         Output,
@@ -70,8 +74,8 @@ Void _DefaultDiagnosticHandler(
 }
 
 Void DiagnosticSetup(
-    Int32 Level,
     FILE* Output,
+    Int32 Level,
     DiagnosticHandler Handler,
     Void* Context
 ) {

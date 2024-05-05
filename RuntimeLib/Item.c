@@ -615,7 +615,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotConverter) {
 	Int32 SourceItemSlotIndex = ItemSlot->SlotIndex;
 	Int32 TargetItemSlotIndex = TargetItemSlot->SlotIndex;
 
-	Int32 Seed = GetTickCount();
+	Int32 Seed = PlatformGetTickCount();
 	Int32 RandomValue = RandomRange(&Seed, 0, 1000);
 	if (RandomValue < ItemData->SlotConverter.SuccessRate) {
 		TargetItemOptions.Equipment.SlotCount += 1;
@@ -660,7 +660,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpicConverter) {
 		MaxRandomValue += OptionPool->EpicOptionPoolValueList[Index].Rate;
 	}
 
-	Int32 Seed = GetTickCount();
+	Int32 Seed = PlatformGetTickCount();
 	Int32 RandomValue = RandomRange(&Seed, 0, MaxRandomValue);
 	Int32 RateOffset = 0;
 	Bool Success = false;

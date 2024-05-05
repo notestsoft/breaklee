@@ -204,12 +204,12 @@ struct _RTCharacterAbility {
 };
 
 struct _RTCharacterResource {
-    Int32 HP;
-    Int32 MP;
-    Int32 SP;
-    Int32 BP;
-    Int32 DP;
-    Int32 Rage;
+    Int64 HP;
+    Int64 MP;
+    Int64 SP;
+    Int64 BP;
+    Int64 DP;
+    Int64 Rage;
 };
 
 struct _RTCharacterSkill {
@@ -439,13 +439,13 @@ Void RTCharacterAddAbilityExp(
 Void RTCharacterAddRage(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    UInt32 Rage
+    Int32 Rage
 );
 
 Bool RTCharacterConsumeRage(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    UInt32 Rage
+    Int32 Rage
 );
 
 Bool RTCharacterAddStats(
@@ -469,14 +469,14 @@ Bool RTCharacterResetStats(
 Void RTCharacterSetHP(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    Int32 NewValue,
+    Int64 NewValue,
     Bool IsPotion
 );
 
 Void RTCharacterAddHP(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    Int32 HP,
+    Int64 HP,
     Bool IsPotion
 );
 

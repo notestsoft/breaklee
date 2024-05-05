@@ -25,42 +25,56 @@ Int32 CalculateHitRate(
 	return 50 + 50 * AttackRate / (AttackRate + DefenseRate);
 }
 
-static inline Int32 _CalculateFinalAttribute(
-	Int32 Value,
-	Int32 MaxValue,
-	Int32 ResistValue,
-	Int32 IgnoreResistValue
+static inline Int64 _CalculateFinalAttribute(
+	Int64 Value,
+	Int64 MaxValue,
+	Int64 ResistValue,
+	Int64 IgnoreResistValue
 ) {
 	return MAX(0, MIN(Value, MaxValue) - MAX(0, ResistValue - IgnoreResistValue));
 }
 
-static inline Int32 _CalculateFinalDefense(Int32 Defense, Int32 Penetration) {
+static inline Int64 _CalculateFinalDefense(
+    Int64 Defense,
+    Int64 Penetration
+) {
 	return Defense * 10000 / (10000 + Penetration);
 }
 
-static inline Int32 _CalculateFinalMissRate(Int32 Evasion, Int32 Accuracy) {
-	Int32 FinalEvasion = Evasion * 10000 / (10000 + Accuracy);
+static inline Int64 _CalculateFinalMissRate(
+    Int64 Evasion,
+    Int64 Accuracy
+) {
+	Int64 FinalEvasion = Evasion * 10000 / (10000 + Accuracy);
 	
 	return 100 - 100 * 10000 / (10000 + FinalEvasion);
 }
 
-static inline Int32 _CalculateFinalMinDamage(Int32 MinDamage, Int32 AttackRate, Int32 DefenseRate) {
-	Int32 BaseRate = 100 - MinDamage;
+static inline Int64 _CalculateFinalMinDamage(
+    Int64 MinDamage,
+    Int64 AttackRate,
+    Int64 DefenseRate
+) {
+	Int64 BaseRate = 100 - MinDamage;
 	if (DefenseRate < 1) return BaseRate;
 
-	Int32 AppliedAttackRate = MAX(0, AttackRate - DefenseRate);
+	Int64 AppliedAttackRate = MAX(0, AttackRate - DefenseRate);
 
 	return MinDamage + BaseRate - BaseRate * DefenseRate / (DefenseRate + AppliedAttackRate);
 }
 
-static inline Int32 _CalculateFinalBlockRate(Int32 AttackRate, Int32 DefenseRate) {
+static inline Int64 _CalculateFinalBlockRate(
+    Int64 AttackRate,
+    Int64 DefenseRate
+) {
 	if (AttackRate < 1) return 0;
 
-	Int32 AppliedDefenseRate = MAX(0, DefenseRate - AttackRate);
+	Int64 AppliedDefenseRate = MAX(0, DefenseRate - AttackRate);
 
 	return 100 - 100 * AttackRate / (AttackRate + AppliedDefenseRate);
 }
 
+// TODO: Add missing attributes...
 Void CalculateFinalBattleAttributes(
 	Int32 BattleSkillType,
 	Int32 AttackerLevel,
@@ -167,7 +181,7 @@ Void RTCalculateNormalAttackResult(
 //	Int32 LevelDifference = CalculateLevelDifference(AttackerLevel, DefenderLevel);
 //	Int32 LevelDifferencePenalty = CalculateLevelDifferencePenalty(AttackerLevel, DefenderLevel);
 
-	Int32 Rate = RandomRange(&Attacker->Seed, 0, Attributes.AccumulatedRate);
+	Int32 Rate = RandomRange(&Attacker->Seed, 0, (Int32)Attributes.AccumulatedRate);
 	if (Rate < Attributes.CriticalRate) {
 		Attributes.MinDamage = 100;
 
@@ -186,7 +200,7 @@ Void RTCalculateNormalAttackResult(
 	}
 
 	Result->TotalDamage = MAX(1, Attributes.Attack - Attributes.Defense);
-	Int32 DamageRate = RandomRange(&Attacker->Seed, Attributes.MinDamage, 100);
+	Int32 DamageRate = RandomRange(&Attacker->Seed, (Int32)Attributes.MinDamage, 100);
 	Result->TotalDamage = (Result->TotalDamage * DamageRate) / 100;
 	Result->TotalDamage = (Result->TotalDamage * (100 + Attributes.SkillAmp)) / 100;
 

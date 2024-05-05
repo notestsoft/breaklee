@@ -334,7 +334,7 @@ Bool RTCharacterForceWingRollArrivalSkill(
 
 	RTForceWingArrivalSkillSlotRef RestoreSkillSlot = &Character->ForceWingInfo.ArrivalSkillRestoreSlot;
 
-	Int32 Seed = GetTickCount();
+	Int32 Seed = PlatformGetTickCount();
 	for (Index SkillIndex = 0; SkillIndex < RUNTIME_CHARACTER_MAX_FORCE_WING_ARRIVAL_SKILL_COUNT; SkillIndex += 1) {
 		RTForceWingArrivalSkillSlotRef ArrivalSkillSlot = &Character->ForceWingInfo.ArrivalSkillSlots[SkillIndex];
 		if (ArrivalSkillSlot->SlotIndex != SkillSlotIndex) continue;

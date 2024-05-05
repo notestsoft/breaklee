@@ -372,6 +372,22 @@ Timestamp PlatformGetTickCount() {
 #endif
 }
 
+Void PlatformSleep(
+    UInt64 Milliseconds
+) {
+#ifdef _WIN32
+    Sleep(Milliseconds);
+#else
+    struct timespec Remaining = { 0 };
+    struct timespec Request = {
+        .tv_sec = Milliseconds / 1000,
+        .tv_nsec = (Milliseconds % 1000L) * 1000000L,
+   };
+
+   nanosleep(&Request, &Remaining);
+#endif
+}
+
 void __unreachable(const char* message, const char* file, size_t line) {
     exit(EXIT_FAILURE);
 }

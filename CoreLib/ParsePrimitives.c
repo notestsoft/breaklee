@@ -529,7 +529,7 @@ Int32 ParseAttributeCharArrayCounted(
     Int64 Length = Data->Length;
     memcpy(Result, Data->Data, Length);
     if (Length > 0) Result[strlen(Result)] = '\0';
-    return strlen(Result);
+    return (Int32)strlen(Result);
 
 error:
     return 0;

@@ -193,7 +193,7 @@ struct _RTMob {
 	RTDataMobSkillRef SpecialAttackSkill;
 
 	Timestamp NextPhaseTimestamp;
-	Int32 HPTriggerThreshold;
+	Int64 HPTriggerThreshold;
 
 	struct _RTMobSpawnData Spawn;
 	struct _RTMobAggroData Aggro;

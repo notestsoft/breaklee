@@ -6,7 +6,6 @@ EXTERN_C_BEGIN
 
 #pragma pack(push, 1)
 
-// TODO: Move this to a xml config file, data driven...
 enum {
 	RUNTIME_FORCE_EFFECT_NONE = 0,
 	RUNTIME_FORCE_EFFECT_HP_UP = 1,
@@ -336,23 +335,47 @@ enum {
 	RUNTIME_FORCE_VALUE_TYPE_MULTIPLICATIVE = 1,
 };
 
+enum {
+    RUNTIME_FORCE_EFFECT_TARGET_TYPE_NONE,
+    RUNTIME_FORCE_EFFECT_TARGET_TYPE_PVE,
+    RUNTIME_FORCE_EFFECT_TARGET_TYPE_PVP,
+};
+
+typedef Void (*RTForceEffectFormulaCallback)(
+    RTRuntimeRef Runtime,
+    RTForceEffectFormulaRef Formula,
+    RTBattleAttributesRef Attributes,
+    Int64 Value
+);
+
+struct _RTForceEffectFormula {
+    Index ForceEffectIndex;
+    UInt8 ForceEffectTargetType;
+    Index AttributeCount;
+	Index AttributeIndices[RUNTIME_MAX_FORCE_EFFECT_ATTRIBUTE_COUNT];
+	RTForceEffectFormulaCallback OnApply;
+    RTForceEffectFormulaCallback OnCancel;
+};
+
 #pragma pack(pop)
 
-Void RTInitForceEffectFormulas();
+Void RTRuntimeInitForceEffectFormulas(
+    RTRuntimeRef Runtime
+);
 
 Void RTCharacterApplyForceEffect(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
-	Int32 ForceEffect,
-	Int32 ForceValue,
+	Index ForceEffectIndex,
+	Int64 ForceValue,
 	Int32 ForceValueType
 );
 
 Void RTCharacterCancelForceEffect(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
-	Int32 ForceEffect,
-	Int32 ForceValue,
+	Index ForceEffectIndex,
+	Int64 ForceValue,
 	Int32 ForceValueType
 );
 

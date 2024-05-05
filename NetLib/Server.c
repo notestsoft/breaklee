@@ -173,7 +173,7 @@ Void ServerRun(
 
         IPCSocketUpdate(Server->IPCSocket);
 
-        Sleep(1);
+        PlatformSleep(1);
     }
 }
 

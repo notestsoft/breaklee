@@ -115,7 +115,7 @@ Bool RTScriptCall(
 
     Void* Argument = NULL;
     Int32 ArgumentCount = 0;
-    while (Argument = va_arg(ArgumentPointer, Void*)) {
+    while ((Argument = va_arg(ArgumentPointer, Void*))) {
         lua_pushlightuserdata(Script->State, Argument);
         ArgumentCount += 1;
     }
@@ -138,9 +138,9 @@ static Int32 _DebugWorldSpawnMob(
 ) {
     RTRuntimeRef Runtime = lua_touserdata(State, 1);
     RTWorldContextRef WorldContext = lua_touserdata(State, 2);
-    Int32 MobIndex = lua_tointeger(State, 3);
-    Int32 X = lua_tointeger(State, 4);
-    Int32 Y = lua_tointeger(State, 5);
+    Int32 MobIndex = (Int32)lua_tointeger(State, 3);
+    Int32 X = (Int32)lua_tointeger(State, 4);
+    Int32 Y = (Int32)lua_tointeger(State, 5);
 
     /*
     Index MemoryPoolIndex = 0;

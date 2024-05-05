@@ -70,8 +70,8 @@ struct _RTRuntime {
     struct _RTDungeonData DungeonData[RUNTIME_MEMORY_MAX_DUNGEON_COUNT];
     struct _RTMissionDungeonPatternPartData MissionDungeonPatternPartData[RUNTIME_MEMORY_MAX_DUNGEON_PATTERN_PART_COUNT];
     Float32 MovementDistanceCache[RUNTIME_MOVEMENT_MAX_DISTANCE_LENGTH * RUNTIME_MOVEMENT_MAX_DISTANCE_LENGTH];
-
     MemoryPoolRef SkillDataPool;
+    MemoryPoolRef ForceEffectFormulaPool;
 
     struct _RTEvent Event;
     RTEventCallback Callback;

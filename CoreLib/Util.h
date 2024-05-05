@@ -153,4 +153,8 @@ Void ReadConfigIndex(
 
 Timestamp PlatformGetTickCount();
 
+Void PlatformSleep(
+    UInt64 Milliseconds
+);
+
 EXTERN_C_END

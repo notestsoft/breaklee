@@ -720,7 +720,7 @@ Void RTCharacterAddExp(
     if (LevelDiff > 0) {
 		RTCharacterInitializeAttributes(Runtime, Character);
         RTCharacterSetHP(Runtime, Character, Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX], false);
-        RTCharacterSetMP(Runtime, Character, Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX], false);
+        RTCharacterSetMP(Runtime, Character, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX], false);
 		Character->Info.Stat[RUNTIME_CHARACTER_STAT_PNT] += LevelDiff * 5;
 
 		if (Character->Info.Overlord.Level < 1) {
@@ -956,7 +956,7 @@ Bool RTCharacterResetStats(
 Void RTCharacterSetHP(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
-	Int32 NewValue,
+	Int64 NewValue,
 	Bool IsPotion
 ) {
 	if (NewValue != Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT]) {
@@ -976,7 +976,7 @@ Void RTCharacterSetHP(
 Void RTCharacterAddHP(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
-	Int32 HP,
+	Int64 HP,
 	Bool IsPotion
 ) {
 	Int64 NewValue = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
@@ -1016,7 +1016,7 @@ Void RTCharacterAddMP(
 	NewValue += MP;
 	NewValue = MAX(NewValue, 0);
 	NewValue = MIN(NewValue, Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX]);
-	RTCharacterSetMP(Runtime, Character, NewValue, IsPotion);
+	RTCharacterSetMP(Runtime, Character, (Int32)NewValue, IsPotion);
 }
 
 Void RTCharacterSetSP(
@@ -1047,7 +1047,7 @@ Void RTCharacterAddSP(
 	NewValue += SP;
 	NewValue = MAX(NewValue, 0);
 	NewValue = MIN(NewValue, Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX]);
-	RTCharacterSetSP(Runtime, Character, NewValue);
+	RTCharacterSetSP(Runtime, Character, (Int32)NewValue);
 }
 
 Void RTCharacterSetBP(
@@ -1078,15 +1078,15 @@ Void RTCharacterAddBP(
 	NewValue += BP;
 	NewValue = MAX(NewValue, 0);
 	NewValue = MIN(NewValue, Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_MAX]);
-	RTCharacterSetBP(Runtime, Character, NewValue);
+	RTCharacterSetBP(Runtime, Character, (Int32)NewValue);
 }
 
 Void RTCharacterAddRage(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
-	UInt32 Rage
+	Int32 Rage
 ) {
-	Int32 NewValue = MIN(
+	Int64 NewValue = MIN(
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX],
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] + MAX(0, Rage)
 	);
@@ -1108,13 +1108,13 @@ Void RTCharacterAddRage(
 Bool RTCharacterConsumeRage(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
-	UInt32 Rage
+	Int32 Rage
 ) {
 	assert(Rage >= 0);
 
 	if (Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] < Rage) return false;
 
-	Int32 NewValue = MIN(
+	Int64 NewValue = MIN(
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX],
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] - Rage
 	);

@@ -157,7 +157,7 @@ union _RTEventData {
             RTEntityID Entity;
             Bool IsDead;
             UInt8 Result;
-            UInt32 AppliedDamage;
+            UInt64 AppliedDamage;
             UInt64 TargetHP;
         } Results[RUNTIME_MOB_MAX_ATTACK_RESULT_COUNT];
     } MobAttack;

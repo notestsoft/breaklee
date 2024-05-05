@@ -169,6 +169,15 @@ Bool ParseAttributeCharArray(
     Char Separator
 );
 
+Int32 ParseAttributeCharArrayCounted(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    Char* Result,
+    Int64 Count,
+    Char Separator
+);
+
 Bool ParseAttributeString(
     ArchiveRef Object,
     Int64 NodeIndex,

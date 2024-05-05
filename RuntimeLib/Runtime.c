@@ -55,8 +55,7 @@ Bool RTRuntimeLoadData(
     CString RuntimeDataPath,
     CString ServerDataPath
 ) {
-    // TODO: This should be configured in xml file
-    RTInitForceEffectFormulas();
+    RTRuntimeInitForceEffectFormulas(Runtime);
  
     return RTRuntimeDataContextLoad(Runtime->Context, RuntimeDataPath, ServerDataPath);
 }
