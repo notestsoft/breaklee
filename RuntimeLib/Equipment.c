@@ -190,22 +190,6 @@ Int32 RTCharacterFindNextEquipmentSlotIndex(
     return -1;
 }
 
-Void RTCharacterApplyEquipmentAttributes(
-    RTRuntimeRef Runtime,
-    RTCharacterRef Character
-) {
-    for (Int32 Index = 0; Index < Character->EquipmentInfo.Count; Index += 1) {
-        RTItemSlotRef ItemSlot = &Character->EquipmentInfo.Slots[Index];
-        RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
-        if (!ItemData) {
-            Warn("No item data found for item id: %d", ItemSlot->Item.ID);
-            continue;
-        }
-
-        RTItemUseInternal(Runtime, Character, ItemSlot, ItemData, NULL);
-    }
-}
-
 Void RTCharacterBroadcastEquipmentUpdate(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,

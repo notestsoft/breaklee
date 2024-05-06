@@ -206,31 +206,3 @@ Bool RTCharacterRemoveEssenceAbility(
 
 	return true;
 }
-
-Void RTCharacterApplyEssenceAbilityAttributes(
-	RTRuntimeRef Runtime,
-	RTCharacterRef Character
-) {
-	for (Int32 Index = 0; Index < Character->EssenceAbilityInfo.Count; Index += 1) {
-		RTEssenceAbilitySlotRef AbilitySlot = &Character->EssenceAbilityInfo.Slots[Index];
-
-		RTDataPassiveAbilityValueRef AbilityValue = RTRuntimeDataPassiveAbilityValueGet(
-			Runtime->Context, 
-			AbilitySlot->AbilityID
-		);
-		assert(AbilityValue);
-
-		RTDataPassiveAbilityValueLevelRef AbilityLevel = RTRuntimeDataPassiveAbilityValueLevelGet(
-			AbilityValue, 
-			AbilitySlot->Level
-		);
-		assert(AbilityLevel);
-
-		// TODO: Check if ForceCode is force effect or code..
-		/*
-		RUNTIME_DATA_PROPERTY(Int32, ForceCode, "forcecode")
-		RUNTIME_DATA_PROPERTY(Int32, ValueType, "valuetype")
-		AbilityLevel->ForceValue
-		*/
-	}
-}

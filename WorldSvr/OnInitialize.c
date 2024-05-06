@@ -191,9 +191,6 @@ IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER) {
         );
     }
 
-    //memset(Packet->Character.InventoryData.Inventory, 0, sizeof(struct _RTItemSlot) * Packet->Character.InventoryData.Count);
-    //Packet->Character.InventoryData.Count = 0;
-
     Response->InventorySlotCount = Packet->Character.InventoryData.Count;
     if (Packet->Character.InventoryData.Count > 0) {
         PacketBufferAppendCopy(

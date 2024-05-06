@@ -54,17 +54,10 @@ Void RTCharacterInitialize(
 	);
 }
 
-// TODO: Split this up to resources and runtime attributes!!!
-Void RTCharacterInitializeAttributes(
-	RTRuntimeRef Runtime,
-	RTCharacterRef Character
+Void RTCharacterInitializeBattleStyleLevel(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
 ) {
-	memset(Character->Attributes.Values, 0, sizeof(Character->Attributes.Values));
-
-	Int32 BattleStyleIndex = Character->Info.Style.BattleStyle | (Character->Info.Style.ExtendedBattleStyle << 3);
-
-	// Battle Style Level Formula 
-
 	RTBattleStyleLevelFormulaDataRef LevelFormula = RTRuntimeGetBattleStyleLevelFormulaData(Runtime, BattleStyleIndex);
 	RTDataSpiritPointLimitRef SpiritPointLimitData = RTRuntimeDataSpiritPointLimitGet(Runtime->Context, Character->Info.Style.BattleRank);
 	assert(SpiritPointLimitData);
@@ -104,9 +97,12 @@ Void RTCharacterInitializeAttributes(
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX],
 		Character->Info.Resource.Rage
 	);
+}
 
-	// Battle Style Class Formula 
-
+Void RTCharacterInitializeBattleStyleClass(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
 	RTBattleStyleClassFormulaDataRef ClassFormula = RTRuntimeGetBattleStyleClassFormulaData(Runtime, BattleStyleIndex);
 
 	struct { Int32 AttributeIndex; Int32* Values; } ClassFormulaIndices[] = {
@@ -128,9 +124,12 @@ Void RTCharacterInitializeAttributes(
 			(Int64)Character->Info.Style.BattleRank * ClassFormulaIndices[Index].Values[0] + ClassFormulaIndices[Index].Values[1]
 		);
 	}
+}
 
-	// Battle Style Stats Formula 
-
+Void RTCharacterInitializeBattleStyleStats(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
 	RTBattleStyleStatsFormulaDataRef StatsFormula = RTRuntimeGetBattleStyleStatsFormulaData(Runtime, BattleStyleIndex);
 
 	struct { Int32 AttributeIndex; Int32* Values; Int32 SlopeID; } StatsFormulaIndices[] = {
@@ -176,16 +175,131 @@ Void RTCharacterInitializeAttributes(
 
 		Character->Attributes.Values[StatsFormulaIndices[Index].AttributeIndex] += AttributeValue / 1000;
 	}
+}
 
-	// TODO: Skill Rank Formula
+Void RTCharacterInitializeSkillRank(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    // TODO: Skill Rank Formula
+}
 
-	// Overlord Mastery Force Effects
+Void RTCharacterInitializeEquipment(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    for (Int32 Index = 0; Index < Character->EquipmentInfo.Count; Index += 1) {
+        RTItemSlotRef ItemSlot = &Character->EquipmentInfo.Slots[Index];
+        RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
+        if (!ItemData) {
+            Warn("No item data found for item id: %d", ItemSlot->Item.ID);
+            continue;
+        }
 
+        RTItemUseInternal(Runtime, Character, ItemSlot, ItemData, NULL);
+    }
+}
+
+Void RTCharacterInitializeSkillStats(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    // TODO: Passive skill values
+    // struct _RTCharacterSkillSlotInfo SkillSlotInfo;
+}
+
+Void RTCharacterInitializeEssenceAbilities(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    for (Int32 Index = 0; Index < Character->EssenceAbilityInfo.Count; Index += 1) {
+		RTEssenceAbilitySlotRef AbilitySlot = &Character->EssenceAbilityInfo.Slots[Index];
+
+		RTDataPassiveAbilityValueRef AbilityValue = RTRuntimeDataPassiveAbilityValueGet(
+			Runtime->Context, 
+			AbilitySlot->AbilityID
+		);
+		assert(AbilityValue);
+
+		RTDataPassiveAbilityValueLevelRef AbilityLevel = RTRuntimeDataPassiveAbilityValueLevelGet(
+			AbilityValue, 
+			AbilitySlot->Level
+		);
+		assert(AbilityLevel);
+
+		// TODO: Check if ForceCode is force effect or code..
+		/*
+		RUNTIME_DATA_PROPERTY(Int32, ForceCode, "forcecode")
+		RUNTIME_DATA_PROPERTY(Int32, ValueType, "valuetype")
+		AbilityLevel->ForceValue
+		*/
+	}
+}
+
+Void RTCharacterInitializeBlendedAbilities(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    // TODO: Blended ability triggers
+}
+
+Void RTCharacterInitializeKarmaAbilities(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    // TODO: Karma ability values
+}
+
+Void RTCharacterInitializeBlessingBeads(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    // TODO: Blessing bead values
+}
+
+Void RTCharacterInitializePremiumServices(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    // TODO: Premium service values
+}
+
+Void RTCharacterInitializeAchievements(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    // TODO: Achievement values
+}
+
+Void RTCharacterInitializeBuffs(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    // TODO: Buff values
+}
+
+Void RTCharacterInitializeGoldMeritMastery(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    // TODO: Gold merit values
+}
+
+Void RTCharacterInitializePlatinumMeritMastery(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    // TODO: Platinum merit values
+}
+
+Void RTCharacterInitializeOverlordMastery(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
 	for (Int32 Index = 0; Index < Character->OverlordMasteryInfo.Count; Index += 1) {
 		RTOverlordMasterySlotRef MasterySlot = &Character->OverlordMasteryInfo.Slots[Index];
 		RTDataOverlordMasteryValueRef MasteryValue = RTRuntimeDataOverlordMasteryValueGet(Runtime->Context, MasterySlot->MasteryIndex);
-		
-		// TODO: Solve this with a macro..
+
 		// TODO: ValueType refers to numeric or percentage ...
 
 		Bool Found = false;
@@ -208,20 +322,88 @@ Void RTCharacterInitializeAttributes(
 		assert(Found);
 	}
 	
-	// TODO: Values are still broken and check HP! It is way too big, new deltas don't make sense or whats broken with the packets actually?
-	RTCharacterApplyEquipmentAttributes(Runtime, Character);
-	RTCharacterApplyEssenceAbilityAttributes(Runtime, Character);
+}
 
+Void RTCharacterInitializeHonorMedalMastery(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    // TODO: Honor medal values
+}
+
+Void RTCharacterInitializeForceWingMastery(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    // TODO: Honor medal values
+}
+
+Void RTCharacterInitializeCollection(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    // TODO: Honor medal values
+}
+
+Void RTCharacterInitializeTranscendenceMastery(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    // TODO: Transcendence values
+}
+
+Void RTCharacterInitializeStellarMastery(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    // TODO: Stellar mastery values
+}
+
+Void RTCharacterInitializeMythMastery(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    // TODO: Myth mastery values
+}
+
+// TODO: Split this up to resources and runtime attributes!!!
+Void RTCharacterInitializeAttributes(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+	memset(Character->Attributes.Values, 0, sizeof(Character->Attributes.Values));
+
+	Int32 BattleStyleIndex = Character->Info.Style.BattleStyle | (Character->Info.Style.ExtendedBattleStyle << 3);
+
+    RTCharacterInitializeBattleStyleLevel(Runtime, Character);
+	RTCharacterInitializeBattleStyleClass(Runtime, Character);
+    RTCharacterInitializeBattleStyleStats(Runtime, Character);
+    RTCharacterInitializeSkillRank(Runtime, Character);
+	RTCharacterInitializeEquipment(Runtime, Character);
+    RTCharacterInitializeSkillStats(Runtime, Character);
+    RTCharacterInitializeEssenceAbilities(Runtime, Character);
+    RTCharacterInitializeBlendedAbilities(Runtime, Character);
+    RTCharacterInitializeKarmaAbilities(Runtime, Character);
+    RTCharacterInitializeBlessingBeads(Runtime, Character);
+    RTCharacterInitializePremiumServices(Runtime, Character);
+    RTCharacterInitializeAchievements(Runtime, Character);
+    RTCharacterInitializeBuffs(Runtime, Character);
+    RTCharacterInitializeGoldMeritMastery(Runtime, Character);
+    RTCharacterInitializePlatinumMeritMastery(Runtime, Character);
+    RTCharacterInitializeOverlordMastery(Runtime, Character);
+    RTCharacterInitializeHonorMedalMastery(Runtime, Character);
+    RTCharacterInitializeForceWingMastery(Runtime, Character);
+    RTCharacterInitializeCollection(Runtime, Character);
+    RTCharacterInitializeTranscendenceMastery(Runtime, Character);
+    RTCharacterInitializeStellarMastery(Runtime, Character);
+    RTCharacterInitializeMythMastery(Runtime, Character);
+    
+	// TODO: Values are still broken and check HP! It is way too big, new deltas don't make sense or whats broken with the packets actually?
+	
 	RTDataAxpFieldRateRef AxpFieldRate = RTRuntimeDataAxpFieldRateGet(Runtime->Context, Character->Info.Basic.Level);
 	if (AxpFieldRate) {
 		Character->AxpFieldRate = AxpFieldRate->Rate;
 	}
-
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_DEFENSE] = 99999;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_ATTACK] = 99999;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MAGIC_ATTACK] = 99999;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_CRITICAL_RATE] = 80;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_CRITICAL_RATE_MAX] = 80;
 }
 
 Bool RTCharacterIsAlive(

@@ -46,9 +46,4 @@ Bool RTCharacterRemoveEssenceAbility(
     UInt32 AbilityID
 );
 
-Void RTCharacterApplyEssenceAbilityAttributes(
-    RTRuntimeRef Runtime,
-    RTCharacterRef Character
-);
-
 EXTERN_C_END

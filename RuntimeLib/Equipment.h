@@ -120,11 +120,6 @@ Int32 RTCharacterFindNextEquipmentSlotIndex(
     UInt32 ItemType
 );
 
-Void RTCharacterApplyEquipmentAttributes(
-    RTRuntimeRef Runtime,
-    RTCharacterRef Character
-);
-
 Void RTCharacterBroadcastEquipmentUpdate(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
