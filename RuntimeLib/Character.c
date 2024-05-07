@@ -57,7 +57,10 @@ Void RTCharacterInitialize(
 Void RTCharacterInitializeBattleStyleLevel(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
+
 ) {
+	Int32 BattleStyleIndex = Character->Info.Style.BattleStyle | (Character->Info.Style.ExtendedBattleStyle << 3);
+
 	RTBattleStyleLevelFormulaDataRef LevelFormula = RTRuntimeGetBattleStyleLevelFormulaData(Runtime, BattleStyleIndex);
 	RTDataSpiritPointLimitRef SpiritPointLimitData = RTRuntimeDataSpiritPointLimitGet(Runtime->Context, Character->Info.Style.BattleRank);
 	assert(SpiritPointLimitData);
@@ -103,6 +106,8 @@ Void RTCharacterInitializeBattleStyleClass(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 ) {
+	Int32 BattleStyleIndex = Character->Info.Style.BattleStyle | (Character->Info.Style.ExtendedBattleStyle << 3);
+
 	RTBattleStyleClassFormulaDataRef ClassFormula = RTRuntimeGetBattleStyleClassFormulaData(Runtime, BattleStyleIndex);
 
 	struct { Int32 AttributeIndex; Int32* Values; } ClassFormulaIndices[] = {
@@ -130,6 +135,8 @@ Void RTCharacterInitializeBattleStyleStats(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 ) {
+	Int32 BattleStyleIndex = Character->Info.Style.BattleStyle | (Character->Info.Style.ExtendedBattleStyle << 3);
+
 	RTBattleStyleStatsFormulaDataRef StatsFormula = RTRuntimeGetBattleStyleStatsFormulaData(Runtime, BattleStyleIndex);
 
 	struct { Int32 AttributeIndex; Int32* Values; Int32 SlopeID; } StatsFormulaIndices[] = {
@@ -372,8 +379,6 @@ Void RTCharacterInitializeAttributes(
 	RTCharacterRef Character
 ) {
 	memset(Character->Attributes.Values, 0, sizeof(Character->Attributes.Values));
-
-	Int32 BattleStyleIndex = Character->Info.Style.BattleStyle | (Character->Info.Style.ExtendedBattleStyle << 3);
 
     RTCharacterInitializeBattleStyleLevel(Runtime, Character);
 	RTCharacterInitializeBattleStyleClass(Runtime, Character);
