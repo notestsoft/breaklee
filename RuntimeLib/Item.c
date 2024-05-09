@@ -740,7 +740,21 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemDivineConverter) {
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemChaosConverter) {
 	struct _RTItemConverterPayload* Data = Payload;
 
-	return RUNTIME_ITEM_USE_RESULT_FAILED;
+	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Data->TargetSlotIndex);
+	if (!TargetItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	RTItemDataRef TargetItemData = RTRuntimeGetItemDataByIndex(Runtime, TargetItemSlot->Item.ID);
+	if (!TargetItemData) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	RTDataChaosUpgradeItemListRef ChaosUpgradeItemList = RTRuntimeDataChaosUpgradeItemListGet(Runtime->Context, TargetItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX);
+	if (!ChaosUpgradeItemList) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	if (TargetItemSlot->Item.UpgradeLevel >= ChaosUpgradeItemList->MaxGrade) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	TargetItemSlot->Item.UpgradeLevel += 1;
+	RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHolyWater) {

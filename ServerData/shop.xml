@@ -120,6 +120,7 @@
         <item slot_id="115" item_id="33556689" option="805306368" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="116" item_id="33556690" option="805306368" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="117" item_id="33556691" option="805306368" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
+        <item slot_id="118" item_id="33556338" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
 
     </shop>
 	<shop world_id="1" npc_id="35">
