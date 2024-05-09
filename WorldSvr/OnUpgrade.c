@@ -371,6 +371,67 @@ error:
 	return SocketDisconnect(Socket, Connection);
 }
 
+CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_SEAL) {
+	if (!Character) goto error;
+
+	RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->SourceSlotIndex);
+	if (!SourceSlot) goto error;
+
+	RTItemDataRef SourceData = RTRuntimeGetItemDataByIndex(Runtime, SourceSlot->Item.ID);
+	if (!SourceData) goto error;
+
+	RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->TargetSlotIndex);
+	if (!TargetSlot) goto error;
+
+	RTItemDataRef TargetData = RTRuntimeGetItemDataByIndex(Runtime, TargetSlot->Item.ID);
+	if (!TargetData) goto error;
+
+	RTDataDivineUpgradeMainRef DivineUpgradeMain = RTRuntimeDataDivineUpgradeMainGet(Runtime->Context, TargetData->ItemGrade, TargetData->ItemType);
+	if (!DivineUpgradeMain) goto error;
+
+	RTItemOptions SourceItemOptions = { .Serial = SourceSlot->ItemOptions };
+	if (SourceSlot->ItemOptions) {
+		if (TargetSlot->Item.DivineLevel > 0) goto error;
+		if (SourceItemOptions.DivineSeal.ItemCategory != DivineUpgradeMain->ItemCategory) goto error;
+		if (SourceItemOptions.DivineSeal.ItemGrade != TargetData->ItemGrade) goto error;
+
+		TargetSlot->Item.DivineLevel = SourceItemOptions.DivineSeal.ItemLevel;
+		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceSlot->SlotIndex);
+		Character->SyncMask.InventoryInfo = true;
+		Character->SyncPriority.High = true;
+
+		S2C_DATA_DIVINE_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DIVINE_UPGRADE_SEAL);
+		Response->Result = S2C_DIVINE_UPGRADE_SEAL_RESULT_UNSEAL;
+		Response->ResultSerial = TargetSlot->Item.Serial;
+		SocketSend(Socket, Connection, Response);
+		return;
+	}
+	else {
+		if (TargetSlot->Item.DivineLevel < 1) goto error;
+
+		SourceItemOptions.DivineSeal.ItemLevel = TargetSlot->Item.DivineLevel;
+		SourceItemOptions.DivineSeal.ItemGrade = TargetData->ItemGrade;
+		SourceItemOptions.DivineSeal.ItemCategory = DivineUpgradeMain->ItemCategory;
+		SourceSlot->ItemOptions = SourceItemOptions.Serial;
+		TargetSlot->Item.DivineLevel = 0;
+		Character->SyncMask.InventoryInfo = true;
+		Character->SyncPriority.High = true;
+
+		S2C_DATA_DIVINE_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DIVINE_UPGRADE_SEAL);
+		Response->Result = S2C_DIVINE_UPGRADE_SEAL_RESULT_SEAL;
+		Response->ResultSerial = SourceItemOptions.Serial;
+		SocketSend(Socket, Connection, Response);
+		return;
+	}
+
+error:
+	{
+		S2C_DATA_DIVINE_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DIVINE_UPGRADE_SEAL);
+		Response->Result = S2C_DIVINE_UPGRADE_SEAL_RESULT_ERROR;
+		SocketSend(Socket, Connection, Response);
+	}
+}
+
 CLIENT_PROCEDURE_BINDING(EXTREME_UPGRADE_SEAL) {
 	if (!Character) goto error;
 

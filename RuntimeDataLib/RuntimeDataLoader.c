@@ -485,6 +485,9 @@ Bool ParseAttributeRTDataItemCategory(
     else if (strcmp(Data->Data, "CHAKRAM") == 0) {
         *Result = RUNTIME_ITEM_CATEGORY_CHAKRAM;
     }
+    else if (strcmp(Data->Data, "DivineToken") == 0) {
+        *Result = RUNTIME_ITEM_CATEGORY_TOKEN;
+    }
     else {
         goto error;
     }

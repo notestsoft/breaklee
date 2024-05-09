@@ -4,6 +4,7 @@ RUNTIME_DATA_TYPE_BEGIN(DivineUpgradeMain, "divine_upgrade.divine_upgrade_main.d
 	RUNTIME_DATA_PROPERTY(Int32, Group, "group")
 	RUNTIME_DATA_PROPERTY(Int32, ItemGrade, "grade")
 	RUNTIME_DATA_PROPERTY(RTDataItemType, ItemType, "type")
+	RUNTIME_DATA_PROPERTY(RTDataItemCategory, ItemCategory, "type")
 RUNTIME_DATA_TYPE_END(DivineUpgradeMain)
 
 RUNTIME_DATA_TYPE_BEGIN(DivineUpgradeGroupCost, "divine_upgrade.divine_needs_core", 32)

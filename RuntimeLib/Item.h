@@ -299,6 +299,17 @@ struct _RTItemOptions {
 			};
 			UInt32 _Padding1 : 32;
 		} Equipment;
+
+		struct {
+			UInt64 Level : 8;
+			UInt64 Category : 8;
+		} Seal;
+
+		struct {
+			UInt16 ItemLevel;
+			UInt16 ItemGrade;
+			UInt32 ItemCategory;
+		} DivineSeal;
 	};
 };
 typedef struct _RTItemOptions RTItemOptions;
