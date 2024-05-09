@@ -24,7 +24,6 @@
         <item slot_id="5" item_id="2378" option="999" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="6" item_id="637" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="7" item_id="582" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
-
         <item slot_id="8" item_id="10" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="9" item_id="33556513" option="999" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="10" item_id="8202" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
@@ -33,7 +32,6 @@
         <item slot_id="13" item_id="2379" option="999" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="14" item_id="638" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="15" item_id="583" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
-       
         <item slot_id="16" item_id="1" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="17" item_id="33556514" option="999" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="18" item_id="8193" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
@@ -42,7 +40,6 @@
         <item slot_id="21" item_id="2380" option="999" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="22" item_id="639" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="23" item_id="2" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
-        
         <item slot_id="24" item_id="1214" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="25" item_id="33556515" option="999" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="26" item_id="9406" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
@@ -94,18 +91,18 @@
         <item slot_id="78" item_id="439" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="79" item_id="4084" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="80" item_id="33556579" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
-        
+        <item slot_id="81" item_id="33554733" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
+        <item slot_id="82" item_id="33556517" option="999" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
+        <item slot_id="83" item_id="33556339" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
+        <item slot_id="84" item_id="33556338" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
 
         <item slot_id="96" item_id="33556675" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="97" item_id="33556676" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="98" item_id="33556677" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="99" item_id="33556937" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
-        
         <item slot_id="100" item_id="33558050" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="101" item_id="33558051" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="102" item_id="33558052" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
-        
-
         <item slot_id="104" item_id="33554633" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="105" item_id="33554721" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="106" item_id="33554722" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
@@ -120,8 +117,6 @@
         <item slot_id="115" item_id="33556689" option="805306368" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="116" item_id="33556690" option="805306368" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
         <item slot_id="117" item_id="33556691" option="805306368" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
-        <item slot_id="118" item_id="33556338" option="0" reputation_class="-19" duration_id="0" price="0" onlypremium="0" wexpprice="0" dp="0" />
-
     </shop>
 	<shop world_id="1" npc_id="35">
 	 
