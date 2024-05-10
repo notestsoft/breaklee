@@ -1,0 +1,239 @@
+<cabal_chaos_upgrade>
+	<chaosupgrade_rate	group="-1"	>
+		<chaositem	level="0"	rate="1000,0,0,0,0,0,0,0,0,0,0"	/>
+		<chaositem	level="1"	rate="950,0,0,0,0,0"	/>
+		<chaositem	level="2"	rate="900,0,0,0,0,0"	/>
+		<chaositem	level="3"	rate="750,0,0,0,0,0"	/>
+		<chaositem	level="4"	rate="650,0,0,0,0,0"	/>
+		<chaositem	level="5"	rate="600,0,0,0,0,0"	/>
+		<chaositem	level="6"	rate="400,0,0,0,0,0"	/>
+		<chaositem	level="7"	rate="400,0,0,0,0,0"	/>
+		<chaositem	level="8"	rate="360,0,0,0,0,0"	/>
+		<chaositem	level="9"	rate="360,0,0,0,0,0"	/>
+		<chaositem	level="10"	rate="360,0,0,0,0,0"	/>
+		<chaositem	level="11"	rate="360,0,0,0,0,0"	/>
+		<chaositem	level="12"	rate="360,0,0,0,0,0"	/>
+		<chaositem	level="13"	rate="360,0,0,0,0,0"	/>
+		<chaositem	level="14"	rate="360,0,0,0,0,0"	/>
+		<chaositem	level="15"	rate="130,0,0,0,0,0"	/>
+		<chaositem	level="16"	rate="170,0,0,0,0,0"	/>
+		<chaositem	level="17"	rate="140,0,0,0,0,0"	/>
+	</chaosupgrade_rate>
+	<chaosupgrade_rate	group="1"	>
+		<chaositem	level="0"	rate="1000,0,0,0,0,0"	/>
+		<chaositem	level="1"	rate="950,50,0,0,0,0"	/>
+		<chaositem	level="2"	rate="900,100,0,0,0,0"	/>
+		<chaositem	level="3"	rate="750,250,0,0,0,0"	/>
+		<chaositem	level="4"	rate="650,350,0,0,0,0"	/>
+		<chaositem	level="5"	rate="600,400,0,0,0,0"	/>
+		<chaositem	level="6"	rate="400,600,0,0,0,0"	/>
+		<chaositem	level="7"	rate="400,600,0,0,0,0"	/>
+		<chaositem	level="8"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="9"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="10"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="11"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="12"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="13"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="14"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="15"	rate="150,0,850,0,0,0"	/>
+		<chaositem	level="16"	rate="200,0,200,600,0,0"	/>
+		<chaositem	level="17"	rate="160,0,220,260,360,0"	/>
+		<chaositem	level="18"	rate="120,0,130,200,300,250"	/>
+		<chaositem	level="19"	rate="80,0,120,200,350,250"	/>
+	</chaosupgrade_rate>
+	<chaosupgrade_rate	group="2"	>
+		<chaositem	level="0"	rate="1000,0,0,0,0,0"	/>
+		<chaositem	level="1"	rate="950,50,0,0,0,0"	/>
+		<chaositem	level="2"	rate="900,100,0,0,0,0"	/>
+		<chaositem	level="3"	rate="750,250,0,0,0,0"	/>
+		<chaositem	level="4"	rate="650,350,0,0,0,0"	/>
+		<chaositem	level="5"	rate="600,400,0,0,0,0"	/>
+		<chaositem	level="6"	rate="400,600,0,0,0,0"	/>
+		<chaositem	level="7"	rate="400,600,0,0,0,0"	/>
+		<chaositem	level="8"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="9"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="10"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="11"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="12"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="13"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="14"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="15"	rate="150,0,850,0,0,0"	/>
+		<chaositem	level="16"	rate="200,0,200,600,0,0"	/>
+		<chaositem	level="17"	rate="160,0,220,260,360,0"	/>
+		<chaositem	level="18"	rate="120,0,130,200,300,250"	/>
+		<chaositem	level="19"	rate="80,0,120,200,350,250"	/>
+	</chaosupgrade_rate>
+	<chaosupgrade_rate	group="3"	>
+		<chaositem	level="0"	rate="1000,0,0,0,0,0"	/>
+		<chaositem	level="1"	rate="950,50,0,0,0,0"	/>
+		<chaositem	level="2"	rate="900,100,0,0,0,0"	/>
+		<chaositem	level="3"	rate="750,250,0,0,0,0"	/>
+		<chaositem	level="4"	rate="650,350,0,0,0,0"	/>
+		<chaositem	level="5"	rate="600,400,0,0,0,0"	/>
+		<chaositem	level="6"	rate="400,600,0,0,0,0"	/>
+		<chaositem	level="7"	rate="400,600,0,0,0,0"	/>
+		<chaositem	level="8"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="9"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="10"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="11"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="12"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="13"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="14"	rate="360,640,0,0,0,0"	/>
+		<chaositem	level="15"	rate="150,0,850,0,0,0"	/>
+		<chaositem	level="16"	rate="200,0,200,600,0,0"	/>
+		<chaositem	level="17"	rate="160,0,220,260,360,0"	/>
+		<chaositem	level="18"	rate="120,0,130,200,300,250"	/>
+		<chaositem	level="19"	rate="80,0,120,200,350,250"	/>
+	</chaosupgrade_rate>
+	<chaosupgrade_rate	group="4"	>
+		<chaositem	level="0"	rate="800,200,0,0,0,0"	/>
+		<chaositem	level="1"	rate="750,250,0,0,0,0"	/>
+		<chaositem	level="2"	rate="650,350,0,0,0,0"	/>
+		<chaositem	level="3"	rate="600,400,0,0,0,0"	/>
+		<chaositem	level="4"	rate="550,450,0,0,0,0"	/>
+		<chaositem	level="5"	rate="400,600,0,0,0,0"	/>
+		<chaositem	level="6"	rate="300,700,0,0,0,0"	/>
+		<chaositem	level="7"	rate="200,800,0,0,0,0"	/>
+		<chaositem	level="8"	rate="200,800,0,0,0,0"	/>
+		<chaositem	level="9"	rate="150,850,0,0,0,0"	/>
+	</chaosupgrade_rate>
+	<chaosupgrade_rate	group="6"	>
+		<chaositem	level="0"	rate="1000,0,0,0,0,0"	/>
+		<chaositem	level="1"	rate="950,50,0,0,0,0"	/>
+		<chaositem	level="2"	rate="900,100,0,0,0,0"	/>
+		<chaositem	level="3"	rate="750,250,0,0,0,0"	/>
+		<chaositem	level="4"	rate="650,350,0,0,0,0"	/>
+		<chaositem	level="5"	rate="600,400,0,0,0,0"	/>
+		<chaositem	level="6"	rate="400,600,0,0,0,0"	/>
+		<chaositem	level="7"	rate="400,600,0,0,0,0"	/>
+		<chaositem	level="8"	rate="300,700,0,0,0,0"	/>
+		<chaositem	level="9"	rate="300,700,0,0,0,0"	/>
+		<chaositem	level="10"	rate="300,700,0,0,0,0"	/>
+		<chaositem	level="11"	rate="300,700,0,0,0,0"	/>
+		<chaositem	level="12"	rate="300,700,0,0,0,0"	/>
+		<chaositem	level="13"	rate="300,700,0,0,0,0"	/>
+		<chaositem	level="14"	rate="300,700,0,0,0,0"	/>
+		<chaositem	level="15"	rate="130,0,870,0,0,0"	/>
+		<chaositem	level="16"	rate="170,0,170,660,0,0"	/>
+		<chaositem	level="17"	rate="140,0,220,270,370,0"	/>
+		<chaositem	level="18"	rate="90,0,130,200,320,260"	/>
+		<chaositem	level="19"	rate="60,0,120,200,360,260"	/>
+	</chaosupgrade_rate>
+	<chaosupgrade_rate	group="7"	>
+		<chaositem	level="0"	rate="1000,0,0,0,0,0"	/>
+		<chaositem	level="1"	rate="950,50,0,0,0,0"	/>
+		<chaositem	level="2"	rate="900,100,0,0,0,0"	/>
+		<chaositem	level="3"	rate="750,250,0,0,0,0"	/>
+		<chaositem	level="4"	rate="650,350,0,0,0,0"	/>
+		<chaositem	level="5"	rate="600,400,0,0,0,0"	/>
+		<chaositem	level="6"	rate="400,600,0,0,0,0"	/>
+		<chaositem	level="7"	rate="400,600,0,0,0,0"	/>
+		<chaositem	level="8"	rate="300,700,0,0,0,0"	/>
+		<chaositem	level="9"	rate="300,700,0,0,0,0"	/>
+		<chaositem	level="10"	rate="300,700,0,0,0,0"	/>
+		<chaositem	level="11"	rate="300,700,0,0,0,0"	/>
+		<chaositem	level="12"	rate="300,700,0,0,0,0"	/>
+		<chaositem	level="13"	rate="300,700,0,0,0,0"	/>
+		<chaositem	level="14"	rate="300,700,0,0,0,0"	/>
+		<chaositem	level="15"	rate="120,0,880,0,0,0"	/>
+		<chaositem	level="16"	rate="100,0,150,750,0,0"	/>
+		<chaositem	level="17"	rate="80,0,130,440,350,0"	/>
+		<chaositem	level="18"	rate="60,0,110,280,350,200"	/>
+		<chaositem	level="19"	rate="40,0,90,270,350,250"	/>
+	</chaosupgrade_rate>
+	<chaosupgrade_rate	group="8"	>
+		<chaositem	level="0"	rate="1000,0,0,0,0,0"	/>
+		<chaositem	level="1"	rate="950,50,0,0,0,0"	/>
+		<chaositem	level="2"	rate="900,100,0,0,0,0"	/>
+		<chaositem	level="3"	rate="750,250,0,0,0,0"	/>
+		<chaositem	level="4"	rate="650,350,0,0,0,0"	/>
+		<chaositem	level="5"	rate="600,400,0,0,0,0"	/>
+		<chaositem	level="6"	rate="400,600,0,0,0,0"	/>
+		<chaositem	level="7"	rate="400,600,0,0,0,0"	/>
+		<chaositem	level="8"	rate="330,670,0,0,0,0"	/>
+		<chaositem	level="9"	rate="330,670,0,0,0,0"	/>
+		<chaositem	level="10"	rate="330,670,0,0,0,0"	/>
+		<chaositem	level="11"	rate="330,670,0,0,0,0"	/>
+		<chaositem	level="12"	rate="330,670,0,0,0,0"	/>
+		<chaositem	level="13"	rate="330,670,0,0,0,0"	/>
+		<chaositem	level="14"	rate="330,670,0,0,0,0"	/>
+		<chaositem	level="15"	rate="120,0,880,0,0,0"	/>
+		<chaositem	level="16"	rate="100,0,150,750,0,0"	/>
+		<chaositem	level="17"	rate="80,0,130,440,350,0"	/>
+		<chaositem	level="18"	rate="60,0,110,280,350,200"	/>
+		<chaositem	level="19"	rate="40,0,90,270,350,250"	/>
+	</chaosupgrade_rate>
+	<chaosupgrade_rate	group="9"	>
+		<chaositem	level="0"	rate="1000,0,0,0,0,0"	/>
+		<chaositem	level="1"	rate="950,50,0,0,0,0"	/>
+		<chaositem	level="2"	rate="900,100,0,0,0,0"	/>
+		<chaositem	level="3"	rate="750,250,0,0,0,0"	/>
+		<chaositem	level="4"	rate="650,350,0,0,0,0"	/>
+		<chaositem	level="5"	rate="600,400,0,0,0,0"	/>
+		<chaositem	level="6"	rate="400,600,0,0,0,0"	/>
+		<chaositem	level="7"	rate="400,600,0,0,0,0"	/>
+		<chaositem	level="8"	rate="330,670,0,0,0,0"	/>
+		<chaositem	level="9"	rate="330,670,0,0,0,0"	/>
+		<chaositem	level="10"	rate="330,670,0,0,0,0"	/>
+		<chaositem	level="11"	rate="330,670,0,0,0,0"	/>
+		<chaositem	level="12"	rate="330,670,0,0,0,0"	/>
+		<chaositem	level="13"	rate="330,670,0,0,0,0"	/>
+		<chaositem	level="14"	rate="330,670,0,0,0,0"	/>
+		<chaositem	level="15"	rate="120,0,880,0,0,0"	/>
+		<chaositem	level="16"	rate="100,0,150,750,0,0"	/>
+		<chaositem	level="17"	rate="80,0,130,440,350,0"	/>
+		<chaositem	level="18"	rate="60,0,110,280,350,200"	/>
+		<chaositem	level="19"	rate="40,0,90,270,350,250"	/>
+	</chaosupgrade_rate>
+	<chaosupgrade_rate	group="10"	>
+		<chaositem	level="0"	rate="1000,0,0,0,0,0"	/>
+		<chaositem	level="1"	rate="950,50,0,0,0,0"	/>
+		<chaositem	level="2"	rate="900,100,0,0,0,0"	/>
+		<chaositem	level="3"	rate="750,250,0,0,0,0"	/>
+		<chaositem	level="4"	rate="650,350,0,0,0,0"	/>
+		<chaositem	level="5"	rate="600,400,0,0,0,0"	/>
+		<chaositem	level="6"	rate="400,600,0,0,0,0"	/>
+		<chaositem	level="7"	rate="300,700,0,0,0,0"	/>
+		<chaositem	level="8"	rate="250,750,0,0,0,0"	/>
+		<chaositem	level="9"	rate="240,760,0,0,0,0"	/>
+		<chaositem	level="10"	rate="230,770,0,0,0,0"	/>
+		<chaositem	level="11"	rate="220,780,0,0,0,0"	/>
+		<chaositem	level="12"	rate="210,790,0,0,0,0"	/>
+		<chaositem	level="13"	rate="200,800,0,0,0,0"	/>
+		<chaositem	level="14"	rate="200,800,0,0,0,0"	/>
+	</chaosupgrade_rate>
+	<chaosupgrade_rate	group="11"	>
+		<chaositem	level="0"	rate="1000,0,0,0,0,0"	/>
+		<chaositem	level="1"	rate="950,50,0,0,0,0"	/>
+		<chaositem	level="2"	rate="900,100,0,0,0,0"	/>
+		<chaositem	level="3"	rate="750,250,0,0,0,0"	/>
+		<chaositem	level="4"	rate="650,350,0,0,0,0"	/>
+		<chaositem	level="5"	rate="600,400,0,0,0,0"	/>
+		<chaositem	level="6"	rate="400,600,0,0,0,0"	/>
+		<chaositem	level="7"	rate="300,700,0,0,0,0"	/>
+		<chaositem	level="8"	rate="250,750,0,0,0,0"	/>
+		<chaositem	level="9"	rate="240,760,0,0,0,0"	/>
+		<chaositem	level="10"	rate="230,770,0,0,0,0"	/>
+		<chaositem	level="11"	rate="220,780,0,0,0,0"	/>
+		<chaositem	level="12"	rate="210,790,0,0,0,0"	/>
+		<chaositem	level="13"	rate="200,800,0,0,0,0"	/>
+		<chaositem	level="14"	rate="200,800,0,0,0,0"	/>
+	</chaosupgrade_rate>
+	<chaosupgrade_rate	group="12"	>
+		<chaositem	level="0"	rate="1000,0,0,0,0,0"	/>
+		<chaositem	level="1"	rate="950,50,0,0,0,0"	/>
+		<chaositem	level="2"	rate="900,100,0,0,0,0"	/>
+		<chaositem	level="3"	rate="750,250,0,0,0,0"	/>
+		<chaositem	level="4"	rate="650,350,0,0,0,0"	/>
+		<chaositem	level="5"	rate="600,400,0,0,0,0"	/>
+		<chaositem	level="6"	rate="400,600,0,0,0,0"	/>
+		<chaositem	level="7"	rate="300,700,0,0,0,0"	/>
+		<chaositem	level="8"	rate="250,750,0,0,0,0"	/>
+		<chaositem	level="9"	rate="240,760,0,0,0,0"	/>
+		<chaositem	level="10"	rate="230,770,0,0,0,0"	/>
+		<chaositem	level="11"	rate="220,780,0,0,0,0"	/>
+		<chaositem	level="12"	rate="210,790,0,0,0,0"	/>
+		<chaositem	level="13"	rate="200,800,0,0,0,0"	/>
+		<chaositem	level="14"	rate="200,800,0,0,0,0"	/>
+	</chaosupgrade_rate>
+</cabal_chaos_upgrade>
