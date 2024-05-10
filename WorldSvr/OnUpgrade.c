@@ -432,65 +432,6 @@ error:
 	}
 }
 
-CLIENT_PROCEDURE_BINDING(CHAOS_UPGRADE_SEAL) {
-	if (!Character) goto error;
-
-	RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->SourceSlotIndex);
-	if (!SourceSlot) goto error;
-
-	RTItemDataRef SourceData = RTRuntimeGetItemDataByIndex(Runtime, SourceSlot->Item.ID);
-	if (!SourceData) goto error;
-
-	RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->TargetSlotIndex);
-	if (!TargetSlot) goto error;
-
-	RTItemDataRef TargetData = RTRuntimeGetItemDataByIndex(Runtime, TargetSlot->Item.ID);
-	if (!TargetData) goto error;
-
-	RTDataChaosUpgradeItemListRef ChaosUpgradeItemList = RTRuntimeDataChaosUpgradeItemListGet(Runtime->Context, TargetSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX);
-	if (!ChaosUpgradeItemList) goto error;
-
-	RTItemOptions SourceItemOptions = { .Serial = SourceSlot->ItemOptions };
-	if (SourceSlot->ItemOptions) {
-		if (TargetSlot->Item.UpgradeLevel > 0) goto error;
-
-		TargetSlot->Item.UpgradeLevel = SourceItemOptions.ChaosSeal.ItemID;
-		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceSlot->SlotIndex);
-		Character->SyncMask.InventoryInfo = true;
-		Character->SyncPriority.High = true;
-
-		S2C_DATA_CHAOS_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHAOS_UPGRADE_SEAL);
-		Response->Result = S2C_CHAOS_UPGRADE_SEAL_RESULT_UNSEAL;
-		Response->ResultSerial = TargetSlot->Item.Serial;
-		SocketSend(Socket, Connection, Response);
-		return;
-	}
-	else {
-		if (TargetSlot->Item.UpgradeLevel < 1) goto error;
-
-		SourceItemOptions.ChaosSeal.ItemID = TargetSlot->Item.UpgradeLevel;
-		SourceItemOptions.ChaosSeal.ItemGrade = TargetData->ItemGrade;
-		SourceItemOptions.ChaosSeal.ItemType = TargetData->ItemType;
-		SourceSlot->ItemOptions = SourceItemOptions.Serial;
-		TargetSlot->Item.UpgradeLevel = 0;
-		Character->SyncMask.InventoryInfo = true;
-		Character->SyncPriority.High = true;
-
-		S2C_DATA_CHAOS_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHAOS_UPGRADE_SEAL);
-		Response->Result = S2C_CHAOS_UPGRADE_SEAL_RESULT_SEAL;
-		Response->ResultSerial = SourceItemOptions.Serial;
-		SocketSend(Socket, Connection, Response);
-		return;
-	}
-
-error:
-	{
-		S2C_DATA_CHAOS_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHAOS_UPGRADE_SEAL);
-		Response->Result = S2C_CHAOS_UPGRADE_SEAL_RESULT_ERROR;
-		SocketSend(Socket, Connection, Response);
-	}
-}
-
 CLIENT_PROCEDURE_BINDING(EXTREME_UPGRADE_SEAL) {
 	if (!Character) goto error;
 
@@ -565,4 +506,65 @@ CLIENT_PROCEDURE_BINDING(EXTREME_UPGRADE_SEAL) {
 
 error:
 	return SocketDisconnect(Socket, Connection);
+}
+
+CLIENT_PROCEDURE_BINDING(CHAOS_UPGRADE_SEAL) {
+	if (!Character) goto error;
+
+	RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->SourceSlotIndex);
+	if (!SourceSlot) goto error;
+
+	RTItemDataRef SourceData = RTRuntimeGetItemDataByIndex(Runtime, SourceSlot->Item.ID);
+	if (!SourceData) goto error;
+
+	RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->TargetSlotIndex);
+	if (!TargetSlot) goto error;
+
+	RTItemDataRef TargetData = RTRuntimeGetItemDataByIndex(Runtime, TargetSlot->Item.ID);
+	if (!TargetData) goto error;
+
+	RTDataChaosUpgradeItemListRef ChaosUpgradeItemList = RTRuntimeDataChaosUpgradeItemListGet(Runtime->Context, TargetSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX);
+	if (!ChaosUpgradeItemList) goto error;
+
+	RTItemOptions SourceItemOptions = { .Serial = SourceSlot->ItemOptions };
+	if (SourceSlot->ItemOptions) {
+		if (TargetSlot->Item.UpgradeLevel > 0) goto error;
+		if (SourceItemOptions.ChaosSeal.ItemType != TargetData->ItemType) goto error;
+		if (SourceItemOptions.ChaosSeal.ItemGrade != TargetData->ItemGrade) goto error;
+
+		TargetSlot->Item.UpgradeLevel = SourceItemOptions.ChaosSeal.ItemLevel;
+		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceSlot->SlotIndex);
+		Character->SyncMask.InventoryInfo = true;
+		Character->SyncPriority.High = true;
+
+		S2C_DATA_CHAOS_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHAOS_UPGRADE_SEAL);
+		Response->Result = S2C_CHAOS_UPGRADE_SEAL_RESULT_UNSEAL;
+		Response->ResultSerial = TargetSlot->Item.Serial;
+		SocketSend(Socket, Connection, Response);
+		return;
+	}
+	else {
+		if (TargetSlot->Item.UpgradeLevel < 1) goto error;
+
+		SourceItemOptions.ChaosSeal.ItemLevel = TargetSlot->Item.DivineLevel;
+		SourceItemOptions.ChaosSeal.ItemGrade = TargetData->ItemGrade;
+		SourceItemOptions.ChaosSeal.ItemType = TargetData->ItemType;
+		SourceSlot->ItemOptions = SourceItemOptions.Serial;
+		TargetSlot->Item.UpgradeLevel = 0;
+		Character->SyncMask.InventoryInfo = true;
+		Character->SyncPriority.High = true;
+
+		S2C_DATA_CHAOS_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHAOS_UPGRADE_SEAL);
+		Response->Result = S2C_CHAOS_UPGRADE_SEAL_RESULT_SEAL;
+		Response->ResultSerial = SourceItemOptions.Serial;
+		SocketSend(Socket, Connection, Response);
+		return;
+	}
+
+error:
+	{
+		S2C_DATA_CHAOS_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHAOS_UPGRADE_SEAL);
+		Response->Result = S2C_CHAOS_UPGRADE_SEAL_RESULT_ERROR;
+		SocketSend(Socket, Connection, Response);
+	}
 }
