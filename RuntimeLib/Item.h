@@ -310,6 +310,12 @@ struct _RTItemOptions {
 			UInt16 ItemGrade;
 			UInt32 ItemCategory;
 		} DivineSeal;
+
+		struct {
+			UInt16 ItemID;
+			UInt16 ItemGrade;
+			UInt16 ItemType;
+		} ChaosSeal;
 	};
 };
 typedef struct _RTItemOptions RTItemOptions;
