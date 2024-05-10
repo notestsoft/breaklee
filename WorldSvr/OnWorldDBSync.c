@@ -69,6 +69,10 @@ Void ServerSyncCharacter(
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->OverlordMasteryInfo, sizeof(struct _RTCharacterOverlordMasteryInfo));
 	}
 
+	if (Character->SyncMask.HonorMedalInfo) {
+		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->HonorMedalInfo, sizeof(struct _RTCharacterHonorMedalInfo));
+	}
+
 	if (Character->SyncMask.ForceWingInfo) {
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->ForceWingInfo, sizeof(struct _RTCharacterForceWingInfo));
 	}

@@ -163,6 +163,21 @@ IPC_PROCEDURE_BINDING(W2M, DBSYNC) {
 		}
 	}
 
+	if (Packet->SyncMask.HonorMedalInfo) {
+		RTCharacterHonorMedalInfoRef Data = (RTCharacterHonorMedalInfoRef)&Packet->Data[DataOffset];
+		DataOffset += sizeof(struct _RTCharacterHonorMedalInfo);
+
+		Bool Success = MasterDBUpdateCharacterHonorMedalData(
+			Context->Database,
+			Packet->CharacterID,
+			Data
+		);
+
+		if (!Success) {
+			Response->SyncMaskFailed.HonorMedalInfo = true;
+		}
+	}
+
 	if (Packet->SyncMask.ForceWingInfo) {
 		RTCharacterForceWingInfoRef ForceWingInfo = (RTCharacterForceWingInfoRef)&Packet->Data[DataOffset];
 		DataOffset += sizeof(struct _RTCharacterForceWingInfo);

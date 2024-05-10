@@ -7,12 +7,16 @@
             <item slot_id="2" item_id="33556938" option="65536000999" duration_id="0" price="0"></item>
             <item slot_id="3" item_id="33556820" option="65536000999" duration_id="0" price="0"></item>
             <item slot_id="4" item_id="33557407" option="131072000000999" duration_id="0" price="0"></item>
+            <item slot_id="5" item_id="33556682" option="3277799" duration_id="0" price="0"></item>
 
             <item slot_id="8" item_id="33556371" option="0" duration_id="0" price="0"></item>   
             <item slot_id="9" item_id="33556435" option="999" duration_id="0" price="0"></item>
             <item slot_id="10" item_id="33556818" option="999" duration_id="0" price="0"></item>
             <item slot_id="11" item_id="33557013" option="999" duration_id="0" price="0"></item>
             <item slot_id="12" item_id="33557014" option="999" duration_id="0" price="0"></item>
+
+            <item slot_id="64" item_id="33556474" option="999" duration_id="0" price="0"></item>
+            <item slot_id="65" item_id="33556475" option="999" duration_id="0" price="0"></item>
         </event_shop>
     </event>
 
@@ -243,6 +247,8 @@
             <item slot_id="59" item_id="33558049" option="1" duration_id="0" price="0"></item>
             <item slot_id="60" item_id="33558069" option="1" duration_id="0" price="0"></item>
             <item slot_id="64" item_id="33555354" option="0" duration_id="0" price="0"></item>
+            
+            <item slot_id="72" item_id="3192" option="6553700" duration_id="0" price="0"></item>
         </event_shop>
     </event_info>
 
@@ -638,6 +644,7 @@
         <event_shop>
             <item slot_id = "0" item_id = "33554684" option = "0" duration_id = "0" price = "0"></item>
             <item slot_id = "1" item_id = "33554685" option = "0" duration_id = "0" price = "0"></item>
+            <item slot_id = "2" item_id = "1721" option = "0" duration_id = "0" price = "0"></item>
             <item slot_id="16" item_id="1561" option="4208880" duration_id="0" price="0"></item>
         </event_shop>
         

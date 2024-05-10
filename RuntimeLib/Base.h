@@ -48,6 +48,8 @@ typedef struct _RTForceWingPresetSlot* RTForceWingPresetSlotRef;
 typedef struct _RTForceWingTrainingSlot* RTForceWingTrainingSlotRef;
 typedef struct _RTCharacterForceWingInfo* RTCharacterForceWingInfoRef;
 typedef struct _RTGiftBoxSlot* RTGiftBoxSlotRef;
+typedef struct _RTHonorMedalSlot* RTHonorMedalSlotRef;
+typedef struct _RTCharacterHonorMedalInfo* RTCharacterHonorMedalInfoRef;
 typedef struct _RTItemData* RTItemDataRef;
 typedef struct _RTItemSlot* RTItemSlotRef;
 typedef struct _RTItemSlotAppearance* RTItemSlotAppearanceRef;

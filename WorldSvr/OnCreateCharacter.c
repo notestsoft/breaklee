@@ -145,10 +145,14 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 		Request->CharacterData.Basic.Exp = RTRuntimeGetExpByLevel(Runtime, 200);
 		Request->CharacterData.Stat[RUNTIME_CHARACTER_STAT_PNT] = 200 * 5;
 		Request->CharacterData.Style.BattleRank = 20;
+		Request->CharacterData.Skill.Rank = 10;
+		Request->CharacterData.Skill.Level = 500;
+		Request->CharacterData.Profile.Nation = 2;
 
 		RTDataHonorLevelFormulaRef HonorLevelFormula = RTRuntimeDataHonorLevelFormulaGet(Runtime->Context, 20);
 		Request->CharacterData.Honor.Rank = HonorLevelFormula->Rank;
-		Request->CharacterData.Honor.Exp = HonorLevelFormula->MaxPoint;
+		Request->CharacterData.Honor.Point = HonorLevelFormula->MaxPoint;
+		Request->CharacterData.Honor.Exp = 0;
 	}
 
 	IPCSocketUnicast(Server->IPCSocket, Request);

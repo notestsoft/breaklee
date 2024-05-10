@@ -176,7 +176,8 @@ Bool MasterDBUpdateCharacterBlendedAbilityData(
 
 Bool MasterDBUpdateCharacterHonorMedalData(
     DatabaseRef Database,
-    MASTERDB_DATA_CHARACTER* Data
+    Int32 CharacterID,
+    RTCharacterHonorMedalInfoRef Data
 );
 
 Bool MasterDBUpdateCharacterOverlordData(

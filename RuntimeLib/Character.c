@@ -16,6 +16,7 @@ Void RTCharacterInitialize(
 	RTCharacterDungeonQuestFlagInfoRef DungeonQuestFlagInfo,
 	RTCharacterEssenceAbilityInfoRef EssenceAbilityInfo,
 	RTCharacterOverlordMasteryInfoRef OverlordMasteryInfo,
+	RTCharacterHonorMedalInfoRef HonorMedalInfo,
 	RTCharacterForceWingInfoRef ForceWingInfo,
 	RTCharacterCollectionInfoRef CollectionInfo,
 	RTCharacterNewbieSupportInfoRef NewbieSupportInfo,
@@ -36,6 +37,7 @@ Void RTCharacterInitialize(
 	memcpy(&Character->DungeonQuestFlagInfo, DungeonQuestFlagInfo, sizeof(struct _RTCharacterDungeonQuestFlagInfo));
 	memcpy(&Character->EssenceAbilityInfo, EssenceAbilityInfo, sizeof(struct _RTCharacterEssenceAbilityInfo));
 	memcpy(&Character->OverlordMasteryInfo, OverlordMasteryInfo, sizeof(struct _RTCharacterOverlordMasteryInfo));
+	memcpy(&Character->HonorMedalInfo, HonorMedalInfo, sizeof(struct _RTCharacterHonorMedalInfo));
 	memcpy(&Character->ForceWingInfo, ForceWingInfo, sizeof(struct _RTCharacterForceWingInfo));
 	memcpy(&Character->CollectionInfo, CollectionInfo, sizeof(struct _RTCharacterCollectionInfo));
 	memcpy(&Character->NewbieSupportInfo, NewbieSupportInfo, sizeof(struct _RTCharacterNewbieSupportInfo));
@@ -917,27 +919,31 @@ Void RTCharacterAddExp(
 				Character->Info.Overlord.Exp = 0;
 				Character->Info.Overlord.Point = Start->MasteryPointCount;
 
-                RTRuntimeBroadcastEvent(
-                    Runtime,
-                    RUNTIME_EVENT_CHARACTER_OVERLORD_LEVEL_UP,
-                    RTRuntimeGetWorldByCharacter(Runtime, Character),
-                    kEntityIDNull,
-                    Character->ID,
-                    Character->Movement.PositionCurrent.X,
-                    Character->Movement.PositionCurrent.Y
-                );
+				for (Index Index = 0; Index < LevelDiff; Index += 1) {
+					RTRuntimeBroadcastEvent(
+						Runtime,
+						RUNTIME_EVENT_CHARACTER_OVERLORD_LEVEL_UP,
+						RTRuntimeGetWorldByCharacter(Runtime, Character),
+						kEntityIDNull,
+						Character->ID,
+						Character->Movement.PositionCurrent.X,
+						Character->Movement.PositionCurrent.Y
+					);
+				}
             }
 		}
 
-		RTRuntimeBroadcastEvent(
-			Runtime,
-			RUNTIME_EVENT_CHARACTER_LEVEL_UP,
-			RTRuntimeGetWorldByCharacter(Runtime, Character),
-			kEntityIDNull,
-			Character->ID,
-			Character->Movement.PositionCurrent.X,
-			Character->Movement.PositionCurrent.Y
-		);
+		for (Index Index = 0; Index < LevelDiff; Index += 1) {
+			RTRuntimeBroadcastEvent(
+				Runtime,
+				RUNTIME_EVENT_CHARACTER_LEVEL_UP,
+				RTRuntimeGetWorldByCharacter(Runtime, Character),
+				kEntityIDNull,
+				Character->ID,
+				Character->Movement.PositionCurrent.X,
+				Character->Movement.PositionCurrent.Y
+			);
+		}
     }
 }
 

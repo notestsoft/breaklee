@@ -58,7 +58,7 @@ typedef struct {
     GAME_DATA_CHARACTER_ACHIEVEMENT AchievementData;
     struct _RTCharacterEssenceAbilityInfo EssenceAbilityData;
     GAME_DATA_CHARACTER_BLENDEDABILITY BlendedAbilityData;
-    GAME_DATA_CHARACTER_HONORMEDAL HonorMedalData;
+    struct _RTCharacterHonorMedalInfo HonorMedalData;
     struct _RTCharacterOverlordMasteryInfo OverlordData;
     struct _RTCharacterForceWingInfo ForceWingData;
     GAME_DATA_CHARACTER_TRANSFORM TransformData;

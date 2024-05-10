@@ -5,7 +5,7 @@ RUNTIME_DATA_TYPE_BEGIN(HonorMedalMain, "honor_medal_main.medal_main", 1)
 	RUNTIME_DATA_PROPERTY(Int32, Type, "type")
 	RUNTIME_DATA_PROPERTY(UInt64, RequiredHonorPoint, "needs")
 RUNTIME_DATA_TYPE_END(HonorMedalMain)
-RUNTIME_DATA_TYPE_INDEX_SINGLE(HonorMedalMain)
+RUNTIME_DATA_TYPE_INDEX(HonorMedalMain, Int32, Category)
 
 RUNTIME_DATA_TYPE_BEGIN(HonorMedalBasicCategory, "honor_medal_main.honor_medal_basic.medal_category", 1)
 	RUNTIME_DATA_PROPERTY(Int32, Category, "category")
@@ -16,6 +16,7 @@ RUNTIME_DATA_TYPE_BEGIN(HonorMedalBasicCategory, "honor_medal_main.honor_medal_b
 	RUNTIME_DATA_TYPE_END_CHILD(HonorMedalBasicMedal, 8)
 RUNTIME_DATA_TYPE_END(HonorMedalBasicCategory)
 RUNTIME_DATA_TYPE_INDEX(HonorMedalBasicCategory, Int32, Category)
+RUNTIME_DATA_TYPE_INDEX_CHILD(HonorMedalBasicCategory, HonorMedalBasicMedal, Int32, Group)
 
 RUNTIME_DATA_TYPE_BEGIN(HonorMedalScoreCategory, "honor_medal_main.honor_medal_score.medal_category", 1)
 	RUNTIME_DATA_PROPERTY(Int32, Category, "category")
@@ -38,6 +39,7 @@ RUNTIME_DATA_TYPE_BEGIN(HonorMedalSlotCountCategory, "honor_medal_main.honor_med
 	RUNTIME_DATA_TYPE_END_CHILD(HonorMedalSlotCountMedal, 8)
 RUNTIME_DATA_TYPE_END(HonorMedalSlotCountCategory)
 RUNTIME_DATA_TYPE_INDEX(HonorMedalSlotCountCategory, Int32, Category)
+RUNTIME_DATA_TYPE_INDEX_CHILD(HonorMedalSlotCountCategory, HonorMedalSlotCountMedal, Int32, Group)
 
 RUNTIME_DATA_TYPE_BEGIN(HonorMedalSlotOpenCategory, "honor_medal_main.honor_medal_slot_open.medal_category", 1)
 	RUNTIME_DATA_PROPERTY(Int32, Category, "category")

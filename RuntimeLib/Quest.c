@@ -195,7 +195,16 @@ Bool RTCharacterQuestClear(
 	if (!Quest) return false;
 	if (QuestSlot->NpcActionIndex < 0 || QuestSlot->NpcActionIndex >= Quest->NpcSet.Count) return false;
 
-	RTQuestNpcDataRef QuestNpc = &Quest->NpcSet.Npcs[QuestSlot->NpcActionIndex];
+	RTQuestNpcDataRef QuestNpc = NULL;
+	for (Int32 Index = 0; Index < Quest->NpcSet.Count; Index += 1) {
+		if (Quest->NpcSet.Npcs[Index].NpcActionOrder != QuestSlot->NpcActionIndex) continue;
+
+		QuestNpc = &Quest->NpcSet.Npcs[Index];
+		break;
+	}
+
+	if (!QuestNpc) return false;
+
 	RTNpcRef Npc = RTRuntimeGetNpcByWorldNpcID(Runtime, QuestNpc->WorldID, QuestNpc->NpcID);
 	if (!Npc) return false;
 

@@ -193,7 +193,7 @@ struct _RTCharacterLevel {
 struct _RTCharacterHonor {
     Int8 Rank;
     Int64 Point;
-    UInt64 Exp;
+    Int64 Exp;
 };
 
 struct _RTCharacterAbility {
@@ -318,6 +318,7 @@ Void RTCharacterInitialize(
     RTCharacterDungeonQuestFlagInfoRef DungeonQuestFlagInfo,
     RTCharacterEssenceAbilityInfoRef EssenceAbilityInfo,
     RTCharacterOverlordMasteryInfoRef OverlordMasteryInfo,
+    RTCharacterHonorMedalInfoRef HonorMedalInfo,
     RTCharacterForceWingInfoRef ForceWingInfo,
     RTCharacterCollectionInfoRef CollectionInfo,
     RTCharacterNewbieSupportInfoRef NewbieSupportInfo,

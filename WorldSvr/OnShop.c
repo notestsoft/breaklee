@@ -172,7 +172,7 @@ CLIENT_PROCEDURE_BINDING(GET_SHOP_DATA) {
         ItemIndex->ItemID = ItemData->ItemID;
         ItemIndex->ItemOptions = ItemData->ItemOption;
         ItemIndex->MinHonorRank = (Int8)ItemData->MinHonorRank;
-        ItemIndex->MaxHonorRank = 20; // TODO: Add configuration for max honor rank
+        ItemIndex->MaxHonorRank = 30; // TODO: Add configuration for max honor rank
         ItemIndex->AlzPrice = ItemData->Price;
         ItemIndex->DpPrice = (UInt16)ItemData->DpPrice;
         ItemIndex->WexpPrice = ItemData->WexpPrice;

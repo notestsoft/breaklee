@@ -195,7 +195,7 @@ Bool MasterDBInsertCharacter(
     StatementBindParameterBinary(Statement, 11, &Data->AchievementData, sizeof(GAME_DATA_CHARACTER_ACHIEVEMENT));
     StatementBindParameterBinary(Statement, 12, &Data->EssenceAbilityData, sizeof(struct _RTCharacterEssenceAbilityInfo));
     StatementBindParameterBinary(Statement, 13, &Data->BlendedAbilityData, sizeof(GAME_DATA_CHARACTER_BLENDEDABILITY));
-    StatementBindParameterBinary(Statement, 14, &Data->HonorMedalData, sizeof(GAME_DATA_CHARACTER_HONORMEDAL));
+    StatementBindParameterBinary(Statement, 14, &Data->HonorMedalData, sizeof(struct _RTCharacterHonorMedalInfo));
     StatementBindParameterBinary(Statement, 15, &Data->OverlordData, sizeof(struct _RTCharacterOverlordMasteryInfo));
     StatementBindParameterBinary(Statement, 16, &Data->ForceWingData, sizeof(struct _RTCharacterForceWingInfo));
     StatementBindParameterBinary(Statement, 17, &Data->TransformData, sizeof(GAME_DATA_CHARACTER_TRANSFORM));
@@ -234,7 +234,7 @@ Bool MasterDBSelectCharacterByID(
     StatementReadResultBinary(Statement, 12, sizeof(GAME_DATA_CHARACTER_ACHIEVEMENT), &Data->AchievementData, NULL);
     StatementReadResultBinary(Statement, 13, sizeof(struct _RTCharacterEssenceAbilityInfo), &Data->EssenceAbilityData, NULL);
     StatementReadResultBinary(Statement, 14, sizeof(GAME_DATA_CHARACTER_BLENDEDABILITY), &Data->BlendedAbilityData, NULL);
-    StatementReadResultBinary(Statement, 15, sizeof(GAME_DATA_CHARACTER_HONORMEDAL), &Data->HonorMedalData, NULL);
+    StatementReadResultBinary(Statement, 15, sizeof(struct _RTCharacterHonorMedalInfo), &Data->HonorMedalData, NULL);
     StatementReadResultBinary(Statement, 16, sizeof(struct _RTCharacterOverlordMasteryInfo), &Data->OverlordData, NULL);
     StatementReadResultBinary(Statement, 17, sizeof(struct _RTCharacterForceWingInfo), &Data->ForceWingData, NULL);
     StatementReadResultBinary(Statement, 18, sizeof(GAME_DATA_CHARACTER_TRANSFORM), &Data->TransformData, NULL);
@@ -284,7 +284,7 @@ Bool MasterDBSelectCharacterFetchNext(
     StatementReadResultBinary(Statement, 12, sizeof(GAME_DATA_CHARACTER_ACHIEVEMENT), &Result->AchievementData, NULL);
     StatementReadResultBinary(Statement, 13, sizeof(struct _RTCharacterEssenceAbilityInfo), &Result->EssenceAbilityData, NULL);
     StatementReadResultBinary(Statement, 14, sizeof(GAME_DATA_CHARACTER_BLENDEDABILITY), &Result->BlendedAbilityData, NULL);
-    StatementReadResultBinary(Statement, 15, sizeof(GAME_DATA_CHARACTER_HONORMEDAL), &Result->HonorMedalData, NULL);
+    StatementReadResultBinary(Statement, 15, sizeof(struct _RTCharacterHonorMedalInfo), &Result->HonorMedalData, NULL);
     StatementReadResultBinary(Statement, 16, sizeof(struct _RTCharacterOverlordMasteryInfo), &Result->OverlordData, NULL);
     StatementReadResultBinary(Statement, 17, sizeof(struct _RTCharacterForceWingInfo), &Result->ForceWingData, NULL);
     StatementReadResultBinary(Statement, 18, sizeof(GAME_DATA_CHARACTER_TRANSFORM), &Result->TransformData, NULL);
@@ -478,11 +478,12 @@ Bool MasterDBUpdateCharacterBlendedAbilityData(
 
 Bool MasterDBUpdateCharacterHonorMedalData(
     DatabaseRef Database,
-    MASTERDB_DATA_CHARACTER* Data
+    Int32 CharacterID,
+    RTCharacterHonorMedalInfoRef Data
 ) {
     StatementRef Statement = MasterDBGetStatement(Database, MASTERDB_UPDATE_CHARACTER_HONORMEDAL_DATA);
-    StatementBindParameterBinary(Statement, 0, &Data->HonorMedalData, sizeof(GAME_DATA_CHARACTER_HONORMEDAL));
-    StatementBindParameterInt32(Statement, 1, Data->CharacterID);
+    StatementBindParameterBinary(Statement, 0, Data, sizeof(struct _RTCharacterHonorMedalInfo));
+    StatementBindParameterInt32(Statement, 1, CharacterID);
 
     return StatementExecute(Statement);
 }

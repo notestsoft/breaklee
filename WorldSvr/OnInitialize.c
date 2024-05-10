@@ -283,7 +283,18 @@ IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER) {
         MasterySlot->Level = Packet->Character.OverlordData.Slots[Index].Level;
     }
 
-    // HonorMedalCount
+    Response->UnknownMeritMasteryCount = 0;
+
+    Response->HonorMedalExp = Packet->Character.HonorMedalData.Score;
+    Response->HonorMedalCount = Packet->Character.HonorMedalData.SlotCount;
+    for (Int32 Index = 0; Index < Packet->Character.HonorMedalData.SlotCount; Index += 1) {
+        S2C_DATA_HONOR_MEDAL_SLOT* Slot = PacketBufferAppendStruct(ClientConnection->PacketBuffer, S2C_DATA_HONOR_MEDAL_SLOT);
+        Slot->CategoryIndex = Packet->Character.HonorMedalData.Slots[Index].CategoryIndex;
+        Slot->GroupIndex = Packet->Character.HonorMedalData.Slots[Index].GroupIndex;
+        Slot->SlotIndex = Packet->Character.HonorMedalData.Slots[Index].SlotIndex;
+        Slot->ForceEffectIndex = Packet->Character.HonorMedalData.Slots[Index].ForceEffectIndex;
+        Slot->IsUnlocked = Packet->Character.HonorMedalData.Slots[Index].IsUnlocked;
+    }
 
     Response->ForceWingGrade = Packet->Character.ForceWingData.Grade;
     Response->ForceWingLevel = Packet->Character.ForceWingData.Level;
@@ -381,6 +392,7 @@ IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER) {
         &Packet->Character.DungeonQuestFlagData,
         &Packet->Character.EssenceAbilityData,
         &Packet->Character.OverlordData,
+        &Packet->Character.HonorMedalData,
         &Packet->Character.ForceWingData,
         &Packet->Character.CollectionData,
         &Packet->Character.NewbieSupportData,
@@ -440,7 +452,6 @@ IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER) {
     Response->Unknown1[55] = 1;
     Response->Unknown1[58] = 20;
     */
-    Response->Nation = 3;
     Response->MapsMask = 2101247;
     Response->WarpMask = 2101247;
     //memset(Response->DungeonFlagInfo.Flags, 0xFF, 640);

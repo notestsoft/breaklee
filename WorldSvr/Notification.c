@@ -504,6 +504,11 @@ Void ServerRuntimeOnEvent(
                 Notification->Rage = Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT];
             }
 
+            if (Notification->Type == S2C_DATA_CHARACTER_UPDATE_TYPE_HONOR_MEDAL) {
+                Notification->HonorMedalGrade = RTCharacterGetHonorMedalGrade(Runtime, Character, 0);
+                Notification->HonorPoints = Character->Info.Honor.Point;
+            }
+
             // TODO: Add missing types of updates...
             // TODO: This can cause the client to close... but the packet length is correct!
             SocketSend(Context->ClientSocket, Client->Connection, Notification);

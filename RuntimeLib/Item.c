@@ -363,6 +363,12 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemImmediateReward) {
 
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_WAREXP:
 		UNIMPLEMENTED;
+		
+	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_MEDALSCORE:
+		if (!RTCharacterAddHonorMedalScore(Runtime, Character, 0, ItemSlot->ItemOptions)) {
+			return RUNTIME_ITEM_USE_RESULT_FAILED;
+		}
+		break;
 
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_OXP: {
 		if (Character->Info.Overlord.Level < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
@@ -378,7 +384,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemImmediateReward) {
 	RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
 
 	Character->SyncMask.InventoryInfo = true;
-	Character->SyncPriority.Low = true;
+	Character->SyncPriority.High = true;
 
     return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
@@ -819,6 +825,12 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
 
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_WAREXP:
 		UNIMPLEMENTED;
+
+	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_MEDALSCORE:
+		if (!RTCharacterAddHonorMedalScore(Runtime, Character, 0, TotalAmount)) {
+			return RUNTIME_ITEM_USE_RESULT_FAILED;
+		}
+		break;
 
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_OXP: {
 		if (Character->Info.Overlord.Level < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;

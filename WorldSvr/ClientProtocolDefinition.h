@@ -178,6 +178,14 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_BLESSING_BEAD_SLOT,
     UInt32 Unknown2;
 )
 
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_HONOR_MEDAL_SLOT,
+    UInt8 CategoryIndex;
+    UInt8 GroupIndex;
+    UInt32 SlotIndex;
+    UInt32 ForceEffectIndex;
+    UInt8 IsUnlocked;
+)
+
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_OVERLORD_MASTERY_SLOT,
     UInt8 MasteryIndex;
     UInt8 Level;
@@ -1241,6 +1249,7 @@ CLIENT_PROTOCOL_ENUM(
     S2C_DATA_CHARACTER_UPDATE_TYPE_RAGE             = 20,
 
     S2C_DATA_CHARACTER_UPDATE_TYPE_OVERLORD_LEVEL   = 22,
+    S2C_DATA_CHARACTER_UPDATE_TYPE_HONOR_MEDAL      = 23,
 
     S2C_DATA_CHARACTER_UPDATE_TYPE_BP               = 24,
 )
@@ -1258,6 +1267,7 @@ CLIENT_PROTOCOL(S2C, NFY_CHARACTER_DATA, DEFAULT, 287,
         struct { UInt8 _11[34]; UInt32 BP; UInt8 _12[8]; };
         struct { UInt8 _13[34]; UInt32 BuffResult; UInt8 _14[8]; };
         struct { UInt8 _15[34]; UInt32 SkillRank; UInt8 _16[8]; };
+        struct { UInt8 _17[22]; UInt32 HonorMedalGrade; UInt8 _18[8]; Int64 HonorPoints; UInt8 _19[4]; };
     };
 )
 
@@ -2946,6 +2956,22 @@ CLIENT_PROTOCOL(C2S, EXTREME_UPGRADE_SEAL, DEFAULT, 2769,
 CLIENT_PROTOCOL(S2C, EXTREME_UPGRADE_SEAL, DEFAULT, 2769,
     Int32 IsUnsealing;
     RTItem ItemID;
+)
+
+CLIENT_PROTOCOL(C2S, HONOR_MEDAL_UNLOCK_SLOT, DEFAULT, 2770,
+    UInt8 CategoryIndex;
+    UInt8 GroupIndex;
+    UInt32 SlotIndex;
+    UInt16 MaterialSlotCount1;
+    UInt16 MaterialSlotCount2;
+    UInt16 MaterialSlotIndex[0]; // MaterialSlotCount1 + MaterialSlotCount2
+)
+
+CLIENT_PROTOCOL(S2C, HONOR_MEDAL_UNLOCK_SLOT, DEFAULT, 2770,
+    UInt8 CategoryIndex;
+    UInt8 GroupIndex;
+    UInt32 SlotIndex;
+    UInt32 Result;
 )
 
 CLIENT_PROTOCOL(C2S, CHAOS_UPGRADE_SEAL, DEFAULT, 2787,

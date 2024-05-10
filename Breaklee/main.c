@@ -83,6 +83,13 @@ Int32 main(
     Int32 ArgumentCount,
     CString* Arguments
 ) {
+    DiagnosticSetup(
+        stdout,
+        LOG_LEVEL_TRACE,
+        NULL,
+        NULL
+    );
+
     if (ArgumentCount < 2) {
         Error("Missing argument `pattern`");
         goto error;
