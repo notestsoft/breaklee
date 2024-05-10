@@ -312,9 +312,9 @@ struct _RTItemOptions {
 		} DivineSeal;
 
 		struct {
-			UInt16 ItemID;
+			UInt16 ItemLevel;
 			UInt16 ItemGrade;
-			UInt16 ItemType;
+			UInt32 ItemType;
 		} ChaosSeal;
 	};
 };
