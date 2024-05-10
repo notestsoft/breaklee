@@ -1224,7 +1224,7 @@ Bool ServerLoadWorldData(
                 memset(Mob, 0, sizeof(struct _RTMob));
 
                 //Mob->ID.EntityIndex = ArrayGetElementCount(World->MobTable);
-                if (!ParseAttributeIndex(Archive, ChildIterator->Index, "order", &Mob->ID.EntityIndex)) goto error;
+                if (!ParseAttributeUInt16(Archive, ChildIterator->Index, "order", &Mob->ID.EntityIndex)) goto error;
                 Mob->ID.WorldIndex = World->WorldIndex;
                 Mob->ID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
 

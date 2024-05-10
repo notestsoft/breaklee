@@ -29,6 +29,7 @@ IPC_PROCEDURE_BINDING(W2M, CREATE_CHARACTER) {
 		return;
 	}
 
+	memset(Character, 0, sizeof(MASTERDB_DATA_CHARACTER));
 	Character->AccountID = Account->AccountID;
 	CStringCopySafe(Character->Name, MAX_CHARACTER_NAME_LENGTH + 1, Packet->Name);
 	Character->Index = Packet->SlotIndex;

@@ -2,6 +2,21 @@
 #include "HonorMedal.h"
 #include "Runtime.h"
 
+Int32 RTRuntimeGetHonorMedalMaxScore(
+    RTRuntimeRef Runtime,
+    Int32 CategoryIndex
+) {
+    RTDataHonorMedalScoreCategoryRef Category = RTRuntimeDataHonorMedalScoreCategoryGet(Runtime->Context, CategoryIndex);
+    if (!Category) return 0;
+
+    Int32 Score = 0;
+    for (Index Index = 0; Index < Category->HonorMedalScoreMedalCount; Index += 1) {
+        Score = MAX(Score, Category->HonorMedalScoreMedalList[Index].AccumulatedRequiredScore);
+    }
+
+    return Score;
+}
+
 Bool RTCharacterIsHonorMedalUnlocked(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
@@ -10,7 +25,7 @@ Bool RTCharacterIsHonorMedalUnlocked(
     RTDataHonorMedalMainRef HonorMedalMain = RTRuntimeDataHonorMedalMainGet(Runtime->Context, CategoryIndex);
     if (!HonorMedalMain) return false;
     
-    return Character->Info.Honor.Exp >= HonorMedalMain->RequiredHonorPoint;
+    return Character->Info.Honor.Point >= HonorMedalMain->RequiredHonorPoint;
 }
 
 Bool RTCharacterAddHonorMedalScore(
@@ -23,7 +38,9 @@ Bool RTCharacterAddHonorMedalScore(
     
     if (!RTCharacterIsHonorMedalUnlocked(Runtime, Character, CategoryIndex)) return false;
 
-    Character->HonorMedalInfo.Score += Score;
+    Int32 MaxScore = RTRuntimeGetHonorMedalMaxScore(Runtime, CategoryIndex);
+
+    Character->HonorMedalInfo.Score = MIN(MaxScore, Character->HonorMedalInfo.Score + Score);
     Character->SyncMask.HonorMedalInfo = true;
     Character->SyncPriority.High = true;
 
