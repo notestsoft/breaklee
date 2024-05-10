@@ -546,7 +546,7 @@ CLIENT_PROCEDURE_BINDING(CHAOS_UPGRADE_SEAL) {
 	else {
 		if (TargetSlot->Item.UpgradeLevel < 1) goto error;
 
-		SourceItemOptions.ChaosSeal.ItemLevel = TargetSlot->Item.DivineLevel;
+		SourceItemOptions.ChaosSeal.ItemLevel = TargetSlot->Item.UpgradeLevel;
 		SourceItemOptions.ChaosSeal.ItemGrade = TargetData->ItemGrade;
 		SourceItemOptions.ChaosSeal.ItemType = TargetData->ItemType;
 		SourceSlot->ItemOptions = SourceItemOptions.Serial;
