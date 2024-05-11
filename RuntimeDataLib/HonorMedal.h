@@ -84,9 +84,10 @@ RUNTIME_DATA_TYPE_INDEX(HonorMedalValueCategory, Int32, Category)
 
 RUNTIME_DATA_TYPE_BEGIN(HonorMedalSeal, "honor_medal_main.honor_medal_seal.medal_seal", 64)
 	RUNTIME_DATA_PROPERTY(Int32, Option, "option")
-	RUNTIME_DATA_PROPERTY(Int32, ForceID, "force_id")
+	RUNTIME_DATA_PROPERTY(Int32, ForceEffectIndex, "force_id")
 RUNTIME_DATA_TYPE_END(HonorMedalSeal)
 RUNTIME_DATA_TYPE_INDEX(HonorMedalSeal, Int32, Option)
+RUNTIME_DATA_TYPE_INDEX_SUFFIXED(HonorMedalSeal, ByForceID, Int32, ForceEffectIndex)
 
 RUNTIME_DATA_FILE_END
 

@@ -94,7 +94,7 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_ROLL_SLOT) {
     RTDataHonorMedalSlotPriceCategoryRef PriceCategory = RTRuntimeDataHonorMedalSlotPriceCategoryGet(Runtime->Context, Packet->CategoryIndex);
     if (!PriceCategory) goto error;
 
-    RTDataHonorMedalSlotPriceMedalRef PriceMedal = RTRuntimeDataHonorMedalSlotCountMedalGet(PriceCategory, Packet->GroupIndex);
+    RTDataHonorMedalSlotPriceMedalRef PriceMedal = RTRuntimeDataHonorMedalSlotPriceMedalGet(PriceCategory, Packet->GroupIndex);
     if (!PriceMedal) goto error;
 
     RTDataHonorMedalUpgradeCategoryRef Category = RTRuntimeDataHonorMedalUpgradeCategoryGet(Runtime->Context, Packet->CategoryIndex);
@@ -136,4 +136,95 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_ROLL_SLOT) {
 
 error:
     SocketDisconnect(Socket, Connection);
+}
+
+CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_SEALING) {
+    if (!Character) goto error;
+
+    RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+    if (!ItemSlot) goto error;
+
+    RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
+    if (!ItemData) goto error;
+
+    if (ItemData->ItemType != RUNTIME_ITEM_TYPE_MEDAL_SEAL_STONE) goto error;
+
+    S2C_DATA_HONOR_MEDAL_SEALING* Response = PacketBufferInit(Connection->PacketBuffer, S2C, HONOR_MEDAL_SEALING);
+    Response->Result = S2C_CHAOS_HONOR_MEDAL_SEAL_RESULT_ERROR;
+
+    Bool IsSealing = Packet->GroupIndex > 0;
+    if (IsSealing) {
+        if (ItemSlot->ItemOptions > 0) goto error;
+
+        Int32 CategoryIndex = 0;
+        RTDataHonorMedalSlotCountCategoryRef SlotCountCategory = RTRuntimeDataHonorMedalSlotCountCategoryGet(Runtime->Context, CategoryIndex);
+        if (!SlotCountCategory) goto error;
+
+        RTDataHonorMedalSlotCountMedalRef SlotCountMedal = RTRuntimeDataHonorMedalSlotCountMedalGet(SlotCountCategory, Packet->GroupIndex);
+        if (!SlotCountMedal) goto error;
+        if (SlotCountMedal->SlotCount > RUNTIME_CHARACTER_MAX_HONOR_MEDAL_SEAL_SLOT_COUNT) goto error;
+
+        RTItemHonorMedalSealData SealData = { 0 };
+        SealData.Group = Packet->GroupIndex;
+
+        for (Index SlotIndex = 0; SlotIndex < SlotCountMedal->SlotCount; SlotIndex += 1) {
+            RTHonorMedalSlotRef MedalSlot = RTCharacterGetHonorMedalSlot(Runtime, Character, CategoryIndex, Packet->GroupIndex, SlotIndex);
+            if (!MedalSlot) continue;
+            if (!MedalSlot->IsUnlocked) continue;
+
+            SealData.ForceEffectIndex[SlotIndex] = MedalSlot->ForceEffectIndex;
+            MedalSlot->ForceEffectIndex = 0;
+        }
+
+        ItemSlot->ItemOptions = RTItemHonorMedalSealEncode(Runtime, SealData);
+        Character->SyncMask.HonorMedalInfo = true;
+        Character->SyncMask.InventoryInfo = true;
+        Character->SyncPriority.High = true;
+
+        Response->Result = S2C_CHAOS_HONOR_MEDAL_SEAL_RESULT_SEAL;
+        Response->ItemSerial = ItemSlot->ItemOptions;
+    }
+    else {
+        RTItemHonorMedalSealData SealData = RTItemHonorMedalSealDecode(Runtime, ItemSlot->ItemOptions);
+        if (SealData.Group < 1) goto error;
+
+        Int32 CategoryIndex = 0;
+        RTDataHonorMedalSlotCountCategoryRef SlotCountCategory = RTRuntimeDataHonorMedalSlotCountCategoryGet(Runtime->Context, CategoryIndex);
+        if (!SlotCountCategory) goto error;
+
+        RTDataHonorMedalSlotCountMedalRef SlotCountMedal = RTRuntimeDataHonorMedalSlotCountMedalGet(SlotCountCategory, SealData.Group);
+        if (!SlotCountMedal) goto error;
+
+        for (Index SlotIndex = 0; SlotIndex < SlotCountMedal->SlotCount; SlotIndex += 1) {
+            RTHonorMedalSlotRef MedalSlot = RTCharacterGetHonorMedalSlot(Runtime, Character, CategoryIndex, SealData.Group, SlotIndex);
+            if (!MedalSlot) goto error;
+            if (!MedalSlot->IsUnlocked) goto error;
+            if (MedalSlot->ForceEffectIndex > 0) goto error;
+        }
+
+        for (Index SlotIndex = 0; SlotIndex < SlotCountMedal->SlotCount; SlotIndex += 1) {
+            RTHonorMedalSlotRef MedalSlot = RTCharacterGetHonorMedalSlot(Runtime, Character, CategoryIndex, SealData.Group, SlotIndex);
+            assert(MedalSlot && MedalSlot->IsUnlocked);
+
+            MedalSlot->ForceEffectIndex = SealData.ForceEffectIndex[SlotIndex];
+        }
+
+        RTInventoryClearSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+        Character->SyncMask.HonorMedalInfo = true;
+        Character->SyncMask.InventoryInfo = true;
+        Character->SyncPriority.High = true;
+
+        Response->Result = S2C_CHAOS_HONOR_MEDAL_SEAL_RESULT_UNSEAL;
+        Response->ItemSerial = 0;
+    }
+
+    SocketSend(Socket, Connection, Response);
+    return;
+
+error:
+    {
+        S2C_DATA_HONOR_MEDAL_SEALING* Response = PacketBufferInit(Connection->PacketBuffer, S2C, HONOR_MEDAL_SEALING);
+        Response->Result = S2C_CHAOS_HONOR_MEDAL_SEAL_RESULT_ERROR;
+        SocketSend(Socket, Connection, Response);
+    }
 }

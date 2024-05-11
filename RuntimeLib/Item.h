@@ -323,6 +323,20 @@ struct _RTItemOptions {
 			UInt16 ItemGrade;
 			UInt32 ItemType;
 		} ChaosSeal;
+
+		struct {
+			UInt8 Slot1 : 6;
+			UInt8 Slot2 : 6;
+			UInt8 Slot3 : 6;
+			UInt8 Slot4 : 6;
+			UInt8 Slot5 : 6;
+			UInt8 Slot6 : 6;
+			UInt8 Slot7 : 6;
+			UInt8 Slot8 : 6;
+			UInt8 Slot9 : 6;
+			UInt8 Slot10 : 6;
+			UInt8 Group : 4;
+		} HonorMedalSeal;
 	};
 };
 typedef struct _RTItemOptions RTItemOptions;
@@ -359,6 +373,12 @@ struct _RTItemProperty {
 };
 typedef struct _RTItemProperty RTItemProperty;
 
+struct _RTItemHonorMedalSealData {
+	Int32 Group;
+	Int32 ForceEffectIndex[RUNTIME_CHARACTER_MAX_HONOR_MEDAL_SEAL_SLOT_COUNT];
+};
+typedef struct _RTItemHonorMedalSealData RTItemHonorMedalSealData;
+
 struct _RTItemSlot {
     RTItem Item;
     UInt64 ItemSerial;
@@ -373,7 +393,15 @@ struct _RTItemSlotAppearance {
     UInt32 Duration;
 };
 
-#pragma pack(pop)
+RTItemHonorMedalSealData RTItemHonorMedalSealDecode(
+	RTRuntimeRef Runtime,
+	UInt64 Serial
+);
+
+UInt64 RTItemHonorMedalSealEncode(
+	RTRuntimeRef Runtime,
+	RTItemHonorMedalSealData Data
+);
 
 Int32 RTItemUseInternal(
 	RTRuntimeRef Runtime,
@@ -424,5 +452,15 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemDivineConverter);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemChaosConverter);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHolyWater);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion);
+
+struct _RTItemHonorMedalResetSelectivePayload {
+	UInt8 CategoryIndex;
+	UInt8 GroupIndex;
+	Int32 SlotIndex;
+};
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHonorMedalResetSelective);
+
+#pragma pack(pop)
 
 EXTERN_C_END

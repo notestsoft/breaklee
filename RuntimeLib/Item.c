@@ -91,6 +91,41 @@ Void RTCharacterApplyItemUpgradeForceEffect(
 		*/
 }
 
+RTItemHonorMedalSealData RTItemHonorMedalSealDecode(
+	RTRuntimeRef Runtime,
+	UInt64 Serial
+) {
+	RTItemHonorMedalSealData Data = { 0 };
+	Data.Group = (Serial >> 60) & 0xF;
+
+	for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_HONOR_MEDAL_SEAL_SLOT_COUNT; Index += 1) {
+		UInt8 Option = (Serial >> (Index * 6)) & 0b111111;
+		RTDataHonorMedalSealRef Seal = RTRuntimeDataHonorMedalSealGet(Runtime->Context, Option);
+		if (!Seal) continue;
+
+		Data.ForceEffectIndex[Index] = (Seal) ? Seal->ForceEffectIndex : 0;
+	}
+
+	return Data;
+}
+
+UInt64 RTItemHonorMedalSealEncode(
+	RTRuntimeRef Runtime,
+	RTItemHonorMedalSealData Data
+) {
+	UInt64 Serial = 0;
+
+	for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_HONOR_MEDAL_SEAL_SLOT_COUNT; Index += 1) {
+		RTDataHonorMedalSealRef Seal = RTRuntimeDataHonorMedalSealGetByForceID(Runtime->Context, Data.ForceEffectIndex[Index]);
+		if (!Seal) continue;
+
+		Serial |= (((UInt64)Seal->Option & 0b111111) << (Index * 6));
+	}
+
+	Serial |= ((UInt64)Data.Group & 0xF) << 60;
+	return Serial;
+}
+
 Int32 RTItemUseInternal(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
@@ -859,6 +894,22 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
 
 	Character->SyncMask.InventoryInfo = true;
 	Character->SyncPriority.Low = true;
+
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+}
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHonorMedalResetSelective) {
+	struct _RTItemHonorMedalResetSelectivePayload* Data = (struct _RTItemHonorMedalResetSelectivePayload*)Payload;
+	
+	RTHonorMedalSlotRef MedalSlot = RTCharacterGetHonorMedalSlot(Runtime, Character, Data->CategoryIndex, Data->GroupIndex, Data->SlotIndex);
+	if (!MedalSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	MedalSlot->ForceEffectIndex = 0;
+	RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+
+	Character->SyncMask.InventoryInfo = true;
+	Character->SyncMask.HonorMedalInfo = true;
+	Character->SyncPriority.High = true;
 
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }

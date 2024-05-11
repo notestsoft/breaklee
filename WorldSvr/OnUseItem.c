@@ -27,6 +27,7 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM) {
 
 		Info("Use Item ItemType: %d", ItemData->ItemType);
 		// TODO: Check if it is a general option of an item that it been consumed from the inventory
+		// TODO: CHeck if Packet->Data length is matching the expected payload length
 
 		#define RUNTIME_ITEM_PROCEDURE(__NAME__, __TYPE__, __INTERNAL__)	\
 		if (ItemData->ItemType == __TYPE__) {								\
@@ -36,7 +37,7 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM) {
 				Character,													\
 				ItemSlot,													\
 				ItemData,													\
-				Packet->Data												\
+				&Packet->Data[0]										    \
 			);																\
 		}
 		#include <RuntimeLib/ItemProcDefinition.h>
@@ -232,7 +233,7 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM_SAVER) {
 		for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
 			RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlots[Index].InventorySlotIndex);
 			assert(ItemSlot);
-			ItemSlot->ItemOptions |= Packet->InventorySlots[Index].Amount << 16;
+			ItemSlot->ItemOptions |= (UInt64)Packet->InventorySlots[Index].Amount << 16;
 		}
 	}
 	else {
