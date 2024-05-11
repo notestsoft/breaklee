@@ -443,7 +443,7 @@ IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER) {
     Response->CurrentSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
     Response->CurrentBP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT];
     Response->CurrentRage = Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT];
-    
+
     /*
     Response->Unknown7[0] = 113;
     Response->Unknown7[1] = 201;

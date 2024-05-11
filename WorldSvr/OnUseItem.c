@@ -127,12 +127,131 @@ CLIENT_PROCEDURE_BINDING(CONVERT_ITEM) {
         Response
     );
     
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
 	{
 		S2C_DATA_CONVERT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CONVERT_ITEM);
 		Response->Result = 1;
-		return SocketSend(Socket, Connection, Response);
+		SocketSend(Socket, Connection, Response);
+		return;
 	}
+}
+
+CLIENT_PROCEDURE_BINDING(USE_ITEM_SAVER) {
+	S2C_DATA_USE_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, USE_ITEM);
+	Response->Result = S2C_DATA_USE_ITEM_RESULT_FAILED;
+
+	Int32 PacketLength = sizeof(C2S_DATA_USE_ITEM_SAVER) + Packet->InventorySlotCount * sizeof(C2S_DATA_USE_ITEM_SAVER_INVENTORY_SLOT);
+	if (PacketLength < Packet->Length) goto error;
+
+	if (!Character) goto error;
+
+	if (Packet->InventorySlotCount < 1) goto error;
+
+	RTItemSlotRef FirstItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlots[0].InventorySlotIndex);
+	if (!FirstItemSlot) goto error;
+
+	RTItemDataRef FirstItemData = RTRuntimeGetItemDataByIndex(Runtime, FirstItemSlot->Item.ID);
+	if (!FirstItemData) goto error;
+	if (FirstItemData->ItemType != RUNTIME_ITEM_TYPE_SAVER) goto error;
+
+	Int32 FirstItemAmount = (FirstItemSlot->ItemOptions >> 16) & 0xFFFF;
+	Int32 FirstItemLimit = FirstItemSlot->ItemOptions & 0xFFFF;
+	Int32 FirstItemSubtype = FirstItemData->Options[0];
+	Bool FirstIsSaving = FirstItemAmount == 0;
+	Int32 TotalAmount = 0;
+
+	for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
+		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlots[Index].InventorySlotIndex);
+		if (!ItemSlot) goto error;
+
+		RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
+		if (!ItemData) goto error;
+		if (ItemData->ItemType != RUNTIME_ITEM_TYPE_SAVER) goto error;
+
+		Int32 ItemAmount = (ItemSlot->ItemOptions >> 16) & 0xFFFF;
+		Int32 ItemLimit = ItemSlot->ItemOptions & 0xFFFF;
+		Int32 ItemSubtype = ItemData->Options[0];
+		Bool IsSaving = ItemAmount == 0;
+
+		if (FirstIsSaving != IsSaving) goto error;
+		if (FirstItemSubtype != ItemSubtype) goto error;
+
+		if (!IsSaving && ItemAmount != Packet->InventorySlots[Index].Amount) goto error;
+		if (IsSaving && ItemLimit != Packet->InventorySlots[Index].Amount) goto error;
+
+		TotalAmount += Packet->InventorySlots[Index].Amount;
+	}
+
+	if (FirstIsSaving) {
+		switch (FirstItemSubtype) {
+		case RUNTIME_ITEM_SUBTYPE_SAVER_DP:
+			if (Character->Info.Resource.DP < TotalAmount) goto error;
+			Character->Info.Resource.DP -= TotalAmount;
+			// TODO: Notification for dp is missing!
+			break;
+
+		case RUNTIME_ITEM_SUBTYPE_SAVER_AP:
+			if (Character->Info.Ability.Point < TotalAmount) goto error;
+			Character->Info.Ability.Point -= TotalAmount;
+			break;
+
+		case RUNTIME_ITEM_SUBTYPE_SAVER_WEXP:
+			if (Character->Info.Honor.Exp < TotalAmount) goto error;
+			Character->Info.Honor.Exp -= TotalAmount;
+			break;
+
+		default:
+			goto error;
+		}
+	}
+	else {
+		switch (FirstItemSubtype) {
+		case RUNTIME_ITEM_SUBTYPE_SAVER_DP:
+			Character->Info.Resource.DP += TotalAmount;
+			break;
+
+		case RUNTIME_ITEM_SUBTYPE_SAVER_AP:
+			Character->Info.Ability.Point += TotalAmount;
+			break;
+
+		case RUNTIME_ITEM_SUBTYPE_SAVER_WEXP:
+			Character->Info.Honor.Exp += TotalAmount;
+			break;
+
+		default:
+			goto error;
+		}
+	}
+
+	Response->Result = S2C_DATA_USE_ITEM_RESULT_SUCCESS;
+
+	if (FirstIsSaving) {
+		for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
+			RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlots[Index].InventorySlotIndex);
+			assert(ItemSlot);
+			ItemSlot->ItemOptions |= Packet->InventorySlots[Index].Amount << 16;
+		}
+	}
+	else {
+		for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
+			RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlots[Index].InventorySlotIndex);
+			assert(ItemSlot);
+			RTInventoryClearSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlots[Index].InventorySlotIndex);
+		}
+	}
+
+	Character->SyncMask.Info = true;
+	Character->SyncMask.InventoryInfo = true;
+	Character->SyncPriority.High = true;
+
+	SocketSend(Socket, Connection, Response);
+	return;
+
+error:
+	Response->Result = S2C_DATA_USE_ITEM_RESULT_FAILED;
+	SocketSend(Socket, Connection, Response);
+	return;
 }

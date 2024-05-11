@@ -1,85 +1,87 @@
-<honor_medal_upgrade>
-    <honormedal_rate    group="1"    >
-        <medal force_id="1" rate="80" />
-        <medal force_id="2" rate="80" />
-        <medal force_id="6" rate="80" />
-        <medal force_id="7" rate="80" />
-        <medal force_id="37" rate="110" />
-        <medal force_id="38" rate="110" />
-        <medal force_id="45" rate="50" />
-        <medal force_id="46" rate="50" />
-        <medal force_id="47" rate="50" />
-        <medal force_id="73" rate="70" />
-        <medal force_id="74" rate="50" />
-        <medal force_id="36" rate="60" />
-        <medal force_id="79" rate="70" />
-        <medal force_id="78" rate="60" />
-    </honormedal_rate>
-    <honormedal_rate    group="2"    >
-        <medal force_id="2" rate="80" />
-        <medal force_id="5" rate="80" />
-        <medal force_id="6" rate="90" />
-        <medal force_id="7" rate="90" />
-        <medal force_id="37" rate="120" />
-        <medal force_id="38" rate="120" />
-        <medal force_id="113" rate="70" />
-        <medal force_id="127" rate="60" />
-        <medal force_id="39" rate="80" />
-        <medal force_id="98" rate="50" />
-        <medal force_id="112" rate="50" />
-        <medal force_id="71" rate="50" />
-        <medal force_id="72" rate="40" />
-        <medal force_id="8" rate="20" />
-    </honormedal_rate>
-    <honormedal_rate    group="3"    >
-        <medal force_id="1" rate="80" />
-        <medal force_id="2" rate="80" />
-        <medal force_id="6" rate="70" />
-        <medal force_id="7" rate="70" />
-        <medal force_id="71" rate="50" />
-        <medal force_id="72" rate="30" />
-        <medal force_id="73" rate="50" />
-        <medal force_id="5" rate="80" />
-        <medal force_id="78" rate="50" />
-        <medal force_id="113" rate="70" />
-        <medal force_id="98" rate="40" />
-        <medal force_id="101" rate="80" />
-        <medal force_id="102" rate="80" />
-        <medal force_id="103" rate="80" />
-        <medal force_id="112" rate="40" />
-        <medal force_id="114" rate="20" />
-        <medal force_id="79" rate="30" />
-    </honormedal_rate>
-    <honormedal_rate    group="4"    >
-        <medal force_id="2" rate="80" />
-        <medal force_id="5" rate="80" />
-        <medal force_id="6" rate="90" />
-        <medal force_id="7" rate="90" />
-        <medal force_id="71" rate="50" />
-        <medal force_id="72" rate="30" />
-        <medal force_id="73" rate="50" />
-        <medal force_id="80" rate="20" />
-        <medal force_id="112" rate="50" />
-        <medal force_id="113" rate="70" />
-        <medal force_id="128" rate="70" />
-        <medal force_id="127" rate="80" />
-        <medal force_id="129" rate="80" />
-        <medal force_id="130" rate="80" />
-        <medal force_id="131" rate="80" />
-    </honormedal_rate>
-    <honormedal_rate    group="5"    >
-        <medal force_id="1" rate="110" />
-        <medal force_id="5" rate="90" />
-        <medal force_id="6" rate="70" />
-        <medal force_id="7" rate="70" />
-        <medal force_id="71" rate="60" />
-        <medal force_id="79" rate="50" />
-        <medal force_id="73" rate="120" />
-        <medal force_id="139" rate="20" />
-        <medal force_id="81" rate="100" />
-        <medal force_id="113" rate="60" />
-        <medal force_id="127" rate="50" />
-        <medal force_id="83" rate="100" />
-        <medal force_id="85" rate="100" />
-    </honormedal_rate>
-</honor_medal_upgrade>
+<honor_medal>
+    <honor_medal_upgrade Category="0">
+        <honormedal_rate group="1">
+            <medal force_id="1" rate="80" />
+            <medal force_id="2" rate="80" />
+            <medal force_id="6" rate="80" />
+            <medal force_id="7" rate="80" />
+            <medal force_id="37" rate="110" />
+            <medal force_id="38" rate="110" />
+            <medal force_id="45" rate="50" />
+            <medal force_id="46" rate="50" />
+            <medal force_id="47" rate="50" />
+            <medal force_id="73" rate="70" />
+            <medal force_id="74" rate="50" />
+            <medal force_id="36" rate="60" />
+            <medal force_id="79" rate="70" />
+            <medal force_id="78" rate="60" />
+        </honormedal_rate>
+        <honormedal_rate group="2">
+            <medal force_id="2" rate="80" />
+            <medal force_id="5" rate="80" />
+            <medal force_id="6" rate="90" />
+            <medal force_id="7" rate="90" />
+            <medal force_id="37" rate="120" />
+            <medal force_id="38" rate="120" />
+            <medal force_id="113" rate="70" />
+            <medal force_id="127" rate="60" />
+            <medal force_id="39" rate="80" />
+            <medal force_id="98" rate="50" />
+            <medal force_id="112" rate="50" />
+            <medal force_id="71" rate="50" />
+            <medal force_id="72" rate="40" />
+            <medal force_id="8" rate="20" />
+        </honormedal_rate>
+        <honormedal_rate    group="3"    >
+            <medal force_id="1" rate="80" />
+            <medal force_id="2" rate="80" />
+            <medal force_id="6" rate="70" />
+            <medal force_id="7" rate="70" />
+            <medal force_id="71" rate="50" />
+            <medal force_id="72" rate="30" />
+            <medal force_id="73" rate="50" />
+            <medal force_id="5" rate="80" />
+            <medal force_id="78" rate="50" />
+            <medal force_id="113" rate="70" />
+            <medal force_id="98" rate="40" />
+            <medal force_id="101" rate="80" />
+            <medal force_id="102" rate="80" />
+            <medal force_id="103" rate="80" />
+            <medal force_id="112" rate="40" />
+            <medal force_id="114" rate="20" />
+            <medal force_id="79" rate="30" />
+        </honormedal_rate>
+        <honormedal_rate    group="4"    >
+            <medal force_id="2" rate="80" />
+            <medal force_id="5" rate="80" />
+            <medal force_id="6" rate="90" />
+            <medal force_id="7" rate="90" />
+            <medal force_id="71" rate="50" />
+            <medal force_id="72" rate="30" />
+            <medal force_id="73" rate="50" />
+            <medal force_id="80" rate="20" />
+            <medal force_id="112" rate="50" />
+            <medal force_id="113" rate="70" />
+            <medal force_id="128" rate="70" />
+            <medal force_id="127" rate="80" />
+            <medal force_id="129" rate="80" />
+            <medal force_id="130" rate="80" />
+            <medal force_id="131" rate="80" />
+        </honormedal_rate>
+        <honormedal_rate    group="5"    >
+            <medal force_id="1" rate="110" />
+            <medal force_id="5" rate="90" />
+            <medal force_id="6" rate="70" />
+            <medal force_id="7" rate="70" />
+            <medal force_id="71" rate="60" />
+            <medal force_id="79" rate="50" />
+            <medal force_id="73" rate="120" />
+            <medal force_id="139" rate="20" />
+            <medal force_id="81" rate="100" />
+            <medal force_id="113" rate="60" />
+            <medal force_id="127" rate="50" />
+            <medal force_id="83" rate="100" />
+            <medal force_id="85" rate="100" />
+        </honormedal_rate>
+    </honor_medal_upgrade>
+</honor_medal>

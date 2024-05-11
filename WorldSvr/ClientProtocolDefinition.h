@@ -2974,6 +2974,32 @@ CLIENT_PROTOCOL(S2C, HONOR_MEDAL_UNLOCK_SLOT, DEFAULT, 2770,
     UInt32 Result;
 )
 
+CLIENT_PROTOCOL(C2S, HONOR_MEDAL_ROLL_SLOT, DEFAULT, 2771,
+    UInt8 CategoryIndex;
+    UInt8 GroupIndex;
+    UInt32 SlotIndex;
+)
+
+CLIENT_PROTOCOL(S2C, HONOR_MEDAL_ROLL_SLOT, DEFAULT, 2771,
+    UInt8 CategoryIndex;
+    UInt8 GroupIndex;
+    UInt32 SlotIndex;
+    UInt32 Unknown1;
+    UInt32 ForceEffectIndex;
+    Int64 WExp;
+    Int16 AP;
+)
+
+CLIENT_PROTOCOL_STRUCT(C2S_DATA_USE_ITEM_SAVER_INVENTORY_SLOT,
+    Int16 InventorySlotIndex;
+    Int16 Amount;
+)
+
+CLIENT_PROTOCOL(C2S, USE_ITEM_SAVER, DEFAULT, 2773,
+    UInt16 InventorySlotCount;
+    C2S_DATA_USE_ITEM_SAVER_INVENTORY_SLOT InventorySlots[0]; // InventorySlotCount
+)
+
 CLIENT_PROTOCOL(C2S, CHAOS_UPGRADE_SEAL, DEFAULT, 2787,
     Int16 TargetSlotIndex;
     Int16 SourceSlotIndex;

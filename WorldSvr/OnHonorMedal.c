@@ -70,7 +70,7 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_UNLOCK_SLOT) {
     Response->CategoryIndex = Packet->CategoryIndex;
     Response->GroupIndex = Packet->GroupIndex;
     Response->SlotIndex = Packet->SlotIndex;
-    Response->Result = 0;    
+    Response->Result = 0;
     SocketSend(Socket, Connection, Response);
     return;
 
@@ -84,4 +84,56 @@ error:
         SocketSend(Socket, Connection, Response);
         return;
     }
+}
+
+CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_ROLL_SLOT) {
+    RTHonorMedalSlotRef Slot = RTCharacterGetHonorMedalSlot(Runtime, Character, Packet->CategoryIndex, Packet->GroupIndex, Packet->SlotIndex);
+    if (!Slot) goto error;
+    if (Slot->ForceEffectIndex > 0 || !Slot->IsUnlocked) goto error;
+
+    RTDataHonorMedalSlotPriceCategoryRef PriceCategory = RTRuntimeDataHonorMedalSlotPriceCategoryGet(Runtime->Context, Packet->CategoryIndex);
+    if (!PriceCategory) goto error;
+
+    RTDataHonorMedalSlotPriceMedalRef PriceMedal = RTRuntimeDataHonorMedalSlotCountMedalGet(PriceCategory, Packet->GroupIndex);
+    if (!PriceMedal) goto error;
+
+    RTDataHonorMedalUpgradeCategoryRef Category = RTRuntimeDataHonorMedalUpgradeCategoryGet(Runtime->Context, Packet->CategoryIndex);
+    if (!Category) goto error;
+
+    RTDataHonorMedalUpgradeGroupRef Group = RTRuntimeDataHonorMedalUpgradeGroupGet(Category, Packet->GroupIndex);
+    if (!Group) goto error;
+
+    if (Character->Info.Ability.Point < PriceMedal->AP) goto error;
+    if (Character->Info.Honor.Exp < PriceMedal->WarExp) goto error;
+
+    Int32 Seed = (Int32)PlatformGetTickCount();
+    Int32 DropRate = RandomRange(&Seed, 0, 1000);
+    Int32 DropRateOffset = 0;
+    for (Int32 Index = 0; Index < Group->HonorMedalUpgradeMedalCount; Index += 1) {
+        if (DropRate <= Group->HonorMedalUpgradeMedalList[Index].Rate + DropRateOffset) {
+            Slot->ForceEffectIndex = Group->HonorMedalUpgradeMedalList[Index].ForceEffectIndex;
+            break;
+        }
+
+        DropRateOffset += Group->HonorMedalUpgradeMedalList[Index].Rate;
+    }
+
+    Character->Info.Ability.Point -= PriceMedal->AP;
+    Character->Info.Honor.Exp -= PriceMedal->WarExp;
+    Character->SyncMask.Info = true;
+    Character->SyncMask.HonorMedalInfo = true;
+    Character->SyncPriority.High = true;
+
+    S2C_DATA_HONOR_MEDAL_ROLL_SLOT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, HONOR_MEDAL_ROLL_SLOT);
+    Response->CategoryIndex = Packet->CategoryIndex;
+    Response->GroupIndex = Packet->GroupIndex;
+    Response->SlotIndex = Packet->SlotIndex;
+    Response->ForceEffectIndex = Slot->ForceEffectIndex;
+    Response->WExp = Character->Info.Honor.Exp;
+    Response->AP = Character->Info.Ability.Point;
+    SocketSend(Socket, Connection, Response);
+    return;
+
+error:
+    SocketDisconnect(Socket, Connection);
 }
