@@ -371,6 +371,26 @@ error:
 	return SocketDisconnect(Socket, Connection);
 }
 
+
+CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_ITEM_LEVEL) {
+	if (!Character) goto error;
+
+	Int32 TailLength = sizeof(UInt16) * (Packet->CoreCount + Packet->SafeCount);
+	if (sizeof(S2C_DATA_DIVINE_UPGRADE_ITEM_LEVEL) + TailLength > Packet->Length) goto error;
+
+	UInt16* CoreSlotIndices = &Packet->CoreSlotIndices[0];
+	UInt16* SafeSlotIndices = &Packet->CoreSlotIndices[Packet->CoreCount];
+
+
+error:
+	{
+		S2C_DATA_DIVINE_UPGRADE_ITEM_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DIVINE_UPGRADE_ITEM_LEVEL);
+		Response->UpgradeResult = S2C_DIVINE_UPGRADE_LEVEL_RESULT_ERROR;
+		SocketSend(Socket, Connection, Response);
+	}
+}
+
+
 CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_SEAL) {
 	if (!Character) goto error;
 
