@@ -7,7 +7,6 @@
             <item slot_id="2" item_id="33556938" option="65536000999" duration_id="0" price="0"></item>
             <item slot_id="3" item_id="33556820" option="65536000999" duration_id="0" price="0"></item>
             <item slot_id="4" item_id="33557407" option="131072000000999" duration_id="0" price="0"></item>
-            <item slot_id="5" item_id="33556682" option="3277799" duration_id="0" price="0"></item>
 
             <item slot_id="8" item_id="33556371" option="0" duration_id="0" price="0"></item>   
             <item slot_id="9" item_id="33556435" option="999" duration_id="0" price="0"></item>
@@ -534,8 +533,19 @@
         <event_description content="Honor Medal" />
         
         <event_shop>
-            <item slot_id="0" item_id="3103" option="999" duration_id="0" price="0"></item>
-            <item slot_id="1" item_id="3103" option="999" duration_id="0" price="0"></item>
+            <item slot_id="0" item_id="33556682" option="3277799" duration_id="0" price="0"></item>
+            <item slot_id="1" item_id="33554733" option="0" duration_id="0" price="0"></item>
+            <item slot_id="2" item_id="33555961" option="0" duration_id="0" price="0"></item>
+            <item slot_id="3" item_id="3192" option="65537000" duration_id="0" price="0"></item>
+            <item slot_id="4" item_id="33555979" option="65537000" duration_id="0" price="0"></item>
+            <item slot_id="5" item_id="33556128" option="0" duration_id="0" price="0"></item>
+            <item slot_id="6" item_id="33556068" option="0" duration_id="0" price="0"></item>
+            
+            <item slot_id="8" item_id="33556068" option="1152921504608711111" duration_id="0" price="0"></item>
+            <item slot_id="9" item_id="33556068" option="2305843009215558087" duration_id="0" price="0"></item>
+            <item slot_id="10" item_id="33556068" option="3458764513822405063" duration_id="0" price="0"></item>
+            <item slot_id="11" item_id="33556068" option="4611686018429252039" duration_id="0" price="0"></item>
+            <item slot_id="12" item_id="33556068" option="5764607523036099015" duration_id="0" price="0"></item>
         </event_shop>
     </event_info>
 
