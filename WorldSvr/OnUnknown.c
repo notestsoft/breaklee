@@ -58,19 +58,6 @@ error:
 	return SocketDisconnect(Socket, Connection);
 }
 
-CLIENT_PROCEDURE_BINDING(UNKNOWN_985) {
-	if (!Character) goto error;
-
-	// NOTE: This is being called when character select is executed..
-
-	S2C_DATA_UNKNOWN_985* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UNKNOWN_985);
-	Response->Result = 1;
-	return SocketSend(Socket, Connection, Response);
-
-error:
-	return SocketDisconnect(Socket, Connection);
-}
-
 CLIENT_PROCEDURE_BINDING(UNKNOWN_2173) {
 	if (!Character) goto error;
 

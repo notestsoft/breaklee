@@ -100,7 +100,8 @@ CLIENT_PROCEDURE_BINDING(CONVERT_ITEM) {
 		SourceItemData->ItemType == RUNTIME_ITEM_TYPE_SLOT_CONVERTER ||
 		SourceItemData->ItemType == RUNTIME_ITEM_TYPE_EPIC_CONVERTER ||
 		SourceItemData->ItemType == RUNTIME_ITEM_TYPE_DIVINE_CONVERTER ||
-		SourceItemData->ItemType == RUNTIME_ITEM_TYPE_CHAOS_CONVERTER
+		SourceItemData->ItemType == RUNTIME_ITEM_TYPE_CHAOS_CONVERTER ||
+		SourceItemData->ItemType == RUNTIME_ITEM_TYPE_EPIC_BOOSTER
 	) {
 		struct _RTItemConverterPayload Payload = { 0 };
 		Payload.TargetSlotIndex = Packet->TargetSlotIndex;
