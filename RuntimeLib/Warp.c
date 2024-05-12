@@ -66,7 +66,7 @@ Bool RTRuntimeWarpCharacter(
                 assert(TargetWorld);
             }
 
-            RTWorldDespawnCharacter(Runtime, World, Entity);
+            RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 
             RTCharacterSetHP(Runtime, Character, Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX], false);
             RTCharacterSetMP(Runtime, Character, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX], false);
@@ -120,7 +120,7 @@ Bool RTRuntimeWarpCharacter(
             RTWorldContextRef NewWorld = RTRuntimeGetWorldByID(Runtime, WarpPoint.WorldIndex);
             assert(NewWorld);
 
-            RTWorldDespawnCharacter(Runtime, World, Entity);
+            RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 
             Character->Info.Position.X = WarpPoint.X;
             Character->Info.Position.Y = WarpPoint.Y;
@@ -171,7 +171,7 @@ Bool RTRuntimeWarpCharacter(
             }
 
             // TODO: Delete Dungeon Instance!
-            RTWorldDespawnCharacter(Runtime, World, Entity);
+            RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 
             Character->Info.Position.X = WarpPoint.X;
             Character->Info.Position.Y = WarpPoint.Y;
@@ -212,7 +212,7 @@ Bool RTRuntimeWarpCharacter(
         RTWorldContextRef TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpWorldID);
         if (RTWorldIsTileColliding(Runtime, TargetWorld, WarpPositionX, WarpPositionY, Character->Movement.CollisionMask)) return false;
 
-        RTWorldDespawnCharacter(Runtime, World, Entity);
+        RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 
         Character->Info.Position.X = WarpPositionX;
         Character->Info.Position.Y = WarpPositionY;
@@ -255,7 +255,7 @@ Bool RTRuntimeWarpCharacter(
             assert(TargetWorld);
         }
 
-        RTWorldDespawnCharacter(Runtime, World, Entity);
+        RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 
         Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= Warp->Fee;
         Character->Info.Position.X = WarpPoint.X;
@@ -293,7 +293,7 @@ Bool RTRuntimeWarpCharacter(
         // TODO: Check EntryConditionClass
 
         RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, QuestDungeonData->EntryWarpID);
-        RTWorldDespawnCharacter(Runtime, World, Entity);
+        RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 
         RTWorldContextRef DungeonWorld = RTRuntimeOpenDungeon(Runtime, Character, WarpPoint.WorldIndex, QuestDungeonData->DungeonID);
         if (!DungeonWorld) return false;
@@ -339,7 +339,7 @@ Bool RTRuntimeWarpCharacter(
         // TODO: Check EntryConditionClass
 
         RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, DungeonData->EntryWarpID);
-        RTWorldDespawnCharacter(Runtime, World, Entity);
+        RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
         
         RTWorldContextRef DungeonWorld = RTRuntimeOpenDungeon(Runtime, Character, WarpPoint.WorldIndex, DungeonData->DungeonID);
         if (!DungeonWorld) return false;

@@ -24,7 +24,7 @@ error:
 }
 
 IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER_LIST) {
-    if (!ClientConnection || !Client) goto error;
+    if (!ClientConnection || !Client) return;
 
     memcpy(Client->Characters, Packet->Characters, sizeof(Packet->Characters));
     Client->Flags |= CLIENT_FLAGS_CHARACTER_INDEX_LOADED;
@@ -44,8 +44,5 @@ IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER_LIST) {
     }
 
     memcpy(Response->Characters, Packet->Characters, sizeof(Packet->Characters));
-    return SocketSend(Context->ClientSocket, ClientConnection, Response);
-
-error:
-    return SocketDisconnect(Socket, Connection);
+    SocketSend(Context->ClientSocket, ClientConnection, Response);
 }

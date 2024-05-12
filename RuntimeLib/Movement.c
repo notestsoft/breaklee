@@ -12,6 +12,7 @@ Void RTMovementInitialize(
 	memset(Movement, 0, sizeof(struct _RTMovement));
 
 	Movement->WorldContext = NULL;
+    Movement->WorldChunk = NULL;
 	Movement->Entity = kEntityIDNull;
 	Movement->PositionBegin.X = X;
 	Movement->PositionBegin.Y = Y;
@@ -198,21 +199,7 @@ Void RTMovementSetPosition(
 		);
 
 		if (Movement->WorldChunk != NextChunk) {
-			RTWorldChunkRemove(Movement->WorldChunk, Movement->Entity);
-			RTWorldChunkInsert(NextChunk, Movement->Entity);
-            Movement->WorldChunk = NextChunk;
-		}
-
-		if (Movement->Entity.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) {
-			RTRuntimeBroadcastEvent(
-				Runtime,
-				RUNTIME_EVENT_CHARACTER_CHUNK_UPDATE,
-				Movement->WorldContext,
-				kEntityIDNull,
-				Movement->Entity,
-				Movement->PositionCurrent.X,
-				Movement->PositionCurrent.Y
-			);
+            RTWorldChunkMove(NextChunk, Movement);
 		}
 	}
 

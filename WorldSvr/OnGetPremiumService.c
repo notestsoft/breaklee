@@ -32,7 +32,7 @@ error:
 }
 
 IPC_PROCEDURE_BINDING(M2W, GET_PREMIUM_SERVICE) {
-	if (!ClientConnection || !Client) goto error;
+	if (!ClientConnection || !Client) return;
 
     S2C_DATA_GET_PREMIUM_SERVICE* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, GET_PREMIUM_SERVICE);
     Response->ServiceType = Packet->ServiceType;
@@ -54,8 +54,4 @@ IPC_PROCEDURE_BINDING(M2W, GET_PREMIUM_SERVICE) {
 	UnknownNotification->Unknown1[5] = 1;
 	*/
 	SocketSend(Context->ClientSocket, ClientConnection, UnknownNotification);
-	return;
-
-error:
-    SocketDisconnect(Socket, Connection);
 }

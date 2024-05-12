@@ -127,6 +127,7 @@ struct _AppendCharacterToCharacterSpawnIndexArguments {
     ServerContextRef Context;
     RTWorldContextRef WorldContext;
     PacketBufferRef PacketBuffer;
+    Index IgnoreCharacterIndex;
     S2C_DATA_CHARACTERS_SPAWN* Notification;
 };
 
@@ -136,7 +137,8 @@ Void AppendCharacterToCharacterSpawnIndex(
 ) {
     struct _AppendCharacterToCharacterSpawnIndexArguments* Arguments = (struct _AppendCharacterToCharacterSpawnIndexArguments*)Userdata;
     RTCharacterRef Character = RTWorldManagerGetCharacter(Arguments->WorldContext->WorldManager, Entity);
-
+    if (Character->CharacterIndex == Arguments->IgnoreCharacterIndex) return;
+    
     Arguments->Notification->Count += 1;
 
     S2C_DATA_CHARACTERS_SPAWN_INDEX* Spawn = PacketBufferAppendStruct(Arguments->PacketBuffer, S2C_DATA_CHARACTERS_SPAWN_INDEX);
@@ -188,35 +190,103 @@ Void AppendCharacterToCharacterSpawnIndex(
     }
 }
 
-Void ServerBroadcastCharacterListToClient(
+Void ServerBroadcastUserList(
     ServerContextRef Context,
-    ClientContextRef Client
+    RTEventRef Event
 ) {
-    RTRuntimeRef Runtime = Context->Runtime;
-    RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Client->CharacterIndex);
-    RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Runtime, Character);
-    assert(WorldContext);
+    // TODO: Migrate all of the logic to WorldChunk
+    if (Event->Data.UserList.IsInsertion && Event->Data.UserList.Reason == RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT) {
+        ClientContextRef Client = ServerGetClientByEntity(Context, Event->TargetID);
+        assert(Client);
+        ServerBroadcastMobListToClient(Context, Client);
+    }
 
-    S2C_DATA_CHARACTERS_SPAWN* Notification = PacketBufferInit(Client->Connection->PacketBuffer, S2C, CHARACTERS_SPAWN);
-    Notification->Count = 0;
-    Notification->SpawnType = S2C_DATA_ENTITY_SPAWN_TYPE_LIST;
+    if (Event->Data.UserList.IsInsertion) {
+        ClientContextRef Client = ServerGetClientByEntity(Context, Event->TargetID);
+        assert(Client);
     
-    struct _AppendCharacterToCharacterSpawnIndexArguments Arguments = { 0 };
-    Arguments.Context = Context;
-    Arguments.WorldContext = WorldContext;
-    Arguments.PacketBuffer = Client->Connection->PacketBuffer;
-    Arguments.Notification = Notification;
-    RTWorldContextEnumerateBroadcastTargets(
-        WorldContext,
-        RUNTIME_ENTITY_TYPE_CHARACTER,
-        Character->Movement.PositionCurrent.X,
-        Character->Movement.PositionCurrent.Y,
-        &AppendCharacterToCharacterSpawnIndex,
-        &Arguments
-    );
+        // TODO: This packet has to be send for each chunk once...
+        S2C_DATA_CHARACTERS_SPAWN* Notification = PacketBufferInit(Client->Connection->PacketBuffer, S2C, CHARACTERS_SPAWN);
+        Notification->Count = 0;
+        Notification->SpawnType = S2C_DATA_ENTITY_SPAWN_TYPE_LIST;
+        
+        struct _AppendCharacterToCharacterSpawnIndexArguments Arguments = { 0 };
+        Arguments.Context = Context;
+        Arguments.WorldContext = Event->World;
+        Arguments.PacketBuffer = Client->Connection->PacketBuffer;
+        Arguments.IgnoreCharacterIndex = Event->Data.UserList.CharacterIndex;
+        Arguments.Notification = Notification;
+        RTWorldContextEnumerateBroadcastChunks(
+            Event->World,
+            RUNTIME_ENTITY_TYPE_CHARACTER,
+            Event->Data.UserList.PreviousChunkX,
+            Event->Data.UserList.PreviousChunkY,
+            Event->Data.UserList.CurrentChunkX,
+            Event->Data.UserList.CurrentChunkY,
+            &AppendCharacterToCharacterSpawnIndex,
+            &Arguments
+        );
 
-    if (Notification->Count > 0) {
-        SocketSend(Context->ClientSocket, Client->Connection, Notification);
+        if (Notification->Count > 0) {
+            SocketSend(Context->ClientSocket, Client->Connection, Notification);
+        }
+        
+        Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, CHARACTERS_SPAWN);
+        Notification->Count = 1;
+        Notification->SpawnType = S2C_DATA_ENTITY_SPAWN_TYPE_INIT;
+        
+        if (Event->Data.UserList.Reason == RUNTIME_WORLD_CHUNK_UPDATE_REASON_MOVE) {
+            Notification->SpawnType = S2C_DATA_ENTITY_SPAWN_TYPE_MOVE;
+        }
+        
+        if (Event->Data.UserList.Reason == RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP) {
+            Notification->SpawnType = S2C_DATA_ENTITY_SPAWN_TYPE_WARP;
+        }
+        
+        Arguments.Context = Context;
+        Arguments.WorldContext = Event->World;
+        Arguments.PacketBuffer = Context->ClientSocket->PacketBuffer;
+        Arguments.IgnoreCharacterIndex = 0;
+        Arguments.Notification = Notification;
+        AppendCharacterToCharacterSpawnIndex(Event->TargetID, &Arguments);
+        
+        return BroadcastToChunks(
+            Context,
+            Event->World,
+            kEntityIDNull,
+            Event->Data.UserList.PreviousChunkX,
+            Event->Data.UserList.PreviousChunkY,
+            Event->Data.UserList.CurrentChunkX,
+            Event->Data.UserList.CurrentChunkY,
+            Notification
+        );
+        
+    } else {
+        // TODO: Add all spawn types!
+        S2C_DATA_CHARACTERS_DESPAWN* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, CHARACTERS_DESPAWN);
+        Notification->CharacterIndex = (UInt32)Event->Data.UserList.CharacterIndex;
+        Notification->DespawnType = S2C_DATA_ENTITY_DESPAWN_TYPE_DISAPPEAR;
+
+        if (Event->Data.UserList.Reason == RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT) {
+            Notification->DespawnType = S2C_DATA_ENTITY_DESPAWN_TYPE_DEINIT;
+        }
+        
+        if (Event->Data.UserList.Reason == RUNTIME_WORLD_CHUNK_UPDATE_REASON_MOVE) {
+            Notification->DespawnType = S2C_DATA_ENTITY_DESPAWN_TYPE_DISAPPEAR;
+        }
+        
+        if (Event->Data.UserList.Reason == RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP) {
+            Notification->DespawnType = S2C_DATA_ENTITY_SPAWN_TYPE_WARP;
+        }
+        
+        return BroadcastToWorld(
+            Context,
+            Event->World,
+            kEntityIDNull,
+            Event->X,
+            Event->Y,
+            Notification
+        );
     }
 }
 
@@ -259,6 +329,33 @@ Void _BroadcastToWorldProc(
     if (!Client) return;
 
     SocketSend(Arguments->Context->ClientSocket, Client->Connection, Arguments->Packet);
+}
+
+Void BroadcastToChunks(
+    ServerContextRef Context,
+    RTWorldContextRef WorldContext,
+    RTEntityID Entity,
+    Int32 PreviousChunkX,
+    Int32 PreviousChunkY,
+    Int32 CurrentChunkX,
+    Int32 CurrentChunkY,
+    Void *Packet
+) {
+    struct _BroadcastToWorldArguments Arguments = { 0 };
+    Arguments.Context = Context;
+    Arguments.Runtime = Context->Runtime;
+    Arguments.Source = Entity;
+    Arguments.Packet = Packet;
+    RTWorldContextEnumerateBroadcastChunks(
+        WorldContext,
+        RUNTIME_ENTITY_TYPE_CHARACTER,
+        PreviousChunkX,
+        PreviousChunkY,
+        CurrentChunkX,
+        CurrentChunkY,
+        &_BroadcastToWorldProc,
+        &Arguments
+    );
 }
 
 Void BroadcastToWorld(
@@ -320,94 +417,8 @@ Void ServerRuntimeOnEvent(
     ServerContextRef Context = (ServerContextRef)UserData;
     PacketBufferRef PacketBuffer = Context->ClientSocket->PacketBuffer;
 
-    if (Event->Type == RUNTIME_EVENT_CHARACTER_SPAWN) {
-        S2C_DATA_CHARACTERS_SPAWN* Notification = PacketBufferInit(PacketBuffer, S2C, CHARACTERS_SPAWN);
-        Notification->Count = 1;
-        Notification->SpawnType = S2C_DATA_ENTITY_SPAWN_TYPE_INIT; // TODO: Add all spawn types!
-
-        RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(
-            Runtime->WorldManager, 
-            Event->Data.CharacterSpawn.CharacterIndex
-        );
-
-        S2C_DATA_CHARACTERS_SPAWN_INDEX* Spawn = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_CHARACTERS_SPAWN_INDEX);
-        Spawn->CharacterIndex = (UInt32)Character->CharacterIndex;
-        Spawn->Entity = Character->ID;
-        Spawn->Level = Character->Info.Basic.Level;
-        Spawn->OverlordLevel = Character->Info.Overlord.Level;
-        Spawn->ForceWingGrade = Character->ForceWingInfo.Grade;
-        Spawn->ForceWingLevel = Character->ForceWingInfo.Level;
-        Spawn->MaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
-        Spawn->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-        Spawn->MovementSpeed = (UInt32)(Character->Movement.Speed * RUNTIME_MOVEMENT_SPEED_SCALE);
-        Spawn->PositionBegin.X = Character->Movement.PositionBegin.X;
-        Spawn->PositionBegin.Y = Character->Movement.PositionBegin.Y;
-        Spawn->PositionEnd.X = Character->Movement.PositionEnd.X;
-        Spawn->PositionEnd.Y = Character->Movement.PositionEnd.Y;
-        Spawn->Nation = Character->Info.Profile.Nation;
-        Spawn->CharacterStyle = SwapUInt32(Character->Info.Style.RawValue);
-        Spawn->CharacterLiveStyle = Character->Info.LiveStyle.RawValue;
-        Spawn->IsDead = RTCharacterIsAlive(Runtime, Character) ? 0 : 1;
-        Spawn->EquipmentSlotCount = Character->EquipmentInfo.Count;
-
-        ClientContextRef Client = ServerGetClientByEntity(Context, Character->ID);
-        assert(Client);
-
-        Spawn->NameLength = strlen(Client->CharacterName) + 1;
-        CString Name = (CString)PacketBufferAppend(PacketBuffer, strlen(Client->CharacterName));
-        memcpy(Name, Client->CharacterName, strlen(Client->CharacterName));
-
-        S2C_DATA_CHARACTERS_SPAWN_GUILD* Guild = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_CHARACTERS_SPAWN_GUILD);
-        Guild->GuildNameLength = 0;
-
-        for (Index Index = 0; Index < Character->EquipmentInfo.Count; Index += 1) {
-            RTItemSlotRef ItemSlot = &Character->EquipmentInfo.Slots[Index];
-
-            S2C_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* Slot = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
-            Slot->EquipmentSlotIndex = ItemSlot->SlotIndex;
-            Slot->ItemID = ItemSlot->Item.Serial;
-            Slot->ItemOptions = ItemSlot->ItemOptions;
-            Slot->ItemDuration = ItemSlot->ItemDuration.Serial;
-        }
-
-        // TODO: This is a placeholder for costumes add them after adding the costume system
-        Spawn->CostumeSlotCount = 6;
-        for (Index Index = 0; Index < 6; Index += 1) {
-            S2C_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* Slot = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
-            Slot->EquipmentSlotIndex = Index;
-        }
-
-        return BroadcastToWorld(
-            Context,
-            Event->World,
-            kEntityIDNull,
-            Event->X,
-            Event->Y,
-            Notification
-        );
-    }
-
-    if (Event->Type == RUNTIME_EVENT_CHARACTER_DESPAWN) {
-        S2C_DATA_CHARACTERS_DESPAWN* Notification = PacketBufferInit(PacketBuffer, S2C, CHARACTERS_DESPAWN);
-        Notification->CharacterIndex = (UInt32)Event->Data.CharacterSpawn.CharacterIndex;
-        Notification->DespawnType = S2C_DATA_ENTITY_DESPAWN_TYPE_DISAPPEAR; // TODO: Add all spawn types!
-
-        return BroadcastToWorld(
-            Context,
-            Event->World,
-            kEntityIDNull,
-            Event->X,
-            Event->Y,
-            Notification
-        );
-    }
-
-    if (Event->Type == RUNTIME_EVENT_CHARACTER_CHUNK_UPDATE) {
-        ClientContextRef Client = ServerGetClientByEntity(Context, Event->TargetID);
-        if (Client) {
-            ServerBroadcastMobListToClient(Context, Client);
-            ServerBroadcastCharacterListToClient(Context, Client);
-        }
+    if (Event->Type == RUNTIME_EVENT_USER_LIST) {
+        ServerBroadcastUserList(Context, Event);
     }
 
     if (Event->Type == RUNTIME_EVENT_CHARACTER_LEVEL_UP) {

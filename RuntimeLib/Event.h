@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base.h"
+#include "Entity.h"
 #include "Constants.h"
 #include "BattleSystem.h"
 #include "Item.h"
@@ -8,9 +9,7 @@
 EXTERN_C_BEGIN
 
 enum {
-    RUNTIME_EVENT_CHARACTER_SPAWN,
-    RUNTIME_EVENT_CHARACTER_DESPAWN,
-    RUNTIME_EVENT_CHARACTER_CHUNK_UPDATE,
+    RUNTIME_EVENT_USER_LIST,
     RUNTIME_EVENT_CHARACTER_LEVEL_UP,
     RUNTIME_EVENT_CHARACTER_SKILL_LEVEL_UP,
     RUNTIME_EVENT_CHARACTER_SKILL_RANK_UP,
@@ -75,8 +74,15 @@ enum {
 };
 
 union _RTEventData {
-    struct { Index CharacterIndex; struct _RTCharacterPosition Position; } CharacterSpawn;
-    struct { Index CharacterIndex; struct _RTCharacterPosition Position; } CharacterDespawn;
+    struct {
+        Index CharacterIndex;
+        Int32 PreviousChunkX;
+        Int32 PreviousChunkY;
+        Int32 CurrentChunkX;
+        Int32 CurrentChunkY;
+        Int32 Reason;
+        Bool IsInsertion;
+    } UserList;
 
     /*
     struct { } CharacterChunkUpdate;

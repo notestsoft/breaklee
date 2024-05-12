@@ -130,46 +130,12 @@ Void RTWorldSpawnCharacterWithoutNotification(
     UInt16 X = Character->Movement.PositionCurrent.X;
     UInt16 Y = Character->Movement.PositionCurrent.Y;
     RTWorldChunkRef WorldChunk = RTWorldContextGetChunk(WorldContext, X, Y);
-    RTWorldChunkInsert(WorldChunk, Entity);
+    RTWorldChunkInsert(WorldChunk, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_NONE);
     RTWorldContextAddReferenceCount(WorldContext, X, Y, 1);
 
     Character->Movement.WorldContext = WorldContext;
     Character->Movement.WorldChunk = WorldChunk;
     Character->Movement.Entity = Character->ID;
-}
-
-Void RTWorldBroadcastSpawnCharacterNotification(
-    RTRuntimeRef Runtime,
-    RTWorldContextRef WorldContext,
-    RTEntityID Entity
-) {
-    RTCharacterRef Character = RTWorldManagerGetCharacter(WorldContext->WorldManager, Entity);
-    assert(Character);
-
-    RTEventData EventData = { 0 };
-    EventData.CharacterSpawn.CharacterIndex = Character->CharacterIndex;
-    EventData.CharacterSpawn.Position = Character->Info.Position;
-
-    RTRuntimeBroadcastEventData(
-        Runtime,
-        RUNTIME_EVENT_CHARACTER_SPAWN,
-        WorldContext,
-        Entity,
-        kEntityIDNull,
-        Character->Movement.PositionCurrent.X,
-        Character->Movement.PositionCurrent.Y,
-        EventData
-    );
-
-    RTRuntimeBroadcastEvent(
-        Runtime,
-        RUNTIME_EVENT_CHARACTER_CHUNK_UPDATE,
-        WorldContext,
-        kEntityIDNull,
-        Entity,
-        Character->Movement.PositionCurrent.X,
-        Character->Movement.PositionCurrent.Y
-    );
 }
 
 Void RTWorldSpawnCharacter(
@@ -178,13 +144,17 @@ Void RTWorldSpawnCharacter(
     RTEntityID Entity
 ) {
     RTWorldSpawnCharacterWithoutNotification(Runtime, WorldContext, Entity);
-    RTWorldBroadcastSpawnCharacterNotification(Runtime, WorldContext, Entity);
+    RTCharacterRef Character = RTWorldManagerGetCharacter(WorldContext->WorldManager, Entity);
+    assert(Character);
+    
+    RTWorldChunkNotify(Character->Movement.WorldChunk, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT, true);
 }
 
 Void RTWorldDespawnCharacter(
     RTRuntimeRef Runtime,
     RTWorldContextRef WorldContext,
-    RTEntityID Entity
+    RTEntityID Entity,
+    Int32 Reason
 ) {
     RTCharacterRef Character = RTWorldManagerGetCharacter(WorldContext->WorldManager, Entity);
     assert(Character);
@@ -195,26 +165,11 @@ Void RTWorldDespawnCharacter(
 
     UInt16 X = Character->Movement.PositionCurrent.X;
     UInt16 Y = Character->Movement.PositionCurrent.Y;
-    RTWorldChunkRemove(Character->Movement.WorldChunk, Entity);
+    RTWorldChunkRemove(Character->Movement.WorldChunk, Entity, Reason);
     RTWorldContextAddReferenceCount(WorldContext, X, Y, -1);
 
     Character->Movement.WorldContext = NULL;
     Character->Movement.Entity = kEntityIDNull;
-
-    RTEventData EventData = { 0 };
-    EventData.CharacterSpawn.CharacterIndex = Character->CharacterIndex;
-    EventData.CharacterSpawn.Position = Character->Info.Position;
-
-    RTRuntimeBroadcastEventData(
-        Runtime,
-        RUNTIME_EVENT_CHARACTER_DESPAWN,
-        WorldContext,
-        kEntityIDNull,
-        Entity,
-        Character->Movement.PositionCurrent.X,
-        Character->Movement.PositionCurrent.Y,
-        EventData
-    );
 }
 
 Void RTWorldSpawnMobEvent(
@@ -274,7 +229,7 @@ Void RTWorldSpawnMob(
     Mob->EventDespawnTimestamp = 0;
 
     RTWorldChunkRef WorldChunk = RTWorldContextGetChunk(WorldContext, X, Y);
-    RTWorldChunkInsert(WorldChunk, Mob->ID);
+    RTWorldChunkInsert(WorldChunk, Mob->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT);
 
     Mob->Movement.WorldContext = WorldContext;
     Mob->Movement.WorldChunk = WorldChunk;
@@ -348,7 +303,7 @@ Void RTWorldDespawnMob(
     Mob->Movement.WorldContext = NULL;
     Mob->Movement.Entity = kEntityIDNull;
 
-    RTWorldChunkRemove(Mob->Movement.WorldChunk, Mob->ID);
+    RTWorldChunkRemove(Mob->Movement.WorldChunk, Mob->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT);
 
     RTRuntimeBroadcastEvent(
         Runtime,
@@ -889,6 +844,81 @@ Void RTWorldContextEnumerateBroadcastTargets(
 
     for (Int32 DeltaChunkX = StartChunkX; DeltaChunkX <= EndChunkX; DeltaChunkX += 1) {
         for (Int32 DeltaChunkY = StartChunkY; DeltaChunkY <= EndChunkY; DeltaChunkY += 1) {
+            Index ChunkIndex = (Index)DeltaChunkX + DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
+            assert(ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT);
+
+            RTWorldChunkRef WorldChunk = &WorldContext->Chunks[ChunkIndex];
+            ArrayRef Entities = NULL;
+
+            switch (EntityType) {
+            case RUNTIME_ENTITY_TYPE_CHARACTER:
+                Entities = WorldChunk->Characters;
+                break;
+
+            case RUNTIME_ENTITY_TYPE_MOB:
+                Entities = WorldChunk->Mobs;
+                break;
+
+            case RUNTIME_ENTITY_TYPE_ITEM:
+                Entities = WorldChunk->Items;
+                break;
+
+            default:
+                UNREACHABLE("Invalid entity type given!");
+            }
+
+            for (Int32 Index = 0; Index < ArrayGetElementCount(Entities); Index += 1) {
+                RTEntityID Entity = *(RTEntityID*)ArrayGetElementAtIndex(Entities, Index);
+                Callback(Entity, Userdata);
+            }
+        }
+    }
+}
+
+Bool RTChunkAreaIntersectsPoint(
+    Int32 AreaX,
+    Int32 AreaY,
+    Int32 AreaRadius,
+    Int32 X,
+    Int32 Y
+) {
+    if (AreaX < 0 || AreaY < 0) return true;
+    
+    Int32 StartChunkX = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, AreaX - RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
+    Int32 StartChunkY = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, AreaY - RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
+    Int32 EndChunkX = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, AreaX + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
+    Int32 EndChunkY = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, AreaY + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
+
+    return (X >= StartChunkX && X <= EndChunkX && Y >= StartChunkY && Y <= EndChunkY);
+}
+
+Void RTWorldContextEnumerateBroadcastChunks(
+    RTWorldContextRef WorldContext,
+    UInt8 EntityType,
+    Int32 PreviousChunkX,
+    Int32 PreviousChunkY,
+    Int32 CurrentChunkX,
+    Int32 CurrentChunkY,
+    RTEntityVisitorCallback Callback,
+    Void* Userdata
+) {
+    Int32 StartChunkX = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, CurrentChunkX - RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
+    Int32 StartChunkY = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, CurrentChunkY - RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
+    Int32 EndChunkX = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, CurrentChunkX + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
+    Int32 EndChunkY = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, CurrentChunkY + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
+
+    for (Int32 DeltaChunkX = StartChunkX; DeltaChunkX <= EndChunkX; DeltaChunkX += 1) {
+        for (Int32 DeltaChunkY = StartChunkY; DeltaChunkY <= EndChunkY; DeltaChunkY += 1) {
+            if (RTChunkAreaIntersectsPoint(
+                PreviousChunkX,
+                PreviousChunkY,
+                RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS,
+                DeltaChunkX,
+                DeltaChunkY
+            )) {
+                continue;
+            }
+        
             Index ChunkIndex = (Index)DeltaChunkX + DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
             assert(ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT);
 

@@ -159,7 +159,7 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 }
 
 IPC_PROCEDURE_BINDING(M2W, CREATE_CHARACTER) {
-	if (!ClientConnection || !Client) goto error;
+	if (!ClientConnection || !Client) return;
 
 	if (Packet->Status == CREATE_CHARACTER_STATUS_SUCCESS) {
 		Client->Characters[Packet->SlotIndex] = Packet->Character;
@@ -168,8 +168,5 @@ IPC_PROCEDURE_BINDING(M2W, CREATE_CHARACTER) {
 	S2C_DATA_CREATE_CHARACTER* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, CREATE_CHARACTER);
 	Response->CharacterIndex = Packet->Character.ID * MAX_CHARACTER_COUNT + Packet->SlotIndex;
 	Response->CharacterStatus = Packet->Status;
-	return SocketSend(Context->ClientSocket, ClientConnection, Response);
-
-error:
-	return SocketDisconnect(Socket, Connection);
+	SocketSend(Context->ClientSocket, ClientConnection, Response);
 }

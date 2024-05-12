@@ -97,7 +97,7 @@ Void RTRuntimeBroadcastEvent(
 Void RTRuntimeBroadcastEventData(
     RTRuntimeRef Runtime,
     Int32 EventType,
-    RTWorldContextRef World,
+    RTWorldContextRef WorldContext,
     RTEntityID SourceID,
     RTEntityID TargetID,
     Int32 X,
@@ -105,7 +105,7 @@ Void RTRuntimeBroadcastEventData(
     RTEventData Data
 ) {
     Runtime->Event.Type = EventType;
-    Runtime->Event.World = World;
+    Runtime->Event.World = WorldContext;
     Runtime->Event.SourceID = SourceID;
     Runtime->Event.TargetID = TargetID;
     Runtime->Event.X = X;

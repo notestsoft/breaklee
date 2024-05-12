@@ -11,7 +11,7 @@
 #endif
 
 IPC_PROTOCOL(L2W, VERIFY_LINKS,
-    Int32 AccountID;
+    Int64 AccountID;
 	UInt32 AuthKey;
 	UInt16 EntityID;
 	UInt8 NodeIndex;
@@ -20,7 +20,7 @@ IPC_PROTOCOL(L2W, VERIFY_LINKS,
 )
 
 IPC_PROTOCOL(W2L, VERIFY_LINKS,
-    Int32 AccountID;
+    Int64 AccountID;
 	UInt8 NodeIndex;
 	UInt8 GroupIndex;
 	UInt8 Status;

@@ -79,7 +79,7 @@ error:
 }
 
 IPC_PROCEDURE_BINDING(L2W, VERIFY_PASSWORD) {
-	if (!ClientConnection || !Client) goto error;
+	if (!ClientConnection || !Client) return;
 
 	if (Packet->Success) {
 		Client->PasswordVerificationTimestamp = GetTimestampMs();
@@ -88,9 +88,6 @@ IPC_PROCEDURE_BINDING(L2W, VERIFY_PASSWORD) {
 	S2C_DATA_VERIFY_CREDENTIALS* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, VERIFY_CREDENTIALS);
 	Response->Success = Packet->Success;
     return SocketSend(Context->ClientSocket, ClientConnection, Response);
-
-error:
-    return SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(VERIFY_CREDENTIALS_SUBPASSWORD) {
@@ -141,7 +138,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_CREDENTIALS_SUBPASSWORD) {
 	S2C_DATA_VERIFY_CREDENTIALS_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_CREDENTIALS_SUBPASSWORD);
 	Response->Success = 1;
 
-	Int32 SubpasswordLength = strlen(Client->Account.CharacterPassword);
+	Int32 SubpasswordLength = (Int32)strlen(Client->Account.CharacterPassword);
 	Bool IsSubpasswordSet = SubpasswordLength > 0;
 	if (!IsSubpasswordSet || strlen(Packet->Password) != SubpasswordLength ||
 		memcmp(Client->Account.CharacterPassword, Packet->Password, SubpasswordLength) != 0) {

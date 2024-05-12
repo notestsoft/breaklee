@@ -103,12 +103,6 @@ Void RTWorldSpawnCharacterWithoutNotification(
     RTEntityID Entity
 );
 
-Void RTWorldBroadcastSpawnCharacterNotification(
-    RTRuntimeRef Runtime,
-    RTWorldContextRef World,
-    RTEntityID Entity
-);
-
 Void RTWorldSpawnCharacter(
     RTRuntimeRef Runtime,
     RTWorldContextRef World,
@@ -118,7 +112,8 @@ Void RTWorldSpawnCharacter(
 Void RTWorldDespawnCharacter(
     RTRuntimeRef Runtime,
     RTWorldContextRef World,
-    RTEntityID Entity
+    RTEntityID Entity,
+    Int32 Reason
 );
 
 Void RTWorldSpawnMobEvent(
@@ -241,6 +236,17 @@ Void RTWorldContextEnumerateBroadcastTargets(
     UInt8 EntityType,
     UInt16 X,
     UInt16 Y,
+    RTEntityVisitorCallback Callback,
+    Void* Userdata
+);
+
+Void RTWorldContextEnumerateBroadcastChunks(
+    RTWorldContextRef WorldContext,
+    UInt8 EntityType,
+    Int32 PreviousChunkX,
+    Int32 PreviousChunkY,
+    Int32 CurrentChunkX,
+    Int32 CurrentChunkY,
     RTEntityVisitorCallback Callback,
     Void* Userdata
 );

@@ -28,12 +28,7 @@ CLIENT_PROCEDURE_BINDING(WARP) {
     SocketSend(Socket, Connection, Response);
 
     if (Response->Result == 0) {
-        RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Runtime, Character);
-        RTWorldBroadcastSpawnCharacterNotification(
-            Runtime,
-            WorldContext,
-            Character->ID
-        );
+        RTWorldChunkNotify(Character->Movement.WorldChunk, Character->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP, true);
     }
 
     return;

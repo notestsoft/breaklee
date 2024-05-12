@@ -31,7 +31,7 @@ Void ClientSocketOnDisconnect(
 
         RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Client->CharacterIndex);
         RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Context->Runtime, Character);
-        RTWorldDespawnCharacter(WorldContext->WorldManager->Runtime, WorldContext, Character->ID);
+        RTWorldDespawnCharacter(WorldContext->WorldManager->Runtime, WorldContext, Character->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT);
         RTWorldManagerDestroyCharacter(WorldContext->WorldManager, Client->CharacterIndex);
         Client->CharacterIndex = 0;
     }

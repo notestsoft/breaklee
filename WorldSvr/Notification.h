@@ -21,6 +21,17 @@ Void BroadcastToParty(
     Void *Notification
 );
 
+Void BroadcastToChunks(
+    ServerContextRef Context,
+    RTWorldContextRef WorldContext,
+    RTEntityID Entity,
+    Int32 PreviousChunkX,
+    Int32 PreviousChunkY,
+    Int32 CurrentChunkX,
+    Int32 CurrentChunkY,
+    Void *Packet
+);
+
 Void BroadcastToWorld(
     ServerContextRef Context,
     RTWorldContextRef World,

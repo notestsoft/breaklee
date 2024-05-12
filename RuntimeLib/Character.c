@@ -775,18 +775,6 @@ Bool RTCharacterMovementChangeChunk(
 	Character->SyncMask.Info = true;
 	Character->SyncPriority.Low = true;
 
-    RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
-
-	RTRuntimeBroadcastEvent(
-		Runtime,
-		RUNTIME_EVENT_CHARACTER_CHUNK_UPDATE,
-		World,
-		kEntityIDNull,
-		Character->ID,
-		Character->Movement.PositionCurrent.X,
-		Character->Movement.PositionCurrent.Y
-	);
-
 	return true;
 }
 

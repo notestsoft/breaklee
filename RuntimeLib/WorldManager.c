@@ -163,8 +163,19 @@ RTWorldContextRef RTWorldContextCreateGlobal(
     WorldContext->EntityToMob = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_MOB_COUNT);
     WorldContext->EntityToItem = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_ITEM_COUNT);
    
-    for (Index ChunkIndex = 0; ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT; ChunkIndex += 1) {
-        RTWorldChunkInitialize(WorldManager->Allocator, &WorldContext->Chunks[ChunkIndex]);
+    for (Int32 ChunkX = 0; ChunkX < RUNTIME_WORLD_CHUNK_COUNT; ChunkX += 1) {
+        for (Int32 ChunkY = 0; ChunkY < RUNTIME_WORLD_CHUNK_COUNT; ChunkY += 1) {
+            Index ChunkIndex = ChunkX + ChunkY * RUNTIME_WORLD_CHUNK_COUNT; // TODO: Check which axis is the first one
+            
+            RTWorldChunkInitialize(
+                WorldManager->Runtime,
+                &WorldContext->Chunks[ChunkIndex],
+                WorldIndex,
+                0,
+                ChunkX,
+                ChunkY
+            );
+        }
     }
 
     DictionaryInsert(WorldManager->IndexToGlobalWorldContextPoolIndex, &WorldIndex, &WorldPoolIndex, sizeof(Index));
@@ -234,8 +245,18 @@ RTWorldContextRef RTWorldContextCreateParty(
     WorldContext->EntityToMob = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_MOB_COUNT);
     WorldContext->EntityToItem = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_ITEM_COUNT);
     
-    for (Index ChunkIndex = 0; ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT; ChunkIndex += 1) {
-        RTWorldChunkInitialize(WorldManager->Allocator, &WorldContext->Chunks[ChunkIndex]);
+    for (Int32 ChunkX = 0; ChunkX < RUNTIME_WORLD_CHUNK_COUNT; ChunkX += 1) {
+        for (Int32 ChunkY = 0; ChunkY < RUNTIME_WORLD_CHUNK_COUNT; ChunkY += 1) {
+            Index ChunkIndex = ChunkX + ChunkY * RUNTIME_WORLD_CHUNK_COUNT; // TODO: Check which axis is the first one
+            RTWorldChunkInitialize(
+                WorldManager->Runtime,
+                &WorldContext->Chunks[ChunkIndex],
+                WorldIndex,
+                WorldPoolIndex,
+                ChunkX,
+                ChunkY
+            );
+        }
     }
     
     DictionaryInsert(WorldManager->PartyToWorldContextPoolIndex, &Party, &WorldPoolIndex, sizeof(Index));
