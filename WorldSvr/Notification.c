@@ -268,7 +268,7 @@ Void ServerBroadcastUserList(
         Notification->DespawnType = S2C_DATA_ENTITY_DESPAWN_TYPE_DISAPPEAR;
 
         if (Event->Data.UserList.Reason == RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT) {
-            Notification->DespawnType = S2C_DATA_ENTITY_DESPAWN_TYPE_DEINIT;
+            Notification->DespawnType = S2C_DATA_ENTITY_DESPAWN_TYPE_INIT;
         }
         
         if (Event->Data.UserList.Reason == RUNTIME_WORLD_CHUNK_UPDATE_REASON_MOVE) {
@@ -276,7 +276,7 @@ Void ServerBroadcastUserList(
         }
         
         if (Event->Data.UserList.Reason == RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP) {
-            Notification->DespawnType = S2C_DATA_ENTITY_SPAWN_TYPE_WARP;
+            Notification->DespawnType = S2C_DATA_ENTITY_DESPAWN_TYPE_WARP;
         }
         
         return BroadcastToWorld(

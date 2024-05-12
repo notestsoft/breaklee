@@ -61,6 +61,7 @@ struct _Socket {
     SocketPacketCallback OnSend;
     SocketPacketCallback OnReceived;
     IndexSetRef ConnectionIndices;
+    IndexSetIteratorRef ConnectionIterator;
     MemoryPoolRef ConnectionPool;
     Void* Userdata;
 };

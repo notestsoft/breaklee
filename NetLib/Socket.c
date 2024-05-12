@@ -42,6 +42,7 @@ SocketRef SocketCreate(
     Socket->OnReceived = OnReceived;
     Socket->ConnectionIndices = IndexSetCreate(Allocator, MaxConnectionCount);
     Socket->ConnectionPool = MemoryPoolCreate(Allocator, sizeof(struct _SocketConnection), MaxConnectionCount);
+    Socket->ConnectionIterator = NULL;
     Socket->Userdata = Userdata;
     return Socket;
 }
@@ -394,11 +395,10 @@ Void SocketUpdate(
 
     Int64 RecvLength = 0;
     UInt8 RecvBuffer[SOCKET_RECV_BUFFER_SIZE] = { 0 };
-    
-    IndexSetIteratorRef Iterator = IndexSetGetIterator(Socket->ConnectionIndices);
-    while (Iterator) {
-        Index ConnectionPoolIndex = Iterator->Value;
-        Iterator = IndexSetIteratorNext(Socket->ConnectionIndices, Iterator);
+
+    if (Socket->ConnectionIterator) {
+        Index ConnectionPoolIndex = Socket->ConnectionIterator->Value;
+        Socket->ConnectionIterator = IndexSetIteratorNext(Socket->ConnectionIndices, Socket->ConnectionIterator);
 
         SocketConnectionRef Connection = (SocketConnectionRef)MemoryPoolFetch(Socket->ConnectionPool, ConnectionPoolIndex);        
         SocketFlushWriteBuffer(Socket, Connection);
@@ -409,13 +409,16 @@ Void SocketUpdate(
             SOCKET_RECV_BUFFER_SIZE,
             &RecvLength
         );
-        if (!Success) {
-            SocketDisconnect(Socket, Connection);
-            continue;
+        if (Success) {
+            MemoryBufferAppendCopy(Connection->ReadBuffer, RecvBuffer, RecvLength);
+            SocketFetchReadBuffer(Socket, Connection);
         }
-        
-        MemoryBufferAppendCopy(Connection->ReadBuffer, RecvBuffer, RecvLength);
-        SocketFetchReadBuffer(Socket, Connection);
+        else {
+            SocketDisconnect(Socket, Connection);
+        }
+    }
+    else {
+        Socket->ConnectionIterator = IndexSetGetIterator(Socket->ConnectionIndices);
     }
 
     SocketReleaseConnections(Socket);
