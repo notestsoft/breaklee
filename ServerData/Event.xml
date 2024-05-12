@@ -1,6 +1,6 @@
 <events>
-    <event id="1" type="2" use_flags="15" world_id="1" npc_id="49" description="Cores">
-        <event_description content="Cores" />
+    <event id="1" type="2" use_flags="15" world_id="1" npc_id="49" description="Normal Upgrade">
+        <event_description content="" />
         <event_shop>
             <item slot_id="0" item_id="9" option="0" duration_id="0" price="0"></item>
             <item slot_id="1" item_id="10" option="0" duration_id="0" price="0"></item>
@@ -121,12 +121,20 @@
 			<item slot_id="127" item_id="33556121" option="9999" duration_id="0" price="0"></item>
         </event_shop>
     </event>
-    <event id="2" type="2" use_flags="15" world_id="1" npc_id="49" description="Insignia">
-        <event_description content="Insignia" />
+
+    <event id="2" type="2" use_flags="15" world_id="1" npc_id="49" description="Honor Medal">
+        <event_description content="" />
         <event_shop>
-            <item slot_id="0" item_id="33557504" option="0" duration_id="0" price="0"></item>
-			</event_shop>
-    </event_info>
+             <item slot_id="0" item_id="33556682" option="3277799" duration_id="0" price="0"></item>
+            <item slot_id="1" item_id="33554733" option="0" duration_id="0" price="0"></item>
+            <item slot_id="2" item_id="33555961" option="0" duration_id="0" price="0"></item>
+            <item slot_id="3" item_id="3192" option="65537000" duration_id="0" price="0"></item>
+            <item slot_id="4" item_id="33555979" option="65537000" duration_id="0" price="0"></item>
+            <item slot_id="5" item_id="33556128" option="0" duration_id="0" price="0"></item>
+            <item slot_id="6" item_id="33556068" option="0" duration_id="0" price="0"></item>
+		</event_shop>
+    </event>
+
     <event id="3" type="2" use_flags="15" world_id="1" npc_id="49" description="Event NPC">
         <event_description content="Event NPC" />
         <event_shop>
