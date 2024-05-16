@@ -2,6 +2,7 @@
 #include "Runtime.h"
 #include "World.h"
 #include "WorldManager.h"
+#include "NotificationProtocol.h"
 
 Index RTCalculateWorldTileIndex(
     UInt16 X,
@@ -235,27 +236,6 @@ Void RTWorldSpawnMob(
     Mob->Movement.WorldChunk = WorldChunk;
     Mob->Movement.Entity = Mob->ID;
 
-    RTEventData EventData = { 0 };
-    EventData.MobSpawnOrUpdate.Level = Mob->SpeciesData->Level;
-    EventData.MobSpawnOrUpdate.CurrentHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-    EventData.MobSpawnOrUpdate.MaxHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
-    EventData.MobSpawnOrUpdate.MobSpeciesIndex = Mob->Spawn.MobSpeciesIndex;
-    EventData.MobSpawnOrUpdate.PositionBeginX = Mob->Movement.PositionBegin.X;
-    EventData.MobSpawnOrUpdate.PositionBeginY = Mob->Movement.PositionBegin.Y;
-    EventData.MobSpawnOrUpdate.PositionEndX = Mob->Movement.PositionEnd.X;
-    EventData.MobSpawnOrUpdate.PositionEndY = Mob->Movement.PositionEnd.Y;
-
-    RTRuntimeBroadcastEventData(
-        Runtime,
-        RUNTIME_EVENT_MOB_SPAWN,
-        WorldContext,
-        kEntityIDNull,
-        Mob->ID,
-        Mob->Movement.PositionCurrent.X,
-        Mob->Movement.PositionCurrent.Y,
-        EventData
-    );
-
     if (Mob->Spawn.SpawnTriggerID) {
         RTDungeonTriggerEvent(WorldContext, Mob->Spawn.SpawnTriggerID);
     }
@@ -304,17 +284,6 @@ Void RTWorldDespawnMob(
     Mob->Movement.Entity = kEntityIDNull;
 
     RTWorldChunkRemove(Mob->Movement.WorldChunk, Mob->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT);
-
-    RTRuntimeBroadcastEvent(
-        Runtime,
-        RUNTIME_EVENT_MOB_DESPAWN,
-        WorldContext,
-        kEntityIDNull,
-        Mob->ID,
-        Mob->Movement.PositionCurrent.X,
-        Mob->Movement.PositionCurrent.Y
-    );
-
     RTMobOnEvent(Runtime, WorldContext, Mob, MOB_EVENT_DESPAWN);
 
     // TODO: This should be evaluated inside the mob it self!
@@ -457,122 +426,82 @@ RTWorldItemRef RTWorldContextGetItem(
 
 RTWorldItemRef RTWorldGetItem(
     RTRuntimeRef Runtime,
-    RTWorldContextRef World,
+    RTWorldContextRef WorldContext,
     RTEntityID Entity,
     UInt32 EntityKey
 ) {
-    for (Int32 Index = 0; Index < World->ItemCount; Index += 1) {
-        if (World->Items[Index].ID.EntityIndex == Entity.EntityIndex &&
-            World->Items[Index].EntityKey == EntityKey) {
-            return &World->Items[Index];
-        }
-    }
-
-    return NULL;
+    RTWorldItemRef Item = RTWorldGetItemByEntity(Runtime, WorldContext, Entity);
+    if (Item->ItemUniqueKey != EntityKey) return NULL;
+    
+    return Item;
 }
 
 RTWorldItemRef RTWorldGetItemByEntity(
     RTRuntimeRef Runtime,
-    RTWorldContextRef World,
+    RTWorldContextRef WorldContext,
     RTEntityID Entity
 ) {
-    assert(Entity.WorldIndex == World->WorldData->WorldIndex);
-    assert(Entity.EntityType == RUNTIME_ENTITY_TYPE_ITEM);
-
-    for (Int32 Index = 0; Index < World->ItemCount; Index += 1) {
-        if (World->Items[Index].ID.EntityIndex == Entity.EntityIndex) {
-            return &World->Items[Index];
-        }
-    }
-
-    return NULL;
+    Index *ItemPoolIndex = (Index*)DictionaryLookup(WorldContext->EntityToItem, &Entity);
+    if (!ItemPoolIndex) return NULL;
+    
+    return (RTWorldItemRef)MemoryPoolFetch(WorldContext->ItemPool, *ItemPoolIndex);
 }
 
 RTWorldItemRef RTWorldSpawnItem(
     RTRuntimeRef Runtime,
-    RTWorldContextRef World,
+    RTWorldContextRef WorldContext,
     RTEntityID SourceID,
     Int32 X,
     Int32 Y,
     RTDropResult Drop
 ) {
-    if (World->ItemCount >= RUNTIME_MEMORY_MAX_ITEM_COUNT) {
-        RTWorldDespawnItem(
-            Runtime,
-            World,
-            &World->Items[0]
-        );
+    if (MemoryPoolIsFull(WorldContext->ItemPool)) {
+        // TODO: Delete oldest item
+        RTWorldItemRef Item = (RTWorldItemRef)MemoryPoolFetch(WorldContext->ItemPool, 1);
+        RTWorldDespawnItem(Runtime, WorldContext, Item);
     }
-
-    RTWorldItemRef Item = &World->Items[World->ItemCount];
-    memset(Item, 0, sizeof(struct _RTWorldItem));
-
-    Item->ID = RTRuntimeCreateEntity(
-        Runtime,
-        World->WorldData->WorldIndex,
-        RUNTIME_ENTITY_TYPE_ITEM
-    );
-    Item->EntityKey = RandomRange(&World->Seed, 0, UINT16_MAX);
-    Item->Index = World->ItemCount;
-    Item->Item = Drop.ItemID;
+    
+    Index ItemPoolIndex = 0;
+    RTWorldItemRef Item = (RTWorldItemRef)MemoryPoolReserveNext(WorldContext->ItemPool, &ItemPoolIndex);
+    Item->ID.EntityIndex = (UInt16)ItemPoolIndex;
+    Item->ID.WorldIndex = WorldContext->WorldData->WorldIndex;
+    Item->ID.EntityType = RUNTIME_ENTITY_TYPE_ITEM;
+    Item->Index = ItemPoolIndex;
     Item->ItemOptions = Drop.ItemOptions;
+    Item->ItemSourceIndex = RTEntityGetSerial(SourceID);
+    Item->Item = Drop.ItemID;
     Item->X = X;
     Item->Y = Y;
+    Item->ItemUniqueKey = RandomRange(&WorldContext->Seed, 0, UINT16_MAX);
+    Item->ContextType = NOTIFICATION_ITEMS_SPAWN_CONTEXT_TYPE_NONE;
+    if (SourceID.EntityType == RUNTIME_ENTITY_TYPE_MOB) {
+        Item->ContextType = NOTIFICATION_ITEMS_SPAWN_CONTEXT_TYPE_MOBS;
+    }
+    if (SourceID.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) {
+        Item->ContextType = NOTIFICATION_ITEMS_SPAWN_CONTEXT_TYPE_USER;
+    }
+    Item->ItemProperty = Drop.ItemProperty;
+    Item->ItemDuration = Drop.ItemDuration;
     Item->Timestamp = PlatformGetTickCount();
-    World->ItemCount += 1;
 
-    RTEventData EventData = { 0 };
-    EventData.ItemSpawn.Entity = Item->ID;
-    EventData.ItemSpawn.ItemOptions = Item->ItemOptions;
-    EventData.ItemSpawn.ItemID = Item->Item.ID;
-    EventData.ItemSpawn.X = Item->X;
-    EventData.ItemSpawn.Y = Item->Y;
-    EventData.ItemSpawn.UniqueKey = Item->EntityKey;
-    EventData.ItemSpawn.ItemProperty = Drop.ItemProperty;
-
-    RTRuntimeBroadcastEventData(
-        Runtime,
-        RUNTIME_EVENT_ITEM_SPAWN,
-        World,
-        SourceID,
-        Item->ID,
-        Item->X,
-        Item->Y,
-        EventData
-    );
+    DictionaryInsert(WorldContext->EntityToItem, &Item->ID, &ItemPoolIndex, sizeof(Index));
+    
+    RTWorldChunkRef WorldChunk = RTWorldContextGetChunk(WorldContext, X, Y);
+    RTWorldChunkInsert(WorldChunk, Item->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT);
 
     return Item;
 }
 
 Void RTWorldDespawnItem(
     RTRuntimeRef Runtime,
-    RTWorldContextRef World,
+    RTWorldContextRef WorldContext,
     RTWorldItemRef Item
 ) {
-    assert(World->WorldData->WorldIndex == Item->ID.WorldIndex);
-
-    for (Int32 Index = 0; Index < World->ItemCount; Index++) {
-        if (World->Items[Index].ID.EntityIndex == Item->ID.EntityIndex &&
-            World->Items[Index].EntityKey == Item->EntityKey) {
-            RTRuntimeBroadcastEvent(
-                Runtime,
-                RUNTIME_EVENT_ITEM_DESPAWN,
-                World,
-                kEntityIDNull,
-                Item->ID,
-                Item->X,
-                Item->Y
-            );
-
-            Int32 TailLength = World->ItemCount - Index - 1;
-            if (TailLength > 0) {
-                memmove(&World->Items[Index], &World->Items[Index + 1], sizeof(struct _RTWorldItem) * TailLength);
-            }
-
-            World->ItemCount -= 1;
-            break;
-        }
-    }
+    RTWorldChunkRef WorldChunk = RTWorldContextGetChunk(WorldContext, Item->X, Item->Y);
+    RTWorldChunkRemove(WorldChunk, Item->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT);
+    
+    DictionaryRemove(WorldContext->EntityToItem, &Item->ID);
+    MemoryPoolRelease(WorldContext->ItemPool, Item->Index);
 }
 
 Bool RTWorldIsTileColliding(
@@ -681,30 +610,10 @@ Void RTWorldSetMobTable(
 ) {
     for (Index ChunkIndex = 0; ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT; ChunkIndex += 1) {
         RTWorldChunkRef WorldChunk = &WorldContext->Chunks[ChunkIndex];
-
-        if (WorldChunk->ReferenceCount > 0) {
-            for (Index MobIndex = 0; MobIndex < ArrayGetElementCount(WorldChunk->Mobs); MobIndex += 1) {
-                RTEntityID Entity = *(RTEntityID*)ArrayGetElementAtIndex(WorldChunk->Mobs, MobIndex);
-                RTMobRef Mob = RTWorldContextGetMob(WorldContext, Entity);
-                assert(Mob);
-
-                if (!Mob->IsDead) {
-                    Mob->IsDead = true;
-
-                    RTRuntimeBroadcastEvent(
-                        Runtime,
-                        RUNTIME_EVENT_MOB_DESPAWN,
-                        WorldContext,
-                        kEntityIDNull,
-                        Mob->ID,
-                        Mob->Movement.PositionCurrent.X,
-                        Mob->Movement.PositionCurrent.Y
-                    );
-                }
-            }
+        for (Int32 MobIndex = (Int32)ArrayGetElementCount(WorldChunk->Mobs) - 1; MobIndex >= 0; MobIndex -= 1) {
+            RTEntityID Entity = *(RTEntityID*)ArrayGetElementAtIndex(WorldChunk->Mobs, MobIndex);
+            RTWorldChunkRemove(WorldChunk, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT);
         }
-
-        ArrayRemoveAllElements(WorldChunk->Mobs, true);
     }
 
     MemoryPoolClear(WorldContext->MobPool);

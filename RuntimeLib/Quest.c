@@ -312,18 +312,6 @@ Bool RTCharacterQuestClear(
 	RTCharacterAddHonorPoint(Runtime, Character, Quest->Reward[RUNTIME_QUEST_REWARD_HONOR_POINT]);
 	RTCharacterQuestFlagSet(Character, QuestIndex);
 
-	RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
-
-	RTRuntimeBroadcastEvent(
-		Runtime,
-		RUNTIME_EVENT_CHARACTER_UPDATE_SKILL_STATUS,
-		World,
-		kEntityIDNull,
-		Character->ID,
-		Character->Movement.PositionCurrent.X,
-		Character->Movement.PositionCurrent.Y
-	);
-
 	memset(QuestSlot, 0, sizeof(struct _RTQuestSlot));
 	Character->SyncMask.QuestSlotInfo = true;
 	Character->SyncPriority.Low = true;

@@ -491,7 +491,7 @@ CLIENT_PROCEDURE_BINDING(EXTREME_UPGRADE_SEAL) {
 		Int32 SourceExtremeLevel = SourceSlot->ItemOptions & 0b111;
 		if (SourceExtremeLevel > ExtremeUpgradeBaseGrade->ExtremeUpgradeMax) goto error;
 		
-		RTDataExtremeUpgradeCategoryRef SourceCategory = RTRuntimeDataExtremeUpgradeCategoryGetByCategory(Runtime->Context, SourceSlot->ItemOptions >> 8);
+		RTDataExtremeUpgradeCategoryRef SourceCategory = RTRuntimeDataExtremeUpgradeCategoryGetByCategory(Runtime->Context, (UInt32)(SourceSlot->ItemOptions >> 8));
 		if (!SourceCategory) goto error;
 
 		RTDataExtremeUpgradeCategoryRef TargetCategory = RTRuntimeDataExtremeUpgradeCategoryGet(Runtime->Context, TargetItemType);

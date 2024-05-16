@@ -163,12 +163,15 @@ RTWorldContextRef RTWorldContextCreateGlobal(
     WorldContext->EntityToMob = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_MOB_COUNT);
     WorldContext->EntityToItem = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_ITEM_COUNT);
    
+    MemoryPoolReserve(WorldContext->ItemPool, 0);
+    
     for (Int32 ChunkX = 0; ChunkX < RUNTIME_WORLD_CHUNK_COUNT; ChunkX += 1) {
         for (Int32 ChunkY = 0; ChunkY < RUNTIME_WORLD_CHUNK_COUNT; ChunkY += 1) {
             Index ChunkIndex = ChunkX + ChunkY * RUNTIME_WORLD_CHUNK_COUNT; // TODO: Check which axis is the first one
             
             RTWorldChunkInitialize(
                 WorldManager->Runtime,
+                WorldContext,
                 &WorldContext->Chunks[ChunkIndex],
                 WorldIndex,
                 0,
@@ -245,11 +248,14 @@ RTWorldContextRef RTWorldContextCreateParty(
     WorldContext->EntityToMob = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_MOB_COUNT);
     WorldContext->EntityToItem = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_ITEM_COUNT);
     
+    MemoryPoolReserve(WorldContext->ItemPool, 0);
+    
     for (Int32 ChunkX = 0; ChunkX < RUNTIME_WORLD_CHUNK_COUNT; ChunkX += 1) {
         for (Int32 ChunkY = 0; ChunkY < RUNTIME_WORLD_CHUNK_COUNT; ChunkY += 1) {
             Index ChunkIndex = ChunkX + ChunkY * RUNTIME_WORLD_CHUNK_COUNT; // TODO: Check which axis is the first one
             RTWorldChunkInitialize(
                 WorldManager->Runtime,
+                WorldContext,
                 &WorldContext->Chunks[ChunkIndex],
                 WorldIndex,
                 WorldPoolIndex,

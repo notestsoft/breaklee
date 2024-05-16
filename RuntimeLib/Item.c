@@ -3,6 +3,8 @@
 #include "Item.h"
 #include "Inventory.h"
 #include "Runtime.h"
+#include "NotificationProtocol.h"
+#include "NotificationManager.h"
 
 Bool RTCharacterCheckItemStatRequirements(
 	RTRuntimeRef Runtime,
@@ -564,29 +566,24 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSpecialPotion) {
  
 	RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
 	assert(World);
-
-	RTEventData EventData = { 0 };
-	EventData.CharacterDataBuff.Type = RUNTIME_EVENT_CHARACTER_DATA_TYPE_BUFF_POTION;
-	EventData.CharacterDataBuff.BuffResult = RTCharacterApplyBuff(
+ 
+    Int32 BuffResult = RTCharacterApplyBuff(
+        Runtime,
 		Character,
 		ItemData->SpecialPotion.ForceEffectIndex,
 		ForceEffectValue,
 		ItemData->SpecialPotion.Duration,
 		ItemData->SpecialPotion.Cooldown
 	);
-
-	RTRuntimeBroadcastEventData(
-		Runtime,
-		RUNTIME_EVENT_CHARACTER_DATA_BUFF,
-		World,
-		kEntityIDNull,
-		Character->ID,
-		Character->Movement.PositionCurrent.X,
-		Character->Movement.PositionCurrent.Y,
-		EventData
-	);
-
-	if (EventData.CharacterDataBuff.BuffResult == RUNTIME_SKILL_RESULT_BUFF_SUCCESS) {
+ 
+    {
+        NOTIFICATION_DATA_CHARACTER_DATA* Notification = RTNotificationInit(CHARACTER_DATA);
+        Notification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_BUFF_POTION;
+        Notification->BuffResult = BuffResult;
+        RTNotificationDispatchToCharacter(Notification, Character);
+    }
+ 
+	if (BuffResult == RUNTIME_SKILL_RESULT_BUFF_SUCCESS) {
 		return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 	}
 

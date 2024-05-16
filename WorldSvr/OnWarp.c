@@ -9,15 +9,16 @@ CLIENT_PROCEDURE_BINDING(WARP) {
     if (!Character) goto error;
 
     S2C_DATA_WARP* Response = PacketBufferInit(Connection->PacketBuffer, S2C, WARP);
-    Response->Result = 1;
-
-    if (RTRuntimeWarpCharacter(Runtime, Character->ID, Packet->NpcID, Packet->WarpPositionX, Packet->WarpPositionY, Packet->WarpWorldID, Packet->WarpIndex, Packet->SlotIndex)) {
-        // TODO: Move this to runtime
-        Character->SyncMask.Info = true;
-        Character->SyncPriority.Low = true;
-        Response->Result = 0;
-    }
-
+    Response->Result = RTRuntimeWarpCharacter(
+        Runtime,
+        Character->ID,
+        Packet->NpcID,
+        Packet->WarpPositionX,
+        Packet->WarpPositionY,
+        Packet->WarpWorldID,
+        Packet->WarpIndex,
+        Packet->SlotIndex
+    ) ? 0 : 1;
     Response->AccumulatedExp = Character->Info.Basic.Exp;
     Response->AccumulatedOxp = Character->Info.Overlord.Exp;
     Response->Currency = Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];

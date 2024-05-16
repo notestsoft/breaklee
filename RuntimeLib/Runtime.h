@@ -30,10 +30,8 @@ struct _RTRuntime {
     RTPartyManagerRef PartyManager;
     RTScriptManagerRef ScriptManager;
     RTWorldManagerRef WorldManager;
+    RTNotificationManagerRef NotificationManager;
 
-    Int32 EntityCount;
-
-    RTEntityID Entities[RUNTIME_MEMORY_MAX_ENTITY_COUNT];
     Int32 EntityToCharacter[RUNTIME_MEMORY_MAX_CHARACTER_COUNT];
     Int32 SlopeFormulaDataCount;
     Int32 ItemDataCount;
@@ -116,17 +114,6 @@ Void RTRuntimeBroadcastEventData(
     RTEventData Data
 );
 
-RTEntityID RTRuntimeCreateEntity(
-    RTRuntimeRef Runtime,
-    UInt8 WorldIndex,
-    UInt8 EntityType
-);
-
-Void RTRuntimeDeleteEntity(
-    RTRuntimeRef Runtime,
-    RTEntityID Entity
-);
-
 RTWorldContextRef RTRuntimeGetWorldByID(
     RTRuntimeRef Runtime,
     Int32 WorldID
@@ -169,12 +156,6 @@ RTPartyRef RTRuntimeGetParty(
 RTWorldItemRef RTRuntimeGetItem(
     RTRuntimeRef Runtime,
     RTEntityID Entity
-);
-
-RTWorldItemRef RTRuntimeGetItemByIndex(
-    RTRuntimeRef Runtime,
-    Int32 WorldID,
-    Int32 ItemID
 );
 
 RTItemDataRef RTRuntimeGetItemDataByIndex(

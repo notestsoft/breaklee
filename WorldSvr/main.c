@@ -81,6 +81,37 @@ Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(            \
 #define IPC_P2W_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(P2W, __NAME__)
 #include "IPCCommands.h"
 
+#define NOTIFICATION_PROTOCOL(__NAME__, __COMMAND__, __BODY__)      \
+Void SERVER_NOTIFICATION_PROC_ ## __NAME__(                         \
+    RTRuntimeRef Runtime,                                           \
+    RTCharacterRef Character,                                       \
+    RTNotificationRef Notification,                                 \
+    Void* UserData                                                  \
+) {                                                                 \
+    ServerRef Server = (ServerRef)UserData;                         \
+    ServerContextRef Context = (ServerContextRef)Server->Userdata;  \
+    ClientContextRef Client = ServerGetClientByIndex(               \
+        Context,                                                    \
+        Character->CharacterIndex,                                  \
+        Character->Name                                             \
+    );                                                              \
+    if (!Client) return;                                            \
+    SocketConnectionRef ClientConnection = Client->Connection;      \
+    if (!ClientConnection) return;                                  \
+                                                                    \
+    NOTIFICATION_PROC_ ## __NAME__(                                 \
+        Server,                                                     \
+        Context,                                                    \
+        Context->ClientSocket,                                      \
+        ClientConnection,                                           \
+        Client,                                                     \
+        Context->Runtime,                                           \
+        Character,                                                  \
+        (NOTIFICATION_DATA_ ## __NAME__ *)Notification              \
+    );                                                              \
+}
+#include "RuntimeLib/NotificationProtocolDefinition.h"
+
 Void ServerOnUpdate(
     ServerRef Server,
     Void *ServerContext
@@ -186,6 +217,10 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_P2W_ ## __NAME__, &SERVER_IPC_P2W_PROC_ ## __NAME__);
 #include "IPCCommands.h"
 
+#define NOTIFICATION_PROTOCOL(__NAME__, __COMMAND__, __BODY__) \
+    RTNotificationManagerRegisterCallback(ServerContext.Runtime->NotificationManager, __COMMAND__, SERVER_NOTIFICATION_PROC_ ## __NAME__, Server);
+#include "RuntimeLib/NotificationProtocolDefinition.h"
+    
     BENCHMARK("RTRuntimeLoadData") {
         RTRuntimeLoadData(ServerContext.Runtime, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
     }

@@ -96,18 +96,21 @@ RTItemSlotRef RTEquipmentGetSlot(
 
 Bool RTEquipmentSetSlot(
     RTRuntimeRef Runtime,
+    RTCharacterRef Character,
     RTCharacterEquipmentInfoRef Equipment,
     RTItemSlotRef Slot
 );
 
 Bool RTEquipmentClearSlot(
     RTRuntimeRef Runtime,
+    RTCharacterRef Character,
     RTCharacterEquipmentInfoRef Equipment,
     Int32 SlotIndex
 );
 
 Bool RTEquipmentRemoveSlot(
     RTRuntimeRef Runtime,
+    RTCharacterRef Character,
     RTCharacterEquipmentInfoRef Equipment,
     Int32 SlotIndex,
     RTItemSlotRef Result
@@ -118,13 +121,6 @@ Int32 RTCharacterFindNextEquipmentSlotIndex(
     RTCharacterRef Character,
     Int32 NextSlotIndex,
     UInt32 ItemType
-);
-
-Void RTCharacterBroadcastEquipmentUpdate(
-    RTRuntimeRef Runtime,
-    RTCharacterRef Character,
-    RTItemSlotRef Slot,
-    Bool IsEquip
 );
 
 EXTERN_C_END

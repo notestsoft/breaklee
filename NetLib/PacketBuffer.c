@@ -7,6 +7,7 @@ struct _PacketBuffer {
     UInt16 ProtocolIdentifier;
     UInt16 ProtocolVersion;
     UInt16 ProtocolExtension;
+    Bool IsClient;
 };
 
 PacketBufferRef PacketBufferCreate(

@@ -2,6 +2,8 @@
 #include "Event.h"
 #include "OverlordMastery.h"
 #include "Runtime.h"
+#include "NotificationProtocol.h"
+#include "NotificationProtocolDefinition.h"
 
 Void RTCharacterAddOverlordExp(
 	RTRuntimeRef Runtime,
@@ -26,16 +28,18 @@ Void RTCharacterAddOverlordExp(
 			Character->SyncPriority.Low = true;
 
 			RTCharacterInitializeAttributes(Runtime, Character);
-
-			RTRuntimeBroadcastEvent(
-				Runtime,
-				RUNTIME_EVENT_CHARACTER_OVERLORD_LEVEL_UP,
-				RTRuntimeGetWorldByCharacter(Runtime, Character),
-				kEntityIDNull,
-				Character->ID,
-				Character->Movement.PositionCurrent.X,
-				Character->Movement.PositionCurrent.Y
-			);
+            RTRuntimeBroadcastCharacterData(
+                Runtime,
+                Character,
+                NOTIFICATION_CHARACTER_DATA_TYPE_OVERLORD_LEVEL
+            );
+            
+            {
+                NOTIFICATION_DATA_CHARACTER_EVENT* Notification = RTNotificationInit(CHARACTER_EVENT);
+                Notification->Type = NOTIFICATION_CHARACTER_EVENT_TYPE_OVERLORD_LEVEL_UP;
+                Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
+                RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
+            }
 		}
 		else {
 			break;

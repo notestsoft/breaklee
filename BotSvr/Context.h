@@ -19,6 +19,9 @@ typedef struct _ServerContext* ServerContextRef;
 struct _ClientContext {
     RSA* RSA;
     UInt8 RSAPayloadBuffer[CLIENT_RSA_PAYLOAD_LENGTH];
+
+    Char WorldHost[MAX_PATH];
+    UInt16 WorldPort;
 };
 typedef struct _ClientContext* ClientContextRef;
 

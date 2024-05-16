@@ -129,7 +129,7 @@ Int32 main(Int32 argc, CString* argv) {
 
     ServerContext.ClientSocket = ServerCreateSocket(
         Server,
-        SOCKET_FLAGS_LISTENER | SOCKET_FLAGS_ENCRYPTED,
+        (Config.NetLib.UseEncryption) ? SOCKET_FLAGS_LISTENER | SOCKET_FLAGS_ENCRYPTED : SOCKET_FLAGS_LISTENER,
         NULL,
         Config.Login.Port,
         sizeof(struct _ClientContext),

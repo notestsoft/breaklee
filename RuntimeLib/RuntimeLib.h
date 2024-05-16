@@ -19,6 +19,8 @@
 #include <RuntimeLib/Level.h>
 #include <RuntimeLib/Mob.h>
 #include <RuntimeLib/NewbieSupport.h>
+#include <RuntimeLib/NotificationManager.h>
+#include <RuntimeLib/NotificationProtocol.h>
 #include <RuntimeLib/Npc.h>
 #include <RuntimeLib/OverlordMastery.h>
 #include <RuntimeLib/Party.h>

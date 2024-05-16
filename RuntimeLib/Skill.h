@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Base.h"
 #include "Constants.h"
@@ -169,6 +169,7 @@ Int32 RTCalculateSkillSlopeValue(
 );
 
 Int32 RTCharacterApplyBuff(
+    RTRuntimeRef Runtime,
 	RTCharacterRef Character,
 	Int32 ForceEffectIndex,
 	Int32 ForceEffectValue,

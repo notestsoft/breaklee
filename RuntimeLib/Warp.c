@@ -74,6 +74,8 @@ Bool RTRuntimeWarpCharacter(
             Character->Info.Position.Y = WarpPoint.Y;
             Character->Info.Position.WorldID = WarpPoint.WorldIndex;
             Character->Info.Position.DungeonIndex = TargetWorld->DungeonIndex;
+            Character->SyncMask.Info = true;
+            Character->SyncPriority.Low = true;
             RTCharacterInitializeAttributes(Runtime, Character);
 
             RTMovementInitialize(
@@ -126,7 +128,9 @@ Bool RTRuntimeWarpCharacter(
             Character->Info.Position.Y = WarpPoint.Y;
             Character->Info.Position.WorldID = WarpPoint.WorldIndex;
             Character->Info.Position.DungeonIndex = NewWorld->DungeonIndex;
-
+            Character->SyncMask.Info = true;
+            Character->SyncPriority.Low = true;
+        
             RTMovementInitialize(
                 Runtime,
                 &Character->Movement,
@@ -177,7 +181,9 @@ Bool RTRuntimeWarpCharacter(
             Character->Info.Position.Y = WarpPoint.Y;
             Character->Info.Position.WorldID = WarpPoint.WorldIndex;
             Character->Info.Position.DungeonIndex = TargetWorld->DungeonIndex;
-
+            Character->SyncMask.Info = true;
+            Character->SyncPriority.Low = true;
+        
             RTMovementInitialize(
                 Runtime,
                 &Character->Movement,
@@ -218,7 +224,9 @@ Bool RTRuntimeWarpCharacter(
         Character->Info.Position.Y = WarpPositionY;
         Character->Info.Position.WorldID = WarpWorldID;
         Character->Info.Position.DungeonIndex = 0;
-
+        Character->SyncMask.Info = true;
+        Character->SyncPriority.Low = true;
+        
         RTMovementInitialize(
             Runtime,
             &Character->Movement,
@@ -262,7 +270,9 @@ Bool RTRuntimeWarpCharacter(
         Character->Info.Position.Y = WarpPoint.Y;
         Character->Info.Position.WorldID = WarpPoint.WorldIndex;
         Character->Info.Position.DungeonIndex = TargetWorld->DungeonIndex;
-
+        Character->SyncMask.Info = true;
+        Character->SyncPriority.Low = true;
+        
         RTMovementInitialize(
             Runtime,
             &Character->Movement,
@@ -303,7 +313,9 @@ Bool RTRuntimeWarpCharacter(
         Character->Info.Position.Y = WarpPoint.Y;
         Character->Info.Position.WorldID = WarpPoint.WorldIndex;
         Character->Info.Position.DungeonIndex = DungeonWorld->DungeonIndex;
-
+        Character->SyncMask.Info = true;
+        Character->SyncPriority.Low = true;
+        
         RTMovementInitialize(
             Runtime,
             &Character->Movement,
@@ -350,7 +362,9 @@ Bool RTRuntimeWarpCharacter(
         Character->Info.Position.WorldID = WarpPoint.WorldIndex;
         Character->Info.Position.DungeonIndex = DungeonWorld->DungeonIndex;
         Character->DungeonEntryItemSlotIndex = SlotIndex;
-
+        Character->SyncMask.Info = true;
+        Character->SyncPriority.Low = true;
+        
         RTMovementInitialize(
             Runtime,
             &Character->Movement,

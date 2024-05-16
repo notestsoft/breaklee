@@ -2,10 +2,13 @@
 #include "Inventory.h"
 #include "Force.h"
 #include "Runtime.h"
+#include "NotificationProtocol.h"
+#include "NotificationManager.h"
 
 Void RTCharacterInitialize(
 	RTRuntimeRef Runtime, 
 	RTCharacterRef Character,
+    CString Name,
 	RTCharacterInfoRef Info,
 	RTCharacterEquipmentInfoRef EquipmentInfo,
 	RTCharacterInventoryInfoRef InventoryInfo,
@@ -27,6 +30,7 @@ Void RTCharacterInitialize(
 	Character->SyncPriority.RawValue = 0;
 	Character->SyncTimestamp = PlatformGetTickCount();
 
+    CStringCopySafe(Character->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Name);
 	memcpy(&Character->Info, Info, sizeof(struct _RTCharacterInfo));
 	memcpy(&Character->EquipmentInfo, EquipmentInfo, sizeof(struct _RTCharacterEquipmentInfo));
 	memcpy(&Character->InventoryInfo, InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
@@ -761,7 +765,7 @@ Bool RTCharacterMovementChangeChunk(
 	Int32 PositionChunkY = Character->Movement.PositionCurrent.Y >> RUNTIME_WORLD_CHUNK_SIZE_EXPONENT;
 	Int32 DeltaChunkX = (PositionCurrentX >> RUNTIME_WORLD_CHUNK_SIZE_EXPONENT) - PositionChunkX;
 	Int32 DeltaChunkY = (PositionCurrentY >> RUNTIME_WORLD_CHUNK_SIZE_EXPONENT) - PositionChunkY;
-
+	Trace("SetChunkPos(%d, %d)", PositionChunkX, PositionChunkY);
 	if (DeltaChunkX == 0 && DeltaChunkY == 0) {
 		return true;
 	}
@@ -841,21 +845,21 @@ Bool RTCharacterBattleRankUp(
 	}
 
 	Character->Info.Style.BattleRank += 1;
-
 	Character->SyncMask.Info = true;
 	Character->SyncPriority.Low = true;
 
-	RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
-
-	RTRuntimeBroadcastEvent(
-		Runtime,
-		RUNTIME_EVENT_CHARACTER_BATTLE_RANK_UP,
-		World,
-		kEntityIDNull,
-		Character->ID,
-		Character->Movement.PositionCurrent.X,
-		Character->Movement.PositionCurrent.Y
-	);
+    {
+        NOTIFICATION_DATA_CHARACTER_BATTLE_RANK_UP* Notification = RTNotificationInit(CHARACTER_BATTLE_RANK_UP);
+        Notification->Level = Character->Info.Style.BattleRank;
+        RTNotificationDispatchToCharacter(Notification, Character);
+    }
+    
+    {
+        NOTIFICATION_DATA_CHARACTER_EVENT* Notification = RTNotificationInit(CHARACTER_EVENT);
+        Notification->Type = NOTIFICATION_CHARACTER_EVENT_TYPE_RANK_UP;
+        Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
+        RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
+    }
 
 	return true;
 }
@@ -900,6 +904,21 @@ Void RTCharacterAddExp(
         RTCharacterSetMP(Runtime, Character, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX], false);
 		Character->Info.Stat[RUNTIME_CHARACTER_STAT_PNT] += LevelDiff * 5;
 
+		for (Index Index = 0; Index < LevelDiff; Index += 1) {
+            RTRuntimeBroadcastCharacterData(
+                Runtime,
+                Character,
+                NOTIFICATION_CHARACTER_DATA_TYPE_LEVEL
+            );
+            
+            {
+                NOTIFICATION_DATA_CHARACTER_EVENT* Notification = RTNotificationInit(CHARACTER_EVENT);
+                Notification->Type = NOTIFICATION_CHARACTER_EVENT_TYPE_LEVEL_UP;
+                Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
+                RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
+            }
+		}
+        
 		if (Character->Info.Overlord.Level < 1) {
 			RTDataOverlordMasteryStartRef Start = RTRuntimeDataOverlordMasteryStartGet(Runtime->Context);
 			if (Character->Info.Basic.Level == Start->RequiredLevel) {
@@ -907,30 +926,19 @@ Void RTCharacterAddExp(
 				Character->Info.Overlord.Exp = 0;
 				Character->Info.Overlord.Point = Start->MasteryPointCount;
 
-				for (Index Index = 0; Index < LevelDiff; Index += 1) {
-					RTRuntimeBroadcastEvent(
-						Runtime,
-						RUNTIME_EVENT_CHARACTER_OVERLORD_LEVEL_UP,
-						RTRuntimeGetWorldByCharacter(Runtime, Character),
-						kEntityIDNull,
-						Character->ID,
-						Character->Movement.PositionCurrent.X,
-						Character->Movement.PositionCurrent.Y
-					);
-				}
+                RTRuntimeBroadcastCharacterData(
+                    Runtime,
+                    Character,
+                    NOTIFICATION_CHARACTER_DATA_TYPE_OVERLORD_LEVEL
+                );
+                
+                {
+                    NOTIFICATION_DATA_CHARACTER_EVENT* Notification = RTNotificationInit(CHARACTER_EVENT);
+                    Notification->Type = NOTIFICATION_CHARACTER_EVENT_TYPE_OVERLORD_LEVEL_UP;
+                    Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
+                    RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
+                }
             }
-		}
-
-		for (Index Index = 0; Index < LevelDiff; Index += 1) {
-			RTRuntimeBroadcastEvent(
-				Runtime,
-				RUNTIME_EVENT_CHARACTER_LEVEL_UP,
-				RTRuntimeGetWorldByCharacter(Runtime, Character),
-				kEntityIDNull,
-				Character->ID,
-				Character->Movement.PositionCurrent.X,
-				Character->Movement.PositionCurrent.Y
-			);
 		}
     }
 }
@@ -955,7 +963,7 @@ Int32 RTCharacterAddSkillExp(
 		Character->Info.Skill.Rank,
 		BattleStyleIndex
 	);
-		
+    
 	Int32 CurrentSkillExp = CurrentSkillLevel * SkillRankData->SkillLevelExp + (Int32)Character->Info.Skill.Exp;
 	Int32 MaxSkillExp = SkillLevelMax * SkillRankData->SkillLevelExp;
 	Int32 FinalSkillExp = MIN(MaxSkillExp, CurrentSkillExp + SkillExp);
@@ -966,24 +974,19 @@ Int32 RTCharacterAddSkillExp(
 	Character->Info.Skill.Exp = FinalSkillExp % SkillRankData->SkillLevelExp;
 	Character->Info.Skill.Level += SkillLevelDiff;
 	Character->Info.Skill.Point += SkillLevelDiff;
-
 	Character->SyncMask.Info = true;
 	Character->SyncPriority.Low = true;
-
-	RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
-
-	if (SkillLevelDiff > 0) {
-		RTRuntimeBroadcastEvent(
-			Runtime,
-			RUNTIME_EVENT_CHARACTER_SKILL_LEVEL_UP,
-			World,
-			kEntityIDNull,
-			Character->ID,
-			Character->Movement.PositionCurrent.X,
-			Character->Movement.PositionCurrent.Y
-		);
-	}
-
+ 
+    {
+        NOTIFICATION_DATA_CHARACTER_SKILL_MASTERY_UPDATE* Notification = RTNotificationInit(CHARACTER_SKILL_MASTERY_UPDATE);
+        Notification->SkillRank = Character->Info.Skill.Rank;
+        Notification->SkillLevel = Character->Info.Skill.Level;
+        Notification->SkillLevelMax = SkillLevelMax;
+        Notification->SkillExp = (UInt32)Character->Info.Skill.Exp;
+        Notification->SkillPoint = Character->Info.Skill.Point;
+        RTNotificationDispatchToCharacter(Notification, Character);
+    }
+    
 	if (Character->Info.Skill.Level >= SkillLevelMax && 
 		Character->Info.Style.BattleRank > Character->Info.Skill.Rank) {
 		RTBattleStyleSkillRankDataRef NextSkillRankData = RTRuntimeGetBattleStyleSkillRankData(
@@ -995,17 +998,20 @@ Int32 RTCharacterAddSkillExp(
 		if (NextSkillRankData) {
 			Character->Info.Skill.Rank += 1;
 			Character->Info.Skill.Level = 0;
+            
+            RTRuntimeBroadcastCharacterData(
+                Runtime,
+                Character,
+                NOTIFICATION_CHARACTER_DATA_TYPE_RANK
+            );
+            
+            {
+                NOTIFICATION_DATA_CHARACTER_EVENT* Notification = RTNotificationInit(CHARACTER_EVENT);
+                Notification->Type = NOTIFICATION_CHARACTER_EVENT_TYPE_RANK_UP;
+                Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
+                RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
+            }
 		}
-
-		RTRuntimeBroadcastEvent(
-			Runtime,
-			RUNTIME_EVENT_CHARACTER_SKILL_RANK_UP,
-			World,
-			kEntityIDNull,
-			Character->ID,
-			Character->Movement.PositionCurrent.X,
-			Character->Movement.PositionCurrent.Y
-		);
 	}
 
 	return ReceivedSkillExp;
@@ -1149,7 +1155,7 @@ Void RTCharacterSetHP(
 		RTRuntimeBroadcastCharacterData(
 			Runtime,
 			Character,
-			IsPotion ? RUNTIME_EVENT_CHARACTER_DATA_TYPE_HP_POTION : RUNTIME_EVENT_CHARACTER_DATA_TYPE_HP
+			IsPotion ? NOTIFICATION_CHARACTER_DATA_TYPE_HPPOTION : NOTIFICATION_CHARACTER_DATA_TYPE_HP
 		);
 	}
 }
@@ -1182,7 +1188,7 @@ Void RTCharacterSetMP(
 		RTRuntimeBroadcastCharacterData(
 			Runtime,
 			Character,
-			IsPotion ? RUNTIME_EVENT_CHARACTER_DATA_TYPE_MP_POTION : RUNTIME_EVENT_CHARACTER_DATA_TYPE_MP
+			IsPotion ? NOTIFICATION_CHARACTER_DATA_TYPE_MPPOTION : NOTIFICATION_CHARACTER_DATA_TYPE_MP
 		);
 	}
 }
@@ -1214,7 +1220,7 @@ Void RTCharacterSetSP(
 		RTRuntimeBroadcastCharacterData(
 			Runtime,
 			Character,
-			RUNTIME_EVENT_CHARACTER_DATA_TYPE_SP
+			NOTIFICATION_CHARACTER_DATA_TYPE_SP
 		);
 	}
 }
@@ -1245,7 +1251,7 @@ Void RTCharacterSetBP(
 		RTRuntimeBroadcastCharacterData(
 			Runtime,
 			Character,
-			RUNTIME_EVENT_CHARACTER_DATA_TYPE_BP
+			NOTIFICATION_CHARACTER_DATA_TYPE_BP
 		);
 	}
 }
@@ -1281,7 +1287,7 @@ Void RTCharacterAddRage(
 		RTRuntimeBroadcastCharacterData(
 			Runtime,
 			Character,
-			RUNTIME_EVENT_CHARACTER_DATA_TYPE_RAGE
+			NOTIFICATION_CHARACTER_DATA_TYPE_RAGE
 		);
 	}
 }
@@ -1309,7 +1315,7 @@ Bool RTCharacterConsumeRage(
 		RTRuntimeBroadcastCharacterData(
 			Runtime,
 			Character,
-			RUNTIME_EVENT_CHARACTER_DATA_TYPE_RAGE
+			NOTIFICATION_CHARACTER_DATA_TYPE_RAGE
 		);
 	}
 

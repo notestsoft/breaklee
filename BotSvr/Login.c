@@ -5,17 +5,52 @@ SERVER_PROCEDURE_BINDING(CONNECT_LOGIN) {
 	KeychainSeed(&Connection->Keychain, Packet->XorKey, Packet->XorKeyIndex);
 
 	C2S_DATA_CHECK_VERSION_LOGIN* Request = PacketBufferInit(Connection->PacketBuffer, C2S, CHECK_VERSION_LOGIN);
-	Request->ClientVersion = 13155;
+	Request->ClientVersion = 13162;
 	SocketSend(Socket, Connection, Request);
 }
 
 SERVER_PROCEDURE_BINDING(VERIFY_LINKS_LOGIN) {}
 
-SERVER_PROCEDURE_BINDING(AUTH_ACCOUNT_LOGIN) {}
+SERVER_PROCEDURE_BINDING(AUTH_ACCOUNT_LOGIN) {
+	ClientContextRef Client = (ClientContextRef)Connection->Userdata;
+	if (!Client->RSA) return;
+
+	C2S_DATA_AUTHENTICATE_LOGIN* Request = PacketBufferInit(Connection->PacketBuffer, C2S, AUTHENTICATE_LOGIN);
+	Request->SubMessageType = 0;
+	
+	Char Payload[256] = { 0 };
+	CString Username = (CString)&Payload[0];
+	CString Password = (CString)&Payload[129];
+	CStringCopySafe(Username, 128, "test");
+	CStringCopySafe(Password, 128, "test");
+	
+	CString EncryptedData = malloc(RSA_size(Client->RSA));
+	Int32 EncryptedDataLength = RSA_public_encrypt(256, Payload, EncryptedData, Client->RSA, RSA_PKCS1_OAEP_PADDING);
+	PacketBufferAppendCopy(Connection->PacketBuffer, EncryptedData, EncryptedDataLength);
+	free(EncryptedData);
+
+	SocketSend(Socket, Connection, Request);
+}
 
 SERVER_PROCEDURE_BINDING(SYSTEM_MESSAGE_LOGIN) {}
 
-SERVER_PROCEDURE_BINDING(SERVER_LIST_LOGIN) {}
+SERVER_PROCEDURE_BINDING(SERVER_LIST_LOGIN) {
+	ClientContextRef Client = (ClientContextRef)Connection->Userdata;
+
+	if (Packet->ServerCount < 1) return;
+	
+	S2C_DATA_LOGIN_SERVER_LIST_INDEX* Server = (S2C_DATA_LOGIN_SERVER_LIST_INDEX*)((UInt8*)Packet) + sizeof(S2C_DATA_SERVER_LIST_LOGIN);
+	if (Server->WorldCount < 1) return;
+
+	S2C_DATA_LOGIN_SERVER_LIST_WORLD* World = (S2C_DATA_LOGIN_SERVER_LIST_WORLD*)((UInt8*)Server) + sizeof(S2C_DATA_LOGIN_SERVER_LIST_INDEX);
+	CStringCopySafe(Client->WorldHost, MAX_PATH, World->WorldHost);
+	Client->WorldPort = World->WorldPort;
+
+	C2S_DATA_CONNECT_WORLD* Request = PacketBufferInit(Connection->PacketBuffer, C2S, CONNECT_WORLD);
+	Request->ServerID = World->ServerID;
+	Request->WorldServerID = World->WorldID;
+	SocketSend(Socket, Connection, Request);
+}
 
 SERVER_PROCEDURE_BINDING(CHECK_VERSION_LOGIN) {
 	C2S_DATA_SERVER_ENVIRONMENT_LOGIN* Request = PacketBufferInit(Connection->PacketBuffer, C2S, SERVER_ENVIRONMENT_LOGIN);
@@ -31,35 +66,23 @@ SERVER_PROCEDURE_BINDING(PUBLIC_KEY_LOGIN) {
 	ClientContextRef Client = (ClientContextRef)Connection->Userdata;
     if (Client->RSA) RSA_free(Client->RSA);
     
-    Client->RSA = RSA_new();
-    BIGNUM* Exponent = BN_new();
-    BIO* BIO = BIO_new(BIO_s_mem());
+    BIO* BIO = BIO_new_mem_buf(Packet->PublicKeyLength, Packet->Payload);
+    if (!BIO) goto error;
 
-    if (!Client->RSA || !Exponent || !BIO) goto error;
+    Client->RSA = d2i_RSAPublicKey_bio(BIO, NULL);
+    if (!Client->RSA) goto error;
 
-    BN_set_word(Exponent, RSA_F4);
+	BIO_free(BIO);
 
-    if (RSA_generate_key_ex(Client->RSA, 2048, Exponent, NULL) != 1) goto error;
-
-    // i2d_RSAPublicKey_bio(BIO, Client->RSA, );
-
-    UInt8* Key = NULL;
-    Int64 Length = BIO_get_mem_data(BIO, &Key);
-    BIO_set_mem_buf(BIO, Packet->Payload, Packet->PublicKeyLength);
-    if (!Key) goto error;
-
-    BN_free(Exponent);
-
-    return true;
+	C2S_DATA_AUTH_ACCOUNT_LOGIN* Request = PacketBufferInit(Connection->PacketBuffer, C2S, AUTH_ACCOUNT_LOGIN);
+	SocketSend(Socket, Connection, Request);
+    return;
 
 error:
     if (Client->RSA) RSA_free(Client->RSA);
-    if (Exponent) BN_free(Exponent);
     if (BIO) BIO_free(BIO);
 
     Client->RSA = NULL;
-
-    return false;
 }
 
 SERVER_PROCEDURE_BINDING(SERVER_ENVIRONMENT_LOGIN) {

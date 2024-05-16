@@ -6,6 +6,8 @@
 #include "Script.h"
 #include "World.h"
 #include "WorldManager.h"
+#include "NotificationProtocol.h"
+#include "NotificationManager.h"
 
 RTRuntimeRef RTRuntimeCreate(
     AllocatorRef Allocator,
@@ -34,6 +36,7 @@ RTRuntimeRef RTRuntimeCreate(
         RUNTIME_MEMORY_MAX_PARTY_WORLD_CONTEXT_COUNT,
         RUNTIME_MEMORY_MAX_CHARACTER_COUNT
     );
+    Runtime->NotificationManager = RTNotificationManagerCreate(Runtime);
     Runtime->SkillDataPool = MemoryPoolCreate(Allocator, sizeof(struct _RTCharacterSkillData), RUNTIME_MEMORY_MAX_CHARACTER_SKILL_DATA_COUNT);
     Runtime->ForceEffectFormulaPool = MemoryPoolCreate(Allocator, sizeof(struct _RTForceEffectFormula), RUNTIME_FORCE_EFFECT_COUNT);
     Runtime->Callback = Callback;
@@ -46,6 +49,7 @@ Void RTRuntimeDestroy(
 ) {
     MemoryPoolDestroy(Runtime->ForceEffectFormulaPool);
     MemoryPoolDestroy(Runtime->SkillDataPool);
+    RTNotificationManagerDestroy(Runtime->NotificationManager);
     RTScriptManagerDestroy(Runtime->ScriptManager);
     RTRuntimeDataContextDestroy(Runtime->Context);
     RTWorldManagerDestroy(Runtime->WorldManager);
@@ -112,40 +116,6 @@ Void RTRuntimeBroadcastEventData(
     Runtime->Event.Y = Y;
     Runtime->Event.Data = Data;
     Runtime->Callback(Runtime, &Runtime->Event, Runtime->UserData);
-}
-
-RTEntityID RTRuntimeCreateEntity(
-    RTRuntimeRef Runtime,
-    UInt8 WorldIndex,
-    UInt8 EntityType
-) {
-    assert(Runtime->EntityCount < RUNTIME_MEMORY_MAX_ENTITY_COUNT);
-
-    for (Int32 Index = 0; Index < RUNTIME_MEMORY_MAX_ENTITY_COUNT; Index += 1) {
-        if (!RTEntityIsNull(Runtime->Entities[Index])) continue;
-
-        Runtime->Entities[Index].EntityIndex = Index + 1;
-        Runtime->Entities[Index].WorldIndex = WorldIndex;
-        Runtime->Entities[Index].EntityType = EntityType;
-        Runtime->EntityCount += 1;
-        return Runtime->Entities[Index];
-    }
-
-    Fatal("Maximum amount of entities reached!");
-    return kEntityIDNull;
-}
-
-Void RTRuntimeDeleteEntity(
-    RTRuntimeRef Runtime,
-    RTEntityID Entity
-) {
-    Int32 Index = Entity.EntityIndex - 1;
-
-    assert(Index < RUNTIME_MEMORY_MAX_ENTITY_COUNT);
-    assert(RTEntityIsEqual(Runtime->Entities[Index], Entity));
-
-    Runtime->Entities[Index] = kEntityIDNull;
-    Runtime->EntityCount -= 1;
 }
 
 RTWorldContextRef RTRuntimeGetWorldByID(
@@ -228,22 +198,6 @@ RTWorldItemRef RTRuntimeGetItem(
     if (!World) return NULL;
 
     return RTWorldGetItemByEntity(Runtime, World, Entity);
-}
-
-RTWorldItemRef RTRuntimeGetItemByIndex(
-    RTRuntimeRef Runtime,
-    Int32 WorldID,
-    Int32 ItemID
-) {
-    RTWorldContextRef World = RTRuntimeGetWorldByID(Runtime, WorldID);
-    assert(World);
-   
-    for (Int32 Index = 0; Index < World->ItemCount; Index++) {
-        RTWorldItemRef Item = &World->Items[Index];
-        if (Item->Index == ItemID) return Item;
-    }
-
-    return NULL;
 }
 
 RTItemDataRef RTRuntimeGetItemDataByIndex(
@@ -556,20 +510,100 @@ Void RTRuntimeBroadcastCharacterData(
     RTCharacterRef Character,
     UInt32 Type
 ) {
-    RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
-    assert(World);
+    NOTIFICATION_DATA_CHARACTER_DATA* Notification = RTNotificationInit(CHARACTER_DATA);
+    Notification->Type = Type;
 
-    RTEventData EventData = { 0 };
-    EventData.CharacterData.Type = Type;
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_HPPOTION) {
+        Notification->HPAfterPotion = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+    }
 
-    RTRuntimeBroadcastEventData(
-        Runtime,
-        RUNTIME_EVENT_CHARACTER_DATA,
-        World,
-        kEntityIDNull,
-        Character->ID,
-        Character->Movement.PositionCurrent.X,
-        Character->Movement.PositionCurrent.Y,
-        EventData
-    );
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_MPPOTION) {
+        // TODO: Check if this is also padded like HPAfterPotion
+        Notification->MP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+    }
+
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_HP) {
+        Notification->HP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+    }
+
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_MP) {
+        Notification->MP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+    }
+
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_SP) {
+        Notification->SP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+    }
+
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_SP_INCREASE) {
+        Fatal("Implementation missing!");
+    }
+
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_SP_DECREASE) {
+        Fatal("Implementation missing!");
+    }
+
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_EXP) {
+        Fatal("Implementation missing!");
+    }
+
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_RANK) {
+        Notification->SkillRank = Character->Info.Skill.Rank;
+    }
+
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_LEVEL) {
+        Fatal("Implementation missing!");
+    }
+
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_SP_DECREASE_EX) {
+        Fatal("Implementation missing!");
+    }
+
+    assert(Notification->Type != NOTIFICATION_CHARACTER_DATA_TYPE_BUFF_POTION);
+
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_REPUTATION) {
+        Fatal("Implementation missing!");
+    }
+
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_GUIDITEMFX) {
+        Fatal("Implementation missing!");
+    }
+
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_RESURRECTION) {
+        Fatal("Implementation missing!");
+    }
+
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_PENALTY_EXP) {
+        Fatal("Implementation missing!");
+    }
+
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_DAMAGE_CELL) {
+        Fatal("Implementation missing!");
+    }
+
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_DEFFICIENCY) {
+        Fatal("Implementation missing!");
+    }
+
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_AUTH_HP_POTION) {
+        Fatal("Implementation missing!");
+    }
+
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_RAGE) {
+        Notification->Rage = Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT];
+    }
+
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_OVERLORD_LEVEL) {
+        Notification->Level = Character->Info.Overlord.Level;
+    }
+
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_HONOR_MEDAL) {
+        Notification->HonorMedalGrade = RTCharacterGetHonorMedalGrade(Runtime, Character, 0);
+        Notification->HonorPoints = Character->Info.Honor.Point;
+    }
+
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_BP) {
+        Notification->BP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT];
+    }
+
+    RTNotificationDispatchToCharacter(Notification, Character);
 }

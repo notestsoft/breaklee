@@ -1,6 +1,8 @@
 #include "Character.h"
 #include "HonorMedal.h"
 #include "Runtime.h"
+#include "NotificationProtocol.h"
+#include "NotificationManager.h"
 
 Int32 RTRuntimeGetHonorMedalMaxScore(
     RTRuntimeRef Runtime,
@@ -44,17 +46,10 @@ Bool RTCharacterAddHonorMedalScore(
     Character->SyncMask.HonorMedalInfo = true;
     Character->SyncPriority.High = true;
 
-    RTEventData EventData = { 0 };
-    EventData.CharacterData.Type = RUNTIME_EVENT_CHARACTER_DATA_TYPE_HONOR_MEDAL;
-    RTRuntimeBroadcastEventData(
+    RTRuntimeBroadcastCharacterData(
         Runtime,
-        RUNTIME_EVENT_CHARACTER_DATA,
-        RTRuntimeGetWorldByCharacter(Runtime, Character),
-        kEntityIDNull,
-        Character->ID,
-        Character->Movement.PositionCurrent.X,
-        Character->Movement.PositionCurrent.Y,
-        EventData
+        Character,
+        NOTIFICATION_CHARACTER_DATA_TYPE_HONOR_MEDAL
     );
 
     return true;

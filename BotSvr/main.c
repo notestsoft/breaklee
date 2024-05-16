@@ -30,6 +30,17 @@ Void SERVER_PROC_ ## __NAME__ ## _WORLD(                                        
 }
 #include "WorldCommands.h"
 
+Void ServerOnConnectLogin(
+    ServerRef Server,
+    Void* ServerContext,
+    SocketRef Socket,
+    SocketConnectionRef Connection,
+    Void* ConnectionContext
+) {
+    C2S_DATA_CONNECT_LOGIN* Request = PacketBufferInit(Connection->PacketBuffer, C2S, CONNECT_LOGIN);
+    SocketSend(Socket, Connection, Request);
+}
+
 Void ServerOnUpdate(
     ServerRef Server,
     Void* ServerContext
@@ -37,11 +48,18 @@ Void ServerOnUpdate(
     ServerContextRef Context = (ServerContextRef)ServerContext;
     if (Context->WorldSocket == NULL && !Context->IsLoggingIn) {
         Context->IsLoggingIn = true;
-        SocketConnect(Context->LoginSocket, "127.0.0.1", 38101, 10000);
+        // SocketConnect(Context->LoginSocket, "127.0.0.1", 38101, 10000);
     }
 }
 
 Int32 main(Int32 ArgumentCount, CString* Arguments) {
+    DiagnosticSetup(
+        stdout,
+        LOG_LEVEL_TRACE,
+        NULL,
+        NULL
+    );
+
     AllocatorRef Allocator = AllocatorGetSystemDefault();
     IPCNodeID NodeID = kIPCNodeIDNull;
     struct _ServerContext ServerContext = { 0 };
@@ -62,7 +80,7 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     ServerContext.LoginSocket = ServerCreateSocket(
         Server,
         SOCKET_FLAGS_CLIENT | SOCKET_FLAGS_ENCRYPTED,
-        NULL,
+        "127.0.0.1",
         38101,
         sizeof(struct _ClientContext),
         0xB7D9,
@@ -71,8 +89,8 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
         0x1FFFF,
         0x7FFFF,
         1,
-        0,
-        NULL,
+        1,
+        ServerOnConnectLogin,
         NULL
     );
 

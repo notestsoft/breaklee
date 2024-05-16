@@ -29,13 +29,17 @@ enum {
 };
 
 struct _RTWorldItem {
+    Index Index;
     RTEntityID ID;
-    UInt16 EntityKey;
-    Int32 Index;
-    RTItem Item;
     UInt64 ItemOptions;
-    Int32 X;
-    Int32 Y;
+    UInt32 ItemSourceIndex;
+    RTItem Item;
+    UInt16 X;
+    UInt16 Y;
+    UInt16 ItemUniqueKey;
+    UInt8 ContextType;
+    RTItemProperty ItemProperty;
+    RTItemDuration ItemDuration;
     Timestamp Timestamp;
 };
 
@@ -65,9 +69,7 @@ struct _RTWorldContext {
     Bool Closed;
     Bool Cleared;
     Int32 Seed;
-    Int32 ItemCount;
-    struct _RTWorldItem Items[RUNTIME_MEMORY_MAX_ITEM_COUNT];
-    
+
     Int32 MissionItemCount;
     Int32 MissionMobCount;
     struct _RTQuestUnitItemData MissionItems[RUNTIME_MAX_QUEST_COUNTER_COUNT];
@@ -213,7 +215,7 @@ Void RTWorldSetMobTable(
     ArrayRef MobTable
 );
 
-typedef Void(*RTEntityVisitorByDistanceCallback)(
+typedef Void (*RTEntityVisitorByDistanceCallback)(
     RTEntityID Entity,
     UInt16 Distance,
     Void* Userdata

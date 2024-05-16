@@ -382,6 +382,7 @@ IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER) {
     RTCharacterInitialize(
         Runtime, 
         Character,
+        Packet->Character.Name,
         &Packet->Character.CharacterData,
         &Packet->Character.EquipmentData,
         &Packet->Character.InventoryData,

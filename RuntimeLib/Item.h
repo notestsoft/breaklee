@@ -125,6 +125,23 @@ enum {
 #define RTQuestItemGetOptions(ItemOptions) ((ItemOptions & RUNTIME_QUEST_ITEM_INDEX_MASK) >> RUNTIME_QUEST_ITEM_INDEX_EXPONENT)
 #define RTQuestItemGetCount(ItemOptions) (ItemOptions & RUNTIME_QUEST_ITEM_COUNT_MASK)
 
+struct _RTItemProperty {
+	union {
+		struct { UInt8 Serial; };
+		struct {
+			UInt8 IsQuestItem : 1;
+			UInt8 Unknown1 : 1;
+			UInt8 Unknown2 : 1;
+			UInt8 Unknown3 : 1;
+			UInt8 Unknown4 : 1;
+			UInt8 Unknown5 : 1;
+			UInt8 Unknown6 : 1;
+			UInt8 Unknown7 : 1;
+		};
+	};
+};
+typedef struct _RTItemProperty RTItemProperty;
+
 struct _RTItemData {
     Int32 ItemID;
     Int32 ItemType;
@@ -355,23 +372,6 @@ struct _RTItemDuration {
     };
 };
 typedef struct _RTItemDuration RTItemDuration;
-
-struct _RTItemProperty {
-	union {
-		struct { UInt8 Serial; };
-		struct {
-			UInt8 IsQuestItem : 1;
-			UInt8 Unknown1 : 1;
-			UInt8 Unknown2 : 1;
-			UInt8 Unknown3 : 1;
-			UInt8 Unknown4 : 1;
-			UInt8 Unknown5 : 1;
-			UInt8 Unknown6 : 1;
-			UInt8 Unknown7 : 1;
-		};
-	};
-};
-typedef struct _RTItemProperty RTItemProperty;
 
 struct _RTItemHonorMedalSealData {
 	Int32 Group;

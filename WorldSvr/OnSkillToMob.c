@@ -74,7 +74,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 	S2C_DATA_SKILL_TO_MOB* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SKILL_TO_MOB);
 	Response->SkillIndex = Packet->SkillIndex;
 	Response->CharacterHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-	Response->CharacterMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+	Response->CharacterMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 	Response->CharacterSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
 	Response->Unknown4 = -1;
 	Response->CharacterMaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
@@ -164,20 +164,6 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 	Response->AP = Character->Info.Ability.Point;
 	Response->TargetCount = TargetCount;
 	SocketSend(Socket, Connection, Response);
-
-	if (ReceivedSkillExp > 0) {
-		RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
-
-		RTRuntimeBroadcastEvent(
-			Runtime,
-			RUNTIME_EVENT_CHARACTER_UPDATE_SKILL_STATUS,
-			World,
-			kEntityIDNull,
-			Character->ID,
-			Character->Movement.PositionCurrent.X,
-			Character->Movement.PositionCurrent.Y
-		);
-	}
 
 	S2C_DATA_NFY_SKILL_TO_MOB* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_SKILL_TO_MOB);
 	Notification->SkillIndex = Response->SkillIndex;

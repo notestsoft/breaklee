@@ -1,6 +1,8 @@
 #include "Character.h"
 #include "ForceWing.h"
 #include "Runtime.h"
+#include "NotificationProtocol.h"
+#include "NotificationManager.h"
 
 Bool RTCharacterEnableForceWing(
 	RTRuntimeRef Runtime,
@@ -34,23 +36,23 @@ Bool RTCharacterEnableForceWing(
 	Character->SyncMask.ForceWingInfo = true;
 	Character->SyncPriority.High = true;
 
-	RTEventData EventData = { 0 };
-	EventData.CharacterUpdateForceWing.CharacterIndex = (UInt32)Character->CharacterIndex;
-	EventData.CharacterUpdateForceWing.ForceWingGrade = Character->ForceWingInfo.Grade;
-	EventData.CharacterUpdateForceWing.ForceWingLevel = Character->ForceWingInfo.Level;
-	EventData.CharacterUpdateForceWing.ForceWingExp = Character->ForceWingInfo.Exp;
-	EventData.CharacterUpdateForceWing.TrainingPointCount = Character->ForceWingInfo.PresetTrainingPointCount[Character->ForceWingInfo.ActivePresetIndex];
-
-	RTRuntimeBroadcastEventData(
-		Runtime,
-		RUNTIME_EVENT_CHARACTER_UPDATE_FORCE_WING,
-		RTRuntimeGetWorldByCharacter(Runtime, Character),
-		kEntityIDNull,
-		Character->ID,
-		Character->Movement.PositionCurrent.X,
-		Character->Movement.PositionCurrent.Y,
-		EventData
-	);
+    {
+        NOTIFICATION_DATA_CHARACTER_FORCE_WING_UPDATE* Notification = RTNotificationInit(CHARACTER_FORCE_WING_UPDATE);
+        Notification->Status = 1;
+        Notification->ForceWingGrade = Character->ForceWingInfo.Grade;
+        Notification->ForceWingLevel = Character->ForceWingInfo.Level;
+        Notification->ForceWingExp = Character->ForceWingInfo.Exp;
+        Notification->Unknown1 = 0;
+        Notification->TrainingPointCount = Character->ForceWingInfo.PresetTrainingPointCount[Character->ForceWingInfo.ActivePresetIndex];
+        RTNotificationDispatchToCharacter(Notification, Character);
+    }
+    
+    {
+        NOTIFICATION_DATA_CHARACTER_FORCE_WING_GRADE* Notification = RTNotificationInit(CHARACTER_FORCE_WING_GRADE);
+        Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
+        Notification->ForceWingGrade = Character->ForceWingInfo.Grade;
+        RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
+    }
 
 	return true;
 }
@@ -69,16 +71,11 @@ Void RTCharacterAddWingExp(
 	RTEventData EventData = { 0 };
 	EventData.CharacterUpdateForceWingExp.ForceWingExp = Character->ForceWingInfo.Exp;
 
-	RTRuntimeBroadcastEventData(
-		Runtime,
-		RUNTIME_EVENT_CHARACTER_UPDATE_FORCE_WING_EXP,
-		RTRuntimeGetWorldByCharacter(Runtime, Character),
-		kEntityIDNull,
-		Character->ID,
-		Character->Movement.PositionCurrent.X,
-		Character->Movement.PositionCurrent.Y,
-		EventData
-	);
+    {
+        NOTIFICATION_DATA_CHARACTER_FORCE_WING_EXP* Notification = RTNotificationInit(CHARACTER_FORCE_WING_EXP);
+        Notification->ForceWingExp = Character->ForceWingInfo.Exp;
+        RTNotificationDispatchToCharacter(Notification, Character);
+    }
 }
 
 Bool RTCharacterForceWingLevelUp(
@@ -154,17 +151,14 @@ Bool RTCharacterForceWingLevelUp(
 	Character->SyncMask.InventoryInfo = true;
 	Character->SyncMask.ForceWingInfo = true;
 	Character->SyncPriority.High = true;
-
-	RTRuntimeBroadcastEvent(
-		Runtime,
-		RUNTIME_EVENT_CHARACTER_UPDATE_FORCE_WING_LEVEL_UP,
-		RTRuntimeGetWorldByCharacter(Runtime, Character),
-		kEntityIDNull,
-		Character->ID,
-		Character->Movement.PositionCurrent.X,
-		Character->Movement.PositionCurrent.Y
-	);
-
+ 
+    {
+        NOTIFICATION_DATA_CHARACTER_EVENT* Notification = RTNotificationInit(CHARACTER_EVENT);
+        Notification->Type = NOTIFICATION_CHARACTER_EVENT_TYPE_FORCE_WING_LEVEL_UP;
+        Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
+        RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
+    }
+ 
 	return true;
 }
 

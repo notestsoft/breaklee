@@ -2,6 +2,8 @@
 #include "Character.h"
 #include "Equipment.h"
 #include "Runtime.h"
+#include "NotificationProtocol.h"
+#include "NotificationManager.h"
 
 Bool RTEquipmentSlotIndexMatchItemType(
     UInt32 BattleStyleIndex,
@@ -116,6 +118,7 @@ RTItemSlotRef RTEquipmentGetSlot(
 
 Bool RTEquipmentSetSlot(
     RTRuntimeRef Runtime,
+    RTCharacterRef Character,
     RTCharacterEquipmentInfoRef Equipment,
     RTItemSlotRef Slot
 ) {
@@ -129,11 +132,24 @@ Bool RTEquipmentSetSlot(
     CurrentSlot = &Equipment->Slots[Equipment->Count];
     memcpy(CurrentSlot, Slot, sizeof(struct _RTItemSlot));
     Equipment->Count += 1;
+
+    {
+        NOTIFICATION_DATA_CHARACTER_ITEM_EQUIP* Notification = RTNotificationInit(CHARACTER_ITEM_EQUIP);
+        Notification->CharacterIndex = Character->CharacterIndex;
+        Notification->Item = Slot->Item;
+        Notification->ItemOptions = Slot->ItemOptions;
+        Notification->EquipmentSlotIndex = Slot->SlotIndex;
+        Notification->Unknown1 = 0;
+        Notification->Unknown2 = 0;
+        RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
+    }
+
     return true;
 }
 
 Bool RTEquipmentClearSlot(
     RTRuntimeRef Runtime,
+    RTCharacterRef Character,
     RTCharacterEquipmentInfoRef Equipment,
     Int32 SlotIndex
 ) {
@@ -143,6 +159,13 @@ Bool RTEquipmentClearSlot(
     for (Int32 Index = 0; Index < Equipment->Count; Index++) {
         RTItemSlotRef Slot = &Equipment->Slots[Index];
         if (Slot->SlotIndex == SlotIndex) {
+            {
+                NOTIFICATION_DATA_CHARACTER_ITEM_UNEQUIP* Notification = RTNotificationInit(CHARACTER_ITEM_UNEQUIP);
+                Notification->CharacterIndex = Character->CharacterIndex;
+                Notification->EquipmentSlotIndex = Slot->SlotIndex;
+                RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
+            }
+
             Int32 TailLength = Equipment->Count - Index - 1;
             if (TailLength > 0) {
                 memmove(
@@ -162,6 +185,7 @@ Bool RTEquipmentClearSlot(
 
 Bool RTEquipmentRemoveSlot(
     RTRuntimeRef Runtime,
+    RTCharacterRef Character,
     RTCharacterEquipmentInfoRef Equipment,
     Int32 SlotIndex,
     RTItemSlotRef Result
@@ -171,7 +195,7 @@ Bool RTEquipmentRemoveSlot(
 
     memcpy(Result, Slot, sizeof(struct _RTItemSlot));
     
-    return RTEquipmentClearSlot(Runtime, Equipment, SlotIndex);
+    return RTEquipmentClearSlot(Runtime, Character, Equipment, SlotIndex);
 }
 
 Int32 RTCharacterFindNextEquipmentSlotIndex(
@@ -188,45 +212,4 @@ Int32 RTCharacterFindNextEquipmentSlotIndex(
     }
 
     return -1;
-}
-
-Void RTCharacterBroadcastEquipmentUpdate(
-    RTRuntimeRef Runtime,
-    RTCharacterRef Character,
-    RTItemSlotRef Slot,
-    Bool IsEquip
-) {
-    RTEventData EventData = { 0 };
-    if (IsEquip) {
-        EventData.CharacterEquipItem.CharacterIndex = (UInt32)Character->CharacterIndex;
-        EventData.CharacterEquipItem.Item = Slot->Item;
-        EventData.CharacterEquipItem.ItemOptions = Slot->ItemOptions;
-        EventData.CharacterEquipItem.EquipmentSlotIndex = Slot->SlotIndex;
-
-        RTRuntimeBroadcastEventData(
-            Runtime,
-            RUNTIME_EVENT_CHARACTER_EQUIP_ITEM,
-            RTRuntimeGetWorldByCharacter(Runtime, Character),
-            kEntityIDNull,
-            Character->ID,
-            Character->Movement.PositionCurrent.X,
-            Character->Movement.PositionCurrent.Y,
-            EventData
-        );
-    }
-    else {
-        EventData.CharacterUnequipItem.CharacterIndex = (UInt32)Character->CharacterIndex;
-        EventData.CharacterUnequipItem.EquipmentSlotIndex = Slot->SlotIndex;
-
-        RTRuntimeBroadcastEventData(
-            Runtime,
-            RUNTIME_EVENT_CHARACTER_UNEQUIP_ITEM,
-            RTRuntimeGetWorldByCharacter(Runtime, Character),
-            kEntityIDNull,
-            Character->ID,
-            Character->Movement.PositionCurrent.X,
-            Character->Movement.PositionCurrent.Y,
-            EventData
-        );
-    }
 }

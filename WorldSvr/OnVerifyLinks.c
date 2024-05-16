@@ -14,7 +14,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_LINKS) {
 		Request->Header.Source = Server->IPCSocket->NodeID;
 		Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
 		Request->Header.Target.Type = IPC_TYPE_LOGIN;
-		Request->AccountID = Client->Account.AccountID;
+		Request->AccountID = (Int32)Client->Account.AccountID;
 		Request->AuthKey = Packet->AuthKey;
 		Request->EntityID = Packet->EntityID;
 		Request->GroupIndex = Packet->GroupIndex;
@@ -30,7 +30,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_LINKS) {
 		Request->Header.Target.Group = Packet->GroupIndex;
 		Request->Header.Target.Index = Packet->NodeIndex;
 		Request->Header.Target.Type = IPC_TYPE_WORLD;
-		Request->AccountID = Client->Account.AccountID;
+		Request->AccountID = (Int32)Client->Account.AccountID;
 		Request->AuthKey = Packet->AuthKey;
 		Request->EntityID = Packet->EntityID;
 		Request->GroupIndex = Packet->GroupIndex;

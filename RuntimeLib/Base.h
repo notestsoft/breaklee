@@ -61,6 +61,8 @@ typedef struct _RTMob* RTMobRef;
 typedef struct _RTMovement* RTMovementRef;
 typedef struct _RTNewbieSupportSlot* RTNewbieSupportSlotRef;
 typedef struct _RTCharacterNewbieSupportInfo* RTCharacterNewbieSupportInfoRef;
+typedef struct _RTNotification* RTNotificationRef;
+typedef struct _RTNotificationManager* RTNotificationManagerRef;
 typedef struct _RTNpc* RTNpcRef;
 typedef struct _RTPartyMemberInfo* RTPartyMemberInfoRef;
 typedef struct _RTPartyMemberData* RTPartyMemberDataRef;

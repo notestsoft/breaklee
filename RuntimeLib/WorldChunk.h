@@ -14,6 +14,7 @@ enum {
 
 struct _RTWorldChunk {
     RTRuntimeRef Runtime;
+    RTWorldContextRef WorldContext;
     Index WorldIndex;
     Index WorldInstanceIndex;
 	Index ReferenceCount;
@@ -28,6 +29,7 @@ typedef Void* RTWorldChunkIteratorRef;
 
 Void RTWorldChunkInitialize(
 	RTRuntimeRef Runtime,
+    RTWorldContextRef WorldContext,
 	RTWorldChunkRef Chunk,
     Index WorldIndex,
     Index WorldInstanceIndex,
@@ -45,9 +47,9 @@ Void RTWorldChunkInsert(
     Int32 Reason
 );
 
-Void RTWorldChunkMove(
-    RTWorldChunkRef NewChunk,
-    RTMovementRef Movement
+Void RTWorldChunkUpdate(
+	RTWorldChunkRef Chunk,
+	RTEntityID Entity
 );
 
 Void RTWorldChunkRemove(

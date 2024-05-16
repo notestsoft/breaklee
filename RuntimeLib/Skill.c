@@ -88,13 +88,15 @@ Int32 RTCalculateSkillSlopeValue(
 }
 
 Int32 RTCharacterApplyBuff(
-	RTCharacterRef Character,
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
 	Int32 ForceEffectIndex,
 	Int32 ForceEffectValue,
 	Int32 Duration,
 	Int32 Cooldown
 ) {
+    Int32 BuffResult = 0;
 	// TODO: Add force effect system with buff support...
-
+    
 	return RUNTIME_SKILL_RESULT_BUFF_SUCCESS;
 }

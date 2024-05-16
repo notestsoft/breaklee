@@ -14,7 +14,7 @@ Void OnVerifyCharacterSubpassword(
     SocketConnectionRef Connection,
     C2S_DATA_VERIFY_SUBPASSWORD* Packet
 ) {
-	Int32 SubpasswordLength = strlen(Client->Account.CharacterPassword);
+	Int32 SubpasswordLength = (Int32)strlen(Client->Account.CharacterPassword);
     Bool IsSubpasswordSet = SubpasswordLength > 0;
     if (!IsSubpasswordSet || strlen(Packet->Password) != SubpasswordLength ||
         memcmp(Client->Account.CharacterPassword, Packet->Password, SubpasswordLength) != 0) {

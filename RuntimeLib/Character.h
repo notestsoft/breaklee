@@ -255,7 +255,7 @@ struct _RTCharacter {
 
 //    Int32 Index;
 //    Timestamp CreationDate;
-//    Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1];
+    Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1];
     struct _RTCharacterInfo Info;
     struct _RTCharacterEquipmentInfo EquipmentInfo;
     struct _RTCharacterEquipmentLockInfo EquipmentLockInfo;
@@ -308,6 +308,7 @@ struct _RTCharacter {
 Void RTCharacterInitialize(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
+    CString Name,
     RTCharacterInfoRef Info,
     RTCharacterEquipmentInfoRef EquipmentInfo,
     RTCharacterInventoryInfoRef InventoryInfo,
