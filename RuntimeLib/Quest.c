@@ -1,10 +1,11 @@
 #include "Character.h"
-#include "Event.h"
 #include "Npc.h"
 #include "Party.h"
 #include "Quest.h"
 #include "Runtime.h"
 #include "World.h"
+#include "NotificationProtocol.h"
+#include "NotificationManager.h"
 
 Void RTCharacterQuestFlagClear(
 	RTCharacterRef Character,
@@ -867,22 +868,12 @@ Bool RTPartyIncrementQuestMobCounter(
 					QuestSlot->Counter[QuestCounterIndex] + 1
 				);
 
-				RTWorldContextRef World = RTRuntimeGetWorldByParty(Runtime, PartyID);
-				assert(World);
-
-				RTEventData EventData = { 0 };
-				EventData.PartyQuestMissionMobKill.QuestID = Quest->ID;
-				EventData.PartyQuestMissionMobKill.MobSpeciesIndex = MobSpeciesIndex;
-				RTRuntimeBroadcastEventData(
-					Runtime,
-					RUNTIME_EVENT_PARTY_QUEST_MISSION_MOB_KILL,
-					World,
-					kEntityIDNull,
-					PartyID,
-					0,
-					0,
-					EventData
-				);
+				{
+					NOTIFICATION_DATA_PARTY_QUEST_MISSION_MOB_KILL* Notification = RTNotificationInit(PARTY_QUEST_MISSION_MOB_KILL);
+					Notification->QuestID = Quest->ID;
+					Notification->MobSpeciesIndex = MobSpeciesIndex;
+					RTNotificationDispatchToParty(Notification, Party);
+				}
 
 				return true;
 			}

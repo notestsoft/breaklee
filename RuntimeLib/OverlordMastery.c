@@ -1,5 +1,4 @@
 #include "Character.h"
-#include "Event.h"
 #include "OverlordMastery.h"
 #include "Runtime.h"
 #include "NotificationProtocol.h"

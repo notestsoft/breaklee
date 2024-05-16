@@ -43,6 +43,12 @@ Void RTNotificationManagerDispatchToCharacter(
     RTCharacterRef Character
 );
 
+Void RTNotificationManagerDispatchToParty(
+    RTNotificationManagerRef NotificationManager,
+    Void* Notification,
+    RTPartyRef Party
+);
+
 Void RTNotificationManagerDispatchToChunk(
     RTNotificationManagerRef NotificationManager,
     Void* Notification,
@@ -65,6 +71,9 @@ RTNotificationRef _RTNotificationInit(
 
 #define RTNotificationDispatchToCharacter(Notification, Character) \
 RTNotificationManagerDispatchToCharacter(Runtime->NotificationManager, Notification, Character)
+
+#define RTNotificationDispatchToParty(Notification, Party) \
+RTNotificationManagerDispatchToParty(Runtime->NotificationManager, Notification, Party)
 
 #define RTNotificationDispatchToChunk(Notification, WorldChunk) \
 RTNotificationManagerDispatchToChunk(Runtime->NotificationManager, Notification, WorldChunk)

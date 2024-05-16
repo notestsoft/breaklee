@@ -9,7 +9,6 @@
 #include <RuntimeLib/Dungeon.h>
 #include <RuntimeLib/Equipment.h>
 #include <RuntimeLib/EssenceAbility.h>
-#include <RuntimeLib/Event.h>
 #include <RuntimeLib/Force.h>
 #include <RuntimeLib/ForceWing.h>
 #include <RuntimeLib/GiftBox.h>

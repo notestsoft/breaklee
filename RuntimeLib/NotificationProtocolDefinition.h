@@ -231,6 +231,47 @@ NOTIFICATION_PROTOCOL(CHARACTER_ITEM_UNEQUIP, 207,
     UInt16 EquipmentSlotIndex;
 )
 
+NOTIFICATION_PROTOCOL(MOB_MOVE_BEGIN, 213,
+    RTEntityID Entity;
+    UInt32 TickCount;
+    UInt16 PositionBeginX;
+    UInt16 PositionBeginY;
+    UInt16 PositionEndX;
+    UInt16 PositionEndY;
+)
+
+NOTIFICATION_PROTOCOL(MOB_MOVE_END, 214,
+    RTEntityID Entity;
+    UInt16 PositionCurrentX;
+    UInt16 PositionCurrentY;
+)
+
+NOTIFICATION_PROTOCOL(MOB_CHASE_BEGIN, 215,
+    RTEntityID Entity;
+    UInt32 TickCount;
+    UInt16 PositionBeginX;
+    UInt16 PositionBeginY;
+    UInt16 PositionEndX;
+    UInt16 PositionEndY;
+)
+
+NOTIFICATION_PROTOCOL(MOB_CHASE_END, 216,
+    RTEntityID Entity;
+    UInt16 PositionCurrentX;
+    UInt16 PositionCurrentY;
+)
+
+NOTIFICATION_PROTOCOL(ATTACK_TO_MOB, 225,
+    UInt8 AttackType;
+    UInt32 CharacterIndex;
+    RTEntityID Mob;
+    UInt8 MobIDType;
+    UInt64 MobHP;
+    UInt8 Unknown1;
+    UInt64 CharacterHP;
+    UInt32 Unknown2;
+)
+
 NOTIFICATION_PROTOCOL(CHARACTER_BATTLE_RANK_UP, 276,
     UInt8 Level;
 )
@@ -291,6 +332,48 @@ NOTIFICATION_PROTOCOL(CHARACTER_DATA, 287,
 NOTIFICATION_PROTOCOL(CHARACTER_EVENT, 288,
     UInt8 Type;
     UInt32 CharacterIndex;
+)
+
+NOTIFICATION_PROTOCOL(DUNGEON_PATTERN_PART_COMPLETED, 303,
+    UInt8 PatternPartIndex;
+)
+
+NOTIFICATION_PROTOCOL(PARTY_QUEST_ACTION, 377,
+    UInt8 QuestSlotIndex;
+    UInt16 QuestID;
+    UInt16 NpcFlags;
+    UInt32 NpcSetID;
+) 
+
+NOTIFICATION_PROTOCOL(PARTY_QUEST_LOOT_ITEM, 378,
+    UInt64 ItemID;
+    UInt64 ItemOptions;
+    Int16 QuestItemSlotIndex;
+    UInt32 ItemDuration;
+)
+
+NOTIFICATION_PROTOCOL(PARTY_QUEST_MISSION_MOB_KILL, 379,
+    UInt16 QuestID;
+    UInt16 MobSpeciesIndex;
+)
+
+NOTIFICATION_PROTOCOL_STRUCT(MOB_ATTACK_AOE_TARGET,
+    UInt32 CharacterIndex;
+    Bool IsDead;
+    UInt8 Result;
+    UInt32 AppliedDamage;
+    UInt64 TargetHP;
+    UInt8 Unknown1[33];
+)
+
+NOTIFICATION_PROTOCOL(MOB_ATTACK_AOE, 413,
+    RTEntityID Entity;
+    Bool IsDefaultSkill;
+    UInt8 Unknown1;
+    UInt64 MobHP;
+    UInt32 Unknown2;
+    UInt16 TargetCount;
+    NOTIFICATION_DATA_MOB_ATTACK_AOE_TARGET Data[0];
 )
 
 NOTIFICATION_PROTOCOL(CHARACTER_SKILL_MASTERY_UPDATE, 760,

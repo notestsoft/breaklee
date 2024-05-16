@@ -3,6 +3,8 @@
 #include "World.h"
 #include "WorldManager.h"
 #include "Mob.h"
+#include "NotificationProtocol.h"
+#include "NotificationManager.h"
 
 Bool RTDungeonIsPatternPartCompleted(
     RTWorldContextRef World
@@ -30,15 +32,12 @@ Bool RTDungeonStartNextPatternPart(
     RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, World->DungeonIndex);
 
     if (World->PatternPartIndex >= 0) {
-        RTRuntimeBroadcastEvent(
-            Runtime,
-            RUNTIME_EVENT_QUEST_DUNGEON_PATTERN_PART_COMPLETED,
-            World,
-            kEntityIDNull,
-            World->Party,
-            -1,
-            -1
-        );
+        RTPartyRef Party = RTRuntimeGetParty(Runtime, World->Party);
+        assert(Party);
+
+        NOTIFICATION_DATA_DUNGEON_PATTERN_PART_COMPLETED* Notification = RTNotificationInit(DUNGEON_PATTERN_PART_COMPLETED);
+        Notification->PatternPartIndex = World->PatternPartIndex;
+        RTNotificationDispatchToParty(Notification, Party);
     }
 
     Int32 PatternPartIndex = World->PatternPartIndex + 1;

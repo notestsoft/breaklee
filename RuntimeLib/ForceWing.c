@@ -68,9 +68,6 @@ Void RTCharacterAddWingExp(
 	Character->SyncMask.ForceWingInfo = true;
 	Character->SyncPriority.High = true;
 
-	RTEventData EventData = { 0 };
-	EventData.CharacterUpdateForceWingExp.ForceWingExp = Character->ForceWingInfo.Exp;
-
     {
         NOTIFICATION_DATA_CHARACTER_FORCE_WING_EXP* Notification = RTNotificationInit(CHARACTER_FORCE_WING_EXP);
         Notification->ForceWingExp = Character->ForceWingInfo.Exp;

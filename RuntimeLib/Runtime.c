@@ -12,7 +12,6 @@
 RTRuntimeRef RTRuntimeCreate(
     AllocatorRef Allocator,
     Index MaxPartyCount,
-    RTEventCallback Callback,
     Void* UserData
 ) {
     RTRuntimeRef Runtime = (RTRuntimeRef)AllocatorAllocate(Allocator, sizeof(struct _RTRuntime));
@@ -39,7 +38,6 @@ RTRuntimeRef RTRuntimeCreate(
     Runtime->NotificationManager = RTNotificationManagerCreate(Runtime);
     Runtime->SkillDataPool = MemoryPoolCreate(Allocator, sizeof(struct _RTCharacterSkillData), RUNTIME_MEMORY_MAX_CHARACTER_SKILL_DATA_COUNT);
     Runtime->ForceEffectFormulaPool = MemoryPoolCreate(Allocator, sizeof(struct _RTForceEffectFormula), RUNTIME_FORCE_EFFECT_COUNT);
-    Runtime->Callback = Callback;
     Runtime->UserData = UserData;
     return Runtime;
 }
@@ -78,44 +76,6 @@ Void RTRuntimeUpdate(
         }
     }
     */
-}
-
-Void RTRuntimeBroadcastEvent(
-    RTRuntimeRef Runtime,
-    Int32 EventType,
-    RTWorldContextRef World,
-    RTEntityID SourceID,
-    RTEntityID TargetID,
-    Int32 X,
-    Int32 Y
-) {
-    Runtime->Event.Type = EventType;
-    Runtime->Event.World = World;
-    Runtime->Event.SourceID = SourceID;
-    Runtime->Event.TargetID = TargetID;
-    Runtime->Event.X = X;
-    Runtime->Event.Y = Y;
-    Runtime->Callback(Runtime, &Runtime->Event, Runtime->UserData);
-}
-
-Void RTRuntimeBroadcastEventData(
-    RTRuntimeRef Runtime,
-    Int32 EventType,
-    RTWorldContextRef WorldContext,
-    RTEntityID SourceID,
-    RTEntityID TargetID,
-    Int32 X,
-    Int32 Y,
-    RTEventData Data
-) {
-    Runtime->Event.Type = EventType;
-    Runtime->Event.World = WorldContext;
-    Runtime->Event.SourceID = SourceID;
-    Runtime->Event.TargetID = TargetID;
-    Runtime->Event.X = X;
-    Runtime->Event.Y = Y;
-    Runtime->Event.Data = Data;
-    Runtime->Callback(Runtime, &Runtime->Event, Runtime->UserData);
 }
 
 RTWorldContextRef RTRuntimeGetWorldByID(

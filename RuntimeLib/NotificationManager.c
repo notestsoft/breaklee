@@ -65,13 +65,25 @@ Void RTNotificationManagerDispatchToCharacter(
     );
 }
 
+Void RTNotificationManagerDispatchToParty(
+    RTNotificationManagerRef NotificationManager,
+    Void* Notification,
+    RTPartyRef Party
+) {
+    RTRuntimeRef Runtime = NotificationManager->Runtime;
+
+    for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
+        RTEntityID Entity = Party->Members[Index].MemberID;
+        RTCharacterRef Character = RTWorldManagerGetCharacter(Runtime->WorldManager, Entity);
+        RTNotificationManagerDispatchToCharacter(NotificationManager, Notification, Character);
+    }
+}
+
 Void RTNotificationManagerDispatchToChunk(
     RTNotificationManagerRef NotificationManager,
     Void* Notification,
     RTWorldChunkRef WorldChunk
 ) {
-    Trace("DispatchToChunk(%d, %d)", WorldChunk->ChunkX, WorldChunk->ChunkY);
-
     for (Int32 Index = 0; Index < ArrayGetElementCount(WorldChunk->Characters); Index += 1) {
         RTEntityID Entity = *(RTEntityID*)ArrayGetElementAtIndex(WorldChunk->Characters, Index);
         RTCharacterRef Character = RTWorldManagerGetCharacter(WorldChunk->Runtime->WorldManager, Entity);
@@ -84,8 +96,6 @@ Void RTNotificationManagerDispatchToNearby(
     Void* Notification,
     RTWorldChunkRef WorldChunk
 ) {
-    Trace("DispatchToNearby(%d, %d)", WorldChunk->ChunkX, WorldChunk->ChunkY);
-
     Int32 StartChunkX = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, WorldChunk->ChunkX - RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
     Int32 StartChunkY = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, WorldChunk->ChunkY - RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
     Int32 EndChunkX = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, WorldChunk->ChunkX + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));

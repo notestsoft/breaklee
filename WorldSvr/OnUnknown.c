@@ -58,11 +58,11 @@ error:
 	return SocketDisconnect(Socket, Connection);
 }
 
-CLIENT_PROCEDURE_BINDING(UNKNOWN_2173) {
+CLIENT_PROCEDURE_BINDING(UPDATE_HELP_INFO) {
 	if (!Character) goto error;
 
-	S2C_DATA_UNKNOWN_2173* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UNKNOWN_2173);
-	Response->Result = Packet->Unknown1;
+	S2C_DATA_UPDATE_HELP_INFO* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPDATE_HELP_INFO);
+	Response->Result = Packet->HelpWindow;
 	return SocketSend(Socket, Connection, Response);
 
 error:

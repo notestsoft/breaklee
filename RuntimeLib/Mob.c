@@ -3,6 +3,8 @@
 #include "Script.h"
 #include "Runtime.h"
 #include "WorldManager.h"
+#include "NotificationProtocol.h"
+#include "NotificationManager.h"
 
 // TODO: Gate mob can attack player which leads to receiving a lot of damage!
 
@@ -214,20 +216,20 @@ Void RTMobCancelMovement(
 		Mob->Movement.PositionEnd.Y = Mob->Movement.PositionCurrent.Y;
 		RTMovementEndDeadReckoning(Runtime, &Mob->Movement);
 
-        RTEventData EventData = { 0 };
-        EventData.MobMovementEnd.PositionCurrentX = Mob->Movement.PositionCurrent.X;
-        EventData.MobMovementEnd.PositionCurrentY = Mob->Movement.PositionCurrent.Y;
-
-		RTRuntimeBroadcastEventData(
-			Runtime,
-			(Mob->IsChasing) ? RUNTIME_EVENT_MOB_CHASE_END : RUNTIME_EVENT_MOB_MOVEMENT_END,
-			World,
-			kEntityIDNull,
-			Mob->ID,
-			Mob->Movement.PositionCurrent.X,
-			Mob->Movement.PositionCurrent.Y,
-            EventData
-		);
+		if (Mob->IsChasing) {
+			NOTIFICATION_DATA_MOB_CHASE_END* Notification = RTNotificationInit(MOB_CHASE_END);
+			Notification->Entity = Mob->ID;
+			Notification->PositionCurrentX = Mob->Movement.PositionCurrent.X;
+			Notification->PositionCurrentY = Mob->Movement.PositionCurrent.Y;
+			RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
+		}
+		else {
+			NOTIFICATION_DATA_MOB_MOVE_END* Notification = RTNotificationInit(MOB_MOVE_END);
+			Notification->Entity = Mob->ID;
+			Notification->PositionCurrentX = Mob->Movement.PositionCurrent.X;
+			Notification->PositionCurrentY = Mob->Movement.PositionCurrent.Y;
+			RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
+		}
 	}
 }
 
@@ -293,25 +295,24 @@ Void RTMobAttackTarget(
 	RTCharacterAddHP(Runtime, Character, -Result.AppliedDamage, false);
 	Mob->NextTimestamp = PlatformGetTickCount() + Mob->ActiveSkill->Interval;
 
-	RTEventData EventData = { 0 };
-	EventData.MobAttack.IsDefaultSkill = true;
-	EventData.MobAttack.ResultCount = 1;
-	EventData.MobAttack.Results[0].Entity = Character->ID;
-	EventData.MobAttack.Results[0].Result = Result.AttackType;
-	EventData.MobAttack.Results[0].IsDead = Result.IsDead;
-	EventData.MobAttack.Results[0].AppliedDamage = Result.AppliedDamage;
-	EventData.MobAttack.Results[0].TargetHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+	{
+		NOTIFICATION_DATA_MOB_ATTACK_AOE* Notification = RTNotificationInit(MOB_ATTACK_AOE);
+		Notification->Entity = Mob->ID;
+		Notification->IsDefaultSkill = true;
+		Notification->Unknown1 = 0;
+		Notification->MobHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+		Notification->Unknown2 = 0;
+		Notification->TargetCount = 1;
 
-	RTRuntimeBroadcastEventData(
-		Runtime,
-		RUNTIME_EVENT_MOB_ATTACK,
-		World,
-		Mob->ID,
-		Character->ID,
-		Mob->Movement.PositionCurrent.X,
-		Mob->Movement.PositionCurrent.Y,
-		EventData
-	);
+		NOTIFICATION_DATA_MOB_ATTACK_AOE_TARGET* NotificationTarget = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_MOB_ATTACK_AOE_TARGET);
+		NotificationTarget->CharacterIndex = Character->CharacterIndex;
+		NotificationTarget->IsDead = Result.IsDead;
+		NotificationTarget->Result = Result.AttackType;
+		NotificationTarget->AppliedDamage = Result.AppliedDamage;
+		NotificationTarget->TargetHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+		memset(NotificationTarget->Unknown1, 0, 33);
+		RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
+	}
 }
 
 struct _RTMobFindNearbyTargetArguments {
@@ -407,20 +408,20 @@ Void RTMobUpdate(
 			Mob->Movement.PositionCurrent.Y == Mob->Movement.PositionEnd.Y) {
 			RTMovementEndDeadReckoning(Runtime, &Mob->Movement);
             
-            RTEventData EventData = { 0 };
-            EventData.MobMovementEnd.PositionCurrentX = Mob->Movement.PositionCurrent.X;
-            EventData.MobMovementEnd.PositionCurrentY = Mob->Movement.PositionCurrent.Y;
-
-			RTRuntimeBroadcastEventData(
-				Runtime,
-				(Mob->IsChasing) ? RUNTIME_EVENT_MOB_CHASE_END : RUNTIME_EVENT_MOB_MOVEMENT_END,
-				WorldContext,
-				kEntityIDNull,
-				Mob->ID,
-				Mob->Movement.PositionCurrent.X,
-				Mob->Movement.PositionCurrent.Y,
-                EventData
-			);
+			if (Mob->IsChasing) {
+				NOTIFICATION_DATA_MOB_CHASE_END* Notification = RTNotificationInit(MOB_CHASE_END);
+				Notification->Entity = Mob->ID;
+				Notification->PositionCurrentX = Mob->Movement.PositionCurrent.X;
+				Notification->PositionCurrentY = Mob->Movement.PositionCurrent.Y;
+				RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
+			}
+			else {
+				NOTIFICATION_DATA_MOB_MOVE_END* Notification = RTNotificationInit(MOB_MOVE_END);
+				Notification->Entity = Mob->ID;
+				Notification->PositionCurrentX = Mob->Movement.PositionCurrent.X;
+				Notification->PositionCurrentY = Mob->Movement.PositionCurrent.Y;
+				RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
+			}
 
 			Mob->RemainingFindCount = Mob->SpeciesData->FindCount;
 		}
@@ -535,25 +536,28 @@ Void RTMobUpdate(
 		}
 
 		RTMovementStartDeadReckoning(Runtime, &Mob->Movement);
-        
-        RTEventData EventData = { 0 };
-        EventData.MobMovementBegin.TickCount = Mob->Movement.TickCount;
-        EventData.MobMovementBegin.PositionBeginX = Mob->Movement.PositionBegin.X;
-        EventData.MobMovementBegin.PositionBeginY = Mob->Movement.PositionBegin.Y;
-        EventData.MobMovementBegin.PositionEndX = Mob->Movement.PositionEnd.X;
-        EventData.MobMovementBegin.PositionEndY = Mob->Movement.PositionEnd.Y;
-        
-		RTRuntimeBroadcastEventData(
-			Runtime,
-			(Mob->IsChasing) ? RUNTIME_EVENT_MOB_CHASE_BEGIN : RUNTIME_EVENT_MOB_MOVEMENT_BEGIN,
-			WorldContext,
-			kEntityIDNull,
-			Mob->ID,
-			Mob->Movement.PositionCurrent.X,
-			Mob->Movement.PositionCurrent.Y,
-            EventData
-		);
 
+		if (Mob->IsChasing) {
+			NOTIFICATION_DATA_MOB_CHASE_BEGIN* Notification = RTNotificationInit(MOB_CHASE_BEGIN);
+			Notification->Entity = Mob->ID;
+			Notification->TickCount = Mob->Movement.TickCount;
+			Notification->PositionBeginX = Mob->Movement.PositionBegin.X;
+			Notification->PositionBeginY = Mob->Movement.PositionBegin.Y;
+			Notification->PositionEndX = Mob->Movement.PositionEnd.X;
+			Notification->PositionEndY = Mob->Movement.PositionEnd.Y;
+			RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
+		}
+		else {
+			NOTIFICATION_DATA_MOB_MOVE_BEGIN* Notification = RTNotificationInit(MOB_MOVE_BEGIN);
+			Notification->Entity = Mob->ID;
+			Notification->TickCount = Mob->Movement.TickCount;
+			Notification->PositionBeginX = Mob->Movement.PositionBegin.X;
+			Notification->PositionBeginY = Mob->Movement.PositionBegin.Y;
+			Notification->PositionEndX = Mob->Movement.PositionEnd.X;
+			Notification->PositionEndY = Mob->Movement.PositionEnd.Y;
+			RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
+		}
+        
 		if (Mob->IsChasing) {
 			Mob->NextTimestamp = Timestamp + Mob->SpeciesData->ChaseInterval;
 		}

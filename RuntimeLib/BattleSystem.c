@@ -215,6 +215,7 @@ Void RTCalculateNormalAttackResult(
 	Result->AdditionalDamage = Attributes.AddDamage;
 	Result->TotalDamage += Attributes.AddDamage;
 	Result->TotalDamage = (Result->TotalDamage * (100 + Attributes.FinalDamageAmp)) / 100;
+	Result->TotalDamage = MAX(1, Result->TotalDamage);
 	Result->AppliedDamage = MIN(Result->TotalDamage, Defender->Values[RUNTIME_ATTRIBUTE_HP_CURRENT]);
 	Result->IsDead = (Defender->Values[RUNTIME_ATTRIBUTE_HP_CURRENT] - Result->TotalDamage) <= 0;
 

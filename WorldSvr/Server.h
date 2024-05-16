@@ -18,12 +18,6 @@ Void ServerSyncDB(
     Bool Force
 );
 
-Void ServerRuntimeOnEvent(
-    RTRuntimeRef Runtime,
-    RTEventRef Event,
-    Void* UserData
-);
-
 ClientContextRef ServerGetClientByAuthKey(
     ServerContextRef Context,
     UInt32 AuthKey,

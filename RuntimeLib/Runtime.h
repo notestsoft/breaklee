@@ -4,7 +4,6 @@
 #include "Constants.h"
 #include "Character.h"
 #include "Dungeon.h"
-#include "Event.h"
 #include "Mob.h"
 #include "Npc.h"
 #include "Party.h"
@@ -67,15 +66,12 @@ struct _RTRuntime {
     MemoryPoolRef SkillDataPool;
     MemoryPoolRef ForceEffectFormulaPool;
 
-    struct _RTEvent Event;
-    RTEventCallback Callback;
     Void* UserData;
 };
 
 RTRuntimeRef RTRuntimeCreate(
     AllocatorRef Allocator,
     Index MaxPartyCount,
-    RTEventCallback Callback,
     Void* UserData
 );
 
@@ -91,27 +87,6 @@ Bool RTRuntimeLoadData(
 
 Void RTRuntimeUpdate(
     RTRuntimeRef Runtime
-);
-
-Void RTRuntimeBroadcastEvent(
-    RTRuntimeRef Runtime,
-    Int32 EventType,
-    RTWorldContextRef World,
-    RTEntityID SourceID,
-    RTEntityID TargetID,
-    Int32 X,
-    Int32 Y
-);
-
-Void RTRuntimeBroadcastEventData(
-    RTRuntimeRef Runtime,
-    Int32 EventType,
-    RTWorldContextRef World,
-    RTEntityID SourceID,
-    RTEntityID TargetID,
-    Int32 X,
-    Int32 Y,
-    RTEventData Data
 );
 
 RTWorldContextRef RTRuntimeGetWorldByID(

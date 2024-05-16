@@ -70,6 +70,61 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTER_ITEM_UNEQUIP) {
     Trace("CharacterItemUnequip");
 }
 
+
+NOTIFICATION_PROCEDURE_BINDING(MOB_MOVE_BEGIN) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+    Trace("MobMoveBegin(%d, %d, %d, %d, %d, %d, %d, %d)",
+        Notification->Entity.EntityIndex,
+        Notification->Entity.WorldIndex,
+        Notification->Entity.EntityType,
+        Notification->TickCount,
+        Notification->PositionBeginX,
+        Notification->PositionBeginY,
+        Notification->PositionEndX,
+        Notification->PositionEndY
+    );
+}
+
+NOTIFICATION_PROCEDURE_BINDING(MOB_MOVE_END) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+    Trace("MobMoveEnd(%d, %d, %d, %d, %d)",
+        Notification->Entity.EntityIndex,
+        Notification->Entity.WorldIndex,
+        Notification->Entity.EntityType,
+        Notification->PositionCurrentX,
+        Notification->PositionCurrentY
+    );
+}
+
+NOTIFICATION_PROCEDURE_BINDING(MOB_CHASE_BEGIN) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+    Trace("MobChaseBegin(%d, %d, %d, %d, %d, %d, %d, %d)",
+        Notification->Entity.EntityIndex,
+        Notification->Entity.WorldIndex,
+        Notification->Entity.EntityType,
+        Notification->TickCount,
+        Notification->PositionBeginX,
+        Notification->PositionBeginY,
+        Notification->PositionEndX,
+        Notification->PositionEndY
+    );
+}
+
+NOTIFICATION_PROCEDURE_BINDING(MOB_CHASE_END) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+    Trace("MobChaseEnd(%d, %d, %d, %d, %d)",
+        Notification->Entity.EntityIndex,
+        Notification->Entity.WorldIndex,
+        Notification->Entity.EntityType,
+        Notification->PositionCurrentX,
+        Notification->PositionCurrentY
+    );
+}
+
+NOTIFICATION_PROCEDURE_BINDING(ATTACK_TO_MOB) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_BATTLE_RANK_UP) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
     Trace("CharacterBattleRankUp -> Character(%d)",
@@ -89,6 +144,26 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTER_EVENT) {
     Trace("CharacterEvent -> Character(%d)",
         Character->CharacterIndex
     );
+}
+
+NOTIFICATION_PROCEDURE_BINDING(DUNGEON_PATTERN_PART_COMPLETED) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
+NOTIFICATION_PROCEDURE_BINDING(PARTY_QUEST_ACTION) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
+NOTIFICATION_PROCEDURE_BINDING(PARTY_QUEST_LOOT_ITEM) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+ 
+NOTIFICATION_PROCEDURE_BINDING(PARTY_QUEST_MISSION_MOB_KILL) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
+NOTIFICATION_PROCEDURE_BINDING(MOB_ATTACK_AOE) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_SKILL_MASTERY_UPDATE) {
@@ -243,155 +318,4 @@ Void BroadcastToWorld(
         &_BroadcastToWorldProc,
         &Arguments
     );
-}
-
-Void ServerRuntimeOnEvent(
-    RTRuntimeRef Runtime,
-    RTEventRef Event,
-    Void* UserData
-) {
-    ServerContextRef Context = (ServerContextRef)UserData;
-    PacketBufferRef PacketBuffer = Context->ClientSocket->PacketBuffer;
-
-    if (Event->Type == RUNTIME_EVENT_MOB_MOVEMENT_BEGIN) {
-        S2C_DATA_MOB_MOVEMENT_BEGIN* Notification = PacketBufferInit(PacketBuffer, S2C, MOB_MOVEMENT_BEGIN);
-        Notification->Entity = Event->TargetID;
-        Notification->TickCount = Event->Data.MobMovementBegin.TickCount;
-        Notification->PositionBegin.X = Event->Data.MobMovementBegin.PositionBeginX;
-        Notification->PositionBegin.Y = Event->Data.MobMovementBegin.PositionBeginY;
-        Notification->PositionEnd.X = Event->Data.MobMovementBegin.PositionEndX;
-        Notification->PositionEnd.Y = Event->Data.MobMovementBegin.PositionEndY;
-
-        return BroadcastToWorld(
-            Context,
-            Event->World,
-            kEntityIDNull,
-            Event->X,
-            Event->Y,
-            Notification
-        );
-    }
-
-    if (Event->Type == RUNTIME_EVENT_MOB_MOVEMENT_END) {
-        S2C_DATA_MOB_MOVEMENT_END* Notification = PacketBufferInit(PacketBuffer, S2C, MOB_MOVEMENT_END);
-        Notification->Entity = Event->TargetID;
-        Notification->Position.X = Event->Data.MobMovementEnd.PositionCurrentX;
-        Notification->Position.Y = Event->Data.MobMovementEnd.PositionCurrentY;
-
-        return BroadcastToWorld(
-            Context,
-            Event->World,
-            kEntityIDNull,
-            Event->X,
-            Event->Y,
-            Notification
-        );
-    }
-
-    if (Event->Type == RUNTIME_EVENT_MOB_CHASE_BEGIN) {
-        S2C_DATA_MOB_CHASE_BEGIN* Notification = PacketBufferInit(PacketBuffer, S2C, MOB_CHASE_BEGIN);
-        Notification->Entity = Event->TargetID;
-        Notification->TickCount = Event->Data.MobMovementBegin.TickCount;
-        Notification->PositionBegin.X = Event->Data.MobMovementBegin.PositionBeginX;
-        Notification->PositionBegin.Y = Event->Data.MobMovementBegin.PositionBeginY;
-        Notification->PositionEnd.X = Event->Data.MobMovementBegin.PositionEndX;
-        Notification->PositionEnd.Y = Event->Data.MobMovementBegin.PositionEndY;
-
-        return BroadcastToWorld(
-            Context,
-            Event->World,
-            kEntityIDNull,
-            Event->X,
-            Event->Y,
-            Notification
-        );
-    }
-
-    if (Event->Type == RUNTIME_EVENT_MOB_CHASE_END) {
-        S2C_DATA_MOB_CHASE_END* Notification = PacketBufferInit(PacketBuffer, S2C, MOB_CHASE_END);
-        Notification->Entity = Event->TargetID;
-        Notification->Position.X = Event->Data.MobMovementEnd.PositionCurrentX;
-        Notification->Position.Y = Event->Data.MobMovementEnd.PositionCurrentY;
-
-        return BroadcastToWorld(
-            Context,
-            Event->World,
-            kEntityIDNull,
-            Event->X,
-            Event->Y,
-            Notification
-        );
-    }
-
-    if (Event->Type == RUNTIME_EVENT_MOB_ATTACK) {
-        S2C_DATA_NFY_MOB_ATTACK_AOE* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_MOB_ATTACK_AOE);
-        Notification->Entity = Event->SourceID;
-        Notification->IsDefaultSkill = Event->Data.MobAttack.IsDefaultSkill;
-        Notification->MobHP = Event->Data.MobAttack.MobHP;
-        Notification->TargetCount = Event->Data.MobAttack.ResultCount;
-
-        for (Int32 Index = 0; Index < Event->Data.MobAttack.ResultCount; Index += 1) {
-            RTCharacterRef Character = RTWorldManagerGetCharacter(Runtime->WorldManager, Event->Data.MobAttack.Results[Index].Entity);
-
-            S2C_DATA_MOB_ATTACK_TARGET* Target = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_MOB_ATTACK_TARGET);
-            Target->CharacterIndex = (UInt32)Character->CharacterIndex;
-            Target->IsDead = Event->Data.MobAttack.Results[Index].IsDead;
-            Target->Result = Event->Data.MobAttack.Results[Index].Result;
-            Target->AppliedDamage = Event->Data.MobAttack.Results[Index].AppliedDamage;
-            Target->TargetHP = Event->Data.MobAttack.Results[Index].TargetHP;
-        }
-
-        return BroadcastToWorld(
-            Context,
-            Event->World,
-            kEntityIDNull,
-            Event->X,
-            Event->Y,
-            Notification
-        );
-    }
-
-    if (Event->Type == RUNTIME_EVENT_QUEST_DUNGEON_PATTERN_PART_COMPLETED) {
-        S2C_DATA_NFY_QUEST_DUNGEON_PATTERN_PART_COMPLETED* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_QUEST_DUNGEON_PATTERN_PART_COMPLETED);
-        Notification->PatternPartIndex = Event->World->PatternPartIndex;
-
-        return BroadcastToParty(
-            Context,
-            Event->TargetID,
-            Notification
-        );
-    }
-
-    if (Event->Type == RUNTIME_EVENT_PARTY_QUEST_MISSION_MOB_KILL) {
-        S2C_DATA_NFY_PARTY_QUEST_MISSION_MOB_KILL* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_PARTY_QUEST_MISSION_MOB_KILL);
-        Notification->QuestID = Event->Data.PartyQuestMissionMobKill.QuestID;
-        Notification->MobSpeciesIndex = Event->Data.PartyQuestMissionMobKill.MobSpeciesIndex;
-
-        return BroadcastToParty(
-            Context,
-            Event->TargetID,
-            Notification
-        );
-    }
-
-    if (Event->Type == RUNTIME_EVENT_ATTACK_TO_MOB) {
-        RTCharacterRef Character = RTWorldManagerGetCharacter(Runtime->WorldManager, Event->Data.AttackToMob.Character);
-
-        S2C_DATA_NFY_ATTACK_TO_MOB* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_ATTACK_TO_MOB);
-        Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
-        Notification->Mob = Event->Data.AttackToMob.Mob;
-        Notification->MobIDType = RUNTIME_ENTITY_TYPE_MOB;
-        Notification->AttackType = Event->Data.AttackToMob.AttackType;
-        Notification->MobHP = Event->Data.AttackToMob.MobHP;
-        Notification->CharacterHP = Event->Data.AttackToMob.CharacterHP;
-
-        return BroadcastToWorld(
-            Context,
-            Event->World,
-            kEntityIDNull,
-            Event->X,
-            Event->Y,
-            Notification
-        );
-    }
 }
