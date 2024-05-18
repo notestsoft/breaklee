@@ -141,9 +141,11 @@ Void IPCSocketOnReceived(
     );
 
     if (Packet->Command == IPC_COMMAND_REGISTER) {
+        if (Packet->Source.Group != Socket->NodeID.Group) goto error;
+
         // TODO: Validate Packet->Source for integrity..
 
-        if (Packet->Source.Group != Socket->NodeID.Group) goto error;
+        /*
         if (DictionaryContains(Socket->NodeTable, &Packet->Source.Serial)) {
             Index* ConnectionID = DictionaryLookup(Socket->NodeTable, &Packet->Source.Serial);
             if (ConnectionID) {
@@ -151,6 +153,7 @@ Void IPCSocketOnReceived(
                 if (Connection) IPCSocketDisconnect(Socket, Connection);
             }
         }
+        */
 
         NodeContext->NodeID = Packet->Source;
         DictionaryInsert(Socket->NodeTable, &Packet->Source.Serial, &Connection->ID, sizeof(Index));
