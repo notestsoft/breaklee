@@ -51,7 +51,7 @@ Void SendEventInfo(
             RTDataEventItemRef EventItem = &EventData->EventItemList[ItemIndex];
 
             S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO_DATA* EventItemData = PacketBufferAppendStruct(Client->Connection->PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO_DATA);
-            EventItemData->ItemID.ID = EventItem->ItemID;
+            EventItemData->ItemID.Serial = EventItem->ItemID;
             EventItemData->ItemOptions = EventItem->ItemOptions;
             EventItemData->ExternalID = EventItem->ExternalID;
             EventItemData->TextureItemID = EventItem->TextureItemID;
@@ -452,16 +452,16 @@ IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER) {
 
     // TODO: Check if max hp or base hp is requested here...
     Response->BaseHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
-    Response->MaxMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX];
+    Response->MaxMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX];
     Response->MaxSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX];
-    Response->MaxBP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_MAX];
-    Response->MaxRage = Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX];
+    Response->MaxBP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_MAX];
+    Response->MaxRage = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX];
 
     Response->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-    Response->CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+    Response->CurrentMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
     Response->CurrentSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
-    Response->CurrentBP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT];
-    Response->CurrentRage = Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT];
+    Response->CurrentBP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT];
+    Response->CurrentRage = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT];
 
     /*
     Response->Unknown7[0] = 113;

@@ -37,13 +37,13 @@ CLIENT_PROCEDURE_BINDING(ATTACK_TO_MOB) {
 	Response->Entity = Packet->Entity;
 	Response->EntityIDType = Packet->EntityIDType;
 	Response->AttackType = Result.AttackType;
-	Response->MobAppliedDamage = Result.AppliedDamage;
-	Response->MobTotalDamage = Result.TotalDamage;
-	Response->MobAdditionalDamage = Result.AdditionalDamage;
+	Response->MobAppliedDamage = (UInt32)Result.AppliedDamage;
+	Response->MobTotalDamage = (UInt32)Result.TotalDamage;
+	Response->MobAdditionalDamage = (UInt32)Result.AdditionalDamage;
 	Response->AccumulatedExp = Character->Info.Basic.Exp;
 	Response->AccumulatedOxp = Character->Info.Overlord.Exp;
 	Response->CharacterHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-	Response->CharacterMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+	Response->CharacterMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 	Response->CharacterSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
 	Response->MobHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
 	SocketSend(Socket, Connection, Response);

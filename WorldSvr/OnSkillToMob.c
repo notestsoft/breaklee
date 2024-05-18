@@ -135,9 +135,9 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 		ReceivedSkillExp += RTCharacterAddSkillExp(Runtime, Character, Result.SkillExp);
 
 		TargetResponse->AttackType = Result.AttackType;
-		TargetResponse->MobAppliedDamage = Result.AppliedDamage;
-		TargetResponse->MobTotalDamage = Result.TotalDamage;
-		TargetResponse->MobAdditionalDamage = Result.AdditionalDamage; // TODO: Check why additional damage is being displayed wrong by client
+		TargetResponse->MobAppliedDamage = (UInt32)Result.AppliedDamage;
+		TargetResponse->MobTotalDamage = (UInt32)Result.TotalDamage;
+		TargetResponse->MobAdditionalDamage = (UInt32)Result.AdditionalDamage; // TODO: Check why additional damage is being displayed wrong by client
 		TargetResponse->MobHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
 		TargetResponse->Unknown3 = 1;
 

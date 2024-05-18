@@ -418,7 +418,7 @@ Void RTCharacterAddExp(
 Int32 RTCharacterAddSkillExp(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    UInt32 SkillExp
+    Int64 SkillExp
 );
 
 Void RTCharacterAddWingExp(

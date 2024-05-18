@@ -55,7 +55,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		C2S_DATA_SKILL_GROUP_MOVEMENT* PacketData = (C2S_DATA_SKILL_GROUP_MOVEMENT*)&Packet->Data[0];
 
 		S2C_DATA_SKILL_GROUP_MOVEMENT* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_MOVEMENT);
-		ResponseData->CharacterMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+		ResponseData->CharacterMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 
 		Int32 CharacterPositionError = RTCalculateDistance(
 			Character->Movement.PositionCurrent.X,
@@ -130,7 +130,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		Character->Info.ExtendedStyle.IsAstralWeaponActive = PacketData->IsActivation;
 
 		S2C_DATA_SKILL_GROUP_ASTRAL* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_ASTRAL);
-		ResponseData->CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+		ResponseData->CurrentMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 		ResponseData->IsActivation = PacketData->IsActivation;
 		ResponseData->Unknown2 = PacketData->Unknown2;
 		SocketSend(Socket, Connection, Response);
@@ -171,7 +171,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		}
 
 		S2C_DATA_SKILL_GROUP_BATTLE_MODE* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_BATTLE_MODE);
-		ResponseData->CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+		ResponseData->CurrentMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 		ResponseData->IsActivation = PacketData->IsActivation;
 		SocketSend(Socket, Connection, Response);
 

@@ -484,7 +484,7 @@ Void RTRuntimeBroadcastCharacterData(
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_MPPOTION) {
         // TODO: Check if this is also padded like HPAfterPotion
-        Notification->MP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+        Notification->MP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_HP) {
@@ -492,11 +492,11 @@ Void RTRuntimeBroadcastCharacterData(
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_MP) {
-        Notification->MP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+        Notification->MP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_SP) {
-        Notification->SP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+        Notification->SP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_SP_INCREASE) {
@@ -554,7 +554,7 @@ Void RTRuntimeBroadcastCharacterData(
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_RAGE) {
-        Notification->Rage = Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT];
+        Notification->Rage = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT];
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_OVERLORD_LEVEL) {
@@ -567,7 +567,7 @@ Void RTRuntimeBroadcastCharacterData(
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_BP) {
-        Notification->BP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT];
+        Notification->BP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT];
     }
 
     RTNotificationDispatchToCharacter(Notification, Character);

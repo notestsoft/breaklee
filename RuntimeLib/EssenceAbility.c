@@ -117,8 +117,8 @@ Bool RTCharacterUpgradeEssenceAbility(
 	if (Character->Info.Ability.Point < AbilityCostLevel->AP) return false;
 
 	Int32 CostCount = 2;
-	struct { Int32 CostItem[3]; Int32 ConsumableCount; Int32 RemainingCount; } Cost[] = {
-		{ { AbilityCostLevel->Item1[0], AbilityCostLevel->Item1[1], AbilityCostLevel->Item1[2] }, 0, AbilityCostLevel->Item1[2]},
+	struct { Int64 CostItem[3]; Int64 ConsumableCount; Int64 RemainingCount; } Cost[] = {
+		{ { AbilityCostLevel->Item1[0], AbilityCostLevel->Item1[1], AbilityCostLevel->Item1[2] }, 0, AbilityCostLevel->Item1[2] },
 		{ { AbilityCostLevel->Item2[0], AbilityCostLevel->Item2[1], AbilityCostLevel->Item2[2] }, 0, AbilityCostLevel->Item2[2] },
 	};
 
@@ -165,13 +165,13 @@ Bool RTCharacterUpgradeEssenceAbility(
 
 			Bool DeleteItem = false;
 			if (ItemData->MaxStackSize > 0) {
-				Int32 ConsumedCount = MIN(Cost[CostIndex].RemainingCount, (Int32)ItemSlot->ItemOptions);
+				Int64 ConsumedCount = MIN(Cost[CostIndex].RemainingCount, (Int32)ItemSlot->ItemOptions);
 				Cost[CostIndex].RemainingCount -= ConsumedCount;
 				ItemSlot->ItemOptions -= ConsumedCount;
 				DeleteItem = (ItemSlot->ItemOptions < 1);
 			}
 			else {
-				Int32 ConsumedCount = MIN(Cost[CostIndex].RemainingCount, 1); 
+				Int64 ConsumedCount = MIN(Cost[CostIndex].RemainingCount, 1); 
 				Cost[CostIndex].RemainingCount -= ConsumedCount;
 				DeleteItem = true;
 			}

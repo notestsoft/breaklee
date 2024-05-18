@@ -146,7 +146,7 @@ ClientContextRef ServerGetClientByEntity(
 
 ClientContextRef ServerGetClientByIndex(
     ServerContextRef Context,
-    UInt32 CharacterIndex,
+    Index CharacterIndex,
     CString CharacterName
 ) {
     SocketConnectionIteratorRef Iterator = SocketGetConnectionIterator(Context->ClientSocket);

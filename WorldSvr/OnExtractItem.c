@@ -34,7 +34,7 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 		if (ItemPattern->Slot == 1 && ItemOptions.Equipment.SlotCount < 1) continue;
 		if (ItemPattern->Epic != -1) {
 			Int32 EpicSlotIndex = -1;
-			for (Index SlotIndex = 0; SlotIndex < ItemOptions.Equipment.SlotCount; SlotIndex += 1) {
+			for (Int32 SlotIndex = 0; SlotIndex < ItemOptions.Equipment.SlotCount; SlotIndex += 1) {
 				if (!ItemOptions.Equipment.Slots[SlotIndex].IsEpic) continue;
 
 				EpicSlotIndex = SlotIndex;

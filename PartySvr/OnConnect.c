@@ -17,7 +17,7 @@ IPC_PROCEDURE_BINDING(W2P, CLIENT_CONNECT) {
     Response->Header.Target = Packet->Header.Source;
     Response->Header.TargetConnectionID = Packet->Header.SourceConnectionID;
 
-    RTPartyRef Party = ServerGetPartyByCharacter(Context, Packet->CharacterIndex);
+    RTPartyRef Party = RTPartyManagerGetPartyByCharacter(Context, Packet->CharacterIndex);
     if (Party) {
         Response->Result = 1;
         Response->DungeonIndex = 0;

@@ -409,5 +409,5 @@ Void RenderLogo() {
         "                                                                                                          \n"
     ;
 
-    printf(Logo);
+    printf("%s", Logo);
 }

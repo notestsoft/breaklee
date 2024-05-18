@@ -238,7 +238,7 @@ Void RTMobApplyDamage(
 	RTWorldContextRef World,
 	RTMobRef Mob,
 	RTEntityID Source,
-	Int32 Damage
+	Int64 Damage
 ) {
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] -= Damage;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] = MAX(0, Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT]);
@@ -305,10 +305,10 @@ Void RTMobAttackTarget(
 		Notification->TargetCount = 1;
 
 		NOTIFICATION_DATA_MOB_ATTACK_AOE_TARGET* NotificationTarget = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_MOB_ATTACK_AOE_TARGET);
-		NotificationTarget->CharacterIndex = Character->CharacterIndex;
+		NotificationTarget->CharacterIndex = (UInt32)Character->CharacterIndex;
 		NotificationTarget->IsDead = Result.IsDead;
 		NotificationTarget->Result = Result.AttackType;
-		NotificationTarget->AppliedDamage = Result.AppliedDamage;
+		NotificationTarget->AppliedDamage = (UInt32)Result.AppliedDamage;
 		NotificationTarget->TargetHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
 		memset(NotificationTarget->Unknown1, 0, 33);
 		RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);

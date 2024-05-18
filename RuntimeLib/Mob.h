@@ -219,7 +219,7 @@ Void RTMobApplyDamage(
 	RTWorldContextRef World,
 	RTMobRef Mob,
 	RTEntityID Source,
-	Int32 Damage
+	Int64 Damage
 );
 
 Void RTMobUpdate(

@@ -5,6 +5,7 @@
 #include "ClientProcedures.h"
 #include "IPCProcedures.h"
 #include "Notification.h"
+#include "NotificationProcedures.h"
 
 #define C2S_COMMAND(__NAME__, __COMMAND__)                                                                                       \
 Void SERVER_PROC_ ## __NAME__(                                                                                                   \

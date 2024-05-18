@@ -1,6 +1,6 @@
 
 #include "Constants.h"
-#include "GameProtocol.h"S2C_DATA_NFY_EQUIP_ITEM
+#include "GameProtocol.h"
 
 #ifndef CLIENT_PROTOCOL_ENUM
 #define CLIENT_PROTOCOL_ENUM(...)

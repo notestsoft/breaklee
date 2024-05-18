@@ -46,7 +46,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE_ACK) {
 	S2C_DATA_PARTY_INVITE* Notification = PacketBufferInit(SourceClient->Connection->PacketBuffer, S2C, PARTY_INVITE);
 	Notification->Result = Packet->Success ? 0 : 1;
 	Notification->WorldServerID = Packet->Target.NodeIndex;
-	Notification->CharacterIndex = Packet->Target.Info.CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Packet->Target.Info.CharacterIndex;
 	Notification->CharacterType = 0;
 	Notification->Level = Packet->Target.Info.Level;
 	Notification->NameLength = strlen(Packet->Target.Info.Name) + 1;
@@ -67,7 +67,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE) {
 
 	S2C_DATA_NFY_PARTY_INVITE* Notification = PacketBufferInit(TargetClient->Connection->PacketBuffer, S2C, NFY_PARTY_INVITE);
 	Notification->WorldServerID = Packet->Source.NodeIndex;
-	Notification->CharacterIndex = Packet->Source.Info.CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Packet->Source.Info.CharacterIndex;
 	Notification->CharacterType = 1;
 	Notification->Level = Packet->Source.Info.Level;
 	Notification->NameLength = strlen(Packet->Source.Info.Name) + 1;
@@ -241,12 +241,12 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INFO) {
 
 		S2C_DATA_NFY_PARTY_INFO* Notification = PacketBufferInit(Client->Connection->PacketBuffer, S2C, NFY_PARTY_INFO);
 		Notification->Result = 0;
-		Notification->LeaderCharacterIndex = Packet->Party.LeaderCharacterIndex;
+		Notification->LeaderCharacterIndex = (UInt32)Packet->Party.LeaderCharacterIndex;
 		Notification->MemberCount = Packet->Party.MemberCount;
 
 		for (Int32 MemberIndex = 0; MemberIndex < Packet->Party.MemberCount; MemberIndex += 1) {
 			S2C_DATA_PARTY_MEMBER* Member = &Notification->Members[MemberIndex];
-			Member->CharacterIndex = Packet->Party.Members[MemberIndex].Info.CharacterIndex;
+			Member->CharacterIndex = (UInt32)Packet->Party.Members[MemberIndex].Info.CharacterIndex;
 			Member->Level = Packet->Party.Members[MemberIndex].Info.Level;
 			Member->BattleStyleIndex = Packet->Party.Members[MemberIndex].Info.BattleStyleIndex;
 			Member->OverlordLevel = Packet->Party.Members[MemberIndex].Info.OverlordLevel;
@@ -271,7 +271,7 @@ IPC_PROCEDURE_BINDING(P2W, CLIENT_CONNECT) {
 	Notification->DungeonIndex = Packet->DungeonIndex;
 	Notification->Unknown1 = 0;
 	Notification->PartyID = Packet->PartyID;
-	Notification->PartyLeaderIndex = Packet->PartyLeaderIndex;
+	Notification->PartyLeaderIndex = (UInt32)Packet->PartyLeaderIndex;
 	Notification->Unknown2 = 0;
 	Notification->Unknown3 = 0;
 	Notification->WorldServerIndex = Packet->WorldServerIndex;
@@ -279,7 +279,7 @@ IPC_PROCEDURE_BINDING(P2W, CLIENT_CONNECT) {
 	Notification->MemberCount = Packet->MemberCount;
 
 	for (Index Index = 0; Index < Packet->MemberCount; Index += 1) {
-		Notification->Members[Index].CharacterIndex = Packet->Members[Index].CharacterIndex;
+		Notification->Members[Index].CharacterIndex = (UInt32)Packet->Members[Index].CharacterIndex;
 		Notification->Members[Index].Level = Packet->Members[Index].Level;
 		Notification->Members[Index].Unknown1 = 0;
 		Notification->Members[Index].Unknown2 = 0;
@@ -316,7 +316,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_DATA) {
 
 	for (Int32 MemberIndex = 0; MemberIndex < Packet->MemberCount; MemberIndex += 1) {
 		S2C_DATA_PARTY_UPDATE_MEMBER* Member = &Notification->Members[MemberIndex];
-		Member->Info.CharacterIndex = Packet->MemberInfo[MemberIndex].CharacterIndex;
+		Member->Info.CharacterIndex = (UInt32)Packet->MemberInfo[MemberIndex].CharacterIndex;
 		Member->Info.Level = Packet->MemberInfo[MemberIndex].Level;
 		Member->Info.BattleStyleIndex = Packet->MemberInfo[MemberIndex].BattleStyleIndex;
 		Member->Info.OverlordLevel = Packet->MemberInfo[MemberIndex].OverlordLevel;
@@ -332,8 +332,8 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_DATA) {
 		if (Character) {
 			Member->Data.MaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
 			Member->Data.CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-			Member->Data.MaxMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX];
-			Member->Data.CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+			Member->Data.MaxMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX];
+			Member->Data.CurrentMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 			Member->Data.PositionX = Character->Movement.PositionCurrent.X;
 			Member->Data.PositionY = Character->Movement.PositionCurrent.Y;
 			Member->Data.MaxSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX];

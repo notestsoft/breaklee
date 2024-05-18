@@ -946,7 +946,7 @@ Void RTCharacterAddExp(
 Int32 RTCharacterAddSkillExp(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
-	UInt32 SkillExp
+	Int64 SkillExp
 ) {
 	RTCharacterAddWingExp(Runtime, Character, SkillExp);
 
@@ -966,7 +966,7 @@ Int32 RTCharacterAddSkillExp(
     
 	Int32 CurrentSkillExp = CurrentSkillLevel * SkillRankData->SkillLevelExp + (Int32)Character->Info.Skill.Exp;
 	Int32 MaxSkillExp = SkillLevelMax * SkillRankData->SkillLevelExp;
-	Int32 FinalSkillExp = MIN(MaxSkillExp, CurrentSkillExp + SkillExp);
+	Int32 FinalSkillExp = MIN(MaxSkillExp, CurrentSkillExp + (Int32)SkillExp);
 	Int32 FinalSkillLevel = FinalSkillExp / SkillRankData->SkillLevelExp;
 	Int32 SkillLevelDiff = FinalSkillLevel - CurrentSkillLevel;
 	Int32 ReceivedSkillExp = FinalSkillExp - CurrentSkillExp;

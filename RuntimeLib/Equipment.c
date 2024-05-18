@@ -135,7 +135,7 @@ Bool RTEquipmentSetSlot(
 
     {
         NOTIFICATION_DATA_CHARACTER_ITEM_EQUIP* Notification = RTNotificationInit(CHARACTER_ITEM_EQUIP);
-        Notification->CharacterIndex = Character->CharacterIndex;
+        Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
         Notification->Item = Slot->Item;
         Notification->ItemOptions = Slot->ItemOptions;
         Notification->EquipmentSlotIndex = Slot->SlotIndex;
@@ -161,7 +161,7 @@ Bool RTEquipmentClearSlot(
         if (Slot->SlotIndex == SlotIndex) {
             {
                 NOTIFICATION_DATA_CHARACTER_ITEM_UNEQUIP* Notification = RTNotificationInit(CHARACTER_ITEM_UNEQUIP);
-                Notification->CharacterIndex = Character->CharacterIndex;
+                Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
                 Notification->EquipmentSlotIndex = Slot->SlotIndex;
                 RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
             }

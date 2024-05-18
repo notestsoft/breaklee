@@ -31,7 +31,7 @@ ClientContextRef ServerGetClientByEntity(
 
 ClientContextRef ServerGetClientByIndex(
     ServerContextRef Context,
-    UInt32 CharacterIndex,
+    Index CharacterIndex,
     CString CharacterName
 );
 

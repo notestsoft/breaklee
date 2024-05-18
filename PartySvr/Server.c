@@ -6,7 +6,7 @@
 
 ClientContextRef ServerGetClientByIndex(
     ServerContextRef Context,
-    UInt32 CharacterIndex,
+    Index CharacterIndex,
     CString CharacterName,
     Int32 CharacterNameLength
 ) {
@@ -22,39 +22,4 @@ ClientContextRef ServerGetClientByIndex(
     }
 
     return NULL;
-}
-
-RTPartyRef ServerCreateParty(
-    ServerContextRef Context,
-    Index CharacterIndex,
-    RTEntityID CharacterID,
-    Int32 PartyType
-) {
-    return RTPartyManagerCreateParty(
-        Context->PartyManager,
-        CharacterIndex,
-        CharacterID,
-        PartyType
-    );
-}
-
-Void ServerDestroyParty(
-    ServerContextRef Context,
-    RTPartyRef Party
-) {
-    return RTPartyManagerDestroyParty(Context->PartyManager, Party);
-}
-
-RTPartyRef ServerGetPartyByCharacter(
-    ServerContextRef Context,
-    Index CharacterIndex
-) {
-    return RTPartyManagerGetPartyByCharacter(Context->PartyManager, CharacterIndex);
-}
-
-RTPartyRef ServerGetParty(
-    ServerContextRef Context,
-    RTEntityID PartyID
-) {
-    return RTPartyManagerGetParty(Context->PartyManager, PartyID);
 }
