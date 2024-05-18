@@ -406,9 +406,13 @@ RTWorldContextRef RTRuntimeOpenDungeon(
     if (RTWorldContextPartyIsFull(Runtime->WorldManager)) return NULL;
 
     if (RTEntityIsNull(Character->PartyID)) {
-        //RTPartyRef Party = RTRuntimeCreateParty(Runtime, Character, RUNTIME_PARTY_TYPE_SOLO_DUNGEON);
-        //Character->PartyID = Party->ID;
-        assert(false && "Implementation missing!");
+        RTPartyRef Party = RTPartyManagerCreateParty(
+            Runtime->PartyManager, 
+            Character->CharacterIndex, 
+            Character->ID, 
+            RUNTIME_PARTY_TYPE_SOLO_DUNGEON
+        );
+        Character->PartyID = Party->ID;
     }
 
     RTWorldContextRef PartyWorld = RTWorldContextCreateParty(Runtime->WorldManager, WorldIndex, DungeonIndex, Character->PartyID);
@@ -431,11 +435,12 @@ Void RTRuntimeCloseDungeon(
         assert(WorldContext->DungeonIndex != Character->Info.Position.DungeonIndex);
 
         RTWorldContextDestroyParty(Runtime->WorldManager, Character->PartyID);
-        //RTRuntimeDestroyParty(Runtime, Party);
-        assert(false && "Implementation missing!");
+        RTPartyManagerDestroyParty(Runtime->PartyManager, Party);
+        Character->PartyID = kEntityIDNull;
     }
     else {
         // TODO: Check if any party member is still in dungeon and do proper cleanup...
+        assert(false && "Implementation missing!");
     }
 }
 

@@ -9,12 +9,14 @@ RTPartyManagerRef RTPartyManagerCreate(
 
     PartyManager->PartyPool = MemoryPoolCreate(Allocator, sizeof(struct _RTParty), MaxPartyCount);
     PartyManager->PartyInvitationPool = MemoryPoolCreate(Allocator, sizeof(struct _RTPartyInvitation), MaxPartyCount);
+    PartyManager->SoloPartyPool = MemoryPoolCreate(Allocator, sizeof(struct _RTParty), MaxPartyCount);
     PartyManager->CharacterToPartyEntity = IndexDictionaryCreate(Allocator, MaxPartyCount);
     PartyManager->CharacterToPartyInvite = IndexDictionaryCreate(Allocator, MaxPartyCount);
 
     Index NullIndex = 0;
     MemoryPoolReserve(PartyManager->PartyPool, NullIndex);
     MemoryPoolReserve(PartyManager->PartyInvitationPool, NullIndex);
+    MemoryPoolReserve(PartyManager->SoloPartyPool, NullIndex);
 
     return PartyManager;
 }
@@ -24,6 +26,7 @@ Void RTPartyManagerDestroy(
 ) {
     MemoryPoolDestroy(PartyManager->PartyPool);
     MemoryPoolDestroy(PartyManager->PartyInvitationPool);
+    MemoryPoolDestroy(PartyManager->SoloPartyPool);
     DictionaryDestroy(PartyManager->CharacterToPartyEntity);
     DictionaryDestroy(PartyManager->CharacterToPartyInvite);
     AllocatorDeallocate(PartyManager->Allocator, PartyManager);
@@ -37,9 +40,15 @@ RTPartyRef RTPartyManagerCreateParty(
 ) {
     assert(!DictionaryLookup(PartyManager->CharacterToPartyEntity, &CharacterIndex));
 
+    MemoryPoolRef PartyPool = PartyManager->PartyPool;
+    if (PartyType == RUNTIME_PARTY_TYPE_SOLO_DUNGEON) {
+        PartyPool = PartyManager->SoloPartyPool;
+    }
+
     Index PartyPoolIndex = 0;
-    RTPartyRef Party = (RTPartyRef)MemoryPoolReserveNext(PartyManager->PartyPool, &PartyPoolIndex);
+    RTPartyRef Party = (RTPartyRef)MemoryPoolReserveNext(PartyPool, &PartyPoolIndex);
     Party->ID.EntityIndex = (UInt16)PartyPoolIndex;
+    Party->ID.WorldIndex = PartyType;
     Party->ID.EntityType = RUNTIME_ENTITY_TYPE_PARTY;
     Party->LeaderID = CharacterID;
     Party->LeaderCharacterIndex = CharacterIndex;
@@ -48,10 +57,11 @@ RTPartyRef RTPartyManagerCreateParty(
 
     RTEntityID PartyID = { 0 };
     PartyID.EntityIndex = (UInt16)PartyPoolIndex;
+    PartyID.WorldIndex = PartyType;
     PartyID.EntityType = RUNTIME_ENTITY_TYPE_PARTY;
     DictionaryInsert(PartyManager->CharacterToPartyEntity, &CharacterIndex, &PartyID, sizeof(struct _RTEntityID));
 
-    return (RTPartyRef)MemoryPoolFetch(PartyManager->PartyPool, PartyPoolIndex);
+    return (RTPartyRef)MemoryPoolFetch(PartyPool, PartyPoolIndex);
 }
 
 RTPartyRef RTPartyManagerCreatePartyRemote(
@@ -64,6 +74,7 @@ RTPartyRef RTPartyManagerCreatePartyRemote(
 
     for (Index MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {
         Index CharacterIndex = RemoteParty->Members[MemberIndex].Info.CharacterIndex;
+        assert(!DictionaryLookup(PartyManager->CharacterToPartyEntity, &CharacterIndex));
         DictionaryInsert(PartyManager->CharacterToPartyEntity, &CharacterIndex, &Party->ID, sizeof(struct _RTEntityID));
     }
 
@@ -81,8 +92,13 @@ Void RTPartyManagerDestroyParty(
         DictionaryRemove(PartyManager->CharacterToPartyEntity, &CharacterIndex);
     }
 
+    MemoryPoolRef PartyPool = PartyManager->PartyPool;
+    if (Party->ID.WorldIndex == RUNTIME_PARTY_TYPE_SOLO_DUNGEON) {
+        PartyPool = PartyManager->SoloPartyPool;
+    }
+
     Index PartyPoolIndex = Party->ID.EntityIndex;
-    MemoryPoolRelease(PartyManager->PartyPool, PartyPoolIndex);
+    MemoryPoolRelease(PartyPool, PartyPoolIndex);
 }
 
 RTPartyRef RTPartyManagerGetPartyByCharacter(
@@ -92,8 +108,13 @@ RTPartyRef RTPartyManagerGetPartyByCharacter(
     RTEntityID* PartyID = (RTEntityID*)DictionaryLookup(PartyManager->CharacterToPartyEntity, &CharacterIndex);
     if (!PartyID) return NULL;
 
+    MemoryPoolRef PartyPool = PartyManager->PartyPool;
+    if (PartyID->WorldIndex == RUNTIME_PARTY_TYPE_SOLO_DUNGEON) {
+        PartyPool = PartyManager->SoloPartyPool;
+    }
+
     Index PartyPoolIndex = PartyID->EntityIndex;
-    return (RTPartyRef)MemoryPoolFetch(PartyManager->PartyPool, PartyPoolIndex);
+    return (RTPartyRef)MemoryPoolFetch(PartyPool, PartyPoolIndex);
 }
 
 RTPartyRef RTPartyManagerGetParty(
@@ -102,8 +123,13 @@ RTPartyRef RTPartyManagerGetParty(
 ) {
     assert(PartyID.EntityType == RUNTIME_ENTITY_TYPE_PARTY);
 
-    Index PartyPoolIndex = PartyID.EntityIndex;
-    if (!MemoryPoolIsReserved(PartyManager->PartyPool, PartyPoolIndex)) return NULL;
+    MemoryPoolRef PartyPool = PartyManager->PartyPool;
+    if (PartyID.WorldIndex == RUNTIME_PARTY_TYPE_SOLO_DUNGEON) {
+        PartyPool = PartyManager->SoloPartyPool;
+    }
 
-    return (RTPartyRef)MemoryPoolReserveNext(PartyManager->PartyPool, &PartyPoolIndex);
+    Index PartyPoolIndex = PartyID.EntityIndex;
+    if (!MemoryPoolIsReserved(PartyPool, PartyPoolIndex)) return NULL;
+
+    return (RTPartyRef)MemoryPoolFetch(PartyPool, PartyPoolIndex);
 }

@@ -228,7 +228,25 @@ IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER) {
         ResponseSlot->Unknown1 = AbilitySlot->Unknown1;
     }
 
-    Response->BlendedAbilityCount = 0;
+    Response->BlendedAbilityCount = Packet->Character.BlendedAbilityData.Count;
+    for (Int32 Index = 0; Index < Packet->Character.BlendedAbilityData.Count; Index += 1) {
+        RTBlendedAbilitySlotRef AbilitySlot = &Packet->Character.BlendedAbilityData.Slots[Index];
+
+        S2C_DATA_INITIALIZE_BLENDED_ABILITY_SLOT* ResponseSlot = PacketBufferAppendStruct(ClientConnection->PacketBuffer, S2C_DATA_INITIALIZE_BLENDED_ABILITY_SLOT);
+        ResponseSlot->AbilityID = AbilitySlot->AbilityID;
+        ResponseSlot->Level = AbilitySlot->Level;
+        ResponseSlot->Unknown1 = AbilitySlot->Unknown1;
+    }
+
+    Response->KarmaAbilityCount = Packet->Character.KarmaAbilityData.Count;
+    for (Int32 Index = 0; Index < Packet->Character.KarmaAbilityData.Count; Index += 1) {
+        RTKarmaAbilitySlotRef AbilitySlot = &Packet->Character.KarmaAbilityData.Slots[Index];
+
+        S2C_DATA_INITIALIZE_KARMA_ABILITY_SLOT* ResponseSlot = PacketBufferAppendStruct(ClientConnection->PacketBuffer, S2C_DATA_INITIALIZE_KARMA_ABILITY_SLOT);
+        ResponseSlot->AbilityID = AbilitySlot->AbilityID;
+        ResponseSlot->Level = AbilitySlot->Level;
+        ResponseSlot->Unknown1 = AbilitySlot->Unknown1;
+    }
 
     memcpy(&Response->QuestFlagInfo, &Packet->Character.QuestFlagData, sizeof(struct _RTCharacterQuestFlagInfo));
     memcpy(&Response->DungeonQuestFlagInfo, &Packet->Character.DungeonQuestFlagData, sizeof(struct _RTCharacterDungeonQuestFlagInfo));

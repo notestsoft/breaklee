@@ -547,6 +547,13 @@ Bool RTCharacterHasQuestDungeon(
 	return false;
 }
 
+Bool RTPartyIsSoloDungeon(
+	RTEntityID PartyID
+) {
+	assert(PartyID.EntityType == RUNTIME_ENTITY_TYPE_PARTY);
+	return PartyID.WorldIndex == RUNTIME_PARTY_TYPE_SOLO_DUNGEON;
+}
+
 Void RTPartyQuestFlagClear(
 	RTPartyRef Party,
 	Int32 QuestIndex

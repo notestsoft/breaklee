@@ -33,7 +33,7 @@ IPC_PROCEDURE_BINDING(W2M, GET_CHARACTER) {
     memcpy(&Response->Character.DungeonQuestFlagData, &Character->DungeonQuestFlagData, sizeof(struct _RTCharacterQuestFlagInfo));
     memcpy(&Response->Character.AchievementData, &Character->AchievementData, sizeof(GAME_DATA_CHARACTER_ACHIEVEMENT));
     memcpy(&Response->Character.EssenceAbilityData, &Character->EssenceAbilityData, sizeof(struct _RTCharacterEssenceAbilityInfo));
-    memcpy(&Response->Character.BlendedAbilityData, &Character->BlendedAbilityData, sizeof(GAME_DATA_CHARACTER_BLENDEDABILITY));
+    memcpy(&Response->Character.BlendedAbilityData, &Character->BlendedAbilityData, sizeof(struct _RTCharacterBlendedAbilityInfo));
     memcpy(&Response->Character.HonorMedalData, &Character->HonorMedalData, sizeof(struct _RTCharacterHonorMedalInfo));
     memcpy(&Response->Character.OverlordData, &Character->OverlordData, sizeof(struct _RTCharacterOverlordMasteryInfo));
     memcpy(&Response->Character.ForceWingData, &Character->ForceWingData, sizeof(struct _RTCharacterForceWingInfo));

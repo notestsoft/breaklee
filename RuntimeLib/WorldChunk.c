@@ -95,7 +95,7 @@ Void RTWorldChunkUpdate(
     
     RTWorldChunkRemove(Movement->WorldChunk, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_NONE);
     RTWorldChunkInsert(NewChunk, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_NONE);
-    Movement->WorldChunk = NewChunk;
+    
     Trace("ServerSetChunkPos(%d, %d)", NewChunk->ChunkX, NewChunk->ChunkY);
     Int32 OldBeginX = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, WorldChunk->ChunkX - RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
     Int32 OldBeginY = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, WorldChunk->ChunkY - RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
@@ -105,6 +105,8 @@ Void RTWorldChunkUpdate(
     Int32 NewBeginY = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, NewChunk->ChunkY - RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
     Int32 NewEndX = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, NewChunk->ChunkX + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
     Int32 NewEndY = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, NewChunk->ChunkY + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
+
+    Movement->WorldChunk = NewChunk;
 
     NOTIFICATION_DATA_CHARACTERS_SPAWN* Notification = RTNotificationInit(CHARACTERS_SPAWN);
     Notification->SpawnType = NOTIFICATION_SPAWN_TYPE_MOVE;

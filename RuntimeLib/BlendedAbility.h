@@ -9,8 +9,8 @@ EXTERN_C_BEGIN
 
 struct _RTBlendedAbilitySlot {
     UInt32 AbilityID;
-    UInt16 Level;
-    UInt16 Unknown1;
+    UInt32 Level;
+    UInt32 Unknown1;
 };
 
 struct _RTCharacterBlendedAbilityInfo {
@@ -19,5 +19,27 @@ struct _RTCharacterBlendedAbilityInfo {
 };
 
 #pragma pack(pop)
+
+Bool RTCharacterAddBlendedAbility(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt32 InventorySlotIndex,
+    UInt16* MaterialSlotIndex,
+    Int32 MaterialSlotCount
+);
+
+Bool RTCharacterUpgradeBlendedAbility(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt32 AbilityID,
+    UInt32 InventorySlotCount,
+    UInt16* InventorySlotIndices
+);
+
+Bool RTCharacterRemoveBlendedAbility(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt32 AbilityID
+);
 
 EXTERN_C_END

@@ -52,6 +52,10 @@ struct _RTParty {
 	struct _RTQuestSlot QuestSlot[RUNTIME_PARTY_MAX_QUEST_SLOT_COUNT];
 };
 
+Bool RTPartyIsSoloDungeon(
+    RTEntityID PartyID
+);
+
 Void RTPartyQuestFlagClear(
     RTPartyRef Party,
     Int32 QuestIndex

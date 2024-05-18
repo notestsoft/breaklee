@@ -7,6 +7,7 @@
 CLIENT_PROCEDURE_BINDING(CHECK_DUNGEON_PLAYTIME) {
 	if (!Character) goto error;
 	
+    Trace("CheckDungeonPlayTime");
 	// TODO: Add xml data
 
 	S2C_DATA_CHECK_DUNGEON_PLAYTIME* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHECK_DUNGEON_PLAYTIME);
@@ -24,7 +25,8 @@ error:
 
 CLIENT_PROCEDURE_BINDING(GET_DUNGEON_REWARD_LIST) {
 	if (!Character) goto error;
-	
+
+    Trace("GetDungeonRewardList");
 	// TODO: Add reward list data
 
 	S2C_DATA_GET_DUNGEON_REWARD_LIST* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_DUNGEON_REWARD_LIST);
@@ -37,6 +39,8 @@ error:
 
 CLIENT_PROCEDURE_BINDING(ENTER_DUNGEON_GATE) {
     if (!Character) goto error;
+
+    Trace("EnterDungeonGate");
 
     S2C_DATA_ENTER_DUNGEON_GATE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ENTER_DUNGEON_GATE);
     Response->Result = 0;
@@ -72,12 +76,27 @@ error:
 CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_START) {
     if (!Character) goto error;
 
+    Trace("QuestDungeonStart");
+
     RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
     if (World->WorldData->Type != RUNTIME_WORLD_TYPE_DUNGEON &&
         World->WorldData->Type != RUNTIME_WORLD_TYPE_QUEST_DUNGEON) goto error;
 
     S2C_DATA_QUEST_DUNGEON_START* Response = PacketBufferInit(Connection->PacketBuffer, S2C, QUEST_DUNGEON_START);
-    return SocketSend(Socket, Connection, Response);
+    Response->Unknown1 = World->Active;
+    SocketSend(Socket, Connection, Response);
+
+    if (World->Active) {
+        RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, World->DungeonIndex);
+        if (!DungeonData) goto error;
+
+        S2C_DATA_NFY_QUEST_DUNGEON_SPAWN* Response = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_QUEST_DUNGEON_SPAWN);
+        Response->DungeonTimeout1 = (UInt32)(World->DungeonTimeout * 1000) - GetTimestampMs();
+        Response->DungeonTimeout2 = (UInt32)(World->DungeonTimeout * 1000) - GetTimestampMs();
+        SocketSend(Socket, Connection, Response);
+    }
+
+    return;
 
 error:
     return SocketDisconnect(Socket, Connection);
@@ -86,37 +105,41 @@ error:
 CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_SPAWN) {
     if (!Character) goto error;
 
-    RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
-    if (World->WorldData->Type != RUNTIME_WORLD_TYPE_DUNGEON &&
-        World->WorldData->Type != RUNTIME_WORLD_TYPE_QUEST_DUNGEON) goto error;
+    Trace("QuestDungeonSpawn");
 
-    // TODO: Not all quest dungeons have a dungeon index like skalids room?
-    //       So how is the npc spawned at all? >> DungeonID = 4162 why do we have 0 here?
+    if (Packet->IsActive) {
+        RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
+        if (World->WorldData->Type != RUNTIME_WORLD_TYPE_DUNGEON &&
+            World->WorldData->Type != RUNTIME_WORLD_TYPE_QUEST_DUNGEON) goto error;
 
-    RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, World->DungeonIndex);
-    if (!DungeonData) goto error;
+        // TODO: Not all quest dungeons have a dungeon index like skalids room?
+        //       So how is the npc spawned at all? >> DungeonID = 4162 why do we have 0 here?
 
-    // TODO: Character is joining the dungeon which doesn't mean that it is a start command,
-    //       because a party member could have had already started it!
+        RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, World->DungeonIndex);
+        if (!DungeonData) goto error;
 
-    // TODO: Find a way to check if the character was already spawned into the dungeon before
-    if (DungeonData->RemoveItem) {
-        // TODO: The inventory slot should also be checked inside the warp command
-        RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Character->DungeonEntryItemSlotIndex);
-        if (!ItemSlot) goto error;
-        if (ItemSlot->Item.Serial != DungeonData->EntryItemID.Serial ||
-            ItemSlot->ItemOptions != DungeonData->EntryItemOption) goto error;
+        // TODO: Character is joining the dungeon which doesn't mean that it is a start command,
+        //       because a party member could have had already started it!
 
-        RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
-        Character->SyncMask.InventoryInfo = true;
-        Character->SyncPriority.High = true;
-    }
+        // TODO: Find a way to check if the character was already spawned into the dungeon before
+        if (DungeonData->RemoveItem) {
+            // TODO: The inventory slot should also be checked inside the warp command
+            RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Character->DungeonEntryItemSlotIndex);
+            if (!ItemSlot) goto error;
+            if (ItemSlot->Item.Serial != DungeonData->EntryItemID.Serial ||
+                ItemSlot->ItemOptions != DungeonData->EntryItemOption) goto error;
 
-    if (RTDungeonStart(World)) {
-        S2C_DATA_NFY_QUEST_DUNGEON_SPAWN* Response = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_QUEST_DUNGEON_SPAWN);
-        Response->DungeonTimeout1 = (UInt32)(World->DungeonTimeout * 1000) - GetTimestampMs();
-        Response->DungeonTimeout2 = DungeonData->MissionTimeout * 1000;
-        SocketSend(Socket, Connection, Response);
+            RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+            Character->SyncMask.InventoryInfo = true;
+            Character->SyncPriority.High = true;
+        }
+
+        if (RTDungeonStart(World)) {
+            S2C_DATA_NFY_QUEST_DUNGEON_SPAWN* Response = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_QUEST_DUNGEON_SPAWN);
+            Response->DungeonTimeout1 = (UInt32)(World->DungeonTimeout * 1000) - GetTimestampMs();
+            Response->DungeonTimeout2 = DungeonData->MissionTimeout * 1000;
+            SocketSend(Socket, Connection, Response);
+        }
     }
 
     return;
@@ -127,6 +150,8 @@ error:
 
 CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_END) {
     if (!Character) goto error;
+
+    Trace("QuestDungeonEnd");
 
     RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
     if (World->WorldData->Type != RUNTIME_WORLD_TYPE_DUNGEON &&
@@ -159,6 +184,8 @@ error:
 CLIENT_PROCEDURE_BINDING(ATTACK_BOSS_MOB) {
     if (!Character) goto error;
 
+    Trace("AttackBossMob");
+
     RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
     assert(World);
 
@@ -185,6 +212,8 @@ error:
 
 CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_GATE_OPEN) {
     if (!Character) goto error;
+
+    Trace("QuestDungeonGateOpen");
     // TODO: Implementation missing!
     return;
     

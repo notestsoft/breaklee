@@ -82,6 +82,16 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 		Request->CharacterData.Ability.MaxEssenceAbilitySlotCount = PassiveAbilitySlotLimit->MinCount;
 	}
 
+	RTDataBlendedAbilitySlotLimitRef BlendedAbilitySlotLimit = RTRuntimeDataBlendedAbilitySlotLimitGet(Runtime->Context);
+	if (BlendedAbilitySlotLimit) {
+		Request->CharacterData.Ability.MaxBlendedAbilitySlotCount = BlendedAbilitySlotLimit->MinCount;
+	}
+
+	RTDataKarmaAbilitySlotLimitRef KarmaAbilitySlotLimit = RTRuntimeDataKarmaAbilitySlotLimitGet(Runtime->Context);
+	if (KarmaAbilitySlotLimit) {
+		Request->CharacterData.Ability.MaxKarmaAbilitySlotCount = KarmaAbilitySlotLimit->MinCount;
+	}
+
 	RTDataCharacterInitRef CharacterInit = RTRuntimeDataCharacterInitGet(Context->Runtime->Context, BattleStyleIndex);
 	Request->CharacterData.Position.WorldID = CharacterInit->WorldID;
 	Request->CharacterData.Position.X = CharacterInit->X;

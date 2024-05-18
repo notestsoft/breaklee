@@ -216,7 +216,8 @@ IPC_PROTOCOL(M2W, GET_CHARACTER,
         struct _RTCharacterDungeonQuestFlagInfo DungeonQuestFlagData;
         GAME_DATA_CHARACTER_ACHIEVEMENT AchievementData;
         struct _RTCharacterEssenceAbilityInfo EssenceAbilityData;
-        GAME_DATA_CHARACTER_BLENDEDABILITY BlendedAbilityData;
+		struct _RTCharacterBlendedAbilityInfo BlendedAbilityData;
+		struct _RTCharacterKarmaAbilityInfo KarmaAbilityData;
         struct _RTCharacterHonorMedalInfo HonorMedalData;
         struct _RTCharacterOverlordMasteryInfo OverlordData;
         struct _RTCharacterForceWingInfo ForceWingData;

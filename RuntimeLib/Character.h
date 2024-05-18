@@ -201,6 +201,7 @@ struct _RTCharacterAbility {
     UInt32 Exp;
     UInt32 MaxEssenceAbilitySlotCount;
     UInt32 MaxBlendedAbilitySlotCount;
+    UInt32 MaxKarmaAbilitySlotCount;
 };
 
 struct _RTCharacterResource {

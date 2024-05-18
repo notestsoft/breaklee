@@ -261,6 +261,21 @@ Void BroadcastToParty(
     RTEntityID PartyID,
     Void *Notification
 ) {
+    if (RTPartyIsSoloDungeon(PartyID)) {
+        RTPartyRef Party = RTPartyManagerGetParty(Context->Runtime->PartyManager, PartyID);
+        if (!Party) return;
+
+        for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
+            RTPartySlotRef PartySlot = &Party->Members[Index];
+            ClientContextRef Client = ServerGetClientByIndex(Context, PartySlot->Info.CharacterIndex, NULL);
+            if (!Client) return;
+
+            SocketSend(Context->ClientSocket, Client->Connection, Notification);
+        }
+
+        return;
+    }
+
     IPC_W2P_DATA_BROADCAST_TO_PARTY* Request = IPCPacketBufferInit(Context->IPCSocket->PacketBuffer, W2P, BROADCAST_TO_PARTY);
     Request->Header.Source = Context->IPCSocket->NodeID;
     Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;

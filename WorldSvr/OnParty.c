@@ -199,6 +199,18 @@ error:
 	return SocketDisconnect(Socket, Connection);
 }
 
+CLIENT_PROCEDURE_BINDING(PARTY_CHANGE_LOOTING_RULE) {
+	if (!Character) goto error;
+
+	// TODO: Implementation missing
+
+	S2C_DATA_NFY_PARTY_CHANGE_LOOTING_RULE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_PARTY_CHANGE_LOOTING_RULE);
+	return SocketSend(Socket, Connection, Response);
+
+error:
+	return SocketDisconnect(Socket, Connection);
+}
+
 IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE_TIMEOUT) {
 	ClientContextRef TargetClient = ServerGetClientByIndex(Context, Packet->CharacterIndex, NULL);
 	if (!TargetClient) return;

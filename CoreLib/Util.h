@@ -155,6 +155,8 @@ Timestamp PlatformGetTickCount();
 
 Void PlatformSleep(
     UInt64 Milliseconds
-);
+); 
+
+Void RenderLogo();
 
 EXTERN_C_END

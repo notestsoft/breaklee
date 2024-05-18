@@ -191,16 +191,16 @@ Void RTMovementSetPosition(
 	Int32 X,
 	Int32 Y
 ) {
-	if (Movement->WorldContext && Movement->WorldChunk && !RTEntityIsNull(Movement->Entity)) {
-        RTWorldChunkUpdate(Movement->WorldChunk, Movement->Entity);
-	}
-
 	Movement->PositionCurrent.X = X;
 	Movement->PositionCurrent.Y = Y;
 	Movement->PositionBegin.X = X;
 	Movement->PositionBegin.Y = Y;
 	Movement->PositionEnd.X = X;
 	Movement->PositionEnd.Y = Y;
+
+	if (Movement->WorldContext && Movement->WorldChunk && !RTEntityIsNull(Movement->Entity)) {
+		RTWorldChunkUpdate(Movement->WorldChunk, Movement->Entity);
+	}
 }
 
 Int32 RTMovementDistance(

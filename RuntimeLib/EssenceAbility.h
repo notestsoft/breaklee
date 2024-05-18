@@ -29,7 +29,9 @@ RTEssenceAbilitySlotRef RTCharacterGetEssenceAbilitySlot(
 Bool RTCharacterAddEssenceAbility(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    UInt32 InventorySlotIndex
+    UInt32 InventorySlotIndex,
+    UInt16* MaterialSlotIndex,
+    Int32 MaterialSlotCount
 );
 
 Bool RTCharacterUpgradeEssenceAbility(

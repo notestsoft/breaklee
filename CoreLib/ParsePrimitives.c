@@ -435,6 +435,48 @@ error:
     return false;
 }
 
+Int32 ParseAttributeUInt64ArrayCounted(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    UInt64* Result,
+    Int64 Count,
+    Char Separator
+) {
+    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    if (AttributeIndex < 0) goto error;
+
+    ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
+    if (!Data) goto error;
+
+    memset(Result, 0, sizeof(UInt64) * Count);
+
+    if (Data->Length < 1) {
+        return true;
+    }
+
+    Int32 Index = 0;
+    Char* Cursor = Data->Data;
+    while (Cursor < Data->Data + Data->Length && Index < Count) {
+        if (*Cursor == '\0') break;
+
+        if (*Cursor == Separator) {
+            Cursor += 1;
+            continue;
+        }
+
+        Char* Next;
+        Result[Index] = (UInt64)strtoull(Cursor, &Next, 10);
+        Index += 1;
+        Cursor = Next;
+    }
+
+    return Index;
+
+error:
+    return 0;
+}
+
 Int32 ParseAttributeInt32Array2D(
     ArchiveRef Object,
     Int64 NodeIndex,

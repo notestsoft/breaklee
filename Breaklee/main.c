@@ -83,6 +83,7 @@ Int32 main(
     Int32 ArgumentCount,
     CString* Arguments
 ) {
+    RenderLogo();
     DiagnosticSetup(
         stdout,
         LOG_LEVEL_TRACE,

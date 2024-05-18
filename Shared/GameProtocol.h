@@ -28,10 +28,6 @@ typedef struct {
 
 typedef struct {
     UInt32 Count;
-} GAME_DATA_CHARACTER_BLENDEDABILITY;
-
-typedef struct {
-    UInt32 Count;
 } GAME_DATA_CHARACTER_TRANSFORM;
 
 typedef struct {
@@ -82,7 +78,8 @@ typedef struct {
     struct _RTCharacterDungeonQuestFlagInfo DungeonQuestFlagData;
     GAME_DATA_CHARACTER_ACHIEVEMENT AchievementData;
     struct _RTCharacterEssenceAbilityInfo EssenceAbilityData;
-    GAME_DATA_CHARACTER_BLENDEDABILITY BlendedAbilityData;
+    struct _RTCharacterBlendedAbilityInfo BlendedAbilityData;
+    struct _RTCharacterKarmaAbilityInfo KarmaAbilityData;
     struct _RTCharacterHonorMedalInfo HonorMedalData;
     struct _RTCharacterOverlordMasteryInfo OverlordData;
     struct _RTCharacterForceWingInfo ForceWingData;
