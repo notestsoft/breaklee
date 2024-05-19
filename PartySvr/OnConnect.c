@@ -17,7 +17,7 @@ IPC_PROCEDURE_BINDING(W2P, CLIENT_CONNECT) {
     Response->Header.Target = Packet->Header.Source;
     Response->Header.TargetConnectionID = Packet->Header.SourceConnectionID;
 
-    RTPartyRef Party = RTPartyManagerGetPartyByCharacter(Context, Packet->CharacterIndex);
+    RTPartyRef Party = RTPartyManagerGetPartyByCharacter(Context->PartyManager, Packet->CharacterIndex);
     if (Party) {
         Response->Result = 1;
         Response->DungeonIndex = 0;
@@ -42,7 +42,7 @@ IPC_PROCEDURE_BINDING(W2P, CLIENT_DISCONNECT) {
 
     DictionaryRemove(Context->CharacterToWorldServer, &Packet->CharacterIndex);
     
-    RTPartyRef Party = ServerGetPartyByCharacter(Context, Packet->CharacterIndex);
+    RTPartyRef Party = RTPartyManagerGetPartyByCharacter(Context->PartyManager, Packet->CharacterIndex);
     if (!Party) return;
 
     Index OnlineMemberCount = 0;

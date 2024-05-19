@@ -81,7 +81,7 @@ IPC_PROCEDURE_BINDING(W2L, WORLD_VERIFY_LINKS) {
 
     IPC_L2M_DATA_GET_WORLD_LIST* Request = IPCPacketBufferInit(Socket->PacketBuffer, L2M, GET_WORLD_LIST);
     Request->Header.Source = Server->IPCSocket->NodeID;
-    Request->Header.Target.Group = 1;
+    Request->Header.Target.Group = Server->IPCSocket->NodeID.Group;
     Request->Header.Target.Type = IPC_TYPE_MASTER;
     IPCSocketUnicast(Socket, Request);
 

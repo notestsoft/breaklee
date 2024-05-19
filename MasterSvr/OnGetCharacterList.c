@@ -3,6 +3,7 @@
 #include "IPCProcedures.h"
 
 IPC_PROCEDURE_BINDING(W2M, GET_CHARACTER_LIST) {
+	memset(Account, 0, sizeof(MASTERDB_DATA_ACCOUNT));
 	Account->AccountID = Packet->AccountID;
 	if (!MasterDBGetOrCreateAccount(Context->Database, Account)) goto error;
 

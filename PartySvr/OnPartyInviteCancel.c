@@ -10,7 +10,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CANCEL) {
     RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolFetch(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);
     if (!Invitation) goto error;
 
-    RTPartyRef Party = ServerGetPartyByCharacter(Context, Packet->SourceCharacterIndex);
+    RTPartyRef Party = RTPartyManagerGetPartyByCharacter(Context->PartyManager, Packet->SourceCharacterIndex);
     if (!Party) goto error;
 
     IPC_P2W_DATA_PARTY_INVITE_TIMEOUT* Notification = IPCPacketBufferInit(Connection->PacketBuffer, P2W, PARTY_INVITE_TIMEOUT);
@@ -27,7 +27,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CANCEL) {
     DictionaryRemove(Context->PartyManager->CharacterToPartyInvite, &Packet->TargetCharacterIndex);
 
     if (Party->PartyType == RUNTIME_PARTY_TYPE_NORMAL && Party->MemberCount < 2) {
-        ServerDestroyParty(Context, Party);
+        RTPartyManagerDestroyParty(Context->PartyManager, Party);
     }
 
     IPC_P2W_DATA_PARTY_INVITE_CANCEL* Response = IPCPacketBufferInit(Connection->PacketBuffer, P2W, PARTY_INVITE_CANCEL);

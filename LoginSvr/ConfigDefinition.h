@@ -15,6 +15,7 @@
 #endif
 
 CONFIG_BEGIN(Login)
+CONFIG_PARAMETER(UInt8, GroupIndex, "LoginSvr.GroupIndex", 21)
 CONFIG_PARAMETER(Bool, Maintenance, "LoginSvr.Maintenance", 0)
 CONFIG_PARAMETER(Bool, CheckVersion, "LoginSvr.CheckVersion", 1)
 CONFIG_PARAMETER(UInt32, ClientVersion, "LoginSvr.ClientVersion", 13162)

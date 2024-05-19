@@ -87,7 +87,7 @@ Void ServerOnUpdate(
         Context->WorldListBroadcastTimestamp = CurrentTimestamp + Context->Config.Login.WorldListBroadcastInterval;
         IPC_L2M_DATA_GET_WORLD_LIST* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, L2M, GET_WORLD_LIST);
         Request->Header.Source = Server->IPCSocket->NodeID;
-        Request->Header.Target.Group = 1;
+        Request->Header.Target.Group = Server->IPCSocket->NodeID.Group;
         Request->Header.Target.Type = IPC_TYPE_MASTER;
         IPCSocketUnicast(Server->IPCSocket, Request);
     }
@@ -111,7 +111,7 @@ Int32 main(Int32 argc, CString* argv) {
     ServerContext.WorldServerTable = IndexDictionaryCreate(Allocator, 256);
 
     IPCNodeID NodeID = kIPCNodeIDNull;
-    NodeID.Group = 1;
+    NodeID.Group = Config.Login.GroupIndex;
     NodeID.Index = 0;
     NodeID.Type = IPC_TYPE_LOGIN;
 

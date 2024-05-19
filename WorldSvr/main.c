@@ -158,7 +158,6 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     NodeID.Group = Config.WorldSvr.GroupIndex;
     NodeID.Index = Config.WorldSvr.NodeIndex;
     NodeID.Type = IPC_TYPE_WORLD;
-    Trace("Node(%d, %d, %d)", NodeID.Group, NodeID.Index, NodeID.Type);
 
     ServerRef Server = ServerCreate(
         Allocator,

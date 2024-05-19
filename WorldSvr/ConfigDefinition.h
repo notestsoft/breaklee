@@ -15,7 +15,7 @@
 #endif
 
 CONFIG_BEGIN(WorldSvr)
-CONFIG_PARAMETER(UInt8, GroupIndex, "WorldSvr.GroupIndex", 1)
+CONFIG_PARAMETER(UInt8, GroupIndex, "WorldSvr.GroupIndex", 21)
 CONFIG_PARAMETER(UInt8, NodeIndex, "WorldSvr.NodeIndex", 1)
 CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, Host, "WorldSvr.Host", 127.0.0.1)
 CONFIG_PARAMETER(UInt16, Port, "WorldSvr.Port", 38121)

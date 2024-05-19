@@ -12,9 +12,9 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
 	Bool HasTargetInvitation = DictionaryLookup(Context->PartyManager->CharacterToPartyInvite, &Target->Info.CharacterIndex) != NULL;
 	if (HasTargetInvitation) goto error;
 
-	RTPartyRef Party = ServerGetPartyByCharacter(Context, Source->Info.CharacterIndex);
+	RTPartyRef Party = RTPartyManagerGetPartyByCharacter(Context->PartyManager, Source->Info.CharacterIndex);
 	if (!Party) {
-		Party = ServerCreateParty(Context, Source->Info.CharacterIndex, kEntityIDNull, RUNTIME_PARTY_TYPE_NORMAL);
+		Party = RTPartyManagerCreateParty(Context->PartyManager, Source->Info.CharacterIndex, kEntityIDNull, RUNTIME_PARTY_TYPE_NORMAL);
 		if (!Party) goto error;
 
 		RTPartySlotRef Member = RTPartyGetMember(Party, Source->Info.CharacterIndex);
@@ -68,7 +68,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_ACK) {
 	RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolFetch(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);
 	if (!Invitation) goto error;
 
-	RTPartyRef Party = ServerGetPartyByCharacter(Context, Source->Info.CharacterIndex);
+	RTPartyRef Party = RTPartyManagerGetPartyByCharacter(Context->PartyManager, Source->Info.CharacterIndex);
 	if (!Party) goto error;
 
 	if (Packet->Success) {
@@ -78,7 +78,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_ACK) {
 	else if (Party->PartyType == RUNTIME_PARTY_TYPE_NORMAL) {
 		MemoryPoolRelease(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);
 		DictionaryRemove(Context->PartyManager->CharacterToPartyInvite, &Target->Info.CharacterIndex);
-		ServerDestroyParty(Context, Party);
+		RTPartyManagerDestroyParty(Context->PartyManager, Party);
 	}
 
 	IPC_P2W_DATA_PARTY_INVITE_ACK* Response = IPCPacketBufferInit(Connection->PacketBuffer, P2W, PARTY_INVITE_ACK);

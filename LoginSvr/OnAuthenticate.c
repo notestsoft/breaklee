@@ -240,7 +240,7 @@ CLIENT_PROCEDURE_BINDING(AUTHENTICATE) {
 
     IPC_L2M_DATA_GET_WORLD_LIST* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, L2M, GET_WORLD_LIST);
     Request->Header.Source = Server->IPCSocket->NodeID;
-    Request->Header.Target.Group = 1;
+    Request->Header.Target.Group = Server->IPCSocket->NodeID.Group;
     Request->Header.Target.Type = IPC_TYPE_MASTER;
     IPCSocketUnicast(Server->IPCSocket, Request);
     return;

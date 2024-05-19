@@ -10,7 +10,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CONFIRM) {
     RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolFetch(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);
     if (!Invitation) goto error;
 
-    RTPartyRef Party = ServerGetPartyByCharacter(Context, Packet->TargetCharacterIndex);
+    RTPartyRef Party = RTPartyManagerGetPartyByCharacter(Context->PartyManager, Packet->TargetCharacterIndex);
     if (!Party) goto error;
 
     if (Packet->IsAccept) {
@@ -36,7 +36,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CONFIRM) {
     DictionaryRemove(Context->PartyManager->CharacterToPartyInvite, &Packet->SourceCharacterIndex);
 
     if (!Packet->IsAccept && Party->PartyType == RUNTIME_PARTY_TYPE_NORMAL && Party->MemberCount < 2) {
-        ServerDestroyParty(Context, Party);
+        RTPartyManagerDestroyParty(Context->PartyManager, Party);
     }
 
     IPC_P2W_DATA_PARTY_INVITE_CONFIRM* Response = IPCPacketBufferInit(Connection->PacketBuffer, P2W, PARTY_INVITE_CONFIRM);

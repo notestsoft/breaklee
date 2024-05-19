@@ -61,7 +61,7 @@ Void ServerOnUpdate(
         Iterator = DictionaryKeyIteratorNext(Iterator);
 
         RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolReserveNext(Context->PartyManager->PartyInvitationPool, &PartyInvitationPoolIndex);
-        RTPartyRef Party = ServerGetParty(Context, Invitation->PartyID);
+        RTPartyRef Party = RTPartyManagerGetParty(Context->PartyManager, Invitation->PartyID);
         assert(Party);
 
         if (Invitation->InvitationTimestamp + Context->Config.PartySvr.PartyInvitationTimeout < CurrentTimestamp) {
@@ -92,7 +92,7 @@ Void ServerOnUpdate(
             if (Party->PartyType == RUNTIME_PARTY_TYPE_NORMAL && Party->MemberCount < 2) {
                 MemoryPoolRelease(Context->PartyManager->PartyInvitationPool, PartyInvitationPoolIndex);
                 DictionaryRemove(Context->PartyManager->CharacterToPartyInvite, &Invitation->Member.Info.CharacterIndex);
-                ServerDestroyParty(Context, Party);
+                RTPartyManagerDestroyParty(Context->PartyManager, Party);
             }
         }
     }

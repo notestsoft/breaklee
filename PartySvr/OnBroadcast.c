@@ -4,7 +4,7 @@
 #include "Server.h"
 
 IPC_PROCEDURE_BINDING(W2P, BROADCAST_TO_PARTY) {
-    RTPartyRef Party = ServerGetParty(Context, Packet->PartyID);
+    RTPartyRef Party = RTPartyManagerGetParty(Context->PartyManager, Packet->PartyID);
     if (!Party) return;
 
     for (Index Index = 0; Index < Party->MemberCount; Index += 1) {

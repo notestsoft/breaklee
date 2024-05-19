@@ -249,6 +249,8 @@ IPCSocketRef IPCSocketCreate(
     Socket->HeartbeatPacket.Target = kIPCNodeIDNull;
     Socket->HeartbeatPacket.TargetConnectionID = 0;
 
+    Trace("Node(%d, %d, %d)", NodeID.Group, NodeID.Index, NodeID.Type);
+
     if (Host) {
         IPCSocketConnect(Socket, Host, Port, Timeout);
     }
