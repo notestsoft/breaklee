@@ -128,7 +128,7 @@ CString PacketBufferAppendCString(
     return (CString)PacketBufferAppendCopy(PacketBuffer, (Void*)Value, (Index)strlen(Value) + 1);
 }
 
-UInt32 PacketGetLength(
+Int32 PacketGetLength(
     UInt16 ProtocolIdentifier,
     UInt16 ProtocolVersion,
     UInt16 ProtocolExtension,
@@ -139,10 +139,10 @@ UInt32 PacketGetLength(
     PacketMagic -= ProtocolVersion;
     
     if (PacketMagic == ProtocolExtension) {
-        return *((UInt32*)((UInt8*)Packet + sizeof(UInt16)));
+        return *((Int32*)((UInt8*)Packet + sizeof(UInt16)));
     }
     
-    return *((UInt16*)((UInt8*)Packet + sizeof(UInt16)));
+    return *((Int32*)((UInt8*)Packet + sizeof(UInt16)));
 }
 
 Void PacketSetLength(
@@ -205,4 +205,38 @@ UInt16 ServerPacketGetCommand(
     }
     
     return *((UInt16*)((UInt8*)Packet + 4));
+}
+
+Int32 ClientPacketGetHeaderLength(
+    UInt16 ProtocolIdentifier,
+    UInt16 ProtocolVersion,
+    UInt16 ProtocolExtension,
+    Void* Packet
+) {
+    UInt16 PacketMagic = *((UInt16*)Packet);
+    PacketMagic -= ProtocolIdentifier;
+    PacketMagic -= ProtocolVersion;
+    
+    if (PacketMagic == ProtocolExtension) {
+        return 12;
+    }
+
+    return 10;
+}
+
+Int32 ServerPacketGetHeaderLength(
+    UInt16 ProtocolIdentifier,
+    UInt16 ProtocolVersion,
+    UInt16 ProtocolExtension,
+    Void* Packet
+) {
+    UInt16 PacketMagic = *((UInt16*)Packet);
+    PacketMagic -= ProtocolIdentifier;
+    PacketMagic -= ProtocolVersion;
+    
+    if (PacketMagic == ProtocolExtension) {
+        return 8;
+    }
+    
+    return 6;
 }

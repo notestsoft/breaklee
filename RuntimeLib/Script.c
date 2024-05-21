@@ -141,7 +141,7 @@ static Int32 _DebugWorldSpawnMob(
     Int32 MobIndex = (Int32)lua_tointeger(State, 3);
     Int32 X = (Int32)lua_tointeger(State, 4);
     Int32 Y = (Int32)lua_tointeger(State, 5);
-
+    
     /*
     Index MemoryPoolIndex = 0;
     RTMobRef Minion = (RTMobRef)MemoryPoolReserveNext(WorldContext->MobPool, &MemoryPoolIndex);
@@ -176,4 +176,3 @@ static Int32 _DebugWorldSpawnMob(
 
     return 0;
 }
-

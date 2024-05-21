@@ -2,6 +2,7 @@
 
 #include "Base.h"
 #include "IPCSocket.h"
+#include "PacketLayout.h"
 #include "Socket.h"
 
 EXTERN_C_BEGIN
@@ -47,16 +48,26 @@ typedef UInt16(*PacketGetCommandCallback)(
     Void* Packet
 );
 
+typedef Int32(*PacketGetLengthCallback)(
+    UInt16 ProtocolIdentifier,
+    UInt16 ProtocolVersion,
+    UInt16 ProtocolExtension,
+    Void* Packet
+);
+
 struct _ServerSocketContext {
     ServerRef Server;
     SocketRef Socket;
     CString SocketHost;
     UInt16 SocketPort;
     MemoryPoolRef ConnectionContextPool;
+    PacketManagerRef PacketManager;
     DictionaryRef CommandRegistry;
     ServerConnectionCallback OnConnect;
     ServerConnectionCallback OnDisconnect;
     PacketGetCommandCallback PacketGetCommandCallback;
+    PacketGetLengthCallback PacketGetLengthCallback;
+    PacketGetLengthCallback PacketGetHeaderLengthCallback;
 };
 
 struct _Server {
@@ -112,6 +123,12 @@ Void ServerSocketRegisterPacketCallback(
     SocketRef Socket,
     Index Command,
     ServerPacketCallback Callback
+);
+
+Void ServerSocketLoadScript(
+    ServerRef Server,
+    SocketRef Socket,
+    CString FilePath
 );
 
 Void ServerRun(

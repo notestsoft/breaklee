@@ -73,7 +73,21 @@ UInt16 ServerPacketGetCommand(
     Void* Packet
 );
 
-UInt32 PacketGetLength(
+Int32 ClientPacketGetHeaderLength(
+    UInt16 ProtocolIdentifier,
+    UInt16 ProtocolVersion,
+    UInt16 ProtocolExtension,
+    Void* Packet
+);
+
+Int32 ServerPacketGetHeaderLength(
+    UInt16 ProtocolIdentifier,
+    UInt16 ProtocolVersion,
+    UInt16 ProtocolExtension,
+    Void* Packet
+);
+
+Int32 PacketGetLength(
     UInt16 ProtocolIdentifier,
     UInt16 ProtocolVersion,
     UInt16 ProtocolExtension,

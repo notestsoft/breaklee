@@ -145,6 +145,8 @@ DictionaryRef DictionaryCreate(
         Allocator,
         sizeof(struct _Dictionary) + sizeof(struct _DictionaryBucket) * Capacity
     );
+    if (!Dictionary) Fatal("Memory allocation failed!");
+    
     Dictionary->Allocator = Allocator;
     Dictionary->BucketAllocator = TempAllocatorCreate(Allocator);
     Dictionary->Comparator = Comparator;

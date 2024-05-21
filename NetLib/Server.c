@@ -63,11 +63,12 @@ Void ServerDestroy(
         SocketDestroy(SocketContext->Socket);
         MemoryPoolDestroy(SocketContext->ConnectionContextPool);
         DictionaryDestroy(SocketContext->CommandRegistry);
+        PacketManagerDestroy(SocketContext->PacketManager);
     }
     
     ArrayDestroy(Server->Sockets);
     AllocatorDeallocate(Server->Allocator, (Void*)Server);
-    
+
     PlatformUnloadSocketLibrary();
 }
 
@@ -114,17 +115,22 @@ SocketRef ServerCreateSocket(
     SocketContext->SocketHost = SocketHost;
     SocketContext->SocketPort = SocketPort;
     SocketContext->ConnectionContextPool = MemoryPoolCreate(Server->Allocator, ConnectionContextSize, MaxConnectionCount);
+    SocketContext->PacketManager = PacketManagerCreate(Server->Allocator);
     SocketContext->CommandRegistry = IndexDictionaryCreate(Server->Allocator, 8);
     SocketContext->OnConnect = OnConnect;
     SocketContext->OnDisconnect = OnDisconnect;
     SocketContext->PacketGetCommandCallback = &ClientPacketGetCommand;
+    SocketContext->PacketGetLengthCallback = &PacketGetLength;
+    SocketContext->PacketGetHeaderLengthCallback = &ClientPacketGetHeaderLength;
     
     if (SocketFlags & SOCKET_FLAGS_CLIENT) {
         SocketContext->PacketGetCommandCallback = &ServerPacketGetCommand;
+        SocketContext->PacketGetHeaderLengthCallback = &ServerPacketGetHeaderLength;
     }
     
     if (SocketFlags & SOCKET_FLAGS_IPC) {
         SocketContext->PacketGetCommandCallback = &ServerPacketGetCommand;
+        SocketContext->PacketGetHeaderLengthCallback = &ServerPacketGetHeaderLength;
     }
 
     return SocketContext->Socket;
@@ -139,6 +145,15 @@ Void ServerSocketRegisterPacketCallback(
     ServerSocketContextRef SocketContext = (ServerSocketContextRef)Socket->Userdata;
     assert(!DictionaryLookup(SocketContext->CommandRegistry, &Command));
     DictionaryInsert(SocketContext->CommandRegistry, &Command, &Callback, sizeof(ServerPacketCallback));
+}
+
+Void ServerSocketLoadScript(
+    ServerRef Server,
+    SocketRef Socket,
+    CString FilePath
+) {
+    ServerSocketContextRef SocketContext = (ServerSocketContextRef)Socket->Userdata;
+
 }
 
 Void ServerRun(
@@ -220,7 +235,31 @@ Void _ServerSocketOnReceived(
         Socket->ProtocolExtension,
         Packet
     );
-
+    
+    Int32 PacketLength = SocketContext->PacketGetLengthCallback(
+        Socket->ProtocolIdentifier,
+        Socket->ProtocolVersion,
+        Socket->ProtocolExtension,
+        Packet
+    );
+    
+    Int32 HeaderLength = SocketContext->PacketGetHeaderLengthCallback(
+        Socket->ProtocolIdentifier,
+        Socket->ProtocolVersion,
+        Socket->ProtocolExtension,
+        Packet
+    );
+    
+    UInt8* Buffer = ((UInt8*)Packet) + HeaderLength;
+    Int32 BufferLength = PacketLength - HeaderLength;
+    Int32 Result = PacketManagerHandle(SocketContext->PacketManager, Command, Buffer, BufferLength);
+    if (Result < 0) {
+        SocketDisconnect(Socket, Connection);
+    }
+    if (Result > 0) {
+        return;
+    }
+    
     ServerPacketCallback *CommandCallback = (ServerPacketCallback*)DictionaryLookup(SocketContext->CommandRegistry, &Command);
     if (CommandCallback) (*CommandCallback)(
         SocketContext->Server,
