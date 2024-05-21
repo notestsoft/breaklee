@@ -26,6 +26,7 @@ enum {
 enum {
     SOCKET_CONNECTION_FLAGS_DISCONNECTED     = 1 << 0,
     SOCKET_CONNECTION_FLAGS_DISCONNECTED_END = 1 << 1,
+    SOCKET_CONNECTION_FLAGS_DISCONNECT_DELAY = 1 << 2,
 };
 
 typedef Void (*SocketConnectionCallback)(
@@ -72,6 +73,7 @@ struct _SocketConnection {
     Char AddressIP[16];
     Index ID;
     UInt32 Flags;
+    Timestamp Timestamp;
     struct _Keychain Keychain;
     PacketBufferRef PacketBuffer;
     MemoryBufferRef ReadBuffer;
@@ -143,6 +145,12 @@ Void SocketUpdate(
 Void SocketDisconnect(
     SocketRef Socket,
     SocketConnectionRef Connection
+);
+
+Void SocketDisconnectDelay(
+    SocketRef Socket,
+    SocketConnectionRef Connection,
+    Timestamp Delay
 );
 
 Void SocketClose(

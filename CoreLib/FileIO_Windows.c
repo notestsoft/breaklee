@@ -85,7 +85,7 @@ Bool FileRead(
 
     OVERLAPPED Overlapped = { 0 };
     *Length = (Int32)FileSize.QuadPart;
-    *Destination = (UInt8*)malloc(*Length);
+    *Destination = (UInt8*)malloc(*Length + 1);
     if (*Destination == NULL) {
         Error("Memory allocation failed!\n");
         return false;
@@ -108,6 +108,8 @@ Bool FileRead(
     }
 
     assert(*Length == FileTransferByteCount);
+
+    (*Destination)[*Length] = '\0';
 
     return true;
 }

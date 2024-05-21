@@ -324,6 +324,8 @@ Bool SocketFlushWriteBuffer(
 Void SocketReleaseConnections(
     SocketRef Socket
 ) {
+    Timestamp Timestamp = GetTimestampMs();
+
     IndexSetIteratorRef Iterator = IndexSetGetInverseIterator(Socket->ConnectionIndices);
     while (Iterator) {
         Index ConnectionPoolIndex = Iterator->Value;
@@ -332,6 +334,11 @@ Void SocketReleaseConnections(
         // TODO: Sometimes Connection can become null!!!
         SocketConnectionRef Connection = (SocketConnectionRef)MemoryPoolFetch(Socket->ConnectionPool, ConnectionPoolIndex);
         if (!Connection) continue;
+
+        if (Connection->Flags & SOCKET_CONNECTION_FLAGS_DISCONNECT_DELAY && Connection->Timestamp < Timestamp) {
+            Connection->Flags &= ~SOCKET_CONNECTION_FLAGS_DISCONNECT_DELAY;
+            Connection->Flags |= SOCKET_CONNECTION_FLAGS_DISCONNECTED;
+        }
 
         if (Connection->Flags & SOCKET_CONNECTION_FLAGS_DISCONNECTED && !(Connection->Flags & SOCKET_CONNECTION_FLAGS_DISCONNECTED_END)) {
             Connection->Flags &= ~SOCKET_CONNECTION_FLAGS_DISCONNECTED_END;
@@ -426,6 +433,15 @@ Void SocketDisconnect(
     SocketConnectionRef Connection
 ) {
     Connection->Flags |= SOCKET_CONNECTION_FLAGS_DISCONNECTED;
+}
+
+Void SocketDisconnectDelay(
+    SocketRef Socket,
+    SocketConnectionRef Connection,
+    Timestamp Delay
+) {
+    Connection->Flags |= SOCKET_CONNECTION_FLAGS_DISCONNECT_DELAY;
+    Connection->Timestamp = GetTimestampMs() + Delay;
 }
 
 Void SocketClose(

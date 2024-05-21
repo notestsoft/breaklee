@@ -153,7 +153,7 @@ Void ServerSocketLoadScript(
     CString FilePath
 ) {
     ServerSocketContextRef SocketContext = (ServerSocketContextRef)Socket->Userdata;
-
+    PacketManagerLoadScript(SocketContext->PacketManager, FilePath);
 }
 
 Void ServerRun(
@@ -228,55 +228,57 @@ Void _ServerSocketOnReceived(
     SocketConnectionRef Connection,
     Void *Packet
 ) {
-    ServerSocketContextRef SocketContext = (ServerSocketContextRef)Socket->Userdata;
-    Index Command = (Index)SocketContext->PacketGetCommandCallback(
-        Socket->ProtocolIdentifier,
-        Socket->ProtocolVersion,
-        Socket->ProtocolExtension,
-        Packet
-    );
-    
-    Int32 PacketLength = SocketContext->PacketGetLengthCallback(
-        Socket->ProtocolIdentifier,
-        Socket->ProtocolVersion,
-        Socket->ProtocolExtension,
-        Packet
-    );
-    
-    Int32 HeaderLength = SocketContext->PacketGetHeaderLengthCallback(
-        Socket->ProtocolIdentifier,
-        Socket->ProtocolVersion,
-        Socket->ProtocolExtension,
-        Packet
-    );
-    
-    UInt8* Buffer = ((UInt8*)Packet) + HeaderLength;
-    Int32 BufferLength = PacketLength - HeaderLength;
-    Int32 Result = PacketManagerHandle(SocketContext->PacketManager, Command, Buffer, BufferLength);
-    if (Result < 0) {
-        SocketDisconnect(Socket, Connection);
-    }
-    if (Result > 0) {
-        return;
-    }
-    
-    ServerPacketCallback *CommandCallback = (ServerPacketCallback*)DictionaryLookup(SocketContext->CommandRegistry, &Command);
-    if (CommandCallback) (*CommandCallback)(
-        SocketContext->Server,
-        SocketContext->Server->Userdata,
-        Socket,
-        Connection,
-        Connection->Userdata,
-        Packet
-    );
-    else {
-        Warn("Received unknown packet: %d", (Int32)Command);
-        
-        PacketLogBytes(
+    BENCHMARK("_ServerSocketOnReceived") {
+        ServerSocketContextRef SocketContext = (ServerSocketContextRef)Socket->Userdata;
+        Index Command = (Index)SocketContext->PacketGetCommandCallback(
             Socket->ProtocolIdentifier,
             Socket->ProtocolVersion,
             Socket->ProtocolExtension,
             Packet
         );
+        Trace("_ServerSocketOnReceived(%d)", (Int32)Command);
+
+        Int32 PacketLength = SocketContext->PacketGetLengthCallback(
+            Socket->ProtocolIdentifier,
+            Socket->ProtocolVersion,
+            Socket->ProtocolExtension,
+            Packet
+        );
+
+        Int32 HeaderLength = SocketContext->PacketGetHeaderLengthCallback(
+            Socket->ProtocolIdentifier,
+            Socket->ProtocolVersion,
+            Socket->ProtocolExtension,
+            Packet
+        );
+
+        UInt8* Buffer = ((UInt8*)Packet) + HeaderLength;
+        Int32 BufferLength = PacketLength - HeaderLength;
+        Int32 Result = PacketManagerHandle(SocketContext->PacketManager, Command, Buffer, BufferLength);
+        if (Result < 0) {
+            SocketDisconnect(Socket, Connection);
+        }
+
+        if (Result == 0) {
+            ServerPacketCallback* CommandCallback = (ServerPacketCallback*)DictionaryLookup(SocketContext->CommandRegistry, &Command);
+            if (CommandCallback) (*CommandCallback)(
+                SocketContext->Server,
+                SocketContext->Server->Userdata,
+                Socket,
+                Connection,
+                Connection->Userdata,
+                Packet
+                );
+            else {
+                Warn("Received unknown packet: %d", (Int32)Command);
+
+                PacketLogBytes(
+                    Socket->ProtocolIdentifier,
+                    Socket->ProtocolVersion,
+                    Socket->ProtocolExtension,
+                    Packet
+                );
+            }
+        }
     }
 }

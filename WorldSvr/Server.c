@@ -101,6 +101,38 @@ Void ServerLoadRuntimeData(
     }
 }
 
+Void ServerLoadScriptData(
+    ServerConfig Config,
+    ServerContextRef Context
+) {
+    CString FilePath = PathCombineNoAlloc(Config.WorldSvr.ScriptDataPath, "ScriptRegistry.txt");
+    FileRef File = fopen(FilePath, "r");
+    if (!File) return;
+
+    Char ScriptDirective[32] = { 0 };
+    Char ScriptFileName[256] = { 0 };
+
+    while (fscanf(File, "%31s %255s", ScriptDirective, ScriptFileName) == 2) {
+        CString ScriptFilePath = PathCombineNoAlloc(Config.WorldSvr.ScriptDataPath, ScriptFileName);
+        if (!FileExists(ScriptFilePath)) {
+            Error("Error loading ScriptRegistry");
+            break;
+        }
+
+        if (strcmp(ScriptDirective, "AddNetworkScript") == 0) {
+            ServerSocketLoadScript(Context->Server, Context->ClientSocket, ScriptFilePath);
+        }
+        else if (strcmp(ScriptDirective, "AddRuntimeScript") == 0) {
+            Error("AddRuntimeScript is not supported yet!");
+        }
+        else {
+            Error("Invalid directive: %s\n", ScriptDirective);
+        }
+    }
+
+    fclose(File);
+}
+
 ClientContextRef ServerGetClientByAuthKey(
     ServerContextRef Context,
     UInt32 AuthKey,

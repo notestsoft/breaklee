@@ -66,9 +66,9 @@ typedef SSIZE_T ssize_t;
 #	if _MSC_VER >= 1400
 #		include <sal.h>
 #		if _MSC_VER > 1400
-#			define PRINTFLIKE_FORMAT(__PARAMETER__) _Printf_format_string_ __PARAMETER__
+#			define PRINTFLIKE_PARAMETER(__PARAMETER__) _Printf_format_string_ __PARAMETER__
 #		else
-#			define PRINTFLIKE_FORMAT(__PARAMETER__) __format_string __PARAMETER__
+#			define PRINTFLIKE_PARAMETER(__PARAMETER__) __format_string __PARAMETER__
 #		endif
 #	endif
 #else

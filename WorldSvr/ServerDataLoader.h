@@ -11,6 +11,11 @@ Void ServerLoadRuntimeData(
     ServerContextRef Context
 );
 
+Void ServerLoadScriptData(
+    ServerConfig Config,
+    ServerContextRef Context
+);
+
 Bool ServerLoadCharacterTemplateData(
     ServerContextRef Context,
     ArchiveRef RankArchive,

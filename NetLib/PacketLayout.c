@@ -32,17 +32,17 @@ enum {
 };
 
 const CString kScriptPrelude =
-    "function i8(name) return { 0, name } end"
-    "function i16(name) return { 1, name } end"
-    "function i32(name) return { 2, name } end"
-    "function i64(name) return { 3, name } end"
-    "function u8(name) return { 4, name } end"
-    "function u16(name) return { 5, name } end"
-    "function u32(name) return { 6, name } end"
-    "function u64(name) return { 7, name } end"
-    "function string(name) return { 8, name } end"
-    "function chars(name, count) return { 9, name, count } end"
-    "function array(name, subtype, count) return { 10, name, subtype, count } end"
+    "function i8(name) return { 0, name } end\n"
+    "function i16(name) return { 1, name } end\n"
+    "function i32(name) return { 2, name } end\n"
+    "function i64(name) return { 3, name } end\n"
+    "function u8(name) return { 4, name } end\n"
+    "function u16(name) return { 5, name } end\n"
+    "function u32(name) return { 6, name } end\n"
+    "function u64(name) return { 7, name } end\n"
+    "function str(name) return { 8, name } end\n"
+    "function chars(name, count) return { 9, name, count } end\n"
+    "function vec(name, subtype, count) return { 10, name, subtype, count } end\n"
 ;
 
 struct _PacketField {
@@ -280,7 +280,7 @@ Void PacketLayoutAddField(
     Index ChildIndex,
     Index CountIndex
 ) {
-    if (DictionaryLookup(PacketLayout->NameToField, Name)) Fatal("Packet field with name '%s' already registered!");
+    if (DictionaryLookup(PacketLayout->NameToField, Name)) Fatal("Packet field with name '%s' already registered!", Name);
     
     Index PacketFieldIndex = ArrayGetElementCount(PacketLayout->Fields);
     PacketFieldRef PacketField = (PacketFieldRef)ArrayAppendUninitializedElement(PacketLayout->Fields);
@@ -291,6 +291,8 @@ Void PacketLayoutAddField(
     PacketField->CountIndex = CountIndex;
     strcpy(PacketField->Name, Name);
     PacketField->StackOffset = 0;
+
+    DictionaryInsert(PacketLayout->NameToField, Name, &PacketFieldIndex, sizeof(Index));
 }
 
 Void PacketLayoutAddInt8(
@@ -402,7 +404,7 @@ Void PacketLayoutAddDynamicArray(
     
     if (!CountFieldIsPrimitive) Fatal("Packet field named '%s' uses non-primitive count '%s'!", ChildName, CountName);
 
-    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_STATIC_ARRAY, 0, ChildIndex, *CountIndex);
+    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_DYNAMIC_ARRAY, 0, ChildIndex, *CountIndex);
 }
 
 lua_Integer PacketFieldReadPrimitive(
@@ -459,7 +461,7 @@ Bool PacketLayoutParse(
         PacketField->StackOffset = *OutOffset;
         
         Int32 FieldLength = (Int32)PacketField->Length;
-        if (PacketField->StackOffset + FieldLength >= Length) {
+        if (PacketField->StackOffset + FieldLength > Length) {
             Error("Received misaligned packet for layout '%s'", PacketLayout->Name);
             return false;
         }
@@ -483,7 +485,7 @@ Bool PacketLayoutParse(
         if (PacketField->Type == PACKET_FIELD_TYPE_STRING) {
             Char* Value = (Char*)&Buffer[PacketField->StackOffset];
             FieldLength = (Int32)strlen(Value);
-            if (PacketField->StackOffset + FieldLength >= Length) {
+            if (PacketField->StackOffset + FieldLength > Length) {
                 Error("Received misaligned packet for layout '%s'", PacketLayout->Name);
                 return false;
             }
@@ -501,9 +503,10 @@ Bool PacketLayoutParse(
            
             lua_createtable(State, (Int32)PacketField->Length, 0);
             for (Int32 ChildIndex = 0; ChildIndex < PacketField->Length; ChildIndex += 1) {
+                lua_pushinteger(State, ChildIndex + 1);
                 if (!PacketLayoutParse(Child, Buffer, OutOffset, Length, State)) return false;
 
-                lua_rawseti(State, -2, Index + 1);
+                lua_settable(State, -3);
             }
             
             FieldLength = 0;
@@ -516,9 +519,10 @@ Bool PacketLayoutParse(
             
             lua_createtable(State, Count, 0);
             for (Int32 ChildIndex = 0; ChildIndex < Count; ChildIndex += 1) {
+                lua_pushinteger(State, ChildIndex + 1);
                 if (!PacketLayoutParse(Child, Buffer, OutOffset, Length, State)) return false;
 
-                lua_rawseti(State, -2, Index + 1);
+                lua_settable(State, -3);
             }
             
             FieldLength = 0;
@@ -537,7 +541,7 @@ static Int32 PacketManagerAPI_RegisterPacketLayout(
     Int32 StateStack = lua_gettop(State);
 
     Int32 Result = lua_getglobal(State, PACKET_MANAGER_GLOBAL_USERDATA_NAME);
-    if (Result != LUA_TUSERDATA) {
+    if (Result != LUA_TLIGHTUSERDATA) {
         lua_pop(State, 1);
         lua_settop(State, StateStack);
         return luaL_error(State, "Corrupted stack!");
@@ -567,12 +571,15 @@ static Int32 PacketManagerAPI_RegisterPacketLayout(
     while (lua_next(State, -2) != 0) {
         if (lua_istable(State, -1)) {
             lua_pushnil(State);
+
             lua_next(State, -2);
-            
             Int32 FieldType = (Int32)lua_tointeger(State, -1);
+            lua_pop(State, 1);
+
             lua_next(State, -2);
-            
             CString FieldName = (CString)lua_tostring(State, -1);
+            lua_pop(State, 1);
+
             switch (FieldType) {
                 case PACKET_FIELD_SCRIPT_TYPE_INT8:
                     PacketLayoutAddInt8(PacketLayout, FieldName);
@@ -613,6 +620,8 @@ static Int32 PacketManagerAPI_RegisterPacketLayout(
                 case PACKET_FIELD_SCRIPT_TYPE_CHARACTERS: {
                     lua_next(State, -2);
                     Int32 Count = (Int32)lua_tointeger(State, -1);
+                    lua_pop(State, 1);
+
                     PacketLayoutAddCharacters(PacketLayout, FieldName, Count);
                     break;
                 }
@@ -620,13 +629,18 @@ static Int32 PacketManagerAPI_RegisterPacketLayout(
                 case PACKET_FIELD_SCRIPT_TYPE_ARRAY: {
                     lua_next(State, -2);
                     CString ChildName = (CString)lua_tostring(State, -1);
+                    lua_pop(State, 1);
                     
                     lua_next(State, -2);
                     if (lua_isinteger(State, -1)) {
                         Int32 Count = (Int32)lua_tointeger(State, -1);
+                        lua_pop(State, 1);
+
                         PacketLayoutAddStaticArray(PacketLayout, FieldName, ChildName, Count);
                     } else {
                         CString CountName = (CString)lua_tostring(State, -1);
+                        lua_pop(State, 1);
+
                         PacketLayoutAddDynamicArray(PacketLayout, FieldName, ChildName, CountName);
                     }
 
@@ -638,8 +652,9 @@ static Int32 PacketManagerAPI_RegisterPacketLayout(
                     break;
             }
 
-            lua_pop(State, 2);
+            lua_pop(State, 1);
         }
+
         lua_pop(State, 1);
     }
 
@@ -652,7 +667,7 @@ static Int32 PacketManagerAPI_RegisterPacketHandler(
     Int32 StateStack = lua_gettop(State);
 
     Int32 Result = lua_getglobal(State, PACKET_MANAGER_GLOBAL_USERDATA_NAME);
-    if (Result != LUA_TUSERDATA) {
+    if (Result != LUA_TLIGHTUSERDATA) {
         lua_pop(State, 1);
         lua_settop(State, StateStack);
         return luaL_error(State, "Corrupted stack!");

@@ -170,6 +170,7 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
         &ServerOnUpdate,
         &ServerContext
     );
+    ServerContext.Server = Server;
     ServerContext.IPCSocket = Server->IPCSocket;
 
     ServerContext.ClientSocket = ServerCreateSocket(
@@ -229,6 +230,7 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
         ServerLoadRuntimeData(Config, &ServerContext);
     }
 
+    ServerLoadScriptData(Config, &ServerContext);
     ServerRun(Server);
 
     for (Index WorldIndex = 0; WorldIndex < ServerContext.Runtime->WorldManager->MaxWorldDataCount; WorldIndex += 1) {
