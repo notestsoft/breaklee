@@ -98,4 +98,10 @@ RTDataDivineUpgradeMainRef RTRuntimeDataDivineUpgradeMainGet(
 	Int32 ItemType
 );
 
+RTDataDummySkillRef RTRuntimeDataDummySkillGet(
+	RTRuntimeDataContextRef Context,
+	Int32 Case,
+	Int32 Property
+);
+
 EXTERN_C_END

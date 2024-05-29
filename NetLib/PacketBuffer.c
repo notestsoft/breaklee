@@ -128,7 +128,7 @@ CString PacketBufferAppendCString(
     return (CString)PacketBufferAppendCopy(PacketBuffer, (Void*)Value, (Index)strlen(Value) + 1);
 }
 
-Int32 PacketGetLength(
+UInt32 PacketGetLength(
     UInt16 ProtocolIdentifier,
     UInt16 ProtocolVersion,
     UInt16 ProtocolExtension,
@@ -139,10 +139,10 @@ Int32 PacketGetLength(
     PacketMagic -= ProtocolVersion;
     
     if (PacketMagic == ProtocolExtension) {
-        return *((Int32*)((UInt8*)Packet + sizeof(UInt16)));
+        return *((UInt32*)((UInt8*)Packet + sizeof(UInt16)));
     }
     
-    return *((Int32*)((UInt8*)Packet + sizeof(UInt16)));
+    return *((UInt16*)((UInt8*)Packet + sizeof(UInt16)));
 }
 
 Void PacketSetLength(

@@ -97,6 +97,8 @@ IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER) {
         memset(Packet->Character.QuestFlagData.FinishedQuests, 0xFF, RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT);
     }
 
+    Packet->Character.CharacterData.Profile.Nation = 3;
+    /*
     Int32 SlotIndex = Packet->Character.SkillSlotData.Count;
     for (Index Index = 144; Index < 148; Index++) {
         RTSkillSlotRef GmSkill = &Packet->Character.SkillSlotData.Skills[Packet->Character.SkillSlotData.Count];
@@ -105,7 +107,7 @@ IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER) {
         GmSkill->Index = SlotIndex++;
         Packet->Character.SkillSlotData.Count += 1;
     }
-
+    */
     /*
     RTWorldRef TargetWorld = RTRuntimeGetWorldByID(Runtime, Packet->Character.CharacterData.Position.WorldID);
     if (TargetWorld->Type == RUNTIME_WORLD_TYPE_QUEST_DUNGEON) {

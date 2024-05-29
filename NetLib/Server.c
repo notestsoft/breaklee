@@ -254,7 +254,14 @@ Void _ServerSocketOnReceived(
 
         UInt8* Buffer = ((UInt8*)Packet) + HeaderLength;
         Int32 BufferLength = PacketLength - HeaderLength;
-        Int32 Result = PacketManagerHandle(SocketContext->PacketManager, Command, Buffer, BufferLength);
+        Int32 Result = PacketManagerHandle(
+            SocketContext->PacketManager, 
+            Socket,
+            Connection,
+            Command, 
+            Buffer, 
+            BufferLength
+        );
         if (Result < 0) {
             SocketDisconnect(Socket, Connection);
         }
@@ -268,7 +275,7 @@ Void _ServerSocketOnReceived(
                 Connection,
                 Connection->Userdata,
                 Packet
-                );
+            );
             else {
                 Warn("Received unknown packet: %d", (Int32)Command);
 

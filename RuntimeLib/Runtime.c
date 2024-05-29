@@ -500,15 +500,15 @@ Void RTRuntimeBroadcastCharacterData(
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_SP_INCREASE) {
-        Fatal("Implementation missing!");
+        assert(false && "Implementation missing!");
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_SP_DECREASE) {
-        Fatal("Implementation missing!");
+        assert(false && "Implementation missing!");
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_EXP) {
-        Fatal("Implementation missing!");
+        assert(false && "Implementation missing!");
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_RANK) {
@@ -516,41 +516,41 @@ Void RTRuntimeBroadcastCharacterData(
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_LEVEL) {
-        Fatal("Implementation missing!");
+        Notification->Level = Character->Info.Basic.Level;
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_SP_DECREASE_EX) {
-        Fatal("Implementation missing!");
+        assert(false && "Implementation missing!");
     }
 
     assert(Notification->Type != NOTIFICATION_CHARACTER_DATA_TYPE_BUFF_POTION);
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_REPUTATION) {
-        Fatal("Implementation missing!");
+        assert(false && "Implementation missing!");
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_GUIDITEMFX) {
-        Fatal("Implementation missing!");
+        assert(false && "Implementation missing!");
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_RESURRECTION) {
-        Fatal("Implementation missing!");
+        assert(false && "Implementation missing!");
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_PENALTY_EXP) {
-        Fatal("Implementation missing!");
+        assert(false && "Implementation missing!");
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_DAMAGE_CELL) {
-        Fatal("Implementation missing!");
+        assert(false && "Implementation missing!");
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_DEFFICIENCY) {
-        Fatal("Implementation missing!");
+        assert(false && "Implementation missing!");
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_AUTH_HP_POTION) {
-        Fatal("Implementation missing!");
+        assert(false && "Implementation missing!");
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_RAGE) {

@@ -1437,6 +1437,7 @@ Bool ServerLoadSkillData(
         if (!ParseAttributeInt32(Archive, Iterator->Index, "group", &SkillData->SkillGroup)) goto error;
         if (!ParseAttributeInt32(Archive, Iterator->Index, "multi", &SkillData->Multi)) goto error;
         if (!ParseAttributeInt32(Archive, Iterator->Index, "intensity", &SkillData->Intensity)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "element", &SkillData->Element)) goto error;
         
         ArchiveIteratorRef AttributeIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, "attribute");
         if (AttributeIterator) {
@@ -1503,6 +1504,39 @@ Bool ServerLoadSkillData(
                 if (!ParseAttributeInt32(Archive, CostIterator->Index, "sp", &SkillData->Sp)) goto error;
                 if (!ParseAttributeInt32(Archive, CostIterator->Index, "rage_value", &SkillData->RageValue)) goto error;
             }
+        }
+
+        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+    }
+
+    Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "skill_value");
+    while (Iterator) {
+        Int32 SkillIndex = 0;
+        Int32 Group = 0;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "id", &SkillIndex)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "group", &Group)) goto error;
+
+        RTCharacterSkillDataRef SkillData = MemoryPoolFetch(Runtime->SkillDataPool, SkillIndex);
+        assert(SkillData);
+
+        ArchiveIteratorRef ValueIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, "value");
+        while (ValueIterator) {
+            assert(SkillData->SkillValueCount < RUNTIME_MEMORY_MAX_SKILL_VALUE_DATA_COUNT);
+
+            RTSkillValueDataRef SkillValue = &SkillData->SkillValues[SkillData->SkillValueCount];
+            memset(SkillValue, 0, sizeof(struct _RTSkillValueData));
+
+            if (!ParseAttributeInt32(Archive, ValueIterator->Index, "bforce_id", &SkillValue->ForceEffectIndex)) goto error;
+            if (!ParseAttributeInt32Array(Archive, ValueIterator->Index, "bforce_value", SkillValue->ForceEffectValue, 3, ',')) goto error;
+            if (!ParseAttributeInt32(Archive, ValueIterator->Index, "type", &SkillValue->Type)) goto error;
+            if (!ParseAttributeInt32(Archive, ValueIterator->Index, "value_type", &SkillValue->ValueType)) goto error;
+            if (!ParseAttributeInt32(Archive, ValueIterator->Index, "check_readiness", &SkillValue->CheckReadiness)) goto error;
+
+            ParseAttributeInt32Array(Archive, ValueIterator->Index, "power", SkillValue->Power, 2, ',');
+            ParseAttributeInt32Array(Archive, ValueIterator->Index, "dur", SkillValue->Duration, 2, ',');
+
+            SkillData->SkillValueCount += 1;
+            ValueIterator = ArchiveQueryNodeIteratorNext(Archive, ValueIterator);
         }
 
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);

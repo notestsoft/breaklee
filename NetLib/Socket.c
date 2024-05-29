@@ -302,9 +302,9 @@ Bool SocketFlushWriteBuffer(
         } else {
             PacketLength = *((UInt16*)((UInt8*)Packet + sizeof(UInt16)));
         }
-        
-        if (Socket->OnSend) Socket->OnSend(Socket, Connection, Packet);
+
         if (Socket->LogPackets) PacketLogBytes(Socket->ProtocolIdentifier, Socket->ProtocolVersion, Socket->ProtocolExtension, Packet);
+        if (Socket->OnSend) Socket->OnSend(Socket, Connection, Packet);
 
         if (Socket->Flags & SOCKET_FLAGS_ENCRYPTED) {
             KeychainEncryptPacket(&Connection->Keychain, Packet, PacketLength);

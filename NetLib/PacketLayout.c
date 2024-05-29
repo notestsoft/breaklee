@@ -1,6 +1,8 @@
 #include "PacketLayout.h"
 
-#define PACKET_MANAGER_GLOBAL_USERDATA_NAME "_PacketManager"
+#define PACKET_MANAGER_GLOBAL_INSTANCE_NAME "_PacketManager"
+#define PACKET_MANAGER_GLOBAL_SOCKET_NAME "_Socket"
+#define PACKET_MANAGER_GLOBAL_SOCKET_CONNECTION_NAME "_SocketConnection"
 
 enum {
     PACKET_FIELD_TYPE_INT8,
@@ -50,9 +52,10 @@ struct _PacketField {
     Index Type;
     Index Length;
     Index ChildIndex;
-    Index CountIndex;
-    Char Name[MAX_PATH];
+    Int64 CountIndex;
     Index StackOffset;
+    Int64 ArrayIndex;
+    Char Name[MAX_PATH];
 };
 
 struct _PacketLayout {
@@ -82,6 +85,11 @@ Void PacketManagerRegisterScriptAPI(
     PacketManagerRef PacketManager
 );
 
+Void* PacketLayoutWriteZero(
+    PacketLayoutRef PacketLayout,
+    PacketBufferRef PacketBuffer
+);
+
 Bool PacketLayoutParse(
     PacketLayoutRef PacketLayout,
     UInt8* Buffer,
@@ -101,7 +109,7 @@ PacketManagerRef PacketManagerCreate(
     if (!PacketManager->State) Fatal("Lua: State creation failed!");
     luaL_openlibs(PacketManager->State);
     lua_pushlightuserdata(PacketManager->State, PacketManager);
-    lua_setglobal(PacketManager->State, PACKET_MANAGER_GLOBAL_USERDATA_NAME);
+    lua_setglobal(PacketManager->State, PACKET_MANAGER_GLOBAL_INSTANCE_NAME);
     
     if (luaL_dostring(PacketManager->State, kScriptPrelude) != LUA_OK) {
         Fatal("Lua: Error %s", lua_tostring(PacketManager->State, -1));
@@ -148,7 +156,6 @@ PacketLayoutRef PacketManagerRegisterLayout(
     Index PacketLayoutIndex = ArrayGetElementCount(PacketManager->PacketLayouts);
     PacketLayoutRef PacketLayout = (PacketLayoutRef)ArrayAppendUninitializedElement(PacketManager->PacketLayouts);
     memset(PacketLayout, 0, sizeof(struct _PacketLayout));
-    
     PacketLayout->Manager = PacketManager;
     PacketLayout->Index = PacketLayoutIndex;
     strcpy(PacketLayout->Name, Name);
@@ -190,6 +197,8 @@ PacketLayoutRef PacketManagerGetLayout(
 
 Int32 PacketManagerHandle(
     PacketManagerRef PacketManager,
+    SocketRef Socket,
+    SocketConnectionRef SocketConnection,
     Index Command,
     UInt8* Buffer,
     Int32 Length
@@ -201,6 +210,13 @@ Int32 PacketManagerHandle(
     if (!PacketLayout) return 0;
     
     Int32 StateStack = lua_gettop(PacketManager->State);
+
+    lua_pushlightuserdata(PacketManager->State, Socket);
+    lua_setglobal(PacketManager->State, PACKET_MANAGER_GLOBAL_SOCKET_NAME);
+
+    lua_pushlightuserdata(PacketManager->State, SocketConnection);
+    lua_setglobal(PacketManager->State, PACKET_MANAGER_GLOBAL_SOCKET_CONNECTION_NAME);
+
     lua_rawgeti(PacketManager->State, LUA_REGISTRYINDEX, PacketHandler->Handler);
 
     Int32 Offset = 0;
@@ -245,12 +261,12 @@ Index PacketFieldGetSize(
     case PACKET_FIELD_TYPE_STRING:
     case PACKET_FIELD_TYPE_CHARACTERS:
         return PacketField->Length;
-        
+ 
     case PACKET_FIELD_TYPE_STATIC_ARRAY: {
         PacketLayoutRef Child = PacketManagerGetLayoutByIndex(PacketLayout->Manager, PacketField->ChildIndex);
         return PacketField->Length * PacketLayoutGetSize(Child);
     }
-        
+    
     case PACKET_FIELD_TYPE_DYNAMIC_ARRAY:
         return 0;
 
@@ -272,18 +288,22 @@ Index PacketLayoutGetSize(
     return Size;
 }
 
-Void PacketLayoutAddField(
+PacketFieldRef PacketLayoutAddField(
     PacketLayoutRef PacketLayout,
     CString Name,
     Index Type,
     Index Length,
     Index ChildIndex,
-    Index CountIndex
+    Int64 CountIndex
 ) {
-    if (DictionaryLookup(PacketLayout->NameToField, Name)) Fatal("Packet field with name '%s' already registered!", Name);
+    if (DictionaryLookup(PacketLayout->NameToField, Name)) {
+        Fatal("Packet field with name '%s' already registered!", Name);
+        return NULL;
+    }
     
     Index PacketFieldIndex = ArrayGetElementCount(PacketLayout->Fields);
     PacketFieldRef PacketField = (PacketFieldRef)ArrayAppendUninitializedElement(PacketLayout->Fields);
+    memset(PacketField, 0, sizeof(struct _PacketField));
     PacketField->Index = PacketFieldIndex;
     PacketField->Type = Type;
     PacketField->Length = Length;
@@ -291,79 +311,114 @@ Void PacketLayoutAddField(
     PacketField->CountIndex = CountIndex;
     strcpy(PacketField->Name, Name);
     PacketField->StackOffset = 0;
+    PacketField->ArrayIndex = -1;
 
     DictionaryInsert(PacketLayout->NameToField, Name, &PacketFieldIndex, sizeof(Index));
+    return PacketField;
+}
+
+PacketFieldRef PacketLayoutGetField(
+    PacketLayoutRef PacketLayout,
+    CString Name
+) {
+    return (PacketFieldRef)DictionaryLookup(PacketLayout->NameToField, Name);
 }
 
 Void PacketLayoutAddInt8(
     PacketLayoutRef PacketLayout,
     CString Name
 ) {
-    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_INT8, sizeof(Int8), 0, 0);
+    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_INT8, sizeof(Int8), 0, -1);
 }
 
 Void PacketLayoutAddInt16(
     PacketLayoutRef PacketLayout,
     CString Name
 ) {
-    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_INT16, sizeof(Int16), 0, 0);
+    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_INT16, sizeof(Int16), 0, -1);
 }
 
 Void PacketLayoutAddInt32(
     PacketLayoutRef PacketLayout,
     CString Name
 ) {
-    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_INT32, sizeof(Int32), 0, 0);
+    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_INT32, sizeof(Int32), 0, -1);
 }
 
 Void PacketLayoutAddInt64(
     PacketLayoutRef PacketLayout,
     CString Name
 ) {
-    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_INT64, sizeof(Int64), 0, 0);
+    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_INT64, sizeof(Int64), 0, -1);
 }
 
 Void PacketLayoutAddUInt8(
     PacketLayoutRef PacketLayout,
     CString Name
 ) {
-    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_UINT8, sizeof(UInt8), 0, 0);
+    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_UINT8, sizeof(UInt8), 0, -1);
 }
 
 Void PacketLayoutAddUInt16(
     PacketLayoutRef PacketLayout,
     CString Name
 ) {
-    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_UINT16, sizeof(UInt16), 0, 0);
+    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_UINT16, sizeof(UInt16), 0, -1);
 }
 
 Void PacketLayoutAddUInt32(
     PacketLayoutRef PacketLayout,
     CString Name
 ) {
-    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_UINT32, sizeof(UInt32), 0, 0);
+    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_UINT32, sizeof(UInt32), 0, -1);
 }
 
 Void PacketLayoutAddUInt64(
     PacketLayoutRef PacketLayout,
     CString Name
 ) {
-    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_UINT64, sizeof(UInt64), 0, 0);
+    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_UINT64, sizeof(UInt64), 0, -1);
 }
 
 Void PacketLayoutAddCString(
     PacketLayoutRef PacketLayout,
     CString Name
 ) {
-    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_STRING, sizeof(Char), 0, 0);
+    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_STRING, sizeof(Char), 0, -1);
 }
 
-Void PacketLayoutAddCharacters(
+Void PacketLayoutAddStaticCharacters(
     PacketLayoutRef PacketLayout,
     CString Name,
     Int32 Count
 ) {
-    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_CHARACTERS, sizeof(Char) * Count, 0, 0);
+    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_CHARACTERS, sizeof(Char) * Count, 0, -1);
+}
+
+Void PacketLayoutAddDynamicCharacters(
+    PacketLayoutRef PacketLayout,
+    CString Name,
+    CString CountName
+) {
+    Index* CountIndex = DictionaryLookup(PacketLayout->NameToField, CountName);
+    if (!CountIndex) Fatal("Packet field named '%s' not found!", CountName);
+
+    PacketFieldRef CountField = (PacketFieldRef)ArrayGetElementAtIndex(PacketLayout->Fields, *CountIndex);
+    Bool CountFieldIsPrimitive = (
+        CountField->Type == PACKET_FIELD_TYPE_INT8 ||
+        CountField->Type == PACKET_FIELD_TYPE_INT16 ||
+        CountField->Type == PACKET_FIELD_TYPE_INT32 ||
+        CountField->Type == PACKET_FIELD_TYPE_INT64 ||
+        CountField->Type == PACKET_FIELD_TYPE_UINT8 ||
+        CountField->Type == PACKET_FIELD_TYPE_UINT16 ||
+        CountField->Type == PACKET_FIELD_TYPE_UINT32 ||
+        CountField->Type == PACKET_FIELD_TYPE_UINT64
+    );
+
+    if (!CountFieldIsPrimitive) Fatal("Packet field named '%s' uses non-primitive count '%s'!", Name, CountName);
+
+    PacketFieldRef PacketField = PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_CHARACTERS, 0, 0, *CountIndex);
+    CountField->ArrayIndex = PacketField->Index;
 }
 
 Void PacketLayoutAddStaticArray(
@@ -404,7 +459,8 @@ Void PacketLayoutAddDynamicArray(
     
     if (!CountFieldIsPrimitive) Fatal("Packet field named '%s' uses non-primitive count '%s'!", ChildName, CountName);
 
-    PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_DYNAMIC_ARRAY, 0, ChildIndex, *CountIndex);
+    PacketFieldRef PacketField = PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_DYNAMIC_ARRAY, 0, ChildIndex, *CountIndex);
+    CountField->ArrayIndex = PacketField->Index;
 }
 
 lua_Integer PacketFieldReadPrimitive(
@@ -445,6 +501,114 @@ lua_Integer PacketFieldReadPrimitive(
     }
     
     return Result;
+}
+
+Void* PacketFieldWritePrimitive(
+    PacketFieldRef PacketField,
+    PacketBufferRef PacketBuffer,
+    lua_Integer Value
+) {
+    if (PacketField->Type == PACKET_FIELD_TYPE_INT8) {
+        return PacketBufferAppendValue(PacketBuffer, Int8, (Int8)Value);
+    }
+
+    if (PacketField->Type == PACKET_FIELD_TYPE_INT16) {
+        return PacketBufferAppendValue(PacketBuffer, Int16, (Int16)Value);
+    }
+
+    if (PacketField->Type == PACKET_FIELD_TYPE_INT32) {
+        return PacketBufferAppendValue(PacketBuffer, Int32, (Int32)Value);
+    }
+
+    if (PacketField->Type == PACKET_FIELD_TYPE_INT64) {
+        return PacketBufferAppendValue(PacketBuffer, Int64, (Int64)Value);
+    }
+
+    if (PacketField->Type == PACKET_FIELD_TYPE_UINT8) {
+        return PacketBufferAppendValue(PacketBuffer, UInt8, (UInt8)Value);
+    }
+
+    if (PacketField->Type == PACKET_FIELD_TYPE_UINT16) {
+        return PacketBufferAppendValue(PacketBuffer, UInt16, (UInt16)Value);
+    }
+
+    if (PacketField->Type == PACKET_FIELD_TYPE_UINT32) {
+        return PacketBufferAppendValue(PacketBuffer, UInt32, (UInt32)Value);
+    }
+
+    if (PacketField->Type == PACKET_FIELD_TYPE_UINT64) {
+        return PacketBufferAppendValue(PacketBuffer, UInt64, (UInt64)Value);
+    }
+
+    return NULL;
+}
+
+Void* PacketFieldWriteZero(
+    PacketLayoutRef PacketLayout,
+    PacketFieldRef PacketField,
+    PacketBufferRef PacketBuffer
+) {
+    if (PacketField->Type == PACKET_FIELD_TYPE_INT8) {
+        return PacketBufferAppendValue(PacketBuffer, Int8, 0);
+    }
+
+    if (PacketField->Type == PACKET_FIELD_TYPE_INT16) {
+        return PacketBufferAppendValue(PacketBuffer, Int16, 0);
+    }
+
+    if (PacketField->Type == PACKET_FIELD_TYPE_INT32) {
+        return PacketBufferAppendValue(PacketBuffer, Int32, 0);
+    }
+
+    if (PacketField->Type == PACKET_FIELD_TYPE_INT64) {
+        return PacketBufferAppendValue(PacketBuffer, Int64, 0);
+    }
+
+    if (PacketField->Type == PACKET_FIELD_TYPE_UINT8) {
+        return PacketBufferAppendValue(PacketBuffer, UInt8, 0);
+    }
+
+    if (PacketField->Type == PACKET_FIELD_TYPE_UINT16) {
+        return PacketBufferAppendValue(PacketBuffer, UInt16, 0);
+    }
+
+    if (PacketField->Type == PACKET_FIELD_TYPE_UINT32) {
+        return PacketBufferAppendValue(PacketBuffer, UInt32, 0);
+    }
+
+    if (PacketField->Type == PACKET_FIELD_TYPE_UINT64) {
+        return PacketBufferAppendValue(PacketBuffer, UInt64, 0);
+    }
+
+    if (PacketField->Type == PACKET_FIELD_TYPE_STRING) {
+        return PacketBufferAppendValue(PacketBuffer, Char, 0);
+    }
+
+    if (PacketField->Type == PACKET_FIELD_TYPE_CHARACTERS) {
+        return PacketBufferAppend(PacketBuffer, PacketField->Length);
+    }
+
+    if (PacketField->Type == PACKET_FIELD_TYPE_STATIC_ARRAY) {
+        PacketLayoutRef ChildLayout = (PacketLayoutRef)ArrayGetElementAtIndex(PacketLayout->Fields, PacketField->ChildIndex);
+        Index ChildSize = PacketLayoutGetSize(ChildLayout);
+        return PacketBufferAppend(PacketBuffer, PacketField->Length * ChildSize);
+    }
+
+    if (PacketField->Type == PACKET_FIELD_TYPE_DYNAMIC_ARRAY) {
+        return NULL;
+    }
+
+    return NULL;
+}
+
+Void* PacketLayoutWriteZero(
+    PacketLayoutRef PacketLayout,
+    PacketBufferRef PacketBuffer
+) {
+    for (Index Index = 0; Index < ArrayGetElementCount(PacketLayout->Fields); Index += 1) {
+        PacketFieldRef PacketField = (PacketFieldRef)ArrayGetElementAtIndex(PacketLayout->Fields, Index);
+        PacketFieldWriteZero(PacketLayout, PacketField, PacketBuffer);
+    }
 }
 
 Bool PacketLayoutParse(
@@ -494,8 +658,29 @@ Bool PacketLayoutParse(
         }
         
         if (PacketField->Type == PACKET_FIELD_TYPE_CHARACTERS) {
+            // TODO: We should do a memcpy here and append a trailing zero manually based on the length
             Char* Value = ((Char*)&Buffer[PacketField->StackOffset]);
             lua_pushstring(State, Value);
+
+            if (PacketField->CountIndex >= 0) {
+                PacketField->Length = strlen(Value);
+
+                PacketFieldRef CountField = (PacketFieldRef)ArrayGetElementAtIndex(PacketLayout->Fields, PacketField->CountIndex);
+
+                lua_settable(State, -3);
+                lua_pushstring(State, CountField->Name);
+                assert(
+                    PacketField->Type == PACKET_FIELD_TYPE_INT8 ||
+                    PacketField->Type == PACKET_FIELD_TYPE_INT16 ||
+                    PacketField->Type == PACKET_FIELD_TYPE_INT32 ||
+                    PacketField->Type == PACKET_FIELD_TYPE_INT64 ||
+                    PacketField->Type == PACKET_FIELD_TYPE_UINT8 ||
+                    PacketField->Type == PACKET_FIELD_TYPE_UINT16 ||
+                    PacketField->Type == PACKET_FIELD_TYPE_UINT32 ||
+                    PacketField->Type == PACKET_FIELD_TYPE_UINT64
+                );
+                lua_pushinteger(State, (lua_Integer)PacketField->Length);
+            }
         }
         
         if (PacketField->Type == PACKET_FIELD_TYPE_STATIC_ARRAY) {
@@ -513,6 +698,7 @@ Bool PacketLayoutParse(
         }
         
         if (PacketField->Type == PACKET_FIELD_TYPE_DYNAMIC_ARRAY) {
+            // TODO: Add support for automatic counting!
             PacketLayoutRef Child = PacketManagerGetLayoutByIndex(PacketLayout->Manager, PacketField->ChildIndex);
             PacketFieldRef CountField = (PacketFieldRef)ArrayGetElementAtIndex(PacketLayout->Fields, PacketField->CountIndex);
             Int32 Count = (Int32)PacketFieldReadPrimitive(CountField, Buffer);
@@ -535,12 +721,172 @@ Bool PacketLayoutParse(
     return true;
 }
 
+Bool PacketLayoutEncode(
+    PacketLayoutRef PacketLayout,
+    PacketBufferRef PacketBuffer,
+    lua_State* State
+) {
+    if (!lua_istable(State, -1)) {
+        return false;
+    }
+
+    for (Int32 FieldIndex = 0; FieldIndex < ArrayGetElementCount(PacketLayout->Fields); FieldIndex += 1) {
+        PacketFieldRef PacketField = (PacketFieldRef)ArrayGetElementAtIndex(PacketLayout->Fields, FieldIndex);
+      
+        if (PacketField->ArrayIndex >= 0) {
+            PacketFieldRef ArrayField = (PacketFieldRef)ArrayGetElementAtIndex(PacketLayout->Fields, PacketField->ArrayIndex);
+            
+            lua_pushstring(State, ArrayField->Name);
+            lua_gettable(State, -2);
+            if (ArrayField->Type == PACKET_FIELD_TYPE_DYNAMIC_ARRAY && lua_istable(State, -1)) {
+                PacketFieldWritePrimitive(PacketField, PacketBuffer, luaL_len(State, -1));
+            }
+            else if (ArrayField->Type == PACKET_FIELD_TYPE_CHARACTERS && lua_isstring(State, -1)) {
+                CString Value = lua_tostring(State, -1);
+                ArrayField->Length = strlen(Value);
+                PacketFieldWritePrimitive(PacketField, PacketBuffer, ArrayField->Length);
+            }
+            else {
+                PacketFieldWritePrimitive(PacketField, PacketBuffer, 0);
+            }
+
+            lua_pop(State, 1);
+            continue;
+        }
+
+        lua_pushstring(State, PacketField->Name);
+        lua_gettable(State, -2);
+
+        if (lua_isnil(State, -1)) {
+            PacketFieldWriteZero(PacketLayout, PacketField, PacketBuffer);
+            lua_pop(State, 1);
+            continue;
+        }
+
+        if (
+            PacketField->Type == PACKET_FIELD_TYPE_INT8 ||
+            PacketField->Type == PACKET_FIELD_TYPE_INT16 ||
+            PacketField->Type == PACKET_FIELD_TYPE_INT32 ||
+            PacketField->Type == PACKET_FIELD_TYPE_INT64 ||
+            PacketField->Type == PACKET_FIELD_TYPE_UINT8 ||
+            PacketField->Type == PACKET_FIELD_TYPE_UINT16 ||
+            PacketField->Type == PACKET_FIELD_TYPE_UINT32 ||
+            PacketField->Type == PACKET_FIELD_TYPE_UINT64
+        ) {
+            if (!lua_isinteger(State, -1)) {
+                Error("Invalid type '%s' given for field '%s' in layout '%s'", lua_typename(State, -1), PacketField->Name, PacketLayout->Name);
+                lua_pop(State, 1);
+                return false;
+            }
+
+            lua_Integer Value = lua_tointeger(State, -1);
+            PacketFieldWritePrimitive(PacketField, PacketBuffer, Value);
+            lua_pop(State, 1);
+            continue;
+        }
+
+        if (PacketField->Type == PACKET_FIELD_TYPE_STRING) {
+            if (!lua_isstring(State, -1)) {
+                lua_pop(State, 1);
+                Error("Invalid type given for field '%s' in layout '%s'", PacketField->Name, PacketLayout->Name);
+                return false;
+            }
+
+            CString Value = lua_tostring(State, -1);
+            PacketBufferAppendCString(PacketBuffer, Value);
+            lua_pop(State, 1);
+            continue;
+        }
+
+        if (PacketField->Type == PACKET_FIELD_TYPE_CHARACTERS) {
+            if (!lua_isstring(State, -1)) {
+                lua_pop(State, 1);
+                Error("Invalid type given for field '%s' in layout '%s'", PacketField->Name, PacketLayout->Name);
+                return false;
+            }
+
+            CString Value = lua_tostring(State, -1);
+            CString Memory = (CString)PacketBufferAppend(PacketBuffer, PacketField->Length);
+            memcpy(Memory, Value, MIN(PacketField->Length, strlen(Value)));
+            lua_pop(State, 1);
+            continue;
+        }
+
+        if (PacketField->Type == PACKET_FIELD_TYPE_STATIC_ARRAY) {
+            if (!lua_istable(State, -1)) {
+                lua_pop(State, 1);
+                Error("Invalid type given for field '%s' in layout '%s'", PacketField->Name, PacketLayout->Name);
+                return false;
+            }
+
+            PacketLayoutRef ChildLayout = PacketManagerGetLayoutByIndex(PacketLayout->Manager, PacketField->ChildIndex);
+            Int32 Count = PacketField->Length;
+
+            lua_pushnil(State);
+
+            Int32 Offset = 0;
+            while (lua_next(State, -2) != 0) {
+                if (Offset >= PacketField->Length) {
+                    lua_pop(State, 2);
+                    Warn("Invalid count of elements given for field '%s' in layout '%s'", PacketField->Name, PacketLayout->Name);
+                    break;
+                }
+
+                if (!PacketLayoutEncode(ChildLayout, PacketBuffer, State)) {
+                    lua_pop(State, 2);
+                    return false;
+                }
+
+                Offset += 1;
+            }
+
+            for (Int32 Index = Offset; Index < Count; Index += 1) {
+                PacketLayoutWriteZero(ChildLayout, PacketBuffer);
+            }
+
+            lua_pop(State, 1);
+            continue;
+        }
+
+        if (PacketField->Type == PACKET_FIELD_TYPE_DYNAMIC_ARRAY) {
+            if (!lua_istable(State, -1)) {
+                lua_pop(State, 1);
+                Error("Invalid type given for field '%s' in layout '%s'", PacketField->Name, PacketLayout->Name);
+                return false;
+            }
+
+            PacketLayoutRef ChildLayout = PacketManagerGetLayoutByIndex(PacketLayout->Manager, PacketField->ChildIndex);
+            Int32 Count = luaL_len(State, -1);
+
+            lua_pushnil(State);
+
+            Int32 Offset = 0;
+            while (lua_next(State, -2) != 0) {
+                if (!PacketLayoutEncode(ChildLayout, PacketBuffer, State)) {
+                    lua_pop(State, 2);
+                    return false;
+                }
+
+                Offset += 1;
+            }
+
+            lua_pop(State, 1);
+            continue;
+        }
+
+        lua_pop(State, 1);
+    }
+
+    lua_pop(State, 1);
+    return true;
+}
+
 static Int32 PacketManagerAPI_RegisterPacketLayout(
     lua_State* State
 ) {
     Int32 StateStack = lua_gettop(State);
 
-    Int32 Result = lua_getglobal(State, PACKET_MANAGER_GLOBAL_USERDATA_NAME);
+    Int32 Result = lua_getglobal(State, PACKET_MANAGER_GLOBAL_INSTANCE_NAME);
     if (Result != LUA_TLIGHTUSERDATA) {
         lua_pop(State, 1);
         lua_settop(State, StateStack);
@@ -619,10 +965,23 @@ static Int32 PacketManagerAPI_RegisterPacketLayout(
                     
                 case PACKET_FIELD_SCRIPT_TYPE_CHARACTERS: {
                     lua_next(State, -2);
-                    Int32 Count = (Int32)lua_tointeger(State, -1);
-                    lua_pop(State, 1);
+                    if (lua_isstring(State, -1)) {
+                        CString CountName = lua_tostring(State, -1);
+                        lua_pop(State, 1);
 
-                    PacketLayoutAddCharacters(PacketLayout, FieldName, Count);
+                        PacketLayoutAddDynamicCharacters(PacketLayout, FieldName, CountName);
+                    }
+                    else if (lua_isinteger(State, -1)) {
+                        Int32 Count = (Int32)lua_tointeger(State, -1);
+                        lua_pop(State, 1);
+
+                        PacketLayoutAddStaticCharacters(PacketLayout, FieldName, Count);
+                    }
+                    else {
+                        lua_pop(State, 1);
+                        return luaL_error(State, "Invalid field value given!");
+                    }
+
                     break;
                 }
                 
@@ -648,8 +1007,7 @@ static Int32 PacketManagerAPI_RegisterPacketLayout(
                 }
                 
                 default:
-                    luaL_error(State, "Invalid field type given!");
-                    break;
+                    return luaL_error(State, "Invalid field type given!");
             }
 
             lua_pop(State, 1);
@@ -661,25 +1019,85 @@ static Int32 PacketManagerAPI_RegisterPacketLayout(
     return 0;
 }
 
-static Int32 PacketManagerAPI_RegisterPacketHandler(
+PacketManagerRef PacketManagerStateGetGlobalInstance(
     lua_State* State
 ) {
     Int32 StateStack = lua_gettop(State);
-
-    Int32 Result = lua_getglobal(State, PACKET_MANAGER_GLOBAL_USERDATA_NAME);
+    Int32 Result = lua_getglobal(State, PACKET_MANAGER_GLOBAL_INSTANCE_NAME);
     if (Result != LUA_TLIGHTUSERDATA) {
         lua_pop(State, 1);
         lua_settop(State, StateStack);
-        return luaL_error(State, "Corrupted stack!");
+        luaL_error(State, "Corrupted stack!");
+        return NULL;
     }
 
     PacketManagerRef PacketManager = lua_touserdata(State, -1);
     if (!PacketManager) {
         lua_pop(State, 1);
         lua_settop(State, StateStack);
-        return luaL_error(State, "Corrupted stack!");
+        luaL_error(State, "Corrupted stack!");
+        return NULL;
     }
     lua_pop(State, 1);
+
+    return PacketManager;
+}
+
+SocketRef PacketManagerStateGetGlobalSocket(
+    lua_State* State
+) {
+    Int32 StateStack = lua_gettop(State);
+    Int32 Result = lua_getglobal(State, PACKET_MANAGER_GLOBAL_SOCKET_NAME);
+    if (Result != LUA_TLIGHTUSERDATA) {
+        lua_pop(State, 1);
+        lua_settop(State, StateStack);
+        luaL_error(State, "Corrupted stack!");
+        return NULL;
+    }
+
+    SocketRef Socket = lua_touserdata(State, -1);
+    if (!Socket) {
+        lua_pop(State, 1);
+        lua_settop(State, StateStack);
+        luaL_error(State, "Corrupted stack!");
+        return NULL;
+    }
+    lua_pop(State, 1);
+
+    return Socket;
+}
+
+SocketConnectionRef PacketManagerStateGetGlobalSocketConnection(
+    lua_State* State
+) {
+    Int32 StateStack = lua_gettop(State);
+    Int32 Result = lua_getglobal(State, PACKET_MANAGER_GLOBAL_SOCKET_CONNECTION_NAME);
+    if (Result != LUA_TLIGHTUSERDATA) {
+        lua_pop(State, 1);
+        lua_settop(State, StateStack);
+        luaL_error(State, "Corrupted stack!");
+        return NULL;
+    }
+
+    SocketConnectionRef SocketConnection = lua_touserdata(State, -1);
+    if (!SocketConnection) {
+        lua_pop(State, 1);
+        lua_settop(State, StateStack);
+        luaL_error(State, "Corrupted stack!");
+        return NULL;
+    }
+    lua_pop(State, 1);
+
+    return SocketConnection;
+}
+
+static Int32 PacketManagerAPI_RegisterPacketHandler(
+    lua_State* State
+) {
+    Int32 StateStack = lua_gettop(State);
+
+    PacketManagerRef PacketManager = PacketManagerStateGetGlobalInstance(State);
+    if (!PacketManager) return 0;
 
     if (!lua_isinteger(State, 1)) return luaL_error(State, "Invalid argument for command!");
     Index Command = (Index)lua_tointeger(State, 1);
@@ -712,6 +1130,45 @@ static Int32 PacketManagerAPI_RegisterPacketHandler(
     return 0;
 }
 
+static Int32 PacketManagerAPI_Unicast(
+    lua_State* State
+) {
+    Int32 StateStack = lua_gettop(State);
+
+    PacketManagerRef PacketManager = PacketManagerStateGetGlobalInstance(State);
+    if (!PacketManager) return 0;
+
+    SocketRef Socket = PacketManagerStateGetGlobalSocket(State);
+    if (!Socket) return 0;
+
+    SocketConnectionRef SocketConnection = PacketManagerStateGetGlobalSocketConnection(State);
+    if (!SocketConnection) return 0;
+
+    if (!lua_isinteger(State, 1)) return luaL_error(State, "Invalid argument for command!");
+    Index Command = (Index)lua_tointeger(State, 1);
+
+    if (!lua_isstring(State, 2)) return luaL_error(State, "Invalid argument for layout!");
+    CString Name = (CString)lua_tostring(State, 2);
+
+    PacketLayoutRef PacketLayout = PacketManagerGetLayout(PacketManager, Name);
+    if (!PacketLayout) return luaL_error(State, "Packet layout not found for name: '%s'", Name);
+
+    if (!lua_istable(State, 3)) return luaL_error(State, "Invalid argument for payload!");
+    lua_pushvalue(State, 3);
+    
+    Void* Packet = _PacketBufferInit(SocketConnection->PacketBuffer, false, 6, Command);
+
+    if (!PacketLayoutEncode(PacketLayout, SocketConnection->PacketBuffer, State)) {
+        lua_settop(State, StateStack);
+        return luaL_error(State, "Failed to encode packet layout!");
+    }
+
+    lua_settop(State, StateStack);
+
+    SocketSend(Socket, SocketConnection, Packet);
+    return 0;
+}
+
 Void PacketManagerRegisterScriptAPI(
     PacketManagerRef PacketManager
 ) {
@@ -720,4 +1177,7 @@ Void PacketManagerRegisterScriptAPI(
     
     lua_pushcfunction(PacketManager->State, PacketManagerAPI_RegisterPacketHandler);
     lua_setglobal(PacketManager->State, "RegisterPacketHandler");
+
+    lua_pushcfunction(PacketManager->State, PacketManagerAPI_Unicast);
+    lua_setglobal(PacketManager->State, "Unicast");
 }

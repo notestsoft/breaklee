@@ -263,7 +263,7 @@ RTDataNewbieSupportCategoryRewardRef RTRuntimeDataNewbieSupportCategoryRewardGet
     Int32 ConditionValue1,
     Int32 ConditionValue2
 ) {
-    for (Index Index = 0; Index < Category->NewbieSupportCategoryRewardCount; Index += 1) {
+    for (Int32 Index = 0; Index < Category->NewbieSupportCategoryRewardCount; Index += 1) {
         RTDataNewbieSupportCategoryRewardRef Reward = &Category->NewbieSupportCategoryRewardList[Index];
         if (Reward->ConditionValue1 == ConditionValue1 && Reward->ConditionValue2 == ConditionValue2) {
             return Reward;
@@ -278,9 +278,25 @@ RTDataDivineUpgradeMainRef RTRuntimeDataDivineUpgradeMainGet(
     Int32 ItemGrade,
     Int32 ItemType
 ) {
-    for (Index Index = 0; Index < Context->DivineUpgradeMainCount; Index += 1) {
+    for (Int32 Index = 0; Index < Context->DivineUpgradeMainCount; Index += 1) {
         RTDataDivineUpgradeMainRef Main = &Context->DivineUpgradeMainList[Index];
         if (Main->ItemGrade == ItemGrade && Main->ItemType == ItemType) return Main;
+    }
+
+    return NULL;
+}
+
+RTDataDummySkillRef RTRuntimeDataDummySkillGet(
+    RTRuntimeDataContextRef Context,
+    Int32 Case,
+    Int32 Property
+) {
+    for (Int32 Index = 0; Index < Context->DummySkillCount; Index += 1) {
+        RTDataDummySkillRef DummySkill = &Context->DummySkillList[Index];
+        if (DummySkill->Case != Case) continue;
+        if (DummySkill->Property != Property) continue;
+
+        return DummySkill;
     }
 
     return NULL;

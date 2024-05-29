@@ -1,0 +1,15 @@
+<DummySkillList>
+    <DummySkill Case="0" Property="0" SkillIndex="264" />
+    <DummySkill Case="0" Property="1" SkillIndex="265" />
+    <DummySkill Case="0" Property="2" SkillIndex="266" />
+    <DummySkill Case="0" Property="3" SkillIndex="267" />
+    <DummySkill Case="0" Property="4" SkillIndex="264" />
+    <DummySkill Case="0" Property="5" SkillIndex="264" />
+    <DummySkill Case="0" Property="6" SkillIndex="264" />
+    <DummySkill Case="1" Property="0" SkillIndex="412" />
+    <DummySkill Case="1" Property="1" SkillIndex="413" />
+    <DummySkill Case="0" Property="2" SkillIndex="414" />
+    <DummySkill Case="2" Property="0" SkillIndex="419" />
+    <DummySkill Case="2" Property="1" SkillIndex="421" />
+    <DummySkill Case="2" Property="2" SkillIndex="422" />
+</DummySkillList>

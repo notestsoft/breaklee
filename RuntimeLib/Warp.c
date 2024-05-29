@@ -97,9 +97,11 @@ Bool RTRuntimeWarpCharacter(
             RTItemSlotRef Slot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, SlotIndex);
             if (!Slot) return false;
 
+            RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, Slot->Item.ID);
+            if (!ItemData) return false;
             // TODO: Check return stone cooldown time!!!
 
-            if (Slot->Item.Serial == RUNTIME_ITEM_SERIAL_WARP_CONSUMABLE) {
+            if (ItemData->ItemType == RUNTIME_ITEM_TYPE_RETURN_STONE) {
                 if (Slot->ItemOptions > 0) {
                     Slot->ItemOptions -= 1;
 
@@ -108,10 +110,10 @@ Bool RTRuntimeWarpCharacter(
                     }
                 }
                 else {
-                    return false;
+                    RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SlotIndex);
                 }
             }
-            else if (Slot->Item.Serial == RUNTIME_ITEM_SERIAL_WARP_PERMANENT) {
+            else if (ItemData->ItemType == RUNTIME_ITEM_TYPE_RETURN_CORE) {
                 // TODO: Check if item is expired
             }
             else {

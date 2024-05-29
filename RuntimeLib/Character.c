@@ -217,8 +217,28 @@ Void RTCharacterInitializeSkillStats(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 ) {
-    // TODO: Passive skill values
-    // struct _RTCharacterSkillSlotInfo SkillSlotInfo;
+	for (Int32 Index = 0; Index < Character->SkillSlotInfo.Count; Index += 1) {
+		RTSkillSlotRef SkillSlot = &Character->SkillSlotInfo.Skills[Index];
+		assert(SkillSlot);
+
+		RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillSlot->ID);
+		assert(SkillData);
+
+		if (SkillData->SkillGroup != RUNTIME_SKILL_GROUP_PASSIVE) continue;
+		
+		for (Int32 ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
+			RTSkillValueDataRef SkillValue = &SkillData->SkillValues[ValueIndex];
+			Int64 ForceValue = (SkillValue->ForceEffectValue[0] + SkillValue->ForceEffectValue[1] * SkillSlot->Level + SkillValue->ForceEffectValue[2]) / 10;
+			
+			RTCharacterApplyForceEffect(
+				Runtime,
+				Character,
+				SkillValue->ForceEffectIndex,
+				ForceValue,
+				SkillValue->ValueType
+			);
+		}
+	}
 }
 
 Void RTCharacterInitializeEssenceAbilities(
@@ -798,7 +818,7 @@ Int32 RTCharacterCalculateRequiredMP(
 	
 	// TODO: Add battle mode based MP usage delta
 	RequiredMP -= Character->SkillComboLevel * RequiredMP * 2 / 10;
-	return RequiredMP;
+	return MAX(0, RequiredMP);
 }
 
 Bool RTCharacterBattleRankUp(

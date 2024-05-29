@@ -9,6 +9,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG=1")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/CMake)
 
 set(CONFIG_BUILD_TARGET_CLIENT false)
 
@@ -185,8 +186,10 @@ if(WIN32)
 endif()
 
 if(CONFIG_BUILD_TARGET_CLIENT)
+    find_package(DirectX REQUIRED)
+
 	add_executable(Client ${CLIENT_HEADERS} ${CLIENT_SOURCES})
 	set_target_properties(Client PROPERTIES WIN32_EXECUTABLE TRUE)
-	target_include_directories(Client PUBLIC ${PROJECT_SOURCE_DIR})
-	target_link_libraries(Client NetLib CoreLib RuntimeLib RuntimeDataLib)
+	target_include_directories(Client PUBLIC ${PROJECT_SOURCE_DIR} ${DirectX_INCLUDE_DIRS})
+	target_link_libraries(Client NetLib CoreLib RuntimeLib RuntimeDataLib ${DirectX_LIBRARIES})
 endif()

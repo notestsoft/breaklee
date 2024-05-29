@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base.h"
+#include "Socket.h"
 
 #include <lua.h>
 #include <lualib.h>
@@ -38,6 +39,8 @@ PacketLayoutRef PacketManagerGetLayout(
 
 Int32 PacketManagerHandle(
     PacketManagerRef PacketManager,
+    SocketRef Socket,
+    SocketConnectionRef SocketConnection,
     Index Command,
     UInt8* Buffer,
     Int32 Length
@@ -88,10 +91,16 @@ Void PacketLayoutAddCString(
     CString Name
 );
 
-Void PacketLayoutAddCharacters(
+Void PacketLayoutAddStaticCharacters(
     PacketLayoutRef PacketLayout,
     CString Name,
     Int32 Count
+);
+
+Void PacketLayoutAddDynamicCharacters(
+    PacketLayoutRef PacketLayout,
+    CString Name,
+    CString CountName
 );
 
 Void PacketLayoutAddStaticArray(

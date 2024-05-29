@@ -208,6 +208,7 @@ Void RTForceEffectFormulaBindAttribute(
     assert(Formula->AttributeCount < RUNTIME_MAX_FORCE_EFFECT_ATTRIBUTE_COUNT);
     
     Formula->AttributeIndices[Formula->AttributeCount] = AttributeIndex;
+    Formula->AttributeCount += 1;
 }
 
 Void RTRuntimeInitForceEffectFormulas(

@@ -8,8 +8,7 @@
 CLIENT_PROCEDURE_BINDING(WARP) {	
     if (!Character) goto error;
 
-    S2C_DATA_WARP* Response = PacketBufferInit(Connection->PacketBuffer, S2C, WARP);
-    Response->Result = RTRuntimeWarpCharacter(
+    Bool Success = RTRuntimeWarpCharacter(
         Runtime,
         Character->ID,
         Packet->NpcID,
@@ -18,7 +17,10 @@ CLIENT_PROCEDURE_BINDING(WARP) {
         Packet->WarpWorldID,
         Packet->WarpIndex,
         Packet->SlotIndex
-    ) ? 0 : 1;
+    );
+
+    S2C_DATA_WARP* Response = PacketBufferInit(Connection->PacketBuffer, S2C, WARP);
+    Response->Result = Success ? 0 : 1;
     Response->AccumulatedExp = Character->Info.Basic.Exp;
     Response->AccumulatedOxp = Character->Info.Overlord.Exp;
     Response->Currency = Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
@@ -27,11 +29,8 @@ CLIENT_PROCEDURE_BINDING(WARP) {
     Response->WorldID = Character->Info.Position.WorldID;
     Response->DungeonID = (UInt32)Character->Info.Position.DungeonIndex;
     SocketSend(Socket, Connection, Response);
-
-    if (Response->Result == 0) {
-        RTWorldChunkNotify(Character->Movement.WorldChunk, Character->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP, true);
-    }
-
+    
+    RTWorldChunkNotify(Character->Movement.WorldChunk, Character->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP, true);
     return;
 
 error:

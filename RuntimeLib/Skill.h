@@ -8,6 +8,20 @@ EXTERN_C_BEGIN
 #pragma pack(push, 1)
 
 enum {
+	RUNTIME_SPECIAL_SKILL_SLOT_ASTRAL_SKILL			= 67,
+	RUNTIME_SPECIAL_SKILL_SLOT_ASTRAL_BIKE			= 68,
+	RUNTIME_SPECIAL_SKILL_SLOT_ASTRAL_BOARD			= 69,
+	RUNTIME_SPECIAL_SKILL_SLOT_AURA					= 70,
+	RUNTIME_SPECIAL_SKILL_SLOT_COMBO				= 71,
+	RUNTIME_SPECIAL_SKILL_SLOT_BATTLE_MODE_1		= 72,
+	RUNTIME_SPECIAL_SKILL_SLOT_BATTLE_MODE_2		= 73,
+	RUNTIME_SPECIAL_SKILL_SLOT_BATTLE_MODE_3		= 74,
+
+	RUNTIME_SPECIAL_SKILL_SLOT_COMBO_BOARD			= 102,
+	RUNTIME_SPECIAL_SKILL_SLOT_COMBO_BIKE			= 103,
+};
+
+enum {
 	RUNTIME_SKILL_TYPE_NONE,
 	RUNTIME_SKILL_TYPE_SWORD,
 	RUNTIME_SKILL_TYPE_MAGIC,
@@ -89,12 +103,23 @@ struct _RTSkillLevelData {
 	Int32 BattleStyles[RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX];
 };
 
+struct _RTSkillValueData {
+	Int32 ForceEffectIndex;
+	Int32 ForceEffectValue[3];
+	Int32 Power[2];
+	Int32 Duration[2];
+	Int32 Type;
+	Int32 ValueType;
+	Int32 CheckReadiness;
+};
+
 struct _RTCharacterSkillData {
 	Int32 SkillID;
 	Int32 SkillType;
 	Int32 SkillGroup;
 	Int32 Multi;
 	Int32 Intensity;
+	Int32 Element;
 	Int32 Target;
 	Int32 MaxTarget;
 	Int32 Reach;
@@ -130,9 +155,13 @@ struct _RTCharacterSkillData {
 	Int32 RageValue;
 	Int32 Mp[2];
 	Int32 Sp;
+	Int32 SkillValueCount;
 	Int32 SkillLevelCount;
+	struct _RTSkillValueData SkillValues[RUNTIME_MEMORY_MAX_SKILL_VALUE_DATA_COUNT];
 	struct _RTSkillLevelData SkillLevels[RUNTIME_MEMORY_MAX_SKILL_LEVEL_DATA_COUNT];
 };
+
+#pragma pack(pop)
 
 Int32 RTCharacterSkillDataGetSkillType(
 	RTCharacterSkillDataRef Skill,
@@ -176,7 +205,5 @@ Int32 RTCharacterApplyBuff(
 	Int32 Duration,
 	Int32 Cooldown
 );
-
-#pragma pack(pop)
 
 EXTERN_C_END

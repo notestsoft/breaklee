@@ -1,18 +1,18 @@
-RegisterPacketLayout("merge_slot", {
+RegisterPacketLayout("c2s_merge_slot", {
 	u16("index")
 })
 
-RegisterPacketLayout("result_slot", {
+RegisterPacketLayout("c2s_result_slot", {
 	u16("index"),
 	u32("stack_size")
 })
 
-RegisterPacketLayout("merge_inventory", {
+RegisterPacketLayout("c2s_merge_inventory", {
 	u16("merge_slot_count"),
 	u16("result_slot_count"),
 	u16("unknown_1"),
-	vec("merge_slots", "merge_slot", "merge_slot_count"),
-	vec("result_slots", "result_slot", "result_slot_count")
+	vec("merge_slots", "c2s_merge_slot", "merge_slot_count"),
+	vec("result_slots", "c2s_result_slot", "result_slot_count")
 })
 
 function print_table(node)
@@ -94,6 +94,6 @@ function print_table(node)
     print(output_str)
 end
 
-RegisterPacketHandler(2501, "merge_inventory", function (packet)
+RegisterPacketHandler(2501, "c2s_merge_inventory", function (packet)
 	print_table(packet, 4)
 end)

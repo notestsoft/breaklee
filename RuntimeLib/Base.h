@@ -91,6 +91,7 @@ typedef struct _RTSkillSlot* RTSkillSlotRef;
 typedef struct _RTTrainerSkillData* RTTrainerSkillDataRef;
 typedef struct _RTTrainerData* RTTrainerDataRef;
 typedef struct _RTSkillLevelData* RTSkillLevelDataRef;
+typedef struct _RTSkillValueData* RTSkillValueDataRef;
 typedef struct _RTCharacterSkillData* RTCharacterSkillDataRef;
 typedef struct _RTWarp* RTWarpRef;
 typedef struct _RTDungeonTriggerEvent* RTDungeonTriggerEventRef;

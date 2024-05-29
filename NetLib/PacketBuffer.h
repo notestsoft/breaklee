@@ -87,7 +87,7 @@ Int32 ServerPacketGetHeaderLength(
     Void* Packet
 );
 
-Int32 PacketGetLength(
+UInt32 PacketGetLength(
     UInt16 ProtocolIdentifier,
     UInt16 ProtocolVersion,
     UInt16 ProtocolExtension,
