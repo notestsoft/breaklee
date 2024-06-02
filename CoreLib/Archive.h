@@ -22,6 +22,13 @@ ArchiveRef ArchiveCreateEmpty(
     AllocatorRef Allocator
 );
 
+Bool ArchiveLoadFromData(
+    ArchiveRef Archive,
+    UInt8* Data,
+    Int32 DataLength,
+    Bool IgnoreErrors
+);
+
 Bool ArchiveLoadFromFileEncrypted(
     ArchiveRef Archive,
     CString FilePath,

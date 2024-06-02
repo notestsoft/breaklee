@@ -49,6 +49,25 @@ ArchiveRef ArchiveCreateEmpty(
     return Archive;
 }
 
+Bool ArchiveLoadFromData(
+    ArchiveRef Archive,
+    UInt8* Data,
+    Int32 DataLength,
+    Bool IgnoreErrors
+) {
+    assert(Archive);
+
+    if (!ArchiveParseFromSource(Archive, (CString)Data, DataLength, IgnoreErrors)) {
+        goto error;
+    }
+
+    return true;
+
+error:
+    Error("Error loading archive from data");
+    return false;
+}
+
 Bool ArchiveLoadFromFileEncrypted(
     ArchiveRef Archive,
     CString FilePath,
