@@ -78,4 +78,6 @@ Please take the time to review existing issues before submitting your own to pre
 
 Copyright (c) 2021 Notestsoft (notestsoft@proton.me).
 
+License: MIT
+
 [LICENSE](LICENSE).
