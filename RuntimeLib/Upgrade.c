@@ -119,7 +119,6 @@ Int32 RTItemUpgradeDivine(
     if (Value < CurrentRate) {
         if (Item->Item.DivineLevel < 6) {
             Item->Item.DivineLevel = 0;
-            return RUNTIME_DIVINE_UPGRADE_RESULT_DESTROYED;
         }
 
         return RUNTIME_DIVINE_UPGRADE_RESULT_DOWNGRADE;
