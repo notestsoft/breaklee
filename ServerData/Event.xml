@@ -26,6 +26,7 @@
 
             <item slot_id="64" item_id="33556474" option="999" duration_id="0" price="0"></item>
             <item slot_id="65" item_id="33556475" option="999" duration_id="0" price="0"></item>
+            <item slot_id="66" item_id="2105" option="0" duration_id="0" price="0"></item>
         </event_shop>
     </event>
 

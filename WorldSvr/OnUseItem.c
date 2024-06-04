@@ -102,7 +102,7 @@ CLIENT_PROCEDURE_BINDING(CONVERT_ITEM) {
 		SourceItemData->ItemType == RUNTIME_ITEM_TYPE_DIVINE_CONVERTER ||
 		SourceItemData->ItemType == RUNTIME_ITEM_TYPE_CHAOS_CONVERTER ||
 		SourceItemData->ItemType == RUNTIME_ITEM_TYPE_EPIC_BOOSTER
-	) {
+	) { // TODO: When item is broken it returns a failure with value 17
 		struct _RTItemConverterPayload Payload = { 0 };
 		Payload.TargetSlotIndex = Packet->TargetSlotIndex;
 		Response->Result = RTItemUseInternal(Runtime, Character, SourceItemSlot, SourceItemData, &Payload);

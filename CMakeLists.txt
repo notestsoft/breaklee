@@ -11,6 +11,7 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG=1")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/CMake)
 
+set(CONFIG_BUILD_TARGET_BOTSVR false)
 set(CONFIG_BUILD_TARGET_CLIENT false)
 
 if(WIN32)
@@ -72,7 +73,6 @@ file(COPY ${PROJECT_SOURCE_DIR}/ServerData/ DESTINATION ${CMAKE_RUNTIME_OUTPUT_D
 file(COPY ${PROJECT_SOURCE_DIR}/Scripts/ DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/Scripts/)
 
 set(AUCTION_SVR_DIR ${PROJECT_SOURCE_DIR}/AuctionSvr)
-set(BOT_SVR_DIR ${PROJECT_SOURCE_DIR}/BotSvr)
 set(BREAKLEE_DIR ${PROJECT_SOURCE_DIR}/Breaklee)
 set(CHAT_SVR_DIR ${PROJECT_SOURCE_DIR}/ChatSvr)
 set(CLIENT_DIR ${PROJECT_SOURCE_DIR}/Client)
@@ -87,9 +87,6 @@ set(WORLD_SVR_DIR ${PROJECT_SOURCE_DIR}/WorldSvr)
 
 file(GLOB AUCTION_SVR_HEADERS ${AUCTION_SVR_DIR}/*.h)
 file(GLOB AUCTION_SVR_SOURCES ${AUCTION_SVR_DIR}/*.c)
-
-file(GLOB BOT_SVR_HEADERS ${BOT_SVR_DIR}/*.h)
-file(GLOB BOT_SVR_SOURCES ${BOT_SVR_DIR}/*.c)
 
 file(GLOB BREAKLEE_HEADERS ${BREAKLEE_DIR}/*.h)
 file(GLOB BREAKLEE_SOURCES ${BREAKLEE_DIR}/*.c)
@@ -128,7 +125,6 @@ set(SHARED_HEADERS_DIR ${PROJECT_SOURCE_DIR}/Shared)
 file(GLOB SHARED_HEADERS ${SHARED_HEADERS_DIR}/*.h)
 
 add_executable(AuctionSvr ${AUCTION_SVR_HEADERS} ${AUCTION_SVR_SOURCES} ${SHARED_HEADERS})
-add_executable(BotSvr ${BOT_SVR_HEADERS} ${BOT_SVR_SOURCES} ${SHARED_HEADERS})
 add_executable(breaklee ${BREAKLEE_HEADERS} ${BREAKLEE_SOURCES} ${SHARED_HEADERS})
 add_executable(ChatSvr ${CHAT_SVR_HEADERS} ${CHAT_SVR_SOURCES} ${SHARED_HEADERS})
 add_library(CoreLib STATIC ${CORE_LIB_HEADERS} ${CORE_LIB_SOURCES})
@@ -141,7 +137,6 @@ add_library(RuntimeLib STATIC ${RUNTIME_LIB_HEADERS} ${RUNTIME_LIB_SOURCES})
 add_executable(WorldSvr ${WORLD_SVR_HEADERS} ${WORLD_SVR_SOURCES} ${SHARED_HEADERS})
 
 target_include_directories(AuctionSvr PUBLIC ${PROJECT_SOURCE_DIR} ${SHARED_HEADERS_DIR})
-target_include_directories(BotSvr PUBLIC ${PROJECT_SOURCE_DIR} ${SHARED_HEADERS_DIR})
 target_include_directories(breaklee PUBLIC ${PROJECT_SOURCE_DIR} ${SHARED_HEADERS_DIR})
 target_include_directories(ChatSvr PUBLIC ${PROJECT_SOURCE_DIR} ${SHARED_HEADERS_DIR})
 target_include_directories(CoreLib PUBLIC ${MARIADB_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
@@ -154,7 +149,7 @@ target_include_directories(RuntimeLib PUBLIC ${PROJECT_SOURCE_DIR} ${LUA_INCLUDE
 target_include_directories(WorldSvr PUBLIC ${PROJECT_SOURCE_DIR} ${SHARED_HEADERS_DIR})
 
 target_link_libraries(AuctionSvr NetLib CoreLib)
-target_link_libraries(BotSvr NetLib CoreLib)
+
 target_link_libraries(LoginSvr NetLib CoreLib)
 target_link_libraries(breaklee NetLib CoreLib)
 target_link_libraries(ChatSvr NetLib CoreLib)
@@ -183,6 +178,17 @@ if(WIN32)
     target_link_libraries(MasterSvr ${MASTER_SVR_DIR}/main.res)
     target_link_libraries(PartySvr ${PARTY_SVR_DIR}/main.res)
     target_link_libraries(WorldSvr ${WORLD_SVR_DIR}/main.res)
+endif()
+
+if(CONFIG_BUILD_TARGET_BOTSVR)
+    set(BOT_SVR_DIR ${PROJECT_SOURCE_DIR}/BotSvr)
+    
+    file(GLOB BOT_SVR_HEADERS ${BOT_SVR_DIR}/*.h)
+    file(GLOB BOT_SVR_SOURCES ${BOT_SVR_DIR}/*.c)
+
+    add_executable(BotSvr ${BOT_SVR_HEADERS} ${BOT_SVR_SOURCES} ${SHARED_HEADERS})
+    target_include_directories(BotSvr PUBLIC ${PROJECT_SOURCE_DIR} ${SHARED_HEADERS_DIR})
+    target_link_libraries(BotSvr NetLib CoreLib)
 endif()
 
 if(CONFIG_BUILD_TARGET_CLIENT)

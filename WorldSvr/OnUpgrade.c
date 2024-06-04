@@ -163,8 +163,8 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 	);
 
 	Int32 ConsumedSafeCount = 0;
-	if (Result != RUNTIME_UPGRADE_RATE_TYPE_UPGRADE_1 &&
-		Result != RUNTIME_UPGRADE_RATE_TYPE_UPGRADE_2) {
+	if (Result != RUNTIME_UPGRADE_RESULT_UPGRADE_1 &&
+		Result != RUNTIME_UPGRADE_RESULT_UPGRADE_2) {
 
 		for (Int32 Index = 0; Index < Packet->SafeCount; Index += 1) {
 			RTItemSlotRef SafeSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->SafeSlotIndices[Index]);
@@ -378,18 +378,137 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_ITEM_LEVEL) {
 	Int32 TailLength = sizeof(UInt16) * (Packet->CoreCount + Packet->SafeCount);
 	if (sizeof(S2C_DATA_DIVINE_UPGRADE_ITEM_LEVEL) + TailLength > Packet->Length) goto error;
 
+	if (Packet->CoreCount < 1) goto error;
+
 	UInt16* CoreSlotIndices = &Packet->CoreSlotIndices[0];
 	UInt16* SafeSlotIndices = &Packet->CoreSlotIndices[Packet->CoreCount];
 
+	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+	if (!ItemSlot) goto error;
+
+	struct _RTItemSlot ItemSlotCopy = *ItemSlot;
+	Int32 DivineLevel = ItemSlot->Item.DivineLevel;
+
+	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
+	if (!ItemData) goto error;
+
+	RTDataDivineUpgradeMainRef DivineUpgradeMain = RTRuntimeDataDivineUpgradeMainGet(Runtime->Context, ItemData->ItemGrade, ItemData->ItemType);
+	if (!DivineUpgradeMain) goto error;
+
+	RTDataDivineUpgradeGroupCostRef GroupCost = RTRuntimeDataDivineUpgradeGroupCostGet(Runtime->Context, DivineUpgradeMain->Group);
+	if (!GroupCost) goto error;
+
+	RTDataDivineUpgradeGroupCostLevelRef GroupCostLevel = RTRuntimeDataDivineUpgradeGroupCostLevelGet(GroupCost, ItemSlot->Item.DivineLevel);
+	if (!GroupCostLevel) goto error;
+
+	RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, CoreSlotIndices[0]);
+	assert(CoreSlot);
+
+	RTItemDataRef CoreData = RTRuntimeGetItemDataByIndex(Runtime, CoreSlot->Item.ID);
+	assert(CoreData);
+
+	if (CoreData->ItemType != RUNTIME_ITEM_TYPE_DIVINE_CORE &&
+		CoreData->ItemType != RUNTIME_ITEM_TYPE_DIVINE_CORE_SET) goto error;
+
+	Int32 RemainingCoreCount = 0;
+	Int32 RemainingSafeCount = 0;
+	Int32 RequiredCoreCount = GroupCostLevel->RequiredCoreCount;
+	Int32 RequiredSafeCount = GroupCostLevel->RequiredSafeCount;
+
+	// TODO: We have to snapshot inventory here to rollback!!!
+	for (Int32 Index = 0; Index < Packet->CoreCount; Index += 1) {
+		RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, CoreSlotIndices[Index]);
+		assert(CoreSlot);
+
+		RTItemDataRef CoreData = RTRuntimeGetItemDataByIndex(Runtime, CoreSlot->Item.ID);
+		assert(CoreData);
+
+		if (CoreData->ItemType == RUNTIME_ITEM_TYPE_DIVINE_CORE) {
+			RTInventoryClearSlot(Runtime, &Character->InventoryInfo, CoreSlot->SlotIndex);
+			RequiredCoreCount -= 1;
+		}
+		else if (CoreData->ItemType == RUNTIME_ITEM_TYPE_DIVINE_CORE_SET) {
+			Int32 ConsumableCoreCount = MIN(RequiredCoreCount, (Int32)CoreSlot->ItemOptions);
+
+			CoreSlot->ItemOptions -= ConsumableCoreCount;
+			RemainingCoreCount = (Int32)CoreSlot->ItemOptions;
+			RequiredCoreCount -= ConsumableCoreCount;
+
+			if (CoreSlot->ItemOptions < 1) {
+				RTInventoryClearSlot(Runtime, &Character->InventoryInfo, CoreSlot->SlotIndex);
+			}
+		}
+
+		if (RequiredCoreCount < 1) {
+			break;
+		}
+	}
+
+	if (RequiredCoreCount > 0) goto error;
+
+	// TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
+	ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+
+	Int32 Seed = (Int32)PlatformGetTickCount();
+	Int32 Result = RTItemUpgradeDivine(
+		Runtime,
+		ItemSlot,
+		&Seed
+	);
+
+	Int32 ConsumedSafeCount = 0;
+	if (Result == RUNTIME_DIVINE_UPGRADE_RESULT_DOWNGRADE) {
+		for (Int32 Index = 0; Index < Packet->SafeCount; Index += 1) {
+			RTItemSlotRef SafeSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, SafeSlotIndices[Index]);
+			assert(SafeSlot);
+
+			RTItemDataRef SafeData = RTRuntimeGetItemDataByIndex(Runtime, SafeSlot->Item.ID);
+			assert(SafeData);
+
+			if (SafeData->ItemType != RUNTIME_ITEM_TYPE_DIVINE_SAFE_GUARD) goto error;
+
+			Int32 ConsumableSafeCount = MIN(RequiredSafeCount, (Int32)SafeSlot->ItemOptions);
+
+			SafeSlot->ItemOptions -= ConsumableSafeCount;
+			RemainingSafeCount = (Int32)SafeSlot->ItemOptions;
+			RequiredSafeCount -= ConsumableSafeCount;
+			ConsumedSafeCount += ConsumableSafeCount;
+
+			if (SafeSlot->ItemOptions < 1) {
+				RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SafeSlot->SlotIndex);
+			}
+		}
+
+		if (ConsumedSafeCount > 0 && RequiredSafeCount < 1) {
+			// TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
+			ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+			*ItemSlot = ItemSlotCopy;
+		}
+	}
+
+	Character->SyncMask.InventoryInfo = true;
+	Character->SyncPriority.High = true;
+
+	S2C_DATA_DIVINE_UPGRADE_ITEM_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DIVINE_UPGRADE_ITEM_LEVEL);
+	Response->Result = Result;
+	if (Result == RUNTIME_DIVINE_UPGRADE_RESULT_UPGRADE ||
+		Result == RUNTIME_DIVINE_UPGRADE_RESULT_DOWNGRADE) {
+		Response->ResultLevel = ABS((Int32)ItemSlot->Item.DivineLevel - DivineLevel);
+	}
+	else {
+		Response->ResultLevel = 0;
+	}
+	Response->ConsumedSafeguardCount = ConsumedSafeCount;
+	Response->RemainingSafeguardCount = RemainingCoreCount;
+	return SocketSend(Socket, Connection, Response);
 
 error:
 	{
 		S2C_DATA_DIVINE_UPGRADE_ITEM_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DIVINE_UPGRADE_ITEM_LEVEL);
-		Response->UpgradeResult = S2C_DIVINE_UPGRADE_LEVEL_RESULT_ERROR;
+		Response->Result = RUNTIME_DIVINE_UPGRADE_RESULT_ERROR;
 		SocketSend(Socket, Connection, Response);
 	}
 }
-
 
 CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_SEAL) {
 	if (!Character) goto error;

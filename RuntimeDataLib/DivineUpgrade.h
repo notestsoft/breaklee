@@ -31,3 +31,17 @@ RUNTIME_DATA_TYPE_END(DivineUpgradeGroupValue)
 RUNTIME_DATA_TYPE_INDEX(DivineUpgradeGroupValue, Int32, Group)
 
 RUNTIME_DATA_FILE_END
+
+RUNTIME_DATA_FILE_BEGIN(divine_upgrade.xml)
+
+RUNTIME_DATA_TYPE_BEGIN(DivineUpgradeGroupRate, "divine_upgrade.divine_upgrade_rate", 32)
+	RUNTIME_DATA_PROPERTY(Int32, Group, "group")
+	RUNTIME_DATA_TYPE_BEGIN_CHILD(DivineUpgradeGroupRateLevel, "divine", 16)
+		RUNTIME_DATA_PROPERTY(Int32, Level, "level")
+		RUNTIME_DATA_PROPERTY_ARRAY(Int32, Rates, "rate", RUNTIME_DATA_UPGRADE_RATE_VALUE_COUNT, ',')
+	RUNTIME_DATA_TYPE_END_CHILD(DivineUpgradeGroupRateLevel, 64)
+RUNTIME_DATA_TYPE_END(DivineUpgradeGroupRate)
+RUNTIME_DATA_TYPE_INDEX(DivineUpgradeGroupRate, Int32, Group)
+RUNTIME_DATA_TYPE_INDEX_CHILD(DivineUpgradeGroupRate, DivineUpgradeGroupRateLevel, Int32, Level)
+
+RUNTIME_DATA_FILE_END
