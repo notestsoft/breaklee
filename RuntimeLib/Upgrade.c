@@ -82,7 +82,8 @@ Int32 RTItemUpgradeNormal(
 Int32 RTItemUpgradeDivine(
     RTRuntimeRef Runtime,
     RTItemSlotRef Item,
-    Int32* Seed
+    Int32* Seed,
+    Int32* ResultLevel
 ) {
     RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, Item->Item.ID);
     if (!ItemData) return RUNTIME_DIVINE_UPGRADE_RESULT_ERROR;
@@ -107,6 +108,7 @@ Int32 RTItemUpgradeDivine(
     CurrentRate += UpgradeRateValue->Rates[RUNTIME_DIVINE_UPGRADE_RATE_TYPE_UPGRADE_1];
     if (Value < CurrentRate) {
         Item->Item.DivineLevel += 1;
+        *ResultLevel = 1;
         return RUNTIME_DIVINE_UPGRADE_RESULT_UPGRADE;
     }
 
@@ -118,30 +120,37 @@ Int32 RTItemUpgradeDivine(
     CurrentRate += UpgradeRateValue->Rates[RUNTIME_DIVINE_UPGRADE_RATE_TYPE_DOWNGRADE_RESET];
     if (Value < CurrentRate) {
         if (Item->Item.DivineLevel < 6) {
+            *ResultLevel = 0;
             Item->Item.DivineLevel = 0;
+            return RUNTIME_DIVINE_UPGRADE_RESULT_RESET;
         }
 
+        *ResultLevel = 0;
         return RUNTIME_DIVINE_UPGRADE_RESULT_DOWNGRADE;
     }
 
     CurrentRate += UpgradeRateValue->Rates[RUNTIME_DIVINE_UPGRADE_RATE_TYPE_DOWNGRADE_1];
     if (Value < CurrentRate) {
         Item->Item.DivineLevel -= 1;
+        *ResultLevel = 1;
         return RUNTIME_DIVINE_UPGRADE_RESULT_DOWNGRADE;
     }
 
     CurrentRate += UpgradeRateValue->Rates[RUNTIME_DIVINE_UPGRADE_RATE_TYPE_DOWNGRADE_2];
     if (Value < CurrentRate) {
         Item->Item.DivineLevel -= 2;
+        *ResultLevel = 2;
         return RUNTIME_DIVINE_UPGRADE_RESULT_DOWNGRADE;
     }
 
     CurrentRate += UpgradeRateValue->Rates[RUNTIME_DIVINE_UPGRADE_RATE_TYPE_DOWNGRADE_3];
     if (Value <= CurrentRate) {
         Item->Item.DivineLevel -= 3;
+        *ResultLevel = 3;
         return RUNTIME_DIVINE_UPGRADE_RESULT_DOWNGRADE;
     }
 
     Warn("Random range calculation should always result in perfect ranged matches!");
+    *ResultLevel = 0;
     return RUNTIME_DIVINE_UPGRADE_RESULT_ERROR;
 }

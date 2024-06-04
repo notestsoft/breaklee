@@ -449,11 +449,13 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_ITEM_LEVEL) {
 	// TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
 	ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
 
+	Int32 ResultLevel = 0;
 	Int32 Seed = (Int32)PlatformGetTickCount();
 	Int32 Result = RTItemUpgradeDivine(
 		Runtime,
 		ItemSlot,
-		&Seed
+		&Seed,
+		&ResultLevel
 	);
 
 	Int32 ConsumedSafeCount = 0;
@@ -491,13 +493,7 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_ITEM_LEVEL) {
 
 	S2C_DATA_DIVINE_UPGRADE_ITEM_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DIVINE_UPGRADE_ITEM_LEVEL);
 	Response->Result = Result;
-	if (Result == RUNTIME_DIVINE_UPGRADE_RESULT_UPGRADE ||
-		Result == RUNTIME_DIVINE_UPGRADE_RESULT_DOWNGRADE) {
-		Response->ResultLevel = ABS((Int32)ItemSlot->Item.DivineLevel - DivineLevel);
-	}
-	else {
-		Response->ResultLevel = 0;
-	}
+	Response->ResultLevel = ResultLevel;
 	Response->ConsumedSafeguardCount = ConsumedSafeCount;
 	Response->RemainingSafeguardCount = RemainingCoreCount;
 	return SocketSend(Socket, Connection, Response);

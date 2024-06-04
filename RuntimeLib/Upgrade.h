@@ -39,8 +39,9 @@ enum {
 enum {
     RUNTIME_DIVINE_UPGRADE_RESULT_UPGRADE   = 0,
     RUNTIME_DIVINE_UPGRADE_RESULT_DOWNGRADE = 1,
-    RUNTIME_DIVINE_UPGRADE_RESULT_ERROR     = 2,
+    RUNTIME_DIVINE_UPGRADE_RESULT_RESET     = 2,
     RUNTIME_DIVINE_UPGRADE_RESULT_DESTROYED = 3,
+    RUNTIME_DIVINE_UPGRADE_RESULT_ERROR     = 4,
 };
 
 #pragma pack(pop)
@@ -56,7 +57,8 @@ Int32 RTItemUpgradeNormal(
 Int32 RTItemUpgradeDivine(
     RTRuntimeRef Runtime,
     RTItemSlotRef Item,
-    Int32* Seed
+    Int32* Seed,
+    Int32* ResultLevel
 );
 
 EXTERN_C_END
