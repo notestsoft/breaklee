@@ -106,6 +106,7 @@
 #include "NewbieSupport.h"
 #include "OverlordMastery.h"
 #include "Pet.h"
+#include "PremiumServiceList.h"
 #include "PVPBattle.h"
 #include "Quest.h"
 #include "QuestDungeon.h"

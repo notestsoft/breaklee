@@ -21,14 +21,62 @@ error:
 	SocketDisconnect(Socket, Connection);
 }
 
-CLIENT_PROCEDURE_BINDING(PREMIUM_BENEFIT_INFO) {
-	if (!Character) goto error;
+Void SendPremiumServiceList(
+    ServerContextRef Context,
+    SocketRef Socket,
+    SocketConnectionRef Connection
+) {
+    S2C_DATA_PREMIUM_BENEFIT_INFO_LIST* Response = PacketBufferInitExtended(Connection->PacketBuffer, S2C, PREMIUM_BENEFIT_INFO_LIST);
+    Response->Count = Context->Runtime->Context->PremiumServiceCount;
 
-	S2C_DATA_PREMIUM_BENEFIT_INFO* Response = PacketBufferInitExtended(Connection->PacketBuffer, S2C, PREMIUM_BENEFIT_INFO);
-	return SocketSend(Context->ClientSocket, Connection, Response);
+    for (Index Index = 0; Index < Context->Runtime->Context->PremiumServiceCount; Index += 1) {
+        RTDataPremiumServiceRef PremiumService = &Context->Runtime->Context->PremiumServiceList[Index];
 
-error:
-	SocketDisconnect(Socket, Connection);
+        S2C_DATA_PREMIUM_BENEFIT_INFO* ResponseInfo = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_PREMIUM_BENEFIT_INFO);
+        ResponseInfo->DurationServiceID = PremiumService->DurationServiceID;
+        ResponseInfo->Type = PremiumService->Type;
+        ResponseInfo->XP = PremiumService->XP;
+        ResponseInfo->SkillXP = PremiumService->SkillXP;
+        ResponseInfo->DropRate = PremiumService->DropRate;
+        ResponseInfo->AlzBombRate = PremiumService->AlzBombRate;
+        ResponseInfo->WarXP = PremiumService->WarXP;
+        ResponseInfo->PetXP = PremiumService->PetXP;
+        ResponseInfo->AXP = PremiumService->AXP;
+        ResponseInfo->TPointUp = PremiumService->TPointUp;
+        ResponseInfo->AlzDropRate = PremiumService->AlzDropRate;
+        ResponseInfo->BoxDropRate = PremiumService->BoxDropRate;
+        ResponseInfo->ForceWingXP = PremiumService->ForceWingXP;
+        ResponseInfo->Inventory1 = PremiumService->Inventory1;
+        ResponseInfo->Inventory2 = PremiumService->Inventory2;
+        ResponseInfo->Inventory3 = PremiumService->Inventory3;
+        ResponseInfo->Inventory4 = PremiumService->Inventory4;
+        ResponseInfo->Inventory5 = PremiumService->Inventory5;
+        ResponseInfo->Inventory6 = PremiumService->Inventory6;
+        ResponseInfo->ExtendPetSlot = PremiumService->ExtendPetSlot;
+        ResponseInfo->Warehouse = PremiumService->Warehouse;
+        ResponseInfo->SkillXPTDummy = PremiumService->SkillXPTDummy;
+        ResponseInfo->GPSWarpMask = PremiumService->GPSWarpMask;
+        ResponseInfo->UnlimitedWarp = PremiumService->UnlimitedWarp;
+        ResponseInfo->AuctionHouseItemBonusSlots = PremiumService->AuctionHouseItemBonusSlots;
+        ResponseInfo->AuctionHouseItemBonusQuantity = PremiumService->AuctionHouseItemBonusQuantity;
+        ResponseInfo->AuctionHouseItemBonusPeriod = PremiumService->AuctionHouseItemBonusPeriod;
+        ResponseInfo->AuctionHouseFeeExemption = PremiumService->AuctionHouseFeeExemption;
+        ResponseInfo->AbleToBuyPremiumItemFromShop = PremiumService->AbleToBuyPremiumItemFromShop;
+        ResponseInfo->RemoteShop = PremiumService->RemoteShop;
+        ResponseInfo->AbleToEnterPremiumDungeon = PremiumService->AbleToEnterPremiumDungeon;
+        ResponseInfo->PremiumDungeonReward = PremiumService->PremiumDungeonReward;
+        ResponseInfo->RemoteWarehouse = PremiumService->RemoteWarehouse;
+        ResponseInfo->CraftMasteryUp = PremiumService->CraftMasteryUp;
+        ResponseInfo->RequestAmityUp = PremiumService->RequestAmityUp;
+        ResponseInfo->RequestAmitySlots = PremiumService->RequestAmitySlots;
+        ResponseInfo->DungeonPlayTimeIncreased = PremiumService->DungeonPlayTimeIncreased;
+    }
+
+    SocketSend(Context->ClientSocket, Connection, Response);
+}
+
+CLIENT_PROCEDURE_BINDING(PREMIUM_BENEFIT_INFO_LIST) {
+    SendPremiumServiceList(Context, Socket, Connection);
 }
 
 IPC_PROCEDURE_BINDING(M2W, GET_PREMIUM_SERVICE) {

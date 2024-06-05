@@ -1903,14 +1903,71 @@ CLIENT_PROTOCOL(S2C, SELECT_CHARACTER_IN_GAME, DEFAULT, 985,
     UInt8 Result;
 )
 
-CLIENT_PROTOCOL(C2S, PREMIUM_BENEFIT_INFO, DEFAULT, 999,
+CLIENT_PROTOCOL(C2S, PREMIUM_BENEFIT_INFO_LIST, DEFAULT, 999,
     // TODO: Add packet structure
 )
 
-CLIENT_PROTOCOL(S2C, PREMIUM_BENEFIT_INFO, EXTENDED, 999,
-    UInt8 Unknown1;
-    UInt32 Count;
-    // TODO: Add packet structure
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_PREMIUM_BENEFIT_INFO,
+    Int16 Unknown1;
+    Int32 Unknown2;
+    Int32 DurationServiceID;
+    Int32 Type;
+    Int16 Unknown3;
+    Int16 Unknown4;
+    Int32 XP;
+    Int32 SkillXP;
+    Int32 DropRate;
+    Int32 AlzBombRate;
+    Int32 WarXP;
+    Int32 PetXP;
+    Int32 AXP;
+    Int32 TPointUp;
+    Int32 AlzDropRate;
+    Int32 BoxDropRate;
+    Int32 ForceWingXP;
+    Int32 Inventory1;
+    Int32 Inventory2;
+    Int32 Inventory3;
+    Int32 Inventory4;
+    Int32 Inventory5;
+    Int32 Inventory6;
+    Int32 ExtendPetSlot;
+    Int32 Warehouse;
+    Int32 SkillXPTDummy;
+    Int32 GPSWarpMask;
+    UInt8 UnlimitedWarp;
+    Int16 AuctionHouseItemBonusSlots;
+    Int16 AuctionHouseItemBonusQuantity;
+    Int16 AuctionHouseItemBonusPeriod;
+    UInt8 AuctionHouseFeeExemption;
+    UInt8 AbleToBuyPremiumItemFromShop;
+    UInt8 RemoteShop;
+    UInt8 AbleToEnterPremiumDungeon;
+    UInt8 PremiumDungeonReward;
+    UInt8 RemoteWarehouse;
+    Int32 CraftMasteryUp;
+    Int32 RequestAmityUp;
+    UInt8 RequestAmitySlots;
+    Int32 DungeonPlayTimeIncreased;
+    Int32 Unknown5;
+    Int32 Unknown6;
+    Int32 Unknown7;
+    Int32 Unknown8;
+    Int32 Unknown9;
+    UInt8 Unknown10;
+    UInt8 Unknown11;
+    UInt8 Unknown12;
+    Int32 MercenarySummoningRestrictionLifted;
+    Int32 Unknown13;
+    Int32 Unknown14;
+    Int32 Unknown15;
+    Int32 Unknown16;
+)
+
+CLIENT_PROTOCOL(S2C, PREMIUM_BENEFIT_INFO_LIST, EXTENDED, 999,
+    UInt8 Result;
+    Int32 Count;
+    // S2C_DATA_PREMIUM_BENEFIT_INFO Benefits[];
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO_DATA,

@@ -30,4 +30,10 @@ Void BroadcastToWorld(
     Void *Packet
 );
 
+Void SendPremiumServiceList(
+    ServerContextRef Context,
+    SocketRef Socket,
+    SocketConnectionRef Connection
+);
+
 EXTERN_C_END

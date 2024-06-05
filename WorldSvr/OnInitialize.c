@@ -522,6 +522,7 @@ IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER) {
     // TODO: Move event data to database and trigger request on init
     SendEventInfo(Context, Client);
     SendEventList(Context, Client);
+    SendPremiumServiceList(Context, Server->ClientSocket, Client->Connection);
     BroadcastUserList(Server, Context);
 
     IPC_W2P_DATA_CLIENT_CONNECT* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2P, CLIENT_CONNECT);
