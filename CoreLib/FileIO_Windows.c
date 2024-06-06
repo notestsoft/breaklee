@@ -157,15 +157,16 @@ Bool FileExists(
 }
 
 Int32 FilesProcess(
+    CString Directory,
     CString Pattern,
     FilesProcessCallback Callback,
     Void* UserData
 ) {
+    CString PatternDirectory = PathCombineNoAlloc(Directory, Pattern);
     WIN32_FIND_DATA FindData;
-    HANDLE FileHandle = FindFirstFile(Pattern, &FindData);
+    HANDLE FileHandle = FindFirstFile(PatternDirectory, &FindData);
     Int32 ProcessedFileCount = 0;
     CHAR Buffer[MAX_PATH] = { 0 };
-    CString Directory = PathGetCurrentDirectory(Buffer, MAX_PATH);
 
     if (FileHandle == INVALID_HANDLE_VALUE) {
         return ProcessedFileCount;

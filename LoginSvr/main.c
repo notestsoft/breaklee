@@ -93,6 +93,27 @@ Void ServerOnUpdate(
     }
 }
 
+Void ContextAddCaptchaFile(
+    CString FileName,
+    FileRef File,
+    Void* UserData
+) {
+    ServerContextRef Context = (ServerContextRef)UserData;
+    CaptchaInfoRef Captcha = (CaptchaInfoRef)ArrayAppendUninitializedElement(Context->CaptchaInfoList);
+
+    CStringCopySafe(Captcha->Name, MAX_PATH, FileName);
+
+    CString ExtensionOffset = strstr(FileName, ".jpg");
+    if (ExtensionOffset != NULL) {
+        Int32 CaptchaLength = ExtensionOffset - FileName;
+        Captcha->Name[CaptchaLength] = '\0';
+    }
+
+    if (!FileRead(File, &Captcha->Data, &Captcha->DataLength)) {
+        Fatal("Couldn't load captcha file content '%s'", FileName);
+    }
+}
+
 Int32 main(Int32 argc, CString* argv) {
     DiagnosticSetupLogFile("LoginSvr", LOG_LEVEL_TRACE, NULL, NULL);
 
@@ -109,6 +130,16 @@ Int32 main(Int32 argc, CString* argv) {
     ServerContext.Database = NULL;
     ServerContext.WorldListBroadcastTimestamp = 0;
     ServerContext.WorldServerTable = IndexDictionaryCreate(Allocator, 256);
+    ServerContext.CaptchaInfoList = ArrayCreateEmpty(Allocator, sizeof(struct _CaptchaInfo), 8);
+
+    if (Config.Login.CaptchaVerificationEnabled) {
+        FilesProcess(
+            Config.Login.CaptchaDataPath,
+            "*.jpg",
+            ContextAddCaptchaFile,
+            &ServerContext
+        );
+    }
 
     IPCNodeID NodeID = kIPCNodeIDNull;
     NodeID.Group = Config.Login.GroupIndex;
@@ -170,6 +201,14 @@ Int32 main(Int32 argc, CString* argv) {
     ServerRun(Server);
     ServerDestroy(Server);
     DatabaseDisconnect(ServerContext.Database);
+
+    for (Index Index = 0; Index < ArrayGetElementCount(ServerContext.CaptchaInfoList); Index += 1) {
+        CaptchaInfoRef Captcha = (CaptchaInfoRef)ArrayGetElementAtIndex(ServerContext.CaptchaInfoList, Index);
+        free(Captcha->Data);
+    }
+
+    ArrayDestroy(ServerContext.CaptchaInfoList);
+
     DiagnosticTeardown();
 
     return EXIT_SUCCESS;

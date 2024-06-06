@@ -25,6 +25,24 @@ CLIENT_PROCEDURE_BINDING(SERVER_ENVIRONMENT) {
 DATA_PROCEDURE_BINDING(OnDataAccountInfo, IPC_DATA_ACCOUNTINFO, IPC_DATA_ACKACCOUNTINFO) {
 	*/
 	S2C_DATA_SERVER_ENVIRONMENT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SERVER_ENVIRONMENT);
+	if (Context->Config.Login.CaptchaVerificationEnabled) {
+		Int32 Seed = PlatformGetTickCount();
+		Client->Captcha = (CaptchaInfoRef)ArrayGetElementAtIndex(
+			Context->CaptchaInfoList,
+			Random(&Seed) % ArrayGetElementCount(Context->CaptchaInfoList)
+		);
+
+		Response->Active = 1;
+		Response->Timeout = Context->Config.Login.AutoDisconnectDelay;
+		Response->CaptchaSize = Client->Captcha->DataLength;
+		Client->Flags |= CLIENT_FLAGS_CHECK_DISCONNECT_TIMER;
+		Client->DisconnectTimestamp = ServerGetTimestamp(Server) + Response->Timeout;
+		memcpy(Response->Captcha, Client->Captcha->Data, Response->CaptchaSize);
+	}
+	else {
+		Client->Flags |= CLIENT_FLAGS_CAPTCHA_VERIFIED;
+	}
+
 	// TODO: Add support for image authentication
 	Client->Flags |= CLIENT_FLAGS_USERNAME_CHECKED;
 	SocketSend(Socket, Connection, Response);

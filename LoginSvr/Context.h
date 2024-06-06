@@ -10,12 +10,20 @@ enum {
     CLIENT_FLAGS_CONNECTED              = 1 << 0,
     CLIENT_FLAGS_VERSION_CHECKED        = 1 << 1,
     CLIENT_FLAGS_USERNAME_CHECKED       = 1 << 2,
-    CLIENT_FLAGS_PUBLICKEY_INITIALIZED  = 1 << 3,
-    CLIENT_FLAGS_AUTHORIZED             = 1 << 4,
-    CLIENT_FLAGS_AUTHENTICATED          = 1 << 5,
-    CLIENT_FLAGS_VERIFIED               = 1 << 6,
-    CLIENT_FLAGS_CHECK_DISCONNECT_TIMER = 1 << 7,
+    CLIENT_FLAGS_CAPTCHA_VERIFIED       = 1 << 3,
+    CLIENT_FLAGS_PUBLICKEY_INITIALIZED  = 1 << 4,
+    CLIENT_FLAGS_AUTHORIZED             = 1 << 5,
+    CLIENT_FLAGS_AUTHENTICATED          = 1 << 6,
+    CLIENT_FLAGS_VERIFIED               = 1 << 7,
+    CLIENT_FLAGS_CHECK_DISCONNECT_TIMER = 1 << 8,
 };
+
+struct _CaptchaInfo {
+    Char Name[MAX_PATH];
+    Int32 DataLength;
+    Void* Data;
+};
+typedef struct _CaptchaInfo* CaptchaInfoRef;
 
 struct _WorldServerInfo {
     IPCNodeID NodeID;
@@ -34,6 +42,7 @@ struct _ServerContext {
     DatabaseRef Database;
     Timestamp WorldListBroadcastTimestamp;
     DictionaryRef WorldServerTable;
+    ArrayRef CaptchaInfoList;
 };
 typedef struct _ServerContext* ServerContextRef;
 
@@ -49,6 +58,7 @@ struct _ClientContext {
     Int32 LoginStatus;
     Int32 AccountStatus;
     Char Username[MAX_USERNAME_LENGTH];
+    CaptchaInfoRef Captcha;
 };
 typedef struct _ClientContext* ClientContextRef;
 

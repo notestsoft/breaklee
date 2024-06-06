@@ -10,6 +10,10 @@
 CLIENT_PROCEDURE_BINDING(VERIFY_LINKS) {
     if (!(Client->Flags & CLIENT_FLAGS_AUTHENTICATED)) goto error;
 
+    if (Context->Config.Login.CaptchaVerificationEnabled) {
+        if (!(Client->Flags & CLIENT_FLAGS_CAPTCHA_VERIFIED)) goto error;
+    }
+
     if (Client->Flags & CLIENT_FLAGS_VERIFIED) goto error;
 
     Info("Client Magic Key: %d", Packet->ClientMagicKey);

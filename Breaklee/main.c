@@ -102,7 +102,10 @@ Int32 main(
     }
 
     CString Pattern = Arguments[1];
+    Char DirectoryBuffer[MAX_PATH] = { 0 };
+    CString Directory = PathGetCurrentDirectory(DirectoryBuffer, MAX_PATH);
     Int32 ProcessedFileCount = FilesProcess(
+        Directory,
         Pattern,
         &EncryptDecryptFile,
         NULL
