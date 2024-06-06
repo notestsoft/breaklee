@@ -22,7 +22,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -39,7 +39,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -56,7 +56,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -73,7 +73,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -90,7 +90,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -107,7 +107,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -124,7 +124,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -141,7 +141,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -158,7 +158,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -175,7 +175,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -192,7 +192,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -209,7 +209,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -226,7 +226,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -243,7 +243,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -260,7 +260,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -277,7 +277,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -294,7 +294,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -311,7 +311,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -328,7 +328,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -345,7 +345,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -362,7 +362,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -379,7 +379,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -396,7 +396,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -413,7 +413,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -430,7 +430,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>
@@ -447,7 +447,7 @@
 		<divine	level="2"	rate="700,0,300,0,0,0"	/>
 		<divine	level="3"	rate="550,0,450,0,0,0"	/>
 		<divine	level="4"	rate="400,0,600,0,0,0"	/>
-		<divine	level="5"	rate="360,640,0,0,0,0"	/>
+		<divine	level="5"	rate="360,0,640,0,0,0"	/>
 		<divine	level="6"	rate="360,640,0,0,0,0"	/>
 		<divine	level="7"	rate="280,400,0,320,0,0"	/>
 		<divine	level="8"	rate="240,400,0,200,160,0"	/>

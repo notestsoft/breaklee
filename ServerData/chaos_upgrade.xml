@@ -1,6 +1,6 @@
 <cabal_chaos_upgrade>
 	<chaosupgrade_rate	group="-1"	>
-		<chaositem	level="0"	rate="1000,0,0,0,0,0,0,0,0,0,0"	/>
+		<chaositem	level="0"	rate="1000,0,0,0,0,0"	/>
 		<chaositem	level="1"	rate="950,0,0,0,0,0"	/>
 		<chaositem	level="2"	rate="900,0,0,0,0,0"	/>
 		<chaositem	level="3"	rate="750,0,0,0,0,0"	/>
