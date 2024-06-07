@@ -371,6 +371,148 @@ error:
 	return SocketDisconnect(Socket, Connection);
 }
 
+CLIENT_PROCEDURE_BINDING(UPGRADE_CHAOS_LEVEL) {
+	if (!Character) goto error;
+
+	Int32 TailLength = sizeof(UInt16) * (Packet->CoreCount + Packet->SafeCount);
+	if (sizeof(S2C_DATA_UPGRADE_CHAOS_LEVEL) + TailLength > Packet->Length) goto error;
+
+	if (Packet->CoreCount < 1) goto error;
+
+	UInt16* CoreSlotIndices = &Packet->CoreSlotIndices[0];
+	UInt16* SafeSlotIndices = &Packet->CoreSlotIndices[Packet->CoreCount];
+
+	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+	if (!ItemSlot) goto error;
+
+	struct _RTItemSlot ItemSlotCopy = *ItemSlot;
+
+	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
+	if (!ItemData) goto error;
+
+	RTDataChaosUpgradeItemListRef UpgradeMain = RTRuntimeDataChaosUpgradeItemListGet(Runtime->Context, ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX);
+	if (!UpgradeMain) goto error;
+	if (ItemSlot->Item.UpgradeLevel < UpgradeMain->CheckLevel) goto error;
+	if (ItemSlot->Item.UpgradeLevel >= UpgradeMain->ItemGrade) goto error;
+
+	RTDataChaosUpgradeGroupCostRef UpgradeGroupCost = RTRuntimeDataChaosUpgradeGroupCostGet(Runtime->Context, UpgradeMain->Group);
+	if (!UpgradeGroupCost) goto error;
+
+	RTDataChaosUpgradeGroupCostLevelRef UpgradeGroupCostLevel = RTRuntimeDataChaosUpgradeGroupCostLevelGet(UpgradeGroupCost, ItemSlot->Item.UpgradeLevel);
+	if (!UpgradeGroupCostLevel) goto error;
+
+	RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, CoreSlotIndices[0]);
+	assert(CoreSlot);
+
+	RTItemDataRef CoreData = RTRuntimeGetItemDataByIndex(Runtime, CoreSlot->Item.ID);
+	assert(CoreData);
+
+	if (CoreData->ItemType != RUNTIME_ITEM_TYPE_CHAOS_CORE &&
+		CoreData->ItemType != RUNTIME_ITEM_TYPE_CHAOS_CORE_SET) goto error;
+
+	Int32 RemainingCoreCount = 0;
+	Int32 RemainingSafeCount = 0;
+	Int32 RequiredCoreCount = UpgradeGroupCostLevel->RequiredCoreCount;
+	Int32 RequiredSafeCount = UpgradeGroupCostLevel->RequiredSafeCount;
+
+	// TODO: We have to snapshot inventory here to rollback!!!
+	for (Int32 Index = 0; Index < Packet->CoreCount; Index += 1) {
+		RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, CoreSlotIndices[Index]);
+		assert(CoreSlot);
+
+		RTItemDataRef CoreData = RTRuntimeGetItemDataByIndex(Runtime, CoreSlot->Item.ID);
+		assert(CoreData);
+
+		if (CoreData->ItemType == RUNTIME_ITEM_TYPE_CHAOS_CORE) {
+			RTInventoryClearSlot(Runtime, &Character->InventoryInfo, CoreSlot->SlotIndex);
+			RequiredCoreCount -= 1;
+		}
+		else if (CoreData->ItemType == RUNTIME_ITEM_TYPE_CHAOS_CORE_SET) {
+			Int32 ConsumableCoreCount = MIN(RequiredCoreCount, (Int32)CoreSlot->ItemOptions);
+
+			CoreSlot->ItemOptions -= ConsumableCoreCount;
+			RemainingCoreCount = (Int32)CoreSlot->ItemOptions;
+			RequiredCoreCount -= ConsumableCoreCount;
+
+			if (CoreSlot->ItemOptions < 1) {
+				RTInventoryClearSlot(Runtime, &Character->InventoryInfo, CoreSlot->SlotIndex);
+			}
+		}
+
+		if (RequiredCoreCount < 1) {
+			break;
+		}
+	}
+
+	if (RequiredCoreCount > 0) goto error;
+
+	// TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
+	ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+
+	Int32 Seed = (Int32)PlatformGetTickCount();
+	Int32 UpgradePoint = Client->UpgradePoint;
+	Bool DestroyItem = false;
+	Int32 Result = RTItemUpgradeChaos(
+		Runtime,
+		ItemSlot,
+		&UpgradePoint,
+		&Seed,
+		&DestroyItem
+	);
+
+	Int32 ConsumedSafeCount = 0;
+	if (Result != RUNTIME_CHAOS_UPGRADE_RESULT_UPGRADE) {
+		for (Int32 Index = 0; Index < Packet->SafeCount; Index += 1) {
+			RTItemSlotRef SafeSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, SafeSlotIndices[Index]);
+			assert(SafeSlot);
+
+			RTItemDataRef SafeData = RTRuntimeGetItemDataByIndex(Runtime, SafeSlot->Item.ID);
+			assert(SafeData);
+
+			if (SafeData->ItemType != RUNTIME_ITEM_TYPE_CHAOS_SAFEGUARD) goto error;
+			// TODO: Check chaos safeguard subtypes
+
+			Int32 ConsumableSafeCount = MIN(RequiredSafeCount, (Int32)SafeSlot->ItemOptions);
+
+			SafeSlot->ItemOptions -= ConsumableSafeCount;
+			RemainingSafeCount = (Int32)SafeSlot->ItemOptions;
+			RequiredSafeCount -= ConsumableSafeCount;
+			ConsumedSafeCount += ConsumableSafeCount;
+
+			if (SafeSlot->ItemOptions < 1) {
+				RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SafeSlot->SlotIndex);
+			}
+		}
+
+		if (ConsumedSafeCount > 0 && RequiredSafeCount < 1) {
+			// TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
+			ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+			*ItemSlot = ItemSlotCopy;
+		}
+	}
+
+	if (DestroyItem) {
+		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+	}
+
+	Client->UpgradePoint = UpgradePoint;
+	Character->SyncMask.InventoryInfo = true;
+	Character->SyncPriority.High = true;
+
+	S2C_DATA_UPDATE_UPGRADE_POINTS* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, UPDATE_UPGRADE_POINTS);
+	Notification->UpgradePoint = Client->UpgradePoint;
+	Notification->Timestamp = (UInt32)GetTimestampMs() + 1000 * 60 * 60;
+	SocketSend(Socket, Connection, Notification);
+
+	S2C_DATA_UPGRADE_CHAOS_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPGRADE_CHAOS_LEVEL);
+	Response->Result = Result;
+	Response->RemainingCoreCount = RemainingCoreCount;
+	Response->ConsumedSafeCount = ConsumedSafeCount;
+	return SocketSend(Socket, Connection, Response);
+
+error:
+	return SocketDisconnect(Socket, Connection);
+}
 
 CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_ITEM_LEVEL) {
 	if (!Character) goto error;

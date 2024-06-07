@@ -802,6 +802,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemChaosConverter) {
 
 	RTDataChaosUpgradeItemListRef ChaosUpgradeItemList = RTRuntimeDataChaosUpgradeItemListGet(Runtime->Context, TargetItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX);
 	if (!ChaosUpgradeItemList) return RUNTIME_ITEM_USE_RESULT_FAILED;
+	if (!ChaosUpgradeItemList->CheckLevel) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
 	if (TargetItemSlot->Item.UpgradeLevel >= ChaosUpgradeItemList->ItemGrade) return RUNTIME_ITEM_USE_RESULT_FAILED;
 

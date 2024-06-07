@@ -43,3 +43,17 @@ RUNTIME_DATA_TYPE_BEGIN(ChaosUpgradeSafeguardItemList, "cabal_chaos_upgrade.chao
 RUNTIME_DATA_TYPE_END(ChaosUpgradeSafeguardItemList)
 
 RUNTIME_DATA_FILE_END
+
+RUNTIME_DATA_FILE_BEGIN(chaos_upgrade.xml)
+
+RUNTIME_DATA_TYPE_BEGIN(ChaosUpgradeGroupRate, "cabal_chaos_upgrade.chaosupgrade_rate", 16)
+	RUNTIME_DATA_PROPERTY(Int32, Group, "group")
+	RUNTIME_DATA_TYPE_BEGIN_CHILD(ChaosUpgradeGroupRateLevel, "chaositem", 32)
+		RUNTIME_DATA_PROPERTY(Int32, Level, "level")
+		RUNTIME_DATA_PROPERTY_ARRAY(Int32, Rates, "rate", RUNTIME_DATA_UPGRADE_RATE_VALUE_COUNT, ',')
+	RUNTIME_DATA_TYPE_END_CHILD(ChaosUpgradeGroupRateLevel, 32)
+RUNTIME_DATA_TYPE_END(ChaosUpgradeGroupRate)
+RUNTIME_DATA_TYPE_INDEX(ChaosUpgradeGroupRate, Int32, Group)
+RUNTIME_DATA_TYPE_INDEX_CHILD(ChaosUpgradeGroupRate, ChaosUpgradeGroupRateLevel, Int32, Level)
+
+RUNTIME_DATA_FILE_END

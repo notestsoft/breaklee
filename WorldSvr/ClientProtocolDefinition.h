@@ -3002,6 +3002,20 @@ CLIENT_PROTOCOL(S2C, NFY_UNKNOWN_2528, DEFAULT, 2528,
     UInt32 Unknown1;
 )
 
+CLIENT_PROTOCOL(C2S, UPGRADE_CHAOS_LEVEL, DEFAULT, 2534,
+    Int32 Unknown1;
+    UInt16 InventorySlotIndex;
+    UInt16 CoreCount;
+    UInt16 SafeCount;
+    UInt16 CoreSlotIndices[0];
+)
+
+CLIENT_PROTOCOL(S2C, UPGRADE_CHAOS_LEVEL, DEFAULT, 2534,
+    UInt8 Result;
+    UInt8 ConsumedSafeCount;
+    Int32 RemainingCoreCount;
+)
+
 CLIENT_PROTOCOL(C2S, UNKNOWN_2559, DEFAULT, 2559,
     UInt8 Unknown1;
 )
