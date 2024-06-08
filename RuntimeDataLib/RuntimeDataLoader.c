@@ -280,7 +280,7 @@ RTDataDivineUpgradeMainRef RTRuntimeDataDivineUpgradeMainGet(
 ) {
     for (Int32 Index = 0; Index < Context->DivineUpgradeMainCount; Index += 1) {
         RTDataDivineUpgradeMainRef Main = &Context->DivineUpgradeMainList[Index];
-        if (Main->ItemGrade == ItemGrade && Main->ItemType == ItemType) return Main;
+        if ((Main->ItemGrade == ItemGrade || Main->ItemGrade < 0) && Main->ItemType == ItemType) return Main;
     }
 
     return NULL;
@@ -297,6 +297,59 @@ RTDataDummySkillRef RTRuntimeDataDummySkillGet(
         if (DummySkill->Property != Property) continue;
 
         return DummySkill;
+    }
+
+    return NULL;
+}
+
+RTDataForceCoreBaseRef RTRuntimeDataForceCoreBaseGet(
+    RTRuntimeDataContextRef Context,
+    Int32 ItemGrade,
+    Int32 ItemType
+) {
+    for (Int32 Index = 0; Index < Context->ForceCoreBaseCount; Index += 1) {
+        RTDataForceCoreBaseRef Main = &Context->ForceCoreBaseList[Index];
+        if ((Main->ItemGrade == ItemGrade || Main->ItemGrade < 0) && Main->ItemType == ItemType) return Main;
+    }
+
+    return NULL;
+}
+
+RTDataForceCodeCostRef RTRuntimeDataForceCodeCostGet(
+    RTRuntimeDataContextRef Context,
+    Int32 CostGrade,
+    Int32 FilledSlotCount
+) {
+    for (Int32 Index = 0; Index < Context->ForceCodeCostCount; Index += 1) {
+        RTDataForceCodeCostRef Cost = &Context->ForceCodeCostList[Index];
+        if (Cost->CostGrade == CostGrade && Cost->FilledSlotCount == FilledSlotCount) return Cost;
+    }
+
+    return NULL;
+}
+
+RTDataForceCodeRateRef RTRuntimeDataForceCodeRateGet(
+    RTRuntimeDataContextRef Context,
+    Int32 ItemType,
+    Int32 FilledSlotCount,
+    Int32 ItemUpgradeLevel
+) {
+    for (Int32 Index = 0; Index < Context->ForceCodeRateCount; Index += 1) {
+        RTDataForceCodeRateRef Rate = &Context->ForceCodeRateList[Index];
+        if (Rate->ItemType == ItemType && Rate->FilledSlotCount == FilledSlotCount && Rate->ItemUpgradeLevel == ItemUpgradeLevel) return Rate;
+    }
+
+    return NULL;
+}
+
+RTDataUpgradeGradeChangeRef RTRuntimeDataUpgradeGradeChangeGet(
+    RTRuntimeDataContextRef Context,
+    Int32 ItemType,
+    Int32 ItemGrade
+) {
+    for (Int32 Index = 0; Index < Context->UpgradeGradeChangeCount; Index += 1) {
+        RTDataUpgradeGradeChangeRef Change = &Context->UpgradeGradeChangeList[Index];
+        if (Change->ItemType == ItemType && Change->ItemGrade == ItemGrade) return Change;
     }
 
     return NULL;
@@ -348,9 +401,9 @@ Bool ParseAttributeRTDataItemType(
         { "BRACELET_14", RUNTIME_ITEM_TYPE_BRACELET },
         { "BROOCH", RUNTIME_ITEM_TYPE_BROOCH },
         { "CHARM", RUNTIME_ITEM_TYPE_CHARM },
-        { "EMBLEM_1", RUNTIME_ITEM_TYPE_CHARM },
-        { "EMBLEM_2", RUNTIME_ITEM_TYPE_CHARM },
-        { "EMBLEM_3", RUNTIME_ITEM_TYPE_CHARM },
+        { "EMBLEM_1", RUNTIME_ITEM_TYPE_CREST },
+        { "EMBLEM_2", RUNTIME_ITEM_TYPE_CREST },
+        { "EMBLEM_3", RUNTIME_ITEM_TYPE_CREST },
         { "EARRING_1", RUNTIME_ITEM_TYPE_EARRING },
         { "EARRING_2", RUNTIME_ITEM_TYPE_EARRING },
         { "EARRING_3", RUNTIME_ITEM_TYPE_EARRING },
@@ -367,8 +420,8 @@ Bool ParseAttributeRTDataItemType(
         { "EARRING_14", RUNTIME_ITEM_TYPE_EARRING },
         { "EPULET", RUNTIME_ITEM_TYPE_EPAULET },
         { "RING", RUNTIME_ITEM_TYPE_RING },
-        { "UNIQUEEMBLEM", 0 },
-        { "DivineToken", 0 },
+        { "DivineToken", RUNTIME_ITEM_TYPE_DIVINE_TOKEN },
+        { "UNIQUEEMBLEM", RUNTIME_ITEM_TYPE_ARTIFACT },
     };
 
     Int32 Count = sizeof(Dictionary) / sizeof(Dictionary[0]);
@@ -447,6 +500,7 @@ Bool ParseAttributeRTDataItemTypeGrade(
         { "EARRING_14", 14 },
         { "EPULET", -1 },
         { "RING", -1 },
+        { "DivineToken", -1 },
         { "UNIQUEEMBLEM", -1 },
     };
 

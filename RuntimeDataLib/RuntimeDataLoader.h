@@ -104,4 +104,29 @@ RTDataDummySkillRef RTRuntimeDataDummySkillGet(
 	Int32 Property
 );
 
+RTDataForceCoreBaseRef RTRuntimeDataForceCoreBaseGet(
+	RTRuntimeDataContextRef Context,
+	Int32 ItemGrade,
+	Int32 ItemType
+);
+
+RTDataForceCodeCostRef RTRuntimeDataForceCodeCostGet(
+	RTRuntimeDataContextRef Context,
+	Int32 CostGrade,
+	Int32 FilledSlotCount
+);
+
+RTDataForceCodeRateRef RTRuntimeDataForceCodeRateGet(
+	RTRuntimeDataContextRef Context,
+	Int32 ItemType,
+	Int32 FilledSlotCount,
+	Int32 ItemUpgradeLevel
+);
+
+RTDataUpgradeGradeChangeRef RTRuntimeDataUpgradeGradeChangeGet(
+	RTRuntimeDataContextRef Context,
+	Int32 ItemType,
+	Int32 ItemGrade
+);
+
 EXTERN_C_END

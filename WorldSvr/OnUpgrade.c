@@ -7,15 +7,195 @@
 
 // TODO: Split all reads from writes
 
+// TODO: Delete second slot when 3. slot fails
+// TODO: Success rate is calculated wrong
+// TODO: Item option slot it filled wrong
 CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 	if (!Character) goto error;
+
+	if (Packet->ForceCoreCount < 1 || Packet->ForceCoreCount > 10) goto error;
 
 	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->ItemSlotIndex);
 	if (!ItemSlot) goto error;
 
-	// TODO: Implementation is missing
+	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
+	if (!ItemData) goto error;
+
+	RTDataUpgradeGradeRef UpgradeGrade = RTRuntimeDataUpgradeGradeGet(Runtime->Context, ItemData->ItemGrade);
+	if (!UpgradeGrade) goto error;
+
+	Int32 CostGrade = UpgradeGrade->CostGrade;
+
+	RTDataUpgradeGradeChangeRef UpgradeGradeChange = RTRuntimeDataUpgradeGradeChangeGet(Runtime->Context, ItemData->ItemType, ItemData->ItemGrade);
+	if (UpgradeGradeChange) {
+		CostGrade = UpgradeGradeChange->CostGrade;
+	}
+
+	for (Int32 SlotIndex = 0; SlotIndex < Packet->ForceCoreCount; SlotIndex += 1) {
+		RTItemSlotRef ForceCoreSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->ForceCoreSlotIndices[SlotIndex]);
+		if (!ForceCoreSlot) goto error;
+		
+		RTItemDataRef ForceCoreData = RTRuntimeGetItemDataByIndex(Runtime, ForceCoreSlot->Item.ID);
+		if (!ForceCoreData) goto error;
+
+		if (ForceCoreData->ItemType != RUNTIME_ITEM_TYPE_FORCE_CORE) goto error;
+		if (ForceCoreData->ItemGrade != CostGrade) goto error;
+	}
+
+	RTItemOptions ItemOptions = { 0 };
+	ItemOptions.Serial = ItemSlot->ItemOptions;
+
+	Int32 FilledSlotCount = RTItemOptionGetFilledSlotCount(ItemOptions);
+	Int32 TotalSlotCount = ItemOptions.Equipment.SlotCount;
+	if (FilledSlotCount >= TotalSlotCount) goto error;
+
+	RTDataForceCodeCostRef ForceCodeCost = RTRuntimeDataForceCodeCostGet(Runtime->Context, CostGrade, FilledSlotCount);
+	if (!ForceCodeCost) goto error;
+
+	if (Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < ForceCodeCost->CurrencyCost) goto error;
+
+	Bool IsOneHandedWeapon = (
+		ItemData->ItemType == RUNTIME_ITEM_TYPE_WEAPON_ONE_HAND ||
+		ItemData->ItemType == RUNTIME_ITEM_TYPE_WEAPON_FORCE_CONTROLLER ||
+		ItemData->ItemType == RUNTIME_ITEM_TYPE_CHAKRAM
+	);
+	Int32 ItemType = IsOneHandedWeapon ? RUNTIME_ITEM_TYPE_WEAPON_ONE_HAND : ItemData->ItemType;
+
+	RTDataForceCoreBaseRef ForceCoreBase = RTRuntimeDataForceCoreBaseGet(Runtime->Context, ItemData->ItemGrade, ItemType);
+	if (!ForceCoreBase) goto error;
+
+	RTItemSlotRef FixedScrollSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->OptionScrollSlotIndex);
+	RTItemDataRef FixedScrollData = NULL;
+	RTItemOptions FixedScrollOptions = { 0 };
+
+	if (FixedScrollSlot) {
+		FixedScrollData = RTRuntimeGetItemDataByIndex(Runtime, FixedScrollSlot->Item.ID);
+		if (!FixedScrollData) goto error;
+		
+		FixedScrollOptions.Serial = FixedScrollSlot->ItemOptions;
+		if (FixedScrollOptions.OptionScroll.ForceEffectIndex < 1) goto error;
+	}
+
+	RTItemSlotRef RandomScrollSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->RandomScrollSlotIndex);
+	RTItemDataRef RandomScrollData = NULL;
+	RTItemOptions RandomScrollOptions = { 0 };
+
+	if (RandomScrollSlot) {
+		RandomScrollData = RTRuntimeGetItemDataByIndex(Runtime, RandomScrollSlot->Item.ID);
+		if (!RandomScrollData) goto error;
+
+		RandomScrollOptions.Serial = RandomScrollSlot->ItemOptions;
+		if (RandomScrollOptions.OptionScroll.ForceEffectIndex > 0) goto error;
+	}
+
+	if (!FixedScrollSlot && !RandomScrollSlot) goto error;
+
+	RTItemSlotRef MainScrollSlot = FixedScrollSlot ? FixedScrollSlot : RandomScrollSlot;
+	RTItemDataRef MainScrollData = FixedScrollSlot ? FixedScrollData : RandomScrollData;
+	RTItemOptions MainScrollOptions = FixedScrollSlot ? FixedScrollOptions : RandomScrollOptions;
+
+	Int32 Seed = PlatformGetTickCount();
+	if (FixedScrollSlot && RandomScrollSlot) {
+		Int32 Value = RandomRange(&Seed, 0, 10000);
+		if (Value >= 5000) {
+			MainScrollSlot = RandomScrollSlot;
+			MainScrollData = RandomScrollData;
+			MainScrollOptions = RandomScrollOptions;
+		}
+	}
+
+	RTDataForceCoreBaseCodeRef ForceCoreBaseCode = NULL;
+	if (MainScrollOptions.OptionScroll.ForceEffectIndex < 1) {
+		assert(ForceCoreBase->ForceCoreBaseCodeCount > 0);
+
+		Int32 Value = RandomRange(&Seed, 0, 1000 * ForceCoreBase->ForceCoreBaseCodeCount);
+		for (Index Index = 0; Index < ForceCoreBase->ForceCoreBaseCodeCount; Index += 1) {
+			RTDataForceCoreBaseCodeRef Code = &ForceCoreBase->ForceCoreBaseCodeList[Index];
+			if (Code->HasRandomRate && Value <= 1000 * (Index + 1)) {
+				ForceCoreBaseCode = Code;
+				break;
+			}
+		}
+	}
+	else {
+		ForceCoreBaseCode = RTRuntimeDataForceCoreBaseCodeGet(ForceCoreBase, MainScrollOptions.OptionScroll.ForceEffectIndex);
+	}
+
+	if (!ForceCoreBaseCode) goto error;
+
+	RTDataForceCodeRateBaseRef ForceCodeRateBase = RTRuntimeDataForceCodeRateBaseGet(Runtime->Context);
+	if (!ForceCodeRateBase) goto error;
+
+	Int32 SuccessRate = ForceCodeRateBase->DefaultRate;
+
+	RTItemOptionSlot LastForceSlot = RTItemOptionGetLastFilledForceSlot(ItemOptions);
+	if (LastForceSlot.ForceIndex == ForceCoreBaseCode->ForceIndex) {
+		if (ItemData->ItemType == RUNTIME_ITEM_TYPE_VEHICLE_BIKE) {
+			SuccessRate = ForceCodeRateBase->VehicleBikeRate;
+		}
+
+		if (ItemData->ItemType == RUNTIME_ITEM_TYPE_CREST || ItemData->ItemType == RUNTIME_ITEM_TYPE_EPAULET) {
+			SuccessRate = ForceCodeRateBase->EmblemRate;
+		}
+	}
+
+	SuccessRate *= Packet->ForceCoreCount;
+	
+	RTDataForceCodeRateRef ForceCodeRate = RTRuntimeDataForceCodeRateGet(Runtime->Context, ItemData->ItemType, FilledSlotCount, ItemSlot->Item.UpgradeLevel);
+	if (!ForceCodeRate) goto error;
+
+	Int32 EqualSlotCount = RTItemOptionGetForceSlotCount(ItemOptions, ForceCoreBaseCode->ForceIndex);
+	if (EqualSlotCount == 0) SuccessRate += ForceCodeRate->Rate1;
+	if (EqualSlotCount == 1) SuccessRate += ForceCodeRate->Rate2;
+	if (EqualSlotCount == 2) SuccessRate += ForceCodeRate->Rate3;
+
+	Bool HasError = false;
+	Int32 Value = RandomRange(&Seed, 0, 1000000000);
+	if (Value <= SuccessRate) {
+		RTItemOptionSlot ForceSlot = { 0 };
+		ForceSlot.ForceIndex = ForceCoreBaseCode->ForceIndex;
+		ForceSlot.ForceLevel = 1;
+		HasError = !RTItemOptionAppendSlot((RTItemOptions*)&ItemSlot->ItemOptions, ForceSlot);
+	}
+
+	if (!HasError) {
+		if (FixedScrollSlot) {
+			FixedScrollOptions.OptionScroll.StackSize -= 1;
+			if (FixedScrollOptions.OptionScroll.StackSize > 0) {
+				FixedScrollSlot->ItemOptions = FixedScrollOptions.Serial;
+			}
+			else {
+				RTInventoryClearSlot(Runtime, &Character->InventoryInfo, FixedScrollSlot->SlotIndex);
+
+				if (Packet->RandomScrollSlotIndex >= 0) {
+					RandomScrollSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->RandomScrollSlotIndex);
+				}
+			}
+		}
+
+		if (RandomScrollSlot) {
+			RandomScrollOptions.OptionScroll.StackSize -= 1;
+			if (RandomScrollOptions.OptionScroll.StackSize > 0) {
+				RandomScrollSlot->ItemOptions = RandomScrollOptions.Serial;
+			}
+			else {
+				RTInventoryClearSlot(Runtime, &Character->InventoryInfo, RandomScrollSlot->SlotIndex);
+			}
+		}
+
+		for (Int32 SlotIndex = 0; SlotIndex < Packet->ForceCoreCount; SlotIndex += 1) {
+			RTInventoryClearSlot(Runtime, &Character->InventoryInfo, Packet->ForceCoreSlotIndices[SlotIndex]);			
+		}
+
+		Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= ForceCodeCost->CurrencyCost;
+		Character->SyncMask.Info = true;
+		Character->SyncMask.InventoryInfo = true;
+		Character->SyncPriority.High = true;
+	}
 
 	S2C_DATA_ADD_FORCE_SLOT_OPTION* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ADD_FORCE_SLOT_OPTION);
+	Response->Result = HasError ? 0 : 1;
+	Response->ItemOptions = ItemSlot->ItemOptions;
 	return SocketSend(Socket, Connection, Response);
 
 error:
@@ -53,10 +233,10 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 	if (!UpgradeCostSafeguard) goto error;
 
 	RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->CoreSlotIndices[0]);
-	assert(CoreSlot);
+	if (!CoreSlot) goto error;
 
 	RTItemDataRef CoreData = RTRuntimeGetItemDataByIndex(Runtime, CoreSlot->Item.ID);
-	assert(CoreData);
+	if (!CoreData) goto error;
 
 	if (CoreData->ItemType != RUNTIME_ITEM_TYPE_UPGRADE_CORE &&
 		CoreData->ItemType != RUNTIME_ITEM_TYPE_UPGRADE_CORE_SET) goto error;

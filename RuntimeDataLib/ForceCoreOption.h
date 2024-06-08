@@ -1,7 +1,7 @@
 RUNTIME_DATA_FILE_BEGIN(forcecore_option.enc)
 
 RUNTIME_DATA_TYPE_BEGIN(ForceCoreBase, "cabal.force_core.code", 64)
-	RUNTIME_DATA_PROPERTY(RTDataItemType, Type, "type")
+	RUNTIME_DATA_PROPERTY(RTDataItemType, ItemType, "type")
 	RUNTIME_DATA_PROPERTY(RTDataItemTypeGrade, ItemGrade, "type")
 	RUNTIME_DATA_TYPE_BEGIN_CHILD(ForceCoreBaseCode, "cont", 16)
 		RUNTIME_DATA_PROPERTY(Int32, ForceIndex, "index")
@@ -10,6 +10,7 @@ RUNTIME_DATA_TYPE_BEGIN(ForceCoreBase, "cabal.force_core.code", 64)
 		RUNTIME_DATA_PROPERTY(Int32, HasRandomRate, "randomrate_exist")
 	RUNTIME_DATA_TYPE_END_CHILD(ForceCoreBaseCode, 16)
 RUNTIME_DATA_TYPE_END(ForceCoreBase)
+RUNTIME_DATA_TYPE_INDEX_CHILD(ForceCoreBase, ForceCoreBaseCode, Int32, ForceEffectIndex)
 
 RUNTIME_DATA_TYPE_BEGIN(ForceCodeEquipment, "cabal.force_core.force_code_equip", 512)
 	RUNTIME_DATA_PROPERTY(Int32, ForceEffectIndex, "code")
@@ -31,6 +32,28 @@ RUNTIME_DATA_TYPE_BEGIN(ForceCodeEquipment, "cabal.force_core.force_code_equip",
 	RUNTIME_DATA_PROPERTY(Int32, Grade15, "grade15")
 RUNTIME_DATA_TYPE_END(ForceCodeEquipment)
 
+RUNTIME_DATA_TYPE_BEGIN(ForceCodeCost, "cabal.force_core.fcore_cost_init.fcore_cost", 64)
+	RUNTIME_DATA_PROPERTY(Int32, CostGrade, "equip_lv")
+	RUNTIME_DATA_PROPERTY(Int32, FilledSlotCount, "active_opt")
+	RUNTIME_DATA_PROPERTY(Int32, CurrencyCost, "cost")
+RUNTIME_DATA_TYPE_END(ForceCodeCost)
+
+RUNTIME_DATA_TYPE_BEGIN(ForceCodeRate, "cabal.force_core.fcore_rate_init.fcore_rate", 1024)
+	RUNTIME_DATA_PROPERTY(Int32, ItemType, "item_type")
+	RUNTIME_DATA_PROPERTY(Int32, FilledSlotCount, "active_opt")
+	RUNTIME_DATA_PROPERTY(Int32, ItemUpgradeLevel, "enchant_level")
+	RUNTIME_DATA_PROPERTY(Int32, Rate1, "equal0_rate")
+	RUNTIME_DATA_PROPERTY(Int32, Rate2, "equal1_rate")
+	RUNTIME_DATA_PROPERTY(Int32, Rate3, "equal2_rate")
+RUNTIME_DATA_TYPE_END(ForceCodeRate)
+
+RUNTIME_DATA_TYPE_BEGIN(ForceCodeRateBase, "cabal.force_core.fcore_success_rate", 1)
+	RUNTIME_DATA_PROPERTY(Int32, DefaultRate, "default")
+	RUNTIME_DATA_PROPERTY(Int32, VehicleBikeRate, "bike_same_op")
+	RUNTIME_DATA_PROPERTY(Int32, EmblemRate, "Emblem_same_op")
+RUNTIME_DATA_TYPE_END(ForceCodeRateBase)
+RUNTIME_DATA_TYPE_INDEX_SINGLE(ForceCodeRateBase)
+
 RUNTIME_DATA_FILE_END
 
 RUNTIME_DATA_FILE_BEGIN(EpicOptionPool.xml)
@@ -41,7 +64,7 @@ RUNTIME_DATA_TYPE_BEGIN(EpicOptionPool, "EpicOptionPool.Pool", 128)
 		RUNTIME_DATA_PROPERTY(Int32, EpicOption, "id")
 		RUNTIME_DATA_PROPERTY(Int32, EpicGrade, "grade")
 		RUNTIME_DATA_PROPERTY(Int32, Rate, "rate")
-	RUNTIME_DATA_TYPE_END_CHILD(EpicOptionPoolValue, 32)
+	RUNTIME_DATA_TYPE_END_CHILD(EpicOptionPoolValue, 8)
 RUNTIME_DATA_TYPE_END(EpicOptionPool)
 RUNTIME_DATA_TYPE_INDEX(EpicOptionPool, Int32, Index)
 

@@ -354,6 +354,11 @@ struct _RTItemOptions {
 			UInt8 Slot10 : 6;
 			UInt8 Group : 4;
 		} HonorMedalSeal;
+
+		struct {
+			UInt64 StackSize : 7;
+			UInt64 ForceEffectIndex : 25;
+		} OptionScroll;
 	};
 };
 typedef struct _RTItemOptions RTItemOptions;
@@ -420,6 +425,19 @@ Int32 RTItemOptionLastEmptySlotIndex(
 );
 
 Bool RTItemOptionHasEpic(
+	RTItemOptions Options
+);
+
+RTItemOptionSlot RTItemOptionGetLastFilledForceSlot(
+	RTItemOptions Options
+);
+
+Int32 RTItemOptionGetForceSlotCount(
+	RTItemOptions Options,
+	Int32 ForceIndex
+);
+
+Int32 RTItemOptionGetFilledSlotCount(
 	RTItemOptions Options
 );
 

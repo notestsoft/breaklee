@@ -182,6 +182,38 @@ Bool RTItemOptionHasEpic(
 	return false;
 }
 
+RTItemOptionSlot RTItemOptionGetLastFilledForceSlot(
+	RTItemOptions Options
+) {
+	for (Int32 Index = RUNTIME_ITEM_MAX_OPTION_COUNT - 1; Index >= 0; Index -= 1) {
+		RTItemOptionSlot Slot = Options.Equipment.Slots[Index];
+		if (Slot.IsEpic) continue;
+		if (Slot.ForceIndex < 1) continue;
+
+		return Slot;
+	}
+
+	RTItemOptionSlot ZeroSlot = { 0 };
+	return ZeroSlot;
+}
+
+Int32 RTItemOptionGetForceSlotCount(
+	RTItemOptions Options,
+	Int32 ForceIndex
+) {
+	Int32 Count = 0;
+
+	for (Int32 Index = RUNTIME_ITEM_MAX_OPTION_COUNT - 1; Index >= 0; Index -= 1) {
+		RTItemOptionSlot Slot = Options.Equipment.Slots[Index];
+		if (Slot.IsEpic) continue;
+		if (Slot.ForceIndex != ForceIndex) continue;
+
+		Count += 1;
+	}
+
+	return Count;
+}
+
 Bool RTItemOptionPreserveEpicSlot(
 	RTItemOptions* Options
 ) {
@@ -191,6 +223,21 @@ Bool RTItemOptionPreserveEpicSlot(
 	}
 
 	return true;
+}
+
+Int32 RTItemOptionGetFilledSlotCount(
+	RTItemOptions Options
+) {
+	Int32 FilledSlotCount = 0;
+
+	for (Int32 Index = RUNTIME_ITEM_MAX_OPTION_COUNT - 1; Index >= 0; Index -= 1) {
+		if (Options.Equipment.Slots[Index].IsEpic) continue;
+		if (Options.Equipment.Slots[Index].ForceIndex < 1) continue;
+
+		FilledSlotCount += 1;
+	}
+
+	return FilledSlotCount;
 }
 
 Bool RTItemOptionPushSlots(

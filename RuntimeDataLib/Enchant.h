@@ -98,6 +98,12 @@ RUNTIME_DATA_TYPE_BEGIN(UpgradeGrade, "enchant.enchant_grade.enchant_grade_value
 RUNTIME_DATA_TYPE_END(UpgradeGrade)
 RUNTIME_DATA_TYPE_INDEX(UpgradeGrade, Int32, ItemGrade)
 
+RUNTIME_DATA_TYPE_BEGIN(UpgradeGradeChange, "enchant.enchant_grade_change.enchant_grade_change_value", 32)
+	RUNTIME_DATA_PROPERTY(Int32, ItemType, "item_type")
+	RUNTIME_DATA_PROPERTY(Int32, ItemGrade, "item_grade")
+	RUNTIME_DATA_PROPERTY(Int32, CostGrade, "cost_grade")
+RUNTIME_DATA_TYPE_END(UpgradeGradeChange)
+
 RUNTIME_DATA_TYPE_BEGIN(UpgradeExtendGrade, "enchant.enchant_extend_grade.enchant_grade_value", 32)
 	RUNTIME_DATA_PROPERTY(Int32, ItemGrade, "item_grade")
 	RUNTIME_DATA_PROPERTY(Int32, CostGrade, "cost_grade")
