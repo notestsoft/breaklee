@@ -384,6 +384,15 @@ struct _RTItemHonorMedalSealData {
 };
 typedef struct _RTItemHonorMedalSealData RTItemHonorMedalSealData;
 
+struct _RTItemForceOptionData {
+	Int32 EpicSlotCount; 
+	RTItemOptionSlot EpicSlots[RUNTIME_ITEM_MAX_OPTION_COUNT];
+	Int32 ForceSlotCount;
+	Int32 FilledForceSlotCount;
+	UInt8 ForceSlots[RUNTIME_ITEM_MAX_OPTION_COUNT];
+};
+typedef struct _RTItemForceOptionData RTItemForceOptionData;
+
 struct _RTItemSlot {
     RTItem Item;
     UInt64 ItemSerial;
@@ -408,6 +417,14 @@ UInt64 RTItemHonorMedalSealEncode(
 	RTItemHonorMedalSealData Data
 );
 
+RTItemForceOptionData RTItemForceOptionDecode(
+	UInt64 Serial
+);
+
+UInt64 RTItemForceOptionEncode(
+	RTItemForceOptionData Data
+);
+
 Int32 RTItemUseInternal(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
@@ -428,6 +445,14 @@ Bool RTItemOptionHasEpic(
 	RTItemOptions Options
 );
 
+RTItemOptionSlot* RTItemOptionGetLastEmptyForceSlot(
+	RTItemOptions Options
+);
+
+Int32 RTItemOptionGetLastFilledForceSlotIndex(
+	RTItemOptions Options
+);
+
 RTItemOptionSlot RTItemOptionGetLastFilledForceSlot(
 	RTItemOptions Options
 );
@@ -445,9 +470,19 @@ Bool RTItemOptionPushSlots(
 	RTItemOptions* Options
 );
 
+Void RTItemOptionClearForceSlot(
+	RTItemOptions* Options,
+	Int32 Index
+);
+
+Void RTItemOptionClearSecondForceSlot(
+	RTItemOptions* Options
+);
+
 Bool RTItemOptionAppendSlot(
 	RTItemOptions* Options,
-	RTItemOptionSlot Slot
+	RTItemOptionSlot Slot,
+	Bool IsExtended
 );
 
 struct _RTItemConverterPayload {

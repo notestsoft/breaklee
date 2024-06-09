@@ -21,7 +21,7 @@
         <enchant_grade_change_value item_type="190" item_grade="1" cost_grade="8" />
         <enchant_grade_change_value item_type="190" item_grade="2" cost_grade="8" />
         <enchant_grade_change_value item_type="190" item_grade="3" cost_grade="8" />
-    <enchant_grade_change>
+    </enchant_grade_change>
 
     <enchant_extend_grade>
         <enchant_grade_value item_grade="1" cost_grade="1" />

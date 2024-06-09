@@ -7,9 +7,6 @@
 
 // TODO: Split all reads from writes
 
-// TODO: Delete second slot when 3. slot fails
-// TODO: Success rate is calculated wrong
-// TODO: Item option slot it filled wrong
 CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 	if (!Character) goto error;
 
@@ -106,37 +103,41 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 
 	RTDataForceCoreBaseCodeRef ForceCoreBaseCode = NULL;
 	if (MainScrollOptions.OptionScroll.ForceEffectIndex < 1) {
-		assert(ForceCoreBase->ForceCoreBaseCodeCount > 0);
+		Int32 RandomForceCorePoolCount = 0;
+		Int32 RandomForceCorePool[16] = { 0 };
 
-		Int32 Value = RandomRange(&Seed, 0, 1000 * ForceCoreBase->ForceCoreBaseCodeCount);
 		for (Index Index = 0; Index < ForceCoreBase->ForceCoreBaseCodeCount; Index += 1) {
 			RTDataForceCoreBaseCodeRef Code = &ForceCoreBase->ForceCoreBaseCodeList[Index];
-			if (Code->HasRandomRate && Value <= 1000 * (Index + 1)) {
-				ForceCoreBaseCode = Code;
-				break;
+			if (Code->HasRandomRate) {
+				RandomForceCorePool[RandomForceCorePoolCount] = Index;
+				RandomForceCorePoolCount += 1;
 			}
 		}
+
+		assert(RandomForceCorePoolCount > 0);
+
+		Int32 RandomIndex = RandomRange(&Seed, 0, RandomForceCorePoolCount - 1);
+		ForceCoreBaseCode = &ForceCoreBase->ForceCoreBaseCodeList[RandomIndex];
 	}
 	else {
 		ForceCoreBaseCode = RTRuntimeDataForceCoreBaseCodeGet(ForceCoreBase, MainScrollOptions.OptionScroll.ForceEffectIndex);
 	}
 
-	if (!ForceCoreBaseCode) goto error;
+	if (!ForceCoreBaseCode) {
+		goto error;
+	}
 
 	RTDataForceCodeRateBaseRef ForceCodeRateBase = RTRuntimeDataForceCodeRateBaseGet(Runtime->Context);
 	if (!ForceCodeRateBase) goto error;
 
 	Int32 SuccessRate = ForceCodeRateBase->DefaultRate;
 
-	RTItemOptionSlot LastForceSlot = RTItemOptionGetLastFilledForceSlot(ItemOptions);
-	if (LastForceSlot.ForceIndex == ForceCoreBaseCode->ForceIndex) {
-		if (ItemData->ItemType == RUNTIME_ITEM_TYPE_VEHICLE_BIKE) {
-			SuccessRate = ForceCodeRateBase->VehicleBikeRate;
-		}
+	if (ItemData->ItemType == RUNTIME_ITEM_TYPE_VEHICLE_BIKE) {
+		SuccessRate = ForceCodeRateBase->VehicleBikeRate;
+	}
 
-		if (ItemData->ItemType == RUNTIME_ITEM_TYPE_CREST || ItemData->ItemType == RUNTIME_ITEM_TYPE_EPAULET) {
-			SuccessRate = ForceCodeRateBase->EmblemRate;
-		}
+	if (ItemData->ItemType == RUNTIME_ITEM_TYPE_CREST || ItemData->ItemType == RUNTIME_ITEM_TYPE_EPAULET) {
+		SuccessRate = ForceCodeRateBase->EmblemRate;
 	}
 
 	SuccessRate *= Packet->ForceCoreCount;
@@ -155,7 +156,10 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 		RTItemOptionSlot ForceSlot = { 0 };
 		ForceSlot.ForceIndex = ForceCoreBaseCode->ForceIndex;
 		ForceSlot.ForceLevel = 1;
-		HasError = !RTItemOptionAppendSlot((RTItemOptions*)&ItemSlot->ItemOptions, ForceSlot);
+		HasError = !RTItemOptionAppendSlot((RTItemOptions*)&ItemSlot->ItemOptions, ForceSlot, ItemSlot->Item.IsAccountBinding);
+	}
+	else {
+		RTItemOptionClearSecondForceSlot((RTItemOptions*)&ItemSlot->ItemOptions);
 	}
 
 	if (!HasError) {
@@ -192,6 +196,9 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 		Character->SyncMask.InventoryInfo = true;
 		Character->SyncPriority.High = true;
 	}
+
+	ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->ItemSlotIndex);
+	assert(ItemSlot);
 
 	S2C_DATA_ADD_FORCE_SLOT_OPTION* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ADD_FORCE_SLOT_OPTION);
 	Response->Result = HasError ? 0 : 1;

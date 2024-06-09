@@ -77,6 +77,7 @@ IPC_PROCEDURE_BINDING(W2L, WORLD_VERIFY_LINKS) {
     SocketSend(Context->ClientSocket, ClientConnection, AuthTimerResponse);
 
     Client->Flags |= CLIENT_FLAGS_CHECK_DISCONNECT_TIMER;
+    Client->Flags |= CLIENT_FLAGS_CAPTCHA_VERIFIED;
     Client->DisconnectTimestamp = ServerGetTimestamp(Server) + Context->Config.Login.AutoDisconnectDelay;
     Client->Flags |= CLIENT_FLAGS_AUTHENTICATED;
     Client->AccountID = Account.ID;

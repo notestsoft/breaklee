@@ -128,6 +128,118 @@ UInt64 RTItemHonorMedalSealEncode(
 	return Serial;
 }
 
+RTItemForceOptionData RTItemForceOptionDecode(
+	UInt64 Serial
+) {
+	RTItemForceOptionData Data = { 0 };
+	RTItemOptions Options = { 0 };
+	Options.Serial = Serial;
+
+	for (Int32 Index = 0; Index < RUNTIME_ITEM_MAX_OPTION_COUNT; Index += 1) {
+		RTItemOptionSlot Slot = Options.Equipment.Slots[Index];
+		if (Slot.IsEpic) {
+			assert(Data.EpicSlotCount < RUNTIME_ITEM_MAX_OPTION_COUNT);
+			Data.EpicSlots[Data.EpicSlotCount] = Slot;
+			Data.EpicSlotCount += 1;
+		}
+		else {
+			for (Int32 Offset = 0; Offset < Slot.ForceLevel; Offset += 1) {
+				assert(Data.FilledForceSlotCount < RUNTIME_ITEM_MAX_OPTION_COUNT);
+				Data.ForceSlots[Data.FilledForceSlotCount] = Slot.ForceIndex;
+				Data.FilledForceSlotCount += 1;
+			}
+		}
+	}
+
+	Data.ForceSlotCount = Options.Equipment.SlotCount;
+	return Data;
+}
+
+Int32 RTItemForceOptionRemoveForceIndex(
+	RTItemForceOptionData* Data,
+	UInt8 ForceIndex
+) {
+	Int32 Count = 0;
+
+	for (Int32 Index = 0; Index < Data->FilledForceSlotCount; Index += 1) {
+		if (Data->ForceSlots[Index] != ForceIndex) continue;
+
+		for (Int32 MoveIndex = Index; MoveIndex < Data->FilledForceSlotCount - 1; MoveIndex += 1) {
+			Data->ForceSlots[MoveIndex] = Data->ForceSlots[MoveIndex + 1];
+		}
+
+		Count += 1;
+		Index -= 1;
+		Data->FilledForceSlotCount -= 1;
+	}
+
+	return Count;
+}
+
+Bool RTItemForceOptionInsertForceIndex(
+	RTItemForceOptionData* Data,
+	UInt8 ForceIndex
+) {
+	for (Int32 Index = 0; Index < Data->FilledForceSlotCount; Index += 1) {
+		if (Data->ForceSlots[Index] != ForceIndex) continue;
+
+		if (Data->FilledForceSlotCount >= RUNTIME_ITEM_MAX_OPTION_COUNT) {
+			return 0;
+		}
+
+		Int32 TailLength = RUNTIME_ITEM_MAX_OPTION_COUNT - Index - 2;
+		if (TailLength > 0) {
+			memmove(&Data->ForceSlots[Index + 2], &Data->ForceSlots[Index + 1], TailLength * sizeof(UInt8));
+		}
+
+		Data->ForceSlots[Index + 1] = Data->ForceSlots[Index];
+		Data->FilledForceSlotCount += 1;
+		return true;
+	}
+
+	return false;
+}
+
+UInt64 RTItemForceOptionEncode(
+	RTItemForceOptionData Data
+) {
+	RTItemOptions Options = { 0 };
+	Options.Equipment.SlotCount = Data.ForceSlotCount;
+
+	Int32 NextSlotIndex = 0;
+	for (Int32 Index = 0; Index < Data.EpicSlotCount; Index += 1) {
+		RTItemOptionSlot Slot = Data.EpicSlots[Index];
+		if (Slot.Serial > 0) {
+			assert(NextSlotIndex < RUNTIME_ITEM_MAX_OPTION_COUNT);
+			Options.Equipment.Slots[NextSlotIndex].Serial = Slot.Serial;
+			NextSlotIndex += 1;
+		}
+	}
+
+	for (Int32 Index = 0; Index < Data.FilledForceSlotCount; Index += 1) {
+		UInt8 ForceIndex = Data.ForceSlots[Index];
+		if (NextSlotIndex > 0 &&
+			!Options.Equipment.Slots[NextSlotIndex - 1].IsEpic &&
+			Options.Equipment.Slots[NextSlotIndex - 1].ForceIndex == ForceIndex) {
+			Options.Equipment.Slots[NextSlotIndex - 1].ForceLevel += 1;
+		}
+		else if (ForceIndex > 0) {
+			if (NextSlotIndex >= RUNTIME_ITEM_MAX_OPTION_COUNT) {
+				assert(!Options.Equipment.ExtraForceIndex);
+				Options.Equipment.ExtraForceIndex = ForceIndex;
+				NextSlotIndex += 1;
+			}
+			else {
+				Options.Equipment.Slots[NextSlotIndex].ForceIndex = ForceIndex;
+				Options.Equipment.Slots[NextSlotIndex].ForceLevel = 1;
+				NextSlotIndex += 1;
+			}
+		}
+	}
+	
+	return Options.Serial;
+}
+
 Int32 RTItemUseInternal(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
@@ -182,6 +294,34 @@ Bool RTItemOptionHasEpic(
 	return false;
 }
 
+RTItemOptionSlot* RTItemOptionGetLastEmptyForceSlot(
+	RTItemOptions Options
+) {
+	for (Int32 Index = RUNTIME_ITEM_MAX_OPTION_COUNT - 1; Index >= 0; Index -= 1) {
+		RTItemOptionSlot* Slot = &Options.Equipment.Slots[Index];
+		if (*(UInt8*)Slot != 0) continue;
+
+		return Slot;
+	}
+
+	return NULL;
+}
+
+Int32 RTItemOptionGetLastFilledForceSlotIndex(
+	RTItemOptions Options
+) {
+	RTItemForceOptionData Data = RTItemForceOptionDecode(Options.Serial);
+	
+	for (Int32 Index = Data.FilledForceSlotCount - 1; Index >= 0; Index -= 1) {
+		UInt8 ForceIndex = Data.ForceSlots[Index];
+		if (ForceIndex < 1) continue;
+
+		return Index;
+	}
+
+	return -1;
+}
+
 RTItemOptionSlot RTItemOptionGetLastFilledForceSlot(
 	RTItemOptions Options
 ) {
@@ -203,12 +343,12 @@ Int32 RTItemOptionGetForceSlotCount(
 ) {
 	Int32 Count = 0;
 
-	for (Int32 Index = RUNTIME_ITEM_MAX_OPTION_COUNT - 1; Index >= 0; Index -= 1) {
+	for (Int32 Index = 0; Index < RUNTIME_ITEM_MAX_OPTION_COUNT; Index += 1) {
 		RTItemOptionSlot Slot = Options.Equipment.Slots[Index];
 		if (Slot.IsEpic) continue;
 		if (Slot.ForceIndex != ForceIndex) continue;
 
-		Count += 1;
+		Count += Slot.ForceLevel;
 	}
 
 	return Count;
@@ -255,36 +395,99 @@ Bool RTItemOptionPushSlots(
 	return true;
 }
 
+Void RTItemOptionClearForceSlot(
+	RTItemOptions* Options,
+	Int32 Index
+) {
+	assert(Index < RUNTIME_ITEM_MAX_OPTION_COUNT);
+
+	RTItemForceOptionData Data = RTItemForceOptionDecode(Options->Serial);
+	if (Data.ForceSlots[Index] > 0) {
+		Data.ForceSlots[Index] = 0;
+
+		for (Int32 Offset = Index + 1; Offset < Data.FilledForceSlotCount; Offset += 1) {
+			Data.ForceSlots[Offset - 1] = Data.ForceSlots[Offset];
+		}
+
+		Data.FilledForceSlotCount -= 1;
+		Options->Serial = RTItemForceOptionEncode(Data);
+	}
+}
+
+Void RTItemOptionClearSecondForceSlot(
+	RTItemOptions* Options
+) {
+	RTItemForceOptionData Data = RTItemForceOptionDecode(Options->Serial);
+	if (Data.FilledForceSlotCount > 1) {
+		Data.ForceSlots[1] = 0;
+
+		for (Int32 Offset = 2; Offset < Data.FilledForceSlotCount; Offset += 1) {
+			Data.ForceSlots[Offset - 1] = Data.ForceSlots[Offset];
+		}
+
+		Data.FilledForceSlotCount -= 1;
+		Options->Serial = RTItemForceOptionEncode(Data);
+	}
+}
+
 Bool RTItemOptionAppendSlot(
 	RTItemOptions* Options,
-	RTItemOptionSlot Slot
+	RTItemOptionSlot Slot,
+	Bool IsExtended
 ) {
-	Int32 LastNonEpicSlotIndex = -1;
+	RTItemForceOptionData Data = RTItemForceOptionDecode(Options->Serial);
 
-	for (Int32 Index = 0; Index < RUNTIME_ITEM_MAX_OPTION_COUNT; ++Index) {
-		if (!Options->Equipment.Slots[Index].IsEpic) {
-			LastNonEpicSlotIndex = Index;
-			break;
+	if (Slot.IsEpic) {
+		if (Data.EpicSlotCount >= RUNTIME_ITEM_MAX_OPTION_COUNT) return false;
+
+		Data.EpicSlots[Data.EpicSlotCount].Serial = Slot.Serial;
+		Data.EpicSlotCount += 1;
+	}
+	else {
+		if (Data.FilledForceSlotCount + 1 > MIN(Data.ForceSlotCount, RUNTIME_ITEM_MAX_OPTION_COUNT)) return false;
+
+		if (!RTItemForceOptionInsertForceIndex(&Data, Slot.ForceIndex)) {
+			for (Int32 Index = Data.FilledForceSlotCount; Index < Data.FilledForceSlotCount + 1; Index += 1) {
+				Data.ForceSlots[Index] = Slot.ForceIndex;
+			}
+
+			Data.FilledForceSlotCount += 1;
 		}
+
+		/*
+		RTItemForceOptionData TargetData = Data;
+		TargetData.FilledForceSlotCount = 0;
+
+		for (Int32 Index = 0; Index < Data.ForceSlotCount; Index += 1) {
+			if (Slot.ForceLevel < 2 &&
+				Data.ForceSlots[Index].ForceIndex == Slot.ForceIndex &&
+				Data.ForceSlots[Index].ForceLevel + Slot.ForceLevel < 0b111) {
+				Slot.ForceLevel += Data.ForceSlots[Index].ForceLevel;
+			}
+			else if (Data.ForceSlots[Index].Serial > 0) {
+				TargetData.ForceSlots[TargetData.FilledForceSlotCount] = Data.ForceSlots[Index];
+				TargetData.FilledForceSlotCount += 1;
+			}
+		}
+
+		if (TargetData.FilledForceSlotCount >= MIN(TargetData.ForceSlotCount, RUNTIME_ITEM_MAX_OPTION_COUNT)) return false;
+
+		TargetData.ForceSlots[TargetData.FilledForceSlotCount].Serial = Slot.Serial;
+		TargetData.FilledForceSlotCount += 1;
+
+		if (IsExtended && TargetData.FilledForceSlotCount >= Data.ForceSlotCount && Data.ForceSlots.) {
+			RTItemOptionSlot Slot = Data.ForceSlots[FilledIndex];
+
+			for (Int32 Index = FilledIndex - 1; Index >= 0; Index -= 1) {
+				Data.ForceSlots[Index + 1] = Data.ForceSlots[Index];
+			}
+
+			Data.ForceSlots[0] = Slot;
+		}
+		*/
 	}
 
-	if (LastNonEpicSlotIndex == RUNTIME_ITEM_MAX_OPTION_COUNT - 1) {
-		return false;
-	}
-
-	for (Int32 Index = LastNonEpicSlotIndex + 1; Index > 0; --Index) {
-		Options->Equipment.Slots[Index] = Options->Equipment.Slots[Index - 1];
-	}
-
-	Options->Equipment.Slots[0] = Slot;
-
-	if (LastNonEpicSlotIndex == RUNTIME_ITEM_MAX_OPTION_COUNT - 1) {
-		Options->Equipment.ExtraForceIndex = Options->Equipment.Slots[LastNonEpicSlotIndex].ForceIndex;
-		Options->Equipment.Slots[LastNonEpicSlotIndex].ForceIndex = 0;
-		Options->Equipment.Slots[LastNonEpicSlotIndex].ForceLevel = 0;
-		Options->Equipment.Slots[LastNonEpicSlotIndex].IsEpic = 0;
-	}
-
+	Options->Serial = RTItemForceOptionEncode(Data);
 	return true;
 }
 
