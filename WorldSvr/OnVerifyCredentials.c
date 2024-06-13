@@ -35,11 +35,11 @@ Void OnVerifyCharacterSubpassword(
     memcpy(Client->Account.SessionIP, Connection->AddressIP, MAX_ADDRESSIP_LENGTH);
     Client->Account.SessionTimeout = time(NULL) + (time_t)Packet->ExpirationInHours * 60 * 60;
 
-	IPC_W2M_DATA_UPDATE_ACCOUNT_SESSION* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2M, UPDATE_ACCOUNT_SESSION);
+	IPC_W2D_DATA_UPDATE_ACCOUNT_SESSION* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2D, UPDATE_ACCOUNT_SESSION);
 	Request->Header.SourceConnectionID = Connection->ID;
 	Request->Header.Source = Server->IPCSocket->NodeID;
 	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
-	Request->Header.Target.Type = IPC_TYPE_MASTER;
+	Request->Header.Target.Type = IPC_TYPE_MASTERDB;
     Request->AccountID = Client->Account.AccountID;
     memcpy(Request->SessionIP, Client->Account.SessionIP, MAX_ADDRESSIP_LENGTH);
     Request->SessionTimeout = Client->Account.SessionTimeout;

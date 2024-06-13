@@ -20,17 +20,6 @@ Void SERVER_PROC_ ## __NAME__(                                                  
 }
 #include "ClientCommands.h"
 
-Void ServerOnIPCPacketReceived(
-    ServerRef Server,
-    Void* ServerContext,
-    IPCSocketRef Socket,
-    IPCSocketConnectionRef Connection,
-    Void* ConnectionContext,
-    IPCPacketRef Packet
-) {
-
-}
-
 Void ServerOnUpdate(
     ServerRef Server,
     Void *ServerContext
@@ -64,7 +53,6 @@ Int32 main(Int32 argc, CString* argv) {
         Config.NetLib.ReadBufferSize,
         Config.NetLib.WriteBufferSize,
         &ServerOnUpdate,
-        &ServerOnIPCPacketReceived,
         &ServerContext
     );
 

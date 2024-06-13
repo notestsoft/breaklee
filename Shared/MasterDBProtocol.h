@@ -1,23 +1,10 @@
 #pragma once
 
 #include "Constants.h"
-#include "GameProtocol.h"
 
 EXTERN_C_BEGIN
 
 #pragma pack(push, 1)
-
-typedef struct {
-    UInt32 _;
-} MASTERDB_DATA_ACCOUNT_ACHIEVEMENT_DATA;
-
-typedef struct {
-    UInt32 _;
-} MASTERDB_DATA_ACCOUNT_WAREHOUSE_DATA;
-
-typedef struct {
-    UInt32 _;
-} MASTERDB_DATA_ACCOUNT_MERIT_DATA;
 
 typedef struct {
     Int64 AccountID;
@@ -32,11 +19,6 @@ typedef struct {
     UInt32 CharacterQuestion;
     Char CharacterAnswer[MAX_SUBPASSWORD_ANSWER_LENGTH + 1];
 
-    MASTERDB_DATA_ACCOUNT_ACHIEVEMENT_DATA AchievementData;
-    MASTERDB_DATA_ACCOUNT_MERIT_DATA MeritData;
-    struct _RTCharacterWarehouseInfo WarehouseData;
-    struct _RTCharacterCollectionInfo CollectionData;
-
     Timestamp CreatedAt;
     Timestamp UpdatedAt;
 } MASTERDB_DATA_ACCOUNT;
@@ -46,28 +28,6 @@ typedef struct {
     Int32 CharacterID;
     Char Name[MAX_CHARACTER_NAME_LENGTH + 1];
     UInt8 Index;
-
-    struct _RTCharacterInfo CharacterData;
-    struct _RTCharacterEquipmentInfo EquipmentData;
-    struct _RTCharacterInventoryInfo InventoryData;
-    struct _RTCharacterSkillSlotInfo SkillSlotData;
-    struct _RTCharacterQuickSlotInfo QuickSlotData;
-    struct _RTCharacterQuestSlotInfo QuestSlotData;
-    struct _RTCharacterQuestFlagInfo QuestFlagData;
-    struct _RTCharacterQuestFlagInfo DungeonQuestFlagData;
-    GAME_DATA_CHARACTER_ACHIEVEMENT AchievementData;
-    struct _RTCharacterEssenceAbilityInfo EssenceAbilityData;
-    struct _RTCharacterBlendedAbilityInfo BlendedAbilityData;
-    struct _RTCharacterKarmaAbilityInfo KarmaAbilityData;
-    struct _RTCharacterHonorMedalInfo HonorMedalData;
-    struct _RTCharacterOverlordMasteryInfo OverlordData;
-    struct _RTCharacterForceWingInfo ForceWingData;
-    GAME_DATA_CHARACTER_TRANSFORM TransformData;
-    GAME_DATA_CHARACTER_TRANSCENDENCE TranscendenceData;
-    GAME_DATA_CHARACTER_MERCENARY MercenaryData;
-    GAME_DATA_CHARACTER_CRAFT CraftData;
-    struct _RTCharacterNewbieSupportInfo NewbieSupportData;
-
     Timestamp CreatedAt;
     Timestamp UpdatedAt;
 } MASTERDB_DATA_CHARACTER;

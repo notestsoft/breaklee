@@ -54,7 +54,7 @@ SERVER_PROCEDURE_BINDING(SERVER_LIST_LOGIN) {
 
 SERVER_PROCEDURE_BINDING(CHECK_VERSION_LOGIN) {
 	C2S_DATA_SERVER_ENVIRONMENT_LOGIN* Request = PacketBufferInit(Connection->PacketBuffer, C2S, SERVER_ENVIRONMENT_LOGIN);
-	CStringCopySafe(&Request->Username, 129, Context->Username);
+	CStringCopySafe(Request->Username, 129, Context->Username);
 	SocketSend(Socket, Connection, Request);
 }
 
@@ -66,7 +66,7 @@ SERVER_PROCEDURE_BINDING(PUBLIC_KEY_LOGIN) {
 	ClientContextRef Client = (ClientContextRef)Connection->Userdata;
     if (Client->RSA) RSA_free(Client->RSA);
     
-    BIO* BIO = BIO_new_mem_buf(Packet->PublicKeyLength, Packet->Payload);
+    BIO* BIO = BIO_new_mem_buf(Packet->Payload, Packet->PublicKeyLength);
     if (!BIO) goto error;
 
     Client->RSA = d2i_RSAPublicKey_bio(BIO, NULL);

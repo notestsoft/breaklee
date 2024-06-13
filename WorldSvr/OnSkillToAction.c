@@ -21,8 +21,8 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_ACTION) {
         Context,
         RTRuntimeGetWorldByCharacter(Runtime, Character),
         kEntityIDNull,
-        Notification->X,
-        Notification->Y,
+        Character->Movement.PositionCurrent.X,
+        Character->Movement.PositionCurrent.Y,
         Notification
     );
 

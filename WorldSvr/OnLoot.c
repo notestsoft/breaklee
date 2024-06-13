@@ -24,7 +24,7 @@ CLIENT_PROCEDURE_BINDING(LOOT_INVENTORY_ITEM) {
     Slot.Item = Item->Item;
     Slot.ItemOptions = Item->ItemOptions;
     Slot.SlotIndex = Packet->InventorySlotIndex;
-    if (RTInventorySetSlot(Runtime, &Character->InventoryInfo, &Slot)) {
+    if (RTInventorySetSlot(Runtime, &Character->Data.InventoryInfo, &Slot)) {
         Response->Result = S2C_DATA_LOOT_RESULT_SUCCESS;
         Response->ItemID = Slot.Item.Serial;
         Response->ItemOptions = Slot.ItemOptions;
@@ -36,7 +36,6 @@ CLIENT_PROCEDURE_BINDING(LOOT_INVENTORY_ITEM) {
     }
 
     Character->SyncMask.Info = true;
-    Character->SyncPriority.Low = true;
 
     RTWorldDespawnItem(Runtime, World, Item);
 
@@ -66,17 +65,16 @@ CLIENT_PROCEDURE_BINDING(LOOT_CURRENCY_ITEM) {
         
         if (Item->Item.ID != RUNTIME_ITEM_ID_CURRENCY) continue;
 
-        Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] += Item->ItemOptions;
+        Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] += Item->ItemOptions;
 
         Character->SyncMask.Info = true;
-        Character->SyncPriority.Low = true;
 
         Response->Count += 1;
 
         RTWorldDespawnItem(Runtime, World, Item);
     }
 
-    Response->Currency = Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
+    Response->Currency = Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
 
     return SocketSend(Socket, Connection, Response);
 

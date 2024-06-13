@@ -517,6 +517,7 @@ struct _RTItemHonorMedalResetSelectivePayload {
 };
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHonorMedalResetSelective);
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemTransformationCard);
 
 #pragma pack(pop)
 

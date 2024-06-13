@@ -14,9 +14,14 @@ enum {
 };
 
 struct _RTEntityID {
-	UInt16 EntityIndex;
-    UInt8 WorldIndex;
-    UInt8 EntityType;
+	union {
+		struct {
+			UInt16 EntityIndex;
+			UInt8 WorldIndex;
+			UInt8 EntityType;
+		};
+		UInt32 Serial;
+	};
 };
 typedef struct _RTEntityID RTEntityID;
 

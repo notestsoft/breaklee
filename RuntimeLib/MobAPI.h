@@ -7,6 +7,7 @@
 #define SCRIPT_STRUCTURE_BINDING(__TYPE__, __ACCESSOR__, __ACCESSOR_TYPE__, __NAME__)
 #endif
 
+SCRIPT_STRUCTURE_BINDING(Mob, Mob->ID.Serial, number, mob_id)
 SCRIPT_STRUCTURE_BINDING(Mob, Mob->IsSpawned, boolean, mob_is_spawned)
 SCRIPT_STRUCTURE_BINDING(Mob, Mob->IsKilled, boolean, mob_is_killed)
 SCRIPT_STRUCTURE_BINDING(Mob, Mob->IsDead, boolean, mob_is_dead)

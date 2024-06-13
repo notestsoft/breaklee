@@ -203,13 +203,13 @@ Void BroadcastPartyData(
     Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
     Request->Header.Target.Type = IPC_TYPE_PARTY;
     Request->MemberInfo.CharacterIndex = Character->CharacterIndex;
-    Request->MemberInfo.Level = Character->Info.Basic.Level;
-    Request->MemberInfo.OverlordLevel = Character->Info.Overlord.Level;
+    Request->MemberInfo.Level = Character->Data.Info.Basic.Level;
+    Request->MemberInfo.OverlordLevel = Character->Data.Info.Overlord.Level;
     Request->MemberInfo.MythRebirth = 0;
     Request->MemberInfo.MythHolyPower = 0;
     Request->MemberInfo.MythLevel = 0;
-    Request->MemberInfo.ForceWingGrade = Character->ForceWingInfo.Grade;
-    Request->MemberInfo.ForceWingLevel = Character->ForceWingInfo.Level;
+    Request->MemberInfo.ForceWingGrade = Character->Data.ForceWingInfo.Grade;
+    Request->MemberInfo.ForceWingLevel = Character->Data.ForceWingInfo.Level;
     IPCSocketUnicast(Context->IPCSocket, Request);
 }
 

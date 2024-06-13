@@ -2,11 +2,8 @@
 #include "Runtime.h"
 #include "Script.h"
 
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
-
 static Int32 _DebugWorldSpawnMob(lua_State* State);
+static Int32 _DebugWorldSpawnItem(lua_State* State);
 
 struct _RTScript {
     Index PoolIndex;
@@ -92,7 +89,10 @@ RTScriptRef RTScriptManagerLoadScript(
 
     lua_pushcfunction(Script->State, _DebugWorldSpawnMob);
     lua_setglobal(Script->State, "world_spawn_mob");
-    
+
+    lua_pushcfunction(Script->State, _DebugWorldSpawnItem);
+    lua_setglobal(Script->State, "world_spawn_item");
+
     if (luaL_loadfile(Script->State, FilePath) != LUA_OK) Fatal("Lua: %s", lua_tostring(Script->State, -1));
     if (lua_pcall(Script->State, 0, 0, 0) != LUA_OK) Fatal("Lua: %s", lua_tostring(Script->State, -1));
 
@@ -113,10 +113,38 @@ Bool RTScriptCall(
     va_list ArgumentPointer;
     va_start(ArgumentPointer, Function);
 
-    Void* Argument = NULL;
     Int32 ArgumentCount = 0;
-    while ((Argument = va_arg(ArgumentPointer, Void*))) {
-        lua_pushlightuserdata(Script->State, Argument);
+    while (true) {
+        Int32 Type = va_arg(ArgumentPointer, Int32);
+
+        if (Type == LUA_TNIL) {
+            break;
+//            lua_pushnil(Script->State);
+        }
+        else if (Type == LUA_TBOOLEAN) {
+            bool Value = va_arg(ArgumentPointer, bool);
+            lua_pushboolean(Script->State, Value ? 1 : 0);
+        }
+        else if (Type == LUA_TNUMBER) {
+            Int64 Value = va_arg(ArgumentPointer, Int64);
+            lua_pushnumber(Script->State, Value);
+        }
+        else if (Type == LUA_TSTRING) {
+            const Char* Value = va_arg(ArgumentPointer, const Char*);
+            lua_pushstring(Script->State, Value);
+        }
+        else if (Type == LUA_TLIGHTUSERDATA) {
+            Void* Value = va_arg(ArgumentPointer, Void*);
+            lua_pushlightuserdata(Script->State, Value);
+        }
+        else if (Type == LUA_TUSERDATA) {
+            Void* Value = va_arg(ArgumentPointer, Void*);
+            lua_pushlightuserdata(Script->State, Value);
+        }
+        else {
+            break;
+        }
+
         ArgumentCount += 1;
     }
 
@@ -173,6 +201,27 @@ static Int32 _DebugWorldSpawnMob(
         Minion->Spawn.AreaY = Y;
         RTWorldSpawnMob(Runtime, WorldContext, Minion);
     }
+
+    return 0;
+}
+
+// TODO: This is just for debugging for now..
+
+static Int32 _DebugWorldSpawnItem(
+    lua_State* State
+) {
+    RTRuntimeRef Runtime = lua_touserdata(State, 1);
+    RTWorldContextRef WorldContext = lua_touserdata(State, 2);
+    UInt32 EntityID = (UInt32)lua_tointeger(State, 3);
+    Int64 ItemID = (Int64)lua_tointeger(State, 4);
+    Int64 ItemOptions = (Int64)lua_tointeger(State, 5);
+    Int32 X = (Int32)lua_tointeger(State, 6);
+    Int32 Y = (Int32)lua_tointeger(State, 7);
+
+    RTDropResult Drop = { 0 };
+    Drop.ItemID.Serial = ItemID;
+    Drop.ItemOptions = ItemOptions;
+    RTWorldSpawnItem(Runtime, WorldContext, *(RTEntityID*)(&EntityID), X, Y, Drop);
 
     return 0;
 }

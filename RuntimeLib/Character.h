@@ -46,60 +46,6 @@ EXTERN_C_BEGIN
 
 #pragma pack(push, 1)
 
-union _RTCharacterSyncMask {
-    struct {
-        UInt64 Info : 1;
-        UInt64 EquipmentInfo : 1;
-        UInt64 EquipmentLockInfo : 1;
-        UInt64 InventoryInfo : 1;
-        UInt64 SkillSlotInfo : 1;
-        UInt64 QuickSlotInfo : 1;
-        UInt64 EssenceAbilityInfo : 1;
-        UInt64 BlendedAbilityInfo : 1;
-        UInt64 KarmaAbilityInfo : 1;
-        UInt64 BlessingBeadInfo : 1;
-        UInt64 PremiumServiceInfo : 1;
-        UInt64 QuestSlotInfo : 1;
-        UInt64 QuestFlagInfo : 1;
-        UInt64 DungeonQuestFlagInfo : 1;
-        UInt64 DailyQuestInfo : 1;
-        UInt64 MercenaryInfo : 1;
-        UInt64 EquipmentAppearanceInfo : 1;
-        UInt64 InventoryAppearanceInfo : 1;
-        UInt64 AchievementInfo : 1;
-        UInt64 AchievementRewardInfo : 1;
-        UInt64 RequestCraftInfo : 1;
-        UInt64 BuffInfo : 1;
-        UInt64 VehicleInventoryInfo : 1;
-        UInt64 MeritMasteryInfo : 1;
-        UInt64 PlatinumMeritMasteryInfo : 1;
-        UInt64 OverlordMasteryInfo : 1;
-        UInt64 HonorMedalInfo : 1;
-        UInt64 ForceWingInfo : 1;
-        UInt64 GiftboxInfo : 1;
-        UInt64 CollectionInfo : 1;
-        UInt64 TransformInfo : 1;
-        UInt64 TranscendenceInfo : 1;
-        UInt64 StellarMasteryInfo : 1;
-        UInt64 MythMasteryInfo : 1;
-        UInt64 NewbieSupportInfo : 1;
-        UInt64 EventPassInfo : 1;
-        UInt64 CostumeInfo : 1;
-        UInt64 _Padding : 11;
-        UInt64 WarehouseInfo : 1;
-    };
-    UInt64 RawValue;
-};
-
-union _RTCharacterSyncPriority {
-    struct {
-        UInt64 Low : 1;
-        UInt64 High : 1;
-        UInt64 Immediate : 1;
-    };
-    UInt64 RawValue;
-};
-
 enum {
     RUNTIME_CHARACTER_LEVEL_BASIC,
     RUNTIME_CHARACTER_LEVEL_OVERLORD,
@@ -244,58 +190,36 @@ struct _RTCharacterInfo {
     struct _RTCharacterPosition Position;
 };
 
+struct _RTCharacterData {
+#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__, __SCOPE__) \
+    __TYPE__ __NAME__;
+#include "CharacterDataDefinition.h"
+};
+
+union _RTCharacterSyncMask {
+    struct {
+        #define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__, __SCOPE__) \
+            UInt64 __NAME__ : 1;
+        #include "CharacterDataDefinition.h"
+    };
+    UInt64 RawValue;
+};
+
 struct _RTCharacter {
     RTEntityID ID;
     RTEntityID PartyID;
     RTEntityID TargetCharacterID;
     Index CharacterIndex;
     Int32 DungeonEntryItemSlotIndex;
-    union _RTCharacterSyncMask SyncMask;
-    union _RTCharacterSyncPriority SyncPriority;
-    Timestamp SyncTimestamp;
 
 //    Int32 Index;
 //    Timestamp CreationDate;
     Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1];
-    struct _RTCharacterInfo Info;
-    struct _RTCharacterEquipmentInfo EquipmentInfo;
-    struct _RTCharacterEquipmentLockInfo EquipmentLockInfo;
-    struct _RTCharacterInventoryInfo InventoryInfo;
-    struct _RTCharacterSkillSlotInfo SkillSlotInfo;
-    struct _RTCharacterQuickSlotInfo QuickSlotInfo;
-    struct _RTCharacterEssenceAbilityInfo EssenceAbilityInfo;
-    struct _RTCharacterBlendedAbilityInfo BlendedAbilityInfo;
-    struct _RTCharacterKarmaAbilityInfo KarmaAbilityInfo;
-    struct _RTCharacterBlessingBeadInfo BlessingBeadInfo;
-    struct _RTCharacterPremiumServiceInfo PremiumServiceInfo;
-    struct _RTCharacterQuestSlotInfo QuestSlotInfo;
-    struct _RTCharacterQuestFlagInfo QuestFlagInfo;
-    struct _RTCharacterDungeonQuestFlagInfo DungeonQuestFlagInfo;
-    struct _RTCharacterDailyQuestInfo DailyQuestInfo;
-    struct _RTCharacterMercenaryInfo MercenaryInfo;
-    struct _RTCharacterEquipmentAppearanceInfo EquipmentAppearanceInfo;
-    struct _RTCharacterInventoryAppearanceInfo InventoryAppearanceInfo;
-    struct _RTCharacterAchievementInfo AchievementInfo;
-    struct _RTCharacterRequestCraftInfo RequestCraftInfo;
-    struct _RTCharacterBuffInfo BuffInfo;
-    struct _RTCharacterVehicleInventoryInfo VehicleInventoryInfo;
-    struct _RTCharacterGoldMeritMasteryInfo GoldMeritMasteryInfo;
-    // struct _RTCharacterPlatinumMeritMasteryInfo PlatinumMeritMasteryInfo;
-    struct _RTCharacterOverlordMasteryInfo OverlordMasteryInfo;
-    struct _RTCharacterHonorMedalInfo HonorMedalInfo;
-    struct _RTCharacterForceWingInfo ForceWingInfo;
-    struct _RTCharacterGiftboxInfo GiftboxInfo;
-    struct _RTCharacterCollectionInfo CollectionInfo;
-    struct _RTCharacterTransformInfo TransformInfo;
-    struct _RTCharacterTranscendenceInfo TranscendenceInfo;
-    struct _RTCharacterStellarMasteryInfo StellarMasteryInfo;
-    struct _RTCharacterMythMasteryInfo MythMasteryInfo;
-    struct _RTCharacterNewbieSupportInfo NewbieSupportInfo;
-    struct _RTCharacterEventPassInfo EventPassInfo;
-    struct _RTCharacterCostumeInfo CostumeInfo;
-    struct _RTCharacterWarehouseInfo WarehouseInfo;
-    struct _RTCharacterInventoryInfo TemporaryInventoryInfo;
-    struct _RTCharacterRecoveryInfo RecoveryInfo;
+
+    struct _RTCharacterData Data;
+    union _RTCharacterSyncMask SyncMask;
+    Timestamp SyncTimestamp;
+
     struct _RTMovement Movement;
     struct _RTBattleAttributes Attributes;
 
@@ -310,21 +234,7 @@ Void RTCharacterInitialize(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     CString Name,
-    RTCharacterInfoRef Info,
-    RTCharacterEquipmentInfoRef EquipmentInfo,
-    RTCharacterInventoryInfoRef InventoryInfo,
-    RTCharacterSkillSlotInfoRef SkillSlotInfo,
-    RTCharacterQuickSlotInfoRef QuickSlotInfo,
-    RTCharacterQuestSlotInfoRef QuestSlotInfo,
-    RTCharacterQuestFlagInfoRef QuestFlagInfo,
-    RTCharacterDungeonQuestFlagInfoRef DungeonQuestFlagInfo,
-    RTCharacterEssenceAbilityInfoRef EssenceAbilityInfo,
-    RTCharacterOverlordMasteryInfoRef OverlordMasteryInfo,
-    RTCharacterHonorMedalInfoRef HonorMedalInfo,
-    RTCharacterForceWingInfoRef ForceWingInfo,
-    RTCharacterCollectionInfoRef CollectionInfo,
-    RTCharacterNewbieSupportInfoRef NewbieSupportInfo,
-    RTCharacterWarehouseInfoRef WarehouseInfo
+    RTCharacterDataRef Data
 );
 
 Void RTCharacterInitializeAttributes(

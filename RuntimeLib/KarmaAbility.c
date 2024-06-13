@@ -8,8 +8,8 @@ RTKarmaAbilitySlotRef RTCharacterGetKarmaAbilitySlot(
 	RTCharacterRef Character,
 	UInt32 AbilityID
 ) {
-	for (Int32 Index = 0; Index < Character->KarmaAbilityInfo.Count; Index += 1) {
-		RTKarmaAbilitySlotRef AbilitySlot = &Character->KarmaAbilityInfo.Slots[Index];
+	for (Int32 Index = 0; Index < Character->Data.KarmaAbilityInfo.Count; Index += 1) {
+		RTKarmaAbilitySlotRef AbilitySlot = &Character->Data.KarmaAbilityInfo.Slots[Index];
 		if (AbilitySlot->AbilityID != AbilityID) continue;
 
 		return AbilitySlot;
@@ -25,15 +25,15 @@ Bool RTCharacterAddKarmaAbility(
 	UInt16* MaterialSlotIndex,
 	Int32 MaterialSlotCount
 ) {
-	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, InventorySlotIndex);
+	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, InventorySlotIndex);
 	if (!ItemSlot) return false;
 
 	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
 	if (!ItemData) return false;
 
 	if (ItemData->ItemType != RUNTIME_ITEM_TYPE_ABILITY_RUNE_KARMA) return false;
-	if (Character->Info.Basic.Level < ItemData->MinLevel) return false;
-	if (Character->KarmaAbilityInfo.Count >= Character->Info.Ability.MaxKarmaAbilitySlotCount) return false;
+	if (Character->Data.Info.Basic.Level < ItemData->MinLevel) return false;
+	if (Character->Data.KarmaAbilityInfo.Count >= Character->Data.Info.Ability.MaxKarmaAbilitySlotCount) return false;
 
 	RTDataKarmaAbilityCostRef AbilityCost = RTRuntimeDataKarmaAbilityCostGet(Runtime->Context, ItemSlot->Item.ID);
 	if (!AbilityCost) return false;
@@ -42,7 +42,7 @@ Bool RTCharacterAddKarmaAbility(
 	RTDataKarmaAbilityCostLevelRef AbilityCostLevel = RTRuntimeDataKarmaAbilityCostLevelGet(AbilityCost, AbilityLevel);
 	if (!AbilityCostLevel) return false;
 
-	if (Character->Info.Ability.Point < AbilityCostLevel->AP) return false;
+	if (Character->Data.Info.Ability.Point < AbilityCostLevel->AP) return false;
 
 	Int32 RequiredMaterialSlotCount = 0;
 	if (AbilityCostLevel->Item1[0] > 0) RequiredMaterialSlotCount += AbilityCostLevel->Item1[2];
@@ -51,7 +51,7 @@ Bool RTCharacterAddKarmaAbility(
 
 	Int32 MaterialSlotOffset = 0;
 	for (Int32 Index = 0; Index < AbilityCostLevel->Item1[2]; Index += 1) {
-		RTItemSlotRef MaterialSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, MaterialSlotIndex[Index]);
+		RTItemSlotRef MaterialSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index]);
 		if (!MaterialSlot) return false;
 
 		RTItemDataRef MaterialData = RTRuntimeGetItemDataByIndex(Runtime, MaterialSlot->Item.ID);
@@ -62,7 +62,7 @@ Bool RTCharacterAddKarmaAbility(
 	}
 
 	for (Int32 Index = 0; Index < AbilityCostLevel->Item2[2]; Index += 1) {
-		RTItemSlotRef MaterialSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, MaterialSlotIndex[Index + AbilityCostLevel->Item1[2]]);
+		RTItemSlotRef MaterialSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index + AbilityCostLevel->Item1[2]]);
 		if (!MaterialSlot) return false;
 
 		RTItemDataRef MaterialData = RTRuntimeGetItemDataByIndex(Runtime, MaterialSlot->Item.ID);
@@ -73,26 +73,25 @@ Bool RTCharacterAddKarmaAbility(
 	}
 
 	for (Int32 Index = 0; Index < AbilityCostLevel->Item1[2]; Index += 1) {
-		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, MaterialSlotIndex[Index]);
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index]);
 	}
 
 	for (Int32 Index = 0; Index < AbilityCostLevel->Item2[2]; Index += 1) {
-		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, MaterialSlotIndex[Index + AbilityCostLevel->Item1[2]]);
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index + AbilityCostLevel->Item1[2]]);
 	}
 
-	RTKarmaAbilitySlotRef AbilitySlot = &Character->KarmaAbilityInfo.Slots[Character->KarmaAbilityInfo.Count];
-	Character->KarmaAbilityInfo.Count += 1;
+	RTKarmaAbilitySlotRef AbilitySlot = &Character->Data.KarmaAbilityInfo.Slots[Character->Data.KarmaAbilityInfo.Count];
+	Character->Data.KarmaAbilityInfo.Count += 1;
 
 	AbilitySlot->AbilityID = ItemSlot->Item.ID;
 	AbilitySlot->Level = AbilityCostLevel->Level;
 	AbilitySlot->Unknown1 = 0;
 
-	RTInventoryClearSlot(Runtime, &Character->InventoryInfo, InventorySlotIndex);
-	Character->Info.Ability.Point -= AbilityCostLevel->AP;
+	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, InventorySlotIndex);
+	Character->Data.Info.Ability.Point -= AbilityCostLevel->AP;
 	Character->SyncMask.Info = true;
 	Character->SyncMask.KarmaAbilityInfo = true;
 	Character->SyncMask.InventoryInfo = true;
-	Character->SyncPriority.High = true;
 	RTCharacterInitializeAttributes(Runtime, Character);
 
 	return true;
@@ -114,7 +113,7 @@ Bool RTCharacterUpgradeKarmaAbility(
 	RTDataKarmaAbilityCostLevelRef AbilityCostLevel = RTRuntimeDataKarmaAbilityCostLevelGet(AbilityCost, AbilitySlot->Level + 1);
 	if (!AbilityCostLevel) return false;
 
-	if (Character->Info.Ability.Point < AbilityCostLevel->AP) return false;
+	if (Character->Data.Info.Ability.Point < AbilityCostLevel->AP) return false;
 
 	Int32 CostCount = 2;
 	struct { Int32 CostItem[3]; Int32 ConsumableCount; Int32 RemainingCount; } Cost[] = {
@@ -126,7 +125,7 @@ Bool RTCharacterUpgradeKarmaAbility(
 		for (Int32 CostIndex = 0; CostIndex < CostCount; CostIndex += 1) {
 			if (!Cost[CostIndex].CostItem[0]) continue;
 
-			RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, InventorySlotIndices[Index]);
+			RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, InventorySlotIndices[Index]);
 			if (!ItemSlot) return false;
 			if (ItemSlot->Item.ID != Cost[CostIndex].CostItem[0]) return false;
 
@@ -157,7 +156,7 @@ Bool RTCharacterUpgradeKarmaAbility(
 			if (!Cost[CostIndex].CostItem[0]) continue;
 			if (Cost[CostIndex].RemainingCount < 1) continue;
 
-			RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, InventorySlotIndices[Index]);
+			RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, InventorySlotIndices[Index]);
 			assert(ItemSlot);
 			assert(ItemSlot->Item.ID == Cost[CostIndex].CostItem[0]);
 
@@ -178,20 +177,18 @@ Bool RTCharacterUpgradeKarmaAbility(
 			}
 
 			if (DeleteItem) {
-				RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+				RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
 				Character->SyncMask.InventoryInfo = true;
-				Character->SyncPriority.Low = true;
 			}
 		}
 	}
 
 	AbilitySlot->Level = AbilityCostLevel->Level;
 
-	Character->Info.Ability.Point -= AbilityCostLevel->AP;
+	Character->Data.Info.Ability.Point -= AbilityCostLevel->AP;
 	Character->SyncMask.Info = true;
 	Character->SyncMask.KarmaAbilityInfo = true;
 	Character->SyncMask.InventoryInfo = true;
-	Character->SyncPriority.High = true;
 	RTCharacterInitializeAttributes(Runtime, Character);
 
 	return true;
@@ -205,21 +202,20 @@ Bool RTCharacterRemoveKarmaAbility(
 	RTKarmaAbilitySlotRef AbilitySlot = RTCharacterGetKarmaAbilitySlot(Runtime, Character, AbilityID);
 	if (!AbilitySlot) return false;
 
-	Int32 SlotIndex = (Int32)(AbilitySlot - &Character->KarmaAbilityInfo.Slots[0]) / sizeof(struct _RTKarmaAbilitySlot);
+	Int32 SlotIndex = (Int32)(AbilitySlot - &Character->Data.KarmaAbilityInfo.Slots[0]) / sizeof(struct _RTKarmaAbilitySlot);
 
-	Character->KarmaAbilityInfo.Count -= 1;
+	Character->Data.KarmaAbilityInfo.Count -= 1;
 
-	Int32 TailLength = Character->KarmaAbilityInfo.Count - SlotIndex;
+	Int32 TailLength = Character->Data.KarmaAbilityInfo.Count - SlotIndex;
 	if (TailLength > 0) {
 		memmove(
-			&Character->KarmaAbilityInfo.Slots[SlotIndex],
-			&Character->KarmaAbilityInfo.Slots[SlotIndex + 1],
+			&Character->Data.KarmaAbilityInfo.Slots[SlotIndex],
+			&Character->Data.KarmaAbilityInfo.Slots[SlotIndex + 1],
 			TailLength * sizeof(struct _RTKarmaAbilitySlot)
 		);
 	}
 
 	Character->SyncMask.KarmaAbilityInfo = true;
-	Character->SyncPriority.High = true;
 	RTCharacterInitializeAttributes(Runtime, Character);
 
 	return true;

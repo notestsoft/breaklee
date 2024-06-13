@@ -120,6 +120,7 @@ RTNotificationRef _RTNotificationInit(
     memset(kSharedNotification, 0, Length);
     kSharedNotification->Length = Length;
     kSharedNotification->Command = Command;
+    return kSharedNotification;
 }
 
 Void* RTNotificationAppend(
@@ -140,11 +141,12 @@ Void* RTNotificationAppendCopy(
 ) {
     Void* Memory = RTNotificationAppend(Notification, Length);
     memcpy(Memory, Source, Length);
+    return Memory;
 }
 
 CString RTNotificationAppendCString(
     Void* Notification,
     CString Value
 ) {
-    RTNotificationAppendCopy(Notification, Value, strlen(Value) + 1);
+    return (CString)RTNotificationAppendCopy(Notification, Value, strlen(Value) + 1);
 }

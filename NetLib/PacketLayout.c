@@ -85,7 +85,7 @@ Void PacketManagerRegisterScriptAPI(
     PacketManagerRef PacketManager
 );
 
-Void* PacketLayoutWriteZero(
+Void PacketLayoutWriteZero(
     PacketLayoutRef PacketLayout,
     PacketBufferRef PacketBuffer
 );
@@ -503,105 +503,100 @@ lua_Integer PacketFieldReadPrimitive(
     return Result;
 }
 
-Void* PacketFieldWritePrimitive(
+Void PacketFieldWritePrimitive(
     PacketFieldRef PacketField,
     PacketBufferRef PacketBuffer,
     lua_Integer Value
 ) {
     if (PacketField->Type == PACKET_FIELD_TYPE_INT8) {
-        return PacketBufferAppendValue(PacketBuffer, Int8, (Int8)Value);
+        PacketBufferAppendValue(PacketBuffer, Int8, (Int8)Value);
     }
 
     if (PacketField->Type == PACKET_FIELD_TYPE_INT16) {
-        return PacketBufferAppendValue(PacketBuffer, Int16, (Int16)Value);
+        PacketBufferAppendValue(PacketBuffer, Int16, (Int16)Value);
     }
 
     if (PacketField->Type == PACKET_FIELD_TYPE_INT32) {
-        return PacketBufferAppendValue(PacketBuffer, Int32, (Int32)Value);
+        PacketBufferAppendValue(PacketBuffer, Int32, (Int32)Value);
     }
 
     if (PacketField->Type == PACKET_FIELD_TYPE_INT64) {
-        return PacketBufferAppendValue(PacketBuffer, Int64, (Int64)Value);
+        PacketBufferAppendValue(PacketBuffer, Int64, (Int64)Value);
     }
 
     if (PacketField->Type == PACKET_FIELD_TYPE_UINT8) {
-        return PacketBufferAppendValue(PacketBuffer, UInt8, (UInt8)Value);
+        PacketBufferAppendValue(PacketBuffer, UInt8, (UInt8)Value);
     }
 
     if (PacketField->Type == PACKET_FIELD_TYPE_UINT16) {
-        return PacketBufferAppendValue(PacketBuffer, UInt16, (UInt16)Value);
+        PacketBufferAppendValue(PacketBuffer, UInt16, (UInt16)Value);
     }
 
     if (PacketField->Type == PACKET_FIELD_TYPE_UINT32) {
-        return PacketBufferAppendValue(PacketBuffer, UInt32, (UInt32)Value);
+        PacketBufferAppendValue(PacketBuffer, UInt32, (UInt32)Value);
     }
 
     if (PacketField->Type == PACKET_FIELD_TYPE_UINT64) {
-        return PacketBufferAppendValue(PacketBuffer, UInt64, (UInt64)Value);
+        PacketBufferAppendValue(PacketBuffer, UInt64, (UInt64)Value);
     }
-
-    return NULL;
 }
 
-Void* PacketFieldWriteZero(
+Void PacketFieldWriteZero(
     PacketLayoutRef PacketLayout,
     PacketFieldRef PacketField,
     PacketBufferRef PacketBuffer
 ) {
     if (PacketField->Type == PACKET_FIELD_TYPE_INT8) {
-        return PacketBufferAppendValue(PacketBuffer, Int8, 0);
+        PacketBufferAppendValue(PacketBuffer, Int8, 0);
     }
 
     if (PacketField->Type == PACKET_FIELD_TYPE_INT16) {
-        return PacketBufferAppendValue(PacketBuffer, Int16, 0);
+        PacketBufferAppendValue(PacketBuffer, Int16, 0);
     }
 
     if (PacketField->Type == PACKET_FIELD_TYPE_INT32) {
-        return PacketBufferAppendValue(PacketBuffer, Int32, 0);
+        PacketBufferAppendValue(PacketBuffer, Int32, 0);
     }
 
     if (PacketField->Type == PACKET_FIELD_TYPE_INT64) {
-        return PacketBufferAppendValue(PacketBuffer, Int64, 0);
+        PacketBufferAppendValue(PacketBuffer, Int64, 0);
     }
 
     if (PacketField->Type == PACKET_FIELD_TYPE_UINT8) {
-        return PacketBufferAppendValue(PacketBuffer, UInt8, 0);
+        PacketBufferAppendValue(PacketBuffer, UInt8, 0);
     }
 
     if (PacketField->Type == PACKET_FIELD_TYPE_UINT16) {
-        return PacketBufferAppendValue(PacketBuffer, UInt16, 0);
+        PacketBufferAppendValue(PacketBuffer, UInt16, 0);
     }
 
     if (PacketField->Type == PACKET_FIELD_TYPE_UINT32) {
-        return PacketBufferAppendValue(PacketBuffer, UInt32, 0);
+        PacketBufferAppendValue(PacketBuffer, UInt32, 0);
     }
 
     if (PacketField->Type == PACKET_FIELD_TYPE_UINT64) {
-        return PacketBufferAppendValue(PacketBuffer, UInt64, 0);
+        PacketBufferAppendValue(PacketBuffer, UInt64, 0);
     }
 
     if (PacketField->Type == PACKET_FIELD_TYPE_STRING) {
-        return PacketBufferAppendValue(PacketBuffer, Char, 0);
+        PacketBufferAppendValue(PacketBuffer, Char, 0);
     }
 
     if (PacketField->Type == PACKET_FIELD_TYPE_CHARACTERS) {
-        return PacketBufferAppend(PacketBuffer, PacketField->Length);
+        PacketBufferAppend(PacketBuffer, PacketField->Length);
     }
 
     if (PacketField->Type == PACKET_FIELD_TYPE_STATIC_ARRAY) {
         PacketLayoutRef ChildLayout = (PacketLayoutRef)ArrayGetElementAtIndex(PacketLayout->Fields, PacketField->ChildIndex);
         Index ChildSize = PacketLayoutGetSize(ChildLayout);
-        return PacketBufferAppend(PacketBuffer, PacketField->Length * ChildSize);
+        PacketBufferAppend(PacketBuffer, PacketField->Length * ChildSize);
     }
 
     if (PacketField->Type == PACKET_FIELD_TYPE_DYNAMIC_ARRAY) {
-        return NULL;
     }
-
-    return NULL;
 }
 
-Void* PacketLayoutWriteZero(
+Void PacketLayoutWriteZero(
     PacketLayoutRef PacketLayout,
     PacketBufferRef PacketBuffer
 ) {

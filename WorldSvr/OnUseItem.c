@@ -11,12 +11,12 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM) {
 
 	if (!Character) goto error;
 
-	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
 	if (ItemSlot) {
 		RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
 		if (!ItemData) goto error;
 
-		if (Character->Info.Basic.Level < ItemData->MinLevel) goto error;
+		if (Character->Data.Info.Basic.Level < ItemData->MinLevel) goto error;
 
 		PacketLogBytes(
 			Socket->ProtocolIdentifier,
@@ -54,13 +54,13 @@ error:
 CLIENT_PROCEDURE_BINDING(CONVERT_ITEM) {
 	if (!Character) goto error;
 
-	RTItemSlotRef SourceItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->SourceSlotIndex);
+	RTItemSlotRef SourceItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->SourceSlotIndex);
 	if (!SourceItemSlot) goto error;
 
 	RTItemDataRef SourceItemData = RTRuntimeGetItemDataByIndex(Runtime, SourceItemSlot->Item.ID);
 	if (!SourceItemData) goto error;
 
-	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->TargetSlotIndex);
+	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->TargetSlotIndex);
 	if (!TargetItemSlot) goto error;
 
 	RTItemDataRef TargetItemData = RTRuntimeGetItemDataByIndex(Runtime, TargetItemSlot->Item.ID);
@@ -77,18 +77,18 @@ CLIENT_PROCEDURE_BINDING(CONVERT_ITEM) {
 			if (!UpgradeLimit) goto error;
 			if (TargetItemSlot->Item.UpgradeLevel >= UpgradeLimit->MaxItemLevel) goto error;
 			
-            RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceItemSlot->SlotIndex);
+            RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SourceItemSlot->SlotIndex);
 
             // TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
-			TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->TargetSlotIndex);
+			TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->TargetSlotIndex);
 			assert(TargetItemSlot);
 			TargetItemSlot->Item.UpgradeLevel += 1;
 		}
 		else {
-			RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceItemSlot->SlotIndex);
+			RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SourceItemSlot->SlotIndex);
 
             // TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
-			TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->TargetSlotIndex);
+			TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->TargetSlotIndex);
 			assert(TargetItemSlot);
 			TargetItemSlot->Item.VehicleColor = SourceItemData->CoatingKit.VehicleColor;
 		}
@@ -112,7 +112,7 @@ CLIENT_PROCEDURE_BINDING(CONVERT_ITEM) {
 	}
 
     // TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
-	TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->TargetSlotIndex);
+	TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->TargetSlotIndex);
 	if (TargetItemSlot) {
 		Response->Item = TargetItemSlot->Item;
 		Response->ItemOptions = TargetItemSlot->ItemOptions;
@@ -120,7 +120,6 @@ CLIENT_PROCEDURE_BINDING(CONVERT_ITEM) {
 	}
 
 	Character->SyncMask.InventoryInfo = true;
-	Character->SyncPriority.High = true;
 
 	PacketLogBytes(
         Socket->ProtocolIdentifier,
@@ -152,7 +151,7 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM_SAVER) {
 
 	if (Packet->InventorySlotCount < 1) goto error;
 
-	RTItemSlotRef FirstItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlots[0].InventorySlotIndex);
+	RTItemSlotRef FirstItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlots[0].InventorySlotIndex);
 	if (!FirstItemSlot) goto error;
 
 	RTItemDataRef FirstItemData = RTRuntimeGetItemDataByIndex(Runtime, FirstItemSlot->Item.ID);
@@ -166,7 +165,7 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM_SAVER) {
 	Int32 TotalAmount = 0;
 
 	for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
-		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlots[Index].InventorySlotIndex);
+		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlots[Index].InventorySlotIndex);
 		if (!ItemSlot) goto error;
 
 		RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
@@ -190,19 +189,19 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM_SAVER) {
 	if (FirstIsSaving) {
 		switch (FirstItemSubtype) {
 		case RUNTIME_ITEM_SUBTYPE_SAVER_DP:
-			if (Character->Info.Resource.DP < TotalAmount) goto error;
-			Character->Info.Resource.DP -= TotalAmount;
+			if (Character->Data.Info.Resource.DP < TotalAmount) goto error;
+			Character->Data.Info.Resource.DP -= TotalAmount;
 			// TODO: Notification for dp is missing!
 			break;
 
 		case RUNTIME_ITEM_SUBTYPE_SAVER_AP:
-			if (Character->Info.Ability.Point < TotalAmount) goto error;
-			Character->Info.Ability.Point -= TotalAmount;
+			if (Character->Data.Info.Ability.Point < TotalAmount) goto error;
+			Character->Data.Info.Ability.Point -= TotalAmount;
 			break;
 
 		case RUNTIME_ITEM_SUBTYPE_SAVER_WEXP:
-			if (Character->Info.Honor.Exp < TotalAmount) goto error;
-			Character->Info.Honor.Exp -= TotalAmount;
+			if (Character->Data.Info.Honor.Exp < TotalAmount) goto error;
+			Character->Data.Info.Honor.Exp -= TotalAmount;
 			break;
 
 		default:
@@ -212,15 +211,15 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM_SAVER) {
 	else {
 		switch (FirstItemSubtype) {
 		case RUNTIME_ITEM_SUBTYPE_SAVER_DP:
-			Character->Info.Resource.DP += TotalAmount;
+			Character->Data.Info.Resource.DP += TotalAmount;
 			break;
 
 		case RUNTIME_ITEM_SUBTYPE_SAVER_AP:
-			Character->Info.Ability.Point += TotalAmount;
+			Character->Data.Info.Ability.Point += TotalAmount;
 			break;
 
 		case RUNTIME_ITEM_SUBTYPE_SAVER_WEXP:
-			Character->Info.Honor.Exp += TotalAmount;
+			Character->Data.Info.Honor.Exp += TotalAmount;
 			break;
 
 		default:
@@ -232,22 +231,21 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM_SAVER) {
 
 	if (FirstIsSaving) {
 		for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
-			RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlots[Index].InventorySlotIndex);
+			RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlots[Index].InventorySlotIndex);
 			assert(ItemSlot);
 			ItemSlot->ItemOptions |= (UInt64)Packet->InventorySlots[Index].Amount << 16;
 		}
 	}
 	else {
 		for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
-			RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlots[Index].InventorySlotIndex);
+			RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlots[Index].InventorySlotIndex);
 			assert(ItemSlot);
-			RTInventoryClearSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlots[Index].InventorySlotIndex);
+			RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlots[Index].InventorySlotIndex);
 		}
 	}
 
 	Character->SyncMask.Info = true;
 	Character->SyncMask.InventoryInfo = true;
-	Character->SyncPriority.High = true;
 
 	SocketSend(Socket, Connection, Response);
 	return;

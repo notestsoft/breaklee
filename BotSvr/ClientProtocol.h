@@ -2,7 +2,6 @@
 
 #include <NetLib/NetLib.h>
 #include "Constants.h"
-#include "GameProtocol.h"
 
 EXTERN_C_BEGIN
 

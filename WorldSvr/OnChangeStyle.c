@@ -8,7 +8,9 @@
 CLIENT_PROCEDURE_BINDING(CHANGE_STYLE) {
 	if (!Character) goto error;
 
-	// TODO: Verify packet length!
+	// TODO: IMPORTANT VALIDATE THE CHANGE!
+	Character->Data.Info.Style.RawValue = SwapUInt32(Packet->CharacterStyle);
+	Character->Data.Info.LiveStyle.RawValue = SwapUInt32(Packet->CharacterLiveStyle);
 
 	// TODO: Implementation missing!
 	S2C_DATA_CHANGE_STYLE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHANGE_STYLE);
@@ -27,7 +29,7 @@ CLIENT_PROCEDURE_BINDING(CHANGE_STYLE) {
 	return BroadcastToWorld(
 		Context,
 		RTRuntimeGetWorldByCharacter(Runtime, Character),
-		Character->ID,
+		kEntityIDNull,
 		Character->Movement.PositionCurrent.X,
 		Character->Movement.PositionCurrent.Y,
 		Notification

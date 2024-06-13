@@ -6,6 +6,10 @@
 #define IPC_C2W_COMMAND(__NAME__)
 #endif
 
+#ifndef IPC_D2W_COMMAND
+#define IPC_D2W_COMMAND(__NAME__)
+#endif
+
 #ifndef IPC_L2W_COMMAND
 #define IPC_L2W_COMMAND(__NAME__)
 #endif
@@ -34,6 +38,10 @@
 #define IPC_W2C_COMMAND(__NAME__)
 #endif
 
+#ifndef IPC_W2D_COMMAND
+#define IPC_W2D_COMMAND(__NAME__)
+#endif
+
 #ifndef IPC_W2L_COMMAND
 #define IPC_W2L_COMMAND(__NAME__)
 #endif
@@ -56,6 +64,7 @@ IPC_ ## __NAMESPACE__ ## _COMMAND(__NAME__)
 
 #undef IPC_A2W_COMMAND
 #undef IPC_C2W_COMMAND
+#undef IPC_D2W_COMMAND
 #undef IPC_L2W_COMMAND
 #undef IPC_L2M_COMMAND
 #undef IPC_M2W_COMMAND
@@ -63,6 +72,7 @@ IPC_ ## __NAMESPACE__ ## _COMMAND(__NAME__)
 #undef IPC_P2W_COMMAND
 #undef IPC_W2A_COMMAND
 #undef IPC_W2C_COMMAND
+#undef IPC_W2D_COMMAND
 #undef IPC_W2L_COMMAND
 #undef IPC_W2P_COMMAND
 #undef IPC_W2M_COMMAND

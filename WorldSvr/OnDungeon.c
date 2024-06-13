@@ -124,14 +124,13 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_SPAWN) {
         // TODO: Find a way to check if the character was already spawned into the dungeon before
         if (DungeonData->RemoveItem) {
             // TODO: The inventory slot should also be checked inside the warp command
-            RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Character->DungeonEntryItemSlotIndex);
+            RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Character->DungeonEntryItemSlotIndex);
             if (!ItemSlot) goto error;
             if (ItemSlot->Item.Serial != DungeonData->EntryItemID.Serial ||
                 ItemSlot->ItemOptions != DungeonData->EntryItemOption) goto error;
 
-            RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+            RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
             Character->SyncMask.InventoryInfo = true;
-            Character->SyncPriority.High = true;
         }
 
         if (RTDungeonStart(World)) {

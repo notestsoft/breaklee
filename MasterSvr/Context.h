@@ -18,11 +18,7 @@ typedef struct _WorldInfo* WorldInfoRef;
 
 struct _ServerContext {
     ServerConfig Config;
-    DatabaseRef Database;
     DictionaryRef WorldInfoTable;
-
-    MASTERDB_DATA_ACCOUNT TempAccount;
-    MASTERDB_DATA_CHARACTER TempCharacter;
 };
 typedef struct _ServerContext* ServerContextRef;
 

@@ -25,11 +25,11 @@ Void OnCreateCharacterSubpassword(
 	Client->Account.CharacterQuestion = Packet->Question;
 	memcpy(Client->Account.CharacterAnswer, Packet->Answer, MAX_SUBPASSWORD_ANSWER_LENGTH);
 
-	IPC_W2M_DATA_UPDATE_SUBPASSWORD* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2M, UPDATE_SUBPASSWORD);
+	IPC_W2D_DATA_UPDATE_SUBPASSWORD* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2D, UPDATE_SUBPASSWORD);
 	Request->Header.SourceConnectionID = Connection->ID;
 	Request->Header.Source = Server->IPCSocket->NodeID;
 	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
-	Request->Header.Target.Type = IPC_TYPE_MASTER;
+	Request->Header.Target.Type = IPC_TYPE_MASTERDB;
 	Request->AccountID = Client->Account.AccountID;
 	memcpy(Request->CharacterPassword, Client->Account.CharacterPassword, MAX_SUBPASSWORD_LENGTH);
 	Request->CharacterQuestion = Client->Account.CharacterQuestion;
@@ -92,11 +92,11 @@ Void OnDeleteCharacterSubpassword(
 	Client->Account.CharacterQuestion = 0;
 	memset(Client->Account.CharacterAnswer, 0, MAX_SUBPASSWORD_ANSWER_LENGTH);
 
-	IPC_W2M_DATA_UPDATE_SUBPASSWORD* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2M, UPDATE_SUBPASSWORD);
+	IPC_W2D_DATA_UPDATE_SUBPASSWORD* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2D, UPDATE_SUBPASSWORD);
 	Request->Header.SourceConnectionID = Connection->ID;
 	Request->Header.Source = Server->IPCSocket->NodeID;
 	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
-	Request->Header.Target.Type = IPC_TYPE_MASTER;
+	Request->Header.Target.Type = IPC_TYPE_MASTERDB;
 	Request->AccountID = Client->Account.AccountID;
 	memcpy(Request->CharacterPassword, Client->Account.CharacterPassword, MAX_SUBPASSWORD_LENGTH);
 	Request->CharacterQuestion = Client->Account.CharacterQuestion;

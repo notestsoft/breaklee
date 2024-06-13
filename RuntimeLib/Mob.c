@@ -176,7 +176,7 @@ RTEntityID RTMobGetMaxAggroTarget(
 
 		Int32 Distance = RTMovementDistance(&Character->Movement, &Mob->Movement);
 		if (!Character || 
-			Character->Info.Position.WorldID != WorldContext->WorldData->WorldIndex ||
+			Character->Data.Info.Position.WorldID != WorldContext->WorldData->WorldIndex ||
 			!RTCharacterIsAlive(Runtime, Character) ||
 			Distance > Mob->SpeciesData->AlertRange) {
 			Int32 TailLength = Mob->Aggro.Count - Index - 1;
@@ -240,6 +240,7 @@ Void RTMobApplyDamage(
 	RTEntityID Source,
 	Int64 Damage
 ) {
+	Int64 TotalDamage = MIN(Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT], Damage);
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] -= Damage;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] = MAX(0, Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT]);
 	
@@ -261,6 +262,16 @@ Void RTMobApplyDamage(
 
 		RTMobCancelMovement(Runtime, World, Mob);
 	}
+
+	if (Mob->Script && TotalDamage > 0) RTScriptCall(
+		Mob->Script,
+		MOB_EVENT_DAMAGE,
+		LUA_TLIGHTUSERDATA, Runtime,
+		LUA_TLIGHTUSERDATA, World,
+		LUA_TLIGHTUSERDATA, Mob,
+		LUA_TNUMBER, TotalDamage,
+		NULL
+	);
 }
 
 Void RTMobAttackTarget(
@@ -287,7 +298,7 @@ Void RTMobAttackTarget(
 		RUNTIME_BATTLE_SKILL_TYPE_SWORD,
 		Mob->SpeciesData->Level,
 		&Mob->Attributes,
-		Character->Info.Basic.Level,
+		Character->Data.Info.Basic.Level,
 		&Character->Attributes,
 		&Result
 	);
@@ -336,7 +347,7 @@ Void _RTMobFindNearbyTargetProc(
 			Entity
 		);
 
-		Int32 LevelDifference = Character->Info.Basic.Level - Arguments->Mob->SpeciesData->Level;
+		Int32 LevelDifference = Character->Data.Info.Basic.Level - Arguments->Mob->SpeciesData->Level;
 		if (Arguments->WorldContext->WorldData->Type == RUNTIME_WORLD_TYPE_GLOBAL &&
 			LevelDifference > RUNTIME_MOB_MAX_FIND_LEVEL_DIFFERENCE) {
 			return;
@@ -579,5 +590,12 @@ Void RTMobOnEvent(
 ) {
 	if (!Mob->Script) return;
 
-	RTScriptCall(Mob->Script, Event, Runtime, World, Mob, NULL);
+	RTScriptCall(
+        Mob->Script, 
+        Event, 
+        LUA_TLIGHTUSERDATA, Runtime, 
+        LUA_TLIGHTUSERDATA, World, 
+        LUA_TLIGHTUSERDATA, Mob,
+        NULL
+    );
 }

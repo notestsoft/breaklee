@@ -40,9 +40,15 @@ Void _DefaultDiagnosticHandler(
     gmtime_r(&NowTime, &NowTm);
 #endif
 
+#ifdef _WIN32
+    DWORD ThreadID = GetCurrentThreadId();
+#else
+    pthread_t ThreadID = pthread_self();
+#endif
+
     fprintf(
         Output,
-        "\033[%dm[%d-%02d-%02d %02d:%02d:%02d] [%s] : %s\033[0m\n",
+        "\033[%dm[%d-%02d-%02d %02d:%02d:%02d][Thread: %lu] [%s] : %s\033[0m\n",
         kDiagnosticEngine.Colors[Level],
         NowTm.tm_year + 1900, 
         NowTm.tm_mon + 1, 
@@ -50,6 +56,7 @@ Void _DefaultDiagnosticHandler(
         NowTm.tm_hour, 
         NowTm.tm_min,
         NowTm.tm_sec,
+        (unsigned long)ThreadID,
         kDiagnosticEngine.Labels[Level],
         Message
     );
@@ -95,7 +102,7 @@ Void DiagnosticSetupLogFile(
 ) {
     Char Buffer[MAX_PATH] = { 0 };
     CString WorkingDirectory = PathGetCurrentDirectory(Buffer, MAX_PATH);
-    CString FilePath = CStringFormat("%s\\Logs\\%s_%d.log", WorkingDirectory, Namespace, PlatformGetTickCount());
+    CString FilePath = CStringFormat("%s\\Logs\\%s_%d.log", WorkingDirectory, Namespace, (Int32)PlatformGetTickCount());
 
     if (!DirectoryCreate("Logs")) {
         Error("Error creating directory!\n");

@@ -36,8 +36,8 @@ CLIENT_PROCEDURE_BINDING(VERIFY_LINKS) {
 		Request->GroupIndex = Packet->GroupIndex;
 		Request->NodeIndex = Packet->NodeIndex;
 		memcpy(Request->SessionIP, Connection->AddressIP, MAX_ADDRESSIP_LENGTH);
-		memcpy(&Request->Account, &Client->Account, sizeof(GAME_DATA_ACCOUNT));
-		memcpy(&Request->Characters, &Client->Characters, sizeof(GAME_DATA_CHARACTER_INDEX) * MAX_CHARACTER_COUNT);
+		memcpy(&Request->Account, &Client->Account, sizeof(IPC_DATA_ACCOUNT));
+		memcpy(&Request->Characters, &Client->Characters, sizeof(IPC_DATA_CHARACTER_INFO) * MAX_CHARACTER_COUNT);
 		IPCSocketUnicast(Server->IPCSocket, Request);
 	}
 	return;
@@ -81,11 +81,11 @@ IPC_PROCEDURE_BINDING(L2W, VERIFY_LINKS) {
 	// TODO: Check War status for WorldType == WORLD_TYPE_WAR_...
 	// TODO: Store premium service info in client context
 
-	IPC_W2M_DATA_GET_ACCOUNT* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2M, GET_ACCOUNT);
+	IPC_W2D_DATA_GET_ACCOUNT* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2D, GET_ACCOUNT);
 	Request->Header.SourceConnectionID = Client->Connection->ID;
 	Request->Header.Source = Server->IPCSocket->NodeID;
 	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
-	Request->Header.Target.Type = IPC_TYPE_MASTER;
+	Request->Header.Target.Type = IPC_TYPE_MASTERDB;
 	Request->AccountID = Packet->AccountID;
 	Request->GroupIndex = Packet->GroupIndex;
 	Request->NodeIndex = Packet->NodeIndex;
@@ -109,7 +109,7 @@ error:
 	}
 }
 
-IPC_PROCEDURE_BINDING(M2W, GET_ACCOUNT) {
+IPC_PROCEDURE_BINDING(D2W, GET_ACCOUNT) {
 	IPC_W2L_DATA_VERIFY_LINKS* Response = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2L, VERIFY_LINKS);
 	Response->Header.SourceConnectionID = ClientConnection->ID;
 	Response->Header.Source = Server->IPCSocket->NodeID;
@@ -124,7 +124,7 @@ IPC_PROCEDURE_BINDING(M2W, GET_ACCOUNT) {
 	if (Client && Packet->Success) {
 		Response->Status = 1;
 		Client->Flags |= CLIENT_FLAGS_VERIFIED;
-		memcpy(&Client->Account, &Packet->Account, sizeof(GAME_DATA_ACCOUNT));
+		memcpy(&Client->Account, &Packet->Account, sizeof(IPC_DATA_ACCOUNT));
 	}
 
 	IPCSocketUnicast(Server->IPCSocket, Response);
@@ -143,8 +143,8 @@ IPC_PROCEDURE_BINDING(W2W, REQUEST_VERIFY_LINKS) {
 
 	Client->Flags |= CLIENT_FLAGS_VERIFIED;
 	Client->Flags |= CLIENT_FLAGS_CHARACTER_INDEX_LOADED;
-	memcpy(&Client->Account, &Packet->Account, sizeof(GAME_DATA_ACCOUNT));
-	memcpy(&Client->Characters, &Packet->Characters, sizeof(GAME_DATA_CHARACTER_INDEX) * MAX_CHARACTER_COUNT);
+	memcpy(&Client->Account, &Packet->Account, sizeof(IPC_DATA_ACCOUNT));
+	memcpy(&Client->Characters, &Packet->Characters, sizeof(IPC_DATA_CHARACTER_INFO) * MAX_CHARACTER_COUNT);
 
 	IPC_W2W_DATA_RESPONSE_VERIFY_LINKS* Response = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2W, RESPONSE_VERIFY_LINKS);
 	Response->Header.SourceConnectionID = Connection->ID;

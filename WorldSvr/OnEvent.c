@@ -150,7 +150,7 @@ CLIENT_PROCEDURE_BINDING(EVENT_ACTION) {
 	}
 
 	for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
-		if (!RTInventoryIsSlotEmpty(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex[Index])) {
+		if (!RTInventoryIsSlotEmpty(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index])) {
 			goto error;
 		}
 	}
@@ -167,10 +167,9 @@ CLIENT_PROCEDURE_BINDING(EVENT_ACTION) {
 		ItemSlot.ItemOptions = Item->ItemOptions;
 		// ItemSlot.ItemDuration = Item->ItemDurationID;
 
-		if (!RTInventorySetSlot(Runtime, &Character->InventoryInfo, &ItemSlot)) goto error;
+		if (!RTInventorySetSlot(Runtime, &Character->Data.InventoryInfo, &ItemSlot)) goto error;
 
 		Character->SyncMask.InventoryInfo = true;
-		Character->SyncPriority.Low = true;
 
 		S2C_DATA_EVENT_ACTION_SHOP_ITEM* ResponseItem = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_EVENT_ACTION_SHOP_ITEM);
 		ResponseItem->Item = ItemSlot.Item;

@@ -204,7 +204,7 @@ Int32 RTCharacterFindNextEquipmentSlotIndex(
     Int32 NextSlotIndex,
     UInt32 ItemType
 ) {
-    Int32 BattleStyleIndex = Character->Info.Style.BattleStyle | (Character->Info.Style.ExtendedBattleStyle << 3);
+    Int32 BattleStyleIndex = Character->Data.Info.Style.BattleStyle | (Character->Data.Info.Style.ExtendedBattleStyle << 3);
     for (Int32 SlotIndex = NextSlotIndex; SlotIndex < RUNTIME_MAX_EQUIPMENT_SLOT_INDEX_COUNT; SlotIndex += 1) {
         if (RTEquipmentSlotIndexMatchItemType(BattleStyleIndex, SlotIndex, ItemType)) {
             return SlotIndex;

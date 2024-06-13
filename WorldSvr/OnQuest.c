@@ -95,7 +95,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_ACTION) {
 
 	if (!Success) goto error;
 
-	RTQuestSlotRef QuestSlot = &Character->QuestSlotInfo.QuestSlot[Packet->SlotIndex];
+	RTQuestSlotRef QuestSlot = &Character->Data.QuestSlotInfo.QuestSlot[Packet->SlotIndex];
 
 	S2C_DATA_QUEST_ACTION* Response = PacketBufferInit(Connection->PacketBuffer, S2C, QUEST_ACTION);
 	Response->QuestID = Packet->QuestID;

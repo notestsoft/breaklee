@@ -1,5 +1,4 @@
 #include "Context.h"
-#include "MasterDB.h"
 #include "IPCProcedures.h"
 
 #define IPC_COMMAND_CALLBACK(__NAMESPACE__, __NAME__)                       \
@@ -11,8 +10,6 @@ Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                    \
     ServerRef Server = (ServerRef)Socket->Userdata;                         \
     ServerContextRef Context = (ServerContextRef)Server->Userdata;          \
     IPCNodeContextRef NodeContext = (IPCNodeContextRef)Connection->Userdata;\
-    memset(&Context->TempAccount, 0, sizeof(MASTERDB_DATA_ACCOUNT));        \
-    memset(&Context->TempCharacter, 0, sizeof(MASTERDB_DATA_CHARACTER));    \
                                                                             \
     IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                            \
         Server,                                                             \
@@ -20,8 +17,6 @@ Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                    \
         Socket,                                                             \
         Connection,                                                         \
         NodeContext,                                                        \
-        &Context->TempAccount,                                              \
-        &Context->TempCharacter,                                            \
         (IPC_ ## __NAMESPACE__ ## _DATA_ ## __NAME__ *)Packet               \
     );                                                                      \
 }
@@ -50,7 +45,6 @@ Int32 main(Int32 argc, CString* argv) {
     AllocatorRef Allocator = AllocatorGetSystemDefault();
     struct _ServerContext ServerContext = { 0 };
     ServerContext.Config = Config;
-    ServerContext.Database = NULL;
     ServerContext.WorldInfoTable = IndexDictionaryCreate(Allocator, Config.MasterSvr.MaxWorldCount);
 
     IPCNodeID NodeID = kIPCNodeIDNull;
@@ -69,16 +63,6 @@ Int32 main(Int32 argc, CString* argv) {
         &ServerContext
     );
 
-    ServerContext.Database = DatabaseConnect(
-        Config.MasterDB.Host,
-        Config.MasterDB.Username,
-        Config.MasterDB.Password,
-        Config.MasterDB.Database,
-        Config.MasterDB.Port,
-        Config.MasterDB.AutoReconnect
-    );
-    if (!ServerContext.Database) Fatal("Database connection failed");
-
 #define IPC_L2M_COMMAND(__NAME__) \
     IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_L2M_ ## __NAME__, &SERVER_IPC_L2M_PROC_ ## __NAME__);
 #include "IPCCommands.h"
@@ -87,11 +71,8 @@ Int32 main(Int32 argc, CString* argv) {
     IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_W2M_ ## __NAME__, &SERVER_IPC_W2M_PROC_ ## __NAME__);
 #include "IPCCommands.h"
 
-    MasterDBPrepareStatements(ServerContext.Database);
-
     ServerRun(Server);
     ServerDestroy(Server);
-    DatabaseDisconnect(ServerContext.Database);
     DictionaryDestroy(ServerContext.WorldInfoTable);
     DiagnosticTeardown();
 
