@@ -14,7 +14,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_ACCOUNT) {
 
 	MASTERDB_DATA_ACCOUNT Account = { 0 };
 	Account.AccountID = Packet->AccountID;
-	if (MasterDBGetOrCreateAccount(Context->Database, &Account)) {
+	if (MasterDBGetOrCreateAccount(Context->Database, Packet->AccountID, &Account)) {
 		Response->Success = true;
 		Response->Account.AccountID = Account.AccountID;
 		memcpy(Response->Account.SessionIP, Account.SessionIP, MAX_ADDRESSIP_LENGTH);

@@ -240,6 +240,7 @@ Void RTMobApplyDamage(
 	RTEntityID Source,
 	Int64 Damage
 ) {
+	Int64 TotalDamage = MIN(Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT], Damage);
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] -= Damage;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] = MAX(0, Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT]);
 	
@@ -261,6 +262,16 @@ Void RTMobApplyDamage(
 
 		RTMobCancelMovement(Runtime, World, Mob);
 	}
+
+	if (Mob->Script && TotalDamage > 0) RTScriptCall(
+		Mob->Script,
+		MOB_EVENT_DAMAGE,
+		LUA_TLIGHTUSERDATA, Runtime,
+		LUA_TLIGHTUSERDATA, World,
+		LUA_TLIGHTUSERDATA, Mob,
+		LUA_TNUMBER, TotalDamage,
+		NULL
+	);
 }
 
 Void RTMobAttackTarget(
@@ -579,5 +590,12 @@ Void RTMobOnEvent(
 ) {
 	if (!Mob->Script) return;
 
-	RTScriptCall(Mob->Script, Event, Runtime, World, Mob, NULL);
+	RTScriptCall(
+        Mob->Script, 
+        Event, 
+        LUA_TLIGHTUSERDATA, Runtime, 
+        LUA_TLIGHTUSERDATA, World, 
+        LUA_TLIGHTUSERDATA, Mob,
+        NULL
+    );
 }

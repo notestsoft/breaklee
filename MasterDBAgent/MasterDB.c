@@ -2,6 +2,7 @@
 
 static StatementRef kStatementTable[MASTERDB_STATEMENT_COUNT];
 
+// TODO: Migrate missing data for existing accounts and characters when new tables are added
 Void MasterDBMigrate(
     DatabaseRef Database
 ) {
@@ -33,20 +34,21 @@ StatementRef MasterDBGetStatement(
 
 Bool MasterDBGetOrCreateAccount(
     DatabaseRef Database,
+    Int64 AccountID,
     MASTERDB_DATA_ACCOUNT* Account
 ) {
-    if (MasterDBSelectAccountByID(Database, Account)) return true;
+    if (MasterDBSelectAccountByID(Database, AccountID, Account)) return true;
 
-    DatabaseBeginTransaction(Database);
+    if (!DatabaseBeginTransaction(Database)) goto error;
     {
-        if (!MasterDBInsertAccount(Database, Account)) goto error;
+        if (!MasterDBInsertAccount(Database)) goto error;
         if (!MasterDBInsertSubpassword(Database, Account->AccountID)) goto error;
 
         Account->AccountID = DatabaseGetLastInsertID(Database);
     }
-    DatabaseCommitTransaction(Database);
+    if (!DatabaseCommitTransaction(Database)) goto error;
 
-    if (!MasterDBSelectAccountByID(Database, Account)) goto error;
+    if (!MasterDBSelectAccountByID(Database, AccountID, Account)) goto error;
 
     return true;
 
@@ -56,23 +58,20 @@ error:
 }
 
 Bool MasterDBInsertAccount(
-    DatabaseRef Database,
-    MASTERDB_DATA_ACCOUNT* Data
+    DatabaseRef Database
 ) {
     StatementRef Statement = MasterDBGetStatement(Database, MASTERDB_INSERT_ACCOUNT);
-    StatementBindParameterInt64(Statement, 0, Data->AccountID);
 
-    if (!StatementExecute(Statement)) return false;
-
-    return true;
+    return StatementExecute(Statement);
 }
 
 Bool MasterDBSelectAccountByID(
     DatabaseRef Database,
+    Int64 AccountID,
     MASTERDB_DATA_ACCOUNT* Data
 ) {
     StatementRef Statement = MasterDBGetStatement(Database, MASTERDB_SELECT_ACCOUNT_BY_ID);
-    StatementBindParameterInt64(Statement, 0, Data->AccountID);
+    StatementBindParameterInt64(Statement, 0, AccountID);
 
     if (!StatementExecute(Statement)) return false;
     if (!StatementFetchResult(Statement)) return false;
@@ -134,16 +133,16 @@ Bool MasterDBUpdateAccountCharacterPassword(
 
 Bool MasterDBInsertCharacter(
     DatabaseRef Database,
-    MASTERDB_DATA_CHARACTER* Data
+    Int64 AccountID,
+    CString CharacterName,
+    UInt8 CharacterSlotIndex
 ) {
     StatementRef Statement = MasterDBGetStatement(Database, MASTERDB_INSERT_CHARACTER);
-    StatementBindParameterInt64(Statement, 0, Data->AccountID);
-    StatementBindParameterString(Statement, 1, Data->Name);
-    StatementBindParameterUInt8(Statement, 2, Data->Index);
+    StatementBindParameterInt64(Statement, 0, AccountID);
+    StatementBindParameterString(Statement, 1, CharacterName);
+    StatementBindParameterUInt8(Statement, 2, CharacterSlotIndex);
 
-    if (!StatementExecute(Statement)) return false;
-
-    return true;
+    return StatementExecute(Statement);
 }
 
 Bool MasterDBSelectCharacterByID(
@@ -170,10 +169,10 @@ Bool MasterDBSelectCharacterByID(
 
 StatementRef MasterDBSelectCharacterByAccount(
     DatabaseRef Database,
-    Int32 AccountID
+    Int64 AccountID
 ) {
     StatementRef Statement = MasterDBGetStatement(Database, MASTERDB_SELECT_CHARACTER_BY_ACCOUNT);
-    StatementBindParameterInt32(Statement, 0, AccountID);
+    StatementBindParameterInt64(Statement, 0, AccountID);
 
     if (StatementExecute(Statement)) return Statement;
 

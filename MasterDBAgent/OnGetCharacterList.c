@@ -5,7 +5,7 @@
 IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER_LIST) {
 	MASTERDB_DATA_ACCOUNT Account = { 0 };
 	Account.AccountID = Packet->AccountID;
-	if (!MasterDBGetOrCreateAccount(Context->Database, &Account)) goto error;
+	if (!MasterDBGetOrCreateAccount(Context->Database, Packet->AccountID, &Account)) goto error;
 
 	IPC_D2W_DATA_GET_CHARACTER_LIST* Response = IPCPacketBufferInit(Connection->PacketBuffer, D2W, GET_CHARACTER_LIST);
 	Response->Header.Source = Server->IPCSocket->NodeID;

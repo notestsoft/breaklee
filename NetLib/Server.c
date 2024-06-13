@@ -228,7 +228,7 @@ Void _ServerSocketOnReceived(
     SocketConnectionRef Connection,
     Void *Packet
 ) {
-    BENCHMARK("_ServerSocketOnReceived") {
+    BENCHMARK("_ServerSocketOnReceived", {
         ServerSocketContextRef SocketContext = (ServerSocketContextRef)Socket->Userdata;
         Index Command = (Index)SocketContext->PacketGetCommandCallback(
             Socket->ProtocolIdentifier,
@@ -252,14 +252,14 @@ Void _ServerSocketOnReceived(
             Packet
         );
 
-        UInt8* Buffer = ((UInt8*)Packet) + HeaderLength;
+        UInt8 * Buffer = ((UInt8*)Packet) + HeaderLength;
         Int32 BufferLength = PacketLength - HeaderLength;
         Int32 Result = PacketManagerHandle(
-            SocketContext->PacketManager, 
+            SocketContext->PacketManager,
             Socket,
             Connection,
-            Command, 
-            Buffer, 
+            Command,
+            Buffer,
             BufferLength
         );
         if (Result < 0) {
@@ -287,5 +287,5 @@ Void _ServerSocketOnReceived(
                 );
             }
         }
-    }
+    });
 }

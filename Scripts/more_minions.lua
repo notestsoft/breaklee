@@ -10,6 +10,12 @@ function spawn_minion(runtime, world, mob, entity_id)
     world_spawn_mob(runtime, world, entity_id, x, y)
 end
 
+function on_damage(runtime, world, mob, damage)
+    local x = mob_pos_x(mob) + math.random(-1, 2)
+    local y = mob_pos_y(mob) + math.random(-1, 2)
+    world_spawn_item(runtime, world, mob_id(mob), 13, damage * 1000, x, y)
+end
+
 function on_despawn(runtime, world, mob)
     spawn_minion(runtime, world, mob, 227)
     spawn_minion(runtime, world, mob, 228)

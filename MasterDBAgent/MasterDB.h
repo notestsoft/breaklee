@@ -28,16 +28,17 @@ StatementRef MasterDBGetStatement(
 
 Bool MasterDBGetOrCreateAccount(
     DatabaseRef Database,
+    Int64 AccountID,
     MASTERDB_DATA_ACCOUNT* Account
 );
 
 Bool MasterDBInsertAccount(
-    DatabaseRef Database,
-    MASTERDB_DATA_ACCOUNT* Data
+    DatabaseRef Database
 );
 
 Bool MasterDBSelectAccountByID(
     DatabaseRef Database,
+    Int64 AccountID,
     MASTERDB_DATA_ACCOUNT* Data
 );
 
@@ -78,7 +79,9 @@ Bool MasterDBUpdateAccountCollectionData(
 
 Bool MasterDBInsertCharacter(
     DatabaseRef Database,
-    MASTERDB_DATA_CHARACTER* Data
+    Int64 AccountID,
+    CString CharacterName,
+    UInt8 CharacterSlotIndex
 );
 
 Bool MasterDBSelectCharacterByID(
@@ -88,7 +91,7 @@ Bool MasterDBSelectCharacterByID(
 
 StatementRef MasterDBSelectCharacterByAccount(
     DatabaseRef Database,
-    Int32 AccountID
+    Int64 AccountID
 );
 
 Bool MasterDBSelectCharacterFetchNext(

@@ -238,13 +238,13 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     RTNotificationManagerRegisterCallback(ServerContext.Runtime->NotificationManager, __COMMAND__, SERVER_NOTIFICATION_PROC_ ## __NAME__, Server);
 #include "RuntimeLib/NotificationProtocolDefinition.h"
     
-    BENCHMARK("RTRuntimeLoadData") {
+    BENCHMARK("RTRuntimeLoadData", {
         RTRuntimeLoadData(ServerContext.Runtime, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
-    }
+    });
 
-    BENCHMARK("ServerLoadRuntimeData") {
+    BENCHMARK("ServerLoadRuntimeData", {
         ServerLoadRuntimeData(Config, &ServerContext);
-    }
+    });
 
     ServerLoadScriptData(Config, &ServerContext);
     ServerRun(Server);

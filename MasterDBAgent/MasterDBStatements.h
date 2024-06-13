@@ -4,7 +4,7 @@
 
 STATEMENT(
     MASTERDB_INSERT_ACCOUNT, 
-    "INSERT INTO `accounts` (`account_id`) VALUES (?);"
+    "INSERT INTO `accounts` () VALUES ();"
 )
 
 STATEMENT(

@@ -10,7 +10,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
 
     MASTERDB_DATA_ACCOUNT Account = { 0 };
     Account.AccountID = Packet->AccountID;
-	if (!MasterDBGetOrCreateAccount(Context->Database, &Account)) goto error;
+	if (!MasterDBGetOrCreateAccount(Context->Database, Packet->AccountID, &Account)) goto error;
 
     MASTERDB_DATA_CHARACTER Character = { 0 };
     Character.CharacterID = Packet->CharacterID;
@@ -21,15 +21,16 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
 	Response->Success = true;
     Response->CharacterIndex = Packet->CharacterIndex;
     Response->CharacterID = Character.CharacterID;
-    Response->CharacterIndex = Character.Index;
     Response->CharacterCreationDate = Character.CreatedAt;
     CStringCopySafe(Response->CharacterName, MAX_CHARACTER_NAME_LENGTH + 1, Character.Name);
 
-#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__, __SCOPE__) { \
+#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__, __SCOPE__) \
+    { \
         DataTableRef Table = DatabaseGetDataTable(Context->Database, #__SCOPE__, #__NAME__); \
         if (!Table) goto error; \
-        if (!DataTableSelect(Table, __SCOPE__##ID, &Response->CharacterData.__NAME__, sizeof(__TYPE__))); \
+        if (!DataTableSelect(Table, Packet->__SCOPE__##ID, (UInt8*)&Response->CharacterData.__NAME__, sizeof(__TYPE__))); \
     }
+#include "RuntimeLib/CharacterDataDefinition.h"
 
     IPCSocketUnicast(Socket, Response);
     return;

@@ -475,8 +475,6 @@ Bool RTCharacterMovementBegin(
 
 	RTMovementStartDeadReckoning(Runtime, &Character->Movement);
 	
-	Character->SyncMask.Info = true;
-
 	return true;
 }
 
@@ -572,8 +570,6 @@ Bool RTCharacterMovementChange(
 
 	RTMovementStartDeadReckoning(Runtime, &Character->Movement);
 
-	Character->SyncMask.Info = true;
-
 	return true;
 }
 
@@ -640,6 +636,8 @@ Bool RTCharacterMovementEnd(
 
 	RTMovementEndDeadReckoning(Runtime, &Character->Movement);
 
+	Character->Data.Info.Position.X = PositionX;
+	Character->Data.Info.Position.Y = PositionY;
 	Character->SyncMask.Info = true;
 
 	return true;
@@ -680,7 +678,6 @@ Bool RTCharacterMovementChangeWaypoints(
 
 	Character->Movement.PositionCurrent.X = PositionCurrentX;
 	Character->Movement.PositionCurrent.Y = PositionCurrentY;
-
 	Character->SyncMask.Info = true;
 
 	return true;
@@ -764,6 +761,8 @@ Bool RTCharacterMovementChangeChunk(
 
     RTMovementSetPosition(Runtime, &Character->Movement, PositionCurrentX, PositionCurrentY);
 
+	Character->Movement.PositionCurrent.X = PositionCurrentX;
+	Character->Movement.PositionCurrent.Y = PositionCurrentY;
 	Character->SyncMask.Info = true;
 
 	return true;

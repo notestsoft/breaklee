@@ -168,6 +168,7 @@ Void DatabaseDisconnect(
 Bool DatabaseBeginTransaction(
 	DatabaseRef Database
 ) {	
+	Trace("START TRANSACTION");
 	if (mysql_query(Database->Connection, "START TRANSACTION;") != 0) {
 		Error(
 			"Database start transaction failed: %s", 
@@ -182,6 +183,7 @@ Bool DatabaseBeginTransaction(
 Bool DatabaseCommitTransaction(
 	DatabaseRef Database
 ) {
+	Trace("COMMIT TRANSACTION");
 	if (mysql_query(Database->Connection, "COMMIT;") != 0) {
 		Error(
 			"Database commit transaction failed: %s",
@@ -196,6 +198,7 @@ Bool DatabaseCommitTransaction(
 Bool DatabaseRollbackTransaction(
 	DatabaseRef Database
 ) {
+	Trace("ROLLBACK TRANSACTION");
 	if (mysql_query(Database->Connection, "ROLLBACK;") != 0) {
 		Error(
 			"Database rollback transaction failed: %s",
@@ -343,7 +346,7 @@ DataTableRef DatabaseCreateDataTable(
 
 	Table->Database = Database;
 	Table->Insert = DatabaseCreateStatement(Database, CStringFormat(
-		"INSERT INTO `%s%s` (`%sID`, `Data`) VALUES (?, ?);",
+		"INSERT IGNORE INTO `%s%s` (`%sID`, `Data`) VALUES (?, ?);",
 		Scope,
 		Name,
 		Scope
@@ -415,8 +418,8 @@ Bool DataTableUpdate(
 	UInt8* Data,
 	Int32 DataLength
 ) {
-	StatementBindParameterInt32(Table->Update, 0, ID);
-	StatementBindParameterBinary(Table->Update, 1, Data, DataLength);
+	StatementBindParameterBinary(Table->Update, 0, Data, DataLength);
+	StatementBindParameterInt32(Table->Update, 1, ID);
 	return StatementExecute(Table->Update);
 }
 

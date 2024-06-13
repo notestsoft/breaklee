@@ -4,8 +4,17 @@
 
 EXTERN_C_BEGIN
 
-#define BENCHMARK(__PROCESS__) \
-for (float startTime = (float)clock() / CLOCKS_PER_SEC, run = 1.0; run == 1.0; run = 0, Info("[%s] Time elapsed: %fs", __PROCESS__, (float)clock() / CLOCKS_PER_SEC - startTime))
+#define BENCHMARK(__NAME__, __CODE__) \
+do { \
+    LARGE_INTEGER _Start, _End, _Freq; \
+    QueryPerformanceFrequency(&_Freq); \
+    QueryPerformanceCounter(&_Start); \
+    { __CODE__ } \
+    QueryPerformanceCounter(&_End); \
+    LONGLONG _Elapsed = _End.QuadPart - _Start.QuadPart; \
+    LONGLONG _ElapsedMilliseconds = (_Elapsed * 1000LL) / _Freq.QuadPart; \
+    Trace("[%s] Time elapsed: %lldms", __NAME__, _ElapsedMilliseconds); \
+} while (0)
 
 Index Align(
     Index Value,

@@ -5,7 +5,7 @@
 IPC_PROCEDURE_BINDING(W2D, UPDATE_SUBPASSWORD) {
 	MASTERDB_DATA_ACCOUNT Account = { 0 };
 	Account.AccountID = Packet->AccountID;
-	if (!MasterDBGetOrCreateAccount(Context->Database, &Account)) return;
+	if (!MasterDBGetOrCreateAccount(Context->Database, Packet->AccountID, &Account)) return;
 
 	memcpy(Account.CharacterPassword, Packet->CharacterPassword, MAX_SUBPASSWORD_LENGTH);
 	Account.CharacterQuestion = Packet->CharacterQuestion;

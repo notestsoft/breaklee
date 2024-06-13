@@ -26,7 +26,7 @@ IPC_PROCEDURE_BINDING(W2D, CREATE_CHARACTER) {
 
 	MASTERDB_DATA_ACCOUNT Account = { 0 };
 	Account.AccountID = Packet->AccountID;
-	if (!MasterDBGetOrCreateAccount(Context->Database, &Account)) {
+	if (!MasterDBGetOrCreateAccount(Context->Database, Packet->AccountID, &Account)) {
 		DatabaseRollbackTransaction(Context->Database);
 		Response->Status = CREATE_CHARACTER_STATUS_DBERROR;
 		IPCSocketUnicast(Socket, Response);
@@ -38,7 +38,7 @@ IPC_PROCEDURE_BINDING(W2D, CREATE_CHARACTER) {
 	Character.Index = Packet->CharacterSlotIndex;
 	CStringCopySafe(Character.Name, MAX_CHARACTER_NAME_LENGTH + 1, Packet->CharacterName);
 
-	if (!MasterDBInsertCharacter(Context->Database, &Character)) {
+	if (!MasterDBInsertCharacter(Context->Database, Packet->AccountID, Packet->CharacterName, Packet->CharacterSlotIndex)) {
 		DatabaseRollbackTransaction(Context->Database);
 		Response->Status = CREATE_CHARACTER_STATUS_DBERROR;
 		IPCSocketUnicast(Socket, Response);
