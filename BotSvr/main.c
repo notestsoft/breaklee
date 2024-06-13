@@ -63,8 +63,8 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     AllocatorRef Allocator = AllocatorGetSystemDefault();
     IPCNodeID NodeID = kIPCNodeIDNull;
     struct _ServerContext ServerContext = { 0 };
-    CStringCopySafe(&ServerContext.Username, MAX_PATH, "test");
-    CStringCopySafe(&ServerContext.Password, MAX_PATH, "test");
+    CStringCopySafe(ServerContext.Username, MAX_PATH, "test");
+    CStringCopySafe(ServerContext.Password, MAX_PATH, "test");
     ServerRef Server = ServerCreate(
         Allocator,
         NodeID,

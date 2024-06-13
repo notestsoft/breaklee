@@ -115,10 +115,10 @@ Void RTWorldChunkUpdate(
     NOTIFICATION_DATA_CHARACTERS_SPAWN_INDEX* NotificationCharacter = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_INDEX);
     NotificationCharacter->CharacterIndex = (UInt32)Character->CharacterIndex;
     NotificationCharacter->Entity = Character->ID;
-    NotificationCharacter->Level = Character->Info.Basic.Level;
-    NotificationCharacter->OverlordLevel = Character->Info.Overlord.Level;
-    NotificationCharacter->ForceWingGrade = Character->ForceWingInfo.Grade;
-    NotificationCharacter->ForceWingLevel = Character->ForceWingInfo.Level;
+    NotificationCharacter->Level = Character->Data.Info.Basic.Level;
+    NotificationCharacter->OverlordLevel = Character->Data.Info.Overlord.Level;
+    NotificationCharacter->ForceWingGrade = Character->Data.ForceWingInfo.Grade;
+    NotificationCharacter->ForceWingLevel = Character->Data.ForceWingInfo.Level;
     NotificationCharacter->MaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
     NotificationCharacter->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
     NotificationCharacter->MovementSpeed = (UInt32)(Character->Movement.Speed * RUNTIME_MOVEMENT_SPEED_SCALE);
@@ -126,20 +126,20 @@ Void RTWorldChunkUpdate(
     NotificationCharacter->PositionBeginY = Character->Movement.PositionBegin.Y;
     NotificationCharacter->PositionEndX = Character->Movement.PositionEnd.X;
     NotificationCharacter->PositionEndY = Character->Movement.PositionEnd.Y;
-    NotificationCharacter->Nation = Character->Info.Profile.Nation;
-    NotificationCharacter->CharacterStyle = SwapUInt32(Character->Info.Style.RawValue);
-    NotificationCharacter->CharacterLiveStyle = Character->Info.LiveStyle.RawValue;
-    NotificationCharacter->CharacterExtendedStyle = Character->Info.ExtendedStyle.RawValue;
+    NotificationCharacter->Nation = Character->Data.Info.Profile.Nation;
+    NotificationCharacter->CharacterStyle = SwapUInt32(Character->Data.Info.Style.RawValue);
+    NotificationCharacter->CharacterLiveStyle = Character->Data.Info.LiveStyle.RawValue;
+    NotificationCharacter->CharacterExtendedStyle = Character->Data.Info.ExtendedStyle.RawValue;
     NotificationCharacter->IsDead = RTCharacterIsAlive(Runtime, Character) ? 0 : 1;
-    NotificationCharacter->EquipmentSlotCount = Character->EquipmentInfo.Count;
+    NotificationCharacter->EquipmentSlotCount = Character->Data.EquipmentInfo.Count;
     NotificationCharacter->NameLength = strlen(Character->Name) + 1;
     RTNotificationAppendCString(Notification, Character->Name);
     
     NOTIFICATION_DATA_CHARACTERS_SPAWN_GUILD* Guild = (NOTIFICATION_DATA_CHARACTERS_SPAWN_GUILD*)&NotificationCharacter->Name[NotificationCharacter->NameLength];
     Guild->GuildNameLength = 0;
 
-    for (Index EquipmentIndex = 0; EquipmentIndex < Character->EquipmentInfo.Count; EquipmentIndex += 1) {
-        RTItemSlotRef ItemSlot = &Character->EquipmentInfo.Slots[EquipmentIndex];
+    for (Index EquipmentIndex = 0; EquipmentIndex < Character->Data.EquipmentInfo.Count; EquipmentIndex += 1) {
+        RTItemSlotRef ItemSlot = &Character->Data.EquipmentInfo.Slots[EquipmentIndex];
 
         NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* NotificationSlot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
         NotificationSlot->EquipmentSlotIndex = ItemSlot->SlotIndex;
@@ -227,10 +227,10 @@ Void RTWorldChunkBroadcastCharactersToCharacter(
         NOTIFICATION_DATA_CHARACTERS_SPAWN_INDEX* NotificationCharacter = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_INDEX);
         NotificationCharacter->CharacterIndex = (UInt32)Character->CharacterIndex;
         NotificationCharacter->Entity = Character->ID;
-        NotificationCharacter->Level = Character->Info.Basic.Level;
-        NotificationCharacter->OverlordLevel = Character->Info.Overlord.Level;
-        NotificationCharacter->ForceWingGrade = Character->ForceWingInfo.Grade;
-        NotificationCharacter->ForceWingLevel = Character->ForceWingInfo.Level;
+        NotificationCharacter->Level = Character->Data.Info.Basic.Level;
+        NotificationCharacter->OverlordLevel = Character->Data.Info.Overlord.Level;
+        NotificationCharacter->ForceWingGrade = Character->Data.ForceWingInfo.Grade;
+        NotificationCharacter->ForceWingLevel = Character->Data.ForceWingInfo.Level;
         NotificationCharacter->MaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
         NotificationCharacter->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
         NotificationCharacter->MovementSpeed = (UInt32)(Character->Movement.Speed * RUNTIME_MOVEMENT_SPEED_SCALE);
@@ -238,20 +238,20 @@ Void RTWorldChunkBroadcastCharactersToCharacter(
         NotificationCharacter->PositionBeginY = Character->Movement.PositionBegin.Y;
         NotificationCharacter->PositionEndX = Character->Movement.PositionEnd.X;
         NotificationCharacter->PositionEndY = Character->Movement.PositionEnd.Y;
-        NotificationCharacter->Nation = Character->Info.Profile.Nation;
-        NotificationCharacter->CharacterStyle = SwapUInt32(Character->Info.Style.RawValue);
-        NotificationCharacter->CharacterLiveStyle = Character->Info.LiveStyle.RawValue;
-        NotificationCharacter->CharacterExtendedStyle = Character->Info.ExtendedStyle.RawValue;
+        NotificationCharacter->Nation = Character->Data.Info.Profile.Nation;
+        NotificationCharacter->CharacterStyle = SwapUInt32(Character->Data.Info.Style.RawValue);
+        NotificationCharacter->CharacterLiveStyle = Character->Data.Info.LiveStyle.RawValue;
+        NotificationCharacter->CharacterExtendedStyle = Character->Data.Info.ExtendedStyle.RawValue;
         NotificationCharacter->IsDead = RTCharacterIsAlive(Runtime, Character) ? 0 : 1;
-        NotificationCharacter->EquipmentSlotCount = Character->EquipmentInfo.Count;
+        NotificationCharacter->EquipmentSlotCount = Character->Data.EquipmentInfo.Count;
         NotificationCharacter->NameLength = strlen(Character->Name) + 1;
         RTNotificationAppendCString(Notification, Character->Name);
         
         NOTIFICATION_DATA_CHARACTERS_SPAWN_GUILD* Guild = (NOTIFICATION_DATA_CHARACTERS_SPAWN_GUILD*)&NotificationCharacter->Name[NotificationCharacter->NameLength];
         Guild->GuildNameLength = 0;
 
-        for (Index EquipmentIndex = 0; EquipmentIndex < Character->EquipmentInfo.Count; EquipmentIndex += 1) {
-            RTItemSlotRef ItemSlot = &Character->EquipmentInfo.Slots[EquipmentIndex];
+        for (Index EquipmentIndex = 0; EquipmentIndex < Character->Data.EquipmentInfo.Count; EquipmentIndex += 1) {
+            RTItemSlotRef ItemSlot = &Character->Data.EquipmentInfo.Slots[EquipmentIndex];
 
             NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* NotificationSlot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
             NotificationSlot->EquipmentSlotIndex = ItemSlot->SlotIndex;
@@ -546,10 +546,10 @@ Void RTWorldChunkNotify(
         NOTIFICATION_DATA_CHARACTERS_SPAWN_INDEX* NotificationCharacter = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_INDEX);
         NotificationCharacter->CharacterIndex = (UInt32)Character->CharacterIndex;
         NotificationCharacter->Entity = Character->ID;
-        NotificationCharacter->Level = Character->Info.Basic.Level;
-        NotificationCharacter->OverlordLevel = Character->Info.Overlord.Level;
-        NotificationCharacter->ForceWingGrade = Character->ForceWingInfo.Grade;
-        NotificationCharacter->ForceWingLevel = Character->ForceWingInfo.Level;
+        NotificationCharacter->Level = Character->Data.Info.Basic.Level;
+        NotificationCharacter->OverlordLevel = Character->Data.Info.Overlord.Level;
+        NotificationCharacter->ForceWingGrade = Character->Data.ForceWingInfo.Grade;
+        NotificationCharacter->ForceWingLevel = Character->Data.ForceWingInfo.Level;
         NotificationCharacter->MaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
         NotificationCharacter->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
         NotificationCharacter->MovementSpeed = (UInt32)(Character->Movement.Speed * RUNTIME_MOVEMENT_SPEED_SCALE);
@@ -557,20 +557,20 @@ Void RTWorldChunkNotify(
         NotificationCharacter->PositionBeginY = Character->Movement.PositionBegin.Y;
         NotificationCharacter->PositionEndX = Character->Movement.PositionEnd.X;
         NotificationCharacter->PositionEndY = Character->Movement.PositionEnd.Y;
-        NotificationCharacter->Nation = Character->Info.Profile.Nation;
-        NotificationCharacter->CharacterStyle = SwapUInt32(Character->Info.Style.RawValue);
-        NotificationCharacter->CharacterLiveStyle = Character->Info.LiveStyle.RawValue;
-        NotificationCharacter->CharacterExtendedStyle = Character->Info.ExtendedStyle.RawValue;
+        NotificationCharacter->Nation = Character->Data.Info.Profile.Nation;
+        NotificationCharacter->CharacterStyle = SwapUInt32(Character->Data.Info.Style.RawValue);
+        NotificationCharacter->CharacterLiveStyle = Character->Data.Info.LiveStyle.RawValue;
+        NotificationCharacter->CharacterExtendedStyle = Character->Data.Info.ExtendedStyle.RawValue;
         NotificationCharacter->IsDead = RTCharacterIsAlive(Runtime, Character) ? 0 : 1;
-        NotificationCharacter->EquipmentSlotCount = Character->EquipmentInfo.Count;
+        NotificationCharacter->EquipmentSlotCount = Character->Data.EquipmentInfo.Count;
         NotificationCharacter->NameLength = strlen(Character->Name) + 1;
         RTNotificationAppendCString(Notification, Character->Name);
         
         NOTIFICATION_DATA_CHARACTERS_SPAWN_GUILD* Guild = (NOTIFICATION_DATA_CHARACTERS_SPAWN_GUILD*)&NotificationCharacter->Name[NotificationCharacter->NameLength];
         Guild->GuildNameLength = 0;
 
-        for (Index EquipmentIndex = 0; EquipmentIndex < Character->EquipmentInfo.Count; EquipmentIndex += 1) {
-            RTItemSlotRef ItemSlot = &Character->EquipmentInfo.Slots[EquipmentIndex];
+        for (Index EquipmentIndex = 0; EquipmentIndex < Character->Data.EquipmentInfo.Count; EquipmentIndex += 1) {
+            RTItemSlotRef ItemSlot = &Character->Data.EquipmentInfo.Slots[EquipmentIndex];
 
             NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* NotificationSlot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
             NotificationSlot->EquipmentSlotIndex = ItemSlot->SlotIndex;

@@ -8,9 +8,9 @@
 CLIENT_PROCEDURE_BINDING(ADD_CHARACTER_STATS) {
 	if (!Character) goto error;
 
-    if (Character->Info.Stat[RUNTIME_CHARACTER_STAT_STR] != Packet->Stat[RUNTIME_CHARACTER_STAT_STR] ||
-        Character->Info.Stat[RUNTIME_CHARACTER_STAT_DEX] != Packet->Stat[RUNTIME_CHARACTER_STAT_DEX] ||
-        Character->Info.Stat[RUNTIME_CHARACTER_STAT_INT] != Packet->Stat[RUNTIME_CHARACTER_STAT_INT]) {
+    if (Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_STR] != Packet->Stat[RUNTIME_CHARACTER_STAT_STR] ||
+        Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_DEX] != Packet->Stat[RUNTIME_CHARACTER_STAT_DEX] ||
+        Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_INT] != Packet->Stat[RUNTIME_CHARACTER_STAT_INT]) {
         goto error;
     }
 
@@ -18,9 +18,9 @@ CLIENT_PROCEDURE_BINDING(ADD_CHARACTER_STATS) {
     
     S2C_DATA_ADD_CHARACTER_STATS* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ADD_CHARACTER_STATS);
     Response->Result = Success ? 0 : 1;
-    Response->Stat[RUNTIME_CHARACTER_STAT_STR] = Character->Info.Stat[RUNTIME_CHARACTER_STAT_STR];
-    Response->Stat[RUNTIME_CHARACTER_STAT_DEX] = Character->Info.Stat[RUNTIME_CHARACTER_STAT_DEX];
-    Response->Stat[RUNTIME_CHARACTER_STAT_INT] = Character->Info.Stat[RUNTIME_CHARACTER_STAT_INT];
+    Response->Stat[RUNTIME_CHARACTER_STAT_STR] = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_STR];
+    Response->Stat[RUNTIME_CHARACTER_STAT_DEX] = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_DEX];
+    Response->Stat[RUNTIME_CHARACTER_STAT_INT] = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_INT];
 	return SocketSend(Socket, Connection, Response);
 
 error:
@@ -38,9 +38,9 @@ CLIENT_PROCEDURE_BINDING(REMOVE_CHARACTER_STATS) {
 
     if (Packet->Length != sizeof(C2S_DATA_REMOVE_CHARACTER_STATS) + PacketTailLength) goto error;
 
-    if (Character->Info.Stat[RUNTIME_CHARACTER_STAT_STR] != Packet->Stat[RUNTIME_CHARACTER_STAT_STR] ||
-        Character->Info.Stat[RUNTIME_CHARACTER_STAT_DEX] != Packet->Stat[RUNTIME_CHARACTER_STAT_DEX] ||
-        Character->Info.Stat[RUNTIME_CHARACTER_STAT_INT] != Packet->Stat[RUNTIME_CHARACTER_STAT_INT]) {
+    if (Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_STR] != Packet->Stat[RUNTIME_CHARACTER_STAT_STR] ||
+        Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_DEX] != Packet->Stat[RUNTIME_CHARACTER_STAT_DEX] ||
+        Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_INT] != Packet->Stat[RUNTIME_CHARACTER_STAT_INT]) {
         goto error;
     }
 
@@ -61,7 +61,7 @@ CLIENT_PROCEDURE_BINDING(REMOVE_CHARACTER_STATS) {
             Int32 InventorySlotIndex = Packet->InventorySlots[SlotIndex];
             SlotIndex += 1;
 
-            RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, InventorySlotIndex);
+            RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, InventorySlotIndex);
             if (!ItemSlot) goto error;
 
             RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
@@ -77,7 +77,7 @@ CLIENT_PROCEDURE_BINDING(REMOVE_CHARACTER_STATS) {
 
             ItemSlot->ItemOptions -= Packet->StatDelta[Index];
             if (ItemSlot->ItemOptions < 1) {
-                RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+                RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
             }
 
             Bool Success = RTCharacterRemoveStat(Runtime, Character, StatIndex, Packet->StatDelta[Index]);
@@ -87,9 +87,9 @@ CLIENT_PROCEDURE_BINDING(REMOVE_CHARACTER_STATS) {
 
     S2C_DATA_REMOVE_CHARACTER_STATS* Response = PacketBufferInit(Connection->PacketBuffer, S2C, REMOVE_CHARACTER_STATS);
     Response->Result = 0;
-    Response->Stat[RUNTIME_CHARACTER_STAT_STR] = Character->Info.Stat[RUNTIME_CHARACTER_STAT_STR];
-    Response->Stat[RUNTIME_CHARACTER_STAT_DEX] = Character->Info.Stat[RUNTIME_CHARACTER_STAT_DEX];
-    Response->Stat[RUNTIME_CHARACTER_STAT_INT] = Character->Info.Stat[RUNTIME_CHARACTER_STAT_INT];
+    Response->Stat[RUNTIME_CHARACTER_STAT_STR] = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_STR];
+    Response->Stat[RUNTIME_CHARACTER_STAT_DEX] = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_DEX];
+    Response->Stat[RUNTIME_CHARACTER_STAT_INT] = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_INT];
 	return SocketSend(Socket, Connection, Response);
 
 error:

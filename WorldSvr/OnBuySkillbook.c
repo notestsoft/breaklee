@@ -10,7 +10,7 @@ CLIENT_PROCEDURE_BINDING(BUY_SKILLBOOK) {
 
     RTTrainerDataRef Trainer = RTRuntimeGetTrainerByWorldNpcID(
         Runtime,
-        Character->Info.Position.WorldID,
+        Character->Data.Info.Position.WorldID,
         Packet->NpcID
     );
     if (!Trainer) goto error;
@@ -28,7 +28,7 @@ CLIENT_PROCEDURE_BINDING(BUY_SKILLBOOK) {
     RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, Skill->SkillBookID);
     assert(ItemData);
 
-    if (Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < ItemData->BuyPrice) goto error;
+    if (Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < ItemData->BuyPrice) goto error;
     
     struct _RTItemSlot ItemSlot = { 0 };
     ItemSlot.SlotIndex = Packet->InventorySlotIndex;
@@ -37,12 +37,12 @@ CLIENT_PROCEDURE_BINDING(BUY_SKILLBOOK) {
 
     Bool Success = RTInventorySetSlot(
         Runtime,
-        &Character->InventoryInfo,
+        &Character->Data.InventoryInfo,
         &ItemSlot
     );
 
     if (Success) {
-        Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= ItemData->BuyPrice;
+        Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= ItemData->BuyPrice;
     }
 
     S2C_DATA_BUY_SKILLBOOK* Response = PacketBufferInit(Connection->PacketBuffer, S2C, BUY_SKILLBOOK);

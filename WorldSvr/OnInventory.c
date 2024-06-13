@@ -24,17 +24,17 @@ Bool MoveInventoryItem(
     UInt32 DestinationSlotIndex
 ) {
     // TODO: Check if this is causing an issue when the client is not initialized!
-    memcpy(&kEquipmentInfoBackup, &Character->EquipmentInfo, sizeof(struct _RTCharacterEquipmentInfo));
-    memcpy(&kInventoryInfoBackup, &Character->InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
-    memcpy(&kWarehouseInfoBackup, &Character->WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
-    memcpy(&kVehicleInventoryInfoBackup, &Character->VehicleInventoryInfo, sizeof(struct _RTCharacterVehicleInventoryInfo));
+    memcpy(&kEquipmentInfoBackup, &Character->Data.EquipmentInfo, sizeof(struct _RTCharacterEquipmentInfo));
+    memcpy(&kInventoryInfoBackup, &Character->Data.InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
+    memcpy(&kWarehouseInfoBackup, &Character->Data.WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
+    memcpy(&kVehicleInventoryInfoBackup, &Character->Data.VehicleInventoryInfo, sizeof(struct _RTCharacterVehicleInventoryInfo));
 
     struct _RTItemSlot TempSlot = { 0 };
     if (SourceStorageType == STORAGE_TYPE_INVENTORY) {
-        if (!RTInventoryRemoveSlot(Runtime, &Character->InventoryInfo, SourceSlotIndex, &TempSlot)) goto error;
+        if (!RTInventoryRemoveSlot(Runtime, &Character->Data.InventoryInfo, SourceSlotIndex, &TempSlot)) goto error;
     }
     else if (SourceStorageType == STORAGE_TYPE_EQUIPMENT) {
-        if (!RTEquipmentRemoveSlot(Runtime, Character, &Character->EquipmentInfo, SourceSlotIndex, &TempSlot)) goto error;
+        if (!RTEquipmentRemoveSlot(Runtime, Character, &Character->Data.EquipmentInfo, SourceSlotIndex, &TempSlot)) goto error;
 
         if (TempSlot.SlotIndex == RUNTIME_EQUIPMENT_SLOT_INDEX_WEAPON_LEFT && DestinationStorageType != STORAGE_TYPE_EQUIPMENT) {
             RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, TempSlot.Item.ID);
@@ -45,18 +45,18 @@ Bool MoveInventoryItem(
             );
             if (ItemData && IsOneHandedWeapon) {
                 struct _RTItemSlot TempSlot2 = { 0 };
-                if (RTEquipmentRemoveSlot(Runtime, Character, &Character->EquipmentInfo, RUNTIME_EQUIPMENT_SLOT_INDEX_WEAPON_RIGHT, &TempSlot2)) {
+                if (RTEquipmentRemoveSlot(Runtime, Character, &Character->Data.EquipmentInfo, RUNTIME_EQUIPMENT_SLOT_INDEX_WEAPON_RIGHT, &TempSlot2)) {
                     TempSlot2.SlotIndex = RUNTIME_EQUIPMENT_SLOT_INDEX_WEAPON_LEFT;
-                    RTEquipmentSetSlot(Runtime, Character, &Character->EquipmentInfo, &TempSlot2);
+                    RTEquipmentSetSlot(Runtime, Character, &Character->Data.EquipmentInfo, &TempSlot2);
                 }
             }
         }
     }
     else if (SourceStorageType == STORAGE_TYPE_WAREHOUSE) {
-		if (!RTWarehouseRemoveSlot(Runtime, &Character->WarehouseInfo, SourceSlotIndex, &TempSlot)) goto error;
+		if (!RTWarehouseRemoveSlot(Runtime, &Character->Data.WarehouseInfo, SourceSlotIndex, &TempSlot)) goto error;
 	}
     else if (SourceStorageType == STORAGE_TYPE_VEHICLE_INVENTORY) {
-        if (!RTVehicleInventoryRemoveSlot(Runtime, &Character->VehicleInventoryInfo, SourceSlotIndex, &TempSlot)) goto error;
+        if (!RTVehicleInventoryRemoveSlot(Runtime, &Character->Data.VehicleInventoryInfo, SourceSlotIndex, &TempSlot)) goto error;
     }
     else {
         goto error;
@@ -64,23 +64,23 @@ Bool MoveInventoryItem(
 
     TempSlot.SlotIndex = DestinationSlotIndex;
     if (DestinationStorageType == STORAGE_TYPE_INVENTORY) {
-        if (!RTInventorySetSlot(Runtime, &Character->InventoryInfo, &TempSlot)) goto error;
+        if (!RTInventorySetSlot(Runtime, &Character->Data.InventoryInfo, &TempSlot)) goto error;
     }
     else if (DestinationStorageType == STORAGE_TYPE_EQUIPMENT) {
-        if (!RTEquipmentSetSlot(Runtime, Character, &Character->EquipmentInfo, &TempSlot)) goto error;
+        if (!RTEquipmentSetSlot(Runtime, Character, &Character->Data.EquipmentInfo, &TempSlot)) goto error;
     }
     else if (DestinationStorageType == STORAGE_TYPE_WAREHOUSE) {
-        if (!RTWarehouseSetSlot(Runtime, &Character->WarehouseInfo, &TempSlot)) goto error;
+        if (!RTWarehouseSetSlot(Runtime, &Character->Data.WarehouseInfo, &TempSlot)) goto error;
     }
     else if (DestinationStorageType == STORAGE_TYPE_VEHICLE_INVENTORY) {
-        RTItemSlotRef VehicleSlot = RTEquipmentGetSlot(Runtime, &Character->EquipmentInfo, EQUIPMENT_SLOT_INDEX_VEHICLE);
+        RTItemSlotRef VehicleSlot = RTEquipmentGetSlot(Runtime, &Character->Data.EquipmentInfo, EQUIPMENT_SLOT_INDEX_VEHICLE);
         if (!VehicleSlot) goto error;
 
         RTItemDataRef VehicleData = RTRuntimeGetItemDataByIndex(Runtime, VehicleSlot->Item.ID);
         if (!VehicleData) goto error;
         if (VehicleData->ItemType != RUNTIME_ITEM_TYPE_VEHICLE_BIKE) goto error;
 
-        if (!RTVehicleInventorySetSlot(Runtime, &Character->VehicleInventoryInfo, &TempSlot)) goto error;
+        if (!RTVehicleInventorySetSlot(Runtime, &Character->Data.VehicleInventoryInfo, &TempSlot)) goto error;
     }
     else {
         goto error;
@@ -102,15 +102,13 @@ Bool MoveInventoryItem(
         Character->SyncMask.VehicleInventoryInfo = true;
     }
 
-    Character->SyncPriority.Low = true;
-
     return true;
 
 error:
-    memcpy(&Character->EquipmentInfo, &kEquipmentInfoBackup, sizeof(struct _RTCharacterEquipmentInfo));
-    memcpy(&Character->InventoryInfo, &kInventoryInfoBackup, sizeof(struct _RTCharacterInventoryInfo));
-    memcpy(&Character->WarehouseInfo, &kWarehouseInfoBackup, sizeof(struct _RTCharacterWarehouseInfo));
-    memcpy(&Character->VehicleInventoryInfo, &kVehicleInventoryInfoBackup, sizeof(struct _RTCharacterVehicleInventoryInfo));
+    memcpy(&Character->Data.EquipmentInfo, &kEquipmentInfoBackup, sizeof(struct _RTCharacterEquipmentInfo));
+    memcpy(&Character->Data.InventoryInfo, &kInventoryInfoBackup, sizeof(struct _RTCharacterInventoryInfo));
+    memcpy(&Character->Data.WarehouseInfo, &kWarehouseInfoBackup, sizeof(struct _RTCharacterWarehouseInfo));
+    memcpy(&Character->Data.VehicleInventoryInfo, &kVehicleInventoryInfoBackup, sizeof(struct _RTCharacterVehicleInventoryInfo));
     return false;
 }
 
@@ -120,8 +118,8 @@ Bool CanSwapInventoryItem(
     Int32 SourceSlotIndex,
     Int32 TargetSlotIndex
 ) {
-    RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, SourceSlotIndex);
-    RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, TargetSlotIndex);
+    RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, SourceSlotIndex);
+    RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, TargetSlotIndex);
     if (!SourceSlot || !TargetSlot) return false;
 
     return true;
@@ -133,8 +131,8 @@ Bool SwapInventoryItem(
     Int32 SourceSlotIndex,
     Int32 TargetSlotIndex
 ) {
-    RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, SourceSlotIndex);
-    RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, TargetSlotIndex);
+    RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, SourceSlotIndex);
+    RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, TargetSlotIndex);
     if (!SourceSlot || !TargetSlot) return false;
 
     SourceSlot->SlotIndex = TargetSlotIndex;
@@ -149,7 +147,7 @@ CLIENT_PROCEDURE_BINDING(PUSH_EQUIPMENT_ITEM) {
 
     Info("PushEquipment:");
 
-    RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->LeftSlotIndex);
+    RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->LeftSlotIndex);
     if (!ItemSlot) goto error;
 
     RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
@@ -171,19 +169,19 @@ CLIENT_PROCEDURE_BINDING(PUSH_EQUIPMENT_ITEM) {
     while (NextSlotIndex >= 0) {
         Int32 RightSlotIndex = NextSlotIndex;
         if (!HasLeftSlot) {
-            HasLeftSlot = RTEquipmentRemoveSlot(Runtime, Character, &Character->EquipmentInfo, NextSlotIndex, &LeftSlot);
+            HasLeftSlot = RTEquipmentRemoveSlot(Runtime, Character, &Character->Data.EquipmentInfo, NextSlotIndex, &LeftSlot);
             if (HasLeftSlot) Info("[E%d] -> [T1]", LeftSlot.SlotIndex);
             RightSlotIndex = RTCharacterFindNextEquipmentSlotIndex(Runtime, Character, NextSlotIndex + 1, ItemType);
         }
         if (!HasLeftSlot) break;
 
-        HasRightSlot = RTEquipmentRemoveSlot(Runtime, Character, &Character->EquipmentInfo, RightSlotIndex, &RightSlot);
+        HasRightSlot = RTEquipmentRemoveSlot(Runtime, Character, &Character->Data.EquipmentInfo, RightSlotIndex, &RightSlot);
         if (HasRightSlot) Info("[E%d] -> [T2]", RightSlot.SlotIndex);
         NextSlotIndex = RTCharacterFindNextEquipmentSlotIndex(Runtime, Character, RightSlotIndex + 1, ItemType);
 
         if (HasLeftSlot && RightSlotIndex >= 0) {
             LeftSlot.SlotIndex = RightSlotIndex;
-            Bool Success = RTEquipmentSetSlot(Runtime, Character, &Character->EquipmentInfo, &LeftSlot);
+            Bool Success = RTEquipmentSetSlot(Runtime, Character, &Character->Data.EquipmentInfo, &LeftSlot);
             assert(Success);
             Info("[T1] -> [E%d]", LeftSlot.SlotIndex);
             memcpy(&LeftSlot, &RightSlot, sizeof(struct _RTItemSlot));
@@ -193,26 +191,25 @@ CLIENT_PROCEDURE_BINDING(PUSH_EQUIPMENT_ITEM) {
         }
     }
 
-    Bool Success = RTInventoryRemoveSlot(Runtime, &Character->InventoryInfo, Packet->LeftSlotIndex, &RightSlot);
+    Bool Success = RTInventoryRemoveSlot(Runtime, &Character->Data.InventoryInfo, Packet->LeftSlotIndex, &RightSlot);
     assert(Success);
 
     Info("[I%d] -> [T2]", RightSlot.SlotIndex);
 
     if (HasLeftSlot) {
         LeftSlot.SlotIndex = Packet->RightSlotIndex;
-        Bool Success = RTInventorySetSlot(Runtime, &Character->InventoryInfo, &LeftSlot);
+        Bool Success = RTInventorySetSlot(Runtime, &Character->Data.InventoryInfo, &LeftSlot);
         assert(Success);
         Info("[T1] -> [I%d]", LeftSlot.SlotIndex);
     }
 
     RightSlot.SlotIndex = FirstSlotIndex;
-    Success = RTEquipmentSetSlot(Runtime, Character, &Character->EquipmentInfo, &RightSlot);
+    Success = RTEquipmentSetSlot(Runtime, Character, &Character->Data.EquipmentInfo, &RightSlot);
     assert(Success);
     Info("[T2] -> [E%d]", RightSlot.SlotIndex);
 
     Character->SyncMask.EquipmentInfo = true;
     Character->SyncMask.InventoryInfo = true;
-    Character->SyncPriority.High = true;
 
     S2C_DATA_PUSH_EQUIPMENT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PUSH_EQUIPMENT_ITEM);
     Response->Result = 1;
@@ -258,8 +255,8 @@ CLIENT_PROCEDURE_BINDING(SWAP_INVENTORY_ITEM) {
     }
 
     // TODO: Check if this is causing an issue when the client is not initialized!
-    memcpy(&kEquipmentInfoBackup, &Character->EquipmentInfo, sizeof(struct _RTCharacterEquipmentInfo));
-    memcpy(&kInventoryInfoBackup, &Character->InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
+    memcpy(&kEquipmentInfoBackup, &Character->Data.EquipmentInfo, sizeof(struct _RTCharacterEquipmentInfo));
+    memcpy(&kInventoryInfoBackup, &Character->Data.InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
 
     S2C_DATA_SWAP_INVENTORY_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SWAP_INVENTORY_ITEM);
 
@@ -267,10 +264,10 @@ CLIENT_PROCEDURE_BINDING(SWAP_INVENTORY_ITEM) {
 
     // Move Source2 to TempSlot
     if (Packet->Source2.StorageType == STORAGE_TYPE_INVENTORY) {
-        if (!RTInventoryRemoveSlot(Runtime, &Character->InventoryInfo, Packet->Source2.Index, &TempSlot)) goto error;
+        if (!RTInventoryRemoveSlot(Runtime, &Character->Data.InventoryInfo, Packet->Source2.Index, &TempSlot)) goto error;
     }
     else if (Packet->Source2.StorageType == STORAGE_TYPE_EQUIPMENT) {
-        if (!RTEquipmentRemoveSlot(Runtime, Character, &Character->EquipmentInfo, Packet->Source2.Index, &TempSlot)) goto error;
+        if (!RTEquipmentRemoveSlot(Runtime, Character, &Character->Data.EquipmentInfo, Packet->Source2.Index, &TempSlot)) goto error;
     }
     else {
         goto error;
@@ -289,10 +286,10 @@ CLIENT_PROCEDURE_BINDING(SWAP_INVENTORY_ITEM) {
     // Move TempSlot to Destination2
     TempSlot.SlotIndex = Packet->Destination2.Index;
     if (Packet->Destination2.StorageType == STORAGE_TYPE_INVENTORY) {
-        if (!RTInventorySetSlot(Runtime, &Character->InventoryInfo, &TempSlot)) goto error;
+        if (!RTInventorySetSlot(Runtime, &Character->Data.InventoryInfo, &TempSlot)) goto error;
     }
     else if (Packet->Destination2.StorageType == STORAGE_TYPE_EQUIPMENT) {
-        if (!RTEquipmentSetSlot(Runtime, Character, &Character->EquipmentInfo, &TempSlot)) goto error;
+        if (!RTEquipmentSetSlot(Runtime, Character, &Character->Data.EquipmentInfo, &TempSlot)) goto error;
     }
     else {
         goto error;
@@ -305,8 +302,8 @@ CLIENT_PROCEDURE_BINDING(SWAP_INVENTORY_ITEM) {
     return SocketSend(Socket, Connection, Response);
 
 error:
-    memcpy(&Character->EquipmentInfo, &kEquipmentInfoBackup, sizeof(struct _RTCharacterEquipmentInfo));
-    memcpy(&Character->InventoryInfo, &kInventoryInfoBackup, sizeof(struct _RTCharacterInventoryInfo));
+    memcpy(&Character->Data.EquipmentInfo, &kEquipmentInfoBackup, sizeof(struct _RTCharacterEquipmentInfo));
+    memcpy(&Character->Data.InventoryInfo, &kInventoryInfoBackup, sizeof(struct _RTCharacterInventoryInfo));
 
     return SocketDisconnect(Socket, Connection);
 }
@@ -339,12 +336,12 @@ CLIENT_PROCEDURE_BINDING(SORT_INVENTORY) {
 
     struct _RTCharacterInventoryInfo TempInventoryMemory = { 0 };
     RTCharacterInventoryInfoRef TempInventory = &TempInventoryMemory;
-    memcpy(TempInventory, &Character->InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
+    memcpy(TempInventory, &Character->Data.InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
 
     Bool InventoryOccupancyMask[RUNTIME_INVENTORY_TOTAL_SIZE] = { 0 };
     memset(InventoryOccupancyMask, 0, sizeof(Bool) * RUNTIME_INVENTORY_TOTAL_SIZE);
-    for (Int32 Index = 0; Index < Character->InventoryInfo.Count; Index += 1) {
-        InventoryOccupancyMask[Character->InventoryInfo.Slots[Index].SlotIndex] = true;
+    for (Int32 Index = 0; Index < Character->Data.InventoryInfo.Count; Index += 1) {
+        InventoryOccupancyMask[Character->Data.InventoryInfo.Slots[Index].SlotIndex] = true;
     }
 
     for (Int32 Index = 0; Index < Packet->Count; Index += 1) {
@@ -352,7 +349,7 @@ CLIENT_PROCEDURE_BINDING(SORT_INVENTORY) {
     }
 
     for (Int32 Index = 0; Index < Packet->Count; Index += 1) {
-        Int32 SlotIndex = RTInventoryGetSlotIndex(Runtime, &Character->InventoryInfo, Packet->InventorySlots[Index]);
+        Int32 SlotIndex = RTInventoryGetSlotIndex(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlots[Index]);
         if (SlotIndex < 0) goto error;
 
         RTItemSlotRef Slot = &TempInventory->Slots[SlotIndex];
@@ -369,10 +366,9 @@ CLIENT_PROCEDURE_BINDING(SORT_INVENTORY) {
         assert(Found);
     }
 
-    memcpy(&Character->InventoryInfo, TempInventory, sizeof(struct _RTCharacterInventoryInfo));
+    memcpy(&Character->Data.InventoryInfo, TempInventory, sizeof(struct _RTCharacterInventoryInfo));
 
     Character->SyncMask.InventoryInfo = true;
-    Character->SyncPriority.High = true;
 
     S2C_DATA_SORT_INVENTORY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SORT_INVENTORY);
     Response->Success = 1;
@@ -405,10 +401,10 @@ CLIENT_PROCEDURE_BINDING(MOVE_INVENTORY_ITEM_LIST) {
         if (Destination[Index].StorageType != STORAGE_TYPE_INVENTORY) goto error;
 
         Int32 SourceIndex = Source[Index].Index;
-        RTCharacterInventoryInfoRef SourceInventory = &Character->InventoryInfo;
+        RTCharacterInventoryInfoRef SourceInventory = &Character->Data.InventoryInfo;
         if (SourceIndex >= RUNTIME_INVENTORY_TOTAL_SIZE) {
             SourceIndex -= RUNTIME_INVENTORY_TOTAL_SIZE;
-            SourceInventory = &Character->TemporaryInventoryInfo;
+            SourceInventory = &Character->Data.TemporaryInventoryInfo;
             if (SourceIndex >= RUNTIME_INVENTORY_TOTAL_SIZE) {
                 goto error;
             }
@@ -417,7 +413,7 @@ CLIENT_PROCEDURE_BINDING(MOVE_INVENTORY_ITEM_LIST) {
         Bool Success = RTInventoryMoveSlot(
             Runtime,
             SourceInventory,
-            &Character->InventoryInfo,
+            &Character->Data.InventoryInfo,
             SourceIndex,
             Destination[Index].Index
         );
@@ -426,7 +422,6 @@ CLIENT_PROCEDURE_BINDING(MOVE_INVENTORY_ITEM_LIST) {
     }
 
     Character->SyncMask.InventoryInfo = true;
-    Character->SyncPriority.Low = true;
 
     return SocketSend(Socket, Connection, Response);
 

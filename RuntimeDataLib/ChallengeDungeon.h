@@ -1,7 +1,7 @@
 RUNTIME_DATA_FILE_BEGIN(ChallengeDungeon.enc)
 
 RUNTIME_DATA_TYPE_BEGIN(ChallengeDungeonSchedule, "cabal.Schedule.Season_Time", 1)
-	RUNTIME_DATA_PROPERTY_ARRAY(Int32, SeasonTime, "Season_Time", 3, ":")
+	RUNTIME_DATA_PROPERTY_ARRAY(Int32, SeasonTime, "Season_Time", 3, ':')
 RUNTIME_DATA_TYPE_END(ChallengeDungeonSchedule)
 RUNTIME_DATA_TYPE_INDEX_SINGLE(ChallengeDungeonSchedule)
 

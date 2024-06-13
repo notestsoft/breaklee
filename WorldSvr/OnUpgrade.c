@@ -12,7 +12,7 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 
 	if (Packet->ForceCoreCount < 1 || Packet->ForceCoreCount > 10) goto error;
 
-	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->ItemSlotIndex);
+	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->ItemSlotIndex);
 	if (!ItemSlot) goto error;
 
 	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
@@ -29,7 +29,7 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 	}
 
 	for (Int32 SlotIndex = 0; SlotIndex < Packet->ForceCoreCount; SlotIndex += 1) {
-		RTItemSlotRef ForceCoreSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->ForceCoreSlotIndices[SlotIndex]);
+		RTItemSlotRef ForceCoreSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->ForceCoreSlotIndices[SlotIndex]);
 		if (!ForceCoreSlot) goto error;
 		
 		RTItemDataRef ForceCoreData = RTRuntimeGetItemDataByIndex(Runtime, ForceCoreSlot->Item.ID);
@@ -49,7 +49,7 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 	RTDataForceCodeCostRef ForceCodeCost = RTRuntimeDataForceCodeCostGet(Runtime->Context, CostGrade, FilledSlotCount);
 	if (!ForceCodeCost) goto error;
 
-	if (Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < ForceCodeCost->CurrencyCost) goto error;
+	if (Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < ForceCodeCost->CurrencyCost) goto error;
 
 	Bool IsOneHandedWeapon = (
 		ItemData->ItemType == RUNTIME_ITEM_TYPE_WEAPON_ONE_HAND ||
@@ -61,7 +61,7 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 	RTDataForceCoreBaseRef ForceCoreBase = RTRuntimeDataForceCoreBaseGet(Runtime->Context, ItemData->ItemGrade, ItemType);
 	if (!ForceCoreBase) goto error;
 
-	RTItemSlotRef FixedScrollSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->OptionScrollSlotIndex);
+	RTItemSlotRef FixedScrollSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->OptionScrollSlotIndex);
 	RTItemDataRef FixedScrollData = NULL;
 	RTItemOptions FixedScrollOptions = { 0 };
 
@@ -73,7 +73,7 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 		if (FixedScrollOptions.OptionScroll.ForceEffectIndex < 1) goto error;
 	}
 
-	RTItemSlotRef RandomScrollSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->RandomScrollSlotIndex);
+	RTItemSlotRef RandomScrollSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->RandomScrollSlotIndex);
 	RTItemDataRef RandomScrollData = NULL;
 	RTItemOptions RandomScrollOptions = { 0 };
 
@@ -169,10 +169,10 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 				FixedScrollSlot->ItemOptions = FixedScrollOptions.Serial;
 			}
 			else {
-				RTInventoryClearSlot(Runtime, &Character->InventoryInfo, FixedScrollSlot->SlotIndex);
+				RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, FixedScrollSlot->SlotIndex);
 
 				if (Packet->RandomScrollSlotIndex >= 0) {
-					RandomScrollSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->RandomScrollSlotIndex);
+					RandomScrollSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->RandomScrollSlotIndex);
 				}
 			}
 		}
@@ -183,21 +183,20 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 				RandomScrollSlot->ItemOptions = RandomScrollOptions.Serial;
 			}
 			else {
-				RTInventoryClearSlot(Runtime, &Character->InventoryInfo, RandomScrollSlot->SlotIndex);
+				RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, RandomScrollSlot->SlotIndex);
 			}
 		}
 
 		for (Int32 SlotIndex = 0; SlotIndex < Packet->ForceCoreCount; SlotIndex += 1) {
-			RTInventoryClearSlot(Runtime, &Character->InventoryInfo, Packet->ForceCoreSlotIndices[SlotIndex]);			
+			RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, Packet->ForceCoreSlotIndices[SlotIndex]);			
 		}
 
-		Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= ForceCodeCost->CurrencyCost;
+		Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= ForceCodeCost->CurrencyCost;
 		Character->SyncMask.Info = true;
 		Character->SyncMask.InventoryInfo = true;
-		Character->SyncPriority.High = true;
 	}
 
-	ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->ItemSlotIndex);
+	ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->ItemSlotIndex);
 	assert(ItemSlot);
 
 	S2C_DATA_ADD_FORCE_SLOT_OPTION* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ADD_FORCE_SLOT_OPTION);
@@ -218,7 +217,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 
 	if (Packet->CoreCount < 1) goto error;
 
-	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
 	if (!ItemSlot) goto error;
 
     struct _RTItemSlot ItemSlotCopy = *ItemSlot;
@@ -239,7 +238,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 	RTDataUpgradeCostSafeguardRef UpgradeCostSafeguard = RTRuntimeDataUpgradeCostSafeguardGet(Runtime->Context, ItemSlot->Item.UpgradeLevel);
 	if (!UpgradeCostSafeguard) goto error;
 
-	RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->CoreSlotIndices[0]);
+	RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->CoreSlotIndices[0]);
 	if (!CoreSlot) goto error;
 
 	RTItemDataRef CoreData = RTRuntimeGetItemDataByIndex(Runtime, CoreSlot->Item.ID);
@@ -299,7 +298,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 
 	// TODO: We have to snapshot inventory here to rollback!!!
 	for (Int32 Index = 0; Index < Packet->CoreCount; Index += 1) {
-		RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->CoreSlotIndices[Index]);
+		RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->CoreSlotIndices[Index]);
 		assert(CoreSlot);
 
 		if (CoreSlot->Item.UpgradeLevel != UpgradeCoreLevel) goto error;
@@ -314,7 +313,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 		if (!CoreData->Options[UpgradeCoreFlagIndex]) goto error;
 
 		if (CoreData->ItemType == RUNTIME_ITEM_TYPE_UPGRADE_CORE) {
-			RTInventoryClearSlot(Runtime, &Character->InventoryInfo, CoreSlot->SlotIndex);
+			RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, CoreSlot->SlotIndex);
 			RequiredCoreCount -= 1;
 		}
 		else if (CoreData->ItemType == RUNTIME_ITEM_TYPE_UPGRADE_CORE_SET) {
@@ -325,7 +324,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 			RequiredCoreCount -= ConsumableCoreCount;
 
 			if (CoreSlot->ItemOptions < 1) {
-				RTInventoryClearSlot(Runtime, &Character->InventoryInfo, CoreSlot->SlotIndex);
+				RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, CoreSlot->SlotIndex);
 			}
 		}
 
@@ -337,7 +336,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 	if (RequiredCoreCount > 0) goto error;
 
     // TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
-    ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+    ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
 
 	Int32 Seed = (Int32)PlatformGetTickCount();
 	Int32 UpgradePoint = Client->UpgradePoint;
@@ -354,7 +353,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 		Result != RUNTIME_UPGRADE_RESULT_UPGRADE_2) {
 
 		for (Int32 Index = 0; Index < Packet->SafeCount; Index += 1) {
-			RTItemSlotRef SafeSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->SafeSlotIndices[Index]);
+			RTItemSlotRef SafeSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->SafeSlotIndices[Index]);
 			assert(SafeSlot);
 
 			RTItemDataRef SafeData = RTRuntimeGetItemDataByIndex(Runtime, SafeSlot->Item.ID);
@@ -371,20 +370,19 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 			ConsumedSafeCount += ConsumableSafeCount;
 
 			if (SafeSlot->ItemOptions < 1) {
-				RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SafeSlot->SlotIndex);
+				RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SafeSlot->SlotIndex);
 			}
 		}
 
 		if (ConsumedSafeCount > 0 && RequiredSafeCount < 1) {
             // TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
-            ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+            ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
 			*ItemSlot = ItemSlotCopy;
 		}
 	}
 
 	Client->UpgradePoint = UpgradePoint;
 	Character->SyncMask.InventoryInfo = true;
-	Character->SyncPriority.High = true;
 
 	S2C_DATA_UPDATE_UPGRADE_POINTS* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, UPDATE_UPGRADE_POINTS);
 	Notification->UpgradePoint = Client->UpgradePoint;
@@ -409,7 +407,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_LEVEL) {
 	Int32 TailLength = sizeof(UInt16) * Packet->InventorySlotCount;
 	if (sizeof(C2S_DATA_UPGRADE_EXTREME_LEVEL) + TailLength > Packet->Length) goto error;
 
-	RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->TargetSlotIndex);
+	RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->TargetSlotIndex);
 	if (!TargetSlot) goto error;
 
 	RTItemDataRef TargetData = RTRuntimeGetItemDataByIndex(Runtime, TargetSlot->Item.ID);
@@ -443,24 +441,24 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_LEVEL) {
 	if (Packet->InventorySlotCount != ExtremeUpgradeFormulaLevel->RequiredCoreCount) {
 		S2C_DATA_UPGRADE_EXTREME_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPGRADE_EXTREME_LEVEL);
 		Response->Result = S2C_UPGRADE_EXTRENE_LEVEL_RESULT_INSUFFICIENT_CORES;
-		Response->Currency = Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
+		Response->Currency = Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
 		return SocketSend(Socket, Connection, Response);
 	}
 
 	if (TargetSlot->Item.UpgradeLevel < 15) goto error;
 	if (TargetSlot->Item.ExtremeLevel >= ExtremeUpgradeBaseGrade->ExtremeUpgradeMax) goto error;
 
-	if (Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < ExtremeUpgradeFormulaLevel->CurrencyPrice) {
+	if (Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < ExtremeUpgradeFormulaLevel->CurrencyPrice) {
 		S2C_DATA_UPGRADE_EXTREME_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPGRADE_EXTREME_LEVEL);
 		Response->Result = S2C_UPGRADE_EXTRENE_LEVEL_RESULT_INSUFFICIENT_CURRENCY;
-		Response->Currency = Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
+		Response->Currency = Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
 		return SocketSend(Socket, Connection, Response);
 	}
 
 	Int32 CorePower = 0;
 
 	for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
-		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex[Index]);
+		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index]);
 		if (!ItemSlot) goto error;
 
 		RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
@@ -495,17 +493,16 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_LEVEL) {
 		}
 	}
 
-	Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= ExtremeUpgradeFormulaLevel->CurrencyPrice;
+	Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= ExtremeUpgradeFormulaLevel->CurrencyPrice;
 
 	for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
-		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex[Index]);
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index]);
 	}
 
 	Character->SyncMask.Info = true;
 	Character->SyncMask.InventoryInfo = true;
-	Character->SyncPriority.High = true;
 
-	Response->Currency = Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
+	Response->Currency = Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
 	return SocketSend(Socket, Connection, Response);
 
 error:
@@ -515,13 +512,13 @@ error:
 CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_REPAIR) {
 	if (!Character) goto error;
 
-	RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->SourceSlotIndex);
+	RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->SourceSlotIndex);
 	if (!SourceSlot) goto error;
 
 	RTItemDataRef SourceData = RTRuntimeGetItemDataByIndex(Runtime, SourceSlot->Item.ID);
 	if (!SourceData) goto error;
 
-	RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->TargetSlotIndex);
+	RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->TargetSlotIndex);
 	if (!TargetSlot) goto error;
 
 	RTItemDataRef TargetData = RTRuntimeGetItemDataByIndex(Runtime, TargetSlot->Item.ID);
@@ -545,12 +542,11 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_REPAIR) {
 	}
 	else {
 		Response->Result = S2C_UPGRADE_EXTREME_REPAIR_RESULT_BROKEN;
-		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, TargetItemSlotIndex);
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, TargetItemSlotIndex);
 	}
 
-	RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceItemSlotIndex);
+	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SourceItemSlotIndex);
 	Character->SyncMask.InventoryInfo = true;
-	Character->SyncPriority.High = true;
 
 	return SocketSend(Socket, Connection, Response);
 
@@ -569,7 +565,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_CHAOS_LEVEL) {
 	UInt16* CoreSlotIndices = &Packet->CoreSlotIndices[0];
 	UInt16* SafeSlotIndices = &Packet->CoreSlotIndices[Packet->CoreCount];
 
-	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
 	if (!ItemSlot) goto error;
 
 	struct _RTItemSlot ItemSlotCopy = *ItemSlot;
@@ -588,7 +584,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_CHAOS_LEVEL) {
 	RTDataChaosUpgradeGroupCostLevelRef UpgradeGroupCostLevel = RTRuntimeDataChaosUpgradeGroupCostLevelGet(UpgradeGroupCost, ItemSlot->Item.UpgradeLevel);
 	if (!UpgradeGroupCostLevel) goto error;
 
-	RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, CoreSlotIndices[0]);
+	RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, CoreSlotIndices[0]);
 	assert(CoreSlot);
 
 	RTItemDataRef CoreData = RTRuntimeGetItemDataByIndex(Runtime, CoreSlot->Item.ID);
@@ -604,14 +600,14 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_CHAOS_LEVEL) {
 
 	// TODO: We have to snapshot inventory here to rollback!!!
 	for (Int32 Index = 0; Index < Packet->CoreCount; Index += 1) {
-		RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, CoreSlotIndices[Index]);
+		RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, CoreSlotIndices[Index]);
 		assert(CoreSlot);
 
 		RTItemDataRef CoreData = RTRuntimeGetItemDataByIndex(Runtime, CoreSlot->Item.ID);
 		assert(CoreData);
 
 		if (CoreData->ItemType == RUNTIME_ITEM_TYPE_CHAOS_CORE) {
-			RTInventoryClearSlot(Runtime, &Character->InventoryInfo, CoreSlot->SlotIndex);
+			RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, CoreSlot->SlotIndex);
 			RequiredCoreCount -= 1;
 		}
 		else if (CoreData->ItemType == RUNTIME_ITEM_TYPE_CHAOS_CORE_SET) {
@@ -622,7 +618,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_CHAOS_LEVEL) {
 			RequiredCoreCount -= ConsumableCoreCount;
 
 			if (CoreSlot->ItemOptions < 1) {
-				RTInventoryClearSlot(Runtime, &Character->InventoryInfo, CoreSlot->SlotIndex);
+				RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, CoreSlot->SlotIndex);
 			}
 		}
 
@@ -634,7 +630,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_CHAOS_LEVEL) {
 	if (RequiredCoreCount > 0) goto error;
 
 	// TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
-	ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+	ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
 
 	Int32 Seed = (Int32)PlatformGetTickCount();
 	Int32 UpgradePoint = Client->UpgradePoint;
@@ -650,7 +646,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_CHAOS_LEVEL) {
 	Int32 ConsumedSafeCount = 0;
 	if (Result != RUNTIME_CHAOS_UPGRADE_RESULT_UPGRADE) {
 		for (Int32 Index = 0; Index < Packet->SafeCount; Index += 1) {
-			RTItemSlotRef SafeSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, SafeSlotIndices[Index]);
+			RTItemSlotRef SafeSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, SafeSlotIndices[Index]);
 			assert(SafeSlot);
 
 			RTItemDataRef SafeData = RTRuntimeGetItemDataByIndex(Runtime, SafeSlot->Item.ID);
@@ -667,24 +663,23 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_CHAOS_LEVEL) {
 			ConsumedSafeCount += ConsumableSafeCount;
 
 			if (SafeSlot->ItemOptions < 1) {
-				RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SafeSlot->SlotIndex);
+				RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SafeSlot->SlotIndex);
 			}
 		}
 
 		if (ConsumedSafeCount > 0 && RequiredSafeCount < 1) {
 			// TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
-			ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+			ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
 			*ItemSlot = ItemSlotCopy;
 		}
 	}
 
 	if (DestroyItem) {
-		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
 	}
 
 	Client->UpgradePoint = UpgradePoint;
 	Character->SyncMask.InventoryInfo = true;
-	Character->SyncPriority.High = true;
 
 	S2C_DATA_UPDATE_UPGRADE_POINTS* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, UPDATE_UPGRADE_POINTS);
 	Notification->UpgradePoint = Client->UpgradePoint;
@@ -712,7 +707,7 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_ITEM_LEVEL) {
 	UInt16* CoreSlotIndices = &Packet->CoreSlotIndices[0];
 	UInt16* SafeSlotIndices = &Packet->CoreSlotIndices[Packet->CoreCount];
 
-	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
 	if (!ItemSlot) goto error;
 
 	struct _RTItemSlot ItemSlotCopy = *ItemSlot;
@@ -730,7 +725,7 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_ITEM_LEVEL) {
 	RTDataDivineUpgradeGroupCostLevelRef GroupCostLevel = RTRuntimeDataDivineUpgradeGroupCostLevelGet(GroupCost, ItemSlot->Item.DivineLevel);
 	if (!GroupCostLevel) goto error;
 
-	RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, CoreSlotIndices[0]);
+	RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, CoreSlotIndices[0]);
 	assert(CoreSlot);
 
 	RTItemDataRef CoreData = RTRuntimeGetItemDataByIndex(Runtime, CoreSlot->Item.ID);
@@ -746,14 +741,14 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_ITEM_LEVEL) {
 
 	// TODO: We have to snapshot inventory here to rollback!!!
 	for (Int32 Index = 0; Index < Packet->CoreCount; Index += 1) {
-		RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, CoreSlotIndices[Index]);
+		RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, CoreSlotIndices[Index]);
 		assert(CoreSlot);
 
 		RTItemDataRef CoreData = RTRuntimeGetItemDataByIndex(Runtime, CoreSlot->Item.ID);
 		assert(CoreData);
 
 		if (CoreData->ItemType == RUNTIME_ITEM_TYPE_DIVINE_CORE) {
-			RTInventoryClearSlot(Runtime, &Character->InventoryInfo, CoreSlot->SlotIndex);
+			RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, CoreSlot->SlotIndex);
 			RequiredCoreCount -= 1;
 		}
 		else if (CoreData->ItemType == RUNTIME_ITEM_TYPE_DIVINE_CORE_SET) {
@@ -764,7 +759,7 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_ITEM_LEVEL) {
 			RequiredCoreCount -= ConsumableCoreCount;
 
 			if (CoreSlot->ItemOptions < 1) {
-				RTInventoryClearSlot(Runtime, &Character->InventoryInfo, CoreSlot->SlotIndex);
+				RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, CoreSlot->SlotIndex);
 			}
 		}
 
@@ -776,7 +771,7 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_ITEM_LEVEL) {
 	if (RequiredCoreCount > 0) goto error;
 
 	// TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
-	ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+	ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
 
 	Int32 ResultLevel = 0;
 	Int32 Seed = (Int32)PlatformGetTickCount();
@@ -790,7 +785,7 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_ITEM_LEVEL) {
 	Int32 ConsumedSafeCount = 0;
 	if (Result == RUNTIME_DIVINE_UPGRADE_RESULT_DOWNGRADE) {
 		for (Int32 Index = 0; Index < Packet->SafeCount; Index += 1) {
-			RTItemSlotRef SafeSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, SafeSlotIndices[Index]);
+			RTItemSlotRef SafeSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, SafeSlotIndices[Index]);
 			assert(SafeSlot);
 
 			RTItemDataRef SafeData = RTRuntimeGetItemDataByIndex(Runtime, SafeSlot->Item.ID);
@@ -806,19 +801,18 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_ITEM_LEVEL) {
 			ConsumedSafeCount += ConsumableSafeCount;
 
 			if (SafeSlot->ItemOptions < 1) {
-				RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SafeSlot->SlotIndex);
+				RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SafeSlot->SlotIndex);
 			}
 		}
 
 		if (ConsumedSafeCount > 0 && RequiredSafeCount < 1) {
 			// TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
-			ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+			ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
 			*ItemSlot = ItemSlotCopy;
 		}
 	}
 
 	Character->SyncMask.InventoryInfo = true;
-	Character->SyncPriority.High = true;
 
 	S2C_DATA_DIVINE_UPGRADE_ITEM_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DIVINE_UPGRADE_ITEM_LEVEL);
 	Response->Result = Result;
@@ -838,13 +832,13 @@ error:
 CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_SEAL) {
 	if (!Character) goto error;
 
-	RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->SourceSlotIndex);
+	RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->SourceSlotIndex);
 	if (!SourceSlot) goto error;
 
 	RTItemDataRef SourceData = RTRuntimeGetItemDataByIndex(Runtime, SourceSlot->Item.ID);
 	if (!SourceData) goto error;
 
-	RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->TargetSlotIndex);
+	RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->TargetSlotIndex);
 	if (!TargetSlot) goto error;
 
 	RTItemDataRef TargetData = RTRuntimeGetItemDataByIndex(Runtime, TargetSlot->Item.ID);
@@ -860,9 +854,8 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_SEAL) {
 		if (SourceItemOptions.DivineSeal.ItemGrade != TargetData->ItemGrade) goto error;
 
 		TargetSlot->Item.DivineLevel = SourceItemOptions.DivineSeal.ItemLevel;
-		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceSlot->SlotIndex);
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SourceSlot->SlotIndex);
 		Character->SyncMask.InventoryInfo = true;
-		Character->SyncPriority.High = true;
 
 		S2C_DATA_DIVINE_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DIVINE_UPGRADE_SEAL);
 		Response->Result = S2C_DIVINE_UPGRADE_SEAL_RESULT_UNSEAL;
@@ -879,7 +872,6 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_SEAL) {
 		SourceSlot->ItemOptions = SourceItemOptions.Serial;
 		TargetSlot->Item.DivineLevel = 0;
 		Character->SyncMask.InventoryInfo = true;
-		Character->SyncPriority.High = true;
 
 		S2C_DATA_DIVINE_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DIVINE_UPGRADE_SEAL);
 		Response->Result = S2C_DIVINE_UPGRADE_SEAL_RESULT_SEAL;
@@ -899,13 +891,13 @@ error:
 CLIENT_PROCEDURE_BINDING(EXTREME_UPGRADE_SEAL) {
 	if (!Character) goto error;
 
-	RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->SourceSlotIndex);
+	RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->SourceSlotIndex);
 	if (!SourceSlot) goto error;
 
 	RTItemDataRef SourceData = RTRuntimeGetItemDataByIndex(Runtime, SourceSlot->Item.ID);
 	if (!SourceData) goto error;
 
-	RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->TargetSlotIndex);
+	RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->TargetSlotIndex);
 	if (!TargetSlot) goto error;
 
 	RTItemDataRef TargetData = RTRuntimeGetItemDataByIndex(Runtime, TargetSlot->Item.ID);
@@ -946,9 +938,8 @@ CLIENT_PROCEDURE_BINDING(EXTREME_UPGRADE_SEAL) {
 		TargetSlot->Item.ExtremeLevel = SourceExtremeLevel;
 		Response->ItemID = TargetSlot->Item;
 
-		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceSlot->SlotIndex);
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SourceSlot->SlotIndex);
 		Character->SyncMask.InventoryInfo = true;
-		Character->SyncPriority.High = true;
 	}
 	else {
 		if (SourceSlot->ItemOptions > 0) goto error;
@@ -963,7 +954,6 @@ CLIENT_PROCEDURE_BINDING(EXTREME_UPGRADE_SEAL) {
 		TargetSlot->Item.ExtremeLevel = 0;
 		Response->ItemID.Serial = SourceSlot->ItemOptions;
 		Character->SyncMask.InventoryInfo = true;
-		Character->SyncPriority.High = true;
 	}
 
 	return SocketSend(Socket, Connection, Response);
@@ -975,13 +965,13 @@ error:
 CLIENT_PROCEDURE_BINDING(CHAOS_UPGRADE_SEAL) {
 	if (!Character) goto error;
 
-	RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->SourceSlotIndex);
+	RTItemSlotRef SourceSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->SourceSlotIndex);
 	if (!SourceSlot) goto error;
 
 	RTItemDataRef SourceData = RTRuntimeGetItemDataByIndex(Runtime, SourceSlot->Item.ID);
 	if (!SourceData) goto error;
 
-	RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->TargetSlotIndex);
+	RTItemSlotRef TargetSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->TargetSlotIndex);
 	if (!TargetSlot) goto error;
 
 	RTItemDataRef TargetData = RTRuntimeGetItemDataByIndex(Runtime, TargetSlot->Item.ID);
@@ -997,9 +987,8 @@ CLIENT_PROCEDURE_BINDING(CHAOS_UPGRADE_SEAL) {
 		if (SourceItemOptions.ChaosSeal.ItemGrade != TargetData->ItemGrade) goto error;
 
 		TargetSlot->Item.UpgradeLevel = SourceItemOptions.ChaosSeal.ItemLevel;
-		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceSlot->SlotIndex);
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SourceSlot->SlotIndex);
 		Character->SyncMask.InventoryInfo = true;
-		Character->SyncPriority.High = true;
 
 		S2C_DATA_CHAOS_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHAOS_UPGRADE_SEAL);
 		Response->Result = S2C_CHAOS_UPGRADE_SEAL_RESULT_UNSEAL;
@@ -1016,7 +1005,6 @@ CLIENT_PROCEDURE_BINDING(CHAOS_UPGRADE_SEAL) {
 		SourceSlot->ItemOptions = SourceItemOptions.Serial;
 		TargetSlot->Item.UpgradeLevel = 0;
 		Character->SyncMask.InventoryInfo = true;
-		Character->SyncPriority.High = true;
 
 		S2C_DATA_CHAOS_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHAOS_UPGRADE_SEAL);
 		Response->Result = S2C_CHAOS_UPGRADE_SEAL_RESULT_SEAL;

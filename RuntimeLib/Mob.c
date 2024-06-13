@@ -176,7 +176,7 @@ RTEntityID RTMobGetMaxAggroTarget(
 
 		Int32 Distance = RTMovementDistance(&Character->Movement, &Mob->Movement);
 		if (!Character || 
-			Character->Info.Position.WorldID != WorldContext->WorldData->WorldIndex ||
+			Character->Data.Info.Position.WorldID != WorldContext->WorldData->WorldIndex ||
 			!RTCharacterIsAlive(Runtime, Character) ||
 			Distance > Mob->SpeciesData->AlertRange) {
 			Int32 TailLength = Mob->Aggro.Count - Index - 1;
@@ -287,7 +287,7 @@ Void RTMobAttackTarget(
 		RUNTIME_BATTLE_SKILL_TYPE_SWORD,
 		Mob->SpeciesData->Level,
 		&Mob->Attributes,
-		Character->Info.Basic.Level,
+		Character->Data.Info.Basic.Level,
 		&Character->Attributes,
 		&Result
 	);
@@ -336,7 +336,7 @@ Void _RTMobFindNearbyTargetProc(
 			Entity
 		);
 
-		Int32 LevelDifference = Character->Info.Basic.Level - Arguments->Mob->SpeciesData->Level;
+		Int32 LevelDifference = Character->Data.Info.Basic.Level - Arguments->Mob->SpeciesData->Level;
 		if (Arguments->WorldContext->WorldData->Type == RUNTIME_WORLD_TYPE_GLOBAL &&
 			LevelDifference > RUNTIME_MOB_MAX_FIND_LEVEL_DIFFERENCE) {
 			return;

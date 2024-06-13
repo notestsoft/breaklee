@@ -10,15 +10,14 @@ RTSkillSlotRef RTCharacterAddSkillSlot(
 	Int32 Level,
 	Int32 SlotIndex
 ) {
-	if (Character->SkillSlotInfo.Count >= RUNTIME_CHARACTER_MAX_SKILL_SLOT_COUNT) return NULL;
+	if (Character->Data.SkillSlotInfo.Count >= RUNTIME_CHARACTER_MAX_SKILL_SLOT_COUNT) return NULL;
 
-	RTSkillSlotRef SkillSlot = &Character->SkillSlotInfo.Skills[Character->SkillSlotInfo.Count];
+	RTSkillSlotRef SkillSlot = &Character->Data.SkillSlotInfo.Skills[Character->Data.SkillSlotInfo.Count];
 	SkillSlot->ID = SkillID;
 	SkillSlot->Level = Level;
 	SkillSlot->Index = SlotIndex;
-	Character->SkillSlotInfo.Count += 1;
+	Character->Data.SkillSlotInfo.Count += 1;
 	Character->SyncMask.SkillSlotInfo = true;
-	Character->SyncPriority.Low = true;
 
 	return SkillSlot;
 }
@@ -28,9 +27,9 @@ RTSkillSlotRef RTCharacterGetSkillSlotByIndex(
 	RTCharacterRef Character,
 	Int32 SlotIndex
 ) {
-	for (Int32 Index = 0; Index < Character->SkillSlotInfo.Count; Index++) {
-		if (Character->SkillSlotInfo.Skills[Index].Index == SlotIndex) {
-			return &Character->SkillSlotInfo.Skills[Index];
+	for (Int32 Index = 0; Index < Character->Data.SkillSlotInfo.Count; Index++) {
+		if (Character->Data.SkillSlotInfo.Skills[Index].Index == SlotIndex) {
+			return &Character->Data.SkillSlotInfo.Skills[Index];
 		}
 	}
 
@@ -43,21 +42,19 @@ Void RTCharacterRemoveSkillSlot(
 	Int32 SkillID,
 	Int32 SlotIndex
 ) {
-	for (Int32 Index = 0; Index < Character->SkillSlotInfo.Count; Index++) {
-		if (Character->SkillSlotInfo.Skills[Index].Index == SlotIndex) {
-			Int32 TailLength = Character->SkillSlotInfo.Count - Index - 1;
+	for (Int32 Index = 0; Index < Character->Data.SkillSlotInfo.Count; Index++) {
+		if (Character->Data.SkillSlotInfo.Skills[Index].Index == SlotIndex) {
+			Int32 TailLength = Character->Data.SkillSlotInfo.Count - Index - 1;
 			if (TailLength > 0) {
 				memmove(
-					&Character->SkillSlotInfo.Skills[Index],
-					&Character->SkillSlotInfo.Skills[Index + 1],
+					&Character->Data.SkillSlotInfo.Skills[Index],
+					&Character->Data.SkillSlotInfo.Skills[Index + 1],
 					sizeof(struct _RTSkillSlot)
 				);
 			}
 
-			Character->SkillSlotInfo.Count -= 1;
-
+			Character->Data.SkillSlotInfo.Count -= 1;
 			Character->SyncMask.SkillSlotInfo = true;
-			Character->SyncPriority.Low = true;
 		}
 	}
 }
@@ -90,23 +87,23 @@ Bool RTCharacterChangeSkillLevel(
 			RTSkillLevelDataRef SkillLevelData = RTRuntimeGetSkillLevelDataByID(Runtime, SkillID, NextLevel);
 			if (!SkillLevelData) return false;
 
-			if (Character->Info.Skill.Rank < SkillLevelData->SkillRank) return false;
-			if (Character->Info.Skill.Level < SkillLevelData->SkillRankPoint) return false;
+			if (Character->Data.Info.Skill.Rank < SkillLevelData->SkillRank) return false;
+			if (Character->Data.Info.Skill.Level < SkillLevelData->SkillRankPoint) return false;
 
 			RequiredSkillPointCount += SkillLevelData->SkillPoint;
 			RequiredCurrencyAlz += LevelDiff < 0 ? SkillLevelData->UntrainPrice : SkillLevelData->TrainPrice;
 
 			// TODO: Check SkillLevelData->StyleMastery
 
-			Int32 BattleStyleIndex = Character->Info.Style.BattleStyle | (Character->Info.Style.ExtendedBattleStyle << 3);
+			Int32 BattleStyleIndex = Character->Data.Info.Style.BattleStyle | (Character->Data.Info.Style.ExtendedBattleStyle << 3);
 			if (SkillLevelData->BattleStyles[BattleStyleIndex - 1] <= 0) return false;
 		}
 
-	if (Character->Info.Skill.Point < RequiredSkillPointCount) return false;
-	if (Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < RequiredCurrencyAlz) return false;
+	if (Character->Data.Info.Skill.Point < RequiredSkillPointCount) return false;
+	if (Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < RequiredCurrencyAlz) return false;
 
-	Character->Info.Skill.Point -= RequiredSkillPointCount;
-	Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= RequiredCurrencyAlz;
+	Character->Data.Info.Skill.Point -= RequiredSkillPointCount;
+	Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= RequiredCurrencyAlz;
 	SkillSlot->Level = TargetSkillLevel;
 
 	if (TargetSkillLevel <= 0) {
@@ -115,7 +112,6 @@ Bool RTCharacterChangeSkillLevel(
 
 	Character->SyncMask.Info = true;
 	Character->SyncMask.SkillSlotInfo = true;
-	Character->SyncPriority.Low = true;
 
 	return true;
 }

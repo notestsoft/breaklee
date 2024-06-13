@@ -10,6 +10,42 @@
 #define IPC_PROTOCOL(__NAMESPACE__, __NAME__, __BODY__)
 #endif
 
+IPC_PROTOCOL_STRUCT(IPC_DATA_ACCOUNT,
+	Int64 AccountID;
+	Char SessionIP[MAX_ADDRESSIP_LENGTH + 1];
+	Timestamp SessionTimeout;
+	Int32 CharacterSlotID;
+	UInt64 CharacterSlotOrder;
+	UInt32 CharacterSlotFlags;
+	Char CharacterPassword[MAX_SUBPASSWORD_LENGTH + 1];
+	UInt32 CharacterQuestion;
+	Char CharacterAnswer[MAX_SUBPASSWORD_ANSWER_LENGTH + 1];
+)
+
+IPC_PROTOCOL_STRUCT(IPC_DATA_CHARACTER_INFO,
+	Int32 ID;
+	UInt64 CreationDate;
+	UInt32 Style;
+	Int32 Level;
+	UInt16 OverlordLevel;
+	Int32 MythRebirth;
+	Int32 MythHolyPower;
+	Int32 MythLevel;
+	Int32 SkillRank;
+	UInt8 NationMask;
+	Char Name[MAX_CHARACTER_NAME_LENGTH + 1];
+	UInt64 HonorPoint;
+	UInt32 CostumeActivePageIndex;
+	UInt32 CostumeAppliedSlots[6];
+	UInt64 Alz;
+	UInt8 MapID;
+	UInt16 PositionX;
+	UInt16 PositionY;
+	UInt16 EquipmentCount;
+	struct _RTItemSlot Equipment[RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT];
+	struct _RTItemSlotAppearance EquipmentAppearance[RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT];
+)
+
 IPC_PROTOCOL(L2W, VERIFY_LINKS,
     Int64 AccountID;
 	UInt32 AuthKey;
@@ -47,8 +83,8 @@ IPC_PROTOCOL(W2W, REQUEST_VERIFY_LINKS,
 	UInt8 NodeIndex;
 	UInt8 GroupIndex;
 	Char SessionIP[MAX_ADDRESSIP_LENGTH];
-	GAME_DATA_ACCOUNT Account;
-	GAME_DATA_CHARACTER_INDEX Characters[MAX_CHARACTER_COUNT];
+	IPC_DATA_ACCOUNT Account;
+	IPC_DATA_CHARACTER_INFO Characters[MAX_CHARACTER_COUNT];
 )
 
 IPC_PROTOCOL(W2W, RESPONSE_VERIFY_LINKS,
@@ -115,19 +151,19 @@ IPC_PROTOCOL(W2L, VERIFY_PASSWORD,
 	Char Credentials[MAX_CREDENTIALS_LENGTH + 1];
 )
 
-IPC_PROTOCOL(W2M, GET_CHARACTER_LIST,
+IPC_PROTOCOL(W2D, GET_CHARACTER_LIST,
     Int64 AccountID;
 )
 
-IPC_PROTOCOL(M2W, GET_CHARACTER_LIST,
-	GAME_DATA_CHARACTER_INDEX Characters[MAX_CHARACTER_COUNT];
+IPC_PROTOCOL(D2W, GET_CHARACTER_LIST,
+	IPC_DATA_CHARACTER_INFO Characters[MAX_CHARACTER_COUNT];
 )
 
-IPC_PROTOCOL(W2M, GET_PREMIUM_SERVICE,
+IPC_PROTOCOL(W2D, GET_PREMIUM_SERVICE,
     Int64 AccountID;
 )
 
-IPC_PROTOCOL(M2W, GET_PREMIUM_SERVICE,
+IPC_PROTOCOL(D2W, GET_PREMIUM_SERVICE,
     Int64 AccountID;
     Bool HasService;
 	UInt32 ServiceType;
@@ -135,125 +171,94 @@ IPC_PROTOCOL(M2W, GET_PREMIUM_SERVICE,
 	Timestamp ExpiredAt;
 )
 
-IPC_PROTOCOL(W2M, CREATE_CHARACTER,
+IPC_PROTOCOL(W2D, CREATE_CHARACTER,
     Int64 AccountID;
-    UInt8 SlotIndex;
-	UInt8 NameLength;
-	Char Name[MAX_CHARACTER_NAME_LENGTH + 1];
-	struct _RTCharacterInfo CharacterData;
-    struct _RTCharacterEquipmentInfo CharacterEquipment;
-	struct _RTCharacterInventoryInfo CharacterInventory;
-	struct _RTCharacterSkillSlotInfo CharacterSkillSlots;
-	struct _RTCharacterQuickSlotInfo CharacterQuickSlots;
+    UInt8 CharacterSlotIndex;
+	UInt8 CharacterNameLength;
+	Char CharacterName[MAX_CHARACTER_NAME_LENGTH + 1];
+	struct _RTCharacterData CharacterData;
 )
 
-IPC_PROTOCOL(M2W, CREATE_CHARACTER,
+IPC_PROTOCOL(D2W, CREATE_CHARACTER,
     UInt8 Status;
-	UInt8 SlotIndex;
-	GAME_DATA_CHARACTER_INDEX Character;
+	UInt8 CharacterSlotIndex;
+	IPC_DATA_CHARACTER_INFO Character;
 )
 
-IPC_PROTOCOL(W2M, UPDATE_ACCOUNT_SESSION,
+IPC_PROTOCOL(W2D, UPDATE_ACCOUNT_SESSION,
 	Int64 AccountID;
 	Char SessionIP[MAX_ADDRESSIP_LENGTH + 1];
 	Timestamp SessionTimeout;
 )
 
-IPC_PROTOCOL(W2M, UPDATE_CHARACTER_SLOT,
+IPC_PROTOCOL(W2D, UPDATE_CHARACTER_SLOT,
 	Int32 AccountID;
 	Int32 CharacterSlotID;
 	UInt64 CharacterSlotOrder;
 	UInt32 CharacterSlotFlags;
 )
 
-IPC_PROTOCOL(W2M, UPDATE_SUBPASSWORD,
+IPC_PROTOCOL(W2D, UPDATE_SUBPASSWORD,
 	Int64 AccountID;
 	Char CharacterPassword[MAX_SUBPASSWORD_LENGTH + 1];
 	UInt32 CharacterQuestion;
 	Char CharacterAnswer[MAX_SUBPASSWORD_ANSWER_LENGTH + 1];
 )
 
-IPC_PROTOCOL(W2M, GET_ACCOUNT,
+IPC_PROTOCOL(W2D, GET_ACCOUNT,
 	Int64 AccountID;
 	UInt8 NodeIndex;
 	UInt8 GroupIndex;
 	Index LinkConnectionID;
 )
 
-IPC_PROTOCOL(M2W, GET_ACCOUNT,
+IPC_PROTOCOL(D2W, GET_ACCOUNT,
 	Int64 AccountID;
 	UInt8 NodeIndex;
 	UInt8 GroupIndex;
 	Index LinkConnectionID;
 	Bool Success;
-    GAME_DATA_ACCOUNT Account;
+    IPC_DATA_ACCOUNT Account;
 )
 
-IPC_PROTOCOL(W2M, GET_CHARACTER,
+IPC_PROTOCOL(W2D, GET_CHARACTER,
 	Int64 AccountID;
 	Int32 CharacterID;
 	UInt32 CharacterIndex;
 )
 
-IPC_PROTOCOL(M2W, GET_CHARACTER,
-	Int64 AccountID;
-	Int32 CharacterID;
-	UInt32 CharacterIndex;
-    Bool Success;
-    
-    struct {
-        Int32 ID;
-        Int32 Index;
-        UInt64 CreationDate;
-        Char Name[MAX_CHARACTER_NAME_LENGTH + 1];
-        struct _RTCharacterInfo CharacterData;
-        struct _RTCharacterEquipmentInfo EquipmentData;
-        struct _RTCharacterInventoryInfo InventoryData;
-        struct _RTCharacterSkillSlotInfo SkillSlotData;
-        struct _RTCharacterQuickSlotInfo QuickSlotData;
-        struct _RTCharacterQuestSlotInfo QuestSlotData;
-        struct _RTCharacterQuestFlagInfo QuestFlagData;
-        struct _RTCharacterDungeonQuestFlagInfo DungeonQuestFlagData;
-        GAME_DATA_CHARACTER_ACHIEVEMENT AchievementData;
-        struct _RTCharacterEssenceAbilityInfo EssenceAbilityData;
-		struct _RTCharacterBlendedAbilityInfo BlendedAbilityData;
-		struct _RTCharacterKarmaAbilityInfo KarmaAbilityData;
-        struct _RTCharacterHonorMedalInfo HonorMedalData;
-        struct _RTCharacterOverlordMasteryInfo OverlordData;
-        struct _RTCharacterForceWingInfo ForceWingData;
-        GAME_DATA_CHARACTER_TRANSFORM TransformData;
-        GAME_DATA_CHARACTER_TRANSCENDENCE TranscendenceData;
-        GAME_DATA_CHARACTER_MERCENARY MercenaryData;
-        GAME_DATA_CHARACTER_CRAFT CraftData;
-        struct _RTCharacterWarehouseInfo WarehouseData;
-        struct _RTCharacterCollectionInfo CollectionData;
-        struct _RTCharacterNewbieSupportInfo NewbieSupportData;
-    } Character;
-)
-
-IPC_PROTOCOL(W2M, DELETE_CHARACTER,
-	Int64 AccountID;
-	Int32 CharacterID;
-)
-
-IPC_PROTOCOL(M2W, DELETE_CHARACTER,
-	Int32 CharacterID;
+IPC_PROTOCOL(D2W, GET_CHARACTER,
 	Bool Success;
+	Int64 AccountID;
+	Int32 CharacterID;
+	UInt32 CharacterIndex;
+	UInt64 CharacterCreationDate;
+	Char CharacterName[MAX_CHARACTER_NAME_LENGTH + 1];
+	struct _RTCharacterData CharacterData;
 )
 
-IPC_PROTOCOL(W2M, DBSYNC,
+IPC_PROTOCOL(W2D, DELETE_CHARACTER,
+	Int64 AccountID;
+	Int32 CharacterID;
+)
+
+IPC_PROTOCOL(D2W, DELETE_CHARACTER,
+	Bool Success;
+	Int32 CharacterID;
+)
+
+IPC_PROTOCOL(W2D, DBSYNC,
 	Int64 AccountID;
 	Int32 CharacterID;
 	union _RTCharacterSyncMask SyncMask;
-	union _RTCharacterSyncPriority SyncPriority;
+	Bool IsTransaction;
 	UInt8 Data[0];
 )
 
-IPC_PROTOCOL(M2W, DBSYNC,
+IPC_PROTOCOL(D2W, DBSYNC,
 	Int64 AccountID;
 	Int32 CharacterID;
 	union _RTCharacterSyncMask SyncMaskFailed;
-	union _RTCharacterSyncPriority SyncPriority;
 )
 
 IPC_PROTOCOL(W2W, REQUEST_SERVER_STATUS,

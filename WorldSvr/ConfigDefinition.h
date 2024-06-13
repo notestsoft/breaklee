@@ -33,8 +33,7 @@ CONFIG_PARAMETER(UInt64, ExpMultiplier, "WorldSvr.ExpMultiplier", 1)
 CONFIG_PARAMETER(UInt64, SkillExpMultiplier, "WorldSvr.SkillExpMultiplier", 1)
 CONFIG_PARAMETER(UInt32, DebugCharacter, "WorldSvr.DebugCharacter", 1)
 CONFIG_PARAMETER(Bool, DebugSetQuestFlags, "WorldSvr.DebugSetQuestFlags", 0)
-CONFIG_PARAMETER(Bool, DBSyncTimerPriorityLow, "WorldSvr.DBSyncTimerPriorityLow", 1000)
-CONFIG_PARAMETER(Bool, DBSyncTimerPriorityHigh, "WorldSvr.DBSyncTimerPriorityHigh", 1000)
+CONFIG_PARAMETER(Bool, DBSyncTimer, "WorldSvr.DBSyncTimer", 1000)
 CONFIG_PARAMETER(UInt64, UserListBroadcastInterval, "WorldSvr.UserListBroadcastInterval", 1000)
 CONFIG_END(WorldSvr)
 
@@ -80,7 +79,7 @@ CONFIG_PARAMETER(UInt16, ProtocolVersion, "NetLib.ProtocolVersion", 0x0009)
 CONFIG_PARAMETER(UInt16, ProtocolExtension, "NetLib.ProtocolExtension", 0x1111)
 CONFIG_PARAMETER(Index, ReadBufferSize, "NetLib.ReadBufferSize", 0x1FFFF)
 CONFIG_PARAMETER(Index, WriteBufferSize, "NetLib.WriteBufferSize", 0x7FFFF)
-CONFIG_PARAMETER(Bool, LogPackets, "NetLib.LogPackets", 0)
+CONFIG_PARAMETER(Bool, LogPackets, "NetLib.LogPackets", 1)
 CONFIG_END(NetLib)
 
 #undef CONFIG_BEGIN

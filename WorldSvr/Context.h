@@ -3,7 +3,7 @@
 #include "Base.h"
 #include "Config.h"
 #include "Constants.h"
-#include "GameProtocol.h"
+#include "IPCProtocol.h"
 #include "RuntimeProtocol.h"
 #include "MasterDBProtocol.h"
 
@@ -45,8 +45,8 @@ struct _ClientContext {
     Timestamp PasswordVerificationTimestamp;
     UInt32 AuthKey;
     UInt8 SubpasswordFailureCount;
-    GAME_DATA_ACCOUNT Account;
-    GAME_DATA_CHARACTER_INDEX Characters[MAX_CHARACTER_COUNT];
+    IPC_DATA_ACCOUNT Account;
+    IPC_DATA_CHARACTER_INFO Characters[MAX_CHARACTER_COUNT];
     // TODO: Store upgrade point & expiration time in temp memory
     Int32 UpgradePoint;
     Int32 DiceSeed;

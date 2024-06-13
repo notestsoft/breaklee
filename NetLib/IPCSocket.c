@@ -15,7 +15,8 @@ Void PrintNodeTable(
         "LOGIN",
         "MASTER",
         "PARTY",
-        "WORLD"
+        "WORLD",
+        "MASTERDB"
     };
 
 #ifdef _WIN32

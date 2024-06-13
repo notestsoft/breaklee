@@ -69,7 +69,7 @@ RTPartyRef RTPartyManagerCreatePartyRemote(
     RTPartyRef RemoteParty
 ) {
     Index PartyPoolIndex = RemoteParty->ID.EntityIndex;
-    RTPartyRef Party = (RTPartyRef)MemoryPoolReserve(PartyManager->PartyPool, &PartyPoolIndex);
+    RTPartyRef Party = (RTPartyRef)MemoryPoolReserve(PartyManager->PartyPool, PartyPoolIndex);
     memcpy(Party, RemoteParty, sizeof(struct _RTParty));
 
     for (Index MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {

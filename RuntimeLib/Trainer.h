@@ -16,7 +16,7 @@ struct _RTTrainerSkillData {
 
 struct _RTTrainerData {
     Int32 Index;
-    Index WorldID;
+    Int64 WorldID;
     Int32 NpcID;
     Int32 SkillCount;
     struct _RTTrainerSkillData Skills[RUNTIME_TRAINER_MAX_SKILL_COUNT];

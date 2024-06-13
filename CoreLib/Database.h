@@ -4,6 +4,7 @@
 
 EXTERN_C_BEGIN
 
+typedef struct _DataTable* DataTableRef;
 typedef struct _Database* DatabaseRef;
 typedef struct _Statement* StatementRef;
 
@@ -39,6 +40,44 @@ StatementRef DatabaseCreateStatement(
 
 Int64 DatabaseGetLastInsertID(
     DatabaseRef Database
+);
+
+DataTableRef DatabaseCreateDataTable(
+    DatabaseRef Database,
+    CString Scope,
+    CString Name
+);
+
+DataTableRef DatabaseGetDataTable(
+	DatabaseRef Database,
+	CString Scope,
+	CString Name
+);
+
+Bool DataTableInsert(
+    DataTableRef Table,
+    Int32 ID,
+    UInt8* Data,
+    Int32 DataLength
+);
+
+Bool DataTableSelect(
+    DataTableRef Table,
+    Int32 ID,
+    UInt8* Data,
+    Int32 DataLength
+);
+
+Bool DataTableUpdate(
+    DataTableRef Table,
+    Int32 ID,
+    UInt8* Data,
+    Int32 DataLength
+);
+
+Bool DataTableDelete(
+    DataTableRef Table,
+    Int32 ID
 );
 
 Void StatementBindParameterBinary(

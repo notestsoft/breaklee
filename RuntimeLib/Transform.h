@@ -18,4 +18,16 @@ struct _RTCharacterTransformInfo {
 
 #pragma pack(pop)
 
+Bool RTCharacterTransformIsLocked(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 TransformIndex
+);
+
+Bool RTCharacterTransformUnlock(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 TransformIndex
+);
+
 EXTERN_C_END

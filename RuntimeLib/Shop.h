@@ -21,7 +21,7 @@ struct _RTShopItemData {
 
 struct _RTShopData {
     Int32 Index;
-    Index WorldID;
+    Int64 WorldID;
     Int32 NpcID;
     Int32 ItemCount;
     struct _RTShopItemData Items[RUNTIME_SHOP_MAX_ITEM_COUNT];

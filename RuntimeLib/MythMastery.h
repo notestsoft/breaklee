@@ -12,6 +12,14 @@ struct _RTMythMasterySlot {
 };
 
 struct _RTCharacterMythMasteryInfo {
+    Int32 Rebirth;
+    Int32 HolyPower;
+    Int32 Level;
+    Int64 Exp;
+    Int32 Points;
+    Int32 StigmaGrade;
+    Int32 StigmaExp;
+    Int32 UnlockedPageCount;
     Int32 Count;
     struct _RTMythMasterySlot Slots[RUNTIME_CHARACTER_MAX_MYTH_SLOT_COUNT];
 };

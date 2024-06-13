@@ -10,11 +10,11 @@ CLIENT_PROCEDURE_BINDING(GET_CHARACTERS) {
 
     // TODO: Check if is entering premium channel and check service expiration!
 
-    IPC_W2M_DATA_GET_CHARACTER_LIST* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2M, GET_CHARACTER_LIST);
+    IPC_W2D_DATA_GET_CHARACTER_LIST* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2D, GET_CHARACTER_LIST);
     Request->Header.SourceConnectionID = Connection->ID;
     Request->Header.Source = Server->IPCSocket->NodeID;
     Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
-    Request->Header.Target.Type = IPC_TYPE_MASTER;
+    Request->Header.Target.Type = IPC_TYPE_MASTERDB;
     Request->AccountID = Client->Account.AccountID;
     IPCSocketUnicast(Server->IPCSocket, Request);
     return;
@@ -23,7 +23,7 @@ error:
     SocketDisconnect(Socket, Connection);
 }
 
-IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER_LIST) {
+IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER_LIST) {
     if (!ClientConnection || !Client) return;
 
     memcpy(Client->Characters, Packet->Characters, sizeof(Packet->Characters));
@@ -36,7 +36,7 @@ IPC_PROCEDURE_BINDING(M2W, GET_CHARACTER_LIST) {
     Response->CharacterSlotOrder = Client->Account.CharacterSlotOrder;
 
     for (Int32 Index = 0; Index < MAX_CHARACTER_COUNT; Index++) {
-        GAME_DATA_CHARACTER_INDEX* Character = &Packet->Characters[Index];
+        IPC_DATA_CHARACTER_INFO* Character = &Packet->Characters[Index];
         if (Character->ID < 1) continue;
 
         Character->ID = Character->ID * MAX_CHARACTER_COUNT + Index;

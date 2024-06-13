@@ -15,7 +15,7 @@ CLIENT_PROCEDURE_BINDING(BUY_ITEM) {
 
     RTShopDataRef Shop = RTRuntimeGetShopByWorldNpcID(
         Runtime,
-        Character->Info.Position.WorldID,
+        Character->Data.Info.Position.WorldID,
         Packet->NpcID
     );
     if (!Shop) goto error;
@@ -46,12 +46,11 @@ CLIENT_PROCEDURE_BINDING(BUY_ITEM) {
 
         Success &= RTInventorySetSlot(
             Runtime,
-            &Character->InventoryInfo,
+            &Character->Data.InventoryInfo,
             &ItemSlot
         );
 
         Character->SyncMask.InventoryInfo = true;
-        Character->SyncPriority.Low = true;
 
         if (!Success) 
             break;
@@ -78,7 +77,7 @@ CLIENT_PROCEDURE_BINDING(SELL_ITEM) {
 
     RTShopDataRef Shop = RTRuntimeGetShopByWorldNpcID(
         Runtime,
-        Character->Info.Position.WorldID,
+        Character->Data.Info.Position.WorldID,
         Packet->NpcID
     );
     if (!Shop) {
@@ -98,16 +97,16 @@ CLIENT_PROCEDURE_BINDING(SELL_ITEM) {
 
     for (Int32 Index = 0; Index < Packet->InventoryIndexCount; Index++) {
         Int32 ItemSlotIndex = Packet->InventoryIndex[Index];
-        RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, ItemSlotIndex);
+        RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, ItemSlotIndex);
         if (!ItemSlot) goto error;
 
         RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
         if (!ItemData) goto error;
 
-        Int32 RecoverySlotIndex = Character->RecoveryInfo.Count % RUNTIME_CHARACTER_MAX_RECOVERY_SLOT_COUNT;
-        Character->RecoveryInfo.Prices[RecoverySlotIndex] = ItemData->SellPrice;
-        Character->RecoveryInfo.Slots[RecoverySlotIndex] = *ItemSlot;
-        Character->RecoveryInfo.Count = MIN(Character->RecoveryInfo.Count + 1, RUNTIME_CHARACTER_MAX_RECOVERY_SLOT_COUNT);
+        Int32 RecoverySlotIndex = Character->Data.RecoveryInfo.Count % RUNTIME_CHARACTER_MAX_RECOVERY_SLOT_COUNT;
+        Character->Data.RecoveryInfo.Prices[RecoverySlotIndex] = ItemData->SellPrice;
+        Character->Data.RecoveryInfo.Slots[RecoverySlotIndex] = *ItemSlot;
+        Character->Data.RecoveryInfo.Count = MIN(Character->Data.RecoveryInfo.Count + 1, RUNTIME_CHARACTER_MAX_RECOVERY_SLOT_COUNT);
 
         // TODO: This is probably causing issues with other items still being involved inside the inventory...
         if (ItemData->ItemType == RUNTIME_ITEM_TYPE_QUEST_S) {
@@ -115,17 +114,16 @@ CLIENT_PROCEDURE_BINDING(SELL_ITEM) {
             RTCharacterUpdateQuestItemCounter(Runtime, Character, ItemSlot->Item, QuestItemOptions);
         }
 
-        RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlotIndex);
+        RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlotIndex);
 
         // TODO: Calculate sell price based on upgrade level ...
-        Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] += ItemData->SellPrice;
+        Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] += ItemData->SellPrice;
         Character->SyncMask.Info = true;
         Character->SyncMask.InventoryInfo = true;
-        Character->SyncPriority.High = true;
     }
 
     S2C_DATA_SELL_ITEM *Response = PacketBufferInit(Connection->PacketBuffer, S2C, SELL_ITEM);
-    Response->Currency = Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
+    Response->Currency = Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
     return SocketSend(Socket, Connection, Response);
 
 error:
@@ -188,13 +186,13 @@ CLIENT_PROCEDURE_BINDING(GET_ITEM_RECOVERY_LIST) {
     if (!Character) goto error;
 
     S2C_DATA_GET_ITEM_RECOVERY_LIST* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_ITEM_RECOVERY_LIST);
-    Response->Count = Character->RecoveryInfo.Count;
+    Response->Count = Character->Data.RecoveryInfo.Count;
 
     for (Int32 Index = 0; Index < RUNTIME_CHARACTER_MAX_RECOVERY_SLOT_COUNT; Index += 1) {
-        RTItemSlotRef ItemSlot = &Character->RecoveryInfo.Slots[Index];
+        RTItemSlotRef ItemSlot = &Character->Data.RecoveryInfo.Slots[Index];
         if (!ItemSlot->Item.Serial) continue;
 
-        UInt64 RecoveryPrice = Character->RecoveryInfo.Prices[Index];
+        UInt64 RecoveryPrice = Character->Data.RecoveryInfo.Prices[Index];
 
         S2C_ITEM_RECOVERY_LIST_SLOT* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_ITEM_RECOVERY_LIST_SLOT);
         ResponseData->ItemID = ItemSlot->Item.ID;
@@ -216,25 +214,24 @@ CLIENT_PROCEDURE_BINDING(RECOVER_ITEM) {
 
     if (Packet->RecoverySlotIndex >= RUNTIME_CHARACTER_MAX_RECOVERY_SLOT_COUNT) goto error;
 
-    RTItemSlotRef RecoverySlot = &Character->RecoveryInfo.Slots[Packet->RecoverySlotIndex];
+    RTItemSlotRef RecoverySlot = &Character->Data.RecoveryInfo.Slots[Packet->RecoverySlotIndex];
     if (!RecoverySlot->Item.Serial) goto error;
 
-    UInt64 RecoveryPrice = Character->RecoveryInfo.Prices[Packet->RecoverySlotIndex];
-    if (Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < RecoveryPrice) goto error;
+    UInt64 RecoveryPrice = Character->Data.RecoveryInfo.Prices[Packet->RecoverySlotIndex];
+    if (Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < RecoveryPrice) goto error;
 
     RecoverySlot->SlotIndex = Packet->InventorySlotIndex;
 
-    if (!RTInventorySetSlot(Runtime, &Character->InventoryInfo, RecoverySlot)) goto error;
+    if (!RTInventorySetSlot(Runtime, &Character->Data.InventoryInfo, RecoverySlot)) goto error;
 
     memset(RecoverySlot, 0, sizeof(struct _RTItemSlot));
-    Character->RecoveryInfo.Count -= 1;
+    Character->Data.RecoveryInfo.Count -= 1;
 
     RTCharacterUpdateQuestItemCounter(Runtime, Character, RecoverySlot->Item, RecoverySlot->ItemOptions);
 
-    Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= RecoveryPrice;
+    Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= RecoveryPrice;
     Character->SyncMask.Info = true;
     Character->SyncMask.InventoryInfo = true;
-    Character->SyncPriority.High = true;
 
     S2C_DATA_RECOVER_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, RECOVER_ITEM);
     Response->Result = 1; // TODO: Check Result types and remove disconnects

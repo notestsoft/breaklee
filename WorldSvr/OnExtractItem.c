@@ -13,7 +13,7 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 	S2C_DATA_EXTRACT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, EXTRACT_ITEM);
 	Response->ItemCount = 0;
 
-	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
 	if (!ItemSlot) goto error;
 
 	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
@@ -106,9 +106,9 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 				struct _RTItemSlot Slot = { 0 };
 				Slot.Item.ID = ItemResult->ItemKind;
 				Slot.ItemOptions = ItemOptions ? ItemOptions : ItemCount;
-				Slot.SlotIndex = Character->TemporaryInventoryInfo.Count;
+				Slot.SlotIndex = Character->Data.TemporaryInventoryInfo.Count;
 
-				if (RTInventorySetSlot(Runtime, &Character->TemporaryInventoryInfo, &Slot)) {
+				if (RTInventorySetSlot(Runtime, &Character->Data.TemporaryInventoryInfo, &Slot)) {
 					S2C_EXTRACT_ITEM_SLOT_INDEX* ResponseItemSlot = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_EXTRACT_ITEM_SLOT_INDEX);
 					ResponseItemSlot->ItemID = Slot.Item.Serial;
 					ResponseItemSlot->ItemOption = Slot.ItemOptions;
@@ -121,9 +121,9 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 					struct _RTItemSlot Slot = { 0 };
 					Slot.Item.ID = ItemResult->ItemKind;
 					Slot.ItemOptions = ItemOptions;
-					Slot.SlotIndex = Character->TemporaryInventoryInfo.Count;
+					Slot.SlotIndex = Character->Data.TemporaryInventoryInfo.Count;
 
-					if (RTInventorySetSlot(Runtime, &Character->TemporaryInventoryInfo, &Slot)) {
+					if (RTInventorySetSlot(Runtime, &Character->Data.TemporaryInventoryInfo, &Slot)) {
 						S2C_EXTRACT_ITEM_SLOT_INDEX* ResponseItemSlot = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_EXTRACT_ITEM_SLOT_INDEX);
 						ResponseItemSlot->ItemID = Slot.Item.Serial;
 						ResponseItemSlot->ItemOption = Slot.ItemOptions;
@@ -137,9 +137,8 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 
 	if (Response->ItemCount > 0) {
 		Response->Result = 1;
-		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex);
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
 		Character->SyncMask.InventoryInfo = true;
-		Character->SyncPriority.High = true;
 	}
 
 	return SocketSend(Socket, Connection, Response);

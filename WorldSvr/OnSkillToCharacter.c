@@ -98,7 +98,6 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		RTMovementEndDeadReckoning(Runtime, &Character->Movement);
         RTMovementSetPosition(Runtime, &Character->Movement, TargetPosition.X, TargetPosition.Y);
 		Character->SyncMask.Info = true;
-		Character->SyncPriority.Low = true;
 
 		SocketSend(Socket, Connection, Response);
 
@@ -127,7 +126,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		C2S_DATA_SKILL_GROUP_ASTRAL* PacketData = (C2S_DATA_SKILL_GROUP_ASTRAL*)&Packet->Data[0];
 
 		// TODO: Activate, deactivate battle mode, do runtime validations
-		Character->Info.ExtendedStyle.IsAstralWeaponActive = PacketData->IsActivation;
+		Character->Data.Info.ExtendedStyle.IsAstralWeaponActive = PacketData->IsActivation;
 
 		S2C_DATA_SKILL_GROUP_ASTRAL* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_ASTRAL);
 		ResponseData->CurrentMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
@@ -140,9 +139,9 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 		S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON* NotificationData = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON);
 		NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
-		NotificationData->CharacterStyle = SwapUInt32(Character->Info.Style.RawValue);
-		NotificationData->CharacterLiveStyle = SwapUInt32(Character->Info.LiveStyle.RawValue);
-		NotificationData->CharacterExtendedStyle = Character->Info.ExtendedStyle.RawValue;
+		NotificationData->CharacterStyle = SwapUInt32(Character->Data.Info.Style.RawValue);
+		NotificationData->CharacterLiveStyle = SwapUInt32(Character->Data.Info.LiveStyle.RawValue);
+		NotificationData->CharacterExtendedStyle = Character->Data.Info.ExtendedStyle.RawValue;
 		NotificationData->IsActivation = PacketData->IsActivation;
 		NotificationData->Unknown2 = PacketData->Unknown2;
 
@@ -164,10 +163,10 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		// TODO: Activate, deactivate battle mode, do runtime validations
 
 		if (PacketData->IsActivation) {
-			Character->Info.ExtendedStyle.BattleModeFlags |= (1 << (SkillData->Intensity - 1));
+			Character->Data.Info.ExtendedStyle.BattleModeFlags |= (1 << (SkillData->Intensity - 1));
 		}
 		else {
-			Character->Info.ExtendedStyle.BattleModeFlags &= ~(1 << (SkillData->Intensity - 1));
+			Character->Data.Info.ExtendedStyle.BattleModeFlags &= ~(1 << (SkillData->Intensity - 1));
 		}
 
 		S2C_DATA_SKILL_GROUP_BATTLE_MODE* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_BATTLE_MODE);
@@ -180,9 +179,9 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 		S2C_DATA_NFY_SKILL_GROUP_BATTLE_MODE* NotificationData = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_SKILL_GROUP_BATTLE_MODE);
 		NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
-		NotificationData->CharacterStyle = SwapUInt32(Character->Info.Style.RawValue);
-		NotificationData->CharacterLiveStyle = SwapUInt32(Character->Info.LiveStyle.RawValue);
-		NotificationData->CharacterExtendedStyle = Character->Info.ExtendedStyle.RawValue;
+		NotificationData->CharacterStyle = SwapUInt32(Character->Data.Info.Style.RawValue);
+		NotificationData->CharacterLiveStyle = SwapUInt32(Character->Data.Info.LiveStyle.RawValue);
+		NotificationData->CharacterExtendedStyle = Character->Data.Info.ExtendedStyle.RawValue;
 		NotificationData->IsActivation = PacketData->IsActivation;
 
 		return BroadcastToWorld(
@@ -208,8 +207,8 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 	Notification->SkillIndex = Response->SkillIndex;
 	Notification->TargetCount = Response->TargetCount;
 	Notification->CharacterID = Character->ID;
-	Notification->SetPositionX = Character->Info.Position.X;
-	Notification->SetPositionY = Character->Info.Position.Y;
+	Notification->SetPositionX = Character->Data.Info.Position.X;
+	Notification->SetPositionY = Character->Data.Info.Position.Y;
 	Notification->CharacterHP = Response->CharacterHP;
 
 	for (Int32 Index = 0; Index < Response->TargetCount; Index++) {
@@ -228,8 +227,8 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		World,
         kEntityNull,
 		Character->ID,
-		Character->Info.Position.X,
-		Character->Info.Position.Y,
+		Character->Data.Info.Position.X,
+		Character->Data.Info.Position.Y,
 		Notification
 	);
 	*/

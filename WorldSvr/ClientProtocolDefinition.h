@@ -1,6 +1,8 @@
 
+#include <RuntimeLib/RuntimeLib.h>
+
 #include "Constants.h"
-#include "GameProtocol.h"
+#include "IPCProtocol.h"
 
 #ifndef CLIENT_PROTOCOL_ENUM
 #define CLIENT_PROTOCOL_ENUM(...)
@@ -34,16 +36,17 @@ CLIENT_PROTOCOL(C2S, GET_CHARACTERS, DEFAULT, 133,
 )
 
 CLIENT_PROTOCOL(S2C, GET_CHARACTERS, DEFAULT, 133,
-    UInt8 IsSubpasswordSet;
-    UInt8 Unknown1[12];
+    Int32 IsSubpasswordSet;
+    UInt64 BattleFieldEntryFee;
+    UInt8 Unknown1;
     UInt8 Unknown2;
     UInt32 CharacterSlotID;
     UInt64 CharacterSlotOrder;
-    UInt32 Unknown3;
+    UInt32 CharacterSlotOpenMask;
     UInt32 Unknown4;
-    UInt32 Unknown5;
+    UInt32 ForceGem;
     // TODO: Replace with CLIENT_PROTOCOL_STRUCT
-    GAME_DATA_CHARACTER_INDEX Characters[MAX_CHARACTER_COUNT];
+    IPC_DATA_CHARACTER_INFO Characters[MAX_CHARACTER_COUNT];
 )
 
 CLIENT_PROTOCOL(C2S, CREATE_CHARACTER, DEFAULT, 134,
@@ -1873,7 +1876,97 @@ CLIENT_PROTOCOL(S2C, VERIFY_CREDENTIALS, DEFAULT, 800,
 )
 
 CLIENT_PROTOCOL(S2C, NFY_CHARACTER_PARAMETERS, DEFAULT, 904,
-    // TODO: Add character parameters..
+    UInt64 expStatus;
+    Int32 iLEV;
+    Int32 iSTR;
+    Int32 iDEX;
+    Int32 iINT;
+    Int32 iHP;
+    Int32 iMP;
+    Int32 iSP;
+    Int32 iHPMax;
+    Int32 iHPMaxSrc;
+    Int32 iMPMax;
+    Int32 iSPMax;
+    Int32 iSPUseMx;
+    Int32 iOC;
+    Int32 iPhyAttMin;
+    Int32 iPhyAttMax;
+    Int32 iPhyAttDff;
+    Int32 iMagAttVal;
+    Int32 iDefense;
+    UInt8 usingArtOfDefense;
+    Int32 iDefensePercent;
+    Int32 iAttacksR;
+    Int32 iDefenseR;
+    Int32 iEvasionR;
+    Int32 idPhyAttMax;
+    Int32 idMagAttVal;
+    Int32 idDefense;
+    Int32 idAttacksR;
+    Int32 idDefenseR;
+    Int32 id2HPMax;
+    Int32 id2MPMax;
+    Int32 id3PhyAttVal;
+    Int32 id3MagAttVal;
+    Int32 id3Defense;
+    Int32 id3AttacksR;
+    Int32 id3DefenseR;
+    Int32 id3HPMaxVal;
+    Int32 id3MPMaxVal;
+    Int32 id3HPRechagR;
+    Int32 id3MPRechagR;
+    Int32 id3SPUseVal;
+    Int32 id3MPWasteB;
+    Int32 id3CriticalR;
+    Int32 id3CriticalM;
+    Int32 id4SPUseVal;
+    Int32 iCriticalR;
+    Int32 iCriticalM;
+    Int32 iHPRechagR;
+    Int32 iMPRechagR;
+    Int32 iSPUseVal;
+    Int32 iHPStealVal;
+    Int32 iMPStealVal;
+    Int32 iRP;
+    Int32 iAggro;
+    Int32 iExpM;
+    Int32 iStance;
+    Int32 iReputation;
+    Int32 iReputationClass;
+    Int32 iPKPenalty;
+    Int32 iAlzDropM;
+    Int32 iDropRate1SlotP;
+    Int32 iDropRate2SlotP;
+    Int32 iSkillAmpS;
+    Int32 iSkillAmpM;
+    Int32 iSkillExpP;
+    Int32 iDemageP;
+    Int32 iMinDmgRate;
+    Int32 iMinDmgRateP;
+    Int32 iMpStealLimitP;
+    Int32 iHpStealLimitP;
+    Int32 iCriticalRLimitP;
+    Float32 fHitMultiDmg;
+    UInt8 bNation;
+    UInt64 iCraftEXP[4 + 1];
+    Int32 iCraftLEV[4 + 1];
+    UInt8 bCraftFlags[16];
+    UInt8 bIsForceTowerDamage;
+    Int32 iRestEXP;
+    Int32 iConsumExp;
+    Int32 iPenaltyEXP;
+    Int32 iSpRegenP;
+    Int32 iSpAcquireR;
+    Int32 iSpSubtractionR;
+    Int32 iAttackRange;
+    Int32 iHealR;
+    UInt8 isIrremovable;
+    Int32 iHpDurDamage;
+    Int32 iMpDurDamage;
+    Int32 iBfxStunR;
+    Int32 iBfxDownR;
+    Int32 iBfxBlowR;
 )
 
 CLIENT_PROTOCOL(C2S, UPGRADE_ITEM_LEVEL, DEFAULT, 951,
@@ -2613,7 +2706,8 @@ CLIENT_PROTOCOL(C2S, GET_SPECIAL_EVENT_CHARACTER, DEFAULT, 2156,
 
 CLIENT_PROTOCOL(S2C, GET_SPECIAL_EVENT_CHARACTER, DEFAULT, 2156,
     UInt8 IsSet;
-    UInt8 Payload[520];
+    Int32 Data[130];
+    //UInt8 Payload[520];
 )
 
 CLIENT_PROTOCOL(C2S, VERIFY_CREDENTIALS_SUBPASSWORD, DEFAULT, 2160,

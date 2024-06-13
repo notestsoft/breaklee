@@ -1,3 +1,0 @@
-DROP DATABASE IF EXISTS `auth`;
-
-CREATE DATABASE `auth`;

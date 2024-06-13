@@ -89,7 +89,7 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
         );
 
         for (Int32 Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
-            RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex[Index]);
+            RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index]);
             if (!ItemSlot) goto error;
 
             RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
@@ -131,13 +131,12 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
             );
 
             if (!IsStackable || ItemSlot->ItemOptions < 1) {
-                if (!RTInventoryClearSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex[Index])) goto error;
+                if (!RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index])) goto error;
             }
         }
 
         Character->SyncMask.CollectionInfo = true;
         Character->SyncMask.InventoryInfo = true;
-        Character->SyncPriority.Immediate = true;
         Response->Success = 1;
     }
     else if (CollectionMissionDetail->ItemType == RUNTIME_DATA_COLLECTION_ITEM_TYPE_INDEX_UPGRADE) {
@@ -147,7 +146,7 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
         );
 
         for (Int32 Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
-            RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex[Index]);
+            RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index]);
             if (!ItemSlot) goto error;
 
             RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
@@ -175,12 +174,11 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
                 CollectionMissionDetail->ItemCount
             );
 
-            if (!RTInventoryClearSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex[Index])) goto error;
+            if (!RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index])) goto error;
         }
 
         Character->SyncMask.CollectionInfo = true;
         Character->SyncMask.InventoryInfo = true;
-        Character->SyncPriority.Immediate = true;
         Response->Success = 1;
     }
     else if (CollectionMissionDetail->ItemType == RUNTIME_DATA_COLLECTION_ITEM_TYPE_INDEX_QUEST) {
@@ -190,7 +188,7 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
         );
 
         for (Int32 Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
-            RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex[Index]);
+            RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index]);
             if (!ItemSlot) goto error;
 
             RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
@@ -223,13 +221,12 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
             );
 
             if (!IsStackable || ItemSlot->ItemOptions < 1) {
-                if (!RTInventoryClearSlot(Runtime, &Character->InventoryInfo, Packet->InventorySlotIndex[Index])) goto error;
+                if (!RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index])) goto error;
             }
         }
 
         Character->SyncMask.CollectionInfo = true;
         Character->SyncMask.InventoryInfo = true;
-        Character->SyncPriority.Immediate = true;
         Response->Success = 1;
     }
     else {
@@ -271,14 +268,13 @@ CLIENT_PROCEDURE_BINDING(RECEIVE_COLLECTION_REWARD) {
         RTDataCollectionRewardCurrencyRef Reward = RTRuntimeDataCollectionRewardCurrencyGet(Runtime->Context, CollectionKindInfoDetail->RewardID);
 
         CollectionSlot->ReceivedReward = true;
-        Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_GEM] += Reward->Quantity;
+        Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_GEM] += Reward->Quantity;
         Character->SyncMask.Info = true;
         Character->SyncMask.CollectionInfo = true;
-        Character->SyncPriority.High = true;
 
         Response->RewardType = CollectionKindInfoDetail->RewardType;
         S2C_DATA_RECEIVE_COLLECTION_REWARD_CURRENCY* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_RECEIVE_COLLECTION_REWARD_CURRENCY);
-        ResponseData->Currency = (UInt32)Character->Info.Currency[RUNTIME_CHARACTER_CURRENCY_GEM];
+        ResponseData->Currency = (UInt32)Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_GEM];
     }
     else if (CollectionKindInfoDetail->RewardType == RUNTIME_DATA_COLLECTION_REWARD_TYPE_ITEM) {
         if (Packet->InventorySlotCount < 1) goto error;
@@ -290,12 +286,11 @@ CLIENT_PROCEDURE_BINDING(RECEIVE_COLLECTION_REWARD) {
         ItemSlot.Item.Serial = Reward->ItemKind;
         ItemSlot.ItemOptions = Reward->ItemOption;
         ItemSlot.ItemDuration.Serial = Reward->ItemDuration;
-        if (!RTInventorySetSlot(Runtime, &Character->InventoryInfo, &ItemSlot)) goto error;
+        if (!RTInventorySetSlot(Runtime, &Character->Data.InventoryInfo, &ItemSlot)) goto error;
 
         CollectionSlot->ReceivedReward = true;
         Character->SyncMask.CollectionInfo = true;
         Character->SyncMask.InventoryInfo = true;
-        Character->SyncPriority.High = true;
 
         Response->RewardType = CollectionKindInfoDetail->RewardType;
         Response->InventorySlotCount = 1;

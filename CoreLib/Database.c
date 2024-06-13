@@ -5,6 +5,7 @@
 #endif
 
 #include "Diagnostic.h"
+#include "Dictionary.h"
 #include "Database.h"
 #include "String.h"
 
@@ -18,6 +19,7 @@ struct _Database {
     struct _StatementBucket* FirstBucket;
     struct _StatementBucket* LastBucket;
     Int64 LastInsertID;
+	DictionaryRef DataTables;
 } ALIGNED(8);
 
 struct _Buffer {
@@ -43,6 +45,14 @@ struct _Buffer {
 } ALIGNED(8);
 
 typedef struct _Buffer* BufferRef;
+
+struct _DataTable {
+	DatabaseRef Database;
+	StatementRef Insert;
+	StatementRef Select;
+	StatementRef Update;
+	StatementRef Delete;
+} ALIGNED(8);
 
 struct _Statement {
 	DatabaseRef Database;
@@ -109,6 +119,7 @@ DatabaseRef DatabaseConnect(
 	memset(Result->FirstBucket, 0, sizeof(struct _StatementBucket));
 	Result->LastBucket = Result->FirstBucket;
 	Result->LastInsertID = 0;
+	Result->DataTables = CStringDictionaryCreate(AllocatorGetDefault(), 8);
 	return Result;
 }
 
@@ -150,6 +161,7 @@ Void DatabaseDisconnect(
 	}
 
 	mysql_close(Database->Connection);
+	DictionaryDestroy(Database->DataTables);
 	free(Database);
 }
 
@@ -301,6 +313,119 @@ Int64 DatabaseGetLastInsertID(
 	DatabaseRef Database
 ) {
 	return Database->LastInsertID;
+}
+
+DataTableRef DatabaseCreateDataTable(
+	DatabaseRef Database,
+	CString Scope,
+	CString Name
+) {
+	assert(!DictionaryLookup(Database->DataTables, Name));
+
+	Info("Migrating data table: `%s%s`", Scope, Name);
+
+	struct _DataTable Memory = { 0 };
+	DictionaryInsert(Database->DataTables, Name, &Memory, sizeof(struct _DataTable));
+	DataTableRef Table = DictionaryLookup(Database->DataTables, Name);
+	assert(Table);
+
+	if (!StatementExecute(DatabaseCreateStatement(Database, CStringFormat(
+		"CREATE TABLE IF NOT EXISTS `%s%s` ("
+		"   `%sID` INT NOT NULL PRIMARY KEY,"
+		"   `Data` BLOB NOT NULL"
+		") ENGINE = INNODB DEFAULT CHARSET = utf8;",
+		Scope,
+		Name,
+		Scope
+	)))) {
+		Fatal("Database migration failed for data table: `%s%s`", Scope, Name);
+	}
+
+	Table->Database = Database;
+	Table->Insert = DatabaseCreateStatement(Database, CStringFormat(
+		"INSERT INTO `%s%s` (`%sID`, `Data`) VALUES (?, ?);",
+		Scope,
+		Name,
+		Scope
+	));
+	Table->Select = DatabaseCreateStatement(Database, CStringFormat(
+		"SELECT `Data` FROM `%s%s` WHERE `%sID` = ?;",
+		Scope,
+		Name,
+		Scope
+	));
+	Table->Update = DatabaseCreateStatement(Database, CStringFormat(
+		"UPDATE `%s%s` SET `Data` = ? WHERE `%sID` = ?;",
+		Scope,
+		Name,
+		Scope
+	));
+	Table->Delete = DatabaseCreateStatement(Database, CStringFormat(
+		"DELETE FROM `%s%s` WHERE `%sID` = ?;",
+		Scope,
+		Name,
+		Scope
+	));
+	assert(Table->Insert);
+	assert(Table->Select);
+	assert(Table->Update);
+	assert(Table->Delete);
+	return Table;
+}
+
+DataTableRef DatabaseGetDataTable(
+	DatabaseRef Database,
+	CString Scope,
+	CString Name
+) {
+    return (DataTableRef)DictionaryLookup(Database->DataTables, Name);
+}
+
+Bool DataTableInsert(
+	DataTableRef Table,
+	Int32 ID,
+	UInt8* Data,
+	Int32 DataLength
+) {
+	StatementBindParameterInt32(Table->Insert, 0, ID);
+	StatementBindParameterBinary(Table->Insert, 1, Data, DataLength);
+	return StatementExecute(Table->Insert);
+}
+
+Bool DataTableSelect(
+	DataTableRef Table,
+	Int32 ID,
+	UInt8* Data,
+	Int32 DataLength
+) {
+	StatementBindParameterInt64(Table->Select, 0, ID);
+
+	if (!StatementExecute(Table->Select)) return false;
+	if (!StatementFetchResult(Table->Select)) return false;
+
+	StatementReadResultBinary(Table->Select, 0, DataLength, Data, NULL);
+	StatementFlushResults(Table->Select);
+
+	return true;
+}
+
+Bool DataTableUpdate(
+	DataTableRef Table,
+	Int32 ID,
+	UInt8* Data,
+	Int32 DataLength
+) {
+	StatementBindParameterInt32(Table->Update, 0, ID);
+	StatementBindParameterBinary(Table->Update, 1, Data, DataLength);
+	return StatementExecute(Table->Update);
+}
+
+Bool DataTableDelete(
+	DataTableRef Table,
+	Int32 ID
+) {
+	StatementBindParameterInt64(Table->Delete, 0, ID);
+	return StatementExecute(Table->Delete);
 }
 
 Void StatementBindParameter(

@@ -199,6 +199,7 @@ RTForceEffectFormulaRef RTRuntimeAddForceEffectFormula(
     Formula->ForceEffectTargetType = RUNTIME_FORCE_EFFECT_TARGET_TYPE_NONE;
     Formula->OnApply = OnApply;
     Formula->OnCancel = OnCancel;
+    return Formula;
 }
 
 Void RTForceEffectFormulaBindAttribute(

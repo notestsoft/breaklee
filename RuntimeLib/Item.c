@@ -18,9 +18,9 @@ Bool RTCharacterCheckItemStatRequirements(
 	Int32 RequiredDex = ItemData->Weapon.Dex + ItemData->Weapon.DeltaDex * MIN(ItemUpgradeLevel, RUNTIME_ENCHANT_MAX_STAT_INCREASE_LEVEL);
 	Int32 RequiredInt = ItemData->Weapon.Int + ItemData->Weapon.DeltaInt * MIN(ItemUpgradeLevel, RUNTIME_ENCHANT_MAX_STAT_INCREASE_LEVEL);
 
-	if (Character->Info.Stat[RUNTIME_CHARACTER_STAT_STR] < RequiredStr ||
-		Character->Info.Stat[RUNTIME_CHARACTER_STAT_DEX] < RequiredDex ||
-		Character->Info.Stat[RUNTIME_CHARACTER_STAT_INT] < RequiredInt) {
+	if (Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_STR] < RequiredStr ||
+		Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_DEX] < RequiredDex ||
+		Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_INT] < RequiredInt) {
 		return false;
 	}
 
@@ -577,18 +577,16 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemPotion) {
 	if (ItemData->MaxStackSize > 0) {
 		ItemSlot->ItemOptions = MAX(0, ItemSlot->ItemOptions - 1);
 		if (ItemSlot->ItemOptions < 1) {
-			RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+			RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
 
 			Character->SyncMask.InventoryInfo = true;
-			Character->SyncPriority.Low = true;
 		}
 	}
 	else {
 		// TODO: Do not delete inexhaustable items!!!
-		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
 
 		Character->SyncMask.InventoryInfo = true;
-		Character->SyncPriority.Low = true;
 	}
 
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
@@ -612,10 +610,9 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSkillBook) {
     Int32 SkillLevel = MAX(1, (Int32)ItemSlot->ItemOptions);
     SkillSlot = RTCharacterAddSkillSlot(Runtime, Character, SkillData->SkillID, SkillLevel, Data->SkillSlotIndex);
 
-    RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+    RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
 
 	Character->SyncMask.InventoryInfo = true;
-	Character->SyncPriority.Low = true;
 
     return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
@@ -658,7 +655,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemImmediateReward) {
 		break;
 
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_OXP: {
-		if (Character->Info.Overlord.Level < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
+		if (Character->Data.Info.Overlord.Level < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
 		RTCharacterAddOverlordExp(Runtime, Character, ItemSlot->ItemOptions);
 		break;
 	}
@@ -668,10 +665,9 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemImmediateReward) {
 	}
 
 	// TODO: Check if this item should be consumed and check if it is a stackable item
-	RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
 
 	Character->SyncMask.InventoryInfo = true;
-	Character->SyncPriority.High = true;
 
     return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
@@ -825,7 +821,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSpecialPotion) {
 	ItemSlot->ItemOptions = RTQuestItemOptions(ItemOptions, ItemCount);
 
 	if (ItemCount < 1) {
-		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
 	}
 
 	Int32 ForceEffectValue = (Int32)ItemOptions;
@@ -859,7 +855,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSpecialPotion) {
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotExtender) {
 	struct _RTItemConverterPayload* Data = Payload;
 
-	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Data->TargetSlotIndex);
+	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Data->TargetSlotIndex);
 	if (!TargetItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
 	RTItemDataRef TargetItemData = RTRuntimeGetItemDataByIndex(Runtime, TargetItemSlot->Item.ID);
@@ -894,7 +890,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotExtender) {
 	TargetItemSlot->Item.IsAccountBinding = true;
 	TargetItemSlot->ItemOptions = TargetItemOptions.Serial;
 
-	RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
 
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
@@ -902,7 +898,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotExtender) {
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotConverter) {
 	struct _RTItemConverterPayload* Data = Payload;
 
-	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Data->TargetSlotIndex);
+	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Data->TargetSlotIndex);
 	if (!TargetItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
 	RTItemDataRef TargetItemData = RTRuntimeGetItemDataByIndex(Runtime, TargetItemSlot->Item.ID);
@@ -924,14 +920,14 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotConverter) {
 	if (RandomValue < ItemData->SlotConverter.SuccessRate) {
 		TargetItemOptions.Equipment.SlotCount += 1;
 		TargetItemSlot->ItemOptions = TargetItemOptions.Serial;
-		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceItemSlotIndex);
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SourceItemSlotIndex);
 		return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 	}
 	else {
-		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, SourceItemSlotIndex);
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SourceItemSlotIndex);
 
 		if (!ItemData->SlotConverter.HasSafeguard) {
-			RTInventoryClearSlot(Runtime, &Character->InventoryInfo, TargetItemSlotIndex);
+			RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, TargetItemSlotIndex);
 			return RUNTIME_ITEM_USE_RESULT_SUCCESS_DESTROY_ITEM;
 		}
 
@@ -942,7 +938,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotConverter) {
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpicConverter) {
 	struct _RTItemConverterPayload* Data = Payload;
 
-	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Data->TargetSlotIndex);
+	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Data->TargetSlotIndex);
 	if (!TargetItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
 	RTItemDataRef TargetItemData = RTRuntimeGetItemDataByIndex(Runtime, TargetItemSlot->Item.ID);
@@ -996,7 +992,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpicConverter) {
 	}
 
 	TargetItemSlot->ItemOptions = TargetItemOptions.Serial;
-	RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
 
 	return (Success) ? RUNTIME_ITEM_USE_RESULT_SUCCESS : RUNTIME_ITEM_USE_RESULT_SUCCESS_SAFEGUARD_ITEM;
 }
@@ -1004,7 +1000,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpicConverter) {
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemDivineConverter) {
 	struct _RTItemConverterPayload* Data = Payload;
 
-	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Data->TargetSlotIndex);
+	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Data->TargetSlotIndex);
 	if (!TargetItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
 	RTItemDataRef TargetItemData = RTRuntimeGetItemDataByIndex(Runtime, TargetItemSlot->Item.ID);
@@ -1036,7 +1032,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemDivineConverter) {
 	if (UpgradeGroupCostLevel->RequiredCoreCount > 0 || UpgradeGroupCostLevel->RequiredSafeCount > 0) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
 	TargetItemSlot->Item.DivineLevel += 1;
-	RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
 
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
@@ -1044,7 +1040,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemDivineConverter) {
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemChaosConverter) {
 	struct _RTItemConverterPayload* Data = Payload;
 
-	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Data->TargetSlotIndex);
+	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Data->TargetSlotIndex);
 	if (!TargetItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
 	RTItemDataRef TargetItemData = RTRuntimeGetItemDataByIndex(Runtime, TargetItemSlot->Item.ID);
@@ -1057,7 +1053,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemChaosConverter) {
 	if (TargetItemSlot->Item.UpgradeLevel >= ChaosUpgradeItemList->ItemGrade) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
 	TargetItemSlot->Item.UpgradeLevel += 1;
-	RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
 
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
@@ -1065,9 +1061,8 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemChaosConverter) {
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHolyWater) {
 	if (!RTCharacterEnableForceWing(Runtime, Character)) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
-	RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
 	Character->SyncMask.InventoryInfo = true;
-	Character->SyncPriority.High = true;
 
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
@@ -1084,7 +1079,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
 	UInt64 StackSize = 0;
 	UInt64 Amount = 0;
 	for (Index Index = 0; Index < Data->InventoryItemCount; Index += 1) {
-		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->InventoryInfo, Data->InventorySlotIndex[Index]);
+		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Data->InventorySlotIndex[Index]);
 		if (!ItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
 		StackSize += ItemSlot->ItemOptions & 0xFFFF;
@@ -1132,13 +1127,13 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
 		break;
 
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_OXP: {
-		if (Character->Info.Overlord.Level < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
+		if (Character->Data.Info.Overlord.Level < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
 		RTCharacterAddOverlordExp(Runtime, Character, TotalAmount);
 		break;
 	}
 
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_WINGEXP: {
-		if (Character->ForceWingInfo.Grade < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
+		if (Character->Data.ForceWingInfo.Grade < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
 		RTCharacterAddWingExp(Runtime, Character, TotalAmount);
 		break;
 	}
@@ -1150,14 +1145,13 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
 	// TODO: Add support for multiple item consumptions
 	StackSize -= Data->RegisteredStackSize;
 	if (StackSize < 1) {
-		RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
 	}
 	else {
 		ItemSlot->ItemOptions = Amount << 16 | (StackSize & 0xFFFF);
 	}
 
 	Character->SyncMask.InventoryInfo = true;
-	Character->SyncPriority.Low = true;
 
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
@@ -1169,11 +1163,14 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHonorMedalResetSelective) {
 	if (!MedalSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
 	MedalSlot->ForceEffectIndex = 0;
-	RTInventoryClearSlot(Runtime, &Character->InventoryInfo, ItemSlot->SlotIndex);
+	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
 
 	Character->SyncMask.InventoryInfo = true;
 	Character->SyncMask.HonorMedalInfo = true;
-	Character->SyncPriority.High = true;
 
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+}
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemTransformationCard) {
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }

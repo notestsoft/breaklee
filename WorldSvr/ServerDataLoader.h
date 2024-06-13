@@ -2,7 +2,6 @@
 
 #include "Context.h"
 #include "Constants.h"
-#include "GameProtocol.h"
 
 EXTERN_C_BEGIN
 

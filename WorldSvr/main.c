@@ -70,6 +70,9 @@ Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(            \
 #define IPC_C2W_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(C2W, __NAME__)
 #include "IPCCommands.h"
 
+#define IPC_D2W_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(D2W, __NAME__)
+#include "IPCCommands.h"
+
 #define IPC_L2W_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(L2W, __NAME__)
 #include "IPCCommands.h"
 
@@ -191,34 +194,47 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     );
     
 #define C2S_COMMAND(__NAME__, __COMMAND__) \
+    Trace("RegisterCommand(%d, C2S_%s)", C2S_ ## __NAME__, #__NAME__); \
     ServerSocketRegisterPacketCallback(Server, ServerContext.ClientSocket, __COMMAND__, &SERVER_PROC_ ## __NAME__);
 #include "ClientCommands.h"
 
 #define IPC_A2W_COMMAND(__NAME__) \
+    Trace("RegisterCommand(%d, IPC_A2W_%s)", IPC_A2W_ ## __NAME__, #__NAME__); \
     IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_A2W_ ## __NAME__, &SERVER_IPC_A2W_PROC_ ## __NAME__);
 #include "IPCCommands.h"
 
 #define IPC_C2W_COMMAND(__NAME__) \
+    Trace("RegisterCommand(%d, IPC_C2W_%s)", IPC_C2W_ ## __NAME__, #__NAME__); \
     IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_C2W_ ## __NAME__, &SERVER_IPC_C2W_PROC_ ## __NAME__);
 #include "IPCCommands.h"
 
+#define IPC_D2W_COMMAND(__NAME__) \
+    Trace("RegisterCommand(%d, IPC_D2W_%s)", IPC_D2W_ ## __NAME__, #__NAME__); \
+    IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_D2W_ ## __NAME__, &SERVER_IPC_D2W_PROC_ ## __NAME__);
+#include "IPCCommands.h"
+
 #define IPC_L2W_COMMAND(__NAME__) \
+    Trace("RegisterCommand(%d, IPC_L2W_%s)", IPC_L2W_ ## __NAME__, #__NAME__); \
     IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_L2W_ ## __NAME__, &SERVER_IPC_L2W_PROC_ ## __NAME__);
 #include "IPCCommands.h"
 
 #define IPC_M2W_COMMAND(__NAME__) \
+    Trace("RegisterCommand(%d, IPC_M2W_%s)", IPC_M2W_ ## __NAME__, #__NAME__); \
     IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_M2W_ ## __NAME__, &SERVER_IPC_M2W_PROC_ ## __NAME__);
 #include "IPCCommands.h"
 
 #define IPC_W2W_COMMAND(__NAME__) \
+    Trace("RegisterCommand(%d, IPC_W2W_%s)", IPC_W2W_ ## __NAME__, #__NAME__); \
     IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_W2W_ ## __NAME__, &SERVER_IPC_W2W_PROC_ ## __NAME__);
 #include "IPCCommands.h"
 
 #define IPC_P2W_COMMAND(__NAME__) \
+    Trace("RegisterCommand(%d, IPC_P2W_%s)", IPC_P2W_ ## __NAME__, #__NAME__); \
     IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_P2W_ ## __NAME__, &SERVER_IPC_P2W_PROC_ ## __NAME__);
 #include "IPCCommands.h"
 
 #define NOTIFICATION_PROTOCOL(__NAME__, __COMMAND__, __BODY__) \
+    Trace("RegisterNotification(%d, RUNTIME_NOTIFICATION_%s)", __COMMAND__, #__NAME__); \
     RTNotificationManagerRegisterCallback(ServerContext.Runtime->NotificationManager, __COMMAND__, SERVER_NOTIFICATION_PROC_ ## __NAME__, Server);
 #include "RuntimeLib/NotificationProtocolDefinition.h"
     

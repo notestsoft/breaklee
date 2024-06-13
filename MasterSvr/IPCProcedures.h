@@ -23,8 +23,6 @@ Void IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(       \
     IPCSocketRef Socket,                                \
     IPCSocketConnectionRef Connection,                  \
     IPCNodeContextRef ConnectionContext,                \
-    MASTERDB_DATA_ACCOUNT* Account,                     \
-    MASTERDB_DATA_CHARACTER* Character,                 \
     IPC_ ## __NAMESPACE__ ## _DATA_ ## __NAME__* Packet \
 )
 #endif

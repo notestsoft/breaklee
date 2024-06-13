@@ -109,7 +109,7 @@ Void ContextAddCaptchaFile(
         Captcha->Name[CaptchaLength] = '\0';
     }
 
-    if (!FileRead(File, &Captcha->Data, &Captcha->DataLength)) {
+    if (!FileRead(File, (UInt8**)&Captcha->Data, &Captcha->DataLength)) {
         Fatal("Couldn't load captcha file content '%s'", FileName);
     }
 }
