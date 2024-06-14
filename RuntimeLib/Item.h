@@ -337,7 +337,7 @@ struct _RTItemOptions {
 
 		struct {
 			UInt16 ItemLevel;
-			UInt16 ItemGrade;
+			UInt16 ItemGroup;
 			UInt32 ItemType;
 		} ChaosSeal;
 

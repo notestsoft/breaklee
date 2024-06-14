@@ -984,7 +984,7 @@ CLIENT_PROCEDURE_BINDING(CHAOS_UPGRADE_SEAL) {
 	if (SourceSlot->ItemOptions) {
 		if (TargetSlot->Item.UpgradeLevel > 0) goto error;
 		if (SourceItemOptions.ChaosSeal.ItemType != TargetData->ItemType) goto error;
-		if (SourceItemOptions.ChaosSeal.ItemGrade != TargetData->ItemGrade) goto error;
+		if (SourceItemOptions.ChaosSeal.ItemGroup != ChaosUpgradeItemList->Group) goto error;
 
 		TargetSlot->Item.UpgradeLevel = SourceItemOptions.ChaosSeal.ItemLevel;
 		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SourceSlot->SlotIndex);
@@ -1000,7 +1000,7 @@ CLIENT_PROCEDURE_BINDING(CHAOS_UPGRADE_SEAL) {
 		if (TargetSlot->Item.UpgradeLevel < 1) goto error;
 
 		SourceItemOptions.ChaosSeal.ItemLevel = TargetSlot->Item.UpgradeLevel;
-		SourceItemOptions.ChaosSeal.ItemGrade = TargetData->ItemGrade;
+		SourceItemOptions.ChaosSeal.ItemGroup = ChaosUpgradeItemList->Group;
 		SourceItemOptions.ChaosSeal.ItemType = TargetData->ItemType;
 		SourceSlot->ItemOptions = SourceItemOptions.Serial;
 		TargetSlot->Item.UpgradeLevel = 0;

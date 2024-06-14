@@ -21,9 +21,9 @@ CLIENT_PROCEDURE_BINDING(PARTY_INVITE) {
 	Request->Source.Info.Level = Character->Data.Info.Basic.Level;
 	Request->Source.Info.BattleStyleIndex = BattleStyleIndex;
 	Request->Source.Info.OverlordLevel = Character->Data.Info.Overlord.Level;
-	Request->Source.Info.MythRebirth = 0;
-	Request->Source.Info.MythHolyPower = 0;
-	Request->Source.Info.MythLevel = 0;
+	Request->Source.Info.MythRebirth = Character->Data.MythMasteryInfo.Rebirth;
+	Request->Source.Info.MythHolyPower = Character->Data.MythMasteryInfo.HolyPower;
+	Request->Source.Info.MythLevel = Character->Data.MythMasteryInfo.Level;
 	Request->Source.Info.ForceWingGrade = Character->Data.ForceWingInfo.Grade;
 	Request->Source.Info.ForceWingLevel = Character->Data.ForceWingInfo.Level;
 	CStringCopySafe(Request->Source.Info.Name, MAX_CHARACTER_NAME_LENGTH + 1, Client->CharacterName);
@@ -86,9 +86,9 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE) {
 	Response->Target.Info.Level = TargetCharacter->Data.Info.Basic.Level;
 	Response->Target.Info.BattleStyleIndex = BattleStyleIndex;
 	Response->Target.Info.OverlordLevel = TargetCharacter->Data.Info.Overlord.Level;
-	Response->Target.Info.MythRebirth = 0;
-	Response->Target.Info.MythHolyPower = 0;
-	Response->Target.Info.MythLevel = 0;
+	Response->Target.Info.MythRebirth = TargetCharacter->Data.MythMasteryInfo.Rebirth;
+	Response->Target.Info.MythHolyPower = TargetCharacter->Data.MythMasteryInfo.HolyPower;
+	Response->Target.Info.MythLevel = TargetCharacter->Data.MythMasteryInfo.Level;
 	Response->Target.Info.ForceWingGrade = TargetCharacter->Data.ForceWingInfo.Grade;
 	Response->Target.Info.ForceWingLevel = TargetCharacter->Data.ForceWingInfo.Level;
 	Response->Success = true;

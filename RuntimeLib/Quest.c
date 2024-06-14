@@ -1,6 +1,7 @@
 #include "Character.h"
 #include "Npc.h"
 #include "Party.h"
+#include "PartyManager.h"
 #include "Quest.h"
 #include "Runtime.h"
 #include "World.h"
@@ -842,7 +843,7 @@ Bool RTPartyIncrementQuestMobCounter(
 ) {
 	if (RTEntityIsNull(PartyID)) return false;
 
-	RTPartyRef Party = RTRuntimeGetParty(Runtime, PartyID);
+	RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, PartyID);
 	assert(Party);
 
 	for (Int32 SlotIndex = 0; SlotIndex < RUNTIME_PARTY_MAX_QUEST_SLOT_COUNT; SlotIndex += 1) {
