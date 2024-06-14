@@ -33,7 +33,8 @@ Bool MasterDBGetOrCreateAccount(
 );
 
 Bool MasterDBInsertAccount(
-    DatabaseRef Database
+    DatabaseRef Database,
+    Int64 AccountID
 );
 
 Bool MasterDBSelectAccountByID(

@@ -24,7 +24,7 @@ struct _ClientContext {
     SocketConnectionRef Connection;
     UInt32 Flags;
     Index CharacterIndex;
-    Char CharacterName[MAX_CHARACTER_NAME_LENGTH + 1];
+    Index WorldNodeIndex;
 };
 typedef struct _ClientContext* ClientContextRef;
 

@@ -41,7 +41,7 @@ Bool MasterDBGetOrCreateAccount(
 
     if (!DatabaseBeginTransaction(Database)) goto error;
     {
-        if (!MasterDBInsertAccount(Database)) goto error;
+        if (!MasterDBInsertAccount(Database, AccountID)) goto error;
         if (!MasterDBInsertSubpassword(Database, Account->AccountID)) goto error;
 
         Account->AccountID = DatabaseGetLastInsertID(Database);
@@ -58,9 +58,11 @@ error:
 }
 
 Bool MasterDBInsertAccount(
-    DatabaseRef Database
+    DatabaseRef Database,
+    Int64 AccountID
 ) {
     StatementRef Statement = MasterDBGetStatement(Database, MASTERDB_INSERT_ACCOUNT);
+    StatementBindParameterInt64(Statement, 0, AccountID);
 
     return StatementExecute(Statement);
 }

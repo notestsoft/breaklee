@@ -15,7 +15,7 @@
 #endif
 
 CONFIG_BEGIN(PartySvr)
-CONFIG_PARAMETER(UInt8, GroupIndex, "PartySvr.GroupIndex", 1)
+CONFIG_PARAMETER(UInt8, GroupIndex, "PartySvr.GroupIndex", 21)
 CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, Host, "PartySvr.Host", 127.0.0.1)
 CONFIG_PARAMETER(UInt16, Port, "PartySvr.Port", 38190)
 CONFIG_PARAMETER(Int32, MaxConnectionCount, "PartySvr.MaxConnectionCount", 64)
