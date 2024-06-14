@@ -653,7 +653,11 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_CHAOS_LEVEL) {
 			assert(SafeData);
 
 			if (SafeData->ItemType != RUNTIME_ITEM_TYPE_CHAOS_SAFEGUARD) goto error;
-			// TODO: Check chaos safeguard subtypes
+
+			if (SafeData->Options[0] == 0) {
+				RequiredSafeCount = 1;
+			}
+			else if (SafeData->Options[0] != UpgradeMain->Group) goto error;
 
 			Int32 ConsumableSafeCount = MIN(RequiredSafeCount, (Int32)SafeSlot->ItemOptions);
 
