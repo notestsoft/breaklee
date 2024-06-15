@@ -1,3 +1,5 @@
+#include "ClientProtocol.h"
+#include "ClientProcedures.h"
 #include "ClientSocket.h"
 #include "WorldSocket.h"
 #include "Notification.h"
@@ -5,22 +7,6 @@
 #include "IPCCommands.h"
 #include "IPCProtocol.h"
 
-ClientContextRef ServerGetClientByIndex(
-    ServerContextRef Context,
-    UInt32 CharacterIndex,
-    CString CharacterName,
-    Int32 CharacterNameLength
-) {
-    SocketConnectionIteratorRef Iterator = SocketGetConnectionIterator(Context->ClientSocket);
-    while (Iterator) {
-        SocketConnectionRef Connection = SocketConnectionIteratorFetch(Context->ClientSocket, Iterator);
-        Iterator = SocketConnectionIteratorNext(Context->ClientSocket, Iterator);
+CLIENT_PROCEDURE_BINDING(CONNECT) {}
 
-        ClientContextRef Client = (ClientContextRef)Connection->Userdata;
-        if (Client && Client->CharacterIndex == CharacterIndex && memcmp(Client->CharacterName, CharacterName, CharacterNameLength) == 0) {
-            return Client;
-        }
-    }
-
-    return NULL;
-}
+CLIENT_PROCEDURE_BINDING(AUTH_ACCOUNT) {}

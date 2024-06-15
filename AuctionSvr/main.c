@@ -16,8 +16,8 @@ Void SERVER_PROC_ ## __NAME__(                                                  
 ) {                                                                                                                              \
     ServerContextRef Context = (ServerContextRef)ServerContext;                                                                  \
     ClientContextRef Client = (ClientContextRef)ConnectionContext;                                                               \
-    RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Client->CharacterIndex);        \
-    PROC_ ## __NAME__(Server, Context, Socket, Connection, Client, Context->Runtime, Character, (C2S_DATA_ ## __NAME__*)Packet); \
+    RTCharacterRef Character = NULL;                                                                                             \
+    PROC_ ## __NAME__(Server, Context, Socket, Connection, Client, (C2S_DATA_ ## __NAME__*)Packet); \
 }
 #include "ClientCommands.h"
 
