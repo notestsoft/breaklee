@@ -12,6 +12,7 @@ enum {
 
 enum {
     RUNTIME_NPC_ID_GM2                  = 201,
+    RUNTIME_NPC_ID_FRONTIER_STONE       = 202,
 
     RUNTIME_NPC_ID_WAR_0                = 68,
     RUNTIME_NPC_ID_WAR_1                = 67,

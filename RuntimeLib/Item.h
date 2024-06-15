@@ -310,6 +310,15 @@ struct _RTItemOptionSlot {
 };
 typedef struct _RTItemOptionSlot RTItemOptionSlot;
 
+
+struct _RTItemOptionFrontierStone {
+	UInt8 X;
+	UInt8 Y;
+	UInt8 WorldIndex;
+	UInt8 Unknown1;
+};
+typedef struct _RTItemOptionFrontierStone RTItemOptionFrontierStone;
+
 struct _RTItemOptions {
 	union {
 		struct { UInt64 Serial; };
@@ -359,6 +368,8 @@ struct _RTItemOptions {
 			UInt64 StackSize : 7;
 			UInt64 ForceEffectIndex : 25;
 		} OptionScroll;
+
+		RTItemOptionFrontierStone FrontierStone;
 	};
 };
 typedef struct _RTItemOptions RTItemOptions;
@@ -496,6 +507,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemImmediateReward);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemWeapon);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemArmor);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemAccessory);
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemFrontierStone);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEffector);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpaulet);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemVehicleBike);
@@ -507,6 +519,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotConverter);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpicConverter);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemDivineConverter);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemChaosConverter);
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpicBooster);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHolyWater);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion);
 

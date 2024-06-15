@@ -211,10 +211,11 @@ Bool RTRuntimeWarpCharacter(
     }
     
     if (NpcID == RUNTIME_NPC_ID_GM2) {
-        // TODO: Enable this code to check for gm nation
-        // if (Character->Data.Info.Profile.Nation != 3) return false;
+        if (Character->Data.Info.Profile.Nation != 3) return false;
 
         RTWorldContextRef TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpWorldID);
+        if (!TargetWorld) return false;
+
         if (RTWorldIsTileColliding(Runtime, TargetWorld, WarpPositionX, WarpPositionY, Character->Movement.CollisionMask)) return false;
 
         RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
@@ -225,6 +226,48 @@ Bool RTRuntimeWarpCharacter(
         Character->Data.Info.Position.DungeonIndex = 0;
         Character->SyncMask.Info = true;
         
+        RTMovementInitialize(
+            Runtime,
+            &Character->Movement,
+            WarpPositionX,
+            WarpPositionY,
+            RUNTIME_MOVEMENT_SPEED_BASE,
+            RUNTIME_WORLD_TILE_WALL
+        );
+
+        RTWorldSpawnCharacterWithoutNotification(Runtime, TargetWorld, Entity);
+
+        return true;
+    }
+
+    if (NpcID == RUNTIME_NPC_ID_FRONTIER_STONE) {
+        RTItemSlotRef Slot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, SlotIndex);
+        if (!Slot) return false;
+        if (Slot->ItemOptions < 1) return false;
+
+        RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, Slot->Item.ID);
+        if (!ItemData) return false;
+        if (ItemData->ItemType != RUNTIME_ITEM_TYPE_FRONTIER_STONE) return false;
+
+        RTItemOptions ItemOptions = { .Serial = Slot->ItemOptions };
+        WarpWorldID = ItemOptions.FrontierStone.WorldIndex;
+        WarpPositionX = ItemOptions.FrontierStone.X;
+        WarpPositionY = ItemOptions.FrontierStone.Y;
+
+        RTWorldContextRef TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpWorldID);
+        if (!TargetWorld) return false;
+        if (TargetWorld->WorldData->WorldIndex != Character->Data.Info.Position.WorldID) return false;
+
+        if (RTWorldIsTileColliding(Runtime, TargetWorld, WarpPositionX, WarpPositionY, Character->Movement.CollisionMask)) return false;
+
+        RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
+
+        Character->Data.Info.Position.X = WarpPositionX;
+        Character->Data.Info.Position.Y = WarpPositionY;
+        Character->Data.Info.Position.WorldID = WarpWorldID;
+        Character->Data.Info.Position.DungeonIndex = 0;
+        Character->SyncMask.Info = true;
+
         RTMovementInitialize(
             Runtime,
             &Character->Movement,

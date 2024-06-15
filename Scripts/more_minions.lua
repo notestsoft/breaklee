@@ -10,10 +10,24 @@ function spawn_minion(runtime, world, mob, entity_id)
     world_spawn_mob(runtime, world, entity_id, x, y)
 end
 
+local test_timer = 0
+
+function on_spawn(runtime, world, mob)
+    test_timer = os.time()
+    print("Hello, monster!")
+end
+
 function on_damage(runtime, world, mob, damage)
     local x = mob_pos_x(mob) + math.random(-1, 2)
     local y = mob_pos_y(mob) + math.random(-1, 2)
     world_spawn_item(runtime, world, mob_id(mob), 13, damage * 1000, x, y)
+end
+
+function on_update(runtime, world, mob)
+    if os.time() - test_timer > 10 then
+        test_timer = os.time()
+        world_despawn_mob(runtime, world, 226)
+    end
 end
 
 function on_despawn(runtime, world, mob)

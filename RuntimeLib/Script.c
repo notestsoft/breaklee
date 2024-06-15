@@ -3,6 +3,7 @@
 #include "Script.h"
 
 static Int32 _DebugWorldSpawnMob(lua_State* State);
+static Int32 _DebugWorldDespawnMob(lua_State* State);
 static Int32 _DebugWorldSpawnItem(lua_State* State);
 
 struct _RTScript {
@@ -89,6 +90,9 @@ RTScriptRef RTScriptManagerLoadScript(
 
     lua_pushcfunction(Script->State, _DebugWorldSpawnMob);
     lua_setglobal(Script->State, "world_spawn_mob");
+
+    lua_pushcfunction(Script->State, _DebugWorldDespawnMob);
+    lua_setglobal(Script->State, "world_despawn_mob");
 
     lua_pushcfunction(Script->State, _DebugWorldSpawnItem);
     lua_setglobal(Script->State, "world_spawn_item");
@@ -200,6 +204,27 @@ static Int32 _DebugWorldSpawnMob(
         Minion->Spawn.AreaX = X;
         Minion->Spawn.AreaY = Y;
         RTWorldSpawnMob(Runtime, WorldContext, Minion);
+    }
+
+    return 0;
+}
+
+static Int32 _DebugWorldDespawnMob(
+    lua_State* State
+) {
+    RTRuntimeRef Runtime = lua_touserdata(State, 1);
+    RTWorldContextRef WorldContext = lua_touserdata(State, 2);
+    Int32 MobIndex = (Int32)lua_tointeger(State, 3);
+    Int32 X = (Int32)lua_tointeger(State, 4);
+    Int32 Y = (Int32)lua_tointeger(State, 5);
+
+    RTEntityID MobID = { 0 };
+    MobID.EntityIndex = MobIndex;
+    MobID.WorldIndex = WorldContext->WorldData->WorldIndex;
+    MobID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
+    RTMobRef Minion = RTWorldContextGetMob(WorldContext, MobID);
+    if (Minion && Minion->IsSpawned) {
+        RTWorldDespawnMob(Runtime, WorldContext, Minion);
     }
 
     return 0;

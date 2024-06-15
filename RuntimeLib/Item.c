@@ -611,7 +611,6 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSkillBook) {
     SkillSlot = RTCharacterAddSkillSlot(Runtime, Character, SkillData->SkillID, SkillLevel, Data->SkillSlotIndex);
 
     RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
-
 	Character->SyncMask.InventoryInfo = true;
 
     return RUNTIME_ITEM_USE_RESULT_SUCCESS;
@@ -785,6 +784,27 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemArmor) {
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemAccessory) {
 	return RUNTIME_ITEM_USE_RESULT_FAILED;
+}
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemFrontierStone) {
+	RTItemOptionFrontierStone* Data = Payload;
+
+	if (!RTCharacterIsAlive(Runtime, Character)) return RUNTIME_ITEM_USE_RESULT_IS_DEAD;
+
+	if (ItemSlot->ItemOptions > 0) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	RTWorldContextRef TargetWorld = RTRuntimeGetWorldByID(Runtime, Data->WorldIndex);
+	if (!TargetWorld) return RUNTIME_ITEM_USE_RESULT_FAILED;
+	if (TargetWorld->WorldData->Type == RUNTIME_WORLD_TYPE_DUNGEON ||
+		TargetWorld->WorldData->Type == RUNTIME_WORLD_TYPE_QUEST_DUNGEON) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	if (RTWorldIsTileColliding(Runtime, TargetWorld, Data->X, Data->Y, Character->Movement.CollisionMask)) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	RTItemOptions ItemOptions = { .FrontierStone = *Data };
+	ItemSlot->ItemOptions = ItemOptions.Serial;
+	Character->SyncMask.InventoryInfo = true;
+
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEffector) {
@@ -1056,6 +1076,12 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemChaosConverter) {
 	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
 
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+}
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpicBooster) {
+	struct _RTItemConverterPayload* Data = Payload;
+
+	return RUNTIME_ITEM_USE_RESULT_FAILED;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHolyWater) {
