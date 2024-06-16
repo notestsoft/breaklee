@@ -6,6 +6,72 @@ on:
       - main
 
 jobs:
+  build-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install build prerequisites
+      run: sudo apt-get install gcc libssl-dev libmariadb-dev zlib1g-dev ninja-build cmake
+
+    - name: Configure project
+      run: cmake -S . -B build -G Ninja
+
+    - name: Build project
+      run: cmake --build build --config Release
+
+    - name: Prepare to upload binaries
+      run: |
+        mkdir bin
+        cp ./build/LoginSvr bin
+        cp ./build/MasterSvr bin
+        cp ./build/MasterDBAgent bin
+        cp ./build/PartySvr bin
+        cp ./build/WorldSvr bin
+        chmod +x bin/*
+
+    - name: Upload binaries
+      uses: actions/upload-artifact@v2
+      with:
+        name: breaklee-ubuntu-latest
+        path: bin
+
+    - name: Construct artifact URL
+      run: echo "ARTIFACT_URL=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" >> $GITHUB_ENV
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install build prerequisites
+      run: brew install openssl mariadb zlib ninja cmake
+
+    - name: Configure project
+      run: cmake -S . -B build -G Ninja
+
+    - name: Build project
+      run: cmake --build build --config Release
+
+    - name: Prepare to upload binaries (macOS)
+      run: |
+        mkdir bin
+        cp ./build/LoginSvr bin
+        cp ./build/MasterSvr bin
+        cp ./build/MasterDBAgent bin
+        cp ./build/PartySvr bin
+        cp ./build/WorldSvr bin
+        chmod +x bin/*
+
+    - name: Upload binaries
+      uses: actions/upload-artifact@v2
+      with:
+        name: breaklee-macos-latest
+        path: bin
+
+    - name: Construct artifact URL
+      run: echo "ARTIFACT_URL=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" >> $GITHUB_ENV
+
   build-windows:
     runs-on: windows-latest
     steps:
@@ -20,23 +86,88 @@ jobs:
     - name: Prepare to upload binaries
       run: |
         New-Item -ItemType Directory -Force -Path bin
-        Copy-Item ./build/Release/AuctionSvr.exe bin
-        Copy-Item ./build/Release/ChatSvr.exe bin
-        Copy-Item ./build/Release/CoreLib.lib bin
-        Copy-Item ./build/Release/LoginSvr.exe bin
+        Copy-Item ./build/Release/Login.exe bin
         Copy-Item ./build/Release/MasterSvr.exe bin
-        Copy-Item ./build/Release/NetLib.lib bin
+        Copy-Item ./build/Release/MasterDBAgent.exe bin
         Copy-Item ./build/Release/PartySvr.exe bin
-        Copy-Item ./build/Release/RuntimeDataLib.lib bin
-        Copy-Item ./build/Release/RuntimeLib.lib bin
         Copy-Item ./build/Release/WorldSvr.exe bin
       shell: powershell
 
     - name: Upload binaries
       uses: actions/upload-artifact@v2
       with:
-        name: windows-latest
+        name: breaklee-windows-latest
         path: bin
 
     - name: Construct artifact URL
       run: echo "ARTIFACT_URL=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" >> $GITHUB_ENV
+
+  notify-discord-ubuntu:
+    needs: build-ubuntu
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download binaries
+        uses: actions/download-artifact@v2
+        with:
+          name: breaklee-ubuntu-latest
+          path: downloaded_bin
+
+      - name: Send Notification to Discord with Artifact Upload
+        run: |
+          cd downloaded_bin
+          zip -r artifacts.zip .
+
+          curl -H "Content-Type: multipart/form-data" \
+              -F "payload_json={\"content\": \"Build for commit \`${{ github.sha }}\` **ubuntu-latest** completed successfully! Uploading artifacts...\"}" \
+              -F "file=@artifacts.zip" \
+              ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+        shell: bash
+
+  notify-discord-macos:
+    needs: build-macos
+    if: success()
+    runs-on: macos-latest
+    steps:
+      - name: Download binaries
+        uses: actions/download-artifact@v2
+        with:
+          name: breaklee-macos-latest
+          path: downloaded_bin
+
+      - name: Send Notification to Discord with Artifact Upload
+        run: |
+          cd downloaded_bin
+          zip -r artifacts.zip .
+
+          curl -H "Content-Type: multipart/form-data" \
+              -F "payload_json={\"content\": \"Build for commit \`${{ github.sha }}\` **macos-latest** completed successfully! Uploading artifacts...\"}" \
+              -F "file=@artifacts.zip" \
+              ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+        shell: bash
+
+  notify-discord-windows:
+    needs: build-windows
+    if: success()
+    runs-on: windows-latest
+    steps:
+      - name: Download binaries
+        uses: actions/download-artifact@v2
+        with:
+          name: breaklee-windows-latest
+          path: downloaded_bin
+
+      - name: Send Notification to Discord with Artifact Upload
+        run: |
+          cd downloaded_bin
+          choco install zip
+          zip -r artifacts.zip .
+
+          curl -H "Content-Type: multipart/form-data" \
+              -F "payload_json={\"content\": \"Build for commit \`${{ github.sha }}\` **windows-latest** completed successfully! Uploading artifacts...\"}" \
+              -F "file=@artifacts.zip" \
+              ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+        shell: bash
