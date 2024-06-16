@@ -166,6 +166,10 @@ NOTIFICATION_PROCEDURE_BINDING(MOB_ATTACK_AOE) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 
+NOTIFICATION_PROCEDURE_BINDING(CHANGE_GENDER) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_SKILL_MASTERY_UPDATE) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
     Trace("CharacterSkillMasteryUpdate -> Character(%d)",

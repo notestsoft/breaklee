@@ -1200,3 +1200,18 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHonorMedalResetSelective) {
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemTransformationCard) {
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemChangeGender) {
+	Character->Data.Info.Style.Gender = !Character->Data.Info.Style.Gender;
+	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
+
+	Character->SyncMask.Info = true;
+	Character->SyncMask.InventoryInfo = true;
+
+	NOTIFICATION_DATA_CHANGE_GENDER* Notification = RTNotificationInit(CHANGE_GENDER);
+	Notification->Gender = Character->Data.Info.Style.Gender;
+	Notification->Success = 1;
+	RTNotificationDispatchToCharacter(Notification, Character);
+	
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+}
