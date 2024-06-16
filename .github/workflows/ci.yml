@@ -86,7 +86,7 @@ jobs:
     - name: Prepare to upload binaries
       run: |
         New-Item -ItemType Directory -Force -Path bin
-        Copy-Item ./build/Release/Login.exe bin
+        Copy-Item ./build/Release/LoginSvr.exe bin
         Copy-Item ./build/Release/MasterSvr.exe bin
         Copy-Item ./build/Release/MasterDBAgent.exe bin
         Copy-Item ./build/Release/PartySvr.exe bin
