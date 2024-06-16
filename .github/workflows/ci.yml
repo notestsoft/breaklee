@@ -107,6 +107,13 @@ jobs:
     if: success()
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Get commit message
+        id: get_commit_message
+        run: echo "COMMIT_MESSAGE=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
+
       - name: Download binaries
         uses: actions/download-artifact@v2
         with:
@@ -119,7 +126,7 @@ jobs:
           zip -r artifacts.zip .
 
           curl -H "Content-Type: multipart/form-data" \
-              -F "payload_json={\"content\": \"Build for commit \`${{ github.sha }}\` **ubuntu-latest** completed successfully! Uploading artifacts...\"}" \
+              -F "payload_json={\"content\": \"Build for commit \`${{ github.sha }}\` **ubuntu-latest** completed successfully! Commit message: \`${{ env.COMMIT_MESSAGE }}\`.\"}" \
               -F "file=@artifacts.zip" \
               ${{ secrets.DISCORD_WEBHOOK_URL }}
 
@@ -130,6 +137,13 @@ jobs:
     if: success()
     runs-on: macos-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Get commit message
+        id: get_commit_message
+        run: echo "COMMIT_MESSAGE=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
+
       - name: Download binaries
         uses: actions/download-artifact@v2
         with:
@@ -142,7 +156,7 @@ jobs:
           zip -r artifacts.zip .
 
           curl -H "Content-Type: multipart/form-data" \
-              -F "payload_json={\"content\": \"Build for commit \`${{ github.sha }}\` **macos-latest** completed successfully! Uploading artifacts...\"}" \
+              -F "payload_json={\"content\": \"Build for commit \`${{ github.sha }}\` **macos-latest** completed successfully! Commit message: \`${{ env.COMMIT_MESSAGE }}\`. \"}" \
               -F "file=@artifacts.zip" \
               ${{ secrets.DISCORD_WEBHOOK_URL }}
 
@@ -153,6 +167,13 @@ jobs:
     if: success()
     runs-on: windows-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Get commit message
+        id: get_commit_message
+        run: echo "COMMIT_MESSAGE=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
+
       - name: Download binaries
         uses: actions/download-artifact@v2
         with:
@@ -166,7 +187,7 @@ jobs:
           zip -r artifacts.zip .
 
           curl -H "Content-Type: multipart/form-data" \
-              -F "payload_json={\"content\": \"Build for commit \`${{ github.sha }}\` **windows-latest** completed successfully! Uploading artifacts...\"}" \
+              -F "payload_json={\"content\": \"Build for commit \`${{ github.sha }}\` **windows-latest** completed successfully! Commit message: \`${{ env.COMMIT_MESSAGE }}\`.\"}" \
               -F "file=@artifacts.zip" \
               ${{ secrets.DISCORD_WEBHOOK_URL }}
 
