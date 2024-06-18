@@ -32,6 +32,7 @@ enum {
 	RUNTIME_ITEM_USE_RESULT_COOLDOWN_3 = 24,
 	RUNTIME_ITEM_USE_RESULT_WAR_USAGE_LIMIT = 25,
 	RUNTIME_ITEM_USE_RESULT_WAR_USAGE = 26,
+	RUNTIME_ITEM_USE_RESULT_EPIC_BOOST_FAILED = 26,
 	RUNTIME_ITEM_USE_RESULT_DUNGEON_USAGE_LIMIT = 27,
 };
 
@@ -276,6 +277,7 @@ struct _RTItemData {
     Int32 Width;
     Int32 Height;
 	Int32 MaxStackSize;
+	Int32 MasterGrade;
 };
 
 struct _RTItem {
@@ -309,7 +311,6 @@ struct _RTItemOptionSlot {
 	};
 };
 typedef struct _RTItemOptionSlot RTItemOptionSlot;
-
 
 struct _RTItemOptionFrontierStone {
 	UInt8 X;

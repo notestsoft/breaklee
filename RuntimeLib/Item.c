@@ -1081,7 +1081,76 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemChaosConverter) {
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpicBooster) {
 	struct _RTItemConverterPayload* Data = Payload;
 
-	return RUNTIME_ITEM_USE_RESULT_FAILED;
+	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Data->TargetSlotIndex);
+	if (!TargetItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	RTItemDataRef TargetItemData = RTRuntimeGetItemDataByIndex(Runtime, TargetItemSlot->Item.ID);
+	if (!TargetItemData) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	RTDataEpicBoostMainRef EpicBoostMain = RTRuntimeDataEpicBoostMainGet(Runtime->Context, TargetItemData->ItemType);
+	if (!EpicBoostMain) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	RTItemOptions TargetItemOptions = { .Serial = TargetItemSlot->ItemOptions };
+	if (TargetItemData->MasterGrade > 0) {
+		if (TargetItemOptions.Equipment.Slots[0].MasterIndex < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+		RTDataMasterItemRef MasterItem = RTRuntimeDataMasterItemGet(Runtime->Context, TargetItemData->MasterGrade);
+		if (!MasterItem) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+		RTDataMasterItemOptionRef MasterItemOption = RTRuntimeDataMasterItemOptionGet(MasterItem, TargetItemOptions.Equipment.Slots[0].MasterIndex);
+		if (!MasterItemOption) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+		RTDataEpicBoostMasterRateRef EpicBoostMasterRate = RTRuntimeDataEpicBoostMasterRateGet(Runtime->Context, MasterItemOption->BoostCount);
+		if (!EpicBoostMasterRate) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+		Int32 ResultGrade = 0;
+		for (Int32 Index = 0; Index < MasterItem->MasterItemOptionCount; Index += 1) {
+			RTDataMasterItemOptionRef ResultItemOption = &MasterItem->MasterItemOptionList[Index];
+			if (MasterItemOption->BoostCount != ResultItemOption->BoostCount + 1) continue;
+			if (MasterItemOption->MasterItemOptionValueCount != ResultItemOption->MasterItemOptionValueCount) continue;
+
+			Bool IsEqual = true;
+			for (Int32 ValueIndex = 0; ValueIndex < ResultItemOption->MasterItemOptionValueCount; ValueIndex += 1) {
+				if (MasterItemOption->MasterItemOptionValueList[ValueIndex].ForceEffectIndex != ResultItemOption->MasterItemOptionValueList[ValueIndex].ForceEffectIndex) {
+					IsEqual = false;
+					break;
+				}
+			}
+
+			if (IsEqual) {
+				ResultGrade = ResultItemOption->ID;
+				break;
+			}
+		}
+
+		if (ResultGrade < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+		Int32 Seed = (Int32)PlatformGetTickCount();
+		Int32 RandomValue = RandomRange(&Seed, 0, 1000);
+		if (RandomValue < EpicBoostMasterRate->Rate) {
+			TargetItemOptions.Equipment.Slots[0].MasterIndex = ResultGrade;
+			TargetItemSlot->ItemOptions = TargetItemOptions.Serial;
+			return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+		}
+	}
+	else {
+		if (!TargetItemOptions.Equipment.Slots[0].IsEpic) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+		RTDataEpicBoostNormalRateRef EpicBoostNormalRate = RTRuntimeDataEpicBoostNormalRateGet(Runtime->Context, TargetItemOptions.Equipment.Slots[0].ForceLevel);
+		if (!EpicBoostNormalRate) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+		Int32 Seed = (Int32)PlatformGetTickCount();
+		Int32 RandomValue = RandomRange(&Seed, 0, 1000);
+		if (RandomValue < EpicBoostNormalRate->Rate) {
+			TargetItemOptions.Equipment.Slots[0].ForceLevel = EpicBoostNormalRate->ResultGrade;
+			TargetItemSlot->ItemOptions = TargetItemOptions.Serial;
+			return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+		}
+	}
+
+	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
+
+	return RUNTIME_ITEM_USE_RESULT_EPIC_BOOST_FAILED;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHolyWater) {

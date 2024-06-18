@@ -118,6 +118,7 @@ Bool ArchiveLoadFromFile(
     if (!FileRead(File, &Source, &SourceLength)) goto error;
     
     FileClose(File);
+    File = NULL;
 
     if (!ArchiveParseFromSource(Archive, (CString)Source, SourceLength, IgnoreErrors)) {
         goto error;

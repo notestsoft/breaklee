@@ -82,6 +82,7 @@
 #include "Effector.h"
 #include "Enchant.h"
 #include "EnvironmentSettings.h"
+#include "EpicBoost.h"
 #include "Event.h"
 #include "ExtraObject.h"
 #include "ExtremeUpgrade.h"

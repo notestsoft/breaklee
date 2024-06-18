@@ -1,0 +1,24 @@
+<EpicBoost>
+    <EpicBoostMain>
+        <Item ItemType="5" MinLevel="15" />
+        <Item ItemType="6" MinLevel="15" />
+        <Item ItemType="7" MinLevel="15" />
+        <Item ItemType="8" MinLevel="15" />
+        <Item ItemType="9" MinLevel="15" />
+        <Item ItemType="10" MinLevel="15" />
+        <Item ItemType="11" MinLevel="15" />
+        <Item ItemType="12" MinLevel="15" />
+        <Item ItemType="131" MinLevel="15" />
+    </EpicBoostMain>
+    
+    <NormalRate>
+        <Grade Grade="3" ResultGrade="5" Rate="100" />
+        <Grade Grade="5" ResultGrade="6" Rate="240" />
+        <Grade Grade="6" ResultGrade="7" Rate="160" />
+    </NormalRate>
+
+    <MasterRate>
+        <Grade BoostCount="2" Rate="180" />
+        <Grade BoostCount="1" Rate="120" />
+    </MasterRate>
+<EpicBoost>

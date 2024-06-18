@@ -299,7 +299,8 @@ Bool ArchiveParseFromSource(
         if (ConsumeToken(&State, '!')) {
             SkipUntilCharacter(&State, '>');
 
-            if (!ConsumeToken(&State, '>')) goto error;
+            if (!ConsumeToken(&State, '>')) 
+                goto error;
         }
 
         if (ConsumeToken(&State, '/')) {

@@ -9,19 +9,23 @@ struct _ArchiveItemData {
     Char ItemDescription[60];
     UInt8 Padding1[20];
     UInt32 ItemType;
-    UInt32 DisplayCore1;
-    Int32 DisplayCore2;
-    Float32 TranslationFemale[3];
-    Float32 TranslationMale[3];
-    Float32 RotationFemale[3];
-    Float32 RotationMale[3];
-    Float32 ScaleMale;
-    Float32 ScaleFemale;
-    UInt32 MinLevel;
-    UInt32 LimitClass;
+    Int32 DisplayStyle;
+    Int32 DisplayLevel;
+    Float32 InventoryPosition123[3];
+    Float32 InventoryPosition456[3];
+    Float32 InventoryRotation123[3];
+    Float32 InventoryRotation456[3];
+    Float32 InventoryScale1;
+    Float32 InventoryScale2;
+    Int32 MinLevel;
+    Int32 MinOverlordLevel;
+    Int32 LimitClass;
     Int32 MinHonorRank;
-    UInt8 Unknown1[33];
-    UInt32 SellPrice;
+    UInt8 Unknown1[20];
+    Float32 InventoryRotation1;
+    UInt8 UnknownB;
+    Int32 BuyPrice;
+    Int32 SellPrice;
 
     struct {
         UInt32 Height : 2;
@@ -40,7 +44,8 @@ struct _ArchiveItemData {
     UInt8 DurationUse;
     UInt8 UniqueGrade;
     Int32 MaxHonorRank;
-    UInt8 Unknown5[3];
+    UInt8 MeisterGrade;
+    Int16 CooltimeID;
     Int16 MaxStackSize;
     Int32 Unknown6[7];
 };
@@ -742,6 +747,30 @@ error:
     return false;
 }
 
+CString GetItemDescription(
+    ArchiveRef Messages,
+    CString Name
+) {
+    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorByPathFirst(Messages, -1, "cabal_message.item_msg.msg");
+    while (Iterator) {
+        Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Messages, Iterator->Index, "id");
+        if (AttributeIndex >= 0) {
+            ArchiveStringRef String = ArchiveAttributeGetData(Messages, AttributeIndex);
+            if (memcmp(String->Data, Name, String->Length) == 0) {
+                AttributeIndex = ArchiveNodeGetAttributeByName(Messages, Iterator->Index, "cont");
+                if (AttributeIndex >= 0) {
+                    ArchiveStringRef String = ArchiveAttributeGetData(Messages, AttributeIndex);
+                    return String->Data;
+                }
+            }
+        }
+
+        Iterator = ArchiveQueryNodeIteratorNext(Messages, Iterator);
+    }
+
+    return "";
+}
+
 Bool ServerLoadItemData(
     ServerContextRef Context,
     CString RuntimeDirectory,
@@ -755,7 +784,10 @@ Bool ServerLoadItemData(
         "item3.enc",
         "item4.enc"
     };
-    
+
+    ArchiveRef Messages = ArchiveCreateEmpty(Context->Runtime->Allocator);
+    Bool Success = ArchiveLoadFromFile(Messages, PathCombineNoAlloc(RuntimeDirectory, "Language\\Korean\\cabal_msg.enc.xml"), false);
+
     for (Int32 FileIndex = 0; FileIndex < 4; FileIndex++) {
         Char FilePath[MAX_PATH];
         PathCombine(RuntimeDirectory, FileNames[FileIndex], FilePath);
@@ -785,11 +817,100 @@ Bool ServerLoadItemData(
             ItemData->Width = ArchiveItemData->SlotSize.Width;
             ItemData->Height = ArchiveItemData->SlotSize.Height;
             ItemData->MaxStackSize = ArchiveItemData->MaxStackSize;
+            ItemData->MasterGrade = ArchiveItemData->MeisterGrade;
             Runtime->ItemDataCount += 1;
+
+            /*
+            if (ArchiveItemData->MeisterGrade > 0) {
+                Trace("Meister(%d, %d, %s)",
+                    ItemData->ItemID,
+                    ArchiveItemData->MeisterGrade,
+                    GetItemDescription(Messages, ArchiveItemData->ItemName)
+                );
+            }
+
+            if (
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_WEAPON_FORCE_CONTROLLER ||
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_WEAPON_ONE_HAND ||
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_WEAPON_TWO_HAND ||
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_CHAKRAM
+            ) {
+                Trace("Weapon(%d) : Options(%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
+                    ItemData->ItemID,
+                    ItemData->Weapon.UnknownOptions1[0],
+                    ItemData->Weapon.UnknownOptions1[1],
+                    ItemData->Weapon.UnknownOptions1[2],
+                    ItemData->Weapon.UnknownOptions1[3],
+                    ItemData->Weapon.UnknownOptions1[4],
+                    ItemData->Weapon.UnknownOptions1[5],
+                    ItemData->Weapon.UnknownOptions2[0],
+                    ItemData->Weapon.UnknownOptions2[1],
+                    ItemData->Weapon.UnknownOptions2[2],
+                    ItemData->Weapon.UnknownOptions2[3],
+                    ItemData->Weapon.UnknownOptions2[4],
+                    ItemData->Weapon.UnknownOptions2[5]
+                );
+            }
+
+            if (
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_SUIT ||
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_GLOVES ||
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_BOOTS ||
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_HELMED1 ||
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_VEHICLE_BIKE ||
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_VEHICLE_BOARD
+            ) {
+                    Trace("Armor(%d) : Options(%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
+                        ItemData->ItemID,
+                        ItemData->Armor.UnknownOptions1[0],
+                        ItemData->Armor.UnknownOptions1[1],
+                        ItemData->Armor.UnknownOptions1[2],
+                        ItemData->Armor.UnknownOptions1[3],
+                        ItemData->Armor.UnknownOptions1[4],
+                        ItemData->Armor.UnknownOptions1[5],
+                        ItemData->Armor.UnknownOptions2[0],
+                        ItemData->Armor.UnknownOptions2[1],
+                        ItemData->Armor.UnknownOptions2[2],
+                        ItemData->Armor.UnknownOptions2[3],
+                        ItemData->Armor.UnknownOptions2[4],
+                        ItemData->Armor.UnknownOptions2[5]
+                    );
+                
+            }
+
+            if (
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_AMULET ||
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_BELT ||
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_BOOTS ||
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_BRACELET ||
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_BROOCH ||
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_CHARM ||
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_CREST ||
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_EARRING ||
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_EPAULET ||
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_RING ||
+                ItemData->ItemType == RUNTIME_ITEM_TYPE_ARTIFACT
+            ) {
+                    Trace("Accessory(%d) : Options(%d, %d, %d, %d, %d, %d, %d, %d, %d)",
+                        ItemData->ItemID,
+                        ItemData->Accessory.UnknownOptions1[0],
+                        ItemData->Accessory.UnknownOptions1[1], // Accessory Epaulet Dmg reduction
+                        ItemData->Accessory.UnknownOptions1[2],
+                        ItemData->Accessory.UnknownOptions2[0],
+                        ItemData->Accessory.UnknownOptions2[1],
+                        ItemData->Accessory.UnknownOptions2[2],
+                        ItemData->Accessory.UnknownOptions2[3],
+                        ItemData->Accessory.UnknownOptions2[4],
+                        ItemData->Accessory.UnknownOptions2[5]
+                    );
+            }
+                */
         }
 
         free(Buffer);
     }
+
+    ArchiveDestroy(Messages);
 
     return true;
 
