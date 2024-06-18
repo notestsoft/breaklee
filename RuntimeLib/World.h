@@ -69,7 +69,7 @@ struct _RTWorldContext {
     Bool Closed;
     Bool Cleared;
     Int32 Seed;
-
+    Int32 ReferenceCount;
     Int32 MissionItemCount;
     Int32 MissionMobCount;
     struct _RTQuestUnitItemData MissionItems[RUNTIME_MAX_QUEST_COUNTER_COUNT];

@@ -21,6 +21,23 @@ CLIENT_PROCEDURE_BINDING(DEINITIALIZE) {
             RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT
         );
         RTWorldManagerDestroyCharacter(WorldContext->WorldManager, Client->CharacterIndex);
+
+        if (!RTEntityIsNull(Character->PartyID)) {
+            RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
+            if (Party->PartyType == RUNTIME_PARTY_TYPE_SOLO_DUNGEON) {
+                RTPartyManagerDestroyParty(Runtime->PartyManager, Party);
+
+                if (!RTEntityIsNull(WorldContext->Party)) {
+                    RTWorldContextDestroyParty(Runtime->WorldManager, Character->PartyID);
+                }
+
+                RTPartyManagerDestroyParty(Runtime->PartyManager, Party);
+            }
+            else {
+                // TODO: Disband party if needed
+            }
+        }
+
         Client->CharacterIndex = 0;
     }
 

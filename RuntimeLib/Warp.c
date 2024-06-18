@@ -177,6 +177,10 @@ Bool RTRuntimeWarpCharacter(
             // TODO: Delete Dungeon Instance!
             RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 
+            if (!World->Cleared && World->ReferenceCount < 1) {
+                RTDungeonFail(World);
+            }
+
             Character->Data.Info.Position.X = WarpPoint.X;
             Character->Data.Info.Position.Y = WarpPoint.Y;
             Character->Data.Info.Position.WorldID = WarpPoint.WorldIndex;

@@ -77,6 +77,10 @@ Void RTWorldChunkInsert(
 	assert(!ArrayContainsElement(Container, &Entity));
 	ArrayAppendElement(Container, &Entity);
     RTWorldChunkNotify(Chunk, Entity, Reason, true);
+
+    if (Entity.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) {
+        Chunk->WorldContext->ReferenceCount += 1;
+    }
 }
 
 Void RTWorldChunkUpdate(
@@ -180,6 +184,10 @@ Void RTWorldChunkRemove(
     ArrayRef Container = RTWorldChunkGetContainer(Chunk, Entity);
 	assert(ArrayContainsElement(Container, &Entity));
 	ArrayRemoveElement(Container, &Entity);
+
+    if (Entity.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) {
+        Chunk->WorldContext->ReferenceCount -= 1;
+    }
 }
 
 Void RTWorldChunkBroadcastNearbyCharactersToCharacter(

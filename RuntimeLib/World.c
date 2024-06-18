@@ -1,4 +1,5 @@
 #include "Mob.h"
+#include "PartyManager.h"
 #include "Runtime.h"
 #include "World.h"
 #include "WorldManager.h"
@@ -328,9 +329,9 @@ Void RTWorldDespawnMob(
                     Drop
                 );
             }
-            /*
+
             if (!RTEntityIsNull(Character->PartyID)) {
-                RTPartyRef Party = RTRuntimeGetParty(Runtime, Character->PartyID);
+                RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
                 assert(Party);
 
                 RTDropResult Drop = { 0 };
@@ -353,7 +354,7 @@ Void RTWorldDespawnMob(
                     );
                 }
             }
-            */
+
             if (!Success) {
                 Int32 Rate = RandomRange(&WorldContext->Seed, 0, 30000);
                 if (Rate <= 10000) {

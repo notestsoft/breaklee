@@ -130,6 +130,7 @@ Bool RTDungeonFail(
     World->Closed = true;
 
     // TODO: Add dungeon fail related notifications
+    // TODO: Apply dungeon fail penalty
 
     return true;
 }

@@ -1149,6 +1149,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpicBooster) {
 	}
 
 	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
+	Character->SyncMask.InventoryInfo = true;
 
 	return RUNTIME_ITEM_USE_RESULT_EPIC_BOOST_FAILED;
 }
