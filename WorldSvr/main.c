@@ -154,6 +154,14 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     ServerContext.RuntimeData = AllocatorAllocate(Allocator, sizeof(struct _RuntimeData));
     if (!ServerContext.RuntimeData) Fatal("Memory allocation failed");
     ServerContext.Runtime = RTRuntimeCreate(Allocator, Config.WorldSvr.MaxPartyCount, &ServerContext);
+    ServerContext.Runtime->Environment.IsPKEnabled = Config.Environment.IsPKEnabled;
+    ServerContext.Runtime->Environment.IsPremiumEnabled = Config.Environment.IsPremiumEnabled;
+    ServerContext.Runtime->Environment.IsWarEnabled = Config.Environment.IsWarEnabled;
+    ServerContext.Runtime->Environment.IsRestrictedEnabled = Config.Environment.IsRestrictedEnabled;
+    ServerContext.Runtime->Environment.IsEventEnabled = Config.Environment.IsEventEnabled;
+    ServerContext.Runtime->Environment.IsNoviceEnabled = Config.Environment.IsNoviceEnabled;
+    ServerContext.Runtime->Environment.IsOnly2FAEnabled = Config.Environment.IsOnly2FAEnabled;
+    ServerContext.Runtime->Environment.IsRaidBossEnabled = Config.Environment.IsRaidBossEnabled;
     ServerContext.Runtime->Config.ExpMultiplier = Config.WorldSvr.ExpMultiplier;
     ServerContext.Runtime->Config.SkillExpMultiplier = Config.WorldSvr.SkillExpMultiplier;
 

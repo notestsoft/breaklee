@@ -145,7 +145,37 @@ Bool RTRuntimeWarpCharacter(
             return true;
         }
 
-        case RUNTIME_NPC_ID_NAVIGATION: return false;
+        case RUNTIME_NPC_ID_NAVIGATION: {
+            Int32 WarpNpcID = WarpPositionY;
+            RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, WarpNpcID);
+            RTWorldContextRef TargetWorld = World;
+            if (World->WorldData->WorldIndex != WarpPoint.WorldIndex) {
+                TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpPoint.WorldIndex);
+                assert(TargetWorld);
+            }
+
+            RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
+
+            Character->Data.Info.Position.X = WarpPoint.X;
+            Character->Data.Info.Position.Y = WarpPoint.Y;
+            Character->Data.Info.Position.WorldID = WarpPoint.WorldIndex;
+            Character->Data.Info.Position.DungeonIndex = TargetWorld->DungeonIndex;
+            Character->SyncMask.Info = true;
+
+            RTMovementInitialize(
+                Runtime,
+                &Character->Movement,
+                WarpPoint.X,
+                WarpPoint.Y,
+                RUNTIME_MOVEMENT_SPEED_BASE,
+                RUNTIME_WORLD_TILE_WALL
+            );
+
+            RTWorldSpawnCharacterWithoutNotification(Runtime, TargetWorld, Entity);
+
+            return true;
+        }
+
         case RUNTIME_NPC_ID_UNKNOWN_1: return false;
         case RUNTIME_NPC_ID_UNKNOWN_2: return false;
         case RUNTIME_NPC_ID_QUEST_DUNGEON_WARP: return false;

@@ -1971,7 +1971,7 @@ Bool ServerLoadDungeonData(
 
         RTWorldDataRef WorldData = RTWorldDataGet(Runtime->WorldManager, DungeonData->WorldID);
         if (!WorldData) {
-            Info("No world (%lld) found for dungeon (%lld)", DungeonData->WorldID, DungeonData->DungeonID);
+            Info("No world (%d) found for dungeon (%d)", DungeonData->WorldID, DungeonData->DungeonID);
             Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
             continue;
         }
@@ -2009,11 +2009,144 @@ Bool ServerLoadDungeonData(
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
     }
 
+
     Char FilePath[MAX_PATH];
-    PathCombine(ServerDirectory, "quest_dungeon_trigger_to_event.xml", FilePath);
+    ArchiveClear(Archive, true);
+    PathCombine(ServerDirectory, "quest_dungeon_mobs.xml", FilePath);
 
     Archive = TempArchive;
     if (!ArchiveLoadFromFile(Archive, FilePath, false)) goto error;
+
+    ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "quest_dungeon_mobs");
+    if (ParentIndex < 0) goto error;
+
+    Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "mob");
+    while (Iterator) {
+        Int32 PatternPartID;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "PPIdx", &PatternPartID)) goto error;
+
+        RTMissionDungeonPatternPartDataRef PatternPartData = RTRuntimeGetPatternPartByID(Runtime, PatternPartID);
+        assert(PatternPartData);
+
+        RTMobRef Mob = (RTMobRef)ArrayAppendUninitializedElement(PatternPartData->MobTable);
+        memset(Mob, 0, sizeof(struct _RTMob));
+
+        Mob->ID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
+
+        if (!ParseAttributeUInt16(Archive, Iterator->Index, "MobIdx", &Mob->ID.EntityIndex)) {
+            Error("Loading '%s' in '%s' failed!", "MobIdx", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeIndex(Archive, Iterator->Index, "PPIdx", &Mob->Spawn.PatternPartIndex)) {
+            Error("Loading '%s' in '%s' failed!", "PPIdx", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeIndex(Archive, Iterator->Index, "SpeciesIdx", &Mob->Spawn.MobSpeciesIndex)) {
+            Error("Loading '%s' in '%s' failed!", "SpeciesIdx", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "PosX", &Mob->Spawn.AreaX)) {
+            Error("Loading '%s' in '%s' failed!", "PosX", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "PosY", &Mob->Spawn.AreaY)) {
+            Error("Loading '%s' in '%s' failed!", "PosY", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Width", &Mob->Spawn.AreaWidth)) {
+            Error("Loading '%s' in '%s' failed!", "Width", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Height", &Mob->Spawn.AreaHeight)) {
+            Error("Loading '%s' in '%s' failed!", "Height", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpwnInterval", &Mob->Spawn.SpawnInterval)) {
+            Error("Loading '%s' in '%s' failed!", "SpwnInterval", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpwnCount", &Mob->Spawn.SpawnCount)) {
+            Error("Loading '%s' in '%s' failed!", "SpwnCount", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpawnDefault", &Mob->Spawn.SpawnDefault)) {
+            Error("Loading '%s' in '%s' failed!", "SpawnDefault", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Grade", &Mob->Spawn.Grade)) {
+            Error("Loading '%s' in '%s' failed!", "Grade", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Lv", &Mob->Spawn.Level)) {
+            Error("Loading '%s' in '%s' failed!", "Lv", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "MissionGate", &Mob->Spawn.MissionGate)) {
+            Error("Loading '%s' in '%s' failed!", "MissionGate", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "PerfectDrop", &Mob->Spawn.PerfectDrop)) {
+            Error("Loading '%s' in '%s' failed!", "PerfectDrop", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Type", &Mob->Spawn.Type)) {
+            Error("Loading '%s' in '%s' failed!", "Type", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Min", &Mob->Spawn.Min)) {
+            Error("Loading '%s' in '%s' failed!", "Min", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Max", &Mob->Spawn.Max)) {
+            Error("Loading '%s' in '%s' failed!", "Max", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Authority", &Mob->Spawn.Authority)) {
+            Error("Loading '%s' in '%s' failed!", "Authority", "quest_dungeon_mobs.xml");
+            goto error;
+        }
+
+        ParseAttributeInt32(Archive, Iterator->Index, "TrgIdxSpawn", &Mob->Spawn.SpawnTriggerID);
+        ParseAttributeInt32(Archive, Iterator->Index, "TrgIdxKill", &Mob->Spawn.KillTriggerID);
+        ParseAttributeInt32(Archive, Iterator->Index, "Server_Mob", &Mob->Spawn.ServerMobID);
+        ParseAttributeInt32(Archive, Iterator->Index, "Loot_Delay", &Mob->Spawn.LootDelay);
+
+        ParseAttributeInt32Array(Archive, Iterator->Index, "EvtProperty", Mob->Spawn.EventProperty, RUNTIME_MOB_MAX_EVENT_COUNT, ',');
+        ParseAttributeInt32Array(Archive, Iterator->Index, "EvtMobs", Mob->Spawn.EventMobs, RUNTIME_MOB_MAX_EVENT_COUNT, ',');
+        ParseAttributeInt32Array(Archive, Iterator->Index, "EvtInterval", Mob->Spawn.EventInterval, RUNTIME_MOB_MAX_EVENT_COUNT, ',');
+
+        Mob->SpeciesData = &Runtime->MobData[Mob->Spawn.MobSpeciesIndex];
+        Mob->IsInfiniteSpawn = true;
+        Mob->IsPermanentDeath = false;
+        Mob->RemainingSpawnCount = 0;
+
+        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+    }
+
+    PathCombine(ServerDirectory, "mission_dungeon_trigger_to_event.xml", FilePath);
+
+    Archive = TempArchive;
+    if (!ArchiveLoadFromFile(Archive, FilePath, false)) {
+        Error("Loading archive '%s' failed!", "mission_dungeon_trigger_to_event.xml");
+        goto error;
+    }
 
     ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "quest_dungeon_trigger_to_event");
     if (ParentIndex < 0) goto error;
@@ -2021,7 +2154,10 @@ Bool ServerLoadDungeonData(
     Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "trigger");
     while (Iterator) {
         Int32 DungeonID;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "QDungeonIdx", &DungeonID)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "QDungeonIdx", &DungeonID)) {
+            Error("Loading '%s' in '%s' failed!", "QDungeonIdx", "quest_dungeon_trigger_to_event.xml");
+            goto error;
+        }
 
         RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, DungeonID);
         assert(DungeonData);
@@ -2031,10 +2167,25 @@ Bool ServerLoadDungeonData(
         memset(TriggerData, 0, sizeof(struct _RTDungeonTriggerData));        
         TriggerData->DungeonID = DungeonID;
 
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "TrgIdx", &TriggerData->TriggerID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "TrgType", &TriggerData->TriggerType)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "TrgNpcIdx", &TriggerData->TriggerNpcID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "EvtActGroupIdx", &TriggerData->ActionGroupID)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "TrgIdx", &TriggerData->TriggerID)) {
+            Error("Loading '%s' in '%s' failed!", "TrgIdx", "quest_dungeon_trigger_to_event.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "TrgType", &TriggerData->TriggerType)) {
+            Error("Loading '%s' in '%s' failed!", "TrgType", "quest_dungeon_trigger_to_event.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "TrgNpcIdx", &TriggerData->TriggerNpcID)) {
+            Error("Loading '%s' in '%s' failed!", "TrgNpcIdx", "quest_dungeon_trigger_to_event.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "EvtActGroupIdx", &TriggerData->ActionGroupID)) {
+            Error("Loading '%s' in '%s' failed!", "EvtActGroupIdx", "quest_dungeon_trigger_to_event.xml");
+            goto error;
+        }
         
         TriggerData->LiveMobCount = ParseAttributeInt32ArrayCounted(
             Archive,
@@ -2059,7 +2210,7 @@ Bool ServerLoadDungeonData(
     }
 
     ArchiveClear(Archive, true);
-    PathCombine(ServerDirectory, "quest_dungeon_act_group.xml", FilePath);
+    PathCombine(ServerDirectory, "mission_dungeon_act_group.xml", FilePath);
 
     Archive = TempArchive;
     if (!ArchiveLoadFromFile(Archive, FilePath, false)) goto error;
@@ -2080,17 +2231,32 @@ Bool ServerLoadDungeonData(
         memset(TriggerActionData, 0, sizeof(struct _RTDungeonTriggerActionData));
         TriggerActionData->DungeonID = DungeonID;
 
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "EvtActGroupIdx", &TriggerActionData->ActionGroupID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "TgtAction", &TriggerActionData->ActionType)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "TgtMMapIdx", &TriggerActionData->TargetID)) goto error;
-        if (!ParseAttributeUInt64(Archive, Iterator->Index, "EvtDelay", &TriggerActionData->Delay)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "EvtActGroupIdx", &TriggerActionData->ActionGroupID)) {
+            Error("Loading '%s' in '%s' failed!", "EvtActGroupIdx", "quest_dungeon_act_group.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "TgtAction", &TriggerActionData->ActionType)) {
+            Error("Loading '%s' in '%s' failed!", "TgtAction", "quest_dungeon_act_group.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "TgtMMapIdx", &TriggerActionData->TargetID)) {
+            Error("Loading '%s' in '%s' failed!", "TgtMMapIdx", "quest_dungeon_act_group.xml");
+            goto error;
+        }
+
+        if (!ParseAttributeUInt64(Archive, Iterator->Index, "EvtDelay", &TriggerActionData->Delay)) {
+            Error("Loading '%s' in '%s' failed!", "EvtDelay", "quest_dungeon_act_group.xml");
+            goto error;
+        }
 
         DungeonData->TriggerActionCount += 1;
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
     }
 
     ArchiveClear(Archive, true);
-    PathCombine(ServerDirectory, "quest_dungeon_mobs.xml", FilePath);
+    PathCombine(ServerDirectory, "mission_dungeon_mobs.xml", FilePath);
 
     Archive = TempArchive;
     if (!ArchiveLoadFromFile(Archive, FilePath, false)) goto error;
@@ -2104,6 +2270,7 @@ Bool ServerLoadDungeonData(
         if (!ParseAttributeInt32(Archive, Iterator->Index, "PPIdx", &PatternPartID)) goto error;
 
         RTMissionDungeonPatternPartDataRef PatternPartData = RTRuntimeGetPatternPartByID(Runtime, PatternPartID);
+        assert(PatternPartData);
 
         RTMobRef Mob = (RTMobRef)ArrayAppendUninitializedElement(PatternPartData->MobTable);
         memset(Mob, 0, sizeof(struct _RTMob));

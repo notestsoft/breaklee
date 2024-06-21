@@ -194,6 +194,9 @@ Void RTWorldSpawnMob(
     //assert(Mob->State == RUNTIME_MOB_STATE_DEAD);
     // assert(Mob->IsDead);
 
+    if (Mob->IsSpawned)
+        return;
+
     UInt32 CollisionMask = RUNTIME_WORLD_TILE_WALL | RUNTIME_WORLD_TILE_TOWN;
     Int32 X = Mob->Spawn.AreaX;
     Int32 Y = Mob->Spawn.AreaY;
@@ -278,6 +281,9 @@ Void RTWorldDespawnMob(
     Mob->State = RUNTIME_MOB_STATE_DEAD;
     Mob->IsDead = true;
     */
+    if (!Mob->IsSpawned) 
+        return;
+
     Mob->IsSpawned = false;
     Mob->IsDead = true;
 
@@ -630,8 +636,28 @@ Void RTWorldSetMobTable(
         Mob->ID.EntityIndex = TableMob->ID.EntityIndex;
         Mob->ID.WorldIndex = WorldContext->WorldData->WorldIndex;
         Mob->ID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
+        Mob->IsSpawned = false;
 
         DictionaryInsert(WorldContext->EntityToMob, &Mob->ID, &MemoryPoolIndex, sizeof(Index));
+    }
+
+    for (Index MobIndex = 0; MobIndex < ArrayGetElementCount(MobTable); MobIndex += 1) {
+        RTMobRef TableMob = (RTMobRef)ArrayGetElementAtIndex(MobTable, MobIndex);
+
+        RTEntityID MobID = { 0 };
+        MobID.EntityIndex = TableMob->ID.EntityIndex;
+        MobID.WorldIndex = WorldContext->WorldData->WorldIndex;
+        MobID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
+
+        Index* MemoryPoolIndex = DictionaryLookup(WorldContext->EntityToMob, &MobID);
+        assert(MemoryPoolIndex);
+
+        RTMobRef Mob = (RTMobRef)MemoryPoolFetch(WorldContext->MobPool, *MemoryPoolIndex);
+        assert(Mob);
+
+        if (Mob->Spawn.SpawnDefault) {
+            RTWorldSpawnMob(Runtime, WorldContext, Mob);
+        }
     }
 }
 

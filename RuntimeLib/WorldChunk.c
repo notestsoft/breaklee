@@ -1,4 +1,5 @@
 #include "Movement.h"
+#include "PartyManager.h"
 #include "Runtime.h"
 #include "WorldChunk.h"
 #include "WorldManager.h"
@@ -330,7 +331,7 @@ Void RTWorldChunkBroadcastMobsToCharacter(
         NotificationMob->CurrentHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
         NotificationMob->IsChasing = Mob->IsChasing;
         NotificationMob->Level = Mob->SpeciesData->Level;
-        NotificationMob->UnknownNation = 0;
+        NotificationMob->Nation = 0;
         NotificationMob->Unknown1 = 0;
         NotificationMob->UnknownAnimationID = 0;
         NotificationMob->UnknownAnimationTickCount = 0;
@@ -412,6 +413,11 @@ Void RTWorldChunkNotify(
 
     RTRuntimeRef Runtime = WorldChunk->Runtime;
 
+    RTPartyRef Party = NULL;
+    if (!RTEntityIsNull(WorldChunk->WorldContext->Party)) {
+        Party = RTPartyManagerGetParty(Runtime->PartyManager, WorldChunk->WorldContext->Party);
+    }
+
     if (IsInsertion && Entity.EntityType == RUNTIME_ENTITY_TYPE_MOB && Reason == RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT) {
         NOTIFICATION_DATA_MOBS_SPAWN* Notification = RTNotificationInit(MOBS_SPAWN);
         Notification->Count = 1;
@@ -430,7 +436,7 @@ Void RTWorldChunkNotify(
         NotificationMob->CurrentHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
         NotificationMob->IsChasing = Mob->IsChasing;
         NotificationMob->Level = Mob->SpeciesData->Level;
-        NotificationMob->UnknownNation = 0;
+        NotificationMob->Nation = 0;
         NotificationMob->Unknown1 = 0;
         NotificationMob->UnknownAnimationID = 0;
         NotificationMob->UnknownAnimationTickCount = 0;
@@ -440,7 +446,13 @@ Void RTWorldChunkNotify(
         NotificationMob->UnknownCharacterIndex = 0;
         memset(NotificationMob->Unknown4, 0, 12);
         memset(NotificationMob->Unknown5, 0, 22);
-        RTNotificationDispatchToNearby(Notification, WorldChunk);
+
+        if (Party) {
+            RTNotificationDispatchToParty(Notification, Party);
+        }
+        else {
+            RTNotificationDispatchToNearby(Notification, WorldChunk);
+        }
     }
 
     if (!IsInsertion && Entity.EntityType == RUNTIME_ENTITY_TYPE_MOB && Reason == RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT) {
@@ -465,8 +477,13 @@ Void RTWorldChunkNotify(
                 Notification->DespawnType = NOTIFICATION_DESPAWN_TYPE_DEAD;
                 break;
         }
-        
-        RTNotificationDispatchToNearby(Notification, WorldChunk);
+
+        if (Party) {
+            RTNotificationDispatchToParty(Notification, Party);
+        }
+        else {
+            RTNotificationDispatchToNearby(Notification, WorldChunk);
+        }
     }
     
     if (IsInsertion && Entity.EntityType == RUNTIME_ENTITY_TYPE_ITEM) {
@@ -486,15 +503,26 @@ Void RTWorldChunkNotify(
         NotificationItem->UniqueKey = Item->ItemUniqueKey;
         NotificationItem->ContextType = Item->ContextType;
         NotificationItem->ItemProperty = Item->ItemProperty;
-    
-        RTNotificationDispatchToNearby(Notification, WorldChunk);
+
+        if (Party) {
+            RTNotificationDispatchToParty(Notification, Party);
+        }
+        else {
+            RTNotificationDispatchToNearby(Notification, WorldChunk);
+        }
     }
 
     if (!IsInsertion && Entity.EntityType == RUNTIME_ENTITY_TYPE_ITEM) {
         NOTIFICATION_DATA_ITEMS_DESPAWN* Notification = RTNotificationInit(ITEMS_DESPAWN);
         Notification->Entity = Entity;
         Notification->DespawnType = NOTIFICATION_DESPAWN_TYPE_DISAPPEAR;
-        RTNotificationDispatchToNearby(Notification, WorldChunk);
+
+        if (Party) {
+            RTNotificationDispatchToParty(Notification, Party);
+        }
+        else {
+            RTNotificationDispatchToNearby(Notification, WorldChunk);
+        }
     }
 
     if (!IsInsertion && Entity.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) {
@@ -523,7 +551,12 @@ Void RTWorldChunkNotify(
             break;
         }
 
-        RTNotificationDispatchToNearby(Notification, WorldChunk);
+        if (Party) {
+            RTNotificationDispatchToParty(Notification, Party);
+        }
+        else {
+            RTNotificationDispatchToNearby(Notification, WorldChunk);
+        }
     }
 
     if (IsInsertion && Entity.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) {
@@ -594,7 +627,13 @@ Void RTWorldChunkNotify(
             Slot->EquipmentSlotIndex = Index;
         }
 
-        RTNotificationDispatchToNearby(Notification, WorldChunk);
+        if (Party) {
+            RTNotificationDispatchToParty(Notification, Party);
+        }
+        else {
+            RTNotificationDispatchToNearby(Notification, WorldChunk);
+        }
+
         RTWorldChunkBroadcastNearbyCharactersToCharacter(WorldChunk, Entity);
         RTWorldChunkBroadcastNearbyMobsToCharacter(WorldChunk, Entity);
         RTWorldChunkBroadcastNearbyItemsToCharacter(WorldChunk, Entity);

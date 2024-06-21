@@ -1,4 +1,5 @@
 #include "Archive.h"
+#include "Diagnostic.h"
 #include "FileIO.h"
 
 typedef enum {
@@ -39,6 +40,8 @@ static inline Bool CharacterIsSymbol(
     case '=':
     case '"':
     case '/':
+    case '!':
+    case '?':
         return true;
 
     default:
@@ -292,23 +295,48 @@ Bool ArchiveParseFromSource(
     ParseNextToken(&State);
 
     while (State.Token != TokenEndOfFile && State.Token != TokenError) {
-        if (!ConsumeToken(&State, '<')) 
+        if (!ConsumeToken(&State, '<')) {
+            if (!IgnoreErrors) Error("Expected '<' found '%c'", *State.Cursor);
             goto error;
+        }
 
         // <!> 
         if (ConsumeToken(&State, '!')) {
             SkipUntilCharacter(&State, '>');
 
-            if (!ConsumeToken(&State, '>')) 
+            if (!ConsumeToken(&State, '>')) {
+                if (!IgnoreErrors) Error("Expected '>' found '%c'", *State.Cursor);
                 goto error;
+            }
+
+            continue;
+        }
+
+        // <?> 
+        if (ConsumeToken(&State, '?')) {
+            SkipUntilCharacter(&State, '>');
+
+            if (!ConsumeToken(&State, '>')) {
+                if (!IgnoreErrors) Error("Expected '>' found '%c'", *State.Cursor);
+                goto error;
+            }
+
+            continue;
         }
 
         if (ConsumeToken(&State, '/')) {
             State.NameStart = State.TokenStart;
             State.NameEnd = State.TokenEnd;
 
-            if (!ConsumeToken(&State, TokenIdentifier)) goto error;
-            if (!ConsumeToken(&State, '>')) goto error;
+            if (!ConsumeToken(&State, TokenIdentifier)) {
+                if (!IgnoreErrors) Error("Expected <identifier> found '%c'", *State.Cursor);
+                goto error;
+            }
+
+            if (!ConsumeToken(&State, '>')) {
+                if (!IgnoreErrors) Error("Expected '>' found '%c'", *State.Cursor);
+                goto error;
+            }
 
             if (State.NodeIndex < 0)
                 goto error;

@@ -12,7 +12,8 @@ PacketBufferRef PacketBufferCreate(
     UInt16 ProtocolVersion,
     UInt16 ProtocolExtension,
     Index Alignment,
-    Index Length
+    Index Length,
+    Bool IsClient
 );
 
 Void PacketBufferDestroy(

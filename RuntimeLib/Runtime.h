@@ -17,6 +17,27 @@
 
 EXTERN_C_BEGIN
 
+union _RTRuntimeEnvironment {
+    struct {
+        UInt64 IsPKEnabled : 1;
+        UInt64 _0 : 1;
+        UInt64 IsPremiumEnabled : 1;
+        UInt64 IsWarEnabled : 1;
+        UInt64 _1 : 1;
+        UInt64 IsRestrictedEnabled : 1;
+        UInt64 _2 : 5;
+        UInt64 IsEventEnabled : 1;
+        UInt64 _3 : 2;
+        UInt64 IsNoviceEnabled : 1;
+        UInt64 _4 : 1;
+        UInt64 IsOnly2FAEnabled : 1;
+        UInt64 _5 : 2;
+        UInt64 IsRaidBossEnabled : 1;
+    };
+    UInt64 RawValue;
+};
+typedef union _RTRuntimeEnvironment RTRuntimeEnvironment;
+
 struct _RTRuntimeConfig {
     UInt64 ExpMultiplier;
     UInt64 SkillExpMultiplier;
@@ -24,6 +45,7 @@ struct _RTRuntimeConfig {
 
 struct _RTRuntime {
     AllocatorRef Allocator;
+    RTRuntimeEnvironment Environment;
     struct _RTRuntimeConfig Config;
     RTRuntimeDataContextRef Context;
     RTPartyManagerRef PartyManager;

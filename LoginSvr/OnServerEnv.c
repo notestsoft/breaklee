@@ -47,3 +47,31 @@ DATA_PROCEDURE_BINDING(OnDataAccountInfo, IPC_DATA_ACCOUNTINFO, IPC_DATA_ACKACCO
 	Client->Flags |= CLIENT_FLAGS_USERNAME_CHECKED;
 	SocketSend(Socket, Connection, Response);
 }
+
+CLIENT_PROCEDURE_BINDING(REFRESH_CAPTCHA) {
+	if (!(Client->Flags & CLIENT_FLAGS_VERSION_CHECKED)) {
+		SocketDisconnect(Socket, Connection);
+		return;
+	}
+
+	S2C_DATA_REFRESH_CAPTCHA* Response = PacketBufferInit(Connection->PacketBuffer, S2C, REFRESH_CAPTCHA);
+	if (Context->Config.Login.CaptchaVerificationEnabled) {
+		Int32 Seed = PlatformGetTickCount();
+		Client->Captcha = (CaptchaInfoRef)ArrayGetElementAtIndex(
+			Context->CaptchaInfoList,
+			Random(&Seed) % ArrayGetElementCount(Context->CaptchaInfoList)
+		);
+
+		Response->Active = 1;
+		Response->Timeout = Context->Config.Login.AutoDisconnectDelay;
+		Response->CaptchaSize = Client->Captcha->DataLength;
+		Client->Flags |= CLIENT_FLAGS_CHECK_DISCONNECT_TIMER;
+		Client->DisconnectTimestamp = ServerGetTimestamp(Server) + Response->Timeout;
+		memcpy(Response->Captcha, Client->Captcha->Data, Response->CaptchaSize);
+	}
+	else {
+		Client->Flags |= CLIENT_FLAGS_CAPTCHA_VERIFIED;
+	}
+
+	SocketSend(Socket, Connection, Response);
+}

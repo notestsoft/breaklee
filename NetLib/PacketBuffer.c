@@ -16,7 +16,8 @@ PacketBufferRef PacketBufferCreate(
     UInt16 ProtocolVersion,
     UInt16 ProtocolExtension,
     Index Alignment,
-    Index Length
+    Index Length,
+    Bool IsClient
 ) {
     PacketBufferRef PacketBuffer = (PacketBufferRef)AllocatorAllocate(Allocator, sizeof(struct _PacketBuffer));
     if (!PacketBuffer) Fatal("PacketBuffer allocation failed!");
@@ -26,6 +27,7 @@ PacketBufferRef PacketBufferCreate(
     PacketBuffer->ProtocolIdentifier = ProtocolIdentifier;
     PacketBuffer->ProtocolVersion = ProtocolVersion;
     PacketBuffer->ProtocolExtension = ProtocolExtension;
+    PacketBuffer->IsClient = IsClient;
     return PacketBuffer;
 }
 
@@ -45,20 +47,31 @@ Void* _PacketBufferInit(
     MemoryBufferClear(PacketBuffer->MemoryBuffer);
 
     Void* Packet = MemoryBufferAppend(PacketBuffer->MemoryBuffer, Length);
-    if (Extended) {
-        assert(Length >= 8);
 
-        *(UInt16*)((UInt8*)Packet + 0) = PacketBuffer->ProtocolIdentifier + PacketBuffer->ProtocolVersion + PacketBuffer->ProtocolExtension;
-        *(UInt32*)((UInt8*)Packet + 2) = Length;
-        *(UInt16*)((UInt8*)Packet + 6) = Command;
-    } else {
-        assert(Length >= 6);
+    if (PacketBuffer->IsClient) {
+        assert(Length >= 10);
 
         *(UInt16*)((UInt8*)Packet + 0) = PacketBuffer->ProtocolIdentifier + PacketBuffer->ProtocolVersion;
         *(UInt16*)((UInt8*)Packet + 2) = Length;
-        *(UInt16*)((UInt8*)Packet + 4) = Command;
+        *(UInt16*)((UInt8*)Packet + 8) = Command;
     }
-    
+    else {
+        if (Extended) {
+            assert(Length >= 8);
+
+            *(UInt16*)((UInt8*)Packet + 0) = PacketBuffer->ProtocolIdentifier + PacketBuffer->ProtocolVersion + PacketBuffer->ProtocolExtension;
+            *(UInt32*)((UInt8*)Packet + 2) = Length;
+            *(UInt16*)((UInt8*)Packet + 6) = Command;
+        }
+        else {
+            assert(Length >= 6);
+
+            *(UInt16*)((UInt8*)Packet + 0) = PacketBuffer->ProtocolIdentifier + PacketBuffer->ProtocolVersion;
+            *(UInt16*)((UInt8*)Packet + 2) = Length;
+            *(UInt16*)((UInt8*)Packet + 4) = Command;
+        }
+    }
+
     return Packet;
 }
 

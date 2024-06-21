@@ -35,7 +35,7 @@ SocketRef SocketCreate(
     Socket->MaxConnectionCount = MaxConnectionCount;
     Socket->NextConnectionID = 1;
     Socket->Timeout = 0;
-    Socket->PacketBuffer = PacketBufferCreate(Allocator, ProtocolIdentifier, ProtocolVersion, ProtocolExtension, 4, WriteBufferSize);
+    Socket->PacketBuffer = PacketBufferCreate(Allocator, ProtocolIdentifier, ProtocolVersion, ProtocolExtension, 4, WriteBufferSize, Flags & SOCKET_FLAGS_CLIENT);
     Socket->OnConnect = OnConnect;
     Socket->OnDisconnect = OnDisconnect;
     Socket->OnSend = OnSend;
@@ -70,7 +70,8 @@ SocketConnectionRef SocketReserveConnection(
         Socket->ProtocolVersion,
         Socket->ProtocolExtension,
         4,
-        Socket->WriteBufferSize
+        Socket->WriteBufferSize,
+        Socket->Flags & SOCKET_FLAGS_CLIENT
     );
     Connection->ReadBuffer = MemoryBufferCreate(Socket->Allocator, 4, Socket->ReadBufferSize);
     Connection->WriteBuffer = MemoryBufferCreate(Socket->Allocator, 4, Socket->WriteBufferSize);

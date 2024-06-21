@@ -64,7 +64,6 @@ Void KeychainSeed(
 
     KeychainGenerate(Keychain, Key, KEYCHAIN_XORKEY_COUNT, KEYCHAIN_XORKEY_COUNT);
     Keychain->HeaderXor = *(UInt32*)&Keychain->Key[Keychain->Step * Keychain->Mul * 4];
-    Trace("KeychainSeed(%d, %d, %d)", Key, Step, Keychain->HeaderXor);
 }
 
 Void KeychainEncryptClientPacket(

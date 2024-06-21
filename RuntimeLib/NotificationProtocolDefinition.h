@@ -167,7 +167,7 @@ NOTIFICATION_PROTOCOL_STRUCT(MOBS_SPAWN_INDEX,
     UInt64 CurrentHP;
     UInt8 IsChasing;
     UInt8 Level;
-    UInt8 UnknownNation;
+    UInt8 Nation;
     UInt8 Unknown1;
     UInt16 UnknownAnimationID;
     UInt32 UnknownAnimationTickCount;

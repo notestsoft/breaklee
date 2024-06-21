@@ -382,7 +382,6 @@ Void RTMobUpdate(
 		Mob->EventDespawnTimestamp = 0;
 
 		if (Mob->IsSpawned) {
-			Mob->IsSpawned = false;
 			Mob->NextTimestamp = Timestamp + Mob->Spawn.SpawnInterval;
 			RTWorldDespawnMob(Runtime, WorldContext, Mob);
 		}
@@ -391,7 +390,6 @@ Void RTMobUpdate(
 	}
 
 	if (!RTMobIsAlive(Mob) && Mob->IsSpawned) {
-		Mob->IsSpawned = false;
 		Mob->NextTimestamp = Timestamp + Mob->Spawn.SpawnInterval;
 		RTWorldDespawnMob(Runtime, WorldContext, Mob);
 		return;
@@ -403,7 +401,6 @@ Void RTMobUpdate(
 			memset(&Mob->Aggro.Entities, 0, sizeof(Mob->Aggro.Entities));
 
 			Mob->IsKilled = false;
-			Mob->IsSpawned = true;
 			Mob->RemainingSpawnCount = MAX(0, Mob->RemainingSpawnCount - 1);
 			Mob->NextTimestamp = Timestamp;
 			RTWorldSpawnMob(Runtime, WorldContext, Mob);

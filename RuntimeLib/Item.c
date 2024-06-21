@@ -65,7 +65,8 @@ Void RTCharacterApplyItemUpgradeForceEffect(
 		RTDataUpgradeItemGradeRef UpgradeItemGrade = RTRuntimeDataUpgradeItemGradeGet(UpgradeItem, ItemData->ItemGrade);
 		if (UpgradeItemGrade) {
 			for (Int32 Index = 0; Index < UpgradeItemGrade->UpgradeItemGradeValueCount; Index += 1) {
-				RTDataUpgradeItemBasicGradeValueRef Value = &UpgradeItemGrade->UpgradeItemGradeValueList[Index];
+				RTDataUpgradeItemGradeValueRef Value = &UpgradeItemGrade->UpgradeItemGradeValueList[Index];
+				if (ItemUpgradeLevel < Value->ApplyLevel) continue;
 
 				Int32 ForceValue = 0;
 				for (Int32 Level = 0; Level < ItemUpgradeLevel; Level += 1) {

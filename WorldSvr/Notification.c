@@ -22,35 +22,35 @@ Void SendRuntimeNotification(
 NOTIFICATION_PROCEDURE_BINDING(CHARACTERS_SPAWN) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
     Trace(
-        "CharactersSpawn -> Character(%d)",
+        "CharactersSpawn -> Character(%lld)",
         Character->CharacterIndex
     );
 }
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_DESPAWN) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("CharactersDespawn -> Character(%d)",
+    Trace("CharactersDespawn -> Character(%lld)",
         Character->CharacterIndex
     );
 }
 
 NOTIFICATION_PROCEDURE_BINDING(MOBS_SPAWN) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("MobSpawn -> Character(%d)",
+    Trace("MobSpawn -> Character(%lld)",
         Character->CharacterIndex
     );
 }
 
 NOTIFICATION_PROCEDURE_BINDING(MOBS_DESPAWN) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("MobsDespawn -> Character(%d)",
+    Trace("MobsDespawn -> Character(%lld)",
         Character->CharacterIndex
     );
 }
 
 NOTIFICATION_PROCEDURE_BINDING(ITEMS_SPAWN) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("ItemsSpawn -> Character(%d)",
+    Trace("ItemsSpawn -> Character(%lld)",
         Character->CharacterIndex
     );
 }
@@ -172,28 +172,28 @@ NOTIFICATION_PROCEDURE_BINDING(CHANGE_GENDER) {
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_SKILL_MASTERY_UPDATE) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("CharacterSkillMasteryUpdate -> Character(%d)",
+    Trace("CharacterSkillMasteryUpdate -> Character(%lld)",
         Character->CharacterIndex
     );
 }
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_FORCE_WING_GRADE) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("CharacterForceWingGrade -> Character(%d)",
+    Trace("CharacterForceWingGrade -> Character(%lld)",
         Character->CharacterIndex
     );
 }
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_FORCE_WING_UPDATE) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("CharacterForceWingUpdate -> Character(%d)",
+    Trace("CharacterForceWingUpdate -> Character(%lld)",
         Character->CharacterIndex
     );
 }
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_FORCE_WING_EXP) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("CharacterForceWingExp -> Character(%d)",
+    Trace("CharacterForceWingExp -> Character(%lld)",
         Character->CharacterIndex
     );
 }
@@ -256,7 +256,7 @@ Void BroadcastUserList(
     Notification->MaxPlayerCount = Context->Config.WorldSvr.MaxConnectionCount;
     CStringCopySafe(Notification->Host, 64 + 1, Context->Config.WorldSvr.Host);
     Notification->Port = Context->Config.WorldSvr.Port;
-    Notification->Type = Context->Config.WorldSvr.WorldType;
+    Notification->Type = Context->Runtime->Environment.RawValue;
     IPCSocketUnicast(Server->IPCSocket, Notification);
 }
 

@@ -25,6 +25,7 @@ RTRuntimeRef RTRuntimeCreate(
         }
     }
 
+    Runtime->Environment.RawValue = 0;
     Runtime->Context = RTRuntimeDataContextCreate();
     Runtime->PartyManager = RTPartyManagerCreate(Allocator, MaxPartyCount);
     Runtime->ScriptManager = RTScriptManagerCreate(Runtime, RUNTIME_MEMORY_MAX_SCRIPT_COUNT);
@@ -68,6 +69,11 @@ Void RTRuntimeUpdate(
     RTRuntimeRef Runtime
 ) {
     RTWorldManagerUpdate(Runtime->WorldManager);
+
+    if (Runtime->Environment.IsRaidBossEnabled) {
+
+    }
+
     /* Movement Debugging
     for (Int32 Index = 0; Index < Runtime->Characters.Count; Index++) {
         RTCharacterRef Character = (RTCharacterRef)ArrayGetElementAtIndex(&Runtime->Characters, Index);

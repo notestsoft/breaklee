@@ -1875,31 +1875,97 @@ CLIENT_PROTOCOL(S2C, VERIFY_CREDENTIALS, DEFAULT, 800,
     Bool Success;
 )
 
+CLIENT_PROTOCOL_ENUM(
+    CSC_DATA_PET_COMMAND_TYPE_INFO = 1,
+
+    CSC_DATA_PET_COMMAND_TYPE_UNSEAL = 6,
+    CSC_DATA_PET_COMMAND_TYPE_TRAIN = 7,
+)
+
+CLIENT_PROTOCOL_STRUCT(C2S_DATA_PET_COMMAND_INFO,
+    Int32 Unknown1;
+    UInt32 CharacterIndex;
+    UInt8 Unknown2;
+    Int32 InventorySlotIndex;
+    Int32 Unknown3;
+    Int32 Unknown4;
+)
+
+CLIENT_PROTOCOL_STRUCT(C2S_DATA_PET_COMMAND_UNSEAL,
+    Int32 Unknown1;
+    Int32 InventorySlotIndex;
+)
+
+CLIENT_PROTOCOL_STRUCT(C2S_DATA_PET_COMMAND_TRAIN,
+    Int32 PetIndex;
+    UInt8 PetSlotIndex;
+    UInt8 InventorySlotCount;
+    UInt16 InventorySlots[0];
+)
+
+CLIENT_PROTOCOL(C2S, PET_COMMAND, DEFAULT, 905,
+    Int32 CommandType;
+    UInt8 Data[0];
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_PET_COMMAND_INFO,
+    Int32 PetIndex;
+    Int32 Unknown1;
+    UInt8 Unknown2;
+    Int32 InventorySlotIndex;
+    Int32 PetIndex2;
+    UInt32 PetStyle;
+    UInt32 CharacterIndex;
+    UInt64 PetItemOptions;
+    Int8 PetLevel;
+    Int64 PetExp;
+    Int32 Unknown3;
+    Int16 Unknown4;
+    Int64 Unknown5;
+    UInt8 PetSlots[RUNTIME_PET_MAX_SLOT_COUNT];
+    UInt64 DeletionDate;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_PET_COMMAND_UNSEAL,
+    UInt64 PetItemOptions;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_PET_COMMAND_TRAIN,
+    Int32 PetIndex;
+    Int32 Unknown1;
+    Int64 CurrencyCost;
+    UInt8 PetSlotOption;
+)
+
+CLIENT_PROTOCOL(S2C, PET_COMMAND, DEFAULT, 905,
+    Int32 CommandType;
+)
+
 CLIENT_PROTOCOL(S2C, NFY_CHARACTER_PARAMETERS, DEFAULT, 904,
-    UInt64 expStatus;
-    Int32 iLEV;
-    Int32 iSTR;
-    Int32 iDEX;
-    Int32 iINT;
-    Int32 iHP;
-    Int32 iMP;
-    Int32 iSP;
-    Int32 iHPMax;
-    Int32 iHPMaxSrc;
-    Int32 iMPMax;
-    Int32 iSPMax;
-    Int32 iSPUseMx;
+    Int64 Exp;
+    Int32 Level;
+    Int32 Str;
+    Int32 Dex;
+    Int32 Int;
+    Int64 HP;
+    Int32 MP;
+    Int32 SP;
+    Int64 MaxHP;
+    Int64 BaseHP;
+    Int32 MaxMP;
+    Int32 MaxSP;
+    Int32 MaxSPUse;
     Int32 iOC;
-    Int32 iPhyAttMin;
-    Int32 iPhyAttMax;
-    Int32 iPhyAttDff;
-    Int32 iMagAttVal;
-    Int32 iDefense;
-    UInt8 usingArtOfDefense;
-    Int32 iDefensePercent;
-    Int32 iAttacksR;
-    Int32 iDefenseR;
-    Int32 iEvasionR;
+    Int32 PysicalAttackMin;
+    Int32 PysicalAttackMax;
+    Int32 PysicalAttackDifference;
+    Int32 MagicAttackValue;
+    Int32 Defense;
+    UInt8 UsingArtOfDefense;
+    Int32 DefensePercent;
+    Int32 AttacksRate;
+    Int32 DefenseRate;
+    Int32 EvasionRate;
     Int32 idPhyAttMax;
     Int32 idMagAttVal;
     Int32 idDefense;
