@@ -1,0 +1,357 @@
+<SpecialGiftBox>
+	<SpecialBox_CountBonus>
+		<Box_CountBonus	Box_Index="0"	Count="1"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="0"	Count="2"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="0"	Count="3"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="0"	Count="4"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="0"	Count="5"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="0"	Count="6"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="0"	Count="7"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="0"	Count="8"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="0"	Count="9"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="0"	Count="10"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="0"	Count="11"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="0"	Count="12"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="0"	Count="13"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="0"	Count="14"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="0"	Count="15"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="0"	Count="16"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="0"	Count="17"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="0"	Count="18"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="0"	Count="19"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="0"	Count="20"	Bonus_Value="2"	/>
+		<Box_CountBonus	Box_Index="1"	Count="1"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="1"	Count="2"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="1"	Count="3"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="1"	Count="4"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="1"	Count="5"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="1"	Count="6"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="1"	Count="7"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="1"	Count="8"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="1"	Count="9"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="1"	Count="10"	Bonus_Value="2"	/>
+		<Box_CountBonus	Box_Index="1"	Count="11"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="1"	Count="12"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="1"	Count="13"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="1"	Count="14"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="1"	Count="15"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="1"	Count="16"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="1"	Count="17"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="1"	Count="18"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="1"	Count="19"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="1"	Count="20"	Bonus_Value="2"	/>
+		<Box_CountBonus	Box_Index="2"	Count="1"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="2"	Count="2"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="2"	Count="3"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="2"	Count="4"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="2"	Count="5"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="2"	Count="6"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="2"	Count="7"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="2"	Count="8"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="2"	Count="9"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="2"	Count="10"	Bonus_Value="2"	/>
+		<Box_CountBonus	Box_Index="2"	Count="11"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="2"	Count="12"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="2"	Count="13"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="2"	Count="14"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="2"	Count="15"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="2"	Count="16"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="2"	Count="17"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="2"	Count="18"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="2"	Count="19"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="2"	Count="20"	Bonus_Value="2"	/>
+		<Box_CountBonus	Box_Index="3"	Count="1"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="3"	Count="2"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="3"	Count="3"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="3"	Count="4"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="3"	Count="5"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="3"	Count="6"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="3"	Count="7"	Bonus_Value="2"	/>
+		<Box_CountBonus	Box_Index="3"	Count="8"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="3"	Count="9"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="3"	Count="10"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="3"	Count="11"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="3"	Count="12"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="3"	Count="13"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="3"	Count="14"	Bonus_Value="2"	/>
+		<Box_CountBonus	Box_Index="3"	Count="15"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="3"	Count="16"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="3"	Count="17"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="3"	Count="18"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="3"	Count="19"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="3"	Count="20"	Bonus_Value="3"	/>
+		<Box_CountBonus	Box_Index="4"	Count="1"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="4"	Count="2"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="4"	Count="3"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="4"	Count="4"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="4"	Count="5"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="4"	Count="6"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="4"	Count="7"	Bonus_Value="2"	/>
+		<Box_CountBonus	Box_Index="4"	Count="8"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="4"	Count="9"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="4"	Count="10"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="4"	Count="11"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="4"	Count="12"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="4"	Count="13"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="4"	Count="14"	Bonus_Value="2"	/>
+		<Box_CountBonus	Box_Index="4"	Count="15"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="4"	Count="16"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="4"	Count="17"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="4"	Count="18"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="4"	Count="19"	Bonus_Value="1"	/>
+		<Box_CountBonus	Box_Index="4"	Count="20"	Bonus_Value="3"	/>
+	</SpecialBox_CountBonus>
+	<SpecialBox_Forcegem>
+		<Box_Forcegem	Box_Index="0"	Count="1"	/>
+		<Box_Forcegem	Box_Index="0"	Count="2"	/>
+		<Box_Forcegem	Box_Index="0"	Count="3"	/>
+		<Box_Forcegem	Box_Index="0"	Count="4"	/>
+		<Box_Forcegem	Box_Index="0"	Count="5"	/>
+		<Box_Forcegem	Box_Index="0"	Count="6"	/>
+		<Box_Forcegem	Box_Index="0"	Count="7"	/>
+		<Box_Forcegem	Box_Index="0"	Count="8"	/>
+		<Box_Forcegem	Box_Index="0"	Count="9"	/>
+		<Box_Forcegem	Box_Index="0"	Count="10"	/>
+		<Box_Forcegem	Box_Index="0"	Count="11"	/>
+		<Box_Forcegem	Box_Index="0"	Count="12"	/>
+		<Box_Forcegem	Box_Index="0"	Count="13"	/>
+		<Box_Forcegem	Box_Index="0"	Count="14"	/>
+		<Box_Forcegem	Box_Index="0"	Count="15"	/>
+		<Box_Forcegem	Box_Index="0"	Count="16"	/>
+		<Box_Forcegem	Box_Index="0"	Count="17"	/>
+		<Box_Forcegem	Box_Index="0"	Count="18"	/>
+		<Box_Forcegem	Box_Index="0"	Count="19"	/>
+		<Box_Forcegem	Box_Index="0"	Count="20"	/>
+		<Box_Forcegem	Box_Index="0"	Count="21"	/>
+		<Box_Forcegem	Box_Index="0"	Count="22"	/>
+		<Box_Forcegem	Box_Index="0"	Count="23"	/>
+		<Box_Forcegem	Box_Index="0"	Count="24"	/>
+		<Box_Forcegem	Box_Index="0"	Count="25"	/>
+		<Box_Forcegem	Box_Index="1"	Count="1"	/>
+		<Box_Forcegem	Box_Index="1"	Count="2"	/>
+		<Box_Forcegem	Box_Index="1"	Count="3"	/>
+		<Box_Forcegem	Box_Index="1"	Count="4"	/>
+		<Box_Forcegem	Box_Index="1"	Count="5"	/>
+		<Box_Forcegem	Box_Index="1"	Count="6"	/>
+		<Box_Forcegem	Box_Index="1"	Count="7"	/>
+		<Box_Forcegem	Box_Index="1"	Count="8"	/>
+		<Box_Forcegem	Box_Index="1"	Count="9"	/>
+		<Box_Forcegem	Box_Index="1"	Count="10"	/>
+		<Box_Forcegem	Box_Index="1"	Count="11"	/>
+		<Box_Forcegem	Box_Index="1"	Count="12"	/>
+		<Box_Forcegem	Box_Index="1"	Count="13"	/>
+		<Box_Forcegem	Box_Index="1"	Count="14"	/>
+		<Box_Forcegem	Box_Index="1"	Count="15"	/>
+		<Box_Forcegem	Box_Index="1"	Count="16"	/>
+		<Box_Forcegem	Box_Index="1"	Count="17"	/>
+		<Box_Forcegem	Box_Index="1"	Count="18"	/>
+		<Box_Forcegem	Box_Index="1"	Count="19"	/>
+		<Box_Forcegem	Box_Index="1"	Count="20"	/>
+		<Box_Forcegem	Box_Index="1"	Count="21"	/>
+		<Box_Forcegem	Box_Index="1"	Count="22"	/>
+		<Box_Forcegem	Box_Index="1"	Count="23"	/>
+		<Box_Forcegem	Box_Index="1"	Count="24"	/>
+		<Box_Forcegem	Box_Index="1"	Count="25"	/>
+		<Box_Forcegem	Box_Index="2"	Count="1"	/>
+		<Box_Forcegem	Box_Index="2"	Count="2"	/>
+		<Box_Forcegem	Box_Index="2"	Count="3"	/>
+		<Box_Forcegem	Box_Index="2"	Count="4"	/>
+		<Box_Forcegem	Box_Index="2"	Count="5"	/>
+		<Box_Forcegem	Box_Index="2"	Count="6"	/>
+		<Box_Forcegem	Box_Index="2"	Count="7"	/>
+		<Box_Forcegem	Box_Index="2"	Count="8"	/>
+		<Box_Forcegem	Box_Index="2"	Count="9"	/>
+		<Box_Forcegem	Box_Index="2"	Count="10"	/>
+		<Box_Forcegem	Box_Index="2"	Count="11"	/>
+		<Box_Forcegem	Box_Index="2"	Count="12"	/>
+		<Box_Forcegem	Box_Index="2"	Count="13"	/>
+		<Box_Forcegem	Box_Index="2"	Count="14"	/>
+		<Box_Forcegem	Box_Index="2"	Count="15"	/>
+		<Box_Forcegem	Box_Index="2"	Count="16"	/>
+		<Box_Forcegem	Box_Index="2"	Count="17"	/>
+		<Box_Forcegem	Box_Index="2"	Count="18"	/>
+		<Box_Forcegem	Box_Index="2"	Count="19"	/>
+		<Box_Forcegem	Box_Index="2"	Count="20"	/>
+		<Box_Forcegem	Box_Index="2"	Count="21"	/>
+		<Box_Forcegem	Box_Index="2"	Count="22"	/>
+		<Box_Forcegem	Box_Index="2"	Count="23"	/>
+		<Box_Forcegem	Box_Index="2"	Count="24"	/>
+		<Box_Forcegem	Box_Index="2"	Count="25"	/>
+		<Box_Forcegem	Box_Index="3"	Count="1"	/>
+		<Box_Forcegem	Box_Index="3"	Count="2"	/>
+		<Box_Forcegem	Box_Index="3"	Count="3"	/>
+		<Box_Forcegem	Box_Index="3"	Count="4"	/>
+		<Box_Forcegem	Box_Index="3"	Count="5"	/>
+		<Box_Forcegem	Box_Index="3"	Count="6"	/>
+		<Box_Forcegem	Box_Index="3"	Count="7"	/>
+		<Box_Forcegem	Box_Index="3"	Count="8"	/>
+		<Box_Forcegem	Box_Index="3"	Count="9"	/>
+		<Box_Forcegem	Box_Index="3"	Count="10"	/>
+		<Box_Forcegem	Box_Index="3"	Count="11"	/>
+		<Box_Forcegem	Box_Index="3"	Count="12"	/>
+		<Box_Forcegem	Box_Index="3"	Count="13"	/>
+		<Box_Forcegem	Box_Index="3"	Count="14"	/>
+		<Box_Forcegem	Box_Index="3"	Count="15"	/>
+		<Box_Forcegem	Box_Index="3"	Count="16"	/>
+		<Box_Forcegem	Box_Index="3"	Count="17"	/>
+		<Box_Forcegem	Box_Index="3"	Count="18"	/>
+		<Box_Forcegem	Box_Index="3"	Count="19"	/>
+		<Box_Forcegem	Box_Index="3"	Count="20"	/>
+		<Box_Forcegem	Box_Index="3"	Count="21"	/>
+		<Box_Forcegem	Box_Index="3"	Count="22"	/>
+		<Box_Forcegem	Box_Index="3"	Count="23"	/>
+		<Box_Forcegem	Box_Index="3"	Count="24"	/>
+		<Box_Forcegem	Box_Index="3"	Count="25"	/>
+		<Box_Forcegem	Box_Index="4"	Count="1"	/>
+		<Box_Forcegem	Box_Index="4"	Count="2"	/>
+		<Box_Forcegem	Box_Index="4"	Count="3"	/>
+		<Box_Forcegem	Box_Index="4"	Count="4"	/>
+		<Box_Forcegem	Box_Index="4"	Count="5"	/>
+		<Box_Forcegem	Box_Index="4"	Count="6"	/>
+		<Box_Forcegem	Box_Index="4"	Count="7"	/>
+		<Box_Forcegem	Box_Index="4"	Count="8"	/>
+		<Box_Forcegem	Box_Index="4"	Count="9"	/>
+		<Box_Forcegem	Box_Index="4"	Count="10"	/>
+		<Box_Forcegem	Box_Index="4"	Count="11"	/>
+		<Box_Forcegem	Box_Index="4"	Count="12"	/>
+		<Box_Forcegem	Box_Index="4"	Count="13"	/>
+		<Box_Forcegem	Box_Index="4"	Count="14"	/>
+		<Box_Forcegem	Box_Index="4"	Count="15"	/>
+		<Box_Forcegem	Box_Index="4"	Count="16"	/>
+		<Box_Forcegem	Box_Index="4"	Count="17"	/>
+		<Box_Forcegem	Box_Index="4"	Count="18"	/>
+		<Box_Forcegem	Box_Index="4"	Count="19"	/>
+		<Box_Forcegem	Box_Index="4"	Count="20"	/>
+		<Box_Forcegem	Box_Index="4"	Count="21"	/>
+		<Box_Forcegem	Box_Index="4"	Count="22"	/>
+		<Box_Forcegem	Box_Index="4"	Count="23"	/>
+		<Box_Forcegem	Box_Index="4"	Count="24"	/>
+		<Box_Forcegem	Box_Index="4"	Count="25"	/>
+	</SpecialBox_Forcegem>
+	<ServiceBox_info>
+		<Box_ServiceBonus	Box_Index="0"	Time_Sec="0"	ForcegemOpen_Basic="5"	ForcegemOpen_Bonus="0"	Open_Point="13"	/>
+		<Box_ServiceBonus	Box_Index="1"	Time_Sec="120"	ForcegemOpen_Basic="5"	ForcegemOpen_Bonus="5"	Open_Point="25"	/>
+		<Box_ServiceBonus	Box_Index="2"	Time_Sec="120"	ForcegemOpen_Basic="5"	ForcegemOpen_Bonus="5"	Open_Point="25"	/>
+		<Box_ServiceBonus	Box_Index="3"	Time_Sec="180"	ForcegemOpen_Basic="5"	ForcegemOpen_Bonus="5"	Open_Point="45"	/>
+		<Box_ServiceBonus	Box_Index="4"	Time_Sec="180"	ForcegemOpen_Basic="5"	ForcegemOpen_Bonus="5"	Open_Point="45"	/>
+	</ServiceBox_info>
+	<SpecialBox_Count>
+		<Box_Count	SpecialBox_Open_Count="10000"	/>
+	</SpecialBox_Count>
+	<ServiceBox_ItemList>
+		<Box_ItemList	Box_Index="0"	ItemID="33556525"	Count="1"	/>
+		<Box_ItemList	Box_Index="0"	ItemID="33556525"	Count="3"	/>
+		<Box_ItemList	Box_Index="0"	ItemID="33556525"	Count="5"	/>
+		<Box_ItemList	Box_Index="0"	ItemID="33556525"	Count="10"	/>
+		<Box_ItemList	Box_Index="0"	ItemID="33556525"	Count="20"	/>
+		<Box_ItemList	Box_Index="0"	ItemID="9"	Count="1"	/>
+		<Box_ItemList	Box_Index="0"	ItemID="10"	Count="1"	/>
+		<Box_ItemList	Box_Index="0"	ItemID="1"	Count="1"	/>
+		<Box_ItemList	Box_Index="0"	ItemID="1214"	Count="1"	/>
+		<Box_ItemList	Box_Index="0"	ItemID="582"	Count="1"	/>
+		<Box_ItemList	Box_Index="0"	ItemID="583"	Count="1"	/>
+		<Box_ItemList	Box_Index="0"	ItemID="2"	Count="1"	/>
+		<Box_ItemList	Box_Index="0"	ItemID="1215"	Count="1"	/>
+		<Box_ItemList	Box_Index="0"	ItemID="3103"	Count="50"	/>
+		<Box_ItemList	Box_Index="0"	ItemID="3104"	Count="50"	/>
+		<Box_ItemList	Box_Index="1"	ItemID="33556525"	Count="3"	/>
+		<Box_ItemList	Box_Index="1"	ItemID="33556525"	Count="5"	/>
+		<Box_ItemList	Box_Index="1"	ItemID="33556525"	Count="7"	/>
+		<Box_ItemList	Box_Index="1"	ItemID="33556525"	Count="15"	/>
+		<Box_ItemList	Box_Index="1"	ItemID="33556525"	Count="25"	/>
+		<Box_ItemList	Box_Index="1"	ItemID="9"	Count="1"	/>
+		<Box_ItemList	Box_Index="1"	ItemID="10"	Count="1"	/>
+		<Box_ItemList	Box_Index="1"	ItemID="1"	Count="1"	/>
+		<Box_ItemList	Box_Index="1"	ItemID="1214"	Count="1"	/>
+		<Box_ItemList	Box_Index="1"	ItemID="33556422"	Count="1"	/>
+		<Box_ItemList	Box_Index="1"	ItemID="582"	Count="1"	/>
+		<Box_ItemList	Box_Index="1"	ItemID="583"	Count="1"	/>
+		<Box_ItemList	Box_Index="1"	ItemID="2"	Count="1"	/>
+		<Box_ItemList	Box_Index="1"	ItemID="1215"	Count="1"	/>
+		<Box_ItemList	Box_Index="1"	ItemID="33556421"	Count="1"	/>
+		<Box_ItemList	Box_Index="1"	ItemID="33554733"	Count="1"	/>
+		<Box_ItemList	Box_Index="1"	ItemID="3106"	Count="50"	/>
+		<Box_ItemList	Box_Index="1"	ItemID="3104"	Count="50"	/>
+		<Box_ItemList	Box_Index="2"	ItemID="33556525"	Count="3"	/>
+		<Box_ItemList	Box_Index="2"	ItemID="33556525"	Count="5"	/>
+		<Box_ItemList	Box_Index="2"	ItemID="33556525"	Count="7"	/>
+		<Box_ItemList	Box_Index="2"	ItemID="33556525"	Count="15"	/>
+		<Box_ItemList	Box_Index="2"	ItemID="33556525"	Count="25"	/>
+		<Box_ItemList	Box_Index="2"	ItemID="9"	Count="1"	/>
+		<Box_ItemList	Box_Index="2"	ItemID="10"	Count="1"	/>
+		<Box_ItemList	Box_Index="2"	ItemID="1"	Count="1"	/>
+		<Box_ItemList	Box_Index="2"	ItemID="1214"	Count="1"	/>
+		<Box_ItemList	Box_Index="2"	ItemID="33556422"	Count="1"	/>
+		<Box_ItemList	Box_Index="2"	ItemID="582"	Count="1"	/>
+		<Box_ItemList	Box_Index="2"	ItemID="583"	Count="1"	/>
+		<Box_ItemList	Box_Index="2"	ItemID="2"	Count="1"	/>
+		<Box_ItemList	Box_Index="2"	ItemID="1215"	Count="1"	/>
+		<Box_ItemList	Box_Index="2"	ItemID="33556421"	Count="1"	/>
+		<Box_ItemList	Box_Index="2"	ItemID="33554733"	Count="1"	/>
+		<Box_ItemList	Box_Index="2"	ItemID="3106"	Count="50"	/>
+		<Box_ItemList	Box_Index="2"	ItemID="3104"	Count="50"	/>
+		<Box_ItemList	Box_Index="3"	ItemID="33556525"	Count="3"	/>
+		<Box_ItemList	Box_Index="3"	ItemID="33556525"	Count="5"	/>
+		<Box_ItemList	Box_Index="3"	ItemID="33556525"	Count="7"	/>
+		<Box_ItemList	Box_Index="3"	ItemID="33556525"	Count="10"	/>
+		<Box_ItemList	Box_Index="3"	ItemID="33556525"	Count="25"	/>
+		<Box_ItemList	Box_Index="3"	ItemID="33556525"	Count="40"	/>
+		<Box_ItemList	Box_Index="3"	ItemID="9"	Count="1"	/>
+		<Box_ItemList	Box_Index="3"	ItemID="10"	Count="1"	/>
+		<Box_ItemList	Box_Index="3"	ItemID="1"	Count="1"	/>
+		<Box_ItemList	Box_Index="3"	ItemID="1214"	Count="1"	/>
+		<Box_ItemList	Box_Index="3"	ItemID="33556422"	Count="1"	/>
+		<Box_ItemList	Box_Index="3"	ItemID="582"	Count="1"	/>
+		<Box_ItemList	Box_Index="3"	ItemID="583"	Count="1"	/>
+		<Box_ItemList	Box_Index="3"	ItemID="2"	Count="1"	/>
+		<Box_ItemList	Box_Index="3"	ItemID="1215"	Count="1"	/>
+		<Box_ItemList	Box_Index="3"	ItemID="33556421"	Count="1"	/>
+		<Box_ItemList	Box_Index="3"	ItemID="33554733"	Count="1"	/>
+		<Box_ItemList	Box_Index="3"	ItemID="33555961"	Count="1"	/>
+		<Box_ItemList	Box_Index="3"	ItemID="3107"	Count="50"	/>
+		<Box_ItemList	Box_Index="3"	ItemID="3104"	Count="50"	/>
+		<Box_ItemList	Box_Index="4"	ItemID="33556525"	Count="3"	/>
+		<Box_ItemList	Box_Index="4"	ItemID="33556525"	Count="5"	/>
+		<Box_ItemList	Box_Index="4"	ItemID="33556525"	Count="7"	/>
+		<Box_ItemList	Box_Index="4"	ItemID="33556525"	Count="10"	/>
+		<Box_ItemList	Box_Index="4"	ItemID="33556525"	Count="25"	/>
+		<Box_ItemList	Box_Index="4"	ItemID="33556525"	Count="40"	/>
+		<Box_ItemList	Box_Index="4"	ItemID="9"	Count="1"	/>
+		<Box_ItemList	Box_Index="4"	ItemID="10"	Count="1"	/>
+		<Box_ItemList	Box_Index="4"	ItemID="1"	Count="1"	/>
+		<Box_ItemList	Box_Index="4"	ItemID="1214"	Count="1"	/>
+		<Box_ItemList	Box_Index="4"	ItemID="33556422"	Count="1"	/>
+		<Box_ItemList	Box_Index="4"	ItemID="582"	Count="1"	/>
+		<Box_ItemList	Box_Index="4"	ItemID="583"	Count="1"	/>
+		<Box_ItemList	Box_Index="4"	ItemID="2"	Count="1"	/>
+		<Box_ItemList	Box_Index="4"	ItemID="1215"	Count="1"	/>
+		<Box_ItemList	Box_Index="4"	ItemID="33556421"	Count="1"	/>
+		<Box_ItemList	Box_Index="4"	ItemID="33554733"	Count="1"	/>
+		<Box_ItemList	Box_Index="4"	ItemID="33555961"	Count="1"	/>
+		<Box_ItemList	Box_Index="4"	ItemID="3107"	Count="50"	/>
+		<Box_ItemList	Box_Index="4"	ItemID="3104"	Count="50"	/>
+	</ServiceBox_ItemList>
+	<SpecialBox_ItemList>
+		<Box_ItemList	ItemID="33556525"	Count="50"	/>
+		<Box_ItemList	ItemID="33556525"	Count="100"	/>
+		<Box_ItemList	ItemID="33556525"	Count="200"	/>
+		<Box_ItemList	ItemID="33556525"	Count="500"	/>
+		<Box_ItemList	ItemID="33555611"	Count="1"	/>
+		<Box_ItemList	ItemID="33555596"	Count="1"	/>
+		<Box_ItemList	ItemID="33555597"	Count="1"	/>
+		<Box_ItemList	ItemID="33555598"	Count="1"	/>
+		<Box_ItemList	ItemID="33555966"	Count="1"	/>
+		<Box_ItemList	ItemID="33556512"	Count="3"	/>
+		<Box_ItemList	ItemID="33556513"	Count="3"	/>
+		<Box_ItemList	ItemID="33556514"	Count="3"	/>
+		<Box_ItemList	ItemID="33556515"	Count="3"	/>
+		<Box_ItemList	ItemID="33556517"	Count="3"	/>
+		<Box_ItemList	ItemID="637"	Count="1"	/>
+		<Box_ItemList	ItemID="638"	Count="1"	/>
+		<Box_ItemList	ItemID="639"	Count="1"	/>
+		<Box_ItemList	ItemID="1216"	Count="1"	/>
+		<Box_ItemList	ItemID="437"	Count="1"	/>
+		<Box_ItemList	ItemID="439"	Count="1"	/>
+		<Box_ItemList	ItemID="4084"	Count="1"	/>
+	</SpecialBox_ItemList>
+</SpecialGiftBox>
