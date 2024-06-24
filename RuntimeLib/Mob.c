@@ -6,8 +6,6 @@
 #include "NotificationProtocol.h"
 #include "NotificationManager.h"
 
-// TODO: Gate mob can attack player which leads to receiving a lot of damage!
-
 Void RTMobInit(
 	RTRuntimeRef Runtime,
 	RTMobRef Mob

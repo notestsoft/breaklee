@@ -387,6 +387,10 @@ IPC_PROTOCOL(P2W, CREATE_PARTY,
 	struct _RTParty Party;
 )
 
+IPC_PROTOCOL(P2W, DESTROY_PARTY,
+	struct _RTParty Party;
+)
+
 #undef IPC_PROTOCOL_ENUM
 #undef IPC_PROTOCOL_STRUCT
 #undef IPC_PROTOCOL

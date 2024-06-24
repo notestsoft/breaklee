@@ -1371,6 +1371,7 @@ Bool ServerLoadWorldData(
                 }
 
                 Mob->SpeciesData = &Runtime->MobData[Mob->Spawn.MobSpeciesIndex];
+                Mob->Spawn.Level = Mob->SpeciesData->Level;
                 Mob->IsInfiniteSpawn = true;
                 Mob->IsPermanentDeath = false;
                 Mob->RemainingSpawnCount = 0;
@@ -1383,8 +1384,6 @@ Bool ServerLoadWorldData(
 
         Char DropWorldFilePath[MAX_PATH];
         Char DropWorldFileName[MAX_PATH];
-        Float32 DropWorldRates[RUNTIME_MEMORY_MAX_WORLD_DROP_ITEM_COUNT] = { 0 };
-        Float32 DropWorldMinRate = 100;
 
         sprintf(DropWorldFileName, "world%zu-terrain-world.xml", World->WorldIndex);
         PathCombine(ServerDirectory, DropWorldFileName, DropWorldFilePath);
@@ -1402,13 +1401,16 @@ Bool ServerLoadWorldData(
 
                 if (!ParseAttributeUInt32(Archive, ChildIterator->Index, "ItemKind", &DropItem->Item.ItemID.ID)) goto error;
                 if (!ParseAttributeUInt64(Archive, ChildIterator->Index, "ItemOpt", &DropItem->Item.ItemOptions)) goto error;
-                if (!ParseAttributeFloat32(Archive, ChildIterator->Index, "DropRate", &DropWorldRates[World->DropTable.WorldItemCount])) goto error;
+
+                Float64 ScalarDropRate = 0.0;
+                if (!ParseAttributeFloat64(Archive, ChildIterator->Index, "DropRate", &ScalarDropRate)) goto error;
+                DropItem->Item.DropRate = (Int32)(ScalarDropRate / 100.0 * INT32_MAX);
+
                 if (!ParseAttributeInt32(Archive, ChildIterator->Index, "MinLv", &DropItem->MinMobLevel)) goto error;
                 if (!ParseAttributeInt32(Archive, ChildIterator->Index, "MaxLv", &DropItem->MaxMobLevel)) goto error;
                 if (!ParseAttributeInt32(Archive, ChildIterator->Index, "OptPoolIdx", &DropItem->Item.OptionPoolIndex)) goto error;
                 if (!ParseAttributeInt32(Archive, ChildIterator->Index, "DurationIdx", &DropItem->Item.DurationIndex)) goto error;
 
-                DropWorldMinRate = MIN(DropWorldMinRate, DropWorldRates[World->DropTable.WorldItemCount]);
                 World->DropTable.WorldItemCount += 1;
                 ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
             }
@@ -1416,15 +1418,8 @@ Bool ServerLoadWorldData(
             ArchiveClear(Archive, true);
         }
 
-        for (Int32 Index = 0; Index < World->DropTable.WorldItemCount; Index += 1) {
-            World->DropTable.WorldItems[Index].Item.DropRate = (Int64)(1000.0f * DropWorldRates[Index] / DropWorldMinRate);
-            assert(World->DropTable.WorldItems[Index].Item.DropRate > 0);
-        }
-
         Char DropMobFilePath[MAX_PATH];
         Char DropMobFileName[MAX_PATH]; 
-        Float32 DropMobRates[RUNTIME_MEMORY_MAX_MOB_DROP_ITEM_COUNT] = { 0 };
-        Float32 DropMobMinRate = 100;
 
         sprintf(DropMobFileName, "world%zu-terrain-mob.xml", World->WorldIndex);
         PathCombine(ServerDirectory, DropMobFileName, DropMobFilePath);
@@ -1443,13 +1438,14 @@ Bool ServerLoadWorldData(
                 if (!ParseAttributeInt32(Archive, ChildIterator->Index, "SpeciesIdx", &DropItem->MobSpeciesIndex)) goto error;
                 if (!ParseAttributeUInt32(Archive, ChildIterator->Index, "ItemKind", &DropItem->Item.ItemID.ID)) goto error;
                 if (!ParseAttributeUInt64(Archive, ChildIterator->Index, "ItemOpt", &DropItem->Item.ItemOptions)) goto error;
-                if (!ParseAttributeFloat32(Archive, ChildIterator->Index, "DropRate", &DropMobRates[World->DropTable.MobItemCount])) goto error;
+
+                Float64 ScalarDropRate = 0.0;
+                if (!ParseAttributeFloat64(Archive, ChildIterator->Index, "DropRate", &ScalarDropRate)) goto error;
+                DropItem->Item.DropRate = (Int32)(ScalarDropRate / 100.0 * INT32_MAX);
+
                 if (!ParseAttributeInt32(Archive, ChildIterator->Index, "OptPoolIdx", &DropItem->Item.OptionPoolIndex)) goto error;
                 if (!ParseAttributeInt32(Archive, ChildIterator->Index, "DurationIdx", &DropItem->Item.DurationIndex)) goto error;
 
-                // TODO: Some floating point precision errors could occur use epsilon..
-                DropItem->Item.PerfectDrop = (DropMobRates[World->DropTable.MobItemCount] == 100);
-                DropMobMinRate = MIN(DropMobMinRate, DropMobRates[World->DropTable.MobItemCount]);
                 World->DropTable.MobItemCount += 1;
                 ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
             }
@@ -1457,15 +1453,8 @@ Bool ServerLoadWorldData(
             ArchiveClear(Archive, true);
         }
 
-        for (Int32 Index = 0; Index < World->DropTable.MobItemCount; Index++) {
-            World->DropTable.MobItems[Index].Item.DropRate = (Int32)(1000.0f * DropMobRates[Index] / DropMobMinRate);
-            assert(World->DropTable.MobItems[Index].Item.DropRate);
-        }
-
         Char DropQuestFilePath[MAX_PATH];
         Char DropQuestFileName[MAX_PATH];
-        Float32 DropQuestRates[RUNTIME_MEMORY_MAX_QUEST_DROP_ITEM_COUNT] = { 0 };
-        Float32 DropQuestMinRate = 100;
 
         sprintf(DropQuestFileName, "world%zu-terrain-quest.xml", World->WorldIndex);
         PathCombine(ServerDirectory, DropQuestFileName, DropQuestFilePath);
@@ -1484,19 +1473,16 @@ Bool ServerLoadWorldData(
                 if (!ParseAttributeInt32(Archive, ChildIterator->Index, "SpeciesIdx", &DropItem->MobSpeciesIndex)) goto error;
                 if (!ParseAttributeUInt32(Archive, ChildIterator->Index, "ItemKind", &DropItem->Item.ItemID.ID)) goto error;
                 if (!ParseAttributeUInt64(Archive, ChildIterator->Index, "ItemOpt", &DropItem->Item.ItemOptions)) goto error;
-                if (!ParseAttributeFloat32(Archive, ChildIterator->Index, "DropRate", &DropQuestRates[World->DropTable.QuestItemCount])) goto error;
 
-                DropQuestMinRate = MIN(DropQuestMinRate, DropQuestRates[World->DropTable.QuestItemCount]);
+                Float64 ScalarDropRate = 0.0;
+                if (!ParseAttributeFloat64(Archive, ChildIterator->Index, "DropRate", &ScalarDropRate)) goto error;
+                DropItem->Item.DropRate = (Int32)(ScalarDropRate / 100.0 * INT32_MAX);
+
                 World->DropTable.QuestItemCount += 1;
                 ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
             }
 
             ArchiveClear(Archive, true);
-        }
-
-        for (Int32 Index = 0; Index < World->DropTable.QuestItemCount; Index++) {
-            World->DropTable.QuestItems[Index].Item.DropRate = (Int32)(1000.0f * DropQuestRates[Index] / DropQuestMinRate);
-            assert(World->DropTable.QuestItems[Index].Item.DropRate > 0);
         }
     }
 
@@ -2393,5 +2379,103 @@ error:
     }
 
     ArchiveDestroy(TempArchive);
+    return false;
+}
+
+Bool ServerLoadWorldDropData(
+    ServerContextRef Context,
+    CString RuntimeDirectory,
+    CString ServerDirectory
+) {
+    RTRuntimeRef Runtime = Context->Runtime;
+    ArchiveRef Archive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
+
+    Char FilePath[MAX_PATH];
+    PathCombine(ServerDirectory, "WorldDrop.xml", FilePath);
+
+    if (!ArchiveLoadFromFile(Archive, FilePath, false)) goto error;
+
+    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "WorldDrop");
+    if (ParentIndex < 0) goto error;
+
+    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "Item");
+    while (Iterator) {
+        Int32 WorldIndex = -1;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Terrain_World", &WorldIndex)) goto error;
+
+        if (!RTWorldDataExists(Runtime->WorldManager, WorldIndex)) {
+            Error("WorldDrop: World %d not found!", WorldIndex);
+            Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+            continue;
+        }
+
+        RTWorldDataRef World = RTWorldDataGet(Runtime->WorldManager, WorldIndex);
+        RTDropTableRef DropTable = &World->DropTable;
+        
+        Int32 DungeonIndex = -1;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "DungeonID", &DungeonIndex)) goto error;
+
+        if (DungeonIndex > 0) {
+            if (!World->HasQuestDungeon && !World->HasMissionDungeon) {
+                Error("WorldDrop: World %d has no dungeon %d!", WorldIndex, DungeonIndex);
+                Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+                continue;
+            }
+
+            Bool Found = false;
+            for (Int32 Index = 0; Index < Runtime->DungeonDataCount; Index += 1) {
+                RTDungeonDataRef DungeonData = &Runtime->DungeonData[Index];
+                if (DungeonData->WorldID == WorldIndex && DungeonData->DungeonID == DungeonIndex) {
+                    DropTable = &DungeonData->DropTable;
+                    Found = true;
+                }
+            }
+
+            if (!Found) {
+                Error("WorldDrop: World %d has no dungeon %d!", WorldIndex, DungeonIndex);
+                Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+                continue;
+            }
+        }
+
+        Int32 MobSpeciesIndex = -1;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Terrain_Mob", &MobSpeciesIndex)) goto error;
+
+        RTDropItemRef DropItem = NULL;
+        if (MobSpeciesIndex > 0) {
+            assert(DropTable->MobItemCount < RUNTIME_MEMORY_MAX_MOB_DROP_ITEM_COUNT);
+            RTMobDropItemRef MobDropItem = &DropTable->MobItems[DropTable->MobItemCount];
+            MobDropItem->MobSpeciesIndex = MobSpeciesIndex;
+            DropItem = &MobDropItem->Item;
+            DropTable->MobItemCount += 1;
+        }
+        else {
+            // TODO: Add Group property for drops
+            assert(DropTable->WorldItemCount < RUNTIME_MEMORY_MAX_WORLD_DROP_ITEM_COUNT);
+            RTWorldDropItemRef WorldDropItem = &DropTable->WorldItems[DropTable->WorldItemCount];
+            if (!ParseAttributeInt32(Archive, Iterator->Index, "MinLv", &WorldDropItem->MinMobLevel)) goto error;
+            if (!ParseAttributeInt32(Archive, Iterator->Index, "MaxLv", &WorldDropItem->MaxMobLevel)) goto error;
+            DropItem = &WorldDropItem->Item;
+            DropTable->WorldItemCount += 1;
+        }
+
+        if (!ParseAttributeUInt64(Archive, Iterator->Index, "ItemKind", &DropItem->ItemID.Serial)) goto error;
+        if (!ParseAttributeUInt64(Archive, Iterator->Index, "ItemOpt", &DropItem->ItemOptions)) goto error;
+
+        Float64 ScalarDropRate = 0.0;
+        if (!ParseAttributeFloat64(Archive, Iterator->Index, "DropRate", &ScalarDropRate)) goto error;
+        DropItem->DropRate = (Int32)(ScalarDropRate / 100.0 * INT32_MAX);
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "OptPoolIdx", &DropItem->OptionPoolIndex)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "DurationIdx", &DropItem->DurationIndex)) goto error;
+
+        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+    }
+
+    ArchiveDestroy(Archive);
+    return true;
+
+error:
+    ArchiveDestroy(Archive);
     return false;
 }

@@ -310,6 +310,30 @@ error:
     return false;
 }
 
+Bool ParseAttributeFloat64(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    Float64* Result
+) {
+    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    if (AttributeIndex < 0) goto error;
+
+    ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
+    if (!Data) goto error;
+
+    if (Data->Length < 1) {
+        *Result = 0.0;
+        return true;
+    }
+
+    *Result = strtod(Data->Data, NULL);
+    return true;
+
+error:
+    return false;
+}
+
 Bool ParseAttributeInt32Array(
     ArchiveRef Object,
     Int64 NodeIndex,

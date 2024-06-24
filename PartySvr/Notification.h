@@ -15,7 +15,20 @@ Void BroadcastPartyInfo(
     ServerRef Server,
     ServerContextRef Context,
     IPCSocketRef Socket,
-    IPCSocketConnectionRef Connection,
+    RTPartyRef Party
+);
+
+Void BroadcastCreateParty(
+    ServerRef Server,
+    ServerContextRef Context,
+    IPCSocketRef Socket,
+    RTPartyRef Party
+);
+
+Void BroadcastDestroyParty(
+    ServerRef Server,
+    ServerContextRef Context,
+    IPCSocketRef Socket,
     RTPartyRef Party
 );
 
@@ -23,7 +36,6 @@ Void BroadcastPartyData(
     ServerRef Server,
     ServerContextRef Context,
     IPCSocketRef Socket,
-    IPCSocketConnectionRef Connection,
     RTPartyRef Party
 );
 

@@ -40,6 +40,11 @@ Void RTPartyManagerDestroyParty(
     RTPartyRef Party
 );
 
+Void RTPartyManagerDestroyPartyRemote(
+    RTPartyManagerRef PartyManager,
+    RTPartyRef RemoteParty
+);
+
 RTPartyRef RTPartyManagerGetPartyByCharacter(
     RTPartyManagerRef PartyManager,
     Index CharacterIndex

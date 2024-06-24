@@ -123,6 +123,13 @@ Bool ParseAttributeFloat32(
     Float32* Result
 );
 
+Bool ParseAttributeFloat64(
+    ArchiveRef Object,
+    Int64 NodeIndex,
+    CString Name,
+    Float64* Result
+);
+
 Bool ParseAttributeInt32Array(
     ArchiveRef Object,
     Int64 NodeIndex,

@@ -17,6 +17,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_INVITE) {
 	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
 	Request->Header.Target.Type = IPC_TYPE_PARTY;
 	Request->Source.NodeIndex = Context->Config.WorldSvr.NodeIndex;
+	Request->Source.MemberID.Serial = Character->ID.Serial;
 	Request->Source.Info.CharacterIndex = Character->CharacterIndex;
 	Request->Source.Info.Level = Character->Data.Info.Basic.Level;
 	Request->Source.Info.BattleStyleIndex = BattleStyleIndex;
@@ -83,6 +84,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE) {
 	Response->Header.Target.Type = IPC_TYPE_PARTY;
 	Response->Source = Packet->Source;
 	Response->Target = Packet->Target;
+	Response->Target.MemberID.Serial = TargetCharacter->ID.Serial;
 	Response->Target.Info.Level = TargetCharacter->Data.Info.Basic.Level;
 	Response->Target.Info.BattleStyleIndex = BattleStyleIndex;
 	Response->Target.Info.OverlordLevel = TargetCharacter->Data.Info.Overlord.Level;
@@ -227,6 +229,12 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE_TIMEOUT) {
 }
 
 IPC_PROCEDURE_BINDING(P2W, PARTY_INFO) {
+	Index PartyPoolIndex = Packet->Party.ID.EntityIndex;
+	if (MemoryPoolIsReserved(Runtime->PartyManager->PartyPool, PartyPoolIndex)) {
+		RTPartyRef LocalParty = (RTPartyRef)MemoryPoolFetch(Runtime->PartyManager->PartyPool, PartyPoolIndex);
+		memcpy(LocalParty, &Packet->Party, sizeof(struct _RTParty));
+	}
+
 	for (Int32 Index = 0; Index < Packet->Party.MemberCount; Index += 1) {
 		RTPartySlotRef Slot = &Packet->Party.Members[Index];
 
@@ -360,4 +368,8 @@ IPC_PROCEDURE_BINDING(P2W, BROADCAST_TO_CHARACTER) {
 
 IPC_PROCEDURE_BINDING(P2W, CREATE_PARTY) {
 	RTPartyManagerCreatePartyRemote(Runtime->PartyManager, &Packet->Party);
+}
+
+IPC_PROCEDURE_BINDING(P2W, DESTROY_PARTY) {
+	RTPartyManagerDestroyPartyRemote(Runtime->PartyManager, &Packet->Party);
 }

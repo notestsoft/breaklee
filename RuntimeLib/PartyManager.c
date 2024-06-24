@@ -31,7 +31,7 @@ Void RTPartyManagerDestroy(
     DictionaryDestroy(PartyManager->CharacterToPartyInvite);
     AllocatorDeallocate(PartyManager->Allocator, PartyManager);
 }
-
+// TODO: Solo dungeon party is not cleaned up always when the socket disconnects with a timeout (simulatable by halting on a breakpoint)
 RTPartyRef RTPartyManagerCreateParty(
     RTPartyManagerRef PartyManager,
     Index CharacterIndex,
@@ -69,16 +69,20 @@ RTPartyRef RTPartyManagerCreatePartyRemote(
     RTPartyRef RemoteParty
 ) {
     Index PartyPoolIndex = RemoteParty->ID.EntityIndex;
-    RTPartyRef Party = (RTPartyRef)MemoryPoolReserve(PartyManager->PartyPool, PartyPoolIndex);
-    memcpy(Party, RemoteParty, sizeof(struct _RTParty));
+    if (!MemoryPoolIsReserved(PartyManager->PartyPool, PartyPoolIndex)) {
+        RTPartyRef Party = (RTPartyRef)MemoryPoolReserve(PartyManager->PartyPool, PartyPoolIndex);
+        memcpy(Party, RemoteParty, sizeof(struct _RTParty));
 
-    for (Index MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {
-        Index CharacterIndex = RemoteParty->Members[MemberIndex].Info.CharacterIndex;
-        assert(!DictionaryLookup(PartyManager->CharacterToPartyEntity, &CharacterIndex));
-        DictionaryInsert(PartyManager->CharacterToPartyEntity, &CharacterIndex, &Party->ID, sizeof(struct _RTEntityID));
+        for (Index MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {
+            Index CharacterIndex = RemoteParty->Members[MemberIndex].Info.CharacterIndex;
+            assert(!DictionaryLookup(PartyManager->CharacterToPartyEntity, &CharacterIndex));
+            DictionaryInsert(PartyManager->CharacterToPartyEntity, &CharacterIndex, &Party->ID, sizeof(struct _RTEntityID));
+        }
+
+        return Party;
     }
 
-    return Party;
+    return (RTPartyRef)MemoryPoolFetch(PartyManager->PartyPool, PartyPoolIndex);
 }
 
 Void RTPartyManagerDestroyParty(
@@ -99,6 +103,16 @@ Void RTPartyManagerDestroyParty(
 
     Index PartyPoolIndex = Party->ID.EntityIndex;
     MemoryPoolRelease(PartyPool, PartyPoolIndex);
+}
+
+Void RTPartyManagerDestroyPartyRemote(
+    RTPartyManagerRef PartyManager,
+    RTPartyRef RemoteParty
+) {
+    Index PartyPoolIndex = RemoteParty->ID.EntityIndex;
+    if (MemoryPoolIsReserved(PartyManager->PartyPool, PartyPoolIndex)) {
+        RTPartyManagerDestroyParty(PartyManager, RemoteParty);
+    }
 }
 
 RTPartyRef RTPartyManagerGetPartyByCharacter(

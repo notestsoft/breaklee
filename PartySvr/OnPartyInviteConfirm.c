@@ -17,10 +17,11 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CONFIRM) {
         RTPartySlotRef Member = RTPartyAddMember(Party, Invitation->Member.Info.CharacterIndex, kEntityIDNull);
         DictionaryInsert(Context->PartyManager->CharacterToPartyEntity, &Invitation->Member.Info.CharacterIndex, &Party->ID, sizeof(struct _RTEntityID));
 
+        Member->MemberID = Invitation->Member.MemberID;
         Member->NodeIndex = Invitation->Member.NodeIndex;
         memcpy(&Member->Info, &Invitation->Member.Info, sizeof(struct _RTPartyMemberInfo));
 
-        BroadcastPartyInfo(Server, Context, Socket, Connection, Party);
+        BroadcastPartyInfo(Server, Context, Socket, Party);
     }
 
     IPC_P2W_DATA_PARTY_INVITE_TIMEOUT* Notification = IPCPacketBufferInit(Connection->PacketBuffer, P2W, PARTY_INVITE_TIMEOUT);
@@ -36,6 +37,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CONFIRM) {
     DictionaryRemove(Context->PartyManager->CharacterToPartyInvite, &Packet->SourceCharacterIndex);
 
     if (!Packet->IsAccept && Party->PartyType == RUNTIME_PARTY_TYPE_NORMAL && Party->MemberCount < 2) {
+        BroadcastDestroyParty(Server, Context, Server->IPCSocket, Party);
         RTPartyManagerDestroyParty(Context->PartyManager, Party);
     }
 
@@ -50,7 +52,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CONFIRM) {
     Response->Success = Packet->IsAccept;
     IPCSocketUnicast(Socket, Response);
 
-    BroadcastPartyData(Server, Context, Socket, Connection, Party);
+    BroadcastPartyData(Server, Context, Socket, Party);
     return;
 
 error:

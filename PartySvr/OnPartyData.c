@@ -15,5 +15,5 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_DATA) {
         break;
     }
 
-    BroadcastPartyData(Server, Context, Socket, Connection, Party);
+    BroadcastPartyData(Server, Context, Socket, Party);
 }

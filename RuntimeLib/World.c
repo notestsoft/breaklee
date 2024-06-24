@@ -298,15 +298,8 @@ Void RTWorldDespawnMob(
         RTCharacterRef Character = RTWorldManagerGetCharacter(WorldContext->WorldManager, Mob->DropOwner);
         if (Character) {
             RTDropResult Drop = { 0 };
-            Bool Success = RTCalculateDrop(
-                Runtime,
-                WorldContext,
-                Mob,
-                Character,
-                &Drop
-            );
 
-            if (Success) {
+            if (RTCalculateDrop(Runtime, WorldContext, Mob, Character, &Drop)) {
                 RTWorldSpawnItem(
                     Runtime,
                     WorldContext,
@@ -316,16 +309,11 @@ Void RTWorldDespawnMob(
                     Drop
                 );
             }
+            else {
+                RTDropCurrency(Runtime, WorldContext, Mob, Character);
+            }
 
-            Success = RTCalculateQuestDrop(
-                Runtime,
-                WorldContext,
-                Mob,
-                Character,
-                &Drop
-            );
-
-            if (Success) {
+            if (RTCalculateQuestDrop(Runtime, WorldContext, Mob, Character, &Drop)) {
                 RTWorldSpawnItem(
                     Runtime,
                     WorldContext,
@@ -341,33 +329,7 @@ Void RTWorldDespawnMob(
                 assert(Party);
 
                 RTDropResult Drop = { 0 };
-                Bool Success = RTCalculatePartyQuestDrop(
-                    Runtime,
-                    WorldContext,
-                    Mob,
-                    Party,
-                    &Drop
-                );
-
-                if (Success) {
-                    RTWorldSpawnItem(
-                        Runtime,
-                        WorldContext,
-                        Mob->ID,
-                        Character->Movement.PositionCurrent.X,
-                        Character->Movement.PositionCurrent.Y,
-                        Drop
-                    );
-                }
-            }
-
-            if (!Success) {
-                Int32 Rate = RandomRange(&WorldContext->Seed, 0, 30000);
-                if (Rate <= 10000) {
-                    RTDropResult Drop = { 0 };
-                    Drop.ItemID.ID = RUNTIME_ITEM_ID_CURRENCY;
-                    Drop.ItemOptions = 10 * (100 + RandomRange(&WorldContext->Seed, 0, Mob->SpeciesData->Level)) / 100;
-                    
+                if (RTCalculatePartyQuestDrop(Runtime, WorldContext, Mob, Party, &Drop)) {
                     RTWorldSpawnItem(
                         Runtime,
                         WorldContext,

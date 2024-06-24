@@ -54,13 +54,13 @@ Void ServerOnUpdate(
     ServerContextRef Context = (ServerContextRef)ServerContext;
     Timestamp CurrentTimestamp = GetTimestampMs();
     
-    DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(Context->PartyManager->PartyInvitationPool);
+    DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(Context->PartyManager->CharacterToPartyInvite);
     while (Iterator.Key) {
         Index CharacterIndex = *(Index*)Iterator.Key;
         Index PartyInvitationPoolIndex = *(Index*)Iterator.Value;
         Iterator = DictionaryKeyIteratorNext(Iterator);
 
-        RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolReserveNext(Context->PartyManager->PartyInvitationPool, &PartyInvitationPoolIndex);
+        RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolFetch(Context->PartyManager->PartyInvitationPool, PartyInvitationPoolIndex);
         RTPartyRef Party = RTPartyManagerGetParty(Context->PartyManager, Invitation->PartyID);
         assert(Party);
 
@@ -92,6 +92,7 @@ Void ServerOnUpdate(
             if (Party->PartyType == RUNTIME_PARTY_TYPE_NORMAL && Party->MemberCount < 2) {
                 MemoryPoolRelease(Context->PartyManager->PartyInvitationPool, PartyInvitationPoolIndex);
                 DictionaryRemove(Context->PartyManager->CharacterToPartyInvite, &Invitation->Member.Info.CharacterIndex);
+                BroadcastDestroyParty(Server, Context, Server->IPCSocket, Party);
                 RTPartyManagerDestroyParty(Context->PartyManager, Party);
             }
         }

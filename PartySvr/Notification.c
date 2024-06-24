@@ -31,10 +31,37 @@ Void BroadcastPartyInfo(
     ServerRef Server,
     ServerContextRef Context,
     IPCSocketRef Socket,
-    IPCSocketConnectionRef Connection,
     RTPartyRef Party
 ) {
-    IPC_P2W_DATA_PARTY_INFO* Notification = IPCPacketBufferInit(Connection->PacketBuffer, P2W, PARTY_INFO);
+    IPC_P2W_DATA_PARTY_INFO* Notification = IPCPacketBufferInit(Socket->PacketBuffer, P2W, PARTY_INFO);
+    Notification->Header.Source = Server->IPCSocket->NodeID;
+    Notification->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
+    Notification->Header.Target.Type = IPC_TYPE_WORLD;
+    memcpy(&Notification->Party, Party, sizeof(struct _RTParty));
+    IPCSocketBroadcast(Socket, Notification);
+}
+
+Void BroadcastCreateParty(
+    ServerRef Server,
+    ServerContextRef Context,
+    IPCSocketRef Socket,
+    RTPartyRef Party
+) {
+    IPC_P2W_DATA_CREATE_PARTY* Notification = IPCPacketBufferInit(Socket->PacketBuffer, P2W, CREATE_PARTY);
+    Notification->Header.Source = Server->IPCSocket->NodeID;
+    Notification->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
+    Notification->Header.Target.Type = IPC_TYPE_WORLD;
+    memcpy(&Notification->Party, Party, sizeof(struct _RTParty));
+    IPCSocketBroadcast(Socket, Notification);
+}
+
+Void BroadcastDestroyParty(
+    ServerRef Server,
+    ServerContextRef Context,
+    IPCSocketRef Socket,
+    RTPartyRef Party
+) {
+    IPC_P2W_DATA_DESTROY_PARTY* Notification = IPCPacketBufferInit(Socket->PacketBuffer, P2W, DESTROY_PARTY);
     Notification->Header.Source = Server->IPCSocket->NodeID;
     Notification->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
     Notification->Header.Target.Type = IPC_TYPE_WORLD;
@@ -46,10 +73,9 @@ Void BroadcastPartyData(
     ServerRef Server,
     ServerContextRef Context,
     IPCSocketRef Socket,
-    IPCSocketConnectionRef Connection,
     RTPartyRef Party
 ) {
-    IPC_P2W_DATA_PARTY_DATA* Response = IPCPacketBufferInit(Connection->PacketBuffer, P2W, PARTY_DATA);
+    IPC_P2W_DATA_PARTY_DATA* Response = IPCPacketBufferInit(Socket->PacketBuffer, P2W, PARTY_DATA);
     Response->Header.Source = Server->IPCSocket->NodeID;
     Response->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
     Response->Header.Target.Type = IPC_TYPE_WORLD;

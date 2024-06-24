@@ -52,6 +52,7 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 	}
 
 	IPC_W2D_DATA_CREATE_CHARACTER* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2D, CREATE_CHARACTER);
+	memset(&Request->CharacterData, 0, sizeof(struct _RTCharacterData));
 	Request->Header.SourceConnectionID = Connection->ID;
 	Request->Header.Source = Server->IPCSocket->NodeID;
 	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;

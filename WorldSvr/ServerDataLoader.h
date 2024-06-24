@@ -75,4 +75,10 @@ Bool ServerLoadDungeonData(
     ArchiveRef Cont3Archive
 );
 
+Bool ServerLoadWorldDropData(
+    ServerContextRef Context,
+    CString RuntimeDirectory,
+    CString ServerDirectory
+);
+
 EXTERN_C_END

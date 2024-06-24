@@ -2,6 +2,7 @@
 
 #include "Base.h"
 #include "Constants.h"
+#include "Drop.h"
 #include "Item.h"
 #include "Mob.h"
 
@@ -71,6 +72,7 @@ struct _RTDungeonData {
 	Int32 TriggerActionCount;
 	struct _RTDungeonTriggerData TriggerData[RUNTIME_MEMORY_DUNGEON_TRIGGER_DATA_COUNT];
 	struct _RTDungeonTriggerActionData TriggerActionData[RUNTIME_MEMORY_DUNGEON_TRIGGER_ACTION_DATA_COUNT];
+	struct _RTDropTable DropTable;
 };
 
 struct _RTQuestUnitItemData {

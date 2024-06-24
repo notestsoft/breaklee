@@ -75,6 +75,7 @@ Void RTNotificationManagerDispatchToParty(
     for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
         RTEntityID Entity = Party->Members[Index].MemberID;
         RTCharacterRef Character = RTWorldManagerGetCharacter(Runtime->WorldManager, Entity);
+        if (!Character) continue;
         RTNotificationManagerDispatchToCharacter(NotificationManager, Notification, Character);
     }
 }
@@ -87,6 +88,7 @@ Void RTNotificationManagerDispatchToChunk(
     for (Int32 Index = 0; Index < ArrayGetElementCount(WorldChunk->Characters); Index += 1) {
         RTEntityID Entity = *(RTEntityID*)ArrayGetElementAtIndex(WorldChunk->Characters, Index);
         RTCharacterRef Character = RTWorldManagerGetCharacter(WorldChunk->Runtime->WorldManager, Entity);
+        if (!Character) continue;
         RTNotificationManagerDispatchToCharacter(NotificationManager, Notification, Character);
     }
 }

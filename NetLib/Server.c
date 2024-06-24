@@ -198,6 +198,7 @@ Void _ServerSocketOnConnect(
 ) {
     ServerSocketContextRef SocketContext = (ServerSocketContextRef)Socket->Userdata;
     Connection->Userdata = MemoryPoolReserve(SocketContext->ConnectionContextPool, Connection->ConnectionPoolIndex);
+
     if (SocketContext->OnConnect) SocketContext->OnConnect(
         SocketContext->Server,
         SocketContext->Server->Userdata,

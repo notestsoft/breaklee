@@ -55,6 +55,7 @@ IPC_PROCEDURE_BINDING(W2P, CLIENT_DISCONNECT) {
     
     if (OnlineMemberCount < 1) {
         // TODO: Notify world to close the dungeon instance
+        BroadcastDestroyParty(Server, Context, Server->IPCSocket, Party);
         RTPartyManagerDestroyParty(Context->PartyManager, Party);
     }
 }

@@ -10,10 +10,9 @@ EXTERN_C_BEGIN
 struct _RTDropItem {
     RTItem ItemID;
     UInt64 ItemOptions;
-    Int64 DropRate;
+    Int32 DropRate;
     Int32 OptionPoolIndex;
     Int32 DurationIndex;
-    Bool PerfectDrop; // Actually values should be clamped to 100% rate
 };
 
 struct _RTWorldDropItem {
@@ -55,6 +54,13 @@ Bool RTCalculateDrop(
     RTMobRef Mob,
     RTCharacterRef Character,
     RTDropResultRef Result
+);
+
+Bool RTDropCurrency(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef World,
+    RTMobRef Mob,
+    RTCharacterRef Character
 );
 
 Bool RTCalculateQuestDrop(

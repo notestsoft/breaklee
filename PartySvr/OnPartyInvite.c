@@ -1,5 +1,6 @@
 #include "IPCProtocol.h"
 #include "IPCProcedures.h"
+#include "Notification.h"
 #include "Server.h"
 
 IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
@@ -12,12 +13,15 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
 	Bool HasTargetInvitation = DictionaryLookup(Context->PartyManager->CharacterToPartyInvite, &Target->Info.CharacterIndex) != NULL;
 	if (HasTargetInvitation) goto error;
 
+	Bool Created = false;
 	RTPartyRef Party = RTPartyManagerGetPartyByCharacter(Context->PartyManager, Source->Info.CharacterIndex);
 	if (!Party) {
 		Party = RTPartyManagerCreateParty(Context->PartyManager, Source->Info.CharacterIndex, kEntityIDNull, RUNTIME_PARTY_TYPE_NORMAL);
 		if (!Party) goto error;
+		Created = true;
 
 		RTPartySlotRef Member = RTPartyGetMember(Party, Source->Info.CharacterIndex);
+		Member->MemberID = Packet->Source.MemberID;
 		Member->NodeIndex = Packet->Source.NodeIndex;
 		memcpy(&Member->Info, &Source->Info, sizeof(struct _RTPartyMemberInfo));
 	}
@@ -31,9 +35,14 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
 
 	Invitation->InviterCharacterIndex = Packet->Source.Info.CharacterIndex;
 	Invitation->PartyID = Party->ID;
+	Invitation->Member.MemberID = Packet->Target.MemberID;
 	Invitation->Member.NodeIndex = Packet->Target.NodeIndex;
 	memcpy(&Invitation->Member.Info, &Target->Info, sizeof(struct _RTPartyMemberInfo));
 	Invitation->InvitationTimestamp = GetTimestampMs();
+
+	if (Created) {
+		BroadcastCreateParty(Server, Context, Socket, Party);
+	}
 
 	IPC_P2W_DATA_PARTY_INVITE* Request = IPCPacketBufferInit(Connection->PacketBuffer, P2W, PARTY_INVITE);
 	Request->Header.Source = Packet->Header.Source;
@@ -72,12 +81,14 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_ACK) {
 	if (!Party) goto error;
 
 	if (Packet->Success) {
+		Invitation->Member.MemberID = Packet->Target.MemberID;
 		Invitation->Member.NodeIndex = Packet->Target.NodeIndex;
 		memcpy(&Invitation->Member.Info, &Target->Info, sizeof(struct _RTPartyMemberInfo));
 	}
 	else if (Party->PartyType == RUNTIME_PARTY_TYPE_NORMAL) {
 		MemoryPoolRelease(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);
 		DictionaryRemove(Context->PartyManager->CharacterToPartyInvite, &Target->Info.CharacterIndex);
+		BroadcastDestroyParty(Server, Context, Server->IPCSocket, Party);
 		RTPartyManagerDestroyParty(Context->PartyManager, Party);
 	}
 

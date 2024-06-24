@@ -27,6 +27,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CANCEL) {
     DictionaryRemove(Context->PartyManager->CharacterToPartyInvite, &Packet->TargetCharacterIndex);
 
     if (Party->PartyType == RUNTIME_PARTY_TYPE_NORMAL && Party->MemberCount < 2) {
+        BroadcastDestroyParty(Server, Context, Server->IPCSocket, Party);
         RTPartyManagerDestroyParty(Context->PartyManager, Party);
     }
 
