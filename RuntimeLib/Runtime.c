@@ -445,8 +445,21 @@ Void RTRuntimeCloseDungeon(
         Character->PartyID = kEntityIDNull;
     }
     else {
-        // TODO: Check if any party member is still in dungeon and do proper cleanup...
-        assert(false && "Implementation missing!");
+        Bool IsDungeonActive = false;
+
+        for (Int32 Index = 0; Index < Party->MemberCount; Index += 1) {
+            RTCharacterRef Member = RTWorldManagerGetCharacter(Runtime->WorldManager, Party->Members[Index].MemberID);
+            if (!Member) continue;
+            if (Member->Data.Info.Position.WorldID == WorldContext->WorldData->WorldIndex &&
+                Member->Data.Info.Position.DungeonIndex == WorldContext->DungeonIndex) {
+                IsDungeonActive = true;
+                break;
+            }
+        }
+
+        if (!IsDungeonActive) {
+            RTWorldContextDestroyParty(Runtime->WorldManager, Character->PartyID);
+        }
     }
 }
 

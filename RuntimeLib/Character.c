@@ -407,6 +407,20 @@ Void RTCharacterInitializeAttributes(
 	if (AxpFieldRate) {
 		Character->AxpFieldRate = AxpFieldRate->Rate;
 	}
+
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_ATTACK] = 5000;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MAGIC_ATTACK] = 5000;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_ATTACK_RATE] = 5000;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_CRITICAL_RATE] = 50;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_CRITICAL_DAMAGE] = 500;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_SWORD_SKILL_AMP] = 500;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MAGIC_SKILL_AMP] = 500;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_ACCURACY] = 500;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_PENETRATION] = 500;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_ADD_DAMAGE] = 500;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MIN_DAMAGE] = 5;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_DEFENSE] = 5000;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_DEFENSE_RATE] = 5000;
 }
 
 Bool RTCharacterIsAlive(
