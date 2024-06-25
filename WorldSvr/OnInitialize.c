@@ -404,19 +404,6 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         );
     }
 
-    Response->HonorMedalExp = 384000;
-    Response->HonorMedalCount = 40;
-    for (Int32 Index = 0; Index < 40; Index++) {
-        RTHonorMedalSlotRef Slot = PacketBufferAppendStruct(Connection->PacketBuffer, struct _RTHonorMedalSlot);
-        Slot->SlotIndex = Index;
-        Slot->IsUnlocked = true;
-        
-        if (Index < 4) {
-            Slot->CategoryIndex = 1;
-            Slot->ForceEffectIndex = 1;
-        }
-    }
-
     // TODO: Add warp services
     Response->WarpMask = Packet->CharacterData.Info.Profile.WarpMask;
     Response->MapsMask = Packet->CharacterData.Info.Profile.MapsMask;
@@ -539,11 +526,6 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
             sizeof(struct _RTMythMasterySlot) * Packet->CharacterData.MythMasteryInfo.Count
         );
     }
-
-    struct _RTMythMasterySlot* Slot = PacketBufferAppendStruct(Connection->PacketBuffer, struct _RTMythMasterySlot);
-    Slot->Data[0] = 1;
-    Slot->Data[4] = 1;
-    Slot->Data[8] = 1;
 
     Response->NewbieSupportTimestamp = Packet->CharacterData.NewbieSupportInfo.Timestamp;
     Response->NewbieSupportSlotCount = Packet->CharacterData.NewbieSupportInfo.Count;
