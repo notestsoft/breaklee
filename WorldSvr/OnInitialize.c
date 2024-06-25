@@ -518,7 +518,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->MythStigmaGrade = Packet->CharacterData.MythMasteryInfo.StigmaGrade;
     Response->MythStigmaExp = Packet->CharacterData.MythMasteryInfo.StigmaExp;
     Response->MythUnlockedPageCount = Packet->CharacterData.MythMasteryInfo.UnlockedPageCount;
-    Response->MythPropertySlotCount = 1; // Packet->CharacterData.MythMasteryInfo.Count;
+    Response->MythPropertySlotCount = Packet->CharacterData.MythMasteryInfo.Count;
     if (Packet->CharacterData.MythMasteryInfo.Count > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
