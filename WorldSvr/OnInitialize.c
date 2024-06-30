@@ -97,6 +97,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         memset(Packet->CharacterData.QuestFlagInfo.FinishedQuests, 0xFF, RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT);
     }
 
+    /*
     Int32 SlotIndex = Packet->CharacterData.SkillSlotInfo.Count;
     for (Index Index = 144; Index < 148; Index++) {
         RTSkillSlotRef GmSkill = &Packet->CharacterData.SkillSlotInfo.Skills[Packet->CharacterData.SkillSlotInfo.Count];
@@ -106,7 +107,6 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         Packet->CharacterData.SkillSlotInfo.Count += 1;
     }
 
-    /*
     RTWorldRef TargetWorld = RTRuntimeGetWorldByID(Runtime, Packet->CharacterData.CharacterInfo.Position.WorldID);
     if (TargetWorld->Type == RUNTIME_WORLD_TYPE_QUEST_DUNGEON) {
         RTDungeonDataRef QuestDungeonData = RTRuntimeGetDungeonDataByID(Runtime, TargetWorld->DungeonID);
