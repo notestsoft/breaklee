@@ -1293,6 +1293,15 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHonorMedalResetSelective) {
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemTransformationCard) {
+	if (!RTCharacterTransformUnlock(Runtime, Character, ItemData->TransformationCard.TransformIndex)) {
+		return RUNTIME_ITEM_USE_RESULT_FAILED;
+	}
+
+	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
+
+	Character->SyncMask.InventoryInfo = true;
+	Character->SyncMask.TransformInfo = true;
+
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 

@@ -270,6 +270,10 @@ struct _RTItemData {
 			Int32 PoolID;
 		} EpicConverter;
 
+		struct {
+			Int32 TransformIndex;
+		} TransformationCard;
+
 		// TODO: Add other item types like potion, pet, ...
 
 		struct { Int32 Options[22]; };
