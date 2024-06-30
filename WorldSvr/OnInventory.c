@@ -560,9 +560,8 @@ CLIENT_PROCEDURE_BINDING(SET_ITEM_PROTECTION) {
 
     RTItemSlotRef ItemSlot = NULL;
     if (Packet->StorageType == C2S_SET_ITEM_PROTECTION_STORAGE_TYPE_INVENTORY) {
-        RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
+        ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
         if (!ItemSlot) goto error;
-
     }
     else if (Packet->StorageType == C2S_SET_ITEM_PROTECTION_STORAGE_TYPE_EQUIPMENT) {
         ItemSlot = RTEquipmentGetSlot(Runtime, &Character->Data.EquipmentInfo, Packet->InventorySlotIndex);
