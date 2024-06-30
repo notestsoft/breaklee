@@ -536,3 +536,67 @@ error:
     Response->Count = 0;
     return SocketSend(Socket, Connection, Response);
 }
+
+CLIENT_PROCEDURE_BINDING(LOCK_EQUIPMENT) {
+    if (!Character) goto error;
+
+    if (!RTCharacterEquipmentSetLocked(Runtime, Character, Packet->EquipmentSlotIndex, Packet->IsLocked)) goto error;
+
+    S2C_DATA_LOCK_EQUIPMENT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOCK_EQUIPMENT);
+    Response->Success = 1;
+    SocketSend(Socket, Connection, Response);
+    return;
+
+error:
+    {
+        S2C_DATA_LOCK_EQUIPMENT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOCK_EQUIPMENT);
+        Response->Success = 0;
+        SocketSend(Socket, Connection, Response);
+    }
+}
+
+CLIENT_PROCEDURE_BINDING(SET_ITEM_PROTECTION) {
+    if (!Character) goto error;
+
+    RTItemSlotRef ItemSlot = NULL;
+    if (Packet->StorageType == C2S_SET_ITEM_PROTECTION_STORAGE_TYPE_INVENTORY) {
+        RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
+        if (!ItemSlot) goto error;
+
+    }
+    else if (Packet->StorageType == C2S_SET_ITEM_PROTECTION_STORAGE_TYPE_EQUIPMENT) {
+        ItemSlot = RTEquipmentGetSlot(Runtime, &Character->Data.EquipmentInfo, Packet->InventorySlotIndex);
+        if (!ItemSlot) goto error;
+    }
+    else {
+        goto error;
+    }
+
+    RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
+    if (!ItemData) goto error;
+
+    if (!RTItemTypeIsProtectable(ItemData->ItemType)) goto error;
+
+    ItemSlot->Item.IsProtected = Packet->IsLocked;
+
+    if (Packet->StorageType == C2S_SET_ITEM_PROTECTION_STORAGE_TYPE_INVENTORY) {
+        Character->SyncMask.InventoryInfo = true;
+
+    }
+    else if (Packet->StorageType == C2S_SET_ITEM_PROTECTION_STORAGE_TYPE_EQUIPMENT) {
+        Character->SyncMask.EquipmentInfo = true;
+    }
+
+    S2C_DATA_SET_ITEM_PROTECTION* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SET_ITEM_PROTECTION);
+    Response->Success = 1;
+    SocketSend(Socket, Connection, Response);
+    return;
+
+error:
+    {
+        S2C_DATA_SET_ITEM_PROTECTION* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SET_ITEM_PROTECTION);
+        Response->Success = 0;
+        SocketSend(Socket, Connection, Response);
+    }
+}
+

@@ -297,6 +297,7 @@ struct _RTItem {
 		struct { UInt64 _5 : 13; UInt64 UpgradeLevel : 5; };
         struct { UInt64 _6 : 32; UInt64 ExtremeLevel : 4; UInt64 DivineLevel : 4; };
 		struct { UInt32 PartyQuestItemID : 15; UInt32 PartyQuestItemStackable : 1; };
+		struct { UInt64 _8 : 45; UInt64 IsProtected : 1; };
         struct { UInt64 Serial; };
     };
 };
@@ -423,6 +424,10 @@ struct _RTItemSlotAppearance {
     UInt32 ItemID;
     UInt32 Duration;
 };
+
+Bool RTItemTypeIsProtectable(
+	UInt32 ItemType
+);
 
 RTItemHonorMedalSealData RTItemHonorMedalSealDecode(
 	RTRuntimeRef Runtime,

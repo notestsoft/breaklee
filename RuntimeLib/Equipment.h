@@ -77,11 +77,6 @@ struct _RTCharacterEquipmentLockInfo {
 
 #pragma pack(pop)
 
-UInt32 RTEquipmentSlotIndexGetItemType(
-    UInt32 BattleStyleIndex,
-    UInt32 SlotIndex
-);
-
 Bool RTEquipmentIsSlotEmpty(
     RTRuntimeRef Runtime,
     RTCharacterEquipmentInfoRef Equipment,
@@ -121,6 +116,19 @@ Int32 RTCharacterFindNextEquipmentSlotIndex(
     RTCharacterRef Character,
     Int32 NextSlotIndex,
     UInt32 ItemType
+);
+
+Bool RTCharacterEquipmentIsLocked(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 SlotIndex
+);
+
+Bool RTCharacterEquipmentSetLocked(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 SlotIndex,
+    Bool IsLocked
 );
 
 EXTERN_C_END
