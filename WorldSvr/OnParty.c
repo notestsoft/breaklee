@@ -274,6 +274,8 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INFO) {
 IPC_PROCEDURE_BINDING(P2W, CLIENT_CONNECT) {
 	if (!ClientConnection) return;
 
+	Character->PartyID = Packet->PartyID;
+
 	S2C_DATA_NFY_PARTY_INIT* Notification = PacketBufferInit(ClientConnection->PacketBuffer, S2C, NFY_PARTY_INIT);
 	Notification->Result = Packet->Result;
 	Notification->DungeonIndex = Packet->DungeonIndex;
@@ -372,4 +374,65 @@ IPC_PROCEDURE_BINDING(P2W, CREATE_PARTY) {
 
 IPC_PROCEDURE_BINDING(P2W, DESTROY_PARTY) {
 	RTPartyManagerDestroyPartyRemote(Runtime->PartyManager, &Packet->Party);
+}
+
+Void SendPartyData(
+	ServerContextRef Context,
+	SocketRef Socket,
+	RTPartyRef Party
+) {
+	S2C_DATA_NFY_PARTY_UPDATE* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_PARTY_UPDATE);
+	Notification->MemberCount = Party->MemberCount;
+
+	for (Int32 MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {
+		RTPartySlotRef MemberSlot = &Party->Members[MemberIndex];
+
+		RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Party->Members[MemberIndex].Info.CharacterIndex);
+		if (Character) {
+			UInt8 BattleStyleIndex = Character->Data.Info.Style.BattleStyle | (Character->Data.Info.Style.ExtendedBattleStyle << 3);
+
+			MemberSlot->Info.CharacterIndex = Character->CharacterIndex;
+			MemberSlot->Info.Level = Character->Data.Info.Basic.Level;
+			MemberSlot->Info.BattleStyleIndex = BattleStyleIndex;
+			MemberSlot->Info.OverlordLevel = Character->Data.Info.Overlord.Level;
+			MemberSlot->Info.MythRebirth = Character->Data.MythMasteryInfo.Rebirth;
+			MemberSlot->Info.MythHolyPower = Character->Data.MythMasteryInfo.HolyPower;
+			MemberSlot->Info.MythLevel = Character->Data.MythMasteryInfo.Level;
+			MemberSlot->Info.ForceWingGrade = Character->Data.ForceWingInfo.Grade;
+			MemberSlot->Info.ForceWingLevel = Character->Data.ForceWingInfo.Level;
+			CStringCopySafe(MemberSlot->Info.Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Character->Name);
+		}
+
+		S2C_DATA_PARTY_UPDATE_MEMBER* Member = &Notification->Members[MemberIndex];
+		Member->Info.CharacterIndex = (UInt32)MemberSlot->Info.CharacterIndex;
+		Member->Info.Level = MemberSlot->Info.Level;
+		Member->Info.BattleStyleIndex = MemberSlot->Info.BattleStyleIndex;
+		Member->Info.OverlordLevel = Party->Members[MemberIndex].Info.OverlordLevel;
+		Member->Info.MythRebirth = Party->Members[MemberIndex].Info.MythRebirth;
+		Member->Info.MythHolyPower = Party->Members[MemberIndex].Info.MythHolyPower;
+		Member->Info.MythLevel = Party->Members[MemberIndex].Info.MythLevel;
+		Member->Info.ForceWingGrade = Party->Members[MemberIndex].Info.ForceWingGrade;
+		Member->Info.ForceWingLevel = Party->Members[MemberIndex].Info.ForceWingLevel;
+		Member->Info.NameLength = strlen(Party->Members[MemberIndex].Info.Name) + 1;
+		CStringCopySafe(Member->Info.Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Party->Members[MemberIndex].Info.Name);
+
+		if (Character) {
+			Member->Data.MaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
+			Member->Data.CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+			Member->Data.MaxMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX];
+			Member->Data.CurrentMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+			Member->Data.PositionX = Character->Movement.PositionCurrent.X;
+			Member->Data.PositionY = Character->Movement.PositionCurrent.Y;
+			Member->Data.MaxSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX];
+			Member->Data.CurrentSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+		}
+
+		// TODO: Resolve all unknown fields...
+	}
+
+	for (Int32 Index = 0; Index < Party->MemberCount; Index += 1) {
+		ClientContextRef Client = ServerGetClientByIndex(Context, Party->Members[Index].Info.CharacterIndex, NULL);
+		if (!Client) continue;
+		SocketSend(Context->ClientSocket, Client->Connection, Notification);
+	}
 }

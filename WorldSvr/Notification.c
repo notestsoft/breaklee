@@ -25,6 +25,11 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTERS_SPAWN) {
         "CharactersSpawn -> Character(%lld)",
         Character->CharacterIndex
     );
+
+    if (!RTEntityIsNull(Character->PartyID)) {
+        RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
+        SendPartyData(Context, Context->ClientSocket, Party);
+    }
 }
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_DESPAWN) {
@@ -32,6 +37,11 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTER_DESPAWN) {
     Trace("CharactersDespawn -> Character(%lld)",
         Character->CharacterIndex
     );
+
+    if (!RTEntityIsNull(Character->PartyID)) {
+        RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
+        SendPartyData(Context, Context->ClientSocket, Party);
+    }
 }
 
 NOTIFICATION_PROCEDURE_BINDING(MOBS_SPAWN) {
@@ -127,23 +137,33 @@ NOTIFICATION_PROCEDURE_BINDING(ATTACK_TO_MOB) {
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_BATTLE_RANK_UP) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("CharacterBattleRankUp -> Character(%d)",
+    Trace("CharacterBattleRankUp -> Character(%lld)",
         Character->CharacterIndex
     );
 }
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_DATA) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("CharacterData -> Character(%d)",
+    Trace("CharacterData -> Character(%lld)",
         Character->CharacterIndex
     );
+
+    if (!RTEntityIsNull(Character->PartyID)) {
+        RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
+        SendPartyData(Context, Context->ClientSocket, Party);
+    }
 }
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_EVENT) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("CharacterEvent -> Character(%d)",
+    Trace("CharacterEvent -> Character(%lld)",
         Character->CharacterIndex
     );
+
+    if (!RTEntityIsNull(Character->PartyID)) {
+        RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
+        SendPartyData(Context, Context->ClientSocket, Party);
+    }
 }
 
 NOTIFICATION_PROCEDURE_BINDING(DUNGEON_PATTERN_PART_COMPLETED) {
@@ -168,6 +188,11 @@ NOTIFICATION_PROCEDURE_BINDING(MOB_ATTACK_AOE) {
 
 NOTIFICATION_PROCEDURE_BINDING(CHANGE_GENDER) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+
+    if (!RTEntityIsNull(Character->PartyID)) {
+        RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
+        SendPartyData(Context, Context->ClientSocket, Party);
+    }
 }
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_SKILL_MASTERY_UPDATE) {
@@ -175,6 +200,11 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTER_SKILL_MASTERY_UPDATE) {
     Trace("CharacterSkillMasteryUpdate -> Character(%lld)",
         Character->CharacterIndex
     );
+
+    if (!RTEntityIsNull(Character->PartyID)) {
+        RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
+        SendPartyData(Context, Context->ClientSocket, Party);
+    }
 }
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_FORCE_WING_GRADE) {
@@ -182,6 +212,11 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTER_FORCE_WING_GRADE) {
     Trace("CharacterForceWingGrade -> Character(%lld)",
         Character->CharacterIndex
     );
+
+    if (!RTEntityIsNull(Character->PartyID)) {
+        RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
+        SendPartyData(Context, Context->ClientSocket, Party);
+    }
 }
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_FORCE_WING_UPDATE) {
@@ -189,6 +224,11 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTER_FORCE_WING_UPDATE) {
     Trace("CharacterForceWingUpdate -> Character(%lld)",
         Character->CharacterIndex
     );
+
+    if (!RTEntityIsNull(Character->PartyID)) {
+        RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
+        SendPartyData(Context, Context->ClientSocket, Party);
+    }
 }
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_FORCE_WING_EXP) {
@@ -196,25 +236,11 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTER_FORCE_WING_EXP) {
     Trace("CharacterForceWingExp -> Character(%lld)",
         Character->CharacterIndex
     );
-}
 
-Void BroadcastPartyData(
-    ServerContextRef Context,
-    RTCharacterRef Character
-) {
-    IPC_W2P_DATA_PARTY_DATA* Request = IPCPacketBufferInit(Context->IPCSocket->PacketBuffer, W2P, PARTY_DATA);
-    Request->Header.Source = Context->IPCSocket->NodeID;
-    Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
-    Request->Header.Target.Type = IPC_TYPE_PARTY;
-    Request->MemberInfo.CharacterIndex = Character->CharacterIndex;
-    Request->MemberInfo.Level = Character->Data.Info.Basic.Level;
-    Request->MemberInfo.OverlordLevel = Character->Data.Info.Overlord.Level;
-    Request->MemberInfo.MythRebirth = 0;
-    Request->MemberInfo.MythHolyPower = 0;
-    Request->MemberInfo.MythLevel = 0;
-    Request->MemberInfo.ForceWingGrade = Character->Data.ForceWingInfo.Grade;
-    Request->MemberInfo.ForceWingLevel = Character->Data.ForceWingInfo.Level;
-    IPCSocketUnicast(Context->IPCSocket, Request);
+    if (!RTEntityIsNull(Character->PartyID)) {
+        RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
+        SendPartyData(Context, Context->ClientSocket, Party);
+    }
 }
 
 Void BroadcastMessage(

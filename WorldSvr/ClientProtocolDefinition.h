@@ -290,7 +290,7 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     UInt16 QuickSlotCount;
     UInt16 MercenaryCount;
     UInt16 ItemPeriodCount;
-    UInt16 UnknownCount2;
+    UInt16 APTotal;
     UInt16 AP;
     UInt32 Axp;
     UInt8 EssenceAbilityCount;
@@ -335,8 +335,8 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     Int32 CommunityAchievementScore;
     Int32 SharedAchievementScore;
     Int32 SpecialAchievementScore;
-    Int32 ReservedAchievementScore1;
-    Int32 ReservedAchievementScore2;
+    Int32 GeneralMemoirAchievementScore;
+    Int32 SharedMemoirAchievementScore;
     UInt16 DisplayTitle;
     UInt16 EventTitle;
     UInt16 GuildTitle;
@@ -417,14 +417,9 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     UInt8 Unknown1111;
     S2C_DATA_SECRET_SHOP_INDEX SecretShops[MAX_SECRET_SHOP_COUNT];
     UInt8 Unknown44[9];
-    UInt32 TranscendencePoint;
-    UInt32 TranscendenceCount;
-    UInt8 Unknown45;
-    UInt32 Unknown27A[152];
-    UInt16 Unknown28A;
-    UInt16 Unknown28B;
-    struct { UInt32 Unknown1[4]; Int32 Unknown2[2]; } UnknownSlot[100];
-    Int32 Unknown29;
+    Int32 TranscendencePoint;
+    Int32 TranscendenceCount;
+    struct _RTCharacterResearchSupportInfo ResearchSupportInfo;
     UInt8 StellarSlotCount;
     Int32 MythRebirth;
     Int32 MythHolyPower;
@@ -3078,12 +3073,26 @@ CLIENT_PROTOCOL_STRUCT(C2S_DATA_MERGE_INVENTORY_SLOT_RESULT,
     UInt32 StackSize;
 )
 
+CLIENT_PROTOCOL(C2S, SPLIT_INVENTORY, DEFAULT, 2500,
+    UInt8 Unknown1;
+    UInt16 InventorySlotIndex;
+    UInt16 SplitInventorySlotCount;
+    UInt16 StackSize;
+    UInt16 Unknown2;
+    UInt16 PayloadLength;
+    UInt16 SplitInventorySlotIndex[0];
+)
+
+CLIENT_PROTOCOL(S2C, SPLIT_INVENTORY, DEFAULT, 2500,
+    UInt8 Result;
+)
+
 CLIENT_PROTOCOL(C2S, MERGE_INVENTORY, DEFAULT, 2501,
     UInt16 MergeInventorySlotCount;
     UInt16 ResultInventorySlotCount;
-    UInt16 Unknown1;
-    UInt16 MergeInventorySlotIndex[0]; // MergeSlotCount
-    // C2S_DATA_MERGE_INVENTORY_SLOT_RESULT ResultInventorySlots[ResultInventorySlotCount];
+    UInt16 PayloadLength;
+    UInt16 MergeInventorySlotIndex[0]; // MergeInventorySlotCount
+    // C2S_DATA_MERGE_INVENTORY_SLOT_RESULT ResultInventorySlotIndex[ResultInventorySlotCount];
 )
 
 CLIENT_PROTOCOL(S2C, MERGE_INVENTORY, DEFAULT, 2501,

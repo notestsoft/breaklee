@@ -34,6 +34,7 @@
 #include "Quickslot.h"
 #include "Recovery.h"
 #include "RequestCraft.h"
+#include "ResearchSupport.h"
 #include "Skill.h"
 #include "SkillSlot.h"
 #include "StellarMastery.h"

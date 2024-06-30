@@ -2,6 +2,7 @@
 
 #include "Base.h"
 #include "Constants.h"
+#include "Entity.h"
 
 EXTERN_C_BEGIN
 

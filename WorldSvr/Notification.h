@@ -36,4 +36,10 @@ Void SendPremiumServiceList(
     SocketConnectionRef Connection
 );
 
+Void SendPartyData(
+    ServerContextRef Context,
+    SocketRef Socket,
+    RTPartyRef Party
+);
+
 EXTERN_C_END

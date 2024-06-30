@@ -34,7 +34,6 @@ struct _RTCharacterCostumeInfo {
     struct _RTAppliedCostumeSlot AppliedSlots[RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT];
 };
 
-
 #pragma pack(pop)
 
 EXTERN_C_END

@@ -124,6 +124,8 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     }
     */
 
+    Packet->CharacterData.Info.Profile.Nation = 3;
+
     S2C_DATA_INITIALIZE* Response = PacketBufferInitExtended(ClientConnection->PacketBuffer, S2C, INITIALIZE);
     // TODO: Populate correct data!!!
 
@@ -501,6 +503,8 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         );
     }
 
+    memcpy(&Response->ResearchSupportInfo, &Packet->CharacterData.ResearchSupportInfo, sizeof(struct _RTCharacterResearchSupportInfo));
+
     Response->StellarSlotCount = Packet->CharacterData.StellarMasteryInfo.Count;
     if (Packet->CharacterData.StellarMasteryInfo.Count > 0) {
         PacketBufferAppendCopy(
@@ -593,6 +597,8 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->CurrentBP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT];
     Response->CurrentRage = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT];
 
+    Response->MapsMask = 0xFFFFFFFF;
+    Response->WarpMask = 0xFFFFFFFF;
     /*
     Response->Unknown7[0] = 113;
     Response->Unknown7[1] = 201;

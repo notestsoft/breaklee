@@ -241,6 +241,30 @@ UInt64 RTItemForceOptionEncode(
 	return Options.Serial;
 }
 
+UInt64 RTItemDataGetStackSizeMask(
+	RTItemDataRef ItemData
+) {
+	if (ItemData->ItemType == RUNTIME_ITEM_TYPE_QUEST_S ||
+		ItemData->ItemType == RUNTIME_ITEM_TYPE_SPECIAL_POTION ||
+		ItemData->ItemType == RUNTIME_ITEM_TYPE_FORCE_CORE_ORDER_SHEET) {
+		return RUNTIME_QUEST_ITEM_COUNT_MASK;
+	}
+
+	if (ItemData->ItemType == RUNTIME_ITEM_TYPE_EVENT_S ||
+		ItemData->ItemType == RUNTIME_ITEM_TYPE_FONT_S) {
+		// TODO: Check how the item options memory is layouted...
+		return 0;
+	}
+
+	if (ItemData->ItemType == RUNTIME_ITEM_TYPE_BOSS_ARENA_TOKEN ||
+		ItemData->ItemType == RUNTIME_ITEM_TYPE_POTION_STACKABLE ||
+		ItemData->ItemType == RUNTIME_ITEM_TYPE_TIME_REDUCER) {
+		return RUNTIME_SHORT_ITEM_COUNT_MASK;
+	}
+
+	return UINT64_MAX;
+}
+
 Int32 RTItemUseInternal(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,

@@ -22,8 +22,8 @@ CONFIG_PARAMETER(UInt32, MaxWorldCount, "MasterSvr.MaxWorldCount", 32)
 CONFIG_END(MasterSvr)
 
 CONFIG_BEGIN(NetLib)
-CONFIG_PARAMETER(Index, ReadBufferSize, "NetLib.ReadBufferSize", 0x1FFFF)
-CONFIG_PARAMETER(Index, WriteBufferSize, "NetLib.WriteBufferSize", 0x1FFFF)
+CONFIG_PARAMETER(Index, ReadBufferSize, "NetLib.ReadBufferSize", 0x7FFFF)
+CONFIG_PARAMETER(Index, WriteBufferSize, "NetLib.WriteBufferSize", 0x7FFFF)
 CONFIG_PARAMETER(Bool, LogPackets, "NetLib.LogPackets", 0)
 CONFIG_END(NetLib)
 

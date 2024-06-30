@@ -121,6 +121,7 @@ enum {
 #define RUNTIME_QUEST_ITEM_INDEX_MASK		0x000FFF80
 #define RUNTIME_QUEST_ITEM_INDEX_EXPONENT	7
 #define RUNTIME_QUEST_ITEM_COUNT_MASK		0x0000007F
+#define RUNTIME_SHORT_ITEM_COUNT_MASK	0x0000FFFF
 
 #define RTQuestItemOptions(Index, Count) ((Index << RUNTIME_QUEST_ITEM_INDEX_EXPONENT) | Count)
 #define RTQuestItemGetOptions(ItemOptions) ((ItemOptions & RUNTIME_QUEST_ITEM_INDEX_MASK) >> RUNTIME_QUEST_ITEM_INDEX_EXPONENT)
@@ -435,6 +436,10 @@ RTItemForceOptionData RTItemForceOptionDecode(
 
 UInt64 RTItemForceOptionEncode(
 	RTItemForceOptionData Data
+);
+
+UInt64 RTItemDataGetStackSizeMask(
+	RTItemDataRef ItemData
 );
 
 Int32 RTItemUseInternal(

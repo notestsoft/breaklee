@@ -142,6 +142,9 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 	memcpy(&Request->CharacterData.SkillSlotInfo, &CharacterTemplate->SkillSlots, sizeof(struct _RTCharacterSkillSlotInfo));
 	memcpy(&Request->CharacterData.QuickSlotInfo, &CharacterTemplate->QuickSlots, sizeof(struct _RTCharacterQuickSlotInfo));
 
+	Request->CharacterData.Info.Profile.MapsMask = 0xFFFFFFFF;
+	Request->CharacterData.Info.Profile.WarpMask = 0xFFFFFFFF;
+
 	if (Packet->CreateSpecialCharacter && Context->Config.WorldSvr.DebugCharacter) {
 		Request->CharacterData.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] = 999999999;
 		Request->CharacterData.Info.Currency[RUNTIME_CHARACTER_CURRENCY_GEM] = 999999;

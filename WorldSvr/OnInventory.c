@@ -308,25 +308,131 @@ error:
     return SocketDisconnect(Socket, Connection);
 }
 
+CLIENT_PROCEDURE_BINDING(SPLIT_INVENTORY) {
+    if (!Character) goto error;
+
+    Int32 PacketLength = sizeof(C2S_DATA_SPLIT_INVENTORY) + sizeof(UInt16) * Packet->SplitInventorySlotCount;
+    if (PacketLength != Packet->Length) goto error;
+    if (Packet->StackSize < 1) goto error;
+
+    RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
+    if (!ItemSlot) goto error;
+
+    RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
+    if (!ItemData) goto error;
+
+    if (ItemData->MaxStackSize < 1) goto error;
+
+    UInt64 ItemStackSizeMask = RTItemDataGetStackSizeMask(ItemData);
+    Int64 ItemStackSize = ItemSlot->ItemOptions & ItemStackSizeMask;
+    Int64 TotalStackSize = Packet->StackSize * Packet->SplitInventorySlotCount;
+    if (ItemStackSize < TotalStackSize) goto error;
+
+    for (Int32 Index = 0; Index < Packet->SplitInventorySlotCount; Index += 1) {
+        if (!RTInventoryIsSlotEmpty(Runtime, &Character->Data.InventoryInfo, Packet->SplitInventorySlotIndex[Index])) goto error;
+    }
+
+    struct _RTItemSlot TargetSlot = *ItemSlot;
+    TargetSlot.ItemOptions &= ~ItemStackSizeMask;
+    TargetSlot.ItemOptions |= Packet->StackSize & ItemStackSizeMask;
+
+    for (Int32 Index = 0; Index < Packet->SplitInventorySlotCount; Index += 1) {
+        TargetSlot.SlotIndex = Packet->SplitInventorySlotIndex[Index];
+        RTInventorySetSlot(Runtime, &Character->Data.InventoryInfo, &TargetSlot);
+    }
+
+    ItemStackSize -= TotalStackSize;
+    if (ItemStackSize <= 0) {
+        RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
+    }
+    else {
+        ItemSlot->ItemOptions &= ~ItemStackSizeMask;
+        ItemSlot->ItemOptions |= ItemStackSize & ItemStackSizeMask;
+    }
+
+    Character->SyncMask.InventoryInfo = true;
+
+    S2C_DATA_SPLIT_INVENTORY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SPLIT_INVENTORY);
+    Response->Result = 0;
+    SocketSend(Socket, Connection, Response);
+    return;
+
+error:
+    {
+        S2C_DATA_SPLIT_INVENTORY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SPLIT_INVENTORY);
+        Response->Result = 1;
+        SocketSend(Socket, Connection, Response);
+    }
+}
+
 CLIENT_PROCEDURE_BINDING(MERGE_INVENTORY) {
+    if (!Character) goto error;
 
-    /*
-    CLIENT_PROTOCOL_STRUCT(C2S_DATA_MERGE_INVENTORY_SLOT_RESULT,
-        UInt16 SlotIndex;
-        UInt32 StackSize;
-    )
+    Int32 PacketLength = sizeof(C2S_DATA_MERGE_INVENTORY) + sizeof(UInt16) * Packet->MergeInventorySlotCount + sizeof(C2S_DATA_MERGE_INVENTORY_SLOT_RESULT) * Packet->ResultInventorySlotCount;
+    if (PacketLength != Packet->Length) goto error;
+    if (Packet->MergeInventorySlotCount < 1) goto error;
 
-        CLIENT_PROTOCOL(C2S, MERGE_INVENTORY, DEFAULT, 2501,
-            UInt16 MergeInventorySlotCount;
-            UInt16 ResultInventorySlotCount;
-            UInt16 Unknown1;
-            UInt16 MergeInventorySlotIndex[0]; // MergeSlotCount
-            // C2S_DATA_MERGE_INVENTORY_SLOT_RESULT ResultInventorySlots[ResultInventorySlotCount];
-        )
+    RTItemSlotRef FirstItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->MergeInventorySlotIndex[0]);
+    if (!FirstItemSlot) goto error;
 
-    RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, SourceSlot->Item.ID);
-    if (!ItemData || ItemData->MaxStackSize <= 1) return false;
-    */
+    RTItemDataRef FirstItemData = RTRuntimeGetItemDataByIndex(Runtime, FirstItemSlot->Item.ID);
+    if (!FirstItemData) goto error;
+
+    if (FirstItemData->MaxStackSize < 1) goto error;
+
+    UInt64 ItemStackSizeMask = RTItemDataGetStackSizeMask(FirstItemData);
+    Int64 TotalStackSize = 0;
+
+    for (Int32 Index = 0; Index < Packet->MergeInventorySlotCount; Index += 1) {
+        RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->MergeInventorySlotIndex[Index]);
+        if (ItemSlot->Item.Serial != FirstItemSlot->Item.Serial) goto error;
+        if (ItemSlot->ItemDuration.Serial != FirstItemSlot->ItemDuration.Serial) goto error;
+        if ((ItemSlot->ItemOptions & ~ItemStackSizeMask) != (FirstItemSlot->ItemOptions & ~ItemStackSizeMask)) goto error;
+
+        TotalStackSize += ItemSlot->ItemOptions & ItemStackSizeMask;
+    }
+
+    C2S_DATA_MERGE_INVENTORY_SLOT_RESULT* ResultInventorySlotIndex = &Packet->MergeInventorySlotIndex[Packet->MergeInventorySlotCount];
+
+    Int64 ResultStackSize = 0;
+    for (Int32 Index = 0; Index < Packet->ResultInventorySlotCount; Index += 1) {
+        C2S_DATA_MERGE_INVENTORY_SLOT_RESULT ResultInventorySlot = ResultInventorySlotIndex[Index];
+        if (ResultInventorySlot.StackSize > ItemStackSizeMask) goto error;
+
+        RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, ResultInventorySlot.SlotIndex);
+        if (ItemSlot && ItemSlot->Item.Serial != FirstItemSlot->Item.Serial) goto error;
+
+        ResultStackSize += ResultInventorySlot.StackSize;
+    }
+    if (ResultStackSize != TotalStackSize) goto error;
+
+    struct _RTItemSlot ItemSlot = *FirstItemSlot;
+
+    for (Int32 Index = 0; Index < Packet->MergeInventorySlotCount; Index += 1) {
+        RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, Packet->MergeInventorySlotIndex[Index]);
+    }
+
+    for (Int32 Index = 0; Index < Packet->ResultInventorySlotCount; Index += 1) {
+        C2S_DATA_MERGE_INVENTORY_SLOT_RESULT ResultInventorySlot = ResultInventorySlotIndex[Index];
+        ItemSlot.ItemOptions &= ~ItemStackSizeMask;
+        ItemSlot.ItemOptions |= ResultInventorySlot.StackSize & ItemStackSizeMask;
+        ItemSlot.SlotIndex = ResultInventorySlot.SlotIndex;
+        RTInventorySetSlot(Runtime, &Character->Data.InventoryInfo, &ItemSlot);
+    }
+
+    Character->SyncMask.InventoryInfo = true;
+
+    S2C_DATA_MERGE_INVENTORY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, MERGE_INVENTORY);
+    Response->Result = 0;
+    SocketSend(Socket, Connection, Response);
+    return;
+
+error:
+    {
+        S2C_DATA_MERGE_INVENTORY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, MERGE_INVENTORY);
+        Response->Result = 1;
+        SocketSend(Socket, Connection, Response);
+    }
 }
 
 CLIENT_PROCEDURE_BINDING(SORT_INVENTORY) {
@@ -372,13 +478,14 @@ CLIENT_PROCEDURE_BINDING(SORT_INVENTORY) {
 
     S2C_DATA_SORT_INVENTORY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SORT_INVENTORY);
     Response->Success = 1;
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error: 
     {
         S2C_DATA_SORT_INVENTORY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SORT_INVENTORY);
         Response->Success = 0;
-        return SocketSend(Socket, Connection, Response);
+        SocketSend(Socket, Connection, Response);
     }
 }
 

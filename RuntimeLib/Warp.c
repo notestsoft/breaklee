@@ -16,7 +16,7 @@ RTWarpPointResult RTRuntimeGetWarpPoint(
         { WarpPoint->X, WarpPoint->Y },
         { WarpPoint->Nation1X, WarpPoint->Nation1Y },
         { WarpPoint->Nation2X, WarpPoint->Nation2Y },
-        { WarpPoint->Nation3X, WarpPoint->Nation2Y },
+        { WarpPoint->Nation3X, WarpPoint->Nation3Y },
     };
     RTWarpPointResult Result = { 0 };
     Result.X = Positions[Character->Data.Info.Profile.Nation].X;
@@ -146,13 +146,15 @@ Bool RTRuntimeWarpCharacter(
         }
 
         case RUNTIME_NPC_ID_NAVIGATION: {
-            Int32 WarpNpcID = WarpPositionY;
+            Int32 WarpNpcID = WarpPositionX << 8 | WarpPositionY;
             RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, WarpNpcID);
             RTWorldContextRef TargetWorld = World;
             if (World->WorldData->WorldIndex != WarpPoint.WorldIndex) {
                 TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpPoint.WorldIndex);
                 assert(TargetWorld);
             }
+
+            if (RTWorldIsTileColliding(Runtime, TargetWorld, WarpPoint.X, WarpPoint.Y, Character->Movement.CollisionMask)) return false;
 
             RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 

@@ -28,6 +28,7 @@
 #include <RuntimeLib/Quickslot.h>
 #include <RuntimeLib/Recovery.h>
 #include <RuntimeLib/RequestCraft.h>
+#include <RuntimeLib/ResearchSupport.h>
 #include <RuntimeLib/Runtime.h>
 #include <RuntimeLib/Script.h>
 #include <RuntimeLib/Shop.h>
