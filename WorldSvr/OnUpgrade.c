@@ -675,6 +675,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_CHAOS_LEVEL) {
 			// TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
 			ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
 			*ItemSlot = ItemSlotCopy;
+			DestroyItem = false;
 		}
 	}
 
