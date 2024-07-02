@@ -72,12 +72,6 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 	*/
 
 	S2C_DATA_SKILL_TO_MOB* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SKILL_TO_MOB);
-	Response->SkillIndex = Packet->SkillIndex;
-	Response->CharacterHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-	Response->CharacterMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
-	Response->CharacterSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
-	Response->Unknown4 = -1;
-	Response->CharacterMaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
 
 	Int32 TargetCount = 0;
 	Int32 ReceivedSkillExp = 0;
@@ -157,6 +151,12 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 		TargetCount += 1;
 	}
 
+	Response->SkillIndex = Packet->SkillIndex;
+	Response->CharacterHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+	Response->CharacterMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+	Response->CharacterSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+	Response->Unknown4 = -1;
+	Response->CharacterMaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
 	Response->AccumulatedExp = Character->Data.Info.Basic.Exp;
 	Response->AccumulatedOxp = Character->Data.Info.Overlord.Exp;
 	Response->ReceivedSkillExp = ReceivedSkillExp;

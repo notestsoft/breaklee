@@ -75,12 +75,20 @@ RUNTIME_DATA_TYPE_BEGIN(CharacterRankUpCondition, "cabal.rankup.rankup_condition
 RUNTIME_DATA_TYPE_END(CharacterRankUpCondition)
 
 RUNTIME_DATA_TYPE_BEGIN(CharacterRankUpBonus, "cabal.rankup.rank_bonus", 16)
-	RUNTIME_DATA_PROPERTY(UInt32, ReadyRank, "readyrank")
-	RUNTIME_DATA_PROPERTY(UInt32, A, "anum")
-	RUNTIME_DATA_PROPERTY(UInt32, B, "bnum")
-	RUNTIME_DATA_PROPERTY(UInt32, Common, "commonnum")
-	RUNTIME_DATA_PROPERTY(UInt32, Special, "specialnum")
-	RUNTIME_DATA_PROPERTY(UInt32, Stat, "stat")
+	RUNTIME_DATA_PROPERTY(UInt32, Rank, "readyrank")
+	RUNTIME_DATA_PROPERTY(UInt32, AttackSlotCount, "anum")
+	RUNTIME_DATA_PROPERTY(UInt32, SupportSlotCount, "bnum")
+	RUNTIME_DATA_PROPERTY(UInt32, PassiveSlotCount, "commonnum")
+	RUNTIME_DATA_PROPERTY(UInt32, SpecialSlotCount, "specialnum")
+	RUNTIME_DATA_PROPERTY(UInt32, StatPoints, "stat")
 RUNTIME_DATA_TYPE_END(CharacterRankUpBonus)
+RUNTIME_DATA_TYPE_INDEX(CharacterRankUpBonus, Int32, Rank)
+
+RUNTIME_DATA_TYPE_BEGIN(CharacterRankUpLimit, "cabal.rank_limit", 10)
+	RUNTIME_DATA_PROPERTY(UInt32, Rank, "rank")
+	RUNTIME_DATA_PROPERTY(UInt32, Level, "level")
+	RUNTIME_DATA_PROPERTY(UInt32, BattleRank, "bs_lv")
+RUNTIME_DATA_TYPE_END(CharacterRankUpLimit)
+RUNTIME_DATA_TYPE_INDEX(CharacterRankUpLimit, Int32, Rank)
 
 RUNTIME_DATA_FILE_END

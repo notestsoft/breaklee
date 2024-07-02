@@ -41,12 +41,12 @@ CLIENT_PROCEDURE_BINDING(GET_EVENT_LIST) {
 				S2C_DATA_EVENT_SHOP_ITEM* ShopItem = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_EVENT_SHOP_ITEM);
 				ShopItem->ShopSlotIndex = ItemData->SlotIndex;
 				ShopItem->ItemID.Serial = ItemData->ItemID;
-				ShopItem->ItemOptions = ItemData->ItemOptions;
 				ShopItem->CurrencyPrice = ItemData->ItemPrice;
+
+				RTItemOptions Options = { .Serial = ItemData->ItemOptions };
 
 				if (ItemData->ItemOptionForceCount > 0) {
 					RTDataItemOptionForceRef ForceData = &ItemData->ItemOptionForceList[0];
-					RTItemOptions Options = { 0 };
 					Options.Equipment.SlotCount = ForceData->SlotCount;
 
 					for (Int32 SlotIndex = 0; SlotIndex < ForceData->ItemOptionForceSlotCount; SlotIndex += 1) {
@@ -66,9 +66,20 @@ CLIENT_PROCEDURE_BINDING(GET_EVENT_LIST) {
 							SlotData->Type == RUNTIME_ITEM_OPTION_TYPE_MASTER
 						);
 					}
-
-					ShopItem->ItemOptions = Options.Serial;
 				}
+
+				if (ItemData->ItemOptionLevelCount > 0) {
+					RTDataItemOptionLevelRef LevelData = &ItemData->ItemOptionLevelList[0];
+					ShopItem->ItemID.UpgradeLevel = LevelData->Level;
+				}
+
+				for (Int32 Index = 0; Index < ItemData->ItemOptionArtifactSlotCount; Index += 1) {
+					RTDataItemOptionArtifactSlotRef ArtifactSlotData = &ItemData->ItemOptionArtifactSlotList[Index];
+					Options.Artifact.Slots[Index].ArtifactForceLevel = ArtifactSlotData->ForceLevel;
+					Options.Artifact.Slots[Index].ArtifactForceIndex = ArtifactSlotData->ForceIndex;
+				}
+
+				ShopItem->ItemOptions = Options.Serial;
 
 				/*
 				ShopItem->ItemPriceCount = 10;

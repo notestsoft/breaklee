@@ -499,7 +499,10 @@ Void RTRuntimeInitForceEffectFormulas(
     
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_RESIST_ABSOLUTE_DAMAGE, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_RESIST_ABSOLUTE_DAMAGE);
-    
+
+    Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_IGNORE_RESIST_CRITICAL_DAMAGE, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
+    RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_IGNORE_RESIST_CRITICAL_DAMAGE);
+
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_INGORE_RESIST_SKILL_AMP, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_IGNORE_RESIST_SKILL_AMP);
     
@@ -579,6 +582,11 @@ Void RTRuntimeInitForceEffectFormulas(
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_ATTACK);
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_MAGIC_ATTACK);
 
+    Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_PVE_ALL_ATTACK_UP, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
+    Formula->ForceEffectTargetType = RUNTIME_FORCE_EFFECT_TARGET_TYPE_PVE;
+    RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_ATTACK);
+    RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_MAGIC_ATTACK);
+
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_PVP_ATTACK_RATE_UP, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     Formula->ForceEffectTargetType = RUNTIME_FORCE_EFFECT_TARGET_TYPE_PVP;
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_ATTACK_RATE);
@@ -586,7 +594,7 @@ Void RTRuntimeInitForceEffectFormulas(
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_PVE_ATTACK_RATE_UP, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     Formula->ForceEffectTargetType = RUNTIME_FORCE_EFFECT_TARGET_TYPE_PVE;
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_ATTACK_RATE);
-    
+
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_PVE_CRITICAL_RATE, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     Formula->ForceEffectTargetType = RUNTIME_FORCE_EFFECT_TARGET_TYPE_PVE;
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_CRITICAL_RATE);
@@ -614,7 +622,11 @@ Void RTRuntimeInitForceEffectFormulas(
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_PVE_DEFENSE_RATE_UP, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     Formula->ForceEffectTargetType = RUNTIME_FORCE_EFFECT_TARGET_TYPE_PVE;
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_DEFENSE_RATE);
-    
+
+    Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_PVP_EVASION, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
+    Formula->ForceEffectTargetType = RUNTIME_FORCE_EFFECT_TARGET_TYPE_PVP;
+    RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_EVASION);
+
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_PVE_EVASION, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     Formula->ForceEffectTargetType = RUNTIME_FORCE_EFFECT_TARGET_TYPE_PVE;
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_EVASION);
@@ -626,7 +638,7 @@ Void RTRuntimeInitForceEffectFormulas(
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_PVP_IGNORE_PENETRATION, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     Formula->ForceEffectTargetType = RUNTIME_FORCE_EFFECT_TARGET_TYPE_PVP;
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_IGNORE_PENETRATION);
-    
+
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_PVP_FINAL_DAMAGE_DECREASED, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     Formula->ForceEffectTargetType = RUNTIME_FORCE_EFFECT_TARGET_TYPE_PVP;
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_FINAL_DAMAGE_DECREASED);

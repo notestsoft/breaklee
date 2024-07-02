@@ -107,6 +107,10 @@ ATTRIBUTE_NORETURN void __unreachable(const char* message, const char* file, siz
 #define ABS(__X__) (((__X__) < 0) ? -(__X__) : (__X__))
 #endif
 
+#ifndef SIGN
+#define SIGN(__X__) ((__X__ > 0) - (__X__ < 0))
+#endif
+
 #ifndef CONCAT
 #define CONCAT(__LHS__, __RHS__) __LHS__##__RHS__
 #endif

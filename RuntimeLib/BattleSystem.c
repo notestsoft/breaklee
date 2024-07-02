@@ -157,6 +157,21 @@ Void CalculateFinalBattleAttributes(
 	Result->AccumulatedRate = 100 + Result->MissRate + Result->BlockRate;
 }
 
+Int64 RTCalculateBaseHP(
+	Int64 SkillRank,
+	Int64 BaseHP,
+	Int64 DeltaHP,
+	Int64 Level,
+	Int64 BattleRank,
+	Int64 DeltaHP2
+) {
+	Int64 BaseValue = BaseHP - 15;
+	Int64 LevelBonus = (Level - 1) * DeltaHP / 10;
+	Int64 SkillRankBonus = (SkillRank + 1) * SkillRank * 15 / 2;
+	Int64 BattleRankBonus = ((BattleRank * 5 - 14) * BattleRank + 9) * DeltaHP2 / 500;
+	return BaseValue + LevelBonus + SkillRankBonus + (BattleRank > 7 ? BattleRankBonus : 0);
+}
+
 Void RTCalculateNormalAttackResult(
     RTRuntimeRef Runtime,
 	Int32 BattleSkillType,

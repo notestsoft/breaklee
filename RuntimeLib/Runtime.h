@@ -39,6 +39,7 @@ union _RTRuntimeEnvironment {
 typedef union _RTRuntimeEnvironment RTRuntimeEnvironment;
 
 struct _RTRuntimeConfig {
+    Bool IsSkillRankUpLimitEnabled;
     UInt64 ExpMultiplier;
     UInt64 SkillExpMultiplier;
 };

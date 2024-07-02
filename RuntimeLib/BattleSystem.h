@@ -260,6 +260,15 @@ struct _RTBattleResult {
 	Int64 SkillExp;
 };
 
+Int64 RTCalculateBaseHP(
+	Int64 SkillRank,
+	Int64 BaseHP,
+	Int64 DeltaHP,
+	Int64 Level,
+	Int64 BattleRank,
+	Int64 DeltaHP2
+);
+
 Void RTCalculateNormalAttackResult(
 	RTRuntimeRef Runtime,
 	Int32 BattleSkillType,

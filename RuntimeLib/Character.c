@@ -35,7 +35,6 @@ Void RTCharacterInitialize(
 Void RTCharacterInitializeBattleStyleLevel(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
-
 ) {
 	Int32 BattleStyleIndex = Character->Data.Info.Style.BattleStyle | (Character->Data.Info.Style.ExtendedBattleStyle << 3);
 
@@ -49,35 +48,18 @@ Void RTCharacterInitializeBattleStyleLevel(
 	RTDataRageLimitLevelRef RageLimitLevelData = RTRuntimeDataRageLimitLevelGet(RageLimitData, Character->Data.Info.Style.BattleRank);
 	assert(RageLimitLevelData);
 
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX] = LevelFormula->BaseHP + (10 * LevelFormula->DeltaHP2 * (Character->Data.Info.Basic.Level - 1) / 300);
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX] = RTCalculateBaseHP(
+		Character->Data.Info.Skill.Rank,
+		LevelFormula->BaseHP,
+		LevelFormula->DeltaHP,
+		Character->Data.Info.Basic.Level,
+		Character->Data.Info.Style.BattleRank,
+		LevelFormula->DeltaHP2
+	);
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX] = LevelFormula->BaseMP + LevelFormula->DeltaMP * (Character->Data.Info.Basic.Level - 1) / 10;
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX] = SpiritPointLimitData->Value;
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_MAX] = 0;
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX] = RageLimitLevelData->Value;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] = MIN(
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX],
-		Character->Data.Info.Resource.HP
-	);
-
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] = MIN(
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX],
-		Character->Data.Info.Resource.MP
-	);
-
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT] = MIN(
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX],
-		Character->Data.Info.Resource.SP
-	);
-
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT] = MIN(
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_MAX],
-		Character->Data.Info.Resource.BP
-	);
-
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] = MIN(
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX],
-		Character->Data.Info.Resource.Rage
-	);
 }
 
 Void RTCharacterInitializeBattleStyleClass(
@@ -162,13 +144,6 @@ Void RTCharacterInitializeBattleStyleStats(
 	}
 }
 
-Void RTCharacterInitializeSkillRank(
-    RTRuntimeRef Runtime,
-    RTCharacterRef Character
-) {
-    // TODO: Skill Rank Formula
-}
-
 Void RTCharacterInitializeEquipment(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
@@ -232,12 +207,13 @@ Void RTCharacterInitializeEssenceAbilities(
 		);
 		assert(AbilityLevel);
 
-		// TODO: Check if ForceCode is force effect or code..
-		/*
-		RUNTIME_DATA_PROPERTY(Int32, ForceCode, "forcecode")
-		RUNTIME_DATA_PROPERTY(Int32, ValueType, "valuetype")
-		AbilityLevel->ForceValue
-		*/
+		RTCharacterApplyForceEffect(
+			Runtime,
+			Character,
+			AbilityValue->ForceCode,
+			AbilityLevel->ForceValue,
+			AbilityValue->ValueType
+		);
 	}
 }
 
@@ -252,7 +228,29 @@ Void RTCharacterInitializeKarmaAbilities(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 ) {
-    // TODO: Karma ability values
+	for (Int32 Index = 0; Index < Character->Data.KarmaAbilityInfo.Count; Index += 1) {
+		RTEssenceAbilitySlotRef AbilitySlot = &Character->Data.KarmaAbilityInfo.Slots[Index];
+
+		RTDataKarmaAbilityValueRef AbilityValue = RTRuntimeDataKarmaAbilityValueGet(
+			Runtime->Context,
+			AbilitySlot->AbilityID
+		);
+		assert(AbilityValue);
+
+		RTDataKarmaAbilityValueLevelRef AbilityLevel = RTRuntimeDataKarmaAbilityValueLevelGet(
+			AbilityValue,
+			AbilitySlot->Level
+		);
+		assert(AbilityLevel);
+
+		RTCharacterApplyForceEffect(
+			Runtime,
+			Character,
+			AbilityValue->ForceCode,
+			AbilityLevel->ForceValue,
+			AbilityValue->ValueType
+		);
+	}
 }
 
 Void RTCharacterInitializeBlessingBeads(
@@ -381,7 +379,6 @@ Void RTCharacterInitializeAttributes(
     RTCharacterInitializeBattleStyleLevel(Runtime, Character);
 	RTCharacterInitializeBattleStyleClass(Runtime, Character);
     RTCharacterInitializeBattleStyleStats(Runtime, Character);
-    RTCharacterInitializeSkillRank(Runtime, Character);
 	RTCharacterInitializeEquipment(Runtime, Character);
     RTCharacterInitializeSkillStats(Runtime, Character);
     RTCharacterInitializeEssenceAbilities(Runtime, Character);
@@ -401,6 +398,31 @@ Void RTCharacterInitializeAttributes(
     RTCharacterInitializeStellarMastery(Runtime, Character);
     RTCharacterInitializeMythMastery(Runtime, Character);
     
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] = MIN(
+		Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX],
+		Character->Data.Info.Resource.HP
+	);
+
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] = MIN(
+		Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX],
+		Character->Data.Info.Resource.MP
+	);
+
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT] = MIN(
+		Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX],
+		Character->Data.Info.Resource.SP
+	);
+
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT] = MIN(
+		Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_MAX],
+		Character->Data.Info.Resource.BP
+	);
+
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] = MIN(
+		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX],
+		Character->Data.Info.Resource.Rage
+	);
+
 	// TODO: Values are still broken and check HP! It is way too big, new deltas don't make sense or whats broken with the packets actually?
 	
 	RTDataAxpFieldRateRef AxpFieldRate = RTRuntimeDataAxpFieldRateGet(Runtime->Context, Character->Data.Info.Basic.Level);
@@ -896,44 +918,43 @@ Void RTCharacterAddExp(
 	Int32 LevelDiff = Character->Data.Info.Basic.Level - CurrentLevel;
     if (LevelDiff > 0) {
 		RTCharacterInitializeAttributes(Runtime, Character);
-        RTCharacterSetHP(Runtime, Character, Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX], false);
-        RTCharacterSetMP(Runtime, Character, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX], false);
+		RTCharacterSetHP(Runtime, Character, Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX], false);
+		RTCharacterSetMP(Runtime, Character, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX], false);
 		Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_PNT] += LevelDiff * 5;
 
 		for (Index Index = 0; Index < LevelDiff; Index += 1) {
-            RTRuntimeBroadcastCharacterData(
-                Runtime,
-                Character,
-                NOTIFICATION_CHARACTER_DATA_TYPE_LEVEL
-            );
-            
-            {
-                NOTIFICATION_DATA_CHARACTER_EVENT* Notification = RTNotificationInit(CHARACTER_EVENT);
-                Notification->Type = NOTIFICATION_CHARACTER_EVENT_TYPE_LEVEL_UP;
-                Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
-                RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
-            }
+			RTRuntimeBroadcastCharacterData(
+				Runtime,
+				Character,
+				NOTIFICATION_CHARACTER_DATA_TYPE_LEVEL
+			);
+
+			{
+				NOTIFICATION_DATA_CHARACTER_EVENT* Notification = RTNotificationInit(CHARACTER_EVENT);
+				Notification->Type = NOTIFICATION_CHARACTER_EVENT_TYPE_LEVEL_UP;
+				Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
+				RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
+			}
 		}
-        
+
 		if (Character->Data.Info.Overlord.Level < 1) {
 			RTDataOverlordMasteryStartRef Start = RTRuntimeDataOverlordMasteryStartGet(Runtime->Context);
 			if (Character->Data.Info.Basic.Level == Start->RequiredLevel) {
 				Character->Data.Info.Overlord.Level = 1;
 				Character->Data.Info.Overlord.Exp = 0;
 				Character->Data.Info.Overlord.Point = Start->MasteryPointCount;
+				RTRuntimeBroadcastCharacterData(
+					Runtime,
+					Character,
+					NOTIFICATION_CHARACTER_DATA_TYPE_OVERLORD_LEVEL
+				);
 
-                RTRuntimeBroadcastCharacterData(
-                    Runtime,
-                    Character,
-                    NOTIFICATION_CHARACTER_DATA_TYPE_OVERLORD_LEVEL
-                );
-                
-                {
-                    NOTIFICATION_DATA_CHARACTER_EVENT* Notification = RTNotificationInit(CHARACTER_EVENT);
-                    Notification->Type = NOTIFICATION_CHARACTER_EVENT_TYPE_OVERLORD_LEVEL_UP;
-                    Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
-                    RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
-                }
+				{
+					NOTIFICATION_DATA_CHARACTER_EVENT* Notification = RTNotificationInit(CHARACTER_EVENT);
+					Notification->Type = NOTIFICATION_CHARACTER_EVENT_TYPE_OVERLORD_LEVEL_UP;
+					Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
+					RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
+				}
             }
 		}
     }
@@ -981,9 +1002,17 @@ Int32 RTCharacterAddSkillExp(
         Notification->SkillPoint = Character->Data.Info.Skill.Point;
         RTNotificationDispatchToCharacter(Notification, Character);
     }
-    
-	if (Character->Data.Info.Skill.Level >= SkillLevelMax && 
-		Character->Data.Info.Style.BattleRank > Character->Data.Info.Skill.Rank) {
+
+	Bool CanRankUp = Character->Data.Info.Skill.Level >= SkillLevelMax;
+	if (CanRankUp && Runtime->Config.IsSkillRankUpLimitEnabled) {
+		RTDataCharacterRankUpLimitRef RankUpLimit = RTRuntimeDataCharacterRankUpLimitGet(Runtime->Context, Character->Data.Info.Skill.Rank + 1);
+		if (RankUpLimit) {
+			CanRankUp &= RankUpLimit->Level <= Character->Data.Info.Basic.Level;
+			CanRankUp &= RankUpLimit->BattleRank <= Character->Data.Info.Style.BattleRank;
+		}
+	}
+
+	if (CanRankUp) {
 		RTBattleStyleSkillRankDataRef NextSkillRankData = RTRuntimeGetBattleStyleSkillRankData(
 			Runtime,
 			BattleStyleIndex,
@@ -991,8 +1020,16 @@ Int32 RTCharacterAddSkillExp(
 		);
 		
 		if (NextSkillRankData) {
-			Character->Data.Info.Skill.Rank += 1;
+			RTDataCharacterRankUpBonusRef RankUpBonus = RTRuntimeDataCharacterRankUpBonusGet(Runtime->Context, Character->Data.Info.Skill.Rank);
+			if (RankUpBonus) {
+				// TODO: Add skill slot count to character data!
+				Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_PNT] += RankUpBonus->StatPoints;
+			}
+
+			Character->Data.Info.Skill.Rank = NextSkillRankData->SkillRank;
 			Character->Data.Info.Skill.Level = 0;
+			Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_PNT] += 
+			Character->SyncMask.Info = true;
             
             RTRuntimeBroadcastCharacterData(
                 Runtime,

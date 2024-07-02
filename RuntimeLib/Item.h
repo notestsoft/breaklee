@@ -313,6 +313,10 @@ struct _RTItemOptionSlot {
 		struct {
 			UInt8 MasterIndex : 7;
 		};
+		struct {
+			UInt8 ArtifactForceLevel : 4;
+			UInt8 ArtifactForceIndex : 4;
+		};
 		UInt8 Serial;
 	};
 };
@@ -339,6 +343,10 @@ struct _RTItemOptions {
 			};
 			UInt32 _Padding1 : 32;
 		} Equipment;
+
+		struct {
+			RTItemOptionSlot Slots[RUNTIME_ITEM_MAX_ARTIFACT_OPTION_COUNT];
+		} Artifact;
 
 		struct {
 			UInt64 Level : 8;

@@ -77,6 +77,7 @@ RUNTIME_DATA_TYPE_BEGIN(KarmaAbilityValue, "ability.karma_ability.value.value_ab
     RUNTIME_DATA_TYPE_END_CHILD(KarmaAbilityValueLevel, 128)
 RUNTIME_DATA_TYPE_END(KarmaAbilityValue)
 RUNTIME_DATA_TYPE_INDEX(KarmaAbilityValue, UInt32, Index)
+RUNTIME_DATA_TYPE_INDEX_CHILD(KarmaAbilityValue, KarmaAbilityValueLevel, Int32, Level)
 
 RUNTIME_DATA_FILE_END
 
