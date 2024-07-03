@@ -23,7 +23,7 @@ RUNTIME_DATA_TYPE_BEGIN(DivineUpgradeGroupValue, "divine_upgrade.divine_value", 
 	RUNTIME_DATA_PROPERTY(Int32, Group, "group")
 	RUNTIME_DATA_TYPE_BEGIN_CHILD(DivineUpgradeGroupValueLevel, "value", 64)
 		RUNTIME_DATA_PROPERTY(Int32, Level, "level")
-		RUNTIME_DATA_PROPERTY(Int32, ForceIndex, "divine_forceid")
+		RUNTIME_DATA_PROPERTY(Int32, ForceEffectIndex, "divine_forceid")
 		RUNTIME_DATA_PROPERTY(Int32, ForceValue, "force_value")
 		RUNTIME_DATA_PROPERTY(Int32, ForceValueType, "value_type")
 	RUNTIME_DATA_TYPE_END_CHILD(DivineUpgradeGroupValueLevel, 64)

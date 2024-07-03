@@ -817,6 +817,7 @@ Bool ServerLoadItemData(
             ItemData->Width = ArchiveItemData->SlotSize.Width;
             ItemData->Height = ArchiveItemData->SlotSize.Height;
             ItemData->MaxStackSize = ArchiveItemData->MaxStackSize;
+            ItemData->UniqueGrade = ArchiveItemData->UniqueGrade;
             ItemData->MasterGrade = ArchiveItemData->MeisterGrade;
             Runtime->ItemDataCount += 1;
 

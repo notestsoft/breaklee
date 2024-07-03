@@ -704,7 +704,7 @@ Void RTCharacterApplyForceEffect(
 	Int32 ForceValueType
 ) {
 	// TODO: Check if ForceValueType is relevant for the runtime
-   
+    if (ForceEffectIndex < 1) return;
     RTForceEffectFormulaRef Formula = (RTForceEffectFormulaRef)MemoryPoolFetch(Runtime->ForceEffectFormulaPool, ForceEffectIndex);
     Formula->OnApply(Runtime, Formula, &Character->Attributes, ForceValue);
 }

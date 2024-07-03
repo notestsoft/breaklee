@@ -51,15 +51,15 @@ Bool RTCharacterCheckItemStatRequirements(
 	RTItemDataRef ItemData,
 	Int32 ItemUpgradeLevel
 ) {
-	// NOTE: This is only working because Weapon & Armor share same memory layout but actually we should pass Stat + StatDelta!!!
+	Int32 RequiredStr = ItemData->Weapon.Str + ItemData->Weapon.DeltaStr * (1 + MIN(ItemUpgradeLevel, RUNTIME_ENCHANT_MAX_STAT_INCREASE_LEVEL));
+	Int32 RequiredDex = ItemData->Weapon.Dex + ItemData->Weapon.DeltaDex * (1 + MIN(ItemUpgradeLevel, RUNTIME_ENCHANT_MAX_STAT_INCREASE_LEVEL));
+	Int32 RequiredInt = ItemData->Weapon.Int + ItemData->Weapon.DeltaInt * (1 + MIN(ItemUpgradeLevel, RUNTIME_ENCHANT_MAX_STAT_INCREASE_LEVEL));
 
-	Int32 RequiredStr = ItemData->Weapon.Str + ItemData->Weapon.DeltaStr * MIN(ItemUpgradeLevel, RUNTIME_ENCHANT_MAX_STAT_INCREASE_LEVEL);
-	Int32 RequiredDex = ItemData->Weapon.Dex + ItemData->Weapon.DeltaDex * MIN(ItemUpgradeLevel, RUNTIME_ENCHANT_MAX_STAT_INCREASE_LEVEL);
-	Int32 RequiredInt = ItemData->Weapon.Int + ItemData->Weapon.DeltaInt * MIN(ItemUpgradeLevel, RUNTIME_ENCHANT_MAX_STAT_INCREASE_LEVEL);
+	Int32 CurrentStr = Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_STR];
+	Int32 CurrentDex = Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_DEX];
+	Int32 CurrentInt = Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_INT];
 
-	if (Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_STR] < RequiredStr ||
-		Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_DEX] < RequiredDex ||
-		Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_INT] < RequiredInt) {
+	if (CurrentStr < RequiredStr || CurrentDex < RequiredDex || CurrentInt < RequiredInt) {
 		return false;
 	}
 
@@ -76,61 +76,198 @@ Void RTCharacterApplyItemUpgradeForceEffect(
     if (ItemType == RUNTIME_ITEM_TYPE_HELMED2) ItemType = RUNTIME_ITEM_TYPE_HELMED1;
 
 	RTDataUpgradeItemBasicRef UpgradeItemBasic = RTRuntimeDataUpgradeItemBasicGet(Runtime->Context, ItemType);
-	if (UpgradeItemBasic) {
-		RTDataUpgradeItemBasicGradeRef UpgradeItemBasicGrade = RTRuntimeDataUpgradeItemBasicGradeGet(UpgradeItemBasic, ItemData->ItemGrade);
-		if (UpgradeItemBasicGrade) {
-			for (Int32 Index = 0; Index < UpgradeItemBasicGrade->UpgradeItemBasicGradeValueCount; Index += 1) {
-				RTDataUpgradeItemBasicGradeValueRef Value = &UpgradeItemBasicGrade->UpgradeItemBasicGradeValueList[Index];
+	RTDataUpgradeItemBasicGradeRef UpgradeItemBasicGrade = (UpgradeItemBasic) ? RTRuntimeDataUpgradeItemBasicGradeGet(UpgradeItemBasic, ItemData->ItemGrade) : NULL;
+	if (UpgradeItemBasicGrade) {
+		for (Int32 Index = 0; Index < UpgradeItemBasicGrade->UpgradeItemBasicGradeValueCount; Index += 1) {
+			RTDataUpgradeItemBasicGradeValueRef Value = &UpgradeItemBasicGrade->UpgradeItemBasicGradeValueList[Index];
 
-				Int32 ForceValue = 0;
-				for (Int32 Level = 0; Level < ItemUpgradeLevel; Level += 1) {
-					Int32 SlopeMultiplier = MAX(0, MIN(RUNTIME_ENCHANT_SLOPE_MULTIPLIER_LIMIT, ((Int32)Level / RUNTIME_ENCHANT_SLOPE_DIVIDER)));
-					ForceValue += Value->ForceValueFormula[0] + Value->ForceValueFormula[1] * SlopeMultiplier;
-				}
-
-				RTCharacterApplyForceEffect(
-					Runtime,
-					Character,
-					Value->ForceID,
-					ForceValue,
-					RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
-				);
+			Int32 ForceValue = 0;
+			for (Int32 Level = 0; Level < MIN(ItemUpgradeLevel, RUNTIME_ENCHANT_UPGRADE_BASIC_LEVEL_LIMIT); Level += 1) {
+				Int32 SlopeMultiplier = MAX(0, MIN(RUNTIME_ENCHANT_SLOPE_MULTIPLIER_LIMIT, ((Int32)Level / RUNTIME_ENCHANT_SLOPE_DIVIDER)));
+				ForceValue += Value->ForceValueFormula[0] + Value->ForceValueFormula[1] * SlopeMultiplier;
 			}
+
+			RTCharacterApplyForceEffect(
+				Runtime,
+				Character,
+				Value->ForceID,
+				ForceValue,
+				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+			);
 		}
 	}
-	/* @Next
+
 	RTDataUpgradeItemRef UpgradeItem = RTRuntimeDataUpgradeItemGet(Runtime->Context, ItemData->ItemType);
-	if (UpgradeItem) {
-		RTDataUpgradeItemGradeRef UpgradeItemGrade = RTRuntimeDataUpgradeItemGradeGet(UpgradeItem, ItemData->ItemGrade);
-		if (UpgradeItemGrade) {
-			for (Int32 Index = 0; Index < UpgradeItemGrade->UpgradeItemGradeValueCount; Index += 1) {
-				RTDataUpgradeItemGradeValueRef Value = &UpgradeItemGrade->UpgradeItemGradeValueList[Index];
-				if (ItemUpgradeLevel < Value->ApplyLevel) continue;
+	RTDataUpgradeItemGradeRef UpgradeItemGrade = (UpgradeItem) ? RTRuntimeDataUpgradeItemGradeGet(UpgradeItem, ItemData->ItemGrade) : NULL;
+	if (UpgradeItemGrade) {
+		for (Int32 Index = 0; Index < UpgradeItemGrade->UpgradeItemGradeValueCount; Index += 1) {
+			RTDataUpgradeItemGradeValueRef Value = &UpgradeItemGrade->UpgradeItemGradeValueList[Index];
+			if (ItemUpgradeLevel < Value->ApplyLevel) continue;
 
-				Int32 ForceValue = 0;
-				for (Int32 Level = 0; Level < ItemUpgradeLevel; Level += 1) {
-					Int32 SlopeMultiplier = MAX(0, MIN(RUNTIME_ENCHANT_SLOPE_MULTIPLIER_LIMIT, ((Int32)Level / RUNTIME_ENCHANT_SLOPE_DIVIDER)));
-					ForceValue += Value->ForceValueFormula[0] + Value->ForceValueFormula[1] * SlopeMultiplier;
-				}
+			Int32 ForceValue = Value->ForceValueFormula[2];
+			for (Int32 Level = 0; Level < (ItemUpgradeLevel - Value->ApplyLevel + 1); Level += 1) {
+				Int32 SlopeMultiplier = Level + 1;
+				ForceValue += Value->ForceValueFormula[0] + Value->ForceValueFormula[1] * SlopeMultiplier;
+			}
+
+			RTCharacterApplyForceEffect(
+				Runtime,
+				Character,
+				Value->ForceID,
+				ForceValue,
+				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+			);
+		}
+	}
+}
+
+Void RTCharacterApplyItemForceOptionEffect(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	RTItemSlotRef ItemSlot,
+	RTItemDataRef ItemData
+) {
+	RTItemOptions ItemOptions = { .Serial = ItemSlot->ItemOptions };
+
+	Int32 ForceSlotOffset = 0;
+
+	if (ItemData->MasterGrade) {
+		RTItemOptionSlot MasterSlot = ItemOptions.Equipment.Slots[0];
+
+		RTDataMasterItemRef MasterItem = RTRuntimeDataMasterItemGet(Runtime->Context, ItemData->MasterGrade);
+		if (MasterItem) {
+			RTDataMasterItemOptionRef MasterItemOption = RTRuntimeDataMasterItemOptionGet(MasterItem, MasterSlot.MasterIndex);
+			for (Int32 Index = 0; Index < MasterItemOption->MasterItemOptionValueCount; Index += 1) {
+				RTDataMasterItemOptionValueRef MasterItemOptionValue = &MasterItemOption->MasterItemOptionValueList[Index];
 
 				RTCharacterApplyForceEffect(
 					Runtime,
 					Character,
-					Value->ForceID,
-					ForceValue,
-					RUNTIME_FORCE_EFFECT_TYPE_ADDITIVE
+					MasterItemOptionValue->ForceEffectIndex,
+					MasterItemOptionValue->ForceValue,
+					MasterItemOptionValue->ForceValueType == 1 ? RUNTIME_FORCE_VALUE_TYPE_ADDITIVE : RUNTIME_FORCE_VALUE_TYPE_MULTIPLICATIVE
+				);
+			}
+		}
+
+		ForceSlotOffset = 1;
+	}
+
+	// TODO: Check check unique items
+	// <unique_item	item_index="3343"	>
+
+	for (Int32 Index = ForceSlotOffset; Index < RUNTIME_ITEM_MAX_OPTION_COUNT; Index += 1) {
+		RTItemOptionSlot Slot = ItemOptions.Equipment.Slots[Index];
+		if (Slot.Serial < 1) continue;
+
+		RTDataForceCodeFormula Formula = RTRuntimeDataForceCodeFormulaGet(
+			Runtime->Context,
+			ItemData->ItemType,
+			ItemData->ItemGrade,
+			ItemData->UniqueGrade,
+			Slot.ForceIndex,
+			Slot.ForceLevel,
+			ItemSlot->Item.IsAccountBinding,
+			Slot.IsEpic
+		);
+
+		if (Formula.ForceEffectIndex > 0) {
+			RTCharacterApplyForceEffect(
+				Runtime,
+				Character,
+				Formula.ForceEffectIndex,
+				Formula.ForceValue,
+				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+			);
+		}
+	}
+
+	if (ItemOptions.Equipment.ExtraForceIndex) {
+		RTDataForceCodeFormula Formula = RTRuntimeDataForceCodeFormulaGet(
+			Runtime->Context,
+			ItemData->ItemType,
+			ItemData->ItemGrade,
+			ItemData->UniqueGrade,
+			ItemOptions.Equipment.ExtraForceIndex,
+			1,
+			ItemSlot->Item.IsAccountBinding,
+			false
+		);
+
+		if (Formula.ForceEffectIndex > 0) {
+			RTCharacterApplyForceEffect(
+				Runtime,
+				Character,
+				Formula.ForceEffectIndex,
+				Formula.ForceValue,
+				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+			);
+		}
+	}
+}
+
+Void RTCharacterApplyItemExtremeLevelEffect(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	RTItemSlotRef ItemSlot,
+	RTItemDataRef ItemData
+) {
+	if (ItemSlot->Item.ExtremeLevel > 0) {
+		RTDataItemType TargetItemType = ItemData->ItemType;
+		if (TargetItemType == RUNTIME_ITEM_TYPE_HELMED2) TargetItemType = RUNTIME_ITEM_TYPE_HELMED1;
+
+		RTDataExtremeUpgradeValueRef ExtremeUpgradeValue = NULL;
+		RTDataExtremeUpgradeBaseGradeRef ExtremeUpgradeBaseGrade = NULL;
+		for (Index Index = 0; Index < Runtime->Context->ExtremeUpgradeBaseCount; Index += 1) {
+			RTDataExtremeUpgradeBaseRef ExtremeUpgradeBase = &Runtime->Context->ExtremeUpgradeBaseList[Index];
+			if (ExtremeUpgradeBase->Type != TargetItemType) continue;
+
+			RTDataExtremeUpgradeBaseGradeRef ExtremeUpgradeBaseGrade = RTRuntimeDataExtremeUpgradeBaseGradeGet(ExtremeUpgradeBase, ItemData->ItemGrade);
+			RTDataExtremeUpgradeMainRef ExtremeUpgradeMain = (ExtremeUpgradeBaseGrade) ? RTRuntimeDataExtremeUpgradeMainGet(Runtime->Context, ExtremeUpgradeBaseGrade->ExtremeUpgradeGroup) : NULL;
+			RTDataExtremeUpgradeMainLevelRef ExtremeUpgradeMainLevel = (ExtremeUpgradeMain) ? RTRuntimeDataExtremeUpgradeMainLevelGet(ExtremeUpgradeMain, ItemSlot->Item.ExtremeLevel) : NULL;
+			ExtremeUpgradeValue = (ExtremeUpgradeMainLevel) ? RTRuntimeDataExtremeUpgradeValueGet(Runtime->Context, ExtremeUpgradeMainLevel->ExtremeUpgradeOption) : NULL;
+			if (ExtremeUpgradeValue) break;
+		}
+
+		if (ExtremeUpgradeValue) {
+			for (Int32 Index = 0; Index < ExtremeUpgradeValue->ExtremeUpgradeValueOptionCount; Index += 1) {
+				RTDataExtremeUpgradeValueOptionRef ExtremeUpgradeValueOption = &ExtremeUpgradeValue->ExtremeUpgradeValueOptionList[Index];
+				RTCharacterApplyForceEffect(
+					Runtime,
+					Character,
+					ExtremeUpgradeValueOption->ForceEffectIndex,
+					ExtremeUpgradeValueOption->ForceValue,
+					ExtremeUpgradeValueOption->ForceValueType == 1 ? RUNTIME_FORCE_VALUE_TYPE_ADDITIVE : RUNTIME_FORCE_VALUE_TYPE_MULTIPLICATIVE
 				);
 			}
 		}
 	}
+}
 
-	 force_value="6,0,0,1"
-	
-	RUNTIME_DATA_PROPERTY(Int32, ForceID, "force_id")
-		RUNTIME_DATA_PROPERTY_ARRAY(Int32, ForceValueFormula, "force_value", 4, ',')
-		RUNTIME_DATA_PROPERTY(Int32, ForceValueType, "value_type")
-		RUNTIME_DATA_PROPERTY(Int32, ApplyLevel, "Apply_lv")
-		*/
+Void RTCharacterApplyItemDivineLevelEffect(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	RTItemSlotRef ItemSlot,
+	RTItemDataRef ItemData
+) {
+	if (ItemSlot->Item.DivineLevel > 0) {
+		RTDataDivineUpgradeMainRef DivineUpgradeMain = RTRuntimeDataDivineUpgradeMainGet(Runtime->Context, ItemData->ItemGrade, ItemData->ItemType);
+		RTDataDivineUpgradeGroupValueRef DivineUpgradeGroupValue = (DivineUpgradeMain) ? RTRuntimeDataDivineUpgradeGroupValueGet(Runtime->Context, DivineUpgradeMain->Group) : NULL;
+		if (DivineUpgradeGroupValue) {
+			for (Int32 Index = 0; Index < DivineUpgradeGroupValue->DivineUpgradeGroupValueLevelCount; Index += 1) {
+				RTDataDivineUpgradeGroupValueLevelRef DivineUpgradeGroupValueLevel = &DivineUpgradeGroupValue->DivineUpgradeGroupValueLevelList[Index];
+				if (DivineUpgradeGroupValueLevel->Level != ItemSlot->Item.DivineLevel) continue;
+
+				RTCharacterApplyForceEffect(
+					Runtime,
+					Character,
+					DivineUpgradeGroupValueLevel->ForceEffectIndex,
+					DivineUpgradeGroupValueLevel->ForceValue,
+					DivineUpgradeGroupValueLevel->ForceValueType == 1 ? RUNTIME_FORCE_VALUE_TYPE_ADDITIVE : RUNTIME_FORCE_VALUE_TYPE_MULTIPLICATIVE
+				);
+			}
+		}
+	}
 }
 
 RTItemHonorMedalSealData RTItemHonorMedalSealDecode(
@@ -764,45 +901,15 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemWeapon) {
 		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 	);
 
-	RTCharacterApplyItemUpgradeForceEffect(
-		Runtime,
-		Character,
-		ItemData,
-		ItemSlot->Item.UpgradeLevel
-	);
-
-    RTDataItemType ItemType = ItemData->ItemType;
-    if (ItemType == RUNTIME_ITEM_TYPE_HELMED2) ItemType = RUNTIME_ITEM_TYPE_HELMED1;
-
-	RTDataUpgradeItemRef UpgradeItem = RTRuntimeDataUpgradeItemGet(Runtime->Context, ItemType);
-	if (UpgradeItem) {
-		RTDataUpgradeItemGradeRef UpgradeItemGrade = RTRuntimeDataUpgradeItemGradeGet(UpgradeItem, ItemData->ItemGrade);
-		if (UpgradeItemGrade) {
-			for (Int32 Index = 0; Index < UpgradeItemGrade->UpgradeItemGradeValueCount; Index += 1) {
-				RTDataUpgradeItemGradeValueRef Value = &UpgradeItemGrade->UpgradeItemGradeValueList[Index];
-				if (Value->ApplyLevel > ItemSlot->Item.UpgradeLevel) continue;
-				
-				Int32 SlopeMultiplier = MIN(RUNTIME_ENCHANT_SLOPE_MULTIPLIER_LIMIT, (ItemSlot->Item.UpgradeLevel / RUNTIME_ENCHANT_SLOPE_DIVIDER - 1));
-				// TODO: This has 4 values involved
-				/*
-				Int32 ForceValue = Value->ForceValueFormula[0] + Value->ForceValueFormula[1] * SlopeMultiplier;
-
-				RTCharacterApplyForceEffect(
-					Runtime,
-					Character,
-					Value->ForceID,
-					ForceValue,
-					Value->ForceValueType
-				);
-				*/
-			}
-		}
+	RTItemOptions ItemOptions = { .Serial = ItemSlot->ItemOptions };
+	if (ItemOptions.Equipment.SlotCount > 0) {
+		RTCharacterApplyItemUpgradeForceEffect(Runtime, Character, ItemData, 2);
 	}
 
-	/*
-	UInt64 ExtremeLevel : 4;
-	UInt64 DivineLevel : 4;
-	*/
+	RTCharacterApplyItemUpgradeForceEffect(Runtime, Character, ItemData, ItemSlot->Item.UpgradeLevel);
+	RTCharacterApplyItemForceOptionEffect(Runtime, Character, ItemSlot, ItemData);
+	RTCharacterApplyItemExtremeLevelEffect(Runtime, Character, ItemSlot, ItemData);
+	RTCharacterApplyItemDivineLevelEffect(Runtime, Character, ItemSlot, ItemData);
 
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
@@ -836,18 +943,53 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemArmor) {
 		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 	);
 
-	RTCharacterApplyItemUpgradeForceEffect(
-		Runtime,
-		Character,
-		ItemData,
-		ItemSlot->Item.UpgradeLevel
-	);
+	RTItemOptions ItemOptions = { .Serial = ItemSlot->ItemOptions };
+	if (ItemOptions.Equipment.SlotCount > 0) {
+		RTCharacterApplyItemUpgradeForceEffect(Runtime, Character, ItemData, 2);
+	}
+
+	RTCharacterApplyItemUpgradeForceEffect(Runtime, Character, ItemData, ItemSlot->Item.UpgradeLevel);
+	RTCharacterApplyItemForceOptionEffect(Runtime, Character, ItemSlot, ItemData);
+	RTCharacterApplyItemExtremeLevelEffect(Runtime, Character, ItemSlot, ItemData);
+	RTCharacterApplyItemDivineLevelEffect(Runtime, Character, ItemSlot, ItemData);
 
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemAccessory) {
-	return RUNTIME_ITEM_USE_RESULT_FAILED;
+	RTCharacterApplyForceEffect(
+		Runtime,
+		Character,
+		ItemData->Accessory.ForceEffect1,
+		ItemData->Accessory.ForceValue1,
+		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+	);
+
+	RTCharacterApplyForceEffect(
+		Runtime,
+		Character,
+		ItemData->Accessory.ForceEffect2,
+		ItemData->Accessory.ForceValue2,
+		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+	);
+
+	RTCharacterApplyForceEffect(
+		Runtime,
+		Character,
+		ItemData->Accessory.ForceEffect3,
+		ItemData->Accessory.ForceValue3,
+		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+	);
+
+	RTCharacterApplyForceEffect(
+		Runtime,
+		Character,
+		ItemData->Accessory.ForceEffect4,
+		ItemData->Accessory.ForceValue4,
+		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+	);
+
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemFrontierStone) {
@@ -876,11 +1018,74 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEffector) {
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpaulet) {
-	return RUNTIME_ITEM_USE_RESULT_FAILED;
+	RTCharacterApplyForceEffect(
+		Runtime,
+		Character,
+		ItemData->Accessory.ForceEffect1,
+		ItemData->Accessory.ForceValue1,
+		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+	);
+
+	RTCharacterApplyForceEffect(
+		Runtime,
+		Character,
+		ItemData->Accessory.ForceEffect2,
+		ItemData->Accessory.ForceValue2,
+		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+	);
+
+	RTCharacterApplyForceEffect(
+		Runtime,
+		Character,
+		ItemData->Accessory.ForceEffect3,
+		ItemData->Accessory.ForceValue3,
+		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+	);
+
+	RTCharacterApplyForceEffect(
+		Runtime,
+		Character,
+		ItemData->Accessory.ForceEffect4,
+		ItemData->Accessory.ForceValue4,
+		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+	);
+
+	RTCharacterApplyItemForceOptionEffect(Runtime, Character, ItemSlot, ItemData);
+
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemVehicleBike) {
-	return RUNTIME_ITEM_USE_RESULT_FAILED;
+	RTCharacterApplyForceEffect(
+		Runtime,
+		Character,
+		RUNTIME_FORCE_EFFECT_DEFENSE_UP,
+		ItemData->VehicleBike.Defense,
+		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+	);
+
+	RTCharacterApplyForceEffect(
+		Runtime,
+		Character,
+		RUNTIME_FORCE_EFFECT_INCREASE_MOVEMENT_SPEED,
+		ItemData->VehicleBike.MovementSpeed,
+		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+	);
+
+	RTCharacterApplyForceEffect(
+		Runtime,
+		Character,
+		RUNTIME_FORCE_EFFECT_DEFENSE_RATE_UP,
+		ItemData->VehicleBike.DefenseRate,
+		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+	);
+
+	RTCharacterApplyItemUpgradeForceEffect(Runtime, Character, ItemData, ItemSlot->Item.UpgradeLevel);
+	RTCharacterApplyItemForceOptionEffect(Runtime, Character, ItemSlot, ItemData);
+	RTCharacterApplyItemExtremeLevelEffect(Runtime, Character, ItemSlot, ItemData);
+	RTCharacterApplyItemDivineLevelEffect(Runtime, Character, ItemSlot, ItemData);
+
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemVehicleBoard) {
@@ -948,8 +1153,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSlotExtender) {
 	RTItemOptions TargetItemOptions = { 0 };
 	TargetItemOptions.Serial = TargetItemSlot->ItemOptions;
 	if (TargetItemSlot->Item.IsAccountBinding) return RUNTIME_ITEM_USE_RESULT_FAILED;
-	// TODO: Use an equipment type union to name Options[3] to MaxSlotCount!
-	if (TargetItemOptions.Equipment.SlotCount >= TargetItemData->Options[3]) return RUNTIME_ITEM_USE_RESULT_FAILED;
+	if (TargetItemOptions.Equipment.SlotCount >= TargetItemData->Armor.MaxSlotCount) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
 	TargetItemOptions.Equipment.SlotCount += 1;
 

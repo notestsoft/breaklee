@@ -211,6 +211,8 @@ CLIENT_PROCEDURE_BINDING(PUSH_EQUIPMENT_ITEM) {
     Character->SyncMask.EquipmentInfo = true;
     Character->SyncMask.InventoryInfo = true;
 
+    RTCharacterInitializeAttributes(Runtime, Character);
+
     S2C_DATA_PUSH_EQUIPMENT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PUSH_EQUIPMENT_ITEM);
     Response->Result = 1;
     SocketSend(Socket, Connection, Response);
@@ -238,8 +240,7 @@ CLIENT_PROCEDURE_BINDING(MOVE_INVENTORY_ITEM) {
         Packet->Destination.Index
     );
 
-    if (Response->Result) {
-        // TODO: We recalc all character data for simplicity now but please fix this!
+    if (Response->Result && (Packet->Source.StorageType == STORAGE_TYPE_EQUIPMENT || Packet->Destination.StorageType == STORAGE_TYPE_EQUIPMENT)) {
         RTCharacterInitializeAttributes(Runtime, Character);
     }
 
@@ -297,7 +298,12 @@ CLIENT_PROCEDURE_BINDING(SWAP_INVENTORY_ITEM) {
 
     Response->Result = 1;
 
-    RTCharacterInitializeAttributes(Runtime, Character);
+    if (Packet->Source1.StorageType == STORAGE_TYPE_EQUIPMENT ||
+        Packet->Source2.StorageType == STORAGE_TYPE_EQUIPMENT ||
+        Packet->Destination1.StorageType == STORAGE_TYPE_EQUIPMENT ||
+        Packet->Destination2.StorageType == STORAGE_TYPE_EQUIPMENT) { 
+        RTCharacterInitializeAttributes(Runtime, Character);
+    }
 
     return SocketSend(Socket, Connection, Response);
 

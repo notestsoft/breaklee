@@ -84,7 +84,7 @@ RUNTIME_DATA_TYPE_BEGIN(CharacterRankUpBonus, "cabal.rankup.rank_bonus", 16)
 RUNTIME_DATA_TYPE_END(CharacterRankUpBonus)
 RUNTIME_DATA_TYPE_INDEX(CharacterRankUpBonus, Int32, Rank)
 
-RUNTIME_DATA_TYPE_BEGIN(CharacterRankUpLimit, "cabal.rank_limit", 10)
+RUNTIME_DATA_TYPE_BEGIN(CharacterRankUpLimit, "cabal.rank_limit.limit", 10)
 	RUNTIME_DATA_PROPERTY(UInt32, Rank, "rank")
 	RUNTIME_DATA_PROPERTY(UInt32, Level, "level")
 	RUNTIME_DATA_PROPERTY(UInt32, BattleRank, "bs_lv")

@@ -253,6 +253,32 @@
                 </item_option>
             </item>
 
+            <item slot_id="47" item_id="33556201" option="0" duration_id="0" price="0">
+            </item>
+            <item slot_id="48" item_id="33556201" option="0" duration_id="0" price="0">
+                <item_option slot_count="0">
+                    <slot type="2" slot="0" level="-1" option="13" />
+                </item_option>
+            </item>
+            <item slot_id="49" item_id="33556201" option="0" duration_id="0" price="0">
+                <item_option slot_count="1">
+                    <slot type="2" slot="0" level="-1" option="13" />
+                </item_option>
+            </item>
+
+            <item slot_id="50" item_id="19" option="0" duration_id="0" price="0">
+            </item>
+            <item slot_id="51" item_id="19" option="0" duration_id="0" price="0">
+                <item_option slot_count="0">
+                    <slot type="2" slot="0" level="-1" option="13" />
+                </item_option>
+            </item>
+            <item slot_id="52" item_id="19" option="0" duration_id="0" price="0">
+                <item_option slot_count="1">
+                    <slot type="2" slot="0" level="-1" option="13" />
+                </item_option>
+            </item>
+
         </event_shop>
     </event_info>
 
@@ -260,11 +286,82 @@
         <event_description content="Armor" />
         
         <event_shop>
-            <item slot_id="0" item_id="1680" option="1" duration_id="0" price="0"></item>
-            <item slot_id="1" item_id="33556417" option="0" duration_id="0" price="0">
-                <item_option slot_count="2">
-                </item_option>
+            <item slot_id="0" item_id="33557519" option="0" duration_id="0" price="0"></item>
+        </event_shop>
+    </event_info>
+
+    <event id="77" type="2" use_flags="15" world_id="1" npc_id="49" description="Accessories">
+        <event_description content="Accessories" />
+        
+        <event_shop>
+            <item slot_id="0" item_id="33555377" option="0" duration_id="0" price="0"></item>
+
+            <item slot_id="1" item_id="33555238" option="0" duration_id="0" price="0"></item>
+            <item slot_id="2" item_id="33555355" option="0" duration_id="0" price="0"></item>
+
+            <item slot_id="8" item_id="33554729" option="0" duration_id="0" price="0"></item>
+            <item slot_id="9" item_id="33554730" option="0" duration_id="0" price="0"></item>
+            <item slot_id="10" item_id="33554731" option="0" duration_id="0" price="0"></item>
+
+            <item slot_id="5" item_id="33554554" option="0" duration_id="0" price="0"></item>
+            <item slot_id="6" item_id="33554555" option="0" duration_id="0" price="0"></item>
+            <item slot_id="7" item_id="33554556" option="0" duration_id="0" price="0"></item>
+            <item slot_id="13" item_id="33554557" option="0" duration_id="0" price="0"></item>
+            <item slot_id="14" item_id="33554558" option="0" duration_id="0" price="0"></item>
+            <item slot_id="15" item_id="33554559" option="0" duration_id="0" price="0"></item>
+            <item slot_id="21" item_id="33554560" option="0" duration_id="0" price="0"></item>
+            <item slot_id="22" item_id="33554561" option="0" duration_id="0" price="0"></item>
+            <item slot_id="23" item_id="33554562" option="0" duration_id="0" price="0"></item>
+            <item slot_id="29" item_id="33554563" option="0" duration_id="0" price="0"></item>
+            <item slot_id="30" item_id="33554564" option="0" duration_id="0" price="0"></item>
+            <item slot_id="31" item_id="33554565" option="0" duration_id="0" price="0"></item>
+
+            <item slot_id="16" item_id="33555715" option="0" duration_id="0" price="0"></item>
+            <item slot_id="17" item_id="33555716" option="0" duration_id="0" price="0"></item>
+            <item slot_id="18" item_id="33556103" option="0" duration_id="0" price="0"></item>
+
+            <item slot_id="32" item_id="33557026" option="0" duration_id="0" price="0"></item>
+            <item slot_id="33" item_id="33557025" option="0" duration_id="0" price="0"></item>
+            <item slot_id="34" item_id="33556093" option="0" duration_id="0" price="0"></item>
+            <item slot_id="35" item_id="33554553" option="0" duration_id="0" price="0"></item>
+
+            <item slot_id="40" item_id="33556688" option="0" duration_id="0" price="0"></item>
+            <item slot_id="41" item_id="33556689" option="0" duration_id="0" price="0"></item>
+            <item slot_id="42" item_id="33556690" option="0" duration_id="0" price="0"></item>
+            <item slot_id="43" item_id="33556691" option="0" duration_id="0" price="0"></item>
+            
+            <item slot_id="48" item_id="33557263" option="0" duration_id="0" price="0"></item>
+            
+            <item slot_id="56" item_id="33558178" option="1" duration_id="0" price="0">
+                <artifact_slot level="1" force="1" />
+                <artifact_slot level="1" force="5" />
             </item>
+            <item slot_id="57" item_id="33558179" option="1" duration_id="0" price="0">
+                <artifact_slot level="1" force="1" />
+                <artifact_slot level="1" force="1" />
+            </item>
+            <item slot_id="58" item_id="33558180" option="1" duration_id="0" price="0">
+                <artifact_slot level="1" force="1" />
+                <artifact_slot level="1" force="1" />
+                <artifact_slot level="1" force="1" />
+            </item>
+
+            <item slot_id="64" item_id="33558050" option="0" duration_id="0" price="0"></item>
+            <item slot_id="65" item_id="33558051" option="0" duration_id="0" price="0"></item>
+            <item slot_id="66" item_id="33558052" option="0" duration_id="0" price="0"></item>
+
+            <item slot_id="72" item_id="33555756" option="999" duration_id="0" price="0"></item>
+            <item slot_id="73" item_id="33556069" option="999" duration_id="0" price="0"></item>
+            <item slot_id="74" item_id="33556070" option="999" duration_id="0" price="0"></item>
+            <item slot_id="75" item_id="33556071" option="999" duration_id="0" price="0"></item>
+            <item slot_id="76" item_id="33556072" option="999" duration_id="0" price="0"></item>
+            <item slot_id="77" item_id="33556073" option="999" duration_id="0" price="0"></item>
+            <item slot_id="78" item_id="33556120" option="999" duration_id="0" price="0"></item>
+            <item slot_id="79" item_id="33556526" option="999" duration_id="0" price="0"></item>
+            <item slot_id="80" item_id="33556616" option="999" duration_id="0" price="0"></item>
+            <item slot_id="81" item_id="33557018" option="999" duration_id="0" price="0"></item>
+            <item slot_id="82" item_id="33557599" option="999" duration_id="0" price="0"></item>
+            <item slot_id="83" item_id="33557600" option="999" duration_id="0" price="0"></item>
         </event_shop>
     </event_info>
 

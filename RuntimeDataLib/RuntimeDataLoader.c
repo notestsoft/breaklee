@@ -616,3 +616,382 @@ Bool ParseAttributeRTDataItemGroup(
 error:
     return false;
 }
+
+RTDataForceCodeFormula RTRuntimeDataForceCodeFormulaGet(
+    RTRuntimeDataContextRef Context,
+    RTDataItemType ItemType,
+    Int32 ItemGrade,
+    Int32 ItemUniqueGrade,
+    Int32 ForceIndex,
+    Int32 ForceLevel,
+    Bool IsExtended,
+    Bool IsEpic
+) {
+    assert(ItemGrade < 16);
+
+    RTDataForceCodeFormula Formula = { 0 };
+
+    Bool IsOneHandedWeapon = (
+        ItemType == RUNTIME_ITEM_TYPE_WEAPON_ONE_HAND ||
+        ItemType == RUNTIME_ITEM_TYPE_WEAPON_FORCE_CONTROLLER ||
+        ItemType == RUNTIME_ITEM_TYPE_CHAKRAM
+    );
+    Int32 ForceCoreItemType = IsOneHandedWeapon ? RUNTIME_ITEM_TYPE_WEAPON_ONE_HAND : ItemType;
+
+    RTDataForceCoreBaseRef ForceCoreBase = RTRuntimeDataForceCoreBaseGet(Context, ItemGrade, ForceCoreItemType);
+    if (!ForceCoreBase) return Formula;
+
+    Int32 ForceEffectIndex = 0;
+    for (Int32 Index = 0; Index < ForceCoreBase->ForceCoreBaseCodeCount; Index += 1) {
+        if (ForceCoreBase->ForceCoreBaseCodeList[Index].ForceIndex != ForceIndex) continue;
+
+        ForceEffectIndex = ForceCoreBase->ForceCoreBaseCodeList[Index].ForceEffectIndex;
+        break;
+    }
+
+    if (ForceEffectIndex < 1) return Formula;
+
+    Bool IsEquipment = (
+        ItemType == RUNTIME_ITEM_TYPE_WEAPON_FORCE_CONTROLLER ||
+        ItemType == RUNTIME_ITEM_TYPE_WEAPON_ONE_HAND ||
+        ItemType == RUNTIME_ITEM_TYPE_WEAPON_TWO_HAND ||
+        ItemType == RUNTIME_ITEM_TYPE_SUIT ||
+        ItemType == RUNTIME_ITEM_TYPE_GLOVES ||
+        ItemType == RUNTIME_ITEM_TYPE_BOOTS ||
+        ItemType == RUNTIME_ITEM_TYPE_HELMED1 ||
+        ItemType == RUNTIME_ITEM_TYPE_HELMED2 ||
+        ItemType == RUNTIME_ITEM_TYPE_CHAKRAM ||
+        // TODO: Check which table itemtype RUNTIME_ITEM_TYPE_VEHICLE_BOARD refers to.
+        ItemType == RUNTIME_ITEM_TYPE_VEHICLE_BOARD
+    );
+
+    if (IsEquipment && IsEpic) {
+        for (Int32 Index = 0; Index < Context->EpicCodeEquipmentCount; Index += 1) {
+            RTDataEpicCodeEquipmentRef EpicCode = &Context->EpicCodeEquipmentList[Index];
+            if (EpicCode->ForceEffectIndex != ForceEffectIndex) continue;
+            if (EpicCode->ForceLevel != ForceLevel) continue;
+
+            Formula.ForceEffectIndex = ForceEffectIndex;
+            Formula.ForceLevel = ForceLevel;
+
+            if (ItemUniqueGrade > 0) {
+                assert(ItemUniqueGrade < 3);
+
+                Int32 ForceValues[] = {
+                    0,
+                    EpicCode->UniqueForceValueGrade1,
+                    EpicCode->UniqueForceValueGrade2,
+                };
+
+                Formula.ForceValue = ForceValues[ItemUniqueGrade];
+            }
+            else {
+                Int32 ForceValues[] = {
+                    0,
+                    1,
+                    2,
+                    3,
+                    EpicCode->ForceValueGrade4,
+                    EpicCode->ForceValueGrade5,
+                    EpicCode->ForceValueGrade6,
+                    EpicCode->ForceValueGrade7,
+                    EpicCode->ForceValueGrade8,
+                    EpicCode->ForceValueGrade9,
+                    EpicCode->ForceValueGrade10,
+                    EpicCode->ForceValueGrade11,
+                    EpicCode->ForceValueGrade12,
+                    EpicCode->ForceValueGrade13,
+                    EpicCode->ForceValueGrade14,
+                    EpicCode->ForceValueGrade15
+                };
+
+                Formula.ForceValue = ForceValues[ItemGrade];
+            }
+
+            return Formula;
+        }
+
+        return Formula;
+    }
+
+    if (IsEquipment && IsExtended) {
+        for (Int32 Index = 0; Index < Context->ExtendedForceCodeEquipmentCount; Index += 1) {
+            RTDataExtendedForceCodeEquipmentRef ForceCode = &Context->ExtendedForceCodeEquipmentList[Index];
+            if (ForceCode->ForceEffectIndex != ForceEffectIndex) continue;
+            if (ForceCode->ForceLevel != ForceLevel) continue;
+
+            Formula.ForceEffectIndex = ForceEffectIndex;
+            Formula.ForceLevel = ForceLevel;
+
+            Int32 ForceValues[] = {
+                0,
+                ForceCode->ForceValueGrade1,
+                ForceCode->ForceValueGrade2,
+                ForceCode->ForceValueGrade3,
+                ForceCode->ForceValueGrade4,
+                ForceCode->ForceValueGrade5,
+                ForceCode->ForceValueGrade6,
+                ForceCode->ForceValueGrade7,
+                ForceCode->ForceValueGrade8,
+                ForceCode->ForceValueGrade9,
+                ForceCode->ForceValueGrade10,
+                ForceCode->ForceValueGrade11,
+                ForceCode->ForceValueGrade12,
+                ForceCode->ForceValueGrade13,
+                ForceCode->ForceValueGrade14,
+                ForceCode->ForceValueGrade15
+            };
+
+            Formula.ForceValue = ForceValues[ItemGrade];
+
+            return Formula;
+        }
+
+        return Formula;
+    }
+
+    if (IsEquipment) {
+        for (Int32 Index = 0; Index < Context->ForceCodeEquipmentCount; Index += 1) {
+            RTDataExtendedForceCodeEquipmentRef ForceCode = &Context->ForceCodeEquipmentList[Index];
+            if (ForceCode->ForceEffectIndex != ForceEffectIndex) continue;
+            if (ForceCode->ForceLevel != ForceLevel) continue;
+
+            Formula.ForceEffectIndex = ForceEffectIndex;
+            Formula.ForceLevel = ForceLevel;
+
+            Int32 ForceValues[] = {
+                0,
+                ForceCode->ForceValueGrade1,
+                ForceCode->ForceValueGrade2,
+                ForceCode->ForceValueGrade3,
+                ForceCode->ForceValueGrade4,
+                ForceCode->ForceValueGrade5,
+                ForceCode->ForceValueGrade6,
+                ForceCode->ForceValueGrade7,
+                ForceCode->ForceValueGrade8,
+                ForceCode->ForceValueGrade9,
+                ForceCode->ForceValueGrade10,
+                ForceCode->ForceValueGrade11,
+                ForceCode->ForceValueGrade12,
+                ForceCode->ForceValueGrade13,
+                ForceCode->ForceValueGrade14,
+                ForceCode->ForceValueGrade15
+            };
+
+            Formula.ForceValue = ForceValues[ItemGrade];
+
+            return Formula;
+        }
+
+        return Formula;
+    }
+
+    Bool IsAccessory = !IsEquipment;
+    if (IsAccessory && IsEpic) {
+        for (Int32 Index = 0; Index < Context->EpicCodeAccessoryCount; Index += 1) {
+            RTDataEpicCodeAccessoryRef EpicCode = &Context->EpicCodeAccessoryList[Index];
+            if (EpicCode->ForceEffectIndex != ForceEffectIndex) continue;
+            if (EpicCode->ForceLevel != ForceLevel) continue;
+
+            Formula.ForceEffectIndex = ForceEffectIndex;
+            Formula.ForceLevel = ForceLevel;
+
+            if (ItemType == RUNTIME_ITEM_TYPE_VEHICLE_BIKE) {
+                Int32 ForceValues[] = {
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    EpicCode->VehicleForceValueGrade5,
+                    0,
+                    0,
+                    EpicCode->VehicleForceValueGrade8,
+                    0,
+                    0,
+                    EpicCode->VehicleForceValueGrade11,
+                    0,
+                    0,
+                    EpicCode->VehicleForceValueGrade14,
+                    0
+                };
+
+                Formula.ForceValue = ForceValues[ItemGrade];
+            }
+
+            if (ItemType == RUNTIME_ITEM_TYPE_AMULET ||
+                ItemType == RUNTIME_ITEM_TYPE_BELT ||
+                ItemType == RUNTIME_ITEM_TYPE_BRACELET ||
+                ItemType == RUNTIME_ITEM_TYPE_BROOCH ||
+                ItemType == RUNTIME_ITEM_TYPE_CHARM ||
+                ItemType == RUNTIME_ITEM_TYPE_EARRING ||
+                ItemType == RUNTIME_ITEM_TYPE_RING) {
+                assert(0 < ItemGrade && ItemGrade < 15);
+                if (ItemUniqueGrade) {
+                    Formula.ForceValue = EpicCode->UniqueAccessoryForceValueGrades[ItemGrade - 1];
+                }
+                else {
+                    Formula.ForceValue = EpicCode->AccessoryForceValueGrades[ItemGrade - 1];
+                }
+            }
+
+            if (ItemType == RUNTIME_ITEM_TYPE_CREST) {
+                assert(ItemGrade < 4);
+                Int32 ForceValues[] = {
+                    0,
+                    EpicCode->EmblemForceValueGrade1,
+                    EpicCode->EmblemForceValueGrade2,
+                    EpicCode->EmblemForceValueGrade3,
+                };
+                Formula.ForceValue = ForceValues[ItemGrade];
+            }
+
+            if (ItemType == RUNTIME_ITEM_TYPE_ARTIFACT) {
+                Formula.ForceValue = EpicCode->UniqueEmblemForceValue;
+            }
+
+            return Formula;
+        }
+
+        return Formula;
+    }
+
+    if (IsAccessory && IsExtended) {
+        for (Int32 Index = 0; Index < Context->ExtendedForceCodeAccessoryCount; Index += 1) {
+            RTDataExtendedForceCodeAccessoryRef ForceCode = &Context->ExtendedForceCodeAccessoryList[Index];
+            if (ForceCode->ForceEffectIndex != ForceEffectIndex) continue;
+            if (ForceCode->ForceLevel != ForceLevel) continue;
+
+            Formula.ForceEffectIndex = ForceEffectIndex;
+            Formula.ForceLevel = ForceLevel;
+
+            if (ItemType == RUNTIME_ITEM_TYPE_VEHICLE_BIKE) {
+                Int32 ForceValues[] = {
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    ForceCode->VehicleForceValueGrade5,
+                    0,
+                    0,
+                    ForceCode->VehicleForceValueGrade8,
+                    0,
+                    0,
+                    ForceCode->VehicleForceValueGrade11,
+                    0,
+                    0,
+                    ForceCode->VehicleForceValueGrade14,
+                    0
+                };
+
+                Formula.ForceValue = ForceValues[ItemGrade];
+            }
+
+            if (ItemType == RUNTIME_ITEM_TYPE_EPAULET ||
+                ItemType == RUNTIME_ITEM_TYPE_EPAULET2) {
+                Formula.ForceValue = ForceCode->EpauletForceValue;
+            }
+
+            if (ItemType == RUNTIME_ITEM_TYPE_AMULET ||
+                ItemType == RUNTIME_ITEM_TYPE_BELT ||
+                ItemType == RUNTIME_ITEM_TYPE_BRACELET ||
+                ItemType == RUNTIME_ITEM_TYPE_BROOCH ||
+                ItemType == RUNTIME_ITEM_TYPE_CHARM ||
+                ItemType == RUNTIME_ITEM_TYPE_EARRING ||
+                ItemType == RUNTIME_ITEM_TYPE_RING) {
+                assert(false && "Not supported itemtype!");
+            }
+
+            if (ItemType == RUNTIME_ITEM_TYPE_CREST) {
+                assert(ItemGrade < 4);
+                Int32 ForceValues[] = {
+                    0,
+                    ForceCode->EmblemForceValueGrade1,
+                    ForceCode->EmblemForceValueGrade2,
+                    ForceCode->EmblemForceValueGrade3,
+                };
+                Formula.ForceValue = ForceValues[ItemGrade];
+            }
+
+            if (ItemType == RUNTIME_ITEM_TYPE_ARTIFACT) {
+                Formula.ForceValue = ForceCode->UniqueEmblemForceValue;
+            }
+
+            return Formula;
+        }
+
+        return Formula;
+    }
+
+    if (IsAccessory) {
+        for (Int32 Index = 0; Index < Context->ForceCodeAccessoryCount; Index += 1) {
+            RTDataForceCodeAccessoryRef ForceCode = &Context->ForceCodeAccessoryList[Index];
+            if (ForceCode->ForceEffectIndex != ForceEffectIndex) continue;
+            if (ForceCode->ForceLevel != ForceLevel) continue;
+
+            Formula.ForceEffectIndex = ForceEffectIndex;
+            Formula.ForceLevel = ForceLevel;
+
+            if (ItemType == RUNTIME_ITEM_TYPE_VEHICLE_BIKE) {
+                Int32 ForceValues[] = {
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    ForceCode->VehicleForceValueGrade5,
+                    0,
+                    0,
+                    ForceCode->VehicleForceValueGrade8,
+                    0,
+                    0,
+                    ForceCode->VehicleForceValueGrade11,
+                    0,
+                    0,
+                    ForceCode->VehicleForceValueGrade14,
+                    0
+                };
+
+                Formula.ForceValue = ForceValues[ItemGrade];
+            }
+
+            if (ItemType == RUNTIME_ITEM_TYPE_EPAULET ||
+                ItemType == RUNTIME_ITEM_TYPE_EPAULET2) {
+                Formula.ForceValue = ForceCode->EpauletForceValue;
+            }
+
+            if (ItemType == RUNTIME_ITEM_TYPE_AMULET ||
+                ItemType == RUNTIME_ITEM_TYPE_BELT ||
+                ItemType == RUNTIME_ITEM_TYPE_BRACELET ||
+                ItemType == RUNTIME_ITEM_TYPE_BROOCH ||
+                ItemType == RUNTIME_ITEM_TYPE_CHARM ||
+                ItemType == RUNTIME_ITEM_TYPE_EARRING ||
+                ItemType == RUNTIME_ITEM_TYPE_RING) {
+                assert(0 < ItemGrade && ItemGrade < 15);
+                Formula.ForceValue = ForceCode->AccessoryForceValueGrades[ItemGrade - 1];
+            }
+
+            if (ItemType == RUNTIME_ITEM_TYPE_CREST) {
+                assert(ItemGrade < 4);
+                Int32 ForceValues[] = {
+                    0,
+                    ForceCode->EmblemForceValueGrade1,
+                    ForceCode->EmblemForceValueGrade2,
+                    ForceCode->EmblemForceValueGrade3,
+                };
+                Formula.ForceValue = ForceValues[ItemGrade];
+            }
+
+            if (ItemType == RUNTIME_ITEM_TYPE_ARTIFACT) {
+                Formula.ForceValue = ForceCode->UniqueEmblemForceValue;
+            }
+
+            return Formula;
+        }
+
+        return Formula;
+    }
+
+    return Formula;
+}

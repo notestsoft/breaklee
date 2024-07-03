@@ -95,6 +95,10 @@ Void RTCharacterInitializeBattleStyleStats(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 ) {
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_STR] += Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_STR];
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_DEX] += Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_DEX];
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_INT] += Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_INT];
+
 	Int32 BattleStyleIndex = Character->Data.Info.Style.BattleStyle | (Character->Data.Info.Style.ExtendedBattleStyle << 3);
 
 	RTBattleStyleStatsFormulaDataRef StatsFormula = RTRuntimeGetBattleStyleStatsFormulaData(Runtime, BattleStyleIndex);
@@ -120,9 +124,9 @@ Void RTCharacterInitializeBattleStyleStats(
 
 	Int32 StatsFormulaIndexCount = sizeof(StatsFormulaIndices) / sizeof(StatsFormulaIndices[0]);
 	Int32 StatsIndices[] = {
-		RUNTIME_CHARACTER_STAT_STR,
-		RUNTIME_CHARACTER_STAT_DEX,
-		RUNTIME_CHARACTER_STAT_INT,
+		RUNTIME_ATTRIBUTE_STAT_STR,
+		RUNTIME_ATTRIBUTE_STAT_DEX,
+		RUNTIME_ATTRIBUTE_STAT_INT,
 	};
 	Int32 StatsIndexCount = sizeof(StatsIndices) / sizeof(StatsIndices[0]);
 	for (Int32 Index = 0; Index < StatsFormulaIndexCount; Index++) {
@@ -133,10 +137,10 @@ Void RTCharacterInitializeBattleStyleStats(
 				RTBattleStyleSlopeDataRef SlopeData = RTRuntimeGetBattleStyleSlopeData(
 					Runtime,
 					StatsFormulaIndices[Index].SlopeID,
-					Character->Data.Info.Stat[StatsIndex]
+					Character->Attributes.Values[StatsIndex]
 				);
 
-				AttributeValue += Character->Data.Info.Stat[StatsIndex] * SlopeData->Slope + SlopeData->Intercept;
+				AttributeValue += Character->Attributes.Values[StatsIndex] * SlopeData->Slope + SlopeData->Intercept;
 			}
 		}
 
@@ -151,6 +155,8 @@ Void RTCharacterInitializeEquipment(
     for (Int32 Index = 0; Index < Character->Data.EquipmentInfo.Count; Index += 1) {
         RTItemSlotRef ItemSlot = &Character->Data.EquipmentInfo.Slots[Index];
         RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
+		if (ItemData->MinLevel > Character->Data.Info.Basic.Level) continue;
+
         if (!ItemData) {
             Warn("No item data found for item id: %d", ItemSlot->Item.ID);
             continue;
@@ -378,8 +384,6 @@ Void RTCharacterInitializeAttributes(
 
     RTCharacterInitializeBattleStyleLevel(Runtime, Character);
 	RTCharacterInitializeBattleStyleClass(Runtime, Character);
-    RTCharacterInitializeBattleStyleStats(Runtime, Character);
-	RTCharacterInitializeEquipment(Runtime, Character);
     RTCharacterInitializeSkillStats(Runtime, Character);
     RTCharacterInitializeEssenceAbilities(Runtime, Character);
     RTCharacterInitializeBlendedAbilities(Runtime, Character);
@@ -397,6 +401,8 @@ Void RTCharacterInitializeAttributes(
     RTCharacterInitializeTranscendenceMastery(Runtime, Character);
     RTCharacterInitializeStellarMastery(Runtime, Character);
     RTCharacterInitializeMythMastery(Runtime, Character);
+	RTCharacterInitializeBattleStyleStats(Runtime, Character);
+	RTCharacterInitializeEquipment(Runtime, Character);
     
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] = MIN(
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX],
@@ -429,20 +435,6 @@ Void RTCharacterInitializeAttributes(
 	if (AxpFieldRate) {
 		Character->AxpFieldRate = AxpFieldRate->Rate;
 	}
-
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_ATTACK] = 5000;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MAGIC_ATTACK] = 5000;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_ATTACK_RATE] = 5000;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_CRITICAL_RATE] = 50;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_CRITICAL_DAMAGE] = 500;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_SWORD_SKILL_AMP] = 500;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MAGIC_SKILL_AMP] = 500;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_ACCURACY] = 500;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_PENETRATION] = 500;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_ADD_DAMAGE] = 500;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MIN_DAMAGE] = 5;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_DEFENSE] = 5000;
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_DEFENSE_RATE] = 5000;
 }
 
 Bool RTCharacterIsAlive(
@@ -834,9 +826,9 @@ Bool RTCharacterBattleRankUp(
 	RTBattleStyleRankDataRef NextRankData = RTRuntimeGetBattleStyleRankData(Runtime, BattleStyleIndex, Character->Data.Info.Style.BattleRank + 1);
 	if (!NextRankData) return false;
 
-	if (RankData->ConditionSTR > Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_STR] ||
-		RankData->ConditionDEX > Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_DEX] ||
-		RankData->ConditionINT > Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_INT]) {
+	if (RankData->ConditionSTR > Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_STR] ||
+		RankData->ConditionDEX > Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_DEX] ||
+		RankData->ConditionINT > Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_INT]) {
 		return false;
 	}
 

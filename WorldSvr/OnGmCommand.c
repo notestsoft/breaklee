@@ -18,9 +18,9 @@ CLIENT_PROCEDURE_BINDING(GM_COMMAND) {
         S2C_DATA_NFY_CHARACTER_PARAMETERS* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_CHARACTER_PARAMETERS);
         Notification->Exp = Character->Data.Info.Basic.Exp;
         Notification->Level = Character->Data.Info.Basic.Level;
-        Notification->Str = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_STR];
-        Notification->Dex = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_DEX];
-        Notification->Int = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_INT];
+        Notification->Str = Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_STR];
+        Notification->Dex = Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_DEX];
+        Notification->Int = Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_INT];
         Notification->HP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
         Notification->MP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
         Notification->SP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];

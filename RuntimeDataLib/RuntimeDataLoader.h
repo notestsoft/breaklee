@@ -16,6 +16,13 @@ struct _RTRuntimeDataContext {
 };
 typedef struct _RTRuntimeDataContext* RTRuntimeDataContextRef;
 
+struct _RTDataForceCodeFormula {
+	Int32 ForceEffectIndex;
+	Int32 ForceLevel;
+	Int32 ForceValue;
+};
+typedef struct _RTDataForceCodeFormula RTDataForceCodeFormula;
+
 #pragma pack(pop)
 
 RTRuntimeDataContextRef RTRuntimeDataContextCreate();
@@ -127,6 +134,17 @@ RTDataUpgradeGradeChangeRef RTRuntimeDataUpgradeGradeChangeGet(
 	RTRuntimeDataContextRef Context,
 	Int32 ItemType,
 	Int32 ItemGrade
+);
+
+RTDataForceCodeFormula RTRuntimeDataForceCodeFormulaGet(
+	RTRuntimeDataContextRef Context,
+	RTDataItemType ItemType,
+	Int32 ItemGrade,
+	Int32 ItemUniqueGrade,
+	Int32 ForceIndex,
+	Int32 ForceLevel,
+	Bool IsExtended,
+	Bool IsEpic
 );
 
 EXTERN_C_END

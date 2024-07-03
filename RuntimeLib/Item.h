@@ -184,6 +184,16 @@ struct _RTItemData {
 		} Armor;
 
 		struct {
+			Int32 MaybeGrade;
+			Int32 Defense;
+			Int32 MovementSpeed;
+			Int32 MaxSlotCount;
+			Int32 Unknown1;
+			Int32 DefenseRate;
+			Int32 UnknownOptions1[16];
+		} VehicleBike;
+
+		struct {
 			Int32 ForceEffect1;
 			Int32 ForceValue1;
 			Int32 MinLevel;
@@ -282,6 +292,7 @@ struct _RTItemData {
     Int32 Width;
     Int32 Height;
 	Int32 MaxStackSize;
+	Int32 UniqueGrade;
 	Int32 MasterGrade;
 };
 
