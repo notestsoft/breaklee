@@ -657,7 +657,18 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_CHAOS_LEVEL) {
 			if (SafeData->Options[0] == 0) {
 				RequiredSafeCount = 1;
 			}
-			else if (SafeData->Options[0] != UpgradeMain->Group) goto error;
+
+			Bool Found = false;
+			for (Int32 SafeGuardItemIndex = 0; SafeGuardItemIndex < Runtime->Context->ChaosUpgradeSafeguardItemCount; SafeGuardItemIndex += 1) {
+				RTDataChaosUpgradeSafeguardItemRef UpgradeSafeGuardItem = &Runtime->Context->ChaosUpgradeSafeguardItemList[SafeGuardItemIndex];
+				if (UpgradeSafeGuardItem->Group != UpgradeMain->Group) continue;
+				if (UpgradeSafeGuardItem->Option != SafeData->Options[0]) continue;
+
+				Found = true;
+				break;
+			}
+
+			if (!Found) goto error;
 
 			Int32 ConsumableSafeCount = MIN(RequiredSafeCount, (Int32)SafeSlot->ItemOptions);
 
