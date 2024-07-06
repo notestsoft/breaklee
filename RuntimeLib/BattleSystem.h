@@ -247,7 +247,6 @@ struct _RTFinalBattleAttributes {
 	Int64 CriticalRate;
 	Int64 MissRate;
 	Int64 BlockRate;
-	Int64 AccumulatedRate;
 };
 
 struct _RTBattleResult {

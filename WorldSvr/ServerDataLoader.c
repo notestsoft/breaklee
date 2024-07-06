@@ -47,7 +47,8 @@ struct _ArchiveItemData {
     UInt8 MeisterGrade;
     Int16 CooltimeID;
     Int16 MaxStackSize;
-    Int32 Unknown6[7];
+    Int32 ExtendedOptions[6];
+    Int32 Unknown6;
 };
 
 struct _ArchiveMobData {
@@ -819,8 +820,16 @@ Bool ServerLoadItemData(
             ItemData->MaxStackSize = ArchiveItemData->MaxStackSize;
             ItemData->UniqueGrade = ArchiveItemData->UniqueGrade;
             ItemData->MasterGrade = ArchiveItemData->MeisterGrade;
+            memcpy(ItemData->ExtendedOptions, ArchiveItemData->ExtendedOptions, sizeof(ArchiveItemData->ExtendedOptions));
             Runtime->ItemDataCount += 1;
 
+            if (ArchiveItemData->ItemType == RUNTIME_ITEM_TYPE_CHAOS_SAFEGUARD) {
+                Trace("ChaosSafeGuard(%d, %d, %s)",
+                    ItemData->ItemID,
+                    ArchiveItemData->Options[0],
+                    GetItemDescription(Messages, ArchiveItemData->ItemName)
+                );
+            }
             /*
             if (ArchiveItemData->MeisterGrade > 0) {
                 Trace("Meister(%d, %d, %s)",

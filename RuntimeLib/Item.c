@@ -989,6 +989,38 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemAccessory) {
 		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 	);
 
+	RTCharacterApplyForceEffect(
+		Runtime,
+		Character,
+		ItemData->Accessory.ForceEffect5,
+		ItemData->Accessory.ForceValue5,
+		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+	);
+
+	RTCharacterApplyForceEffect(
+		Runtime,
+		Character,
+		ItemData->ExtendedAccessory.ForceEffect1,
+		ItemData->ExtendedAccessory.ForceValue1,
+		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+	);
+
+	RTCharacterApplyForceEffect(
+		Runtime,
+		Character,
+		ItemData->ExtendedAccessory.ForceEffect2,
+		ItemData->ExtendedAccessory.ForceValue2,
+		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+	);
+
+	RTCharacterApplyForceEffect(
+		Runtime,
+		Character,
+		ItemData->ExtendedAccessory.ForceEffect3,
+		ItemData->ExtendedAccessory.ForceValue3,
+		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+	);
+
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 

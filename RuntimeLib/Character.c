@@ -32,6 +32,16 @@ Void RTCharacterInitialize(
 	);
 }
 
+Void RTCharacterInitializeConstantAttributes(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_CRITICAL_DAMAGE] += 20;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_CRITICAL_RATE] += 5;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_CRITICAL_RATE_MAX] += 50;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED] = RUNTIME_MOVEMENT_SPEED_BASE;
+}
+
 Void RTCharacterInitializeBattleStyleLevel(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
@@ -140,7 +150,7 @@ Void RTCharacterInitializeBattleStyleStats(
 					Character->Attributes.Values[StatsIndex]
 				);
 
-				AttributeValue += Character->Attributes.Values[StatsIndex] * SlopeData->Slope + SlopeData->Intercept;
+				AttributeValue += Character->Attributes.Values[StatsIndices[StatsIndex]] * SlopeData->Slope + SlopeData->Intercept;
 			}
 		}
 
@@ -382,6 +392,7 @@ Void RTCharacterInitializeAttributes(
 ) {
 	memset(Character->Attributes.Values, 0, sizeof(Character->Attributes.Values));
 
+	RTCharacterInitializeConstantAttributes(Runtime, Character);
     RTCharacterInitializeBattleStyleLevel(Runtime, Character);
 	RTCharacterInitializeBattleStyleClass(Runtime, Character);
     RTCharacterInitializeSkillStats(Runtime, Character);

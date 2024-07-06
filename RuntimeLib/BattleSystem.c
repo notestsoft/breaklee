@@ -35,19 +35,21 @@ static inline Int64 _CalculateFinalAttribute(
 }
 
 static inline Int64 _CalculateFinalDefense(
+	Int64 AttackerLevel,
+	Int64 DefenderLevel,
     Int64 Defense,
     Int64 Penetration
 ) {
-	return Defense * 10000 / (10000 + Penetration);
+	Int64 LevelDifference = MAX(0, MIN(25, DefenderLevel - AttackerLevel));
+	Int64 DefenseScale = 1000000 - (Penetration * 1000000) / (Penetration + LevelDifference * 2 + 400);
+	return Defense * DefenseScale / 1000000;
 }
 
 static inline Int64 _CalculateFinalMissRate(
     Int64 Evasion,
     Int64 Accuracy
 ) {
-	Int64 FinalEvasion = Evasion * 10000 / (10000 + Accuracy);
-	
-	return 100 - 100 * 10000 / (10000 + FinalEvasion);
+	return MAX(250000, MIN(950000, Evasion - Accuracy * 100));
 }
 
 static inline Int64 _CalculateFinalMinDamage(
@@ -55,23 +57,18 @@ static inline Int64 _CalculateFinalMinDamage(
     Int64 AttackRate,
     Int64 DefenseRate
 ) {
-	Int64 BaseRate = 100 - MinDamage;
-	if (DefenseRate < 1) return BaseRate;
-
-	Int64 AppliedAttackRate = MAX(0, AttackRate - DefenseRate);
-
-	return MinDamage + BaseRate - BaseRate * DefenseRate / (DefenseRate + AppliedAttackRate);
+	return MAX(80, MinDamage + 80);
 }
 
 static inline Int64 _CalculateFinalBlockRate(
-    Int64 AttackRate,
+	Int64 AttackerLevel,
+	Int64 DefenderLevel,
+	Int64 AttackRate,
     Int64 DefenseRate
 ) {
-	if (AttackRate < 1) return 0;
-
-	Int64 AppliedDefenseRate = MAX(0, DefenseRate - AttackRate);
-
-	return 100 - 100 * AttackRate / (AttackRate + AppliedDefenseRate);
+	Int64 LevelDifferenceBonus = MAX(25, DefenderLevel - AttackerLevel) * 4000;
+	Int64 AppliedDefenseRate = DefenseRate - AttackRate;
+	return MAX(0, MIN(950000, (AppliedDefenseRate * 1000000) / (ABS(AppliedDefenseRate) + 10000) + LevelDifferenceBonus));
 }
 
 // TODO: Add missing attributes...
@@ -108,6 +105,8 @@ Void CalculateFinalBattleAttributes(
 		Attacker->Values[RUNTIME_ATTRIBUTE_IGNORE_RESIST_SKILL_AMP]
 	);
 	Result->Defense = _CalculateFinalDefense(
+		AttackerLevel,
+		DefenderLevel,
 		Defender->Values[RUNTIME_ATTRIBUTE_DEFENSE],
 		_CalculateFinalAttribute(
 			Attacker->Values[RUNTIME_ATTRIBUTE_PENETRATION],
@@ -131,6 +130,8 @@ Void CalculateFinalBattleAttributes(
 		)
 	);
 	Result->BlockRate = _CalculateFinalBlockRate(
+		AttackerLevel,
+		DefenderLevel,
 		Attacker->Values[RUNTIME_ATTRIBUTE_ATTACK_RATE],
 		Defender->Values[RUNTIME_ATTRIBUTE_DEFENSE_RATE]
 	);
@@ -154,7 +155,6 @@ Void CalculateFinalBattleAttributes(
 	Result->NormalDamageAmp = Attacker->Values[RUNTIME_ATTRIBUTE_NORMAL_ATTACK_DAMAGE_UP];
 	Result->FinalDamageAmp = Attacker->Values[RUNTIME_ATTRIBUTE_FINAL_DAMAGE_INCREASED];
 	Result->FinalDamageAmp -= Defender->Values[RUNTIME_ATTRIBUTE_FINAL_DAMAGE_DECREASED];
-	Result->AccumulatedRate = 100 + Result->MissRate + Result->BlockRate;
 }
 
 Int64 RTCalculateBaseHP(
@@ -196,19 +196,15 @@ Void RTCalculateNormalAttackResult(
 //	Int32 LevelDifference = CalculateLevelDifference(AttackerLevel, DefenderLevel);
 //	Int32 LevelDifferencePenalty = CalculateLevelDifferencePenalty(AttackerLevel, DefenderLevel);
 
-	Int32 Rate = RandomRange(&Attacker->Seed, 0, (Int32)Attributes.AccumulatedRate);
-	if (Rate < Attributes.CriticalRate) {
-		Attributes.MinDamage = 100;
-
+	Int32 Rate = RandomRange(&Attacker->Seed, 0, 1000000);
+	if (Rate < Attributes.BlockRate) {
+		Result->AttackType = RUNTIME_ATTACK_TYPE_BLOCK;
+	}
+	else if (Rate < Attributes.CriticalRate * 10000) {
 		Result->AttackType = RUNTIME_ATTACK_TYPE_CRITICAL;
 	}
-	else if (Rate < Attributes.CriticalRate + Attributes.MissRate) {
+	else if (Rate < Attributes.MissRate) {
 		Result->AttackType = RUNTIME_ATTACK_TYPE_MISS;
-		return;
-	}
-	else if (Rate < Attributes.CriticalRate + Attributes.MissRate + Attributes.BlockRate) {
-		Result->AttackType = RUNTIME_ATTACK_TYPE_BLOCK;
-		return;
 	}
 	else {
 		Result->AttackType = RUNTIME_ATTACK_TYPE_NORMAL;
@@ -222,17 +218,21 @@ Void RTCalculateNormalAttackResult(
 	if (Result->AttackType == RUNTIME_ATTACK_TYPE_CRITICAL) {
 		Result->TotalDamage = (Result->TotalDamage * (100 + Attributes.CriticalDamage)) / 100;
 	}
-
 	if (Result->AttackType == RUNTIME_ATTACK_TYPE_NORMAL) {
 		Result->TotalDamage = (Result->TotalDamage * (100 + Attributes.NormalDamageAmp)) / 100;
 	}
 
-	Result->AdditionalDamage = Attributes.AddDamage;
+	// Result->AdditionalDamage = Attributes.AddDamage;
 	Result->TotalDamage += Attributes.AddDamage;
 	Result->TotalDamage = (Result->TotalDamage * (100 + Attributes.FinalDamageAmp)) / 100;
 	Result->TotalDamage = MAX(1, Result->TotalDamage);
-	Result->AppliedDamage = MIN(Result->TotalDamage, Defender->Values[RUNTIME_ATTRIBUTE_HP_CURRENT]);
-	Result->IsDead = (Defender->Values[RUNTIME_ATTRIBUTE_HP_CURRENT] - Result->TotalDamage) <= 0;
+	
+	Result->AppliedDamage = 0;
+	if (Result->AttackType == RUNTIME_ATTACK_TYPE_CRITICAL || Result->AttackType == RUNTIME_ATTACK_TYPE_NORMAL) {
+		Result->AppliedDamage = MIN(Result->TotalDamage, Defender->Values[RUNTIME_ATTRIBUTE_HP_CURRENT]);
+	}
+
+	Result->IsDead = (Defender->Values[RUNTIME_ATTRIBUTE_HP_CURRENT] - Result->AppliedDamage) <= 0;
 
 	// TODO: Add damage absorb shield and other stuff
 

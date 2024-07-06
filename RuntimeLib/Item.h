@@ -204,8 +204,9 @@ struct _RTItemData {
 			Int32 ForceValue3;
 			Int32 ForceEffect4;
 			Int32 ForceValue4;
-			// TODO: Check if there can be more then 4 options on ring or other accessories...
-			Int32 UnknownOptions1[3];
+			Int32 ForceEffect5;
+			Int32 ForceValue5;
+			Int32 UnknownOptions1;
 			Int32 DeltaStr;
 			Int32 DeltaDex;
 			Int32 DeltaInt;
@@ -287,6 +288,19 @@ struct _RTItemData {
 		// TODO: Add other item types like potion, pet, ...
 
 		struct { Int32 Options[22]; };
+	};
+
+	union {
+		struct {
+			Int32 ForceEffect1;
+			Int32 ForceValue1;
+			Int32 ForceEffect2;
+			Int32 ForceValue2;
+			Int32 ForceEffect3;
+			Int32 ForceValue3;
+		} ExtendedAccessory;
+
+		struct { Int32 ExtendedOptions[6]; };
 	};
 
     Int32 Width;
