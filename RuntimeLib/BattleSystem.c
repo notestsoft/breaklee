@@ -214,8 +214,7 @@ Void RTCalculateNormalAttackResult(
 	Result->TotalDamage = Attributes.Attack * MinDamageRate / 100;
 	Result->TotalDamage = Result->TotalDamage * (100 + Attributes.SkillAmp) / 100;
 	Result->TotalDamage = Result->TotalDamage * MIN(100, 100 - MIN(25, DefenderLevel - AttackerLevel) * 2) / 100; //  * 2
-	Result->TotalDamage += Result->TotalDamage * (10000 - (Attributes.Defense * 10000) / (Attributes.Defense + Result->TotalDamage));
-	Result->TotalDamage /= 10000;
+	Result->TotalDamage = 2 * Result->TotalDamage * (10000 - (Attributes.Defense * 10000) / (Attributes.Defense + Result->TotalDamage)) / 10000;
 
 	if (Result->AttackType == RUNTIME_ATTACK_TYPE_CRITICAL) {
 		Result->TotalDamage = (Result->TotalDamage * (100 + Attributes.CriticalDamage)) / 100;
