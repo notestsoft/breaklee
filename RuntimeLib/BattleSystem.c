@@ -41,8 +41,8 @@ static inline Int64 _CalculateFinalDefense(
     Int64 Penetration
 ) {
 	Int64 LevelDifference = MAX(0, MIN(25, DefenderLevel - AttackerLevel));
-	Int64 DefenseScale = 1000000 - (Penetration * 1000000) / (Penetration + LevelDifference * 2 + 400);
-	return Defense * DefenseScale / 1000000;
+	Int64 PenetrationPenalty = (Penetration * 1000000) / (Penetration + LevelDifference * 2 + 400);
+	return Defense * MAX(50000, MIN(1000000, 1000000 - PenetrationPenalty)) / 1000000;
 }
 
 static inline Int64 _CalculateFinalMissRate(
@@ -210,10 +210,12 @@ Void RTCalculateNormalAttackResult(
 		Result->AttackType = RUNTIME_ATTACK_TYPE_NORMAL;
 	}
 
-	Result->TotalDamage = MAX(1, Attributes.Attack - Attributes.Defense);
-	Int32 DamageRate = RandomRange(&Attacker->Seed, (Int32)Attributes.MinDamage, 100);
-	Result->TotalDamage = (Result->TotalDamage * DamageRate) / 100;
-	Result->TotalDamage = (Result->TotalDamage * (100 + Attributes.SkillAmp)) / 100;
+	Int32 MinDamageRate = RandomRange(&Attacker->Seed, (Int32)Attributes.MinDamage, 100);
+	Result->TotalDamage = Attributes.Attack * MinDamageRate / 100;
+	Result->TotalDamage = Result->TotalDamage * (100 + Attributes.SkillAmp) / 100;
+	Result->TotalDamage = Result->TotalDamage * MIN(100, 100 - MIN(25, DefenderLevel - AttackerLevel) * 2) / 100; //  * 2
+	Result->TotalDamage += Result->TotalDamage * (10000 - (Attributes.Defense * 10000) / (Attributes.Defense + Result->TotalDamage));
+	Result->TotalDamage /= 10000;
 
 	if (Result->AttackType == RUNTIME_ATTACK_TYPE_CRITICAL) {
 		Result->TotalDamage = (Result->TotalDamage * (100 + Attributes.CriticalDamage)) / 100;
