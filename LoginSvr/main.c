@@ -105,7 +105,7 @@ Void ContextAddCaptchaFile(
 
     CString ExtensionOffset = strstr(FileName, ".jpg");
     if (ExtensionOffset != NULL) {
-        Int32 CaptchaLength = ExtensionOffset - FileName;
+        Int32 CaptchaLength = (Int32)(ExtensionOffset - FileName);
         Captcha->Name[CaptchaLength] = '\0';
     }
 

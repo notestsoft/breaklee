@@ -128,7 +128,6 @@ CLIENT_PROCEDURE_BINDING(AUTHENTICATE) {
     Response->AccountStatus = ACCOUNT_STATUS_NORMAL;
 
     AUTHDB_DATA_ACCOUNT Account = { 0 };
-
     if (AuthDBSelectAccountByUsername(Context->Database, Username, &Account)) {
         if (Account.DeletedAt > 0) {
             Response->AccountStatus = ACCOUNT_STATUS_ACCOUNT_IS_DELETED;

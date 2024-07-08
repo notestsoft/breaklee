@@ -70,7 +70,7 @@ Void ServerOnUpdate(
                 IPC_P2W_DATA_PARTY_INVITE_TIMEOUT* Notification = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, P2W, PARTY_INVITE_TIMEOUT);
                 Notification->Header.Source = Server->IPCSocket->NodeID;
                 Notification->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
-                Notification->Header.Target.Index = *InviterWorldIndex;
+                Notification->Header.Target.Index = (UInt32)*InviterWorldIndex;
                 Notification->Header.Target.Type = IPC_TYPE_WORLD;
                 Notification->CharacterIndex = Invitation->InviterCharacterIndex;
                 Notification->IsAccept = false;
@@ -82,7 +82,7 @@ Void ServerOnUpdate(
                 IPC_P2W_DATA_PARTY_INVITE_TIMEOUT* Notification = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, P2W, PARTY_INVITE_TIMEOUT);
                 Notification->Header.Source = Server->IPCSocket->NodeID;
                 Notification->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
-                Notification->Header.Target.Index = *InvitedWorldIndex;
+                Notification->Header.Target.Index = (UInt32)*InvitedWorldIndex;
                 Notification->Header.Target.Type = IPC_TYPE_WORLD;
                 Notification->CharacterIndex = Invitation->Member.Info.CharacterIndex;
                 Notification->IsAccept = false;

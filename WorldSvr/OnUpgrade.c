@@ -91,7 +91,7 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 	RTItemDataRef MainScrollData = FixedScrollSlot ? FixedScrollData : RandomScrollData;
 	RTItemOptions MainScrollOptions = FixedScrollSlot ? FixedScrollOptions : RandomScrollOptions;
 
-	Int32 Seed = PlatformGetTickCount();
+	Int32 Seed = (Int32)PlatformGetTickCount();
 	if (FixedScrollSlot && RandomScrollSlot) {
 		Int32 Value = RandomRange(&Seed, 0, 10000);
 		if (Value >= 5000) {
@@ -109,7 +109,7 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 		for (Index Index = 0; Index < ForceCoreBase->ForceCoreBaseCodeCount; Index += 1) {
 			RTDataForceCoreBaseCodeRef Code = &ForceCoreBase->ForceCoreBaseCodeList[Index];
 			if (Code->HasRandomRate) {
-				RandomForceCorePool[RandomForceCorePoolCount] = Index;
+				RandomForceCorePool[RandomForceCorePoolCount] = (Int32)Index;
 				RandomForceCorePoolCount += 1;
 			}
 		}

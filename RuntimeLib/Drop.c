@@ -99,16 +99,16 @@ Bool RTDropCurrency(
     RTMobRef Mob,
     RTCharacterRef Character
 ) {
-    Int32 CurrencyDropRate = RUNTIME_DROP_BASE_CURRENCY_RATE + Character->Attributes.Values[RUNTIME_ATTRIBUTE_ALZ_DROP_RATE];
-    Int32 CurrencyBombDropRate = RUNTIME_DROP_BASE_CURRENCY_BOMB_RATE + Character->Attributes.Values[RUNTIME_ATTRIBUTE_ALZ_BOMB_RATE];
+    Int64 CurrencyDropRate = RUNTIME_DROP_BASE_CURRENCY_RATE + Character->Attributes.Values[RUNTIME_ATTRIBUTE_ALZ_DROP_RATE];
+    Int64 CurrencyBombDropRate = RUNTIME_DROP_BASE_CURRENCY_BOMB_RATE + Character->Attributes.Values[RUNTIME_ATTRIBUTE_ALZ_BOMB_RATE];
 
-    Int32 MaxCurrencyDropRate = 10000;
+    Int64 MaxCurrencyDropRate = 10000;
     MaxCurrencyDropRate += Character->Attributes.Values[RUNTIME_ATTRIBUTE_ALZ_DROP_RATE];
     MaxCurrencyDropRate += Character->Attributes.Values[RUNTIME_ATTRIBUTE_ALZ_BOMB_RATE];
-    Int32 FinalCurrencyDropRate = INT16_MAX / MaxCurrencyDropRate * CurrencyDropRate;
-    Int32 FinalCurrencyBombDropRate = INT16_MAX / MaxCurrencyDropRate * CurrencyBombDropRate;
+    Int64 FinalCurrencyDropRate = INT16_MAX / MaxCurrencyDropRate * CurrencyDropRate;
+    Int64 FinalCurrencyBombDropRate = INT16_MAX / MaxCurrencyDropRate * CurrencyBombDropRate;
 
-    Int32 DropRateValue = RandomRange(&World->Seed, 0, INT16_MAX);
+    Int64 DropRateValue = RandomRange(&World->Seed, 0, INT16_MAX);
     if (DropRateValue < FinalCurrencyDropRate) {
         Int32 BaseDropAmount = MAX(1, Mob->Spawn.Level) * RUNTIME_DROP_BASE_CURRENCY_MULTIPLIER;
 
@@ -132,7 +132,7 @@ Bool RTDropCurrency(
 
             RTDropResult Drop = { 0 };
             Drop.ItemID.ID = RUNTIME_ITEM_ID_CURRENCY;
-            Drop.ItemOptions = BaseDropAmount + RandomRange(&World->Seed, 1, BaseDropAmount);
+            Drop.ItemOptions = BaseDropAmount + (Int64)RandomRange(&World->Seed, 1, BaseDropAmount);
             RTWorldSpawnItem(
                 Runtime,
                 World,

@@ -752,7 +752,7 @@ RTDataForceCodeFormula RTRuntimeDataForceCodeFormulaGet(
 
     if (IsEquipment) {
         for (Int32 Index = 0; Index < Context->ForceCodeEquipmentCount; Index += 1) {
-            RTDataExtendedForceCodeEquipmentRef ForceCode = &Context->ForceCodeEquipmentList[Index];
+            RTDataForceCodeEquipmentRef ForceCode = &Context->ForceCodeEquipmentList[Index];
             if (ForceCode->ForceEffectIndex != ForceEffectIndex) continue;
             if (ForceCode->ForceLevel != ForceLevel) continue;
 

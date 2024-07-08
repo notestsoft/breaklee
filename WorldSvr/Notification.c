@@ -286,7 +286,7 @@ Void BroadcastUserList(
     Notification->MaxPlayerCount = Context->Config.WorldSvr.MaxConnectionCount;
     CStringCopySafe(Notification->Host, 64 + 1, Context->Config.WorldSvr.Host);
     Notification->Port = Context->Config.WorldSvr.Port;
-    Notification->Type = Context->Runtime->Environment.RawValue;
+    Notification->Type = (UInt32)Context->Runtime->Environment.RawValue;
     IPCSocketUnicast(Server->IPCSocket, Notification);
 }
 

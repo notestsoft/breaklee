@@ -48,7 +48,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
 	Request->Header.Source = Packet->Header.Source;
 	Request->Header.SourceConnectionID = Packet->Header.SourceConnectionID;
 	Request->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
-	Request->Header.Target.Index = Packet->Target.NodeIndex;
+	Request->Header.Target.Index = (UInt32)Packet->Target.NodeIndex;
 	Request->Header.Target.Type = IPC_TYPE_WORLD;
 	Request->Source = Packet->Source;
 	Request->Target = Packet->Target;

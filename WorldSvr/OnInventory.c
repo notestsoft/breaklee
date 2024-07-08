@@ -398,7 +398,7 @@ CLIENT_PROCEDURE_BINDING(MERGE_INVENTORY) {
         TotalStackSize += ItemSlot->ItemOptions & ItemStackSizeMask;
     }
 
-    C2S_DATA_MERGE_INVENTORY_SLOT_RESULT* ResultInventorySlotIndex = &Packet->MergeInventorySlotIndex[Packet->MergeInventorySlotCount];
+    C2S_DATA_MERGE_INVENTORY_SLOT_RESULT* ResultInventorySlotIndex = (C2S_DATA_MERGE_INVENTORY_SLOT_RESULT*)&Packet->MergeInventorySlotIndex[Packet->MergeInventorySlotCount];
 
     Int64 ResultStackSize = 0;
     for (Int32 Index = 0; Index < Packet->ResultInventorySlotCount; Index += 1) {

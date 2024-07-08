@@ -245,7 +245,7 @@ Void RTCharacterInitializeKarmaAbilities(
     RTCharacterRef Character
 ) {
 	for (Int32 Index = 0; Index < Character->Data.KarmaAbilityInfo.Count; Index += 1) {
-		RTEssenceAbilitySlotRef AbilitySlot = &Character->Data.KarmaAbilityInfo.Slots[Index];
+		RTKarmaAbilitySlotRef AbilitySlot = &Character->Data.KarmaAbilityInfo.Slots[Index];
 
 		RTDataKarmaAbilityValueRef AbilityValue = RTRuntimeDataKarmaAbilityValueGet(
 			Runtime->Context,

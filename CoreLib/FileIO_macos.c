@@ -44,6 +44,7 @@ Bool FileExists(
 }
 
 Int32 FilesProcess(
+	CString Directory,
 	CString Pattern,
 	FilesProcessCallback Callback,
 	Void* UserData

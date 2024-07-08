@@ -56,7 +56,7 @@ IPC_PROCEDURE_BINDING(W2D, CREATE_CHARACTER) {
 #define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__, __SCOPE__) \
 	{ \
         DataTableRef Table = DatabaseGetDataTable(Context->Database, #__SCOPE__, #__NAME__); \
-        if (!Table || !DataTableInsert(Table, Character.__SCOPE__ ## ID, &Packet->CharacterData.__NAME__, sizeof(__TYPE__))) { \
+        if (!Table || !DataTableInsert(Table, Character.__SCOPE__ ## ID, (UInt8*)&Packet->CharacterData.__NAME__, sizeof(__TYPE__))) { \
 			DatabaseRollbackTransaction(Context->Database); \
 			Response->Status = CREATE_CHARACTER_STATUS_DBERROR; \
 			IPCSocketUnicast(Socket, Response); \

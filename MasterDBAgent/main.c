@@ -12,16 +12,14 @@ Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                    \
     ServerContextRef Context = (ServerContextRef)Server->Userdata;          \
     IPCNodeContextRef NodeContext = (IPCNodeContextRef)Connection->Userdata;\
                                                                             \
-    BENCHMARK(#__NAME__, {                                                  \
-        IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                        \
-            Server,                                                         \
-            Context,                                                        \
-            Socket,                                                         \
-            Connection,                                                     \
-            NodeContext,                                                    \
-            (IPC_ ## __NAMESPACE__ ## _DATA_ ## __NAME__ *)Packet           \
-        );                                                                  \
-    });                                                                     \
+    IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                        \
+        Server,                                                         \
+        Context,                                                        \
+        Socket,                                                         \
+        Connection,                                                     \
+        NodeContext,                                                    \
+        (IPC_ ## __NAMESPACE__ ## _DATA_ ## __NAME__ *)Packet           \
+    );                                                                  \
 }
 
 #define IPC_W2D_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(W2D, __NAME__)

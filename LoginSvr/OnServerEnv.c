@@ -26,7 +26,7 @@ DATA_PROCEDURE_BINDING(OnDataAccountInfo, IPC_DATA_ACCOUNTINFO, IPC_DATA_ACKACCO
 	*/
 	S2C_DATA_SERVER_ENVIRONMENT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SERVER_ENVIRONMENT);
 	if (Context->Config.Login.CaptchaVerificationEnabled) {
-		Int32 Seed = PlatformGetTickCount();
+		Int32 Seed = (Int32)PlatformGetTickCount();
 		Client->Captcha = (CaptchaInfoRef)ArrayGetElementAtIndex(
 			Context->CaptchaInfoList,
 			Random(&Seed) % ArrayGetElementCount(Context->CaptchaInfoList)
@@ -56,7 +56,7 @@ CLIENT_PROCEDURE_BINDING(REFRESH_CAPTCHA) {
 
 	S2C_DATA_REFRESH_CAPTCHA* Response = PacketBufferInit(Connection->PacketBuffer, S2C, REFRESH_CAPTCHA);
 	if (Context->Config.Login.CaptchaVerificationEnabled) {
-		Int32 Seed = PlatformGetTickCount();
+		Int32 Seed = (Int32)PlatformGetTickCount();
 		Client->Captcha = (CaptchaInfoRef)ArrayGetElementAtIndex(
 			Context->CaptchaInfoList,
 			Random(&Seed) % ArrayGetElementCount(Context->CaptchaInfoList)

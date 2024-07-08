@@ -386,18 +386,18 @@ DataTableRef DatabaseGetDataTable(
 
 Bool DataTableInsert(
 	DataTableRef Table,
-	Int32 ID,
+	Int64 ID,
 	UInt8* Data,
 	Int32 DataLength
 ) {
-	StatementBindParameterInt32(Table->Insert, 0, ID);
+	StatementBindParameterInt64(Table->Insert, 0, ID);
 	StatementBindParameterBinary(Table->Insert, 1, Data, DataLength);
 	return StatementExecute(Table->Insert);
 }
 
 Bool DataTableSelect(
 	DataTableRef Table,
-	Int32 ID,
+	Int64 ID,
 	UInt8* Data,
 	Int32 DataLength
 ) {
@@ -414,12 +414,12 @@ Bool DataTableSelect(
 
 Bool DataTableUpdate(
 	DataTableRef Table,
-	Int32 ID,
+	Int64 ID,
 	UInt8* Data,
 	Int32 DataLength
 ) {
 	StatementBindParameterBinary(Table->Update, 0, Data, DataLength);
-	StatementBindParameterInt32(Table->Update, 1, ID);
+	StatementBindParameterInt64(Table->Update, 1, ID);
 	return StatementExecute(Table->Update);
 }
 

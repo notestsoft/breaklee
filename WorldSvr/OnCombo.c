@@ -1,4 +1,4 @@
-﻿#include "ClientProtocol.h"
+#include "ClientProtocol.h"
 #include "ClientProcedures.h"
 #include "ClientSocket.h"
 #include "IPCProcedures.h"
@@ -36,7 +36,7 @@ CLIENT_PROCEDURE_BINDING(COMBO_SKILL_EVENT) {
 		if (Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT] < SkillData->Sp) {
 			S2C_DATA_NFY_COMBO_SKILL_SET* Response = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_COMBO_SKILL_SET);
 			Response->Result = S2C_DATA_COMBO_SKILL_SET_RESULT_FAILURE;
-			Response->CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+			Response->CurrentMP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 			SocketSend(Socket, Connection, Response);
 			return;
 		}
@@ -66,11 +66,11 @@ CLIENT_PROCEDURE_BINDING(COMBO_SKILL_EVENT) {
 
 	S2C_DATA_NFY_COMBO_SKILL_SET* Response = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_COMBO_SKILL_SET);
 	Response->Result = S2C_DATA_COMBO_SKILL_SET_RESULT_SUCCESS;
-	Response->CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+	Response->CurrentMP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 	SocketSend(Socket, Connection, Response);
 
 	S2C_DATA_NFY_COMBO_SKILL_EVENT* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_COMBO_SKILL_EVENT);
-	Notification->CharacterIndex = Character->CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
 	Notification->CharacterExtendedStyle = Character->Data.Info.ExtendedStyle.RawValue;
 	BroadcastToWorld(
 		Context,
@@ -84,7 +84,7 @@ CLIENT_PROCEDURE_BINDING(COMBO_SKILL_EVENT) {
 	if (Character->Data.Info.ExtendedStyle.IsComboActive) {
 		S2C_DATA_NFY_CHARACTER_DATA* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_CHARACTER_DATA);
 		Notification->Type = S2C_DATA_CHARACTER_UPDATE_TYPE_SP_DECREASE;
-		Notification->SP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+		Notification->SP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
 		SocketSend(Socket, Connection, Notification);
 	}
 

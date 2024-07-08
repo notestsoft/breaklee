@@ -1128,7 +1128,7 @@ Bool ServerLoadShopData(
         RTShopDataRef ShopData = &Runtime->ShopData[Runtime->ShopDataCount];
         ShopData->Index = Runtime->ShopDataCount;
 
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "world_id", &ShopData->WorldID)) goto error;
+        if (!ParseAttributeIndex(Archive, Iterator->Index, "world_id", (Index*)&ShopData->WorldID)) goto error;
         if (!ParseAttributeInt32(Archive, Iterator->Index, "npc_id", &ShopData->NpcID)) goto error;
 
         ArchiveIteratorRef ItemIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, "item");

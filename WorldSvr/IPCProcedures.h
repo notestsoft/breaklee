@@ -41,6 +41,10 @@ IPC_PROCEDURE_BINDING(A2W, __NAME__);
 IPC_PROCEDURE_BINDING(C2W, __NAME__);
 #include "IPCCommands.h"
 
+#define IPC_D2W_COMMAND(__NAME__) \
+IPC_PROCEDURE_BINDING(D2W, __NAME__);
+#include "IPCCommands.h"
+
 #define IPC_L2W_COMMAND(__NAME__) \
 IPC_PROCEDURE_BINDING(L2W, __NAME__);
 #include "IPCCommands.h"

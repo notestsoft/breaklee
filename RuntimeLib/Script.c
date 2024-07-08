@@ -126,7 +126,7 @@ Bool RTScriptCall(
 //            lua_pushnil(Script->State);
         }
         else if (Type == LUA_TBOOLEAN) {
-            bool Value = va_arg(ArgumentPointer, bool);
+            Bool Value = (Bool)va_arg(ArgumentPointer, Int32);
             lua_pushboolean(Script->State, Value ? 1 : 0);
         }
         else if (Type == LUA_TNUMBER) {

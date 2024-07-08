@@ -51,13 +51,13 @@ Bool RTCharacterCheckItemStatRequirements(
 	RTItemDataRef ItemData,
 	Int32 ItemUpgradeLevel
 ) {
-	Int32 RequiredStr = ItemData->Weapon.Str + ItemData->Weapon.DeltaStr * (1 + MIN(ItemUpgradeLevel, RUNTIME_ENCHANT_MAX_STAT_INCREASE_LEVEL));
-	Int32 RequiredDex = ItemData->Weapon.Dex + ItemData->Weapon.DeltaDex * (1 + MIN(ItemUpgradeLevel, RUNTIME_ENCHANT_MAX_STAT_INCREASE_LEVEL));
-	Int32 RequiredInt = ItemData->Weapon.Int + ItemData->Weapon.DeltaInt * (1 + MIN(ItemUpgradeLevel, RUNTIME_ENCHANT_MAX_STAT_INCREASE_LEVEL));
+	Int64 RequiredStr = ItemData->Weapon.Str + ItemData->Weapon.DeltaStr * (1 + MIN(ItemUpgradeLevel, RUNTIME_ENCHANT_MAX_STAT_INCREASE_LEVEL));
+	Int64 RequiredDex = ItemData->Weapon.Dex + ItemData->Weapon.DeltaDex * (1 + MIN(ItemUpgradeLevel, RUNTIME_ENCHANT_MAX_STAT_INCREASE_LEVEL));
+	Int64 RequiredInt = ItemData->Weapon.Int + ItemData->Weapon.DeltaInt * (1 + MIN(ItemUpgradeLevel, RUNTIME_ENCHANT_MAX_STAT_INCREASE_LEVEL));
 
-	Int32 CurrentStr = Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_STR];
-	Int32 CurrentDex = Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_DEX];
-	Int32 CurrentInt = Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_INT];
+	Int64 CurrentStr = Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_STR];
+	Int64 CurrentDex = Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_DEX];
+	Int64 CurrentInt = Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_INT];
 
 	if (CurrentStr < RequiredStr || CurrentDex < RequiredDex || CurrentInt < RequiredInt) {
 		return false;

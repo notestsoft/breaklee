@@ -26,6 +26,6 @@ IPC_PROCEDURE_BINDING(W2D, GET_ACCOUNT) {
 		Response->Account.CharacterQuestion = Account.CharacterQuestion;
 		CStringCopySafe(Response->Account.CharacterAnswer, MAX_SUBPASSWORD_ANSWER_LENGTH + 1, Account.CharacterAnswer);
 	}
-
+ 
 	IPCSocketUnicast(Socket, Response);
 }

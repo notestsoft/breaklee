@@ -130,14 +130,14 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     // TODO: Populate correct data!!!
 
     /* Server Info */
-    Response->WorldType = Runtime->Environment.RawValue;
+    Response->WorldType = (UInt32)Runtime->Environment.RawValue;
     Response->Server.ServerID = Context->Config.WorldSvr.GroupIndex;
     Response->Server.WorldServerID = Context->Config.WorldSvr.NodeIndex;
     Response->Server.PlayerCount = SocketGetConnectionCount(Context->ClientSocket);
     Response->Server.MaxPlayerCount = Context->Config.WorldSvr.MaxConnectionCount;
     memcpy(Response->Server.Address.Host, Context->Config.WorldSvr.Host, strlen(Context->Config.WorldSvr.Host));
     Response->Server.Address.Port = Context->Config.WorldSvr.Port;
-    Response->Server.WorldType = Runtime->Environment.RawValue;
+    Response->Server.WorldType = (UInt32)Runtime->Environment.RawValue;
 
     /* Character Info */
     Response->WorldIndex = Packet->CharacterData.Info.Position.WorldID;

@@ -21,7 +21,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
             DataOffset += sizeof(__TYPE__); \
             DataTableRef Table = DatabaseGetDataTable(Context->Database, #__SCOPE__, #__NAME__); \
             if (Table) { \
-                if (!DataTableUpdate(Table, Packet->## __SCOPE__ ## ID, (UInt8*)Data, sizeof(__TYPE__))) { \
+                if (!DataTableUpdate(Table, Packet->CONCAT(__SCOPE__, ID), (UInt8*)Data, sizeof(__TYPE__))) { \
                     Response->SyncMaskFailed.__NAME__ = true; \
                 } \
             } else { \

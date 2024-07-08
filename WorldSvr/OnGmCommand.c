@@ -7,7 +7,7 @@
 
 CLIENT_PROCEDURE_BINDING(GM_COMMAND) {
     if (!Character) goto error;
-    if (!Character->Data.Info.Profile.Nation == 3) goto error;
+    if (Character->Data.Info.Profile.Nation != 3) goto error;
 
     if (Packet->Command == 4) {
 

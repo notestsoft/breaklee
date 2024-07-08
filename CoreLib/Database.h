@@ -56,21 +56,21 @@ DataTableRef DatabaseGetDataTable(
 
 Bool DataTableInsert(
     DataTableRef Table,
-    Int32 ID,
+    Int64 ID,
     UInt8* Data,
     Int32 DataLength
 );
 
 Bool DataTableSelect(
     DataTableRef Table,
-    Int32 ID,
+    Int64 ID,
     UInt8* Data,
     Int32 DataLength
 );
 
 Bool DataTableUpdate(
     DataTableRef Table,
-    Int32 ID,
+    Int64 ID,
     UInt8* Data,
     Int32 DataLength
 );

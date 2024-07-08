@@ -737,7 +737,7 @@ Bool PacketLayoutEncode(
                 PacketFieldWritePrimitive(PacketField, PacketBuffer, luaL_len(State, -1));
             }
             else if (ArrayField->Type == PACKET_FIELD_TYPE_CHARACTERS && lua_isstring(State, -1)) {
-                CString Value = lua_tostring(State, -1);
+                CString Value = (CString)lua_tostring(State, -1);
                 ArrayField->Length = strlen(Value);
                 PacketFieldWritePrimitive(PacketField, PacketBuffer, ArrayField->Length);
             }
@@ -787,7 +787,7 @@ Bool PacketLayoutEncode(
                 return false;
             }
 
-            CString Value = lua_tostring(State, -1);
+            CString Value = (CString)lua_tostring(State, -1);
             PacketBufferAppendCString(PacketBuffer, Value);
             lua_pop(State, 1);
             continue;
@@ -800,7 +800,7 @@ Bool PacketLayoutEncode(
                 return false;
             }
 
-            CString Value = lua_tostring(State, -1);
+            CString Value = (CString)lua_tostring(State, -1);
             CString Memory = (CString)PacketBufferAppend(PacketBuffer, PacketField->Length);
             memcpy(Memory, Value, MIN(PacketField->Length, strlen(Value)));
             lua_pop(State, 1);
@@ -815,11 +815,11 @@ Bool PacketLayoutEncode(
             }
 
             PacketLayoutRef ChildLayout = PacketManagerGetLayoutByIndex(PacketLayout->Manager, PacketField->ChildIndex);
-            Int32 Count = PacketField->Length;
+            Index Count = PacketField->Length;
 
             lua_pushnil(State);
 
-            Int32 Offset = 0;
+            Index Offset = 0;
             while (lua_next(State, -2) != 0) {
                 if (Offset >= PacketField->Length) {
                     lua_pop(State, 2);
@@ -835,7 +835,7 @@ Bool PacketLayoutEncode(
                 Offset += 1;
             }
 
-            for (Int32 Index = Offset; Index < Count; Index += 1) {
+            for (Index Index = Offset; Index < Count; Index += 1) {
                 PacketLayoutWriteZero(ChildLayout, PacketBuffer);
             }
 
@@ -851,11 +851,11 @@ Bool PacketLayoutEncode(
             }
 
             PacketLayoutRef ChildLayout = PacketManagerGetLayoutByIndex(PacketLayout->Manager, PacketField->ChildIndex);
-            Int32 Count = luaL_len(State, -1);
+            Index Count = luaL_len(State, -1);
 
             lua_pushnil(State);
 
-            Int32 Offset = 0;
+            Index Offset = 0;
             while (lua_next(State, -2) != 0) {
                 if (!PacketLayoutEncode(ChildLayout, PacketBuffer, State)) {
                     lua_pop(State, 2);
@@ -961,7 +961,7 @@ static Int32 PacketManagerAPI_RegisterPacketLayout(
                 case PACKET_FIELD_SCRIPT_TYPE_CHARACTERS: {
                     lua_next(State, -2);
                     if (lua_isstring(State, -1)) {
-                        CString CountName = lua_tostring(State, -1);
+                        CString CountName = (CString)lua_tostring(State, -1);
                         lua_pop(State, 1);
 
                         PacketLayoutAddDynamicCharacters(PacketLayout, FieldName, CountName);

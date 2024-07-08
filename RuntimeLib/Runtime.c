@@ -320,7 +320,7 @@ RTBattleStyleClassFormulaDataRef RTRuntimeGetBattleStyleClassFormulaData(
 RTBattleStyleSlopeDataRef RTRuntimeGetBattleStyleSlopeData(
     RTRuntimeRef Runtime,
     Int32 SlopeID,
-    Int32 Penalty
+    Int64 Penalty
 ) {
     RTBattleStyleSlopeFormulaDataRef Formula = RTRuntimeGetBattleStyleSlopeFormulaData(Runtime, SlopeID);
     assert(Formula && Formula->SlopeCount > 0);
