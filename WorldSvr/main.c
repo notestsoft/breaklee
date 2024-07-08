@@ -165,6 +165,7 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     ServerContext.Runtime->Config.ExpMultiplier = Config.WorldSvr.ExpMultiplier;
     ServerContext.Runtime->Config.SkillExpMultiplier = Config.WorldSvr.SkillExpMultiplier;
     ServerContext.Runtime->Config.IsSkillRankUpLimitEnabled = Config.Environment.IsSkillRankUpLimitEnabled;
+    ServerContext.Runtime->Config.WorldItemDespawnInterval = Config.WorldSvr.WorldItemDespawnInterval;
 
     IPCNodeID NodeID = kIPCNodeIDNull;
     NodeID.Group = Config.WorldSvr.GroupIndex;

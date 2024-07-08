@@ -34,6 +34,7 @@ CONFIG_PARAMETER(UInt32, DebugCharacter, "WorldSvr.DebugCharacter", 1)
 CONFIG_PARAMETER(Bool, DebugSetQuestFlags, "WorldSvr.DebugSetQuestFlags", 0)
 CONFIG_PARAMETER(Bool, DBSyncTimer, "WorldSvr.DBSyncTimer", 1000)
 CONFIG_PARAMETER(UInt64, UserListBroadcastInterval, "WorldSvr.UserListBroadcastInterval", 1000)
+CONFIG_PARAMETER(UInt64, WorldItemDespawnInterval, "WorldSvr.WorldItemDespawnInterval", 30000)
 CONFIG_END(WorldSvr)
 
 CONFIG_BEGIN(Environment)

@@ -20,9 +20,10 @@ struct _RTWorldChunk {
 	Index ReferenceCount;
     Int32 ChunkX;
     Int32 ChunkY;
-	ArrayRef Characters;
+    ArrayRef Characters;
 	ArrayRef Mobs;
 	ArrayRef Items;
+    Timestamp NextItemUpdateTimestamp;
 };
 
 typedef Void* RTWorldChunkIteratorRef;

@@ -41,6 +41,7 @@ struct _RTWorldItem {
     RTItemProperty ItemProperty;
     RTItemDuration ItemDuration;
     Timestamp Timestamp;
+    Timestamp DespawnTimestamp;
 };
 
 struct _RTWorldData {
@@ -77,6 +78,7 @@ struct _RTWorldContext {
     struct _RTWorldChunk Chunks[RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT];
 
     Timestamp DungeonTimeout;
+    Timestamp NextItemUpdateTimestamp;
     Int32 PatternPartIndex;
     MemoryPoolRef MobPool;
     MemoryPoolRef ItemPool;

@@ -85,6 +85,30 @@ Void RTWorldContextUpdate(
         Iterator = DictionaryKeyIteratorNext(Iterator);
     }
 
+    Timestamp = PlatformGetTickCount();
+    if (WorldContext->NextItemUpdateTimestamp <= Timestamp) {
+        WorldContext->NextItemUpdateTimestamp = INT64_MAX;
+
+        for (Int32 ChunkIndex = 0; ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT; ChunkIndex += 1) {
+            RTWorldChunkRef WorldChunk = &WorldContext->Chunks[ChunkIndex];
+            if (WorldChunk->NextItemUpdateTimestamp > Timestamp) continue;
+            WorldChunk->NextItemUpdateTimestamp = INT64_MAX;
+
+            for (Int32 ItemIndex = (Int32)ArrayGetElementCount(WorldChunk->Items) - 1; ItemIndex >= 0; ItemIndex -= 1) {
+                RTEntityID ItemEntity = *(RTEntityID*)ArrayGetElementAtIndex(WorldChunk->Items, ItemIndex);
+                RTWorldItemRef Item = RTWorldContextGetItem(WorldContext, ItemEntity);
+                if (Item->DespawnTimestamp <= Timestamp) {
+                    RTWorldDespawnItem(WorldContext->WorldManager->Runtime, WorldContext, Item);
+                }
+                else {
+                    WorldChunk->NextItemUpdateTimestamp = MIN(WorldChunk->NextItemUpdateTimestamp, Item->DespawnTimestamp);
+                }
+            }
+
+            WorldContext->NextItemUpdateTimestamp = MIN(WorldContext->NextItemUpdateTimestamp, WorldChunk->NextItemUpdateTimestamp);
+        }
+    }
+
     /*
     for (Index ChunkIndex = 0; ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT; ChunkIndex += 1) {
         RTWorldChunkRef WorldChunk = &WorldContext->Chunks[ChunkIndex];
@@ -447,15 +471,23 @@ RTWorldItemRef RTWorldSpawnItem(
         Item->ContextType = NOTIFICATION_ITEMS_SPAWN_CONTEXT_TYPE_MOBS;
     }
     if (SourceID.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) {
+        RTCharacterRef Character = RTWorldManagerGetCharacter(Runtime->WorldManager, SourceID);
+        if (Character) {
+            Item->ItemSourceIndex = Character->CharacterIndex;
+        }
+
         Item->ContextType = NOTIFICATION_ITEMS_SPAWN_CONTEXT_TYPE_USER;
     }
     Item->ItemProperty = Drop.ItemProperty;
     Item->ItemDuration = Drop.ItemDuration;
     Item->Timestamp = PlatformGetTickCount();
+    Item->DespawnTimestamp = Item->Timestamp + Runtime->Config.WorldItemDespawnInterval;
+    WorldContext->NextItemUpdateTimestamp = MIN(WorldContext->NextItemUpdateTimestamp, Item->DespawnTimestamp);
 
     DictionaryInsert(WorldContext->EntityToItem, &Item->ID, &ItemPoolIndex, sizeof(Index));
     
     RTWorldChunkRef WorldChunk = RTWorldContextGetChunk(WorldContext, X, Y);
+    WorldChunk->NextItemUpdateTimestamp = MIN(WorldChunk->NextItemUpdateTimestamp, Item->DespawnTimestamp);
     RTWorldChunkInsert(WorldChunk, Item->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT);
 
     return Item;

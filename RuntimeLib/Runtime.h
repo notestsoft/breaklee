@@ -42,6 +42,7 @@ struct _RTRuntimeConfig {
     Bool IsSkillRankUpLimitEnabled;
     UInt64 ExpMultiplier;
     UInt64 SkillExpMultiplier;
+    UInt64 WorldItemDespawnInterval;
 };
 
 struct _RTRuntime {
@@ -54,7 +55,6 @@ struct _RTRuntime {
     RTWorldManagerRef WorldManager;
     RTNotificationManagerRef NotificationManager;
 
-    Int32 EntityToCharacter[RUNTIME_MEMORY_MAX_CHARACTER_COUNT];
     Int32 SlopeFormulaDataCount;
     Int32 ItemDataCount;
     Int32 MobDataCount;

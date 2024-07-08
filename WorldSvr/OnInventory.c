@@ -227,6 +227,24 @@ error:
     }
 }
 
+CLIENT_PROCEDURE_BINDING(LOCK_EQUIPMENT) {
+    if (!Character) goto error;
+
+    if (!RTCharacterEquipmentSetLocked(Runtime, Character, Packet->EquipmentSlotIndex, Packet->IsLocked)) goto error;
+
+    S2C_DATA_LOCK_EQUIPMENT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOCK_EQUIPMENT);
+    Response->Success = 1;
+    SocketSend(Socket, Connection, Response);
+    return;
+
+error:
+    {
+        S2C_DATA_LOCK_EQUIPMENT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOCK_EQUIPMENT);
+        Response->Success = 0;
+        SocketSend(Socket, Connection, Response);
+    }
+}
+
 CLIENT_PROCEDURE_BINDING(MOVE_INVENTORY_ITEM) {
     if (!Character) goto error;
 
@@ -543,19 +561,62 @@ error:
     return SocketSend(Socket, Connection, Response);
 }
 
-CLIENT_PROCEDURE_BINDING(LOCK_EQUIPMENT) {
+CLIENT_PROCEDURE_BINDING(DROP_INVENTORY_ITEM) {
     if (!Character) goto error;
 
-    if (!RTCharacterEquipmentSetLocked(Runtime, Character, Packet->EquipmentSlotIndex, Packet->IsLocked)) goto error;
+    RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Runtime, Character);
+    if (!WorldContext) goto error;
 
-    S2C_DATA_LOCK_EQUIPMENT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOCK_EQUIPMENT);
+    // TODO: Check if item type is dropable
+    // TODO: Check if item is account binding
+    // TODO: Check if item is character binding
+
+    struct _RTItemSlot TempSlot = { 0 };
+    if (Packet->StorageType == STORAGE_TYPE_INVENTORY) {
+        if (!RTInventoryRemoveSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex, &TempSlot)) goto error;
+
+        Character->SyncMask.InventoryInfo = true;
+    }
+    else if (Packet->StorageType == STORAGE_TYPE_EQUIPMENT) {
+        if (!RTEquipmentRemoveSlot(Runtime, Character, &Character->Data.EquipmentInfo, Packet->InventorySlotIndex, &TempSlot)) goto error;
+
+        Character->SyncMask.EquipmentInfo = true;
+    }
+    else if (Packet->StorageType == STORAGE_TYPE_WAREHOUSE) {
+        if (!RTWarehouseRemoveSlot(Runtime, &Character->Data.WarehouseInfo, Packet->InventorySlotIndex, &TempSlot)) goto error;
+
+        Character->SyncMask.WarehouseInfo = true;
+    }
+    else if (Packet->StorageType == STORAGE_TYPE_VEHICLE_INVENTORY) {
+        if (!RTVehicleInventoryRemoveSlot(Runtime, &Character->Data.VehicleInventoryInfo, Packet->InventorySlotIndex, &TempSlot)) goto error;
+
+        Character->SyncMask.VehicleInventoryInfo = true;
+    }
+    else {
+        goto error;
+    }
+
+    RTDropResult DropItem = { 0 };
+    DropItem.ItemID.Serial = TempSlot.Item.Serial;
+    DropItem.ItemOptions = TempSlot.ItemOptions;
+    DropItem.ItemDuration = TempSlot.ItemDuration;
+    RTWorldSpawnItem(
+        Runtime,
+        WorldContext,
+        Character->ID,
+        Character->Movement.PositionCurrent.X,
+        Character->Movement.PositionCurrent.Y,
+        DropItem
+    );
+
+    S2C_DATA_DROP_INVENTORY_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DROP_INVENTORY_ITEM);
     Response->Success = 1;
     SocketSend(Socket, Connection, Response);
     return;
 
 error:
     {
-        S2C_DATA_LOCK_EQUIPMENT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOCK_EQUIPMENT);
+        S2C_DATA_DROP_INVENTORY_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DROP_INVENTORY_ITEM);
         Response->Success = 0;
         SocketSend(Socket, Connection, Response);
     }
