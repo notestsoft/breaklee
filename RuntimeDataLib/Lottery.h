@@ -1,0 +1,15 @@
+RUNTIME_DATA_FILE_BEGIN(LotteryItemPool.xml)
+
+RUNTIME_DATA_TYPE_BEGIN(LotteryItemPool, "LotteryItemPool.Pool", 1024)
+	RUNTIME_DATA_PROPERTY(Int32, PoolID, "PoolID")
+	RUNTIME_DATA_TYPE_BEGIN_CHILD(LotteryItemPoolItem, "Item", 128)
+		RUNTIME_DATA_PROPERTY(UInt64, ItemID, "ItemID")
+		RUNTIME_DATA_PROPERTY(UInt64, ItemOption, "ItemOption")
+		RUNTIME_DATA_PROPERTY(Int32, ItemDuration, "ItemDuration")
+		RUNTIME_DATA_PROPERTY(Int32, OptionPoolID, "OptionPoolID")
+		RUNTIME_DATA_PROPERTY(Int32, Rate, "Rate")
+	RUNTIME_DATA_TYPE_END_CHILD(LotteryItemPoolItem, 128)
+RUNTIME_DATA_TYPE_END(LotteryItemPool)
+RUNTIME_DATA_TYPE_INDEX(LotteryItemPool, Int32, PoolID)
+
+RUNTIME_DATA_FILE_END

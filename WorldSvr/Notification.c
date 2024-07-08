@@ -182,6 +182,10 @@ NOTIFICATION_PROCEDURE_BINDING(PARTY_QUEST_MISSION_MOB_KILL) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 
+NOTIFICATION_PROCEDURE_BINDING(CREATE_ITEM) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
 NOTIFICATION_PROCEDURE_BINDING(MOB_ATTACK_AOE) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }

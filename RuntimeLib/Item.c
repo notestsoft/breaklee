@@ -244,6 +244,30 @@ Void RTCharacterApplyItemExtremeLevelEffect(
 	}
 }
 
+Void RTCharacterApplyItemChaosLevelEffect(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	RTItemSlotRef ItemSlot,
+	RTItemDataRef ItemData
+) {
+	RTDataChaosUpgradeItemListRef UpgradeMain = RTRuntimeDataChaosUpgradeItemListGet(Runtime->Context, ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX);
+	RTDataChaosUpgradeGroupValueRef UpgradeGroupValue = (UpgradeMain) ? RTRuntimeDataChaosUpgradeGroupValueGet(Runtime->Context, UpgradeMain->Group) : NULL;
+	if (UpgradeGroupValue) {
+		for (Int32 Index = 0; Index < UpgradeGroupValue->ChaosUpgradeGroupValueLevelCount; Index += 1) {
+			RTDataChaosUpgradeGroupValueLevelRef UpgradeGroupValueLevel = &UpgradeGroupValue->ChaosUpgradeGroupValueLevelList[Index];
+			if (UpgradeGroupValueLevel->Level != ItemSlot->Item.UpgradeLevel) continue;
+
+			RTCharacterApplyForceEffect(
+				Runtime,
+				Character,
+				UpgradeGroupValueLevel->ForceEffectIndex,
+				UpgradeGroupValueLevel->ForceValue,
+				UpgradeGroupValueLevel->ForceValueType == 1 ? RUNTIME_FORCE_VALUE_TYPE_ADDITIVE : RUNTIME_FORCE_VALUE_TYPE_MULTIPLICATIVE
+			);
+		}
+	}
+}
+
 Void RTCharacterApplyItemDivineLevelEffect(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
@@ -1021,6 +1045,9 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemAccessory) {
 		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 	);
 
+	RTCharacterApplyItemForceOptionEffect(Runtime, Character, ItemSlot, ItemData);
+	RTCharacterApplyItemChaosLevelEffect(Runtime, Character, ItemSlot, ItemData);
+
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 
@@ -1047,44 +1074,6 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemFrontierStone) {
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEffector) {
 	return RUNTIME_ITEM_USE_RESULT_FAILED;
-}
-
-RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpaulet) {
-	RTCharacterApplyForceEffect(
-		Runtime,
-		Character,
-		ItemData->Accessory.ForceEffect1,
-		ItemData->Accessory.ForceValue1,
-		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
-	);
-
-	RTCharacterApplyForceEffect(
-		Runtime,
-		Character,
-		ItemData->Accessory.ForceEffect2,
-		ItemData->Accessory.ForceValue2,
-		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
-	);
-
-	RTCharacterApplyForceEffect(
-		Runtime,
-		Character,
-		ItemData->Accessory.ForceEffect3,
-		ItemData->Accessory.ForceValue3,
-		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
-	);
-
-	RTCharacterApplyForceEffect(
-		Runtime,
-		Character,
-		ItemData->Accessory.ForceEffect4,
-		ItemData->Accessory.ForceValue4,
-		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
-	);
-
-	RTCharacterApplyItemForceOptionEffect(Runtime, Character, ItemSlot, ItemData);
-
-	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemVehicleBike) {
@@ -1593,4 +1582,55 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemChangeGender) {
 	RTNotificationDispatchToCharacter(Notification, Character);
 	
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+}
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemCrest) {
+	RTCharacterApplyItemForceOptionEffect(Runtime, Character, ItemSlot, ItemData);
+	
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+}
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemLotto) { 
+	RTDataLotteryItemPoolRef ItemPool = RTRuntimeDataLotteryItemPoolGet(Runtime->Context, ItemData->Lottery.PoolID);
+	if (!ItemPool) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	Int32 Seed = (Int32)PlatformGetTickCount();
+	Int32 RandomRate = RandomRange(&Seed, 0, INT32_MAX);
+	Int32 RandomRateOffset = 0;
+
+	// TODO: Option[0] = Item1, Option[1] = Maybe Perfect Drop?, Option[2] = ?, Option[3] = ?, Option[4] = Item2, ...
+	for (Int32 Index = 0; Index < ItemPool->LotteryItemPoolItemCount; Index += 1) {
+		RTDataLotteryItemPoolItemRef Item = &ItemPool->LotteryItemPoolItemList[Index];
+		if (RandomRate <= Item->Rate + RandomRateOffset || Index + 1 == ItemPool->LotteryItemPoolItemCount) {
+			struct _RTItemSlot CreatedItemSlot = { 0 };
+			CreatedItemSlot.Item.Serial = Item->ItemID;
+			CreatedItemSlot.ItemOptions = Item->ItemOption;
+			CreatedItemSlot.ItemDuration.Serial = Item->ItemDuration;
+			CreatedItemSlot.SlotIndex = RTInventoryGetNextFreeSlotIndex(Runtime, &Character->Data.TemporaryInventoryInfo);
+			if (!RTInventoryInsertSlot(Runtime, &Character->Data.TemporaryInventoryInfo, &CreatedItemSlot)) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+			NOTIFICATION_DATA_CREATE_ITEM* Notification = RTNotificationInit(CREATE_ITEM);
+			Notification->ItemType = 0;
+			Notification->ItemCount = 1;
+
+			NOTIFICATION_DATA_CREATE_ITEM_SLOT* NotificationItem = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CREATE_ITEM_SLOT);
+			NotificationItem->ItemID = CreatedItemSlot.Item.Serial;
+			NotificationItem->ItemOptions = CreatedItemSlot.ItemOptions;
+			NotificationItem->SlotIndex = CreatedItemSlot.SlotIndex + RUNTIME_INVENTORY_TOTAL_SIZE;
+			NotificationItem->ItemDuration = CreatedItemSlot.ItemDuration.Serial;
+
+			RTNotificationDispatchToCharacter(Notification, Character);
+
+			RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
+
+			Character->SyncMask.TemporaryInventoryInfo = true;
+			Character->SyncMask.InventoryInfo = true;
+
+			return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+		}
+
+		RandomRateOffset += Item->Rate;
+	}
+
+	return RUNTIME_ITEM_USE_RESULT_FAILED;
 }

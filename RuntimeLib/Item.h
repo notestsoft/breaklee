@@ -285,6 +285,10 @@ struct _RTItemData {
 			Int32 TransformIndex;
 		} TransformationCard;
 
+		struct {
+			Int32 PoolID;
+			Int32 Unknown1;
+		} Lottery;
 		// TODO: Add other item types like potion, pet, ...
 
 		struct { Int32 Options[22]; };
@@ -408,6 +412,11 @@ struct _RTItemOptions {
 			UInt64 StackSize : 7;
 			UInt64 ForceEffectIndex : 25;
 		} OptionScroll;
+
+		struct {
+			UInt64 StackSize : 7;
+			UInt64 Option : 25;
+		} OptionStack;
 
 		RTItemOptionFrontierStone FrontierStone;
 	};
@@ -557,7 +566,6 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemArmor);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemAccessory);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemFrontierStone);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEffector);
-RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpaulet);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemVehicleBike);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemVehicleBoard);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemCharm);
@@ -580,6 +588,8 @@ struct _RTItemHonorMedalResetSelectivePayload {
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHonorMedalResetSelective);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemTransformationCard);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemChangeGender);
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemCrest);
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemLotto);
 
 #pragma pack(pop)
 

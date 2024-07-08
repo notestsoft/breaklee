@@ -97,6 +97,7 @@
 #include "Item.h"
 #include "Keymap.h"
 #include "Level.h"
+#include "Lottery.h"
 #include "MapInfo.h"
 #include "Market.h"
 #include "Meister.h"

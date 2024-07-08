@@ -12,7 +12,7 @@ RUNTIME_DATA_TYPE_BEGIN(ChaosUpgradeGroupValue, "cabal_chaos_upgrade.chaosupgrad
 	RUNTIME_DATA_PROPERTY(Int32, Group, "group")
 	RUNTIME_DATA_TYPE_BEGIN_CHILD(ChaosUpgradeGroupValueLevel, "value", 128)
 		RUNTIME_DATA_PROPERTY(Int32, Level, "level")
-		RUNTIME_DATA_PROPERTY(Int32, ForceIndex, "force_id")
+		RUNTIME_DATA_PROPERTY(Int32, ForceEffectIndex, "force_id")
 		RUNTIME_DATA_PROPERTY(Int32, ForceValue, "force_value")
 		RUNTIME_DATA_PROPERTY(Int32, ForceValueType, "value_type")
 	RUNTIME_DATA_TYPE_END_CHILD(ChaosUpgradeGroupValueLevel, 128)
