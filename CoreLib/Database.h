@@ -14,6 +14,7 @@ DatabaseRef DatabaseConnect(
     CString Password,
     CString Database,
     UInt16 Port,
+    Int64 ResultBufferSize,
     Bool AutoReconnect
 );
 

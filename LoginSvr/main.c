@@ -193,6 +193,7 @@ Int32 main(Int32 argc, CString* argv) {
         Config.AuthDB.Password,
         Config.AuthDB.Database,
         Config.AuthDB.Port,
+        0,
         Config.AuthDB.AutoReconnect
     );
     if (!ServerContext.Database) Fatal("Database connection failed");

@@ -61,12 +61,18 @@ Int32 main(Int32 argc, CString* argv) {
         &ServerContext
     );
 
+    Int64 DatabaseResultBufferSize = 0;
+#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__, __SCOPE__) \
+    DatabaseResultBufferSize = MAX(DatabaseResultBufferSize, sizeof(__TYPE__));
+#include "RuntimeLib/CharacterDataDefinition.h"
+
     ServerContext.Database = DatabaseConnect(
         Config.Database.Host,
         Config.Database.Username,
         Config.Database.Password,
         Config.Database.Database,
         Config.Database.Port,
+        DatabaseResultBufferSize,
         Config.Database.AutoReconnect
     );
     if (!ServerContext.Database) Fatal("Database connection failed");

@@ -82,13 +82,12 @@ Bool RTCharacterChangeSkillLevel(
 	Int32 RequiredSkillPointCount = 0;
 	Int64 RequiredCurrencyAlz = 0;
 
-	if (TargetSkillLevel > 0)
+	if (TargetSkillLevel > 0) {
 		for (Int32 NextLevel = CurrentSkillLevel + Increment; NextLevel <= Sign * TargetSkillLevel; NextLevel += Increment) {
 			RTSkillLevelDataRef SkillLevelData = RTRuntimeGetSkillLevelDataByID(Runtime, SkillID, NextLevel);
 			if (!SkillLevelData) return false;
 
 			if (Character->Data.Info.Skill.Rank < SkillLevelData->SkillRank) return false;
-			if (Character->Data.Info.Skill.Level < SkillLevelData->SkillRankPoint) return false;
 
 			RequiredSkillPointCount += SkillLevelData->SkillPoint;
 			RequiredCurrencyAlz += LevelDiff < 0 ? SkillLevelData->UntrainPrice : SkillLevelData->TrainPrice;
@@ -98,6 +97,7 @@ Bool RTCharacterChangeSkillLevel(
 			Int32 BattleStyleIndex = Character->Data.Info.Style.BattleStyle | (Character->Data.Info.Style.ExtendedBattleStyle << 3);
 			if (SkillLevelData->BattleStyles[BattleStyleIndex - 1] <= 0) return false;
 		}
+	}
 
 	if (Character->Data.Info.Skill.Point < RequiredSkillPointCount) return false;
 	if (Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < RequiredCurrencyAlz) return false;

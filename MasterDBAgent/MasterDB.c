@@ -43,8 +43,6 @@ Bool MasterDBGetOrCreateAccount(
     {
         if (!MasterDBInsertAccount(Database, AccountID)) goto error;
         if (!MasterDBInsertSubpassword(Database, Account->AccountID)) goto error;
-
-        Account->AccountID = DatabaseGetLastInsertID(Database);
     }
     if (!DatabaseCommitTransaction(Database)) goto error;
 

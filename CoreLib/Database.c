@@ -1,7 +1,9 @@
 #ifdef USE_MYSQL_INCLUDE
 #include <mysql/mysql.h>
+#include <mysql/errmsg.h>
 #else
 #include <mariadb/mysql.h>
+#include <mariadb/errmsg.h>
 #endif
 
 #include "Diagnostic.h"
@@ -9,16 +11,24 @@
 #include "Database.h"
 #include "String.h"
 
+#define DATABASE_STATEMENT_QUERY_SIZE 1024
 #define DATABASE_STATEMENT_BUCKET_SIZE	64
-#define DATABASE_RESULT_BUFFER_SIZE		8192
+#define DATABASE_RESULT_BUFFER_SIZE	8192
 
 #pragma pack(push, 8)
 
 struct _Database {
+	Char Host[MAX_PATH];
+	Char Username[MAX_PATH];
+	Char Password[MAX_PATH];
+	Char Database[MAX_PATH];
+	UInt16 Port;
     MYSQL* Connection;
-    struct _StatementBucket* FirstBucket;
+	struct _StatementBucket* FirstBucket;
     struct _StatementBucket* LastBucket;
-    Int64 LastInsertID;
+	Int64 ResultBufferSize;
+	Bool AutoReconnect;
+	Int64 LastInsertID;
 	DictionaryRef DataTables;
 } ALIGNED(8);
 
@@ -56,6 +66,7 @@ struct _DataTable {
 
 struct _Statement {
 	DatabaseRef Database;
+	Char Query[DATABASE_STATEMENT_QUERY_SIZE];
 	MYSQL_STMT* Statement;
 	UInt64 ParameterCount;
 	MYSQL_BIND* Parameters;
@@ -79,6 +90,7 @@ DatabaseRef DatabaseConnect(
 	CString Password,
 	CString Database,
 	UInt16 Port,
+	Int64 ResultBufferSize,
 	Bool AutoReconnect
 ) {
 	Info(
@@ -91,10 +103,10 @@ DatabaseRef DatabaseConnect(
 
 	MYSQL* Connection = mysql_init(NULL);
 	if (Connection == NULL) return NULL;
-
-	my_bool AutoReconnectArgument = AutoReconnect;
-	mysql_options(Connection, MYSQL_OPT_RECONNECT, &AutoReconnectArgument);
-
+	
+	//my_bool AutoReconnectArgument = AutoReconnect;
+	//mysql_options(Connection, MYSQL_OPT_RECONNECT, &AutoReconnectArgument);
+	
 	Bool Success = mysql_real_connect(
 		Connection,
 		Host,
@@ -113,12 +125,19 @@ DatabaseRef DatabaseConnect(
 
 	DatabaseRef Result = (DatabaseRef)malloc(sizeof(struct _Database));
 	assert(Result);
+	memcpy(Result->Host, Host, strlen(Host) + 1);
+	memcpy(Result->Username, Username, strlen(Username) + 1);
+	memcpy(Result->Password, Password, strlen(Password) + 1);
+	memcpy(Result->Database, Database, strlen(Database) + 1);
+	Result->Port = Port;
 	Result->Connection = Connection;
 	Result->FirstBucket = malloc(sizeof(struct _StatementBucket));
 	assert(Result->FirstBucket);
 	memset(Result->FirstBucket, 0, sizeof(struct _StatementBucket));
 	Result->LastBucket = Result->FirstBucket;
 	Result->LastInsertID = 0;
+	Result->ResultBufferSize = (ResultBufferSize) ? ResultBufferSize : DATABASE_RESULT_BUFFER_SIZE;
+	Result->AutoReconnect = AutoReconnect;
 	Result->DataTables = CStringDictionaryCreate(AllocatorGetDefault(), 8);
 	return Result;
 }
@@ -210,25 +229,14 @@ Bool DatabaseRollbackTransaction(
 	return true;
 }
 
-StatementRef DatabaseCreateStatement(
-	DatabaseRef Database, 
-	CString Query
+Bool DatabaseInitializeStatement(
+	DatabaseRef Database,
+	StatementRef Statement
 ) {
-	if (Database->LastBucket->Count + 1 >= DATABASE_STATEMENT_BUCKET_SIZE) {
-		Database->LastBucket->NextBucket = malloc(sizeof(struct _StatementBucket));
-		assert(Database->LastBucket->NextBucket);
-		memset(Database->LastBucket->NextBucket, 0, sizeof(struct _StatementBucket));
-		Database->LastBucket = Database->LastBucket->NextBucket;
-	}
-
-	StatementRef Statement = &Database->LastBucket->Statements[Database->LastBucket->Count];
-	memset(Statement, 0, sizeof(struct _Statement));
-
-	Statement->Database = Database;
 	Statement->Statement = mysql_stmt_init(Database->Connection);
 	if (Statement->Statement == NULL) goto error;
-	
-	Int32 Status = mysql_stmt_prepare(Statement->Statement, Query, strlen(Query));
+
+	Int32 Status = mysql_stmt_prepare(Statement->Statement, Statement->Query, strlen(Statement->Query));
 	if (Status != 0) goto error;
 
 	Statement->ParameterCount = mysql_stmt_param_count(Statement->Statement);
@@ -247,7 +255,7 @@ StatementRef DatabaseCreateStatement(
 
 		if (mysql_stmt_bind_param(Statement->Statement, Statement->Parameters)) goto error;
 	}
-	
+
 	Statement->ResultCount = mysql_stmt_field_count(Statement->Statement);
 	if (Statement->ResultCount > 0) {
 		Statement->Results = malloc(sizeof(MYSQL_BIND) * Statement->ResultCount);
@@ -278,10 +286,10 @@ StatementRef DatabaseCreateStatement(
 			);
 
 			if (Buffer->Buffered) {
-				Buffer->Value.Buffer = malloc(DATABASE_RESULT_BUFFER_SIZE);
+				Buffer->Value.Buffer = malloc(Database->ResultBufferSize);
 				assert(Buffer->Value.Buffer);
 				Result->buffer = Buffer->Value.Buffer;
-				Result->buffer_length = MIN(Fields[Index].length, DATABASE_RESULT_BUFFER_SIZE);
+				Result->buffer_length = MIN(Fields[Index].length, Database->ResultBufferSize);
 				Result->length = (unsigned long*)&Buffer->Length;
 			}
 			else {
@@ -295,6 +303,30 @@ StatementRef DatabaseCreateStatement(
 
 		if (mysql_stmt_bind_result(Statement->Statement, Statement->Results)) goto error;
 	}
+	
+	return true;
+
+error:
+	return false;
+}
+
+StatementRef DatabaseCreateStatement(
+	DatabaseRef Database, 
+	CString Query
+) {
+	if (Database->LastBucket->Count + 1 >= DATABASE_STATEMENT_BUCKET_SIZE) {
+		Database->LastBucket->NextBucket = malloc(sizeof(struct _StatementBucket));
+		assert(Database->LastBucket->NextBucket);
+		memset(Database->LastBucket->NextBucket, 0, sizeof(struct _StatementBucket));
+		Database->LastBucket = Database->LastBucket->NextBucket;
+	}
+
+	StatementRef Statement = &Database->LastBucket->Statements[Database->LastBucket->Count];	
+	memset(Statement, 0, sizeof(struct _Statement));
+	CStringCopySafe(Statement->Query, DATABASE_STATEMENT_QUERY_SIZE, Query);
+
+	Statement->Database = Database;
+	if (!DatabaseInitializeStatement(Database, Statement)) goto error;
 
 	Database->LastBucket->Count += 1;
 	return Statement;
@@ -336,10 +368,13 @@ DataTableRef DatabaseCreateDataTable(
 		"CREATE TABLE IF NOT EXISTS `%s%s` ("
 		"   `%sID` INT NOT NULL PRIMARY KEY,"
 		"   `Data` BLOB NOT NULL"
+//		"   CONSTRAINT `fk_%s%s_%sID` FOREIGN KEY(`%sID`) REFERENCES `%s` (`%sID`) ON DELETE CASCADE"
 		") ENGINE = INNODB DEFAULT CHARSET = utf8;",
-		Scope,
-		Name,
+		Scope, Name,
 		Scope
+		//Scope, Name, Scope,
+		//Scope,
+		//Scope, Scope
 	)))) {
 		Fatal("Database migration failed for data table: `%s%s`", Scope, Name);
 	}
@@ -580,6 +615,7 @@ Void StatementBindParameterFloat64(
 Bool StatementExecute(
 	StatementRef Statement
 ) {
+start:
 	if (Statement->Parameters) {
 		if (mysql_stmt_bind_param(Statement->Statement, Statement->Parameters)) {
 			Error(
@@ -601,6 +637,71 @@ Bool StatementExecute(
 	}
 
 	if (mysql_stmt_execute(Statement->Statement) != 0) {
+		Int32 ErrorCode = mysql_errno(Statement->Database->Connection);
+		if (Statement->Database->AutoReconnect && (
+			ErrorCode == CR_SERVER_LOST ||
+			ErrorCode == CR_SERVER_GONE_ERROR ||
+			ErrorCode == CR_SERVER_LOST_EXTENDED)) {
+
+			struct _StatementBucket* Bucket = Statement->Database->FirstBucket;
+			while (Bucket) {
+				for (Int32 StatementIndex = 0; StatementIndex < Bucket->Count; StatementIndex += 1) {
+					StatementRef Statement = &Bucket->Statements[StatementIndex];
+					if (Statement->ParameterCount > 0) {
+						free(Statement->ParameterValues);
+						free(Statement->Parameters);
+					}
+
+					if (Statement->ResultCount > 0) {
+						for (Int32 Index = 0; Index < Statement->ResultCount; Index++) {
+							BufferRef Buffer = &Statement->ResultValues[Index];
+							if (Buffer->Buffered) {
+								free(Buffer->Value.Buffer);
+							}
+						}
+
+						free(Statement->ResultValues);
+						free(Statement->Results);
+					}
+
+					mysql_stmt_close(Statement->Statement);
+				}
+
+				Bucket = Bucket->NextBucket;
+			}
+
+			Bool Success = mysql_real_connect(
+				Statement->Database->Connection,
+				Statement->Database->Host,
+				Statement->Database->Username,
+				Statement->Database->Password,
+				Statement->Database->Database,
+				Statement->Database->Port,
+				NULL,
+				0
+			) != NULL;
+
+			if (!Success) {
+				mysql_close(Statement->Database->Connection);
+				Fatal("Database connection lost!");
+				return false;
+			}
+
+			Bucket = Statement->Database->FirstBucket;
+			while (Bucket) {
+				for (Int32 StatementIndex = 0; StatementIndex < Bucket->Count; StatementIndex += 1) {
+					StatementRef Statement = &Bucket->Statements[StatementIndex];
+					if (!DatabaseInitializeStatement(Statement->Database, Statement)) {
+						Fatal("Database prepading statement failed!");
+					}
+				}
+
+				Bucket = Bucket->NextBucket;
+			}
+
+			goto start;
+		}
+
 		Error(
 			"Database Statement execution failed: %s",
 			mysql_error(Statement->Database->Connection)
@@ -632,6 +733,20 @@ Void StatementFlushResults(
 	StatementRef Statement
 ) {
 	while (StatementFetchResult(Statement)) { }
+
+	mysql_stmt_free_result(Statement->Statement);
+	mysql_stmt_reset(Statement->Statement);
+
+	// Clear the buffers for result values
+	for (Int32 Index = 0; Index < Statement->ResultCount; Index += 1) {
+		BufferRef Buffer = &Statement->ResultValues[Index];
+		if (Buffer->Buffered && Buffer->Value.Buffer) {
+			memset(Buffer->Value.Buffer, 0, Statement->Database->ResultBufferSize);
+		}
+		else {
+			memset(&Buffer->Value, 0, sizeof(Buffer->Value));
+		}
+	}
 }
 
 Int64 StatementLastInsertID(
