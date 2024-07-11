@@ -3704,6 +3704,27 @@ CLIENT_PROTOCOL(S2C, NFY_UNKNOWN_3016, DEFAULT, 3016,
     Timestamp UnknownTimestamp2;
 )
 
+CLIENT_PROTOCOL(C2S, MULTI_CONVERT_ITEM, DEFAULT, 3024,
+    Int32 SourceItemCount;
+    Int32 TargetItemCount;
+    UInt16 SourceInventorySlots[0];
+    // UInt16 TargetInventorySlots[0];
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_MULTI_CONVERT_ITEM_SLOT_INDEX,
+    UInt64 ItemID;
+    UInt64 Unknown1;
+    UInt64 ItemOptions;
+    UInt16 InventorySlotIndex;
+    UInt32 Unnown3;
+)
+
+CLIENT_PROTOCOL(S2C, MULTI_CONVERT_ITEM, DEFAULT, 3024,
+    Int32 Result;
+    Int32 ResultSlotCount;
+    S2C_MULTI_CONVERT_ITEM_SLOT_INDEX ResultSlots[0];
+)
+
 CLIENT_PROTOCOL(S2C, NFY_UNKNOWN_5305, DEFAULT, 5305,
     UInt8 Unknown1[6];
 )

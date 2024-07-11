@@ -820,6 +820,7 @@ Bool ServerLoadItemData(
             ItemData->MaxStackSize = ArchiveItemData->MaxStackSize;
             ItemData->UniqueGrade = ArchiveItemData->UniqueGrade;
             ItemData->MasterGrade = ArchiveItemData->MeisterGrade;
+            ItemData->EnchantCodeLink = ArchiveItemData->EnchantCodeLink;
             memcpy(ItemData->ExtendedOptions, ArchiveItemData->ExtendedOptions, sizeof(ArchiveItemData->ExtendedOptions));
             Runtime->ItemDataCount += 1;
 

@@ -5,6 +5,8 @@
 #include "Notification.h"
 #include "Server.h"
 
+static struct _RTCharacterInventoryInfo kInventoryInfoBackup;
+
 CLIENT_PROCEDURE_BINDING(USE_ITEM) {
 	S2C_DATA_USE_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, USE_ITEM);
 	Response->Result = S2C_DATA_USE_ITEM_RESULT_FAILED;
@@ -96,6 +98,7 @@ CLIENT_PROCEDURE_BINDING(CONVERT_ITEM) {
 		Response->Result = RUNTIME_ITEM_USE_RESULT_SUCCESS;
 	}
 	else if (
+		SourceItemData->ItemType == RUNTIME_ITEM_TYPE_CORE_ENHANCER ||
 		SourceItemData->ItemType == RUNTIME_ITEM_TYPE_SLOT_EXTENDER ||
 		SourceItemData->ItemType == RUNTIME_ITEM_TYPE_SLOT_CONVERTER ||
 		SourceItemData->ItemType == RUNTIME_ITEM_TYPE_EPIC_CONVERTER ||
@@ -138,6 +141,107 @@ error:
 		SocketSend(Socket, Connection, Response);
 		return;
 	}
+}
+
+CLIENT_PROCEDURE_BINDING(MULTI_CONVERT_ITEM) {
+	if (!Character) goto error;
+
+	memcpy(&kInventoryInfoBackup, &Character->Data.InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
+
+	Int32 TailLength = (Packet->SourceItemCount + Packet->TargetItemCount) * sizeof(UInt16);
+	if (Packet->Length != sizeof(C2S_DATA_MULTI_CONVERT_ITEM) + TailLength) goto error;
+	if (Packet->SourceItemCount < 1 || Packet->TargetItemCount < 1) goto error;
+
+	S2C_DATA_MULTI_CONVERT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, MULTI_CONVERT_ITEM);
+	Response->Result = RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	UInt16* SourceInventorySlots = &Packet->SourceInventorySlots[0];
+	UInt16* TargetInventorySlots = &Packet->SourceInventorySlots[Packet->SourceItemCount];
+
+	Int32 SourceItemIndex = 0;
+
+	for (Int32 Index = 0; Index < Packet->TargetItemCount; Index += 1) {
+		RTItemSlotRef SourceItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, SourceInventorySlots[SourceItemIndex]);
+		if (!SourceItemSlot && SourceItemIndex < Packet->SourceItemCount) {
+			SourceItemIndex += 1;
+			SourceItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, SourceInventorySlots[SourceItemIndex]);
+		}
+		if (!SourceItemSlot) goto error;
+
+		RTItemDataRef SourceItemData = RTRuntimeGetItemDataByIndex(Runtime, SourceItemSlot->Item.ID);
+		if (!SourceItemData) goto error;
+
+		RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, TargetInventorySlots[Index]);
+		if (!TargetItemSlot) goto error;
+
+		RTItemDataRef TargetItemData = RTRuntimeGetItemDataByIndex(Runtime, TargetItemSlot->Item.ID);
+		if (!TargetItemData) goto error;
+
+		S2C_DATA_MULTI_CONVERT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, MULTI_CONVERT_ITEM);
+		Response->Result = RUNTIME_ITEM_USE_RESULT_FAILED;
+
+		if (SourceItemData->ItemType == RUNTIME_ITEM_TYPE_COATING_KIT) {
+			if (TargetItemData->ItemType != RUNTIME_ITEM_TYPE_VEHICLE_BIKE) goto error;
+
+			if (SourceItemData->ItemID == 636) {
+				RTDataUpgradeLimitRef UpgradeLimit = RTRuntimeDataUpgradeLimitGet(Runtime->Context, TargetItemData->ItemGrade);
+				if (!UpgradeLimit) goto error;
+				if (TargetItemSlot->Item.UpgradeLevel >= UpgradeLimit->MaxItemLevel) goto error;
+
+				RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SourceItemSlot->SlotIndex);
+
+				// TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
+				TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, TargetInventorySlots[Index]);
+				assert(TargetItemSlot);
+				TargetItemSlot->Item.UpgradeLevel += 1;
+			}
+			else {
+				RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SourceItemSlot->SlotIndex);
+
+				// TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
+				TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, TargetInventorySlots[Index]);
+				assert(TargetItemSlot);
+				TargetItemSlot->Item.VehicleColor = SourceItemData->CoatingKit.VehicleColor;
+			}
+
+			Response->Result = RUNTIME_ITEM_USE_RESULT_SUCCESS;
+		}
+		else if (
+			SourceItemData->ItemType == RUNTIME_ITEM_TYPE_CORE_ENHANCER ||
+			SourceItemData->ItemType == RUNTIME_ITEM_TYPE_SLOT_EXTENDER ||
+			SourceItemData->ItemType == RUNTIME_ITEM_TYPE_SLOT_CONVERTER ||
+			SourceItemData->ItemType == RUNTIME_ITEM_TYPE_EPIC_CONVERTER ||
+			SourceItemData->ItemType == RUNTIME_ITEM_TYPE_DIVINE_CONVERTER ||
+			SourceItemData->ItemType == RUNTIME_ITEM_TYPE_CHAOS_CONVERTER ||
+			SourceItemData->ItemType == RUNTIME_ITEM_TYPE_EPIC_BOOSTER
+		) { // TODO: When item is broken it returns a failure with value 17
+			struct _RTItemConverterPayload Payload = { 0 };
+			Payload.TargetSlotIndex = TargetInventorySlots[Index];
+			Response->Result = RTItemUseInternal(Runtime, Character, SourceItemSlot, SourceItemData, &Payload);
+		}
+		else {
+			goto error;
+		}
+
+		// TODO: This is a fallback solution because the inventory pointers are invalidated by RTInventoryClearSlot
+		TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, TargetInventorySlots[Index]);
+		if (TargetItemSlot) {
+			Response->ResultSlotCount += 1;
+
+			S2C_MULTI_CONVERT_ITEM_SLOT_INDEX* ResponseSlot = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_MULTI_CONVERT_ITEM_SLOT_INDEX);
+			ResponseSlot->ItemID = TargetItemSlot->Item.Serial;
+			ResponseSlot->ItemOptions = TargetItemSlot->ItemOptions;
+			ResponseSlot->InventorySlotIndex = TargetItemSlot->SlotIndex;
+		}
+	}
+
+	Character->SyncMask.InventoryInfo = true;
+
+	SocketSend(Socket, Connection, Response);
+	return;
+
+error:
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(USE_ITEM_SAVER) {

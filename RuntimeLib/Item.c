@@ -1634,3 +1634,28 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemLotto) {
 
 	return RUNTIME_ITEM_USE_RESULT_FAILED;
 }
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemCoreEnhancer) {
+	struct _RTItemConverterPayload* Data = Payload;
+
+	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Data->TargetSlotIndex);
+	if (!TargetItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	RTItemDataRef TargetItemData = RTRuntimeGetItemDataByIndex(Runtime, TargetItemSlot->Item.ID);
+	if (!TargetItemData) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	if (ItemSlot->ItemOptions < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
+	if (ItemData->EnchantCodeLink < TargetItemData->EnchantCodeLink) return RUNTIME_ITEM_USE_RESULT_FAILED;
+	if (TargetItemSlot->Item.UpgradeLevel > 0) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	TargetItemSlot->Item.UpgradeLevel = ItemData->CoreEnhancer.UpgradeType;
+
+	ItemSlot->ItemOptions -= 1;
+	if (ItemSlot->ItemOptions < 1) {
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
+	}
+
+	Character->SyncMask.InventoryInfo = true;
+
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+}

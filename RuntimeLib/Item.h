@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base.h"
+#include "Constants.h"
 
 #define RUNTIME_ITEM_PROCEDURE_BINDING(__NAME__) \
 Int32 __NAME__(                                  \
@@ -289,6 +290,10 @@ struct _RTItemData {
 			Int32 PoolID;
 			Int32 Unknown1;
 		} Lottery;
+
+		struct {
+			Int32 UpgradeType;
+		} CoreEnhancer;
 		// TODO: Add other item types like potion, pet, ...
 
 		struct { Int32 Options[22]; };
@@ -312,6 +317,7 @@ struct _RTItemData {
 	Int32 MaxStackSize;
 	Int32 UniqueGrade;
 	Int32 MasterGrade;
+	Int32 EnchantCodeLink;
 };
 
 struct _RTItem {
@@ -590,6 +596,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemTransformationCard);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemChangeGender);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemCrest);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemLotto);
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemCoreEnhancer);
 
 #pragma pack(pop)
 
