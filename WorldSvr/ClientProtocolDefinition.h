@@ -307,20 +307,6 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     UInt8 Unknown15[4097];
     UInt32 DailyQuestCount;
     UInt32 HelpWindow;
-
-    struct {
-        UInt32 PetSerial;
-        UInt32 PetId;
-        UInt32 PetOwnerId;
-        UInt64 PetItemKind;
-        UInt8 PetLevel;
-        UInt32 PetExp;
-        Char PetName[MAX_CHARACTER_NAME_LENGTH + 1];
-        UInt8 PetSkills[33];
-        UInt32 DeleteDate;
-        UInt32 Checked;
-    } Pet[3];
-
     UInt8 EquipmentAppearanceCount;
     UInt16 InventoryAppearanceCount;
     Int32 AllAchievementScore;
@@ -419,6 +405,7 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     UInt8 Unknown44[9];
     Int32 TranscendencePoint;
     Int32 TranscendenceCount;
+    UInt8 Unknown55[18];
     struct _RTCharacterResearchSupportInfo ResearchSupportInfo;
     UInt8 StellarSlotCount;
     Int32 MythRebirth;
@@ -445,6 +432,7 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     Int32 CostumeActivePageIndex;
     Timestamp Unknown1231Timestamp;
     UInt8 Unknown8182[12];
+    UInt8 Unknown8183[20];
     UInt8 NameLength;
     Char Name[0];
 )
@@ -925,6 +913,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_CHARACTERS_SPAWN_INDEX,
     UInt16 EventTitle;
     UInt16 WarTitle;
     UInt16 AbilityTitle;
+    UInt8 Unknown39[17];
     UInt8 NameLength;
     Char Name[0]; // Size: NameLength - 1
     // S2C_DATA_CHARACTERS_SPAWN_GUILD Guild;

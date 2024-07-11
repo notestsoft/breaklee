@@ -123,7 +123,7 @@ CLIENT_PROCEDURE_BINDING(AUTHENTICATE) {
     if (PasswordLength > MAX_PASSWORD_LENGTH) goto error;
 
     S2C_DATA_AUTHENTICATE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, AUTHENTICATE);
-    Response->KeepAlive = 1;
+    Response->KeepAlive = 0;
     Response->LoginStatus = LOGIN_STATUS_ERROR;
     Response->AccountStatus = ACCOUNT_STATUS_NORMAL;
 
@@ -148,6 +148,7 @@ CLIENT_PROCEDURE_BINDING(AUTHENTICATE) {
                 Response->AccountStatus = ACCOUNT_STATUS_INVALID_CREDENTIALS;
             }
             else {
+                Response->KeepAlive = 1;
                 Response->AccountStatus = ACCOUNT_STATUS_NORMAL;
                 Response->LoginStatus = LOGIN_STATUS_SUCCESS;
 
