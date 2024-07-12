@@ -36,6 +36,7 @@
 #include "Recovery.h"
 #include "RequestCraft.h"
 #include "ResearchSupport.h"
+#include "Settings.h"
 #include "Skill.h"
 #include "SkillSlot.h"
 #include "StellarMastery.h"

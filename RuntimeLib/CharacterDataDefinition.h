@@ -44,5 +44,6 @@ CHARACTER_DATA_PROTOCOL(struct _RTCharacterWarehouseInfo, WarehouseInfo, Account
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterInventoryInfo, TemporaryInventoryInfo, Character)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterRecoveryInfo, RecoveryInfo, Character)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterAnimaMasteryInfo, AnimaMasteryInfo, Account)
+CHARACTER_DATA_PROTOCOL(struct _RTCharacterSettingsInfo, SettingsInfo, Account)
 
 #undef CHARACTER_DATA_PROTOCOL
