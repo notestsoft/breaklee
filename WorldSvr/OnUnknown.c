@@ -48,6 +48,12 @@ error:
 	return SocketDisconnect(Socket, Connection);
 }
 
+CLIENT_PROCEDURE_BINDING(UNKNOWN_3046) {
+	S2C_DATA_UNKNOWN_3046* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UNKNOWN_3046);
+	Response->Unknown1 = 0;
+	SocketSend(Socket, Connection, Response);
+}
+
 CLIENT_PROCEDURE_BINDING(GET_UNKNOWN_USER_LIST) {
 	if (!Character) goto error;
 

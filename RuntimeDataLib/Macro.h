@@ -56,6 +56,7 @@
 
 #include "Ability.h"
 #include "Achievement.h"
+#include "AnimaMastery.h"
 #include "Assistant.h"
 #include "Avatar.h"
 #include "AwakenAuraMode.h"

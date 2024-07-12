@@ -614,6 +614,25 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     for (Int32 Index = 0; Index < 282; Index++)
         Response->Unknown14[Index] = Random(&Seed);
         */
+
+    memcpy(&Response->AnimaMasteryInfo, &Packet->CharacterData.AnimaMasteryInfo.Info, sizeof(struct _RTAnimaMasteryInfo));
+
+    if (Packet->CharacterData.AnimaMasteryInfo.Info.PresetCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            Packet->CharacterData.AnimaMasteryInfo.PresetData,
+            sizeof(struct _RTAnimaMasteryPresetData) * Packet->CharacterData.AnimaMasteryInfo.Info.PresetCount
+        );
+    }
+
+    if (Packet->CharacterData.AnimaMasteryInfo.Info.StorageCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            Packet->CharacterData.AnimaMasteryInfo.CategoryData,
+            sizeof(struct _RTAnimaMasteryCategoryData) * Packet->CharacterData.AnimaMasteryInfo.Info.StorageCount
+        );
+    }
+
     SocketSend(Context->ClientSocket, ClientConnection, Response);
 
     if (!RTCharacterIsAlive(Runtime, Character)) {

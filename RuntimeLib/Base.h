@@ -8,6 +8,10 @@ EXTERN_C_BEGIN
 
 #pragma pack(push, 1)
 
+typedef struct _RTAnimaMasteryInfo* RTAnimaMasteryInfoRef;
+typedef struct _RTAnimaMasteryPresetData* RTAnimaMasteryPresetDataRef;
+typedef struct _RTAnimaMasteryCategoryData* RTAnimaMasteryCategoryDataRef;
+typedef struct _RTCharacterAnimaMasteryInfo* RTCharacterAnimaMasteryInfoRef;
 typedef struct _RTBattleAttributes* RTBattleAttributesRef;
 typedef struct _RTBattleStyleLevelFormulaData* RTBattleStyleLevelFormulaDataRef;
 typedef struct _RTBattleStyleClassFormulaData* RTBattleStyleClassFormulaDataRef;

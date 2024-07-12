@@ -1,5 +1,6 @@
 #pragma once
 
+#include <RuntimeLib/AnimaMastery.h>
 #include <RuntimeLib/Constants.h>
 #include <RuntimeLib/BattleSystem.h>
 #include <RuntimeLib/BlendedAbility.h>

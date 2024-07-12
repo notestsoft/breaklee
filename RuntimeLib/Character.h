@@ -4,6 +4,7 @@
 #include "Base.h"
 
 #include "Achievement.h"
+#include "AnimaMastery.h"
 #include "Appearance.h"
 #include "BattleSystem.h"
 #include "BlendedAbility.h"

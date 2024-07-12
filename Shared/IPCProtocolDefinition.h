@@ -36,7 +36,7 @@ IPC_PROTOCOL_STRUCT(IPC_DATA_CHARACTER_INFO,
 	Char Name[MAX_CHARACTER_NAME_LENGTH + 1];
 	UInt64 HonorPoint;
 	UInt32 CostumeActivePageIndex;
-	UInt32 CostumeAppliedSlots[6];
+	UInt32 CostumeAppliedSlots[RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT];
 	UInt64 Alz;
 	UInt8 MapID;
 	UInt16 PositionX;
