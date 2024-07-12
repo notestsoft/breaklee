@@ -40,6 +40,8 @@ CLIENT_PROCEDURE_BINDING(VERIFY_LINKS) {
 		memcpy(&Request->Characters, &Client->Characters, sizeof(IPC_DATA_CHARACTER_INFO) * MAX_CHARACTER_COUNT);
 		IPCSocketUnicast(Server->IPCSocket, Request);
 	}
+
+	SocketDisconnect(Socket, Connection);
 	return;
 
 error:
