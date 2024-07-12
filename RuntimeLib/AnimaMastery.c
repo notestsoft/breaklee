@@ -97,7 +97,7 @@ UInt8 RTCharacterAnimaMasteryTrainSlot(
                 RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index]);
             }
             else {
-                ItemSlot->ItemOptions |= (ItemSlot->ItemOptions & ~StackSizeMask) | RemainingStackSize;
+                ItemSlot->ItemOptions = (ItemSlot->ItemOptions & ~StackSizeMask) | RemainingStackSize;
             }
 
             RemainingItemCount -= ConsumedCount;
@@ -154,7 +154,7 @@ Bool RTCharacterAnimaMasteryResetSlot(
 
     memset(CategoryData->MasterySlots, 0, sizeof(CategoryData->MasterySlots));
     RTCharacterInitializeAttributes(Runtime, Character);
-
+    Character->SyncMask.AnimaMasteryInfo = true;
     return true;
 }
 

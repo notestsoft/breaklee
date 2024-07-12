@@ -508,7 +508,10 @@ Void RTRuntimeInitForceEffectFormulas(
     
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_IGNORE_RESIST_DOWN, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_IGNORE_RESIST_DOWN);
-    
+
+    Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_IGNORE_RESIST_KNOCK_BACK, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
+    RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_IGNORE_RESIST_KNOCK_BACK);
+
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_IGNORE_RESIST_STUN, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_IGNORE_RESIST_STUN);
     
