@@ -412,28 +412,29 @@ Void RTCharacterInitializeAttributes(
     RTCharacterInitializeTranscendenceMastery(Runtime, Character);
     RTCharacterInitializeStellarMastery(Runtime, Character);
     RTCharacterInitializeMythMastery(Runtime, Character);
+	RTCharacterInitializeAnimaMastery(Runtime, Character);
 	RTCharacterInitializeBattleStyleStats(Runtime, Character);
 	RTCharacterInitializeEquipment(Runtime, Character);
     
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] = MIN(
+	RTCharacterSetHP(Runtime, Character, MIN(
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX],
 		Character->Data.Info.Resource.HP
-	);
+	), false);
 
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] = MIN(
+	RTCharacterSetMP(Runtime, Character, MIN(
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX],
 		Character->Data.Info.Resource.MP
-	);
+	), false);
 
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT] = MIN(
+	RTCharacterSetSP(Runtime, Character, MIN(
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX],
 		Character->Data.Info.Resource.SP
-	);
+	));
 
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT] = MIN(
+	RTCharacterSetBP(Runtime, Character, MIN(
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_MAX],
 		Character->Data.Info.Resource.BP
-	);
+	));
 
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] = MIN(
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX],
@@ -1177,17 +1178,15 @@ Void RTCharacterSetHP(
 	Int64 NewValue,
 	Bool IsPotion
 ) {
-	if (NewValue != Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT]) {
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] = NewValue;
-		Character->Data.Info.Resource.HP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-		Character->SyncMask.Info = true;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] = NewValue;
+	Character->Data.Info.Resource.HP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+	Character->SyncMask.Info = true;
 
-		RTRuntimeBroadcastCharacterData(
-			Runtime,
-			Character,
-			IsPotion ? NOTIFICATION_CHARACTER_DATA_TYPE_HPPOTION : NOTIFICATION_CHARACTER_DATA_TYPE_HP
-		);
-	}
+	RTRuntimeBroadcastCharacterData(
+		Runtime,
+		Character,
+		IsPotion ? NOTIFICATION_CHARACTER_DATA_TYPE_HPPOTION : NOTIFICATION_CHARACTER_DATA_TYPE_HP
+	);
 }
 
 Void RTCharacterAddHP(
@@ -1209,17 +1208,15 @@ Void RTCharacterSetMP(
 	Int32 NewValue,
 	Bool IsPotion
 ) {
-	if (NewValue != Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT]) {
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] = NewValue;
-		Character->Data.Info.Resource.MP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
-		Character->SyncMask.Info = true;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] = NewValue;
+	Character->Data.Info.Resource.MP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+	Character->SyncMask.Info = true;
 
-		RTRuntimeBroadcastCharacterData(
-			Runtime,
-			Character,
-			IsPotion ? NOTIFICATION_CHARACTER_DATA_TYPE_MPPOTION : NOTIFICATION_CHARACTER_DATA_TYPE_MP
-		);
-	}
+	RTRuntimeBroadcastCharacterData(
+		Runtime,
+		Character,
+		IsPotion ? NOTIFICATION_CHARACTER_DATA_TYPE_MPPOTION : NOTIFICATION_CHARACTER_DATA_TYPE_MP
+	);
 }
 
 Void RTCharacterAddMP(
@@ -1240,17 +1237,15 @@ Void RTCharacterSetSP(
 	RTCharacterRef Character,
 	Int32 NewValue
 ) {
-	if (NewValue != Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT]) {
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT] = NewValue;
-		Character->Data.Info.Resource.SP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
-		Character->SyncMask.Info = true;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT] = NewValue;
+	Character->Data.Info.Resource.SP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+	Character->SyncMask.Info = true;
 
-		RTRuntimeBroadcastCharacterData(
-			Runtime,
-			Character,
-			NOTIFICATION_CHARACTER_DATA_TYPE_SP
-		);
-	}
+	RTRuntimeBroadcastCharacterData(
+		Runtime,
+		Character,
+		NOTIFICATION_CHARACTER_DATA_TYPE_SP
+	);
 }
 
 Void RTCharacterAddSP(
@@ -1270,17 +1265,15 @@ Void RTCharacterSetBP(
 	RTCharacterRef Character,
 	Int32 NewValue
 ) {
-	if (NewValue != Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT]) {
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT] = NewValue;
-		Character->Data.Info.Resource.BP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT];
-		Character->SyncMask.Info = true;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT] = NewValue;
+	Character->Data.Info.Resource.BP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT];
+	Character->SyncMask.Info = true;
 
-		RTRuntimeBroadcastCharacterData(
-			Runtime,
-			Character,
-			NOTIFICATION_CHARACTER_DATA_TYPE_BP
-		);
-	}
+	RTRuntimeBroadcastCharacterData(
+		Runtime,
+		Character,
+		NOTIFICATION_CHARACTER_DATA_TYPE_BP
+	);
 }
 
 Void RTCharacterAddBP(

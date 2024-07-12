@@ -77,6 +77,12 @@ CONCAT(RTData, __NAME__ ## Ref) CONCAT(RTRuntimeData, __NAME__ ## Get)(						\
 
 #include "Macro.h"
 
+RTDataAnimaMasteryValueRef RTRuntimeDataAnimaMasteryValueGet(
+	RTRuntimeDataContextRef Context,
+	Int32 CategoryIndex,
+	Int32 ForceEffectOrder
+);
+
 Int32 RTRuntimeDataCharacterRankUpConditionGet(
 	RTRuntimeDataContextRef Context,
 	Int32 Rank,

@@ -145,6 +145,14 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 	Request->CharacterData.Info.Profile.MapsMask = 0xFFFFFFFF;
 	Request->CharacterData.Info.Profile.WarpMask = 0xFFFFFFFF;
 
+	Request->CharacterData.AnimaMasteryInfo.Info.PresetCount = 3;
+	for (Int32 PresetIndex = 0; PresetIndex < RUNTIME_MAX_ANIMA_MASTERY_PRESET_COUNT; PresetIndex += 1) {
+		for (Int32 CategoryIndex = 0; CategoryIndex < RUNTIME_MAX_ANIMA_MASTERY_CATEGORY_COUNT; CategoryIndex += 1) {
+			Request->CharacterData.AnimaMasteryInfo.PresetData[PresetIndex].CategoryOrder[CategoryIndex].StorageIndex = 0;
+			Request->CharacterData.AnimaMasteryInfo.PresetData[PresetIndex].CategoryOrder[CategoryIndex].CategoryIndex = CategoryIndex;
+		}
+	}
+
 	if (Packet->CreateSpecialCharacter && Context->Config.WorldSvr.DebugCharacter) {
 		Request->CharacterData.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] = 999999999;
 		Request->CharacterData.Info.Currency[RUNTIME_CHARACTER_CURRENCY_GEM] = 999999;

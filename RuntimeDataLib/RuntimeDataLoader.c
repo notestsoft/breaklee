@@ -183,6 +183,22 @@ CONCAT(RTData, __NAME__ ## Ref) CONCAT(RTRuntimeData, __NAME__ ## Get)(						\
 
 #include "Macro.h"
 
+RTDataAnimaMasteryValueRef RTRuntimeDataAnimaMasteryValueGet(
+    RTRuntimeDataContextRef Context,
+    Int32 CategoryIndex,
+    Int32 ForceEffectOrder
+) {
+    for (Int32 Index = 0; Index < Context->AnimaMasteryValueCount; Index += 1) {
+        RTDataAnimaMasteryValueRef Value = &Context->AnimaMasteryValueList[Index];
+        if (Value->CategoryIndex != CategoryIndex) continue;
+        if (Value->ForceEffectOrder != ForceEffectOrder) continue;
+
+        return Value;
+    }
+
+    return NULL;
+}
+
 Int32 RTRuntimeDataCharacterRankUpConditionGet(
     RTRuntimeDataContextRef Context,
     Int32 Rank,

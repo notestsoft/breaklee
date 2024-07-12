@@ -4,7 +4,6 @@
 #include "Notification.h"
 #include "Server.h"
 
-
 CLIENT_PROCEDURE_BINDING(ANIMA_MASTERY_TRAIN_SLOT) {
 	S2C_DATA_ANIMA_MASTERY_TRAIN_SLOT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ANIMA_MASTERY_TRAIN_SLOT);
 	if (!Character) goto error;

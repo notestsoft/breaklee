@@ -1,6 +1,38 @@
 #include "AnimaMastery.h"
 #include "Character.h"
+#include "Force.h"
 #include "Runtime.h"
+
+Void RTCharacterInitializeAnimaMastery(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    if (Character->Data.AnimaMasteryInfo.Info.PresetCount <= Character->Data.AnimaMasteryInfo.Info.ActivePresetIndex) return;
+
+    RTAnimaMasteryPresetDataRef PresetData = &Character->Data.AnimaMasteryInfo.PresetData[Character->Data.AnimaMasteryInfo.Info.ActivePresetIndex];
+
+    for (Int32 Index = 0; Index < RUNTIME_MAX_ANIMA_MASTERY_CATEGORY_COUNT; Index += 1) {
+        RTAnimaMasteryPresetSlot PresetSlot = PresetData->CategoryOrder[Index];
+        RTAnimaMasteryCategoryDataRef CategoryData = RTCharacterAnimaMasteryGetCategoryData(Runtime, Character, PresetSlot.StorageIndex, PresetSlot.CategoryIndex);
+        if (!CategoryData) continue;
+
+        for (Int32 SlotIndex = 0; SlotIndex < RUNTIME_MAX_ANIMA_MASTERY_SLOT_COUNT; SlotIndex += 1) {
+            UInt8 ForceEffectOrder = CategoryData->MasterySlots[SlotIndex];
+            if (ForceEffectOrder < 1) break;
+
+            RTDataAnimaMasteryValueRef AnimaMasteryValue = RTRuntimeDataAnimaMasteryValueGet(Runtime->Context, PresetSlot.CategoryIndex, ForceEffectOrder);
+            if (!AnimaMasteryValue) continue;
+
+            RTCharacterApplyForceEffect(
+                Runtime,
+                Character,
+                AnimaMasteryValue->ForceEffectIndex,
+                AnimaMasteryValue->ForceValue,
+                (AnimaMasteryValue->ForceValueType == 1) ? RUNTIME_FORCE_VALUE_TYPE_ADDITIVE : RUNTIME_FORCE_VALUE_TYPE_MULTIPLICATIVE
+            );
+        }
+    }
+}
 
 UInt8 RTCharacterAnimaMasteryTrainSlot(
     RTRuntimeRef Runtime,
@@ -75,8 +107,8 @@ UInt8 RTCharacterAnimaMasteryTrainSlot(
     }
 
     Int32 ForceEffectCount = 0;
-    for (Int32 Index = 0; Index < Runtime->Context->AnimaMasteryListCount; Index += 1) {
-        if (Runtime->Context->AnimaMasteryListList[Index].SectionIndex != CategoryIndex) continue;
+    for (Int32 Index = 0; Index < Runtime->Context->AnimaMasteryValueCount; Index += 1) {
+        if (Runtime->Context->AnimaMasteryValueList[Index].CategoryIndex != CategoryIndex) continue;
 
         ForceEffectCount += 1;
     }
@@ -85,12 +117,12 @@ UInt8 RTCharacterAnimaMasteryTrainSlot(
     Int32 RandomRate = RandomRange(&Seed, 0, ForceEffectCount * 1000);
     Int32 RandomRateOffset = 0;
     Int32 ForceEffectOrder = 0;
-    for (Int32 Index = 0; Index < Runtime->Context->AnimaMasteryListCount; Index += 1) {
-        if (Runtime->Context->AnimaMasteryListList[Index].SectionIndex != CategoryIndex) continue;
+    for (Int32 Index = 0; Index < Runtime->Context->AnimaMasteryValueCount; Index += 1) {
+        if (Runtime->Context->AnimaMasteryValueList[Index].CategoryIndex != CategoryIndex) continue;
 
         RandomRateOffset += 1000;
         if (RandomRate <= RandomRateOffset) {
-            ForceEffectOrder = Runtime->Context->AnimaMasteryListList[Index].SlotIndex;
+            ForceEffectOrder = Runtime->Context->AnimaMasteryValueList[Index].ForceEffectOrder;
             break;
         }
     }
@@ -98,6 +130,7 @@ UInt8 RTCharacterAnimaMasteryTrainSlot(
     assert(ForceEffectOrder > 0);
     CategoryData->MasterySlots[MasterySlotIndex] = ForceEffectOrder;
     Character->SyncMask.AnimaMasteryInfo = true;
+    RTCharacterInitializeAttributes(Runtime, Character);
 
     return CategoryData->MasterySlots[MasterySlotIndex];
 }
@@ -120,6 +153,7 @@ Bool RTCharacterAnimaMasteryResetSlot(
     if (!CategoryData) return false;
 
     memset(CategoryData->MasterySlots, 0, sizeof(CategoryData->MasterySlots));
+    RTCharacterInitializeAttributes(Runtime, Character);
 
     return true;
 }
@@ -221,6 +255,7 @@ Bool RTCharacterAnimaMasterySetActiveStorageIndex(
     PresetData->CategoryOrder[CategoryIndex].StorageIndex = StorageIndex;
     PresetData->CategoryOrder[CategoryIndex].CategoryIndex = CategoryIndex;
     Character->SyncMask.AnimaMasteryInfo = true;
+    RTCharacterInitializeAttributes(Runtime, Character);
     return true;
 }
 
@@ -233,6 +268,6 @@ Bool RTCharacterAnimaMasterySetActivePresetIndex(
     
     Character->Data.AnimaMasteryInfo.Info.ActivePresetIndex = PresetIndex;
     Character->SyncMask.AnimaMasteryInfo = true;
-
+    RTCharacterInitializeAttributes(Runtime, Character);
     return true;
 }

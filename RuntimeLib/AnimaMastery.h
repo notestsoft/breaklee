@@ -24,6 +24,8 @@ union _RTAnimaMasteryPresetSlot {
     };
 };
 
+typedef union _RTAnimaMasteryPresetSlot RTAnimaMasteryPresetSlot;
+
 struct _RTAnimaMasteryPresetData {
     union _RTAnimaMasteryPresetSlot CategoryOrder[RUNTIME_MAX_ANIMA_MASTERY_CATEGORY_COUNT];
 };
@@ -41,6 +43,11 @@ struct _RTCharacterAnimaMasteryInfo {
 };
 
 #pragma pack(pop)
+
+Void RTCharacterInitializeAnimaMastery(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
 
 UInt8 RTCharacterAnimaMasteryTrainSlot(
     RTRuntimeRef Runtime,
@@ -73,7 +80,8 @@ Bool RTCharacterAnimaMasteryUnlockCategory(
 RTAnimaMasteryCategoryDataRef RTCharacterAnimaMasteryGetCategoryData(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    Int32 StorageIndex
+    Int32 StorageIndex,
+    Int32 CategoryIndex
 );
 
 Bool RTCharacterAnimaMasterySetActiveStorageIndex(
