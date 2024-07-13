@@ -51,7 +51,8 @@ Bool RTRuntimeWarpCharacter(
     RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
     if (!World) return false;
 
-    if (RUNTIME_NPC_ID_RESERVED_BEGIN <= NpcID && NpcID <= RUNTIME_NPC_ID_RESERVED_END) {
+    if (RUNTIME_NPC_ID_RESERVED_BEGIN <= NpcID && NpcID <= RUNTIME_NPC_ID_RESERVED_END ||
+        RUNTIME_NPC_ID_RESERVED_BEGIN2 <= NpcID && NpcID <= RUNTIME_NPC_ID_RESERVED_END2) {
         switch (NpcID) {
         case RUNTIME_NPC_ID_WAR_0: return false;
         case RUNTIME_NPC_ID_WAR_1: return false;
@@ -141,6 +142,44 @@ Bool RTRuntimeWarpCharacter(
             );
 
             RTWorldSpawnCharacterWithoutNotification(Runtime, NewWorld, Entity);
+
+            return true;
+        }
+
+        case RUNTIME_NPC_ID_DUNGEON_WARP: {
+            Int32 DungeonIndex = WarpPositionX << 8 | WarpPositionY;
+            RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, DungeonIndex);
+            if (!DungeonData) return false;
+
+            if (Character->Data.Info.Basic.Level < DungeonData->EntryConditionLevel) return false;
+
+            RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, DungeonData->FailWarpNpcID);
+            RTWorldContextRef TargetWorld = World;
+            if (World->WorldData->WorldIndex != WarpPoint.WorldIndex) {
+                TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpPoint.WorldIndex);
+                assert(TargetWorld);
+            }
+
+            if (RTWorldIsTileColliding(Runtime, TargetWorld, WarpPoint.X, WarpPoint.Y, Character->Movement.CollisionMask)) return false;
+
+            RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
+
+            Character->Data.Info.Position.X = WarpPoint.X;
+            Character->Data.Info.Position.Y = WarpPoint.Y;
+            Character->Data.Info.Position.WorldID = WarpPoint.WorldIndex;
+            Character->Data.Info.Position.DungeonIndex = TargetWorld->DungeonIndex;
+            Character->SyncMask.Info = true;
+
+            RTMovementInitialize(
+                Runtime,
+                &Character->Movement,
+                WarpPoint.X,
+                WarpPoint.Y,
+                RUNTIME_MOVEMENT_SPEED_BASE,
+                RUNTIME_WORLD_TILE_WALL
+            );
+
+            RTWorldSpawnCharacterWithoutNotification(Runtime, TargetWorld, Entity);
 
             return true;
         }
