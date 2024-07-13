@@ -95,8 +95,6 @@ typedef struct _RTResearchSupportMissionBoard* RTResearchSupportMissionBoardRef;
 typedef struct _RTCharacterResearchSupportInfo* RTCharacterResearchSupportInfoRef;
 typedef struct _RTScript* RTScriptRef;
 typedef struct _RTScriptManager* RTScriptManagerRef;
-typedef struct _RTShopItemData* RTShopItemDataRef;
-typedef struct _RTShopData* RTShopDataRef;
 typedef struct _RTSkillSlot* RTSkillSlotRef;
 typedef struct _RTTrainerSkillData* RTTrainerSkillDataRef;
 typedef struct _RTTrainerData* RTTrainerDataRef;

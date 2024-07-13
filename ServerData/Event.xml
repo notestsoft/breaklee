@@ -30,7 +30,9 @@
 
             <item slot_id="120" item_id="2842" option="1000000000" duration_id="0" price="0"></item>
             <item slot_id="121" item_id="3523" option="640127" duration_id="0" price="0"></item>
-            <item slot_id="122" item_id="33556123" option="0" duration_id="0" price="0"></item>
+            <item slot_id="122" item_id="33555215" option="100000" duration_id="0" price="0"></item>
+            <item slot_id="123" item_id="33556892" option="127" duration_id="0" price="0"></item>
+            <item slot_id="124" item_id="755" option="257" duration_id="0" price="0"></item>
         </event_shop>
     </event>
 

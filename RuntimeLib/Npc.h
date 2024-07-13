@@ -13,6 +13,7 @@ enum {
 enum {
     RUNTIME_NPC_ID_GM2                  = 201,
     RUNTIME_NPC_ID_FRONTIER_STONE       = 202,
+    RUNTIME_NPC_ID_DUNGEON_WARP         = 206,
 
     RUNTIME_NPC_ID_WAR_0                = 68,
     RUNTIME_NPC_ID_WAR_1                = 67,
@@ -34,6 +35,8 @@ enum {
 
     RUNTIME_NPC_ID_RESERVED_BEGIN       = RUNTIME_NPC_ID_GM,
     RUNTIME_NPC_ID_RESERVED_END         = RUNTIME_NPC_ID_WAR_0,
+    RUNTIME_NPC_ID_RESERVED_BEGIN2      = RUNTIME_NPC_ID_GM2,
+    RUNTIME_NPC_ID_RESERVED_END2        = RUNTIME_NPC_ID_DUNGEON_WARP,
 };
 
 struct _RTNpc {

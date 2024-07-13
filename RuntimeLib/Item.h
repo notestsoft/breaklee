@@ -499,6 +499,10 @@ UInt64 RTItemDataGetStackSizeMask(
 	RTItemDataRef ItemData
 );
 
+UInt64 RTItemDataGetItemOptionsOffset(
+	RTItemDataRef ItemData
+);
+
 Int32 RTItemUseInternal(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
@@ -597,6 +601,8 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemChangeGender);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemCrest);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemLotto);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemCoreEnhancer);
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemForceGemPackage);
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemRemoteNpc);
 
 #pragma pack(pop)
 

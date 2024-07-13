@@ -389,6 +389,10 @@ Bool ArchiveParseFromSource(
         goto error;
     }
 
+    if (!IgnoreErrors && State.Token == TokenError) {
+        Error("Expected '<' found '%c'", *State.Cursor);
+    }
+
     return true;
 
 error:

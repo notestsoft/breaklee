@@ -230,35 +230,6 @@ RTQuestRewardItemDataRef RTRuntimeGetQuestRewardItemByIndex(
     return NULL;
 }
 
-RTShopDataRef RTRuntimeGetShopByWorldNpcID(
-    RTRuntimeRef Runtime,
-    Int32 WorldID,
-    Int32 NpcID
-) {
-    for (Int32 Index = 0; Index < Runtime->ShopDataCount; Index++) {
-        RTShopDataRef Shop = &Runtime->ShopData[Index];
-        if (Shop->WorldID == WorldID && Shop->NpcID == NpcID) {
-            return Shop;
-        }
-    }
-
-    return NULL;
-}
-
-RTShopDataRef RTRuntimeGetShopByIndex(
-    RTRuntimeRef Runtime,
-    Int32 ShopIndex
-) {
-    for (Int32 Index = 0; Index < Runtime->ShopDataCount; Index++) {
-        RTShopDataRef Shop = &Runtime->ShopData[Index];
-        if (Shop->Index == ShopIndex) {
-            return Shop;
-        }
-    }
-
-    return NULL;
-}
-
 RTTrainerDataRef RTRuntimeGetTrainerByWorldNpcID(
     RTRuntimeRef Runtime,
     Int32 WorldID,

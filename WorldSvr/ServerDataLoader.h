@@ -43,12 +43,6 @@ Bool ServerLoadMobData(
     CString ServerDirectory
 );
 
-Bool ServerLoadShopData(
-    RTRuntimeRef Runtime,
-    CString RuntimeDirectory,
-    CString ServerDirectory
-);
-
 Bool ServerLoadWorldData(
     RTRuntimeRef Runtime,
     CString RuntimeDirectory,

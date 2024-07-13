@@ -189,7 +189,7 @@ struct _RTCharacterInfo {
     struct _RTCharacterSkill Skill;
     struct _RTCharacterResource Resource;
     UInt16 Stat[RUNTIME_CHARACTER_STAT_COUNT];
-    UInt64 Currency[RUNTIME_CHARACTER_CURRENCY_COUNT];
+    UInt64 Currency[RUNTIME_CHARACTER_CURRENCY_COUNT]; // TODO: Gems are account binding
     struct _RTCharacterPosition Position;
 };
 

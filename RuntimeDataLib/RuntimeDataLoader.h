@@ -153,4 +153,16 @@ RTDataForceCodeFormula RTRuntimeDataForceCodeFormulaGet(
 	Bool IsEpic
 );
 
+RTDataShopIndexRef RTRuntimeDataShopIndexGet(
+	RTRuntimeDataContextRef Context,
+	Int32 WorldIndex,
+	Int32 NpcIndex
+);
+
+RTDataShopItemRef RTRuntimeDataShopItemGet(
+	RTDataShopPoolRef ShopPool,
+	Int32 TabIndex,
+	Int32 SlotIndex
+);
+
 EXTERN_C_END

@@ -61,7 +61,6 @@ struct _RTRuntime {
     Int32 NpcCount;
     Int32 QuestDataCount;
     Int32 QuestRewardItemSetDataCount;
-    Int32 ShopDataCount;
     Int32 TrainerDataCount;
     Int32 WarpCount;
     Int32 WorldCount;
@@ -80,7 +79,6 @@ struct _RTRuntime {
     struct _RTNpc Npcs[RUNTIME_MEMORY_MAX_NPC_COUNT];
     struct _RTQuestData QuestData[RUNTIME_MEMORY_MAX_QUEST_DATA_COUNT];
     struct _RTQuestRewardItemSetData QuestRewardItemSetData[RUNTIME_MEMORY_MAX_QUEST_REWARD_ITEM_SET_DATA_COUNT];
-    struct _RTShopData ShopData[RUNTIME_MEMORY_MAX_SHOP_DATA_COUNT];
     struct _RTTrainerData TrainerData[RUNTIME_MEMORY_MAX_TRAINER_DATA_COUNT];
     struct _RTWarp Warps[RUNTIME_MEMORY_MAX_WARP_COUNT];
     struct _RTDungeonData DungeonData[RUNTIME_MEMORY_MAX_DUNGEON_COUNT];
@@ -176,17 +174,6 @@ RTQuestRewardItemDataRef RTRuntimeGetQuestRewardItemByIndex(
     Int32 ItemSetIndex,
     Int32 ItemIndex,
     Int32 BattleStyleIndex
-);
-
-RTShopDataRef RTRuntimeGetShopByWorldNpcID(
-    RTRuntimeRef Runtime,
-    Int32 WorldID,
-    Int32 NpcID
-);
-
-RTShopDataRef RTRuntimeGetShopByIndex(
-    RTRuntimeRef Runtime,
-    Int32 ShopIndex
 );
 
 RTTrainerDataRef RTRuntimeGetTrainerByWorldNpcID(

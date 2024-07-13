@@ -1011,3 +1011,35 @@ RTDataForceCodeFormula RTRuntimeDataForceCodeFormulaGet(
 
     return Formula;
 }
+
+RTDataShopIndexRef RTRuntimeDataShopIndexGet(
+    RTRuntimeDataContextRef Context,
+    Int32 WorldIndex,
+    Int32 NpcIndex
+) {
+    for (Int32 Index = 0; Index < Context->ShopIndexCount; Index += 1) {
+        RTDataShopIndexRef ShopIndex = &Context->ShopIndexList[Index];
+        if (ShopIndex->WorldIndex != WorldIndex) continue;
+        if (ShopIndex->NpcIndex != NpcIndex) continue;
+
+        return ShopIndex;
+    }
+
+    return NULL;
+}
+
+RTDataShopItemRef RTRuntimeDataShopItemGet(
+    RTDataShopPoolRef ShopPool,
+    Int32 TabIndex,
+    Int32 SlotIndex
+) {
+    for (Int32 Index = 0; Index < ShopPool->ShopItemCount; Index += 1) {
+        RTDataShopItemRef ShopItem = &ShopPool->ShopItemList[Index];
+        if (ShopItem->TabIndex != TabIndex) continue;
+        if (ShopItem->SlotIndex != SlotIndex) continue;
+
+        return ShopItem;
+    }
+
+    return NULL;
+}

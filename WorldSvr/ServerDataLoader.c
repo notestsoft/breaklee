@@ -1108,62 +1108,6 @@ error:
     return false;
 }
 
-Bool ServerLoadShopData(
-    RTRuntimeRef Runtime,
-    CString RuntimeDirectory,
-    CString ServerDirectory
-) {
-    Char ArchiveFilePath[MAX_PATH];
-    PathCombine(ServerDirectory, "shop.xml", ArchiveFilePath);
-
-    ArchiveRef Archive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
-    if (!ArchiveLoadFromFile(Archive, ArchiveFilePath, false)) goto error;
-
-    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "shops");
-    if (ParentIndex < 0) goto error;
-
-    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "shop");
-    while (Iterator) {
-        assert(Runtime->ShopDataCount < RUNTIME_MEMORY_MAX_SHOP_DATA_COUNT);
-
-        RTShopDataRef ShopData = &Runtime->ShopData[Runtime->ShopDataCount];
-        ShopData->Index = Runtime->ShopDataCount;
-
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "world_id", (Index*)&ShopData->WorldID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "npc_id", &ShopData->NpcID)) goto error;
-
-        ArchiveIteratorRef ItemIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, "item");
-        while (ItemIterator) {
-            assert(ShopData->ItemCount < RUNTIME_SHOP_MAX_ITEM_COUNT);
-
-            RTShopItemDataRef ItemData = &ShopData->Items[ShopData->ItemCount];
-
-            if (!ParseAttributeInt32(Archive, ItemIterator->Index, "slot_id", &ItemData->SlotID)) goto error;
-            if (!ParseAttributeInt32(Archive, ItemIterator->Index, "item_id", &ItemData->ItemID)) goto error;
-            if (!ParseAttributeUInt64(Archive, ItemIterator->Index, "option", &ItemData->ItemOption)) goto error;
-            if (!ParseAttributeInt32(Archive, ItemIterator->Index, "reputation_class", &ItemData->MinHonorRank)) goto error;
-            if (!ParseAttributeInt32(Archive, ItemIterator->Index, "duration_id", &ItemData->DurationID)) goto error;
-            if (!ParseAttributeInt32(Archive, ItemIterator->Index, "price", &ItemData->Price)) goto error;
-            if (!ParseAttributeInt32(Archive, ItemIterator->Index, "onlypremium", &ItemData->OnlyPremium)) goto error;
-            if (!ParseAttributeInt32(Archive, ItemIterator->Index, "wexpprice", &ItemData->WexpPrice)) goto error;
-            if (!ParseAttributeInt32(Archive, ItemIterator->Index, "dp", &ItemData->DpPrice)) goto error;
-
-            ShopData->ItemCount += 1;
-            ItemIterator = ArchiveQueryNodeIteratorNext(Archive, ItemIterator);
-        }
-
-        Runtime->ShopDataCount += 1;
-        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
-    }
-
-    ArchiveDestroy(Archive);
-    return true;
-
-error:
-    ArchiveDestroy(Archive);
-    return false;
-}
-
 Bool ServerLoadWarpData(
     RTRuntimeRef Runtime,
     ArchiveRef Archive

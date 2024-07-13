@@ -533,24 +533,24 @@ CLIENT_PROTOCOL(S2C, LOOT_CURRENCY_ITEM, DEFAULT, 154,
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_ITEM_PRICE_INDEX,
-    UInt32 SlotIndexItemPrice;
-    UInt32 AmountItemPrice;
+    UInt32 SlotIndex;
+    UInt32 Count;
 )
 
 CLIENT_PROTOCOL(C2S, BUY_ITEM, DEFAULT, 161,
-    UInt32 TabIndex;
-    UInt16 NpcID;
-    UInt8 Unknown1;
-    UInt16 SlotIndex;
+    Int32 RemoteShopItemIndex;
+    UInt8 NpcIndex;
+    Int16 TabIndex;
+    Int16 SlotIndex;
     UInt64 ItemID;
     UInt64 ItemOptions;
-    UInt16 SlotIndex2;
-    UInt32 Unknown2;
-    UInt32 InventoryIndexCount;
-    UInt32 ItemPriceCount;
-    S2C_DATA_ITEM_PRICE_INDEX ItemPriceTable[522];
-    UInt8 Unknown3;
-    Int32 InventoryIndex[50]; // TODO: Check if the appended data after inventory indices are useful
+    Int16 SlotIndex2;
+    Int32 Unknown2;
+    Int32 ItemCount;
+    Int32 ItemPriceCount;
+    S2C_DATA_ITEM_PRICE_INDEX ItemPriceList[SERVER_CHARACTER_MAX_BUY_ITEM_PRICE_COUNT];
+    UInt8 IsRemoteShop;
+    Int32 InventoryIndex[50];
 )
 
 CLIENT_PROTOCOL(S2C, BUY_ITEM, DEFAULT, 161,
@@ -563,7 +563,8 @@ CLIENT_PROTOCOL(S2C, BUY_ITEM, DEFAULT, 161,
 )
 
 CLIENT_PROTOCOL(C2S, SELL_ITEM, DEFAULT, 162,
-    UInt16 NpcID;
+    UInt8 NpcIndex;
+    UInt8 IsRemoteShop;
     UInt16 Unknown1;
     UInt8 Unknown2;
     UInt32 InventoryIndexCount;
@@ -2876,8 +2877,8 @@ CLIENT_PROTOCOL(C2S, GET_SHOP_LIST, DEFAULT, 2179,
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_GET_SHOP_LIST_INDEX,
-    UInt32 WorldID;
-    UInt8 ShopID;
+    UInt32 WorldIndex;
+    UInt8 NpcIndex;
     UInt16 ShopIndex;
     UInt8 IsCouponShop;
 )
@@ -2892,26 +2893,26 @@ CLIENT_PROTOCOL(C2S, GET_SHOP_DATA, DEFAULT, 2180,
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_GET_SHOP_DATA_INDEX,
-    UInt16 ShopPoolIndex;
-    UInt16 ShopSlotIndex;
-    UInt32 ItemID;
-    UInt32 ItemType;
+    UInt16 TabIndex;
+    UInt16 SlotIndex;
+    UInt64 ItemID;
     UInt64 ItemOptions;
     UInt32 ItemDuration;
-    Int8 MinLevel;
-    Int8 MaxLevel;
-    Int8 GuildLevel;
+    UInt8 MinLevel;
+    UInt8 MaxLevel;
+    UInt8 MinGuildLevel;
     Int8 MinHonorRank;
     Int8 MaxHonorRank;
     UInt8 IsPremiumOnly;
-    UInt8 IsBringerNationOnly;
+    UInt8 IsWinningOnly;
     Int8 Unknown6[4];
-    UInt64 AlzPrice;
-    UInt64 WexpPrice;
-    UInt16 ApPrice;
-    UInt16 DpPrice;
-    UInt32 Unknown8;
-    UInt64 CashPrice;
+    UInt64 PriceAlz;
+    UInt64 PriceWexp;
+    UInt16 PriceAP;
+    UInt32 PriceDP;
+    UInt32 PriceCash;
+    Int16 ShopPricePoolIndex;
+    UInt32 PriceGem;
 )
 
 CLIENT_PROTOCOL(S2C, GET_SHOP_DATA, DEFAULT, 2180,
@@ -3018,14 +3019,14 @@ CLIENT_PROTOCOL(C2S, GET_SHOP_ITEM_PRICE_POOL, DEFAULT, 2308,
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_GET_SHOP_ITEM_PRICE_POOL_INDEX,
-    UInt16 SlotIndex;
+    Int16 PoolIndex;
     RTItem ItemID;
     UInt64 ItemOptions;
-    UInt32 Amount;
+    Int32 ItemCount;
 )
 
 CLIENT_PROTOCOL(S2C, GET_SHOP_ITEM_PRICE_POOL, DEFAULT, 2308,
-    UInt32 Count;
+    Int16 Count;
     S2C_DATA_GET_SHOP_ITEM_PRICE_POOL_INDEX Data[0];
 )
 
@@ -3694,6 +3695,23 @@ CLIENT_PROTOCOL(C2S, SET_ITEM_PROTECTION, DEFAULT, 3011,
 
 CLIENT_PROTOCOL(S2C, SET_ITEM_PROTECTION, DEFAULT, 3011,
     Int32 Success;
+)
+
+CLIENT_PROTOCOL(C2S, COSTUME_WAREHOUSE_PRICE_LIST, DEFAULT, 3019,
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_COSTUME_WAREHOUSE_PRICE_ITEM,
+    UInt32 ItemID;
+    Int32 Price1;
+    Int32 Price2;
+    Int32 Price3;
+)
+
+CLIENT_PROTOCOL(S2C, COSTUME_WAREHOUSE_PRICE_LIST, DEFAULT, 3019,
+    Int32 IsActive;
+    Int32 Unknown1;
+    Int32 ItemCount;
+    S2C_DATA_COSTUME_WAREHOUSE_PRICE_ITEM Items[0];
 )
 
 CLIENT_PROTOCOL(S2C, NFY_UNKNOWN_3016, DEFAULT, 3016,

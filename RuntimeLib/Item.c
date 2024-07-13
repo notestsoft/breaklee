@@ -465,6 +465,30 @@ UInt64 RTItemDataGetStackSizeMask(
 	return UINT64_MAX;
 }
 
+UInt64 RTItemDataGetItemOptionsOffset(
+	RTItemDataRef ItemData
+) {
+	if (ItemData->ItemType == RUNTIME_ITEM_TYPE_QUEST_S ||
+		ItemData->ItemType == RUNTIME_ITEM_TYPE_SPECIAL_POTION ||
+		ItemData->ItemType == RUNTIME_ITEM_TYPE_FORCE_CORE_ORDER_SHEET) {
+		return 7;
+	}
+
+	if (ItemData->ItemType == RUNTIME_ITEM_TYPE_EVENT_S ||
+		ItemData->ItemType == RUNTIME_ITEM_TYPE_FONT_S) {
+		// TODO: Check how the item options memory is layouted...
+		return 0;
+	}
+
+	if (ItemData->ItemType == RUNTIME_ITEM_TYPE_BOSS_ARENA_TOKEN ||
+		ItemData->ItemType == RUNTIME_ITEM_TYPE_POTION_STACKABLE ||
+		ItemData->ItemType == RUNTIME_ITEM_TYPE_TIME_REDUCER) {
+		return 16;
+	}
+
+	return 0;
+}
+
 Int32 RTItemUseInternal(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
@@ -1656,6 +1680,28 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemCoreEnhancer) {
 	}
 
 	Character->SyncMask.InventoryInfo = true;
+
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+}
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemForceGemPackage) {
+	Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_GEM] += ItemSlot->ItemOptions;
+	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
+	Character->SyncMask.Info = true;
+	Character->SyncMask.InventoryInfo = true;
+
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+}
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemRemoteNpc) {
+	if (ItemData->ItemType == RUNTIME_ITEM_TYPE_REMOTE_SHOP) {
+		ItemSlot->ItemOptions = MAX(0, ItemSlot->ItemOptions - 1);
+		if (ItemSlot->ItemOptions <= 0) {
+			RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
+		}
+
+		Character->SyncMask.InventoryInfo = true;
+	}
 
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }

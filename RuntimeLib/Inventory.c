@@ -134,6 +134,7 @@ Bool RTInventorySetSlot(
 	if (InventorySlot) {
 		if (Slot->Item.ID != InventorySlot->Item.ID) return false;
 
+		// TODO: Check if we need more merging options here!
 		if (ItemData->ItemType == RUNTIME_ITEM_TYPE_QUEST_S) {
 			UInt64 ItemOptions = RTQuestItemGetOptions(Slot->ItemOptions);
 			UInt64 InventoryItemOptions = RTQuestItemGetOptions(InventorySlot->ItemOptions);
