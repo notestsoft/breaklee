@@ -1,12 +1,22 @@
-#include "ClientProtocol.h"
-#include "ClientProcedures.h"
-#include "ClientSocket.h"
-#include "WorldSocket.h"
-#include "Notification.h"
 #include "Server.h"
-#include "IPCCommands.h"
-#include "IPCProtocol.h"
 
-CLIENT_PROCEDURE_BINDING(CONNECT) {}
+ClientContextRef ServerGetClientByAuthKey(
+    ServerContextRef Context,
+    UInt32 AuthKey,
+    UInt16 EntityID
+) {
+    SocketConnectionIteratorRef Iterator = SocketGetConnectionIterator(Context->ClientSocket);
+    while (Iterator) {
+        SocketConnectionRef Connection = SocketConnectionIteratorFetch(Context->ClientSocket, Iterator);
+        Iterator = SocketConnectionIteratorNext(Context->ClientSocket, Iterator);
 
-CLIENT_PROCEDURE_BINDING(AUTH_ACCOUNT) {}
+        ClientContextRef Client = (ClientContextRef)Connection->Userdata;
+        if ((Client->Flags & CLIENT_FLAGS_CONNECTED) &&
+            Client->AuthKey == AuthKey &&
+            Connection->ID == EntityID) {
+            return Client;
+        }
+    }
+
+    return NULL;
+}

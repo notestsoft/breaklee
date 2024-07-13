@@ -1,5 +1,7 @@
 #pragma once
 
+#include <RuntimeLib/RuntimeLib.h>
+
 #include "Base.h"
 #include "Context.h"
 #include "ClientProtocol.h"

@@ -2,7 +2,9 @@
 
 #include <NetLib/NetLib.h>
 #include <RuntimeLib/RuntimeLib.h>
+
 #include "Constants.h"
+#include "Context.h"
 
 EXTERN_C_BEGIN
 
@@ -20,10 +22,10 @@ typedef struct {                                        \
 } __NAME__;
 #include "ClientProtocolDefinition.h"
 
-#define CLIENT_PROTOCOL(__NAMESPACE__, __NAME__, __SIGNATURE__, __COMMAND__, __BODY__) \
-typedef struct {                                                                       \
-    __NAMESPACE__ ## _DATA_SIGNATURE_ ## __SIGNATURE__;                                \
-    __BODY__                                                                           \
+#define CLIENT_PROTOCOL(__NAMESPACE__, __NAME__, __SIGNATURE__, __COMMAND__, __BODY__)  \
+typedef struct {                                                                        \
+    __NAMESPACE__  ## _DATA_SIGNATURE_ ## __SIGNATURE__;                                \
+    __BODY__                                                                            \
 } __NAMESPACE__ ## _DATA_ ## __NAME__;
 #include "ClientProtocolDefinition.h"
 

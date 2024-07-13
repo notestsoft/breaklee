@@ -1,7 +1,7 @@
 #include "ClientCommands.h"
 #include "ClientSocket.h"
+#include "ClientProtocol.h"
 #include "ClientProcedures.h"
-#include "Server.h"
 
 Void ClientSocketOnConnect(
     ServerRef Server,
@@ -12,7 +12,10 @@ Void ClientSocketOnConnect(
 ) {
     ClientContextRef Client = (ClientContextRef)ConnectionContext;
     Client->Connection = Connection;
-    Client->CharacterIndex = 0;
+    Client->AccountID = -1;
+    Client->Flags = 0;
+    Client->DisconnectTimestamp = 0;
+    Client->RSA = NULL;
 }
 
 Void ClientSocketOnDisconnect(
@@ -22,19 +25,8 @@ Void ClientSocketOnDisconnect(
     SocketConnectionRef Connection,
     Void *ConnectionContext
 ) {
-    ServerContextRef Context = (ServerContextRef)ServerContext;
     ClientContextRef Client = (ClientContextRef)ConnectionContext;
-    
-    /*
-    if (Client->CharacterIndex > 0) {
-        // TODO: @DungeonCleanUp Delete character dungeon instance and respawn to global world
-
-        RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Client->CharacterIndex);
-        RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Context->Runtime, Character);
-        RTWorldDespawnCharacter(WorldContext->WorldManager->Runtime, WorldContext, Character->ID);
-        RTWorldManagerDestroyCharacter(WorldContext->WorldManager, Client->CharacterIndex);
-        Client->CharacterIndex = 0;
+    if (Client->RSA) {
+        RSA_free(Client->RSA);
     }
-    */
-    Info("Client disconnected...");
 }

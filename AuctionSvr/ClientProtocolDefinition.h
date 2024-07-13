@@ -1,5 +1,3 @@
-#include <NetLib/NetLib.h>
-#include <RuntimeLib/RuntimeLib.h>
 #include "Constants.h"
 
 #ifndef CLIENT_PROTOCOL_ENUM
@@ -15,14 +13,11 @@
 #endif
 
 CLIENT_PROTOCOL(C2S, CONNECT, DEFAULT, 101,
-	UInt8 NodeIndex;
-	UInt8 WorldNodeIndex;
-	UInt8 UnknownIndex1;
-	UInt8 UnknownIndex2;
+    UInt32 AuthKey;
 )
 
 CLIENT_PROTOCOL(S2C, CONNECT, DEFAULT, 101,
-	UInt32 XorKey;
+    UInt32 XorKey;
 	UInt32 AuthKey;
 	UInt16 ConnectionID;
 	UInt16 XorKeyIndex;
@@ -30,11 +25,217 @@ CLIENT_PROTOCOL(S2C, CONNECT, DEFAULT, 101,
 	UInt32 Unknown2;
 )
 
-CLIENT_PROTOCOL(C2S, AUTH_ACCOUNT, DEFAULT, 102,
-	UInt32 CharacterIndex;
-	UInt8 WorldNodeIndex;
+CLIENT_PROTOCOL(C2S, VERIFY_LINKS, DEFAULT, 102,
+	UInt32 AuthKey;
+	UInt16 EntityID;
+	UInt8 WorldID;
+	UInt8 ServerID;
+	UInt32 ClientMagicKey;
+)
+
+CLIENT_PROTOCOL(S2C, VERIFY_LINKS, DEFAULT, 102,
+	UInt8 WorldID;
+	UInt8 ServerID;
+	UInt8 Status;
+)
+
+CLIENT_PROTOCOL(C2S, AUTH_ACCOUNT, DEFAULT, 103,
 	UInt32 Unknown1;
-	UInt64 Unknown2;
+)
+
+CLIENT_PROTOCOL(S2C, AUTH_ACCOUNT, DEFAULT, 103,
+	UInt32 ServerStatus;
+	UInt32 Unknown1;
+	UInt32 Unknown2;
+)
+
+CLIENT_PROTOCOL(C2S, DISCONNECT, DEFAULT, 110,
+)
+
+CLIENT_PROTOCOL_ENUM(
+    SYSTEM_MESSAGE_NONE,
+    SYSTEM_MESSAGE_DUAL_LOGIN,
+    SYSTEM_MESSAGE_DISCONNECTED,
+    SYSTEM_MESSAGE_LOGIN_SUCCESS = 0x09,
+)
+
+CLIENT_PROTOCOL(S2C, SYSTEM_MESSAGE, DEFAULT, 120,
+	UInt8 Message;
+	UInt8 Unknown1;
+	UInt8 Unknown2;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_LOGIN_SERVER_LIST_WORLD,
+	UInt8 ServerID;
+	UInt8 WorldID;
+	UInt16 PlayerCount;
+	UInt16 LobbyPlayerCount;
+	UInt16 Unknown1;
+	UInt16 CapellaPlayerCount;
+	UInt16 ProcyonPlayerCount;
+	UInt32 Unknown2;
+	UInt16 CapellaPlayerCount2;
+	UInt16 ProcyonPlayerCount2;
+	UInt16 Unknown3;
+	UInt8 MinLevel;
+	UInt8 MaxLevel;
+	UInt8 MinRank;
+	UInt8 MaxRank;
+	UInt16 MaxPlayerCount;
+	Char WorldHost[65];
+	UInt16 WorldPort;
+	UInt64 WorldType;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_SERVER_FLAGS,
+	UInt8 Unknown1 : 4;
+	UInt8 IsHot : 1;
+	UInt8 Unknown2 : 3;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_LOGIN_SERVER_LIST_INDEX,
+    UInt8 ServerID;
+	S2C_DATA_SERVER_FLAGS Flags;
+	UInt32 Language;
+	UInt8 Unknown1[2];
+	UInt8 WorldCount;
+    // S2C_DATA_LOGIN_SERVER_LIST_WORLD Worlds[0]; /* [WorldCount] */
+)
+
+CLIENT_PROTOCOL(S2C, SERVER_LIST, DEFAULT, 121,
+	UInt8 ServerCount;
+    // S2C_DATA_LOGIN_SERVER_LIST_INDEX Servers[0];
+)
+
+CLIENT_PROTOCOL(C2S, CHECK_VERSION, DEFAULT, 122,
+	UInt32 ClientVersion;
+	UInt32 DebugVersion;
+	UInt32 Reserved[2];
+)
+
+CLIENT_PROTOCOL(S2C, CHECK_VERSION, DEFAULT, 122,
+	UInt32 ClientVersion;
+	UInt32 ServerMagicKey;
+	UInt32 Reserved[2];
+)
+
+CLIENT_PROTOCOL(S2C, UNKNOWN_124, DEFAULT, 124,
+	UInt8 Unknown1;
+	UInt32 Unknown2[4];
+	UInt8 Unknown3;
+	UInt32 Unknown4[4];
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_URL,
+	UInt32 Length;
+	// Char Data[0]; /* Char[Length] */
+)
+
+CLIENT_PROTOCOL(S2C, URL_LIST, DEFAULT, 128,
+	UInt16 PayloadLength[2];
+	S2C_DATA_URL Urls[0];
+)
+
+CLIENT_PROTOCOL(C2S, PUBLIC_KEY, DEFAULT, 2001,
+)
+
+CLIENT_PROTOCOL(S2C, PUBLIC_KEY, DEFAULT, 2001,
+	UInt8 Unknown1;
+	UInt16 PublicKeyLength;
+    UInt8 Payload[0]; /* UInt8[PublicKeyLength] */
+)
+
+CLIENT_PROTOCOL(C2S, SERVER_ENVIRONMENT, DEFAULT, 2002,
+	Char Username[129];
+)
+
+CLIENT_PROTOCOL(S2C, SERVER_ENVIRONMENT, DEFAULT, 2002,
+	UInt8 Active;
+	Int32 Unknown1;
+	UInt32 Timeout;
+	UInt16 CaptchaSize;
+	UInt8 Captcha[4097];
+)
+
+CLIENT_PROTOCOL(C2S, VERIFY_CAPTCHA, DEFAULT, 2003,
+	Char Captcha[6];
+	UInt8 Unknown1;
+	UInt8 Unknown2;
+)
+
+CLIENT_PROTOCOL(S2C, VERIFY_CAPTCHA, DEFAULT, 2003,
+	UInt8 Success;
+	Int32 Unknown1;
+	Int32 Unknown2;
+)
+
+CLIENT_PROTOCOL(C2S, REFRESH_CAPTCHA, DEFAULT, 2004,
+)
+
+CLIENT_PROTOCOL(S2C, REFRESH_CAPTCHA, DEFAULT, 2004,
+	UInt8 Active;
+	Int32 Unknown1;
+	UInt32 Timeout;
+	UInt16 CaptchaSize;
+	UInt8 Captcha[4097];
+)
+
+CLIENT_PROTOCOL(S2C, DISCONNECT_TIMER, DEFAULT, 2005,
+    UInt64 Timeout;
+	UInt8 Unknown1;
+)
+
+CLIENT_PROTOCOL(C2S, AUTHENTICATE, DEFAULT, 2006,
+	UInt32 SubMessageType;
+	UInt8 Payload[0];
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_AUTHENTICATE_SERVER_INDEX,
+    UInt8 ServerID;
+    UInt8 CharacterCount;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_AUTHENTICATE_EXTENSION,
+	UInt8 Unknown1[55];
+	Char AuthKey[32];
+	UInt8 Unknown2[2];
+	S2C_DATA_AUTHENTICATE_SERVER_INDEX Servers[MAX_SERVER_COUNT];
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_AUTHENTICATE_EXTENSION_UNKNOWN,
+	UInt32 Unknown1;
+	Timestamp UnknownTimestamp1;
+	UInt32 Unknown2;
+	Timestamp UnknownTimestamp2;
+)
+
+CLIENT_PROTOCOL(S2C, AUTHENTICATE, DEFAULT, 2006,
+	UInt8 KeepAlive;
+	Int32 Unknown1;
+	Int32 Unknown2;
+	Int32 LoginStatus;
+	UInt32 SubMessageType;
+	Int32 AccountStatus;
+    S2C_DATA_AUTHENTICATE_EXTENSION Extension[0];
+)
+
+CLIENT_PROTOCOL(S2C, AUTH_TIMER, DEFAULT, 2009,
+	UInt32 Timeout;
+)
+
+CLIENT_PROTOCOL(C2S, UNKNOWN_3383, DEFAULT, 3383,
+)
+
+CLIENT_PROTOCOL(S2C, UNKNOWN_3383, DEFAULT, 3383,
+	UInt8 Unknown1[8];
+)
+
+CLIENT_PROTOCOL(C2S, WAR_ENTRY_STATUS, DEFAULT, 5383,
+)
+
+CLIENT_PROTOCOL(S2C, WAR_ENTRY_STATUS, DEFAULT, 5383,
+	UInt8 Unknown1[4];
+	UInt32 RecievedWarReward;
 )
 
 #undef CLIENT_PROTOCOL_ENUM
