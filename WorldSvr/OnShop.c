@@ -255,6 +255,9 @@ CLIENT_PROCEDURE_BINDING(GET_SHOP_DATA) {
         ResponseItem->MaxHonorRank = ShopItem->MaxHonorRank;
         ResponseItem->IsPremiumOnly = ShopItem->IsPremiumOnly;
         ResponseItem->IsWinningOnly = ShopItem->IsWinningOnly;
+        // TODO: How does the game know how many are already purchased?
+        ResponseItem->DailyPurchaseLimit = ShopItem->DailyPurchaseLimit;
+        ResponseItem->WeeklyPurchaseLimit = ShopItem->WeeklyPurchaseLimit;
         ResponseItem->PriceAlz = ShopItem->PriceAlz;
         ResponseItem->PriceWexp = ShopItem->PriceWexp;
         ResponseItem->PriceAP = ShopItem->PriceAP;

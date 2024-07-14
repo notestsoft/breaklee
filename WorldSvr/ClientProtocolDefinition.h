@@ -2905,7 +2905,8 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_GET_SHOP_DATA_INDEX,
     Int8 MaxHonorRank;
     UInt8 IsPremiumOnly;
     UInt8 IsWinningOnly;
-    Int8 Unknown6[4];
+    Int16 DailyPurchaseLimit;
+    Int16 WeeklyPurchaseLimit;
     UInt64 PriceAlz;
     UInt64 PriceWexp;
     UInt16 PriceAP;
