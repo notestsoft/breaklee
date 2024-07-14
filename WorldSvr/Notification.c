@@ -28,7 +28,7 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTERS_SPAWN) {
 
     if (!RTEntityIsNull(Character->PartyID)) {
         RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
-        SendPartyData(Context, Context->ClientSocket, Party);
+        if (Party) SendPartyData(Context, Context->ClientSocket, Party);
     }
 }
 
@@ -40,7 +40,7 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTER_DESPAWN) {
 
     if (!RTEntityIsNull(Character->PartyID)) {
         RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
-        SendPartyData(Context, Context->ClientSocket, Party);
+        if (Party) SendPartyData(Context, Context->ClientSocket, Party);
     }
 }
 
@@ -129,6 +129,10 @@ NOTIFICATION_PROCEDURE_BINDING(MOB_CHASE_END) {
         Notification->PositionCurrentX,
         Notification->PositionCurrentY
     );
+}
+
+NOTIFICATION_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 
 NOTIFICATION_PROCEDURE_BINDING(ATTACK_TO_MOB) {

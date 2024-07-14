@@ -449,6 +449,30 @@ Void RTCharacterInitializeAttributes(
 	}
 }
 
+Void RTCharacterUpdate(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+	Timestamp Timestamp = PlatformGetTickCount();
+	if (Character->Data.Info.ExtendedStyle.BattleModeFlags && Character->BattleModeTimeout <= Timestamp) {
+		Character->Data.Info.ExtendedStyle.BattleModeFlags = 0;
+		Character->BattleModeSkillIndex = 0;
+		Character->BattleModeTimeout = INT64_MAX;
+		
+		// TODO: After cancelation next activation of battle mode is using the duration of an extension with aura
+		NOTIFICATION_DATA_SKILL_TO_CHARACTER* Notification = RTNotificationInit(SKILL_TO_CHARACTER);
+		Notification->SkillIndex = Character->BattleModeSkillIndex;
+
+		NOTIFICATION_DATA_SKILL_TO_CHARACTER_BATTLE_MODE* NotificationData = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_SKILL_TO_CHARACTER_BATTLE_MODE);
+		NotificationData->CharacterIndex = (UInt32)Character->CharacterIndex;
+		NotificationData->CharacterStyle = SwapUInt32(Character->Data.Info.Style.RawValue);
+		NotificationData->CharacterLiveStyle = SwapUInt32(Character->Data.Info.LiveStyle.RawValue);
+		NotificationData->CharacterExtendedStyle = Character->Data.Info.ExtendedStyle.RawValue;
+		NotificationData->IsActivation = false;
+		RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
+	}
+}
+
 Bool RTCharacterIsAlive(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character
@@ -843,6 +867,8 @@ Bool RTCharacterBattleRankUp(
 		RankData->ConditionINT > Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_INT]) {
 		return false;
 	}
+
+	// TODO: Upgrade pre existing battle mode levels by one, the issue is that they are registered after creation also on official
 
 	if (RankData->SkillSlot[0] > 0 && RankData->SkillIndex[0] > 0) {
 		RTCharacterAddSkillSlot(

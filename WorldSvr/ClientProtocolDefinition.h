@@ -1838,6 +1838,76 @@ CLIENT_PROTOCOL(S2C, GM_COMMAND, DEFAULT, 490,
     UInt8 State;
 )
 
+
+CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_TO_TARGET_BUFF_TARGET,
+    RTEntityID TargetID;
+    UInt8 TargetType;
+)
+
+CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_TO_TARGET_BUFF,
+    //Int32 BuffIndex;
+    Int32 Unknown1;
+    Int32 Unknown2;
+    UInt8 Unknown3[3];
+    UInt8 TargetCount;
+    // C2S_DATA_SKILL_TO_TARGET_BUFF_TARGET Targets[TargetCount + 1];
+)
+
+CLIENT_PROTOCOL(C2S, SKILL_TO_TARGET, DEFAULT, 701,
+    Int16 SkillIndex;
+    UInt8 SlotIndex;
+    UInt8 Data[0];
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_SKILL_TO_TARGET_BUFF_TARGET,
+    UInt32 SourceIndex;
+    UInt32 TargetIndex;
+    UInt8 TargetType;
+    UInt8 Result;
+    Int32 Unknown1;
+    Int16 Unknown2;
+    UInt8 Unknown3[39];
+)
+
+CLIENT_PROTOCOL(S2C, SKILL_TO_TARGET_BUFF, DEFAULT, 703,
+    Int32 SkillIndex;
+    Int8 SkillLevel;
+    Int16 Unknown1;
+    Int8 TargetCount;
+    Int8 Unknown2;
+    Int32 Unknown3;
+    Int16 Unknown4;
+    Int8 Unknown5;
+    Int64 CurrentHP;
+    Int32 CurrentMP;
+    // S2C_DATA_SKILL_TO_TARGET_BUFF_TARGET Targets[TargetCount];
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_SKILL_TO_TARGET_BUFF_TARGET,
+    UInt32 TargetIndex;
+    UInt8 TargetType;
+    Int16 Result;
+    UInt8 UnknownA[6];
+    UInt32 UnknownTimer;
+    UInt8 Unknown4[100];
+)
+
+CLIENT_PROTOCOL(S2C, NFY_SKILL_TO_TARGET_BUFF, DEFAULT, 704,
+    UInt32 CharacterIndex;
+    Int32 SkillIndex;
+    Int16 SkillLevel;
+    Int32 Unknown2;
+    Int8 Unknown3;
+    Int32 Unknown4;
+    Int8 TargetCount;
+    Int32 Unknown5;
+    UInt32 EffectorItemID;
+    UInt32 EffectorItemOptions;
+    Int32 Unknown6;
+    Int32 Unknown7;
+    Int32 Unknown8;
+)
+
 CLIENT_PROTOCOL(S2C, UPDATE_SKILL_STATUS, DEFAULT, 760,
     UInt32 SkillRank;
     UInt32 SkillLevel;

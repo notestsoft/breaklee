@@ -381,6 +381,8 @@ Void SendPartyData(
 	SocketRef Socket,
 	RTPartyRef Party
 ) {
+	if (!Party) return;
+
 	S2C_DATA_NFY_PARTY_UPDATE* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_PARTY_UPDATE);
 	Notification->MemberCount = Party->MemberCount;
 

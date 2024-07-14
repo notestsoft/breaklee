@@ -154,8 +154,8 @@ Void RTWorldChunkUpdate(
     }
 
     // TODO: This is a placeholder for costumes add them after adding the costume system
-    NotificationCharacter->CostumeSlotCount = 6;
-    for (Index Index = 0; Index < 6; Index += 1) {
+    NotificationCharacter->CostumeSlotCount = RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT;
+    for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT; Index += 1) {
         NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* Slot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
         Slot->EquipmentSlotIndex = Index;
     }
@@ -270,8 +270,8 @@ Void RTWorldChunkBroadcastCharactersToCharacter(
         }
 
         // TODO: This is a placeholder for costumes add them after adding the costume system
-        NotificationCharacter->CostumeSlotCount = 6;
-        for (Index Index = 0; Index < 6; Index += 1) {
+        NotificationCharacter->CostumeSlotCount = RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT;
+        for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT; Index += 1) {
             NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* Slot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
             Slot->EquipmentSlotIndex = Index;
         }
@@ -621,8 +621,8 @@ Void RTWorldChunkNotify(
         }
 
         // TODO: This is a placeholder for costumes add them after adding the costume system
-        NotificationCharacter->CostumeSlotCount = 6;
-        for (Index Index = 0; Index < 6; Index += 1) {
+        NotificationCharacter->CostumeSlotCount = RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT;
+        for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT; Index += 1) {
             NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* Slot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
             Slot->EquipmentSlotIndex = Index;
         }

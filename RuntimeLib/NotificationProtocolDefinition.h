@@ -133,6 +133,7 @@ NOTIFICATION_PROTOCOL_STRUCT(CHARACTERS_SPAWN_INDEX,
     UInt16 EventTitle;
     UInt16 WarTitle;
     UInt16 AbilityTitle;
+    UInt8 Unknown16[17];
     UInt8 NameLength;
     Char Name[0]; // Size: NameLength - 1
     // S2C_DATA_CHARACTERS_SPAWN_GUILD Guild;
@@ -259,6 +260,18 @@ NOTIFICATION_PROTOCOL(MOB_CHASE_END, 216,
     RTEntityID Entity;
     UInt16 PositionCurrentX;
     UInt16 PositionCurrentY;
+)
+
+NOTIFICATION_PROTOCOL_STRUCT(SKILL_TO_CHARACTER_BATTLE_MODE,
+    UInt32 CharacterIndex;
+    UInt32 CharacterStyle;
+    UInt32 CharacterLiveStyle;
+    UInt8 CharacterExtendedStyle;
+    UInt16 IsActivation;
+)
+
+NOTIFICATION_PROTOCOL(SKILL_TO_CHARACTER, 221,
+    UInt16 SkillIndex;
 )
 
 NOTIFICATION_PROTOCOL(ATTACK_TO_MOB, 225,

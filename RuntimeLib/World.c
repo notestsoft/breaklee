@@ -108,20 +108,6 @@ Void RTWorldContextUpdate(
             WorldContext->NextItemUpdateTimestamp = MIN(WorldContext->NextItemUpdateTimestamp, WorldChunk->NextItemUpdateTimestamp);
         }
     }
-
-    /*
-    for (Index ChunkIndex = 0; ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT; ChunkIndex += 1) {
-        RTWorldChunkRef WorldChunk = &WorldContext->Chunks[ChunkIndex];
-        if (WorldChunk->ReferenceCount < 1) continue;
-
-        for (Index MobIndex = 0; MobIndex < ArrayGetElementCount(WorldChunk->Mobs); MobIndex += 1) {
-            RTEntityID Entity = *(RTEntityID*)ArrayGetElementAtIndex(WorldChunk->Mobs, MobIndex);
-            RTMobRef Mob = RTWorldContextGetMob(WorldContext, Entity);
-            assert(Mob);
-            RTMobUpdate(WorldContext->WorldManager->Runtime, WorldContext, Mob);
-        }
-    }
-    */
 }
 
 Void* RTWorldContextGetEntityContext(
@@ -424,7 +410,7 @@ RTWorldItemRef RTWorldGetItem(
     UInt32 EntityKey
 ) {
     RTWorldItemRef Item = RTWorldGetItemByEntity(Runtime, WorldContext, Entity);
-    if (Item->ItemUniqueKey != EntityKey) return NULL;
+    if (!Item || Item->ItemUniqueKey != EntityKey) return NULL;
     
     return Item;
 }

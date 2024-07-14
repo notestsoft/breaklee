@@ -229,6 +229,9 @@ struct _RTCharacter {
     Int32 AxpFieldRate;
     Int32 SkillComboLevel;
     Timestamp DebugSpRegenTimeout;
+
+    Int32 BattleModeSkillIndex;
+    Timestamp BattleModeTimeout; // TODO: Replace timeout with skill timer pool
 };
 
 #pragma pack(pop)
@@ -241,6 +244,11 @@ Void RTCharacterInitialize(
 );
 
 Void RTCharacterInitializeAttributes(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Void RTCharacterUpdate(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 );

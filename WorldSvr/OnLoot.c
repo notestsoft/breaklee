@@ -39,10 +39,15 @@ CLIENT_PROCEDURE_BINDING(LOOT_INVENTORY_ITEM) {
 
     RTWorldDespawnItem(Runtime, World, Item);
 
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    {
+        S2C_DATA_LOOT_INVENTORY_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOOT_INVENTORY_ITEM);
+        Response->Result = S2C_DATA_LOOT_RESULT_OWNERSHIP_ERROR;
+        SocketSend(Socket, Connection, Response);
+    }
 }
 
 CLIENT_PROCEDURE_BINDING(LOOT_CURRENCY_ITEM) {

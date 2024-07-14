@@ -104,6 +104,16 @@ Void RTWorldManagerUpdate(
 
         Iterator = DictionaryKeyIteratorNext(Iterator);
     }
+
+    // TODO: This routine shouldn't be on high frequency 100ms is sufficient
+    Iterator = DictionaryGetKeyIterator(WorldManager->IndexToCharacterContextPoolIndex);
+    while (Iterator.Key) {
+        Index CharacterIndex = *(Index*)Iterator.Key;
+        RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(WorldManager, CharacterIndex);
+        RTCharacterUpdate(WorldManager->Runtime, Character);
+
+        Iterator = DictionaryKeyIteratorNext(Iterator);
+    }
 }
 
 RTWorldDataRef RTWorldDataCreate(

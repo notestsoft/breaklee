@@ -164,6 +164,8 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 		if (PacketData->IsActivation) {
 			Character->Data.Info.ExtendedStyle.BattleModeFlags |= (1 << (SkillData->Intensity - 1));
+			Character->BattleModeSkillIndex = SkillData->SkillID;
+			Character->BattleModeTimeout = PlatformGetTickCount() + 90000; // TODO: Check where the duration is stored in
 		}
 		else {
 			Character->Data.Info.ExtendedStyle.BattleModeFlags &= ~(1 << (SkillData->Intensity - 1));
