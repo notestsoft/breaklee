@@ -109,8 +109,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		NotificationData->Entity = Character->ID;
 		NotificationData->PositionEnd.X = Character->Movement.PositionEnd.X;
 		NotificationData->PositionEnd.Y = Character->Movement.PositionEnd.Y;
-
-		return BroadcastToWorld(
+		BroadcastToWorld(
 			Context,
 			RTRuntimeGetWorldByCharacter(Runtime, Character),
 			kEntityIDNull,
@@ -118,6 +117,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 			Character->Movement.PositionCurrent.Y,
 			Notification
 		);
+		return;
 	}
 	else if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_ASTRAL) {
 		Int32 PacketLength = sizeof(C2S_DATA_SKILL_TO_CHARACTER) + sizeof(C2S_DATA_SKILL_GROUP_ASTRAL);
@@ -145,7 +145,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		NotificationData->IsActivation = PacketData->IsActivation;
 		NotificationData->Unknown2 = PacketData->Unknown2;
 
-		return BroadcastToWorld(
+		BroadcastToWorld(
 			Context,
 			RTRuntimeGetWorldByCharacter(Runtime, Character),
 			kEntityIDNull,
@@ -153,6 +153,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 			Character->Movement.PositionCurrent.Y,
 			Notification
 		);
+		return;
 	}
 	else if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_BATTLE_MODE) {
 		Int32 PacketLength = sizeof(C2S_DATA_SKILL_TO_CHARACTER) + sizeof(C2S_DATA_SKILL_GROUP_BATTLE_MODE);
@@ -186,7 +187,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		NotificationData->CharacterExtendedStyle = Character->Data.Info.ExtendedStyle.RawValue;
 		NotificationData->IsActivation = PacketData->IsActivation;
 
-		return BroadcastToWorld(
+		BroadcastToWorld(
 			Context,
 			RTRuntimeGetWorldByCharacter(Runtime, Character),
 			kEntityIDNull,
@@ -194,6 +195,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 			Character->Movement.PositionCurrent.Y,
 			Notification
 		);
+		return;
 	}
 	else {
 		goto error;
@@ -201,7 +203,8 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 	// TODO: Apply dash by attack skill if needed
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 	/* TODO: Send notification S2C_DATA_SKILL_TO_CHARACTER_UPDATE
 	
@@ -236,6 +239,6 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 	*/
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 

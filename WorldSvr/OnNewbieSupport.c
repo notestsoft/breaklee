@@ -21,8 +21,9 @@ CLIENT_PROCEDURE_BINDING(TAKE_NEWBIE_REWARD) {
 		Packet->InventorySlotIndex
 	);
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
 }

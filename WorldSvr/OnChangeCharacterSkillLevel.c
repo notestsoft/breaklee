@@ -20,8 +20,9 @@ CLIENT_PROCEDURE_BINDING(CHANGE_CHARACTER_SKILL_LEVEL) {
 	if (!Success) goto error;
 
 	S2C_DATA_CHANGE_CHARACTER_SKILL_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHANGE_CHARACTER_SKILL_LEVEL);
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

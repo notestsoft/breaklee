@@ -40,17 +40,18 @@ Void OnCreateCharacterSubpassword(
 	Response->Success = 1;
 	Response->Mode = Packet->Mode;
 	Response->Type = CHARACTER_SUBPASSWORD_TYPE_CHARACTER;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(CREATE_SUBPASSWORD) {
 	if (!(Client->Flags & CLIENT_FLAGS_CHARACTER_INDEX_LOADED) || Client->Account.AccountID < 1) goto error;
 
 	if (Packet->Type == CHARACTER_SUBPASSWORD_TYPE_CHARACTER) {
-		return OnCreateCharacterSubpassword(
+		OnCreateCharacterSubpassword(
 			Server,
             Context,
 			Socket,
@@ -58,16 +59,18 @@ CLIENT_PROCEDURE_BINDING(CREATE_SUBPASSWORD) {
 			Connection,
 			Packet
 		);
+		return;
 	}
 
 	S2C_DATA_CREATE_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CREATE_SUBPASSWORD);
 	Response->Success = 0;
 	Response->Mode = Packet->Mode;
 	Response->Type = Packet->Type;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 Void OnDeleteCharacterSubpassword(
@@ -85,7 +88,8 @@ Void OnDeleteCharacterSubpassword(
 		S2C_DATA_DELETE_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DELETE_SUBPASSWORD);
 		Response->Success = 0;
 		Response->Type = CHARACTER_SUBPASSWORD_TYPE_CHARACTER;
-		return SocketSend(Socket, Connection, Response);
+		SocketSend(Socket, Connection, Response);
+		return;
 	}
 
 	memset(Client->Account.CharacterPassword, 0, MAX_SUBPASSWORD_LENGTH);
@@ -106,14 +110,14 @@ Void OnDeleteCharacterSubpassword(
 	S2C_DATA_DELETE_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DELETE_SUBPASSWORD);
 	Response->Success = 1;
 	Response->Type = CHARACTER_SUBPASSWORD_TYPE_CHARACTER;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
 }
 
 CLIENT_PROCEDURE_BINDING(DELETE_SUBPASSWORD) {
 	if (!(Client->Flags & CLIENT_FLAGS_CHARACTER_INDEX_LOADED) || Client->Account.AccountID < 1) goto error;
 
 	if (Packet->Type == CHARACTER_SUBPASSWORD_TYPE_CHARACTER) {
-		return OnDeleteCharacterSubpassword(
+		OnDeleteCharacterSubpassword(
 			Server,
 			Context,
 			Socket,
@@ -121,15 +125,17 @@ CLIENT_PROCEDURE_BINDING(DELETE_SUBPASSWORD) {
 			Connection,
 			Packet
 		);
+		return;
 	}
 
 	S2C_DATA_DELETE_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DELETE_SUBPASSWORD);
 	Response->Success = 0;
 	Response->Type = CHARACTER_SUBPASSWORD_TYPE_CHARACTER;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 Void OnVerifyDeleteCharacterSubpassword(
@@ -152,7 +158,8 @@ Void OnVerifyDeleteCharacterSubpassword(
 		Response->Success = 0;
 		Response->FailureCount = Client->SubpasswordFailureCount;
 		Response->Type = CHARACTER_SUBPASSWORD_TYPE_CHARACTER;
-		return SocketSend(Socket, Connection, Response);
+		SocketSend(Socket, Connection, Response);
+		return;
 	}
 
 	Client->SubpasswordFailureCount = 0;
@@ -163,14 +170,14 @@ Void OnVerifyDeleteCharacterSubpassword(
 	Response->Success = 1;
 	Response->FailureCount = Client->SubpasswordFailureCount;
 	Response->Type = CHARACTER_SUBPASSWORD_TYPE_CHARACTER;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
 }
 
 CLIENT_PROCEDURE_BINDING(VERIFY_DELETE_SUBPASSWORD) {
 	if (!(Client->Flags & CLIENT_FLAGS_CHARACTER_INDEX_LOADED) || Client->Account.AccountID < 1) goto error;
 
 	if (Packet->Type == CHARACTER_SUBPASSWORD_TYPE_CHARACTER) {
-		return OnVerifyDeleteCharacterSubpassword(
+		OnVerifyDeleteCharacterSubpassword(
 			Server,
             Context,
 			Socket,
@@ -178,16 +185,18 @@ CLIENT_PROCEDURE_BINDING(VERIFY_DELETE_SUBPASSWORD) {
 			Connection,
 			Packet
 		);
+		return;
 	}
 
 	S2C_DATA_VERIFY_DELETE_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_DELETE_SUBPASSWORD);
 	Response->Success = 0;
 	Response->FailureCount =0;
 	Response->Type = Packet->Type;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(CHECK_SUBPASSWORD) {
@@ -198,8 +207,9 @@ CLIENT_PROCEDURE_BINDING(CHECK_SUBPASSWORD) {
 
 	S2C_DATA_CHECK_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHECK_SUBPASSWORD);
 	Response->IsVerificationRequired = !IsVerifiedSession && IsSubpasswordSet;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

@@ -6,7 +6,8 @@
 
 CLIENT_PROCEDURE_BINDING(ATTACK_TO_CHARACTER) {
     // TODO: Implementation missing!
-    
+    return;
+
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

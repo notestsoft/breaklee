@@ -19,10 +19,11 @@ CLIENT_PROCEDURE_BINDING(SET_QUICKSLOT) {
     
     S2C_DATA_SET_QUICKSLOT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SET_QUICKSLOT);
     Response->Success = Success ? 1 : 0;
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(SWAP_QUICKSLOT) {
@@ -32,8 +33,9 @@ CLIENT_PROCEDURE_BINDING(SWAP_QUICKSLOT) {
 
     S2C_DATA_SET_QUICKSLOT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SET_QUICKSLOT);
     Response->Success = Success ? 1 : 0;
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }

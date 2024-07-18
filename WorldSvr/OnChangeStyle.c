@@ -26,7 +26,7 @@ CLIENT_PROCEDURE_BINDING(CHANGE_STYLE) {
 	Notification->GuildNameLength = Packet->GuildNameLength;
 	memcpy(Notification->GuildName, Packet->GuildName, Packet->GuildNameLength);
 
-	return BroadcastToWorld(
+	BroadcastToWorld(
 		Context,
 		RTRuntimeGetWorldByCharacter(Runtime, Character),
 		kEntityIDNull,
@@ -34,7 +34,8 @@ CLIENT_PROCEDURE_BINDING(CHANGE_STYLE) {
 		Character->Movement.PositionCurrent.Y,
 		Notification
 	);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

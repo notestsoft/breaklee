@@ -45,11 +45,12 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM) {
 		#include <RuntimeLib/ItemProcDefinition.h>
 	}
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
 	Response->Result = S2C_DATA_USE_ITEM_RESULT_FAILED;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
 }
 
 // TODO: Because the item slots can be deleted the source & target slots will lead to dangling pointers!!!

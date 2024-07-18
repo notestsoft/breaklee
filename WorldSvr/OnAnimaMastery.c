@@ -33,6 +33,10 @@ CLIENT_PROCEDURE_BINDING(ANIMA_MASTERY_RESET_SLOT) {
 	S2C_DATA_ANIMA_MASTERY_RESET_SLOT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ANIMA_MASTERY_RESET_SLOT);
 	if (!Character) goto error;
 
+	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
+	RTItemDataRef ItemData = (ItemSlot) ? RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID) : NULL;
+	if (!ItemData) goto error;
+
 	Response->Success = RTCharacterAnimaMasteryResetSlot(Runtime, Character, Packet->CategoryIndex, Packet->StorageIndex);
 
 	SocketSend(Socket, Connection, Response);
@@ -54,7 +58,7 @@ CLIENT_PROCEDURE_BINDING(ANIMA_MASTERY_UNLOCK_CATEGORY) {
 error:
 	SocketSend(Socket, Connection, Response);
 }
-
+ 
 CLIENT_PROCEDURE_BINDING(ANIMA_MASTERY_SET_ACTIVE_STORAGE_INDEX) {
 	S2C_DATA_ANIMA_MASTERY_SET_ACTIVE_STORAGE_INDEX* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ANIMA_MASTERY_SET_ACTIVE_STORAGE_INDEX);
 	if (!Character) goto error;

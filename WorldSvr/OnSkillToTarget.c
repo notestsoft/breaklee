@@ -30,7 +30,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_TARGET) {
 	Response->Unknown2 = 234;
 	Response->Unknown3 = 345;
 	Response->Unknown4 = 456;
-	Response->Unknown5 = 567;
+	Response->Unknown5 = 255;
 	Response->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
 	Response->CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 
@@ -81,5 +81,5 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_TARGET) {
 	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

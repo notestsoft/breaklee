@@ -17,7 +17,7 @@ CLIENT_PROCEDURE_BINDING(GET_SERVER_LIST) {
 	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 IPC_PROCEDURE_BINDING(M2W, GET_WORLD_LIST) {

@@ -33,7 +33,7 @@ CLIENT_PROCEDURE_BINDING(MOVEMENT_BEGIN) {
 	Notification->PositionEnd.X = Packet->PositionEnd.X;
 	Notification->PositionEnd.Y = Packet->PositionEnd.Y;
 
-	return BroadcastToWorld(
+	BroadcastToWorld(
 		Context,
 		World,
 		Character->ID,
@@ -41,9 +41,10 @@ CLIENT_PROCEDURE_BINDING(MOVEMENT_BEGIN) {
 		Character->Movement.PositionCurrent.Y,
 		Notification
 	);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(MOVEMENT_END) {
@@ -65,7 +66,7 @@ CLIENT_PROCEDURE_BINDING(MOVEMENT_END) {
 	Notification->Position.X = Packet->Position.X;
 	Notification->Position.Y = Packet->Position.Y;
 
-	return BroadcastToWorld(
+	BroadcastToWorld(
 		Context,
 		World,
 		Character->ID,
@@ -73,9 +74,10 @@ CLIENT_PROCEDURE_BINDING(MOVEMENT_END) {
 		Character->Movement.PositionCurrent.Y,
 		Notification
 	);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(MOVEMENT_CHANGE) {
@@ -105,7 +107,7 @@ CLIENT_PROCEDURE_BINDING(MOVEMENT_CHANGE) {
 	Notification->PositionEnd.X = Packet->PositionEnd.X;
 	Notification->PositionEnd.Y = Packet->PositionEnd.Y;
 
-	return BroadcastToWorld(
+	BroadcastToWorld(
 		Context,
 		World,
 		Character->ID,
@@ -113,9 +115,10 @@ CLIENT_PROCEDURE_BINDING(MOVEMENT_CHANGE) {
 		Character->Movement.PositionCurrent.Y,
 		Notification
 	);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(MOVEMENT_WAYPOINTS) {
@@ -134,7 +137,7 @@ CLIENT_PROCEDURE_BINDING(MOVEMENT_WAYPOINTS) {
 	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(MOVEMENT_TILE_POSITION) {
@@ -152,7 +155,7 @@ CLIENT_PROCEDURE_BINDING(MOVEMENT_TILE_POSITION) {
 	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(CHANGE_DIRECTION) {
@@ -164,7 +167,7 @@ CLIENT_PROCEDURE_BINDING(CHANGE_DIRECTION) {
 	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 	Notification->Direction = Packet->Direction;
 
-	return BroadcastToWorld(
+	BroadcastToWorld(
 		Context,
 		World,
 		Character->ID,
@@ -172,9 +175,10 @@ CLIENT_PROCEDURE_BINDING(CHANGE_DIRECTION) {
 		Character->Movement.PositionCurrent.Y,
 		Notification
 	);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_BEGIN) {
@@ -204,8 +208,7 @@ CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_BEGIN) {
 	Notification->PositionEndX = Packet->PositionEndX;
 	Notification->PositionEndY = Packet->PositionEndY;
 	Notification->Direction = Packet->Direction;
-
-	return BroadcastToWorld(
+	BroadcastToWorld(
 		Context,
 		World,
 		Character->ID,
@@ -213,9 +216,10 @@ CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_BEGIN) {
 		Character->Movement.PositionCurrent.Y,
 		Notification
 	);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_END) {
@@ -236,8 +240,7 @@ CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_END) {
 	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 	Notification->PositionCurrentX = Packet->PositionCurrentX;
 	Notification->PositionCurrentY = Packet->PositionCurrentY;
-
-	return BroadcastToWorld(
+	BroadcastToWorld(
 		Context,
 		World,
 		Character->ID,
@@ -245,9 +248,10 @@ CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_END) {
 		Character->Movement.PositionCurrent.Y,
 		Notification
 	);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_CHANGE) {
@@ -277,8 +281,7 @@ CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_CHANGE) {
 	Notification->PositionEndX = Packet->PositionEndX;
 	Notification->PositionEndY = Packet->PositionEndY;
 	Notification->Direction = Packet->Direction;
-
-	return BroadcastToWorld(
+	BroadcastToWorld(
 		Context,
 		World,
 		Character->ID,
@@ -286,7 +289,8 @@ CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_CHANGE) {
 		Character->Movement.PositionCurrent.Y,
 		Notification
 	);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

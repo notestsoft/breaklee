@@ -47,8 +47,9 @@ CLIENT_PROCEDURE_BINDING(BUY_SKILLBOOK) {
 
     S2C_DATA_BUY_SKILLBOOK* Response = PacketBufferInit(Connection->PacketBuffer, S2C, BUY_SKILLBOOK);
     Response->ItemID = Skill->SkillBookID;
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }

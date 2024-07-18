@@ -16,8 +16,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_ACTION) {
     Notification->ActionIndex = Packet->ActionIndex;
     Notification->X = Packet->X;
     Notification->Y = Packet->Y;
-
-    return BroadcastToWorld(
+    BroadcastToWorld(
         Context,
         RTRuntimeGetWorldByCharacter(Runtime, Character),
         kEntityIDNull,
@@ -25,7 +24,8 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_ACTION) {
         Character->Movement.PositionCurrent.Y,
         Notification
     );
+    return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }

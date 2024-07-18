@@ -183,7 +183,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 		TargetNotification->Unknown3 = 1;
 	}
 
-	return BroadcastToWorld(
+	BroadcastToWorld(
 		Context,
 		World,
 		kEntityIDNull,
@@ -191,7 +191,8 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 		Character->Data.Info.Position.Y,
 		Notification
 	);
-	
+	return;
+
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

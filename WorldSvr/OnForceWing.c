@@ -108,10 +108,11 @@ CLIENT_PROCEDURE_BINDING(FORCE_WING_GRADE_UP) {
 	Response->ForceWingExp = Character->Data.ForceWingInfo.Exp;
 	Response->Unknown1 = 0;
 	Response->AddedTrainingPointCount = AddedTrainingPointCount;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(FORCE_WING_LEVEL_UP) {
@@ -136,10 +137,11 @@ CLIENT_PROCEDURE_BINDING(FORCE_WING_LEVEL_UP) {
 	Response->ForceWingExp = Character->Data.ForceWingInfo.Exp;
 	Response->Unknown1 = 0;
 	Response->AddedTrainingPointCount = (Response->Success) ? RUNTIME_CHARACTER_FORCE_WING_LEVEL_TRAINING_POINT_COUNT : 0;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(SET_FORCEWING_PRESET_SLOT) {
@@ -150,10 +152,11 @@ CLIENT_PROCEDURE_BINDING(SET_FORCEWING_PRESET_SLOT) {
 		Response->Result = 1;
 	}
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(ADD_FORCEWING_TRAINING_LEVEL) {
@@ -167,10 +170,11 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCEWING_TRAINING_LEVEL) {
 		Response->RemainingTrainingPointCount = Character->Data.ForceWingInfo.PresetTrainingPointCount[Packet->PresetPageIndex];
 	}
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(SET_ACTIVE_FORCEWING_PRESET) {
@@ -181,10 +185,11 @@ CLIENT_PROCEDURE_BINDING(SET_ACTIVE_FORCEWING_PRESET) {
 		Response->Result = 1;
 	}
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(ROLL_FORCEWING_ARRIVAL_SKILL) {
@@ -202,10 +207,11 @@ CLIENT_PROCEDURE_BINDING(ROLL_FORCEWING_ARRIVAL_SKILL) {
 		);
 	}
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(CHANGE_FORCEWING_ARRIVAL_SKILL) {
@@ -213,10 +219,11 @@ CLIENT_PROCEDURE_BINDING(CHANGE_FORCEWING_ARRIVAL_SKILL) {
 
 	S2C_DATA_CHANGE_FORCEWING_ARRIVAL_SKILL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHANGE_FORCEWING_ARRIVAL_SKILL);
 	Response->Success = RTCharacterForceWingChangeArrivalSkill(Runtime, Character);
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(SET_FORCEWING_TRAINING_SLOT_FLAGS) {
@@ -227,9 +234,8 @@ CLIENT_PROCEDURE_BINDING(SET_FORCEWING_TRAINING_SLOT_FLAGS) {
 	}
 
 	Character->SyncMask.ForceWingInfo = true;
-
 	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

@@ -237,10 +237,11 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
         Response->MissionItemCounts[Index] = CharacterCollectionSlot->MissionItemCounts[Index];
     }
 
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(RECEIVE_COLLECTION_REWARD) {
@@ -305,9 +306,10 @@ CLIENT_PROCEDURE_BINDING(RECEIVE_COLLECTION_REWARD) {
     }
 
     Response->Success = 1;
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error:
     Response->Success = 0;
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
 }

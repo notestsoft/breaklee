@@ -25,13 +25,14 @@ CLIENT_PROCEDURE_BINDING(GET_WAREHOUSE) {
 		ResponseSlot->ItemDuration = ItemSlot->ItemDuration;
 	}
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
+
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(WAREHOUSE_CURRENCY_DEPOSIT) {
-	memcpy(&kInventoryInfoBackup, &Character->Data.InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
 	memcpy(&kWarehouseInfoBackup, &Character->Data.WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
 
 	S2C_DATA_WAREHOUSE_CURRENCY_DEPOSIT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, WAREHOUSE_CURRENCY_DEPOSIT);
@@ -43,7 +44,8 @@ CLIENT_PROCEDURE_BINDING(WAREHOUSE_CURRENCY_DEPOSIT) {
 	if (Packet->Amount > 0) {
 		if (Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < Packet->Amount) {
 			Response->Result = 0;
-			return SocketSend(Socket, Connection, Response);
+			SocketSend(Socket, Connection, Response);
+			return;
 		}
 
 		Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= Packet->Amount;
@@ -58,20 +60,21 @@ CLIENT_PROCEDURE_BINDING(WAREHOUSE_CURRENCY_DEPOSIT) {
 		Character->Data.WarehouseInfo.Currency -= AbsAmount;
 	}
 
-	Character->SyncMask.InventoryInfo = true;
+	Character->SyncMask.Info = true;
 	Character->SyncMask.WarehouseInfo = true;
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	memcpy(&Character->Data.InventoryInfo, &kInventoryInfoBackup, sizeof(struct _RTCharacterInventoryInfo));
 	memcpy(&Character->Data.WarehouseInfo, &kWarehouseInfoBackup, sizeof(struct _RTCharacterWarehouseInfo));
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(SORT_WAREHOUSE) {
 	if (!Character) {
-		return SocketDisconnect(Socket, Connection);
+		SocketDisconnect(Socket, Connection);
+		return;
 	}
 
 	struct _RTCharacterWarehouseInfo TempWarehouseMemory = { 0 };
@@ -111,12 +114,13 @@ CLIENT_PROCEDURE_BINDING(SORT_WAREHOUSE) {
 
 	S2C_DATA_SORT_WAREHOUSE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SORT_WAREHOUSE);
 	Response->Success = 1;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
 	{
 		S2C_DATA_SORT_WAREHOUSE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SORT_WAREHOUSE);
 		Response->Success = 0;
-		return SocketSend(Socket, Connection, Response);
+		SocketSend(Socket, Connection, Response);
 	}
 }

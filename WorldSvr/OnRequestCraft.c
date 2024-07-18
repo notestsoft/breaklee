@@ -17,10 +17,11 @@ C2S_REQUEST_CRAFT_INVENTORY_SLOT InventorySlots[0];
 CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_REGISTER) {
 	S2C_DATA_REQUEST_CRAFT_REGISTER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, REQUEST_CRAFT_REGISTER);
 	Response->Result = 0;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 /*
@@ -39,10 +40,11 @@ C2S_REQUEST_CRAFT_INVENTORY_SLOT InventorySlots[0];
 CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_START) {
 	S2C_DATA_REQUEST_CRAFT_START* Response = PacketBufferInit(Connection->PacketBuffer, S2C, REQUEST_CRAFT_START);
 	Response->Result = 0;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 /*
 CLIENT_PROTOCOL(C2S, REQUEST_CRAFT_END, 2251, 13133,
@@ -58,10 +60,11 @@ C2S_REQUEST_CRAFT_INVENTORY_SLOT InventorySlots[0];
 CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_END) {
 	S2C_DATA_REQUEST_CRAFT_END* Response = PacketBufferInit(Connection->PacketBuffer, S2C, REQUEST_CRAFT_END);
 	Response->Result = 0;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 /*
 CLIENT_PROTOCOL(S2C, REQUEST_CRAFT_UPDATE, 2252, 13133,

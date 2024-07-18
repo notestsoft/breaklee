@@ -87,7 +87,7 @@ IPC_PROCEDURE_BINDING(L2W, VERIFY_PASSWORD) {
 
 	S2C_DATA_VERIFY_CREDENTIALS* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, VERIFY_CREDENTIALS);
 	Response->Success = Packet->Success;
-    return SocketSend(Context->ClientSocket, ClientConnection, Response);
+    SocketSend(Context->ClientSocket, ClientConnection, Response);
 }
 
 CLIENT_PROCEDURE_BINDING(VERIFY_CREDENTIALS_SUBPASSWORD) {
@@ -160,17 +160,18 @@ CLIENT_PROCEDURE_BINDING(VERIFY_CREDENTIALS_SUBPASSWORD) {
 		Packet // TODO: Verify wrong packet is begin passed here...
 	);
 	*/
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(VERIFY_SUBPASSWORD) {
     if (!(Client->Flags & CLIENT_FLAGS_CHARACTER_INDEX_LOADED) || Client->Account.AccountID < 1) goto error;
     
     if (Packet->Type == CHARACTER_SUBPASSWORD_TYPE_CHARACTER) {
-        return OnVerifyCharacterSubpassword(
+        OnVerifyCharacterSubpassword(
             Server,
             Context,
             Socket,
@@ -178,14 +179,16 @@ CLIENT_PROCEDURE_BINDING(VERIFY_SUBPASSWORD) {
             Connection,
             Packet
         );
+		return;
     }
 
     S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_SUBPASSWORD);
     Response->Success = 0;
     Response->FailureCount = 0; 
     Response->Type = Packet->Type;
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }

@@ -18,11 +18,12 @@ CLIENT_PROCEDURE_BINDING(QUEST_BEGIN) {
 		(true);
 	}
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
 	Response->Result = 0;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
 }
 
 CLIENT_PROCEDURE_BINDING(QUEST_CLEAR) {
@@ -63,7 +64,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_CLEAR) {
 
 error:
 	Response->Result = 0;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
 }
 
 CLIENT_PROCEDURE_BINDING(QUEST_CANCEL) {
@@ -71,10 +72,11 @@ CLIENT_PROCEDURE_BINDING(QUEST_CANCEL) {
 
 	if (!RTCharacterQuestCancel(Runtime, Character, Packet->QuestID, Packet->SlotID)) goto error;
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(QUEST_ACTION) {
@@ -108,10 +110,11 @@ CLIENT_PROCEDURE_BINDING(QUEST_ACTION) {
 	// TODO: Set correct npc set id
 	Response->NpcSetID = Packet->NpcSetID;
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(UPDATE_QUEST_LIST) {
@@ -146,7 +149,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_BEGIN) {
 	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(PARTY_QUEST_CLOSE) {
@@ -220,11 +223,12 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_CLOSE) {
 		PacketBufferAppendValue(Context->ClientSocket->PacketBuffer, UInt16, RewardInventorySlotIndex);
 	}
 
-	return BroadcastToParty(Context, Character->PartyID, Notification);
+	BroadcastToParty(Context, Character->PartyID, Notification);
+	return;
 
 error:
 	Response->Result = 1;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
 }
 
 CLIENT_PROCEDURE_BINDING(PARTY_QUEST_ACTION) {
@@ -270,10 +274,11 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_ACTION) {
 	Notification->QuestID = Response->QuestID;
 	Notification->NpcFlags = Response->NpcFlags;
 	Notification->NpcSetID = Response->NpcSetID;
-	return BroadcastToParty(Context, Character->PartyID, Notification);
+	BroadcastToParty(Context, Character->PartyID, Notification);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(PARTY_QUEST_LOOT_ITEM) {
@@ -321,8 +326,9 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_LOOT_ITEM) {
 	Notification->ItemOptions = ItemSlot->ItemOptions;
 	Notification->QuestItemSlotIndex = Packet->QuestItemSlotIndex;
 	Notification->ItemDuration = ItemSlot->ItemDuration.Serial;
-	return BroadcastToParty(Context, Character->PartyID, Notification);
+	BroadcastToParty(Context, Character->PartyID, Notification);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

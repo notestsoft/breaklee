@@ -81,8 +81,9 @@ CLIENT_PROCEDURE_BINDING(LOOT_CURRENCY_ITEM) {
 
     Response->Currency = Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
 
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }

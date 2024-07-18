@@ -69,7 +69,7 @@ CLIENT_PROCEDURE_BINDING(ATTACK_TO_MOB) {
 	Notification->MobHP = Response->MobHP;
 	Notification->CharacterHP = Response->CharacterHP;
 
-	return BroadcastToWorld(
+	BroadcastToWorld(
 		Context,
 		World,
 		kEntityIDNull,
@@ -77,7 +77,8 @@ CLIENT_PROCEDURE_BINDING(ATTACK_TO_MOB) {
 		Character->Movement.PositionCurrent.Y,
 		Notification
 	);
-	
+	return;
+
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

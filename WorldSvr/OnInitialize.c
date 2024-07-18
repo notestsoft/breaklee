@@ -689,6 +689,6 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
 error:
 	if (ClientConnection) {
-		return SocketDisconnect(Context->ClientSocket, ClientConnection);
+		SocketDisconnect(Context->ClientSocket, ClientConnection);
 	}
 }

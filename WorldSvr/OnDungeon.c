@@ -17,10 +17,11 @@ CLIENT_PROCEDURE_BINDING(CHECK_DUNGEON_PLAYTIME) {
 	Response->Unknown1[0] = 0x01;
 	Response->RemainingPlayTimeInSeconds = 21600;
 	Response->MaxEntryCount = 99;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(GET_DUNGEON_REWARD_LIST) {
@@ -31,10 +32,11 @@ CLIENT_PROCEDURE_BINDING(GET_DUNGEON_REWARD_LIST) {
 
 	S2C_DATA_GET_DUNGEON_REWARD_LIST* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_DUNGEON_REWARD_LIST);
 	Response->DungeonID = Packet->DungeonID;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(ENTER_DUNGEON_GATE) {
@@ -67,10 +69,11 @@ CLIENT_PROCEDURE_BINDING(ENTER_DUNGEON_GATE) {
         Response->Result = 1;
     }
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_START) {
@@ -99,7 +102,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_START) {
     return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_SPAWN) {
@@ -144,7 +147,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_SPAWN) {
     return;
     
 error:
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_END) {
@@ -173,11 +176,10 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_END) {
     Notification->Result = Success ? 1 : 0;
     Notification->Unknown1 = 28;
     BroadcastToParty(Context, World->Party, Notification);
-
     return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(ATTACK_BOSS_MOB) {
@@ -203,10 +205,11 @@ CLIENT_PROCEDURE_BINDING(ATTACK_BOSS_MOB) {
     // NOTE: It can be that when an npc is progressed but the dungeon is reopened it calls to repeat the event trigger of the npc and despawn it...
 
     S2C_DATA_ATTACK_BOSS_MOB* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ATTACK_BOSS_MOB);
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_GATE_OPEN) {
@@ -217,5 +220,5 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_GATE_OPEN) {
     return;
     
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

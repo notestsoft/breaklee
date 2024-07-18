@@ -17,10 +17,11 @@ CLIENT_PROCEDURE_BINDING(OPEN_GIFTBOX_ROLL) {
     
     S2C_DATA_OPEN_GIFTBOX_ROLL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, OPEN_GIFTBOX_ROLL);
     Response->Count = 0;
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(OPEN_GIFTBOX_RECEIVE) {
@@ -35,8 +36,9 @@ CLIENT_PROCEDURE_BINDING(OPEN_GIFTBOX_RECEIVE) {
 
     S2C_DATA_OPEN_GIFTBOX_RECEIVE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, OPEN_GIFTBOX_RECEIVE);
     Response->Count = Packet->Count;
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }

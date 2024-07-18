@@ -33,7 +33,7 @@ CLIENT_PROCEDURE_BINDING(DELETE_CHARACTER) {
     return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 IPC_PROCEDURE_BINDING(D2W, DELETE_CHARACTER) {

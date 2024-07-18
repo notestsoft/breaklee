@@ -46,5 +46,5 @@ CLIENT_PROCEDURE_BINDING(DEINITIALIZE) {
     return;
     
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

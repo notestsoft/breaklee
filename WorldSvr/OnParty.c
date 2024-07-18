@@ -127,7 +127,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_INVITE_CONFIRM) {
 	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE_CONFIRM) {
@@ -155,7 +155,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_INVITE_CANCEL) {
 	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE_CANCEL) {
@@ -171,10 +171,11 @@ CLIENT_PROCEDURE_BINDING(PARTY_LEAVE) {
 	// TODO: Implementation missing
 
 	S2C_DATA_PARTY_LEAVE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_LEAVE);
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(PARTY_EXPEL_MEMBER) {
@@ -183,10 +184,11 @@ CLIENT_PROCEDURE_BINDING(PARTY_EXPEL_MEMBER) {
 	// TODO: Implementation missing
 
 	S2C_DATA_PARTY_EXPEL_MEMBER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_EXPEL_MEMBER);
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(PARTY_CHANGE_LEADER) {
@@ -195,10 +197,11 @@ CLIENT_PROCEDURE_BINDING(PARTY_CHANGE_LEADER) {
 	// TODO: Implementation missing
 
 	S2C_DATA_PARTY_CHANGE_LEADER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_CHANGE_LEADER);
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(PARTY_CHANGE_LOOTING_RULE) {
@@ -207,10 +210,11 @@ CLIENT_PROCEDURE_BINDING(PARTY_CHANGE_LOOTING_RULE) {
 	// TODO: Implementation missing
 
 	S2C_DATA_NFY_PARTY_CHANGE_LOOTING_RULE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_PARTY_CHANGE_LOOTING_RULE);
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE_TIMEOUT) {

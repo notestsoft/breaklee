@@ -202,10 +202,11 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 	S2C_DATA_ADD_FORCE_SLOT_OPTION* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ADD_FORCE_SLOT_OPTION);
 	Response->Result = HasError ? 0 : 1;
 	Response->ItemOptions = ItemSlot->ItemOptions;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 // TODO: This is still having some issues!!!
@@ -395,10 +396,11 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 	Response->ItemOption = ItemSlot->ItemOptions;
 	Response->RemainingCoreCount = RemainingCoreCount;
 	Response->ConsumedSafeCount = ConsumedSafeCount;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_LEVEL) {
@@ -442,7 +444,8 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_LEVEL) {
 		S2C_DATA_UPGRADE_EXTREME_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPGRADE_EXTREME_LEVEL);
 		Response->Result = S2C_UPGRADE_EXTRENE_LEVEL_RESULT_INSUFFICIENT_CORES;
 		Response->Currency = Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
-		return SocketSend(Socket, Connection, Response);
+		SocketSend(Socket, Connection, Response);
+		return;
 	}
 
 	if (TargetSlot->Item.UpgradeLevel < 15) goto error;
@@ -452,7 +455,8 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_LEVEL) {
 		S2C_DATA_UPGRADE_EXTREME_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPGRADE_EXTREME_LEVEL);
 		Response->Result = S2C_UPGRADE_EXTRENE_LEVEL_RESULT_INSUFFICIENT_CURRENCY;
 		Response->Currency = Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
-		return SocketSend(Socket, Connection, Response);
+		SocketSend(Socket, Connection, Response);
+		return;
 	}
 
 	Int32 CorePower = 0;
@@ -503,10 +507,11 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_LEVEL) {
 	Character->SyncMask.InventoryInfo = true;
 
 	Response->Currency = Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_REPAIR) {
@@ -548,10 +553,11 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_REPAIR) {
 	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SourceItemSlotIndex);
 	Character->SyncMask.InventoryInfo = true;
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(UPGRADE_CHAOS_LEVEL) {
@@ -706,10 +712,11 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_CHAOS_LEVEL) {
 	Response->Result = Result;
 	Response->RemainingCoreCount = RemainingCoreCount;
 	Response->ConsumedSafeCount = ConsumedSafeCount;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_ITEM_LEVEL) {
@@ -835,7 +842,8 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_ITEM_LEVEL) {
 	Response->ResultLevel = ResultLevel;
 	Response->ConsumedSafeguardCount = ConsumedSafeCount;
 	Response->RemainingSafeguardCount = RemainingCoreCount;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
 	{
@@ -972,10 +980,11 @@ CLIENT_PROCEDURE_BINDING(EXTREME_UPGRADE_SEAL) {
 		Character->SyncMask.InventoryInfo = true;
 	}
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(CHAOS_UPGRADE_SEAL) {

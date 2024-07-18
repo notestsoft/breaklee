@@ -27,10 +27,11 @@ CLIENT_PROCEDURE_BINDING(ADD_ABILITY) {
 		break;
 	}
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(UPGRADE_ABILITY) {
@@ -71,10 +72,11 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ABILITY) {
 		break;
 	}
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(REMOVE_ABILITY) {
@@ -95,8 +97,9 @@ CLIENT_PROCEDURE_BINDING(REMOVE_ABILITY) {
 		break;
 	}
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

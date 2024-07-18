@@ -9,8 +9,9 @@ CLIENT_PROCEDURE_BINDING(GET_UNKNOWN_2571) {
 
 	S2C_DATA_GET_UNKNOWN_2571* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_UNKNOWN_2571);
 	Response->Count = 0;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

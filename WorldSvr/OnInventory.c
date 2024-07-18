@@ -262,15 +262,17 @@ CLIENT_PROCEDURE_BINDING(MOVE_INVENTORY_ITEM) {
         RTCharacterInitializeAttributes(Runtime, Character);
     }
 
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(SWAP_INVENTORY_ITEM) {
     if (!Character) {
-        return SocketDisconnect(Socket, Connection);
+        SocketDisconnect(Socket, Connection);
+        return;
     }
 
     // TODO: Check if this is causing an issue when the client is not initialized!
@@ -323,13 +325,13 @@ CLIENT_PROCEDURE_BINDING(SWAP_INVENTORY_ITEM) {
         RTCharacterInitializeAttributes(Runtime, Character);
     }
 
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error:
     memcpy(&Character->Data.EquipmentInfo, &kEquipmentInfoBackup, sizeof(struct _RTCharacterEquipmentInfo));
     memcpy(&Character->Data.InventoryInfo, &kInventoryInfoBackup, sizeof(struct _RTCharacterInventoryInfo));
-
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(SPLIT_INVENTORY) {
@@ -461,7 +463,8 @@ error:
 
 CLIENT_PROCEDURE_BINDING(SORT_INVENTORY) {
     if (!Character) {
-        return SocketDisconnect(Socket, Connection);
+        SocketDisconnect(Socket, Connection);
+        return;
     }
 
     struct _RTCharacterInventoryInfo TempInventoryMemory = { 0 };
@@ -515,7 +518,8 @@ error:
 
 CLIENT_PROCEDURE_BINDING(MOVE_INVENTORY_ITEM_LIST) {
     if (!Character) {
-        return SocketDisconnect(Socket, Connection);
+        SocketDisconnect(Socket, Connection);
+        return;
     }
 
     S2C_DATA_MOVE_INVENTORY_ITEM_LIST* Response = PacketBufferInit(Connection->PacketBuffer, S2C, MOVE_INVENTORY_ITEM_LIST);
@@ -553,12 +557,12 @@ CLIENT_PROCEDURE_BINDING(MOVE_INVENTORY_ITEM_LIST) {
     }
 
     Character->SyncMask.InventoryInfo = true;
-
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error:
     Response->Count = 0;
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
 }
 
 CLIENT_PROCEDURE_BINDING(DROP_INVENTORY_ITEM) {

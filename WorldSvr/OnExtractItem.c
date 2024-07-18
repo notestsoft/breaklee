@@ -7,7 +7,8 @@
 
 CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 	if (!Character) {
-		return SocketDisconnect(Socket, Connection);
+		SocketDisconnect(Socket, Connection);
+		return;
 	}
 
 	S2C_DATA_EXTRACT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, EXTRACT_ITEM);
@@ -141,10 +142,11 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 		Character->SyncMask.InventoryInfo = true;
 	}
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
 	Response->Result = 0;
 	Response->ItemCount = 0;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
 }

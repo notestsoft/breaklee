@@ -9,10 +9,11 @@ CLIENT_PROCEDURE_BINDING(UNKNOWN_428) {
 	if (!Character) goto error;
 
 	S2C_DATA_UNKNOWN_428* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UNKNOWN_428);
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(UNKNOWN_2559) {
@@ -20,10 +21,11 @@ CLIENT_PROCEDURE_BINDING(UNKNOWN_2559) {
 
 	S2C_DATA_UNKNOWN_2559* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UNKNOWN_2559);
 	Response->Unknown1 = Packet->Unknown1;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(UNKNOWN_2566) {
@@ -31,10 +33,11 @@ CLIENT_PROCEDURE_BINDING(UNKNOWN_2566) {
 
 	S2C_DATA_UNKNOWN_2566* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UNKNOWN_2566);
 	Response->Unknown1 = 0;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(UNKNOWN_2828) {
@@ -42,26 +45,22 @@ CLIENT_PROCEDURE_BINDING(UNKNOWN_2828) {
 
 	S2C_DATA_UNKNOWN_2828* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UNKNOWN_2828);
     Response->Unknown1 = 1;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
-}
-
-CLIENT_PROCEDURE_BINDING(UNKNOWN_3046) {
-	S2C_DATA_UNKNOWN_3046* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UNKNOWN_3046);
-	Response->Unknown1 = 0;
-	SocketSend(Socket, Connection, Response);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(GET_UNKNOWN_USER_LIST) {
 	if (!Character) goto error;
 
 	S2C_DATA_GET_UNKNOWN_USER_LIST* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_UNKNOWN_USER_LIST);
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(UPDATE_HELP_INFO) {
@@ -69,9 +68,10 @@ CLIENT_PROCEDURE_BINDING(UPDATE_HELP_INFO) {
 
 	S2C_DATA_UPDATE_HELP_INFO* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPDATE_HELP_INFO);
 	Response->Result = Packet->HelpWindow;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 

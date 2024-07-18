@@ -6,8 +6,9 @@ CLIENT_PROCEDURE_BINDING(SELECT_CHARACTER_IN_GAME) {
 
 	S2C_DATA_SELECT_CHARACTER_IN_GAME* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SELECT_CHARACTER_IN_GAME);
 	Response->Result = 1;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

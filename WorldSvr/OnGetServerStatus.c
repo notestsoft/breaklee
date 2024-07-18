@@ -18,7 +18,7 @@ CLIENT_PROCEDURE_BINDING(GET_SERVER_STATUS) {
 	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 IPC_PROCEDURE_BINDING(W2W, REQUEST_SERVER_STATUS) {

@@ -201,10 +201,11 @@ CLIENT_PROCEDURE_BINDING(SELL_ITEM) {
 
     S2C_DATA_SELL_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SELL_ITEM);
     Response->Currency = Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(GET_SHOP_LIST) {
@@ -223,10 +224,11 @@ CLIENT_PROCEDURE_BINDING(GET_SHOP_LIST) {
         ResponseIndex->IsCouponShop = ShopIndex->IsCouponShop;
     }
 
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(GET_SHOP_DATA) {
@@ -267,10 +269,11 @@ CLIENT_PROCEDURE_BINDING(GET_SHOP_DATA) {
         ResponseItem->PriceGem = ShopItem->PriceGem;
     }
 
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(GET_SHOP_ITEM_PRICE_POOL) {
@@ -289,10 +292,11 @@ CLIENT_PROCEDURE_BINDING(GET_SHOP_ITEM_PRICE_POOL) {
         ResponsePrice->ItemCount = ShopPrice->ItemCount;
     }
 
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(GET_ITEM_RECOVERY_LIST) {
@@ -316,10 +320,11 @@ CLIENT_PROCEDURE_BINDING(GET_ITEM_RECOVERY_LIST) {
         ResponseData->ExpirationTimestamp = 0;
     }
 
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(RECOVER_ITEM) {
@@ -348,8 +353,9 @@ CLIENT_PROCEDURE_BINDING(RECOVER_ITEM) {
 
     S2C_DATA_RECOVER_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, RECOVER_ITEM);
     Response->Result = 1; // TODO: Check Result types and remove disconnects
-    return SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-    return SocketDisconnect(Socket, Connection);
+    SocketDisconnect(Socket, Connection);
 }

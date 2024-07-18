@@ -1103,9 +1103,6 @@ Bool ServerLoadMobData(
     FileClose(File);
     free(Memory);
     return true;
-
-error:
-    return false;
 }
 
 Bool ServerLoadWarpData(
@@ -1225,7 +1222,7 @@ Bool ServerLoadWorldData(
                 MapDataOffset += 4;
             }
 
-            UInt32 EffectCount = *((UInt32*)&MapData[MapDataOffset]);
+            Int32 EffectCount = *((Int32*)&MapData[MapDataOffset]);
             MapDataOffset += 4;
 
             for (Int32 Index = 0; Index < EffectCount; Index++) {
@@ -1234,7 +1231,7 @@ Bool ServerLoadWorldData(
                 MapDataOffset += TextLength;
             }
 
-            UInt32 TextureCount = *((UInt32*)&MapData[MapDataOffset]);
+            Int32 TextureCount = *((Int32*)&MapData[MapDataOffset]);
             MapDataOffset += 4;
 
             for (Int32 Index = 0; Index < TextureCount; Index++) {

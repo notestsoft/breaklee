@@ -34,5 +34,5 @@ CLIENT_PROCEDURE_BINDING(WARP) {
     return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

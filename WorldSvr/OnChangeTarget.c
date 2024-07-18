@@ -18,12 +18,13 @@ CLIENT_PROCEDURE_BINDING(SELECT_TARGET_CHARACTER) {
 	Response->CurrentHP = Target->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
 	Response->MaxHP = Target->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
 	Response->AbsorbHP = 0;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
 	{
 		S2C_DATA_SELECT_TARGET_CHARACTER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SELECT_TARGET_CHARACTER);
-		return SocketSend(Socket, Connection, Response);
+		SocketSend(Socket, Connection, Response);
 	}
 }
 

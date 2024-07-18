@@ -10,8 +10,9 @@ CLIENT_PROCEDURE_BINDING(GET_SERVER_TIME) {
 	
 	S2C_DATA_GET_SERVER_TIME* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_SERVER_TIME);
 	Response->Timestamp = ServerGetTimestamp(Server);
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

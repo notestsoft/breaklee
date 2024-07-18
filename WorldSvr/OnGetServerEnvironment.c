@@ -49,8 +49,9 @@ CLIENT_PROCEDURE_BINDING(GET_SERVER_ENVIRONMENT) {
     Response->Unknown22 = 0;
     Response->Unknown23 = 0;
     Response->Unknown24 = 1;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

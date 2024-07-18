@@ -10,8 +10,9 @@ CLIENT_PROCEDURE_BINDING(GET_CASH_BALANCE) {
 
     S2C_DATA_GET_CASH_BALANCE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_CASH_BALANCE);
     Response->Amount = 999;
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

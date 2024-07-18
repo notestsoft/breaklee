@@ -10,20 +10,23 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 	S2C_DATA_CREATE_CHARACTER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CREATE_CHARACTER);
 
 	if (!(Client->Flags & CLIENT_FLAGS_CHARACTER_INDEX_LOADED) || Client->Account.AccountID < 1) {
-		return SocketDisconnect(Socket, Connection);
+		SocketDisconnect(Socket, Connection);
+		return;
 	}
 
 	// TODO: CharacterSlotFlags is not set correctly?!
 	if (!(Client->Account.CharacterSlotFlags & (1 << Packet->SlotIndex)) ||
 		Client->Characters[Packet->SlotIndex].ID > 0) {
 		Response->CharacterStatus = CREATE_CHARACTER_STATUS_NOT_ALLOWED;
-		return SocketSend(Socket, Connection, Response);
+		SocketSend(Socket, Connection, Response);
+		return;
 	}
 
 	if (Packet->NameLength < MIN_CHARACTER_NAME_LENGTH ||
 		Packet->NameLength > MAX_CHARACTER_NAME_LENGTH) {
 		Response->CharacterStatus = CREATE_CHARACTER_STATUS_NAME_VALIDATION_FAILED;
-		return SocketSend(Socket, Connection, Response);
+		SocketSend(Socket, Connection, Response);
+		return;
 	}
 
 	UInt32 RawStyle = SwapUInt32(Packet->Style);
@@ -44,7 +47,8 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 		Style.HairColor >= MAX_CHARACTER_NORMAL_HAIR_COLOR_COUNT ||
 		Style.BattleRank > 1) {
 		Response->CharacterStatus = CREATE_CHARACTER_STATUS_NOT_ALLOWED;
-		return SocketSend(Socket, Connection, Response);
+		SocketSend(Socket, Connection, Response);
+		return;
 	}
 
 	if (Packet->CreateSpecialCharacter && Context->Config.WorldSvr.DebugCharacter) {
@@ -65,7 +69,8 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 	struct _RuntimeDataCharacterTemplate* CharacterTemplate = &Context->RuntimeData->CharacterTemplate[BattleStyleIndex - 1];
 	if (CharacterTemplate->BattleStyleIndex != BattleStyleIndex) {
 		Response->CharacterStatus = CREATE_CHARACTER_STATUS_DBERROR;
-		return SocketSend(Socket, Connection, Response);
+		SocketSend(Socket, Connection, Response);
+		return;
 	}
 
 	Request->CharacterData.Info.Resource.HP = INT32_MAX;

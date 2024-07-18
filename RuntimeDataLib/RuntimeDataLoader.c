@@ -54,7 +54,7 @@ Bool RTRuntimeDataContextLoad(
 
 #define RUNTIME_DATA_TYPE_BEGIN(__NAME__, __QUERY__, __COUNT__) \
     { \
-        Info("Data %s memory size %llu", #__NAME__, sizeof(struct CONCAT(_RTData, __NAME__))); \
+        Trace("Data %s memory size: %llu total: %.3f KB", #__NAME__, sizeof(struct CONCAT(_RTData, __NAME__)), (Float32)sizeof(struct CONCAT(_RTData, __NAME__)) * __COUNT__ / 1000); \
         CString Query = __QUERY__; \
         CString PropertyQuery = NULL; \
         Iterator = ArchiveQueryNodeIteratorByPathFirst(Archive, -1, Query); \

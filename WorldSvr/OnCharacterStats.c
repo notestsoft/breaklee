@@ -21,10 +21,11 @@ CLIENT_PROCEDURE_BINDING(ADD_CHARACTER_STATS) {
     Response->Stat[RUNTIME_CHARACTER_STAT_STR] = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_STR];
     Response->Stat[RUNTIME_CHARACTER_STAT_DEX] = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_DEX];
     Response->Stat[RUNTIME_CHARACTER_STAT_INT] = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_INT];
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(REMOVE_CHARACTER_STATS) {
@@ -90,8 +91,9 @@ CLIENT_PROCEDURE_BINDING(REMOVE_CHARACTER_STATS) {
     Response->Stat[RUNTIME_CHARACTER_STAT_STR] = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_STR];
     Response->Stat[RUNTIME_CHARACTER_STAT_DEX] = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_DEX];
     Response->Stat[RUNTIME_CHARACTER_STAT_INT] = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_INT];
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+    return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

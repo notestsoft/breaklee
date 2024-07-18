@@ -12,8 +12,9 @@ CLIENT_PROCEDURE_BINDING(GET_SPECIAL_EVENT_CHARACTER) {
 		Response->IsSet = 1;
 	}
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

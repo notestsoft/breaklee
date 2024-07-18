@@ -12,5 +12,5 @@ CLIENT_PROCEDURE_BINDING(REPUTATION_CHANGE) {
     return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }

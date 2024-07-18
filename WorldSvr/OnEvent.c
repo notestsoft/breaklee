@@ -114,10 +114,11 @@ CLIENT_PROCEDURE_BINDING(GET_EVENT_LIST) {
 		DungeonRewardHeader->Count = 0;
 	}
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
 
 CLIENT_PROCEDURE_BINDING(EVENT_ACTION) {
@@ -169,8 +170,9 @@ CLIENT_PROCEDURE_BINDING(EVENT_ACTION) {
 		ResponseItem->SlotIndex = ItemSlot.SlotIndex;
 	}
 
-	return SocketSend(Socket, Connection, Response);
+	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
-	return SocketDisconnect(Socket, Connection);
+	SocketDisconnect(Socket, Connection);
 }
