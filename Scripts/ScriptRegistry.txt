@@ -1,3 +1,1 @@
 AddNetworkScript Environment/148_get_server_time.lua
-AddNetworkScript SpecialGiftBox/2797_special_giftbox_roll.lua
-AddNetworkScript SpecialGiftBox/2819_special_giftbox_receive.lua

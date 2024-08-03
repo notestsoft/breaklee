@@ -30,6 +30,11 @@ Void BroadcastToWorld(
     Void *Packet
 );
 
+Void SendGiftBoxPricePoolList(
+    ServerContextRef Context,
+    ClientContextRef Client
+);
+
 Void SendPremiumServiceList(
     ServerContextRef Context,
     SocketRef Socket,

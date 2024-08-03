@@ -1,0 +1,215 @@
+<GiftBox>
+    <Condition>
+		<GiftBox Index="0" IsEnabled="1" IsPremiumService="0" IsPremiumPC="0" BlessingBeadIndex="-1" />
+		<GiftBox Index="1" IsEnabled="1" IsPremiumService="1" IsPremiumPC="0" BlessingBeadIndex="-1" />
+		<GiftBox Index="2" IsEnabled="1" IsPremiumService="0" IsPremiumPC="0" BlessingBeadIndex="8" />
+		<GiftBox Index="3" IsEnabled="1" IsPremiumService="0" IsPremiumPC="0" BlessingBeadIndex="65" />
+		<GiftBox Index="4" IsEnabled="0" IsPremiumService="0" IsPremiumPC="1" BlessingBeadIndex="56" />
+    </Condition>
+    <TimePool>
+        <Pool Index="0">
+            <Time RequiredTime="600" Rate="300" />
+            <Time RequiredTime="900" Rate="500" />
+            <Time RequiredTime="1800" Rate="700" />
+            <Time RequiredTime="2700" Rate="1000" />
+            <Time RequiredTime="3000" Rate="2700" />
+            <Time RequiredTime="3600" Rate="2200" />
+            <Time RequiredTime="4500" Rate="1600" />
+            <Time RequiredTime="5400" Rate="1000" />
+        </Pool>
+        <Pool Index="1">
+            <Time RequiredTime="600" Rate="500" />
+            <Time RequiredTime="900" Rate="700" />
+            <Time RequiredTime="1800" Rate="1200" />
+            <Time RequiredTime="2700" Rate="2800" />
+            <Time RequiredTime="3000" Rate="2000" />
+            <Time RequiredTime="3600" Rate="1700" />
+            <Time RequiredTime="4500" Rate="800" />
+            <Time RequiredTime="5400" Rate="300" />
+        </Pool>
+        <Pool Index="2">
+            <Time RequiredTime="600" Rate="500" />
+            <Time RequiredTime="900" Rate="700" />
+            <Time RequiredTime="1800" Rate="1200" />
+            <Time RequiredTime="2700" Rate="2800" />
+            <Time RequiredTime="3000" Rate="2000" />
+            <Time RequiredTime="3600" Rate="1700" />
+            <Time RequiredTime="4500" Rate="800" />
+            <Time RequiredTime="5400" Rate="300" />
+        </Pool>
+        <Pool Index="3">
+            <Time RequiredTime="600" Rate="300" />
+            <Time RequiredTime="900" Rate="500" />
+            <Time RequiredTime="1800" Rate="1000" />
+            <Time RequiredTime="2700" Rate="2000" />
+            <Time RequiredTime="3000" Rate="3000" />
+            <Time RequiredTime="3600" Rate="1500" />
+            <Time RequiredTime="4500" Rate="1200" />
+            <Time RequiredTime="5400" Rate="500" />
+        </Pool>
+        <Pool Index="4">
+            <Time RequiredTime="600" Rate="300" />
+            <Time RequiredTime="900" Rate="500" />
+            <Time RequiredTime="1800" Rate="1000" />
+            <Time RequiredTime="2700" Rate="2000" />
+            <Time RequiredTime="3000" Rate="3000" />
+            <Time RequiredTime="3600" Rate="1500" />
+            <Time RequiredTime="4500" Rate="1200" />
+            <Time RequiredTime="5400" Rate="500" />
+        </Pool>
+    </TimePool>
+    <RewardPool>
+        <Pool Index="0">
+            <Item ItemID="1" ItemOption="0" Rate="1000000" />
+        </Pool>
+        <Pool Index="1">
+            <Item ItemID="1" ItemOption="0" Rate="1000000" />
+        </Pool>
+        <Pool Index="2">
+            <Item ItemID="1" ItemOption="0" Rate="1000000" />
+        </Pool>
+        <Pool Index="3">
+            <Item ItemID="1" ItemOption="0" Rate="1000000" />
+        </Pool>
+        <Pool Index="4">
+            <Item ItemID="1" ItemOption="0" Rate="1000000" />
+        </Pool>
+    </RewardPool>
+    <PricePool>
+        <Pool Index="0">
+            <Price OpenCount="0" Price="3" />
+            <Price OpenCount="1" Price="3" />
+            <Price OpenCount="2" Price="3" />
+            <Price OpenCount="3" Price="3" />
+            <Price OpenCount="4" Price="3" />
+            <Price OpenCount="5" Price="4" />
+            <Price OpenCount="6" Price="4" />
+            <Price OpenCount="7" Price="4" />
+            <Price OpenCount="8" Price="4" />
+            <Price OpenCount="9" Price="4" />
+            <Price OpenCount="10" Price="5" />
+            <Price OpenCount="11" Price="5" />
+            <Price OpenCount="12" Price="5" />
+            <Price OpenCount="13" Price="5" />
+            <Price OpenCount="14" Price="5" />
+            <Price OpenCount="15" Price="6" />
+            <Price OpenCount="16" Price="6" />
+            <Price OpenCount="17" Price="6" />
+            <Price OpenCount="18" Price="6" />
+            <Price OpenCount="19" Price="6" />
+            <Price OpenCount="20" Price="7" />
+            <Price OpenCount="21" Price="7" />
+            <Price OpenCount="22" Price="7" />
+            <Price OpenCount="23" Price="7" />
+            <Price OpenCount="24" Price="7" />
+        </Pool>
+        <Pool Index="1">
+            <Price OpenCount="0" Price="4" />
+            <Price OpenCount="1" Price="4" />
+            <Price OpenCount="2" Price="4" />
+            <Price OpenCount="3" Price="4" />
+            <Price OpenCount="4" Price="4" />
+            <Price OpenCount="5" Price="5" />
+            <Price OpenCount="6" Price="5" />
+            <Price OpenCount="7" Price="5" />
+            <Price OpenCount="8" Price="5" />
+            <Price OpenCount="9" Price="5" />
+            <Price OpenCount="10" Price="6" />
+            <Price OpenCount="11" Price="6" />
+            <Price OpenCount="12" Price="6" />
+            <Price OpenCount="13" Price="6" />
+            <Price OpenCount="14" Price="6" />
+            <Price OpenCount="15" Price="7" />
+            <Price OpenCount="16" Price="7" />
+            <Price OpenCount="17" Price="7" />
+            <Price OpenCount="18" Price="7" />
+            <Price OpenCount="19" Price="7" />
+            <Price OpenCount="20" Price="8" />
+            <Price OpenCount="21" Price="8" />
+            <Price OpenCount="22" Price="8" />
+            <Price OpenCount="23" Price="8" />
+            <Price OpenCount="24" Price="8" />
+        </Pool>
+        <Pool Index="2">
+            <Price OpenCount="0" Price="4" />
+            <Price OpenCount="1" Price="4" />
+            <Price OpenCount="2" Price="4" />
+            <Price OpenCount="3" Price="4" />
+            <Price OpenCount="4" Price="4" />
+            <Price OpenCount="5" Price="5" />
+            <Price OpenCount="6" Price="5" />
+            <Price OpenCount="7" Price="5" />
+            <Price OpenCount="8" Price="5" />
+            <Price OpenCount="9" Price="5" />
+            <Price OpenCount="10" Price="6" />
+            <Price OpenCount="11" Price="6" />
+            <Price OpenCount="12" Price="6" />
+            <Price OpenCount="13" Price="6" />
+            <Price OpenCount="14" Price="6" />
+            <Price OpenCount="15" Price="7" />
+            <Price OpenCount="16" Price="7" />
+            <Price OpenCount="17" Price="7" />
+            <Price OpenCount="18" Price="7" />
+            <Price OpenCount="19" Price="7" />
+            <Price OpenCount="20" Price="8" />
+            <Price OpenCount="21" Price="8" />
+            <Price OpenCount="22" Price="8" />
+            <Price OpenCount="23" Price="8" />
+            <Price OpenCount="24" Price="8" />
+        </Pool>
+        <Pool Index="3">
+            <Price OpenCount="0" Price="5" />
+            <Price OpenCount="1" Price="5" />
+            <Price OpenCount="2" Price="5" />
+            <Price OpenCount="3" Price="5" />
+            <Price OpenCount="4" Price="5" />
+            <Price OpenCount="5" Price="6" />
+            <Price OpenCount="6" Price="6" />
+            <Price OpenCount="7" Price="6" />
+            <Price OpenCount="8" Price="6" />
+            <Price OpenCount="9" Price="6" />
+            <Price OpenCount="10" Price="7" />
+            <Price OpenCount="11" Price="7" />
+            <Price OpenCount="12" Price="7" />
+            <Price OpenCount="13" Price="7" />
+            <Price OpenCount="14" Price="7" />
+            <Price OpenCount="15" Price="8" />
+            <Price OpenCount="16" Price="8" />
+            <Price OpenCount="17" Price="8" />
+            <Price OpenCount="18" Price="8" />
+            <Price OpenCount="19" Price="8" />
+            <Price OpenCount="20" Price="9" />
+            <Price OpenCount="21" Price="9" />
+            <Price OpenCount="22" Price="9" />
+            <Price OpenCount="23" Price="9" />
+            <Price OpenCount="24" Price="9" />
+        </Pool>
+        <Pool Index="4">
+            <Price OpenCount="0" Price="5" />
+            <Price OpenCount="1" Price="5" />
+            <Price OpenCount="2" Price="5" />
+            <Price OpenCount="3" Price="5" />
+            <Price OpenCount="4" Price="5" />
+            <Price OpenCount="5" Price="6" />
+            <Price OpenCount="6" Price="6" />
+            <Price OpenCount="7" Price="6" />
+            <Price OpenCount="8" Price="6" />
+            <Price OpenCount="9" Price="6" />
+            <Price OpenCount="10" Price="7" />
+            <Price OpenCount="11" Price="7" />
+            <Price OpenCount="12" Price="7" />
+            <Price OpenCount="13" Price="7" />
+            <Price OpenCount="14" Price="7" />
+            <Price OpenCount="15" Price="8" />
+            <Price OpenCount="16" Price="8" />
+            <Price OpenCount="17" Price="8" />
+            <Price OpenCount="18" Price="8" />
+            <Price OpenCount="19" Price="8" />
+            <Price OpenCount="20" Price="9" />
+            <Price OpenCount="21" Price="9" />
+            <Price OpenCount="22" Price="9" />
+            <Price OpenCount="23" Price="9" />
+            <Price OpenCount="24" Price="9" />
+        </Pool>
+    </PricePool>
+</GiftBox>

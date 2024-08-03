@@ -6,7 +6,7 @@ Int32 RTVehicleInventoryGetSlotIndex(
 	RTCharacterVehicleInventoryInfoRef Inventory,
 	Int32 SlotIndex
 ) {
-	for (Int32 Index = 0; Index < Inventory->Count; Index++) {
+	for (Int32 Index = 0; Index < Inventory->Info.SlotCount; Index += 1) {
 		RTItemSlotRef Slot = &Inventory->Slots[Index];
 		if (Slot->SlotIndex == SlotIndex) {
 			return Index;
@@ -62,9 +62,9 @@ Bool RTVehicleInventorySetSlot(
 		return false;
 	}
 
-	InventorySlot = &Inventory->Slots[Inventory->Count];
+	InventorySlot = &Inventory->Slots[Inventory->Info.SlotCount];
 	memcpy(InventorySlot, Slot, sizeof(struct _RTItemSlot));
-	Inventory->Count += 1;
+	Inventory->Info.SlotCount += 1;
 	return true;
 }
 
@@ -99,15 +99,15 @@ Bool RTVehicleInventoryClearSlot(
 	);
 	if (InventoryIndex < 0) return false;
 
-	Int32 TailLength = Inventory->Count - InventoryIndex - 1;
+	Int32 TailLength = Inventory->Info.SlotCount - InventoryIndex - 1;
 	if (TailLength > 0) {
 		memmove(
 			&Inventory->Slots[InventoryIndex],
 			&Inventory->Slots[InventoryIndex + 1],
-			sizeof(struct _RTItemSlot) * TailLength
+			TailLength * sizeof(struct _RTItemSlot)
 		);
 	}
 
-	Inventory->Count -= 1;
+	Inventory->Info.SlotCount -= 1;
 	return true;
 }

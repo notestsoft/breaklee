@@ -14,9 +14,9 @@ Void RTCharacterQuestFlagClear(
 ) {
 	assert(0 <= QuestIndex && QuestIndex < RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT);
 
-	Character->Data.QuestFlagInfo.FinishedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] &= ~(1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
+	Character->Data.QuestInfo.Info.FinishedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] &= ~(1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
 
-	Character->SyncMask.QuestFlagInfo = true;
+	Character->SyncMask.QuestInfo = true;
 }
 
 Void RTCharacterQuestFlagSet(
@@ -25,9 +25,9 @@ Void RTCharacterQuestFlagSet(
 ) {
 	assert(0 <= QuestIndex && QuestIndex < RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT);
 
-	Character->Data.QuestFlagInfo.FinishedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] |= (1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
+	Character->Data.QuestInfo.Info.FinishedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] |= (1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
 
-	Character->SyncMask.QuestFlagInfo = true;
+	Character->SyncMask.QuestInfo = true;
 }
 
 Bool RTCharacterQuestFlagIsSet(
@@ -36,7 +36,7 @@ Bool RTCharacterQuestFlagIsSet(
 ) {
 	assert(0 <= QuestIndex && QuestIndex < RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT);
 
-	return (Character->Data.QuestFlagInfo.FinishedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] & (1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE)));
+	return (Character->Data.QuestInfo.Info.FinishedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] & (1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE)));
 }
 
 Void RTCharacterQuestDeleteFlagClear(
@@ -45,9 +45,9 @@ Void RTCharacterQuestDeleteFlagClear(
 ) {
 	assert(0 <= QuestIndex && QuestIndex < RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_NORMAL_QUEST_FLAG_COUNT);
 
-	Character->Data.QuestFlagInfo.DeletedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] &= ~(1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
+	Character->Data.QuestInfo.Info.DeletedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] &= ~(1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
 
-	Character->SyncMask.QuestFlagInfo = true;
+	Character->SyncMask.QuestInfo = true;
 }
 
 Void RTCharacterQuestDeleteFlagSet(
@@ -56,9 +56,9 @@ Void RTCharacterQuestDeleteFlagSet(
 ) {
 	assert(0 <= QuestIndex && QuestIndex < RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_NORMAL_QUEST_FLAG_COUNT);
 
-	Character->Data.QuestFlagInfo.DeletedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] |= (1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
+	Character->Data.QuestInfo.Info.DeletedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] |= (1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
 
-	Character->SyncMask.QuestFlagInfo = true;
+	Character->SyncMask.QuestInfo = true;
 }
 
 Bool RTCharacterQuestDeleteFlagIsSet(
@@ -67,7 +67,7 @@ Bool RTCharacterQuestDeleteFlagIsSet(
 ) {
 	assert(0 <= QuestIndex && QuestIndex < RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_NORMAL_QUEST_FLAG_COUNT);
 
-	return (Character->Data.QuestFlagInfo.DeletedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] & (1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE)));
+	return (Character->Data.QuestInfo.Info.DeletedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] & (1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE)));
 }
 
 Void RTCharacterDungeonQuestFlagClear(
@@ -76,9 +76,9 @@ Void RTCharacterDungeonQuestFlagClear(
 ) {
 	assert(0 <= DungeonIndex && DungeonIndex < RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_DUNGEON_FLAG_COUNT);
 
-	Character->Data.DungeonQuestFlagInfo.FinishedDungeons[DungeonIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] &= ~(1 << (DungeonIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
+	Character->Data.QuestInfo.Info.FinishedDungeons[DungeonIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] &= ~(1 << (DungeonIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
 
-	Character->SyncMask.DungeonQuestFlagInfo = true;
+	Character->SyncMask.QuestInfo = true;
 }
 
 Void RTCharacterDungeonQuestFlagSet(
@@ -87,9 +87,9 @@ Void RTCharacterDungeonQuestFlagSet(
 ) {
 	assert(0 <= DungeonIndex && DungeonIndex < RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_DUNGEON_FLAG_COUNT);
 
-	Character->Data.DungeonQuestFlagInfo.FinishedDungeons[DungeonIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] |= (1 << (DungeonIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
+	Character->Data.QuestInfo.Info.FinishedDungeons[DungeonIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] |= (1 << (DungeonIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
 
-	Character->SyncMask.DungeonQuestFlagInfo = true;
+	Character->SyncMask.QuestInfo = true;
 }
 
 Bool RTCharacterDungeonQuestFlagIsSet(
@@ -98,7 +98,63 @@ Bool RTCharacterDungeonQuestFlagIsSet(
 ) {
 	assert(0 <= DungeonIndex && DungeonIndex < RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_DUNGEON_FLAG_COUNT);
 
-	return (Character->Data.DungeonQuestFlagInfo.FinishedDungeons[DungeonIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] & (1 << (DungeonIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE)));
+	return (Character->Data.QuestInfo.Info.FinishedDungeons[DungeonIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] & (1 << (DungeonIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE)));
+}
+
+RTQuestSlotRef RTCharacterAddQuestSlot(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 QuestIndex,
+	Int32 QuestSlotIndex
+) {
+	if (Character->Data.QuestInfo.Info.SlotCount >= RUNTIME_CHARACTER_MAX_QUEST_SLOT_COUNT) return NULL;
+
+	RTQuestSlotRef QuestSlot = &Character->Data.QuestInfo.Slots[Character->Data.QuestInfo.Info.SlotCount];
+	QuestSlot->SlotIndex = QuestSlotIndex;
+	QuestSlot->QuestIndex = QuestIndex;
+	QuestSlot->DisplayNotice = 0;
+	QuestSlot->DisplayOpenNotice = 0;
+	memset(QuestSlot->Counter, 0, sizeof(UInt8) * RUNTIME_MAX_QUEST_COUNTER_COUNT);
+	Character->Data.QuestInfo.Info.SlotCount += 1;
+	Character->SyncMask.QuestInfo = true;
+	return QuestSlot;
+}
+
+RTQuestSlotRef RTCharacterGetQuestSlot(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 QuestSlotIndex
+) {
+	for (Int32 Index = 0; Index < Character->Data.QuestInfo.Info.SlotCount; Index += 1) {
+		RTQuestSlotRef QuestSlot = &Character->Data.QuestInfo.Slots[QuestSlotIndex];
+		if (QuestSlot->SlotIndex == QuestSlotIndex) return QuestSlot;
+	}
+
+	return NULL;
+}
+
+Void RTCharacterRemoveQuestSlot(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 QuestSlotIndex
+) {
+	for (Int32 Index = 0; Index < Character->Data.QuestInfo.Info.SlotCount; Index += 1) {
+		RTQuestSlotRef QuestSlot = &Character->Data.QuestInfo.Slots[QuestSlotIndex];
+		if (QuestSlot->SlotIndex != QuestSlotIndex) continue;
+
+		Int32 TailLength = Character->Data.QuestInfo.Info.SlotCount - Index - 1;
+		if (TailLength > 0) {
+			memmove(
+				&Character->Data.QuestInfo.Slots[Index],
+				&Character->Data.QuestInfo.Slots[Index + 1],
+				TailLength * sizeof(struct _RTQuestSlot)
+			);
+		}
+
+		Character->Data.QuestInfo.Info.SlotCount -= 1;
+		Character->SyncMask.QuestInfo = true;
+		break;
+	}
 }
 
 Bool RTCharacterQuestBegin(
@@ -110,12 +166,8 @@ Bool RTCharacterQuestBegin(
 	if (QuestSlotIndex < 0 || QuestSlotIndex >= RUNTIME_CHARACTER_MAX_QUEST_SLOT_COUNT) return false;
 	if (RTCharacterQuestFlagIsSet(Character, QuestIndex)) return false;
 
-	RTQuestSlotRef QuestSlot = &Character->Data.QuestSlotInfo.QuestSlot[QuestSlotIndex];
-	if (QuestSlot->QuestIndex) return false;
-
-	for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_QUEST_SLOT_COUNT; Index += 1) {
-		if (Character->Data.QuestSlotInfo.QuestSlot[Index].QuestIndex == QuestIndex) return false;
-	}
+	RTQuestSlotRef QuestSlot = RTCharacterGetQuestSlot(Runtime, Character, QuestSlotIndex);
+	if (QuestSlot) return false;
 
 	RTQuestDataRef Quest = RTRuntimeGetQuestByIndex(Runtime, QuestIndex);
 	if (!Quest) return false;
@@ -124,32 +176,13 @@ Bool RTCharacterQuestBegin(
 		Character->Data.Info.Basic.Level > Quest->Condition.MaxLevel ||
 		Character->Data.Info.Honor.Rank < Quest->Condition.MinHonorRank ||
 		Character->Data.Info.Honor.Rank > Quest->Condition.MaxHonorRank ||
-		Character->Data.Info.Overlord.Level < Quest->Condition.MinOverlordLevel ||
-		Character->Data.Info.Overlord.Level > Quest->Condition.MaxOverlordLevel) {
+		Character->Data.OverlordMasteryInfo.Info.Level < Quest->Condition.MinOverlordLevel ||
+		Character->Data.OverlordMasteryInfo.Info.Level > Quest->Condition.MaxOverlordLevel) {
 		return false;
 	}
 
 	if (Quest->Condition.RelatedQuestID >= 0 && !RTCharacterQuestFlagIsSet(Character, Quest->Condition.RelatedQuestID)) {
 		return false;
-	}
-
-	if (Quest->QuestBeginNpcIndex >= 0) {
-		assert(Quest->QuestBeginNpcIndex < Quest->NpcSet.Count);
-
-		RTQuestNpcDataRef QuestNpc = &Quest->NpcSet.Npcs[Quest->QuestBeginNpcIndex];
-		RTNpcRef Npc = RTRuntimeGetNpcByWorldNpcID(Runtime, QuestNpc->WorldID, QuestNpc->NpcID);
-		if (!Npc) return false;
-
-		if (!RTMovementIsInRange(Runtime, &Character->Movement, Npc->X, Npc->Y)) {
-			return false;
-		}
-
-		QuestSlot->NpcActionIndex = QuestNpc->NpcActionOrder;
-
-		if (Quest->QuestBeginNpcIndex + 1 < Quest->NpcSet.Count) {
-			RTQuestNpcDataRef NextQuestNpc = &Quest->NpcSet.Npcs[Quest->QuestBeginNpcIndex + 1];
-			QuestSlot->NpcActionIndex = NextQuestNpc->NpcActionOrder;
-		}
 	}
 
 	/* TODO: Check conditions for following fields...
@@ -161,12 +194,30 @@ Bool RTCharacterQuestBegin(
 	Int32 NationType;
 	*/
 
-	QuestSlot->QuestIndex = Quest->ID;
-	QuestSlot->DisplayNotice = 0;
-	QuestSlot->DisplayOpenNotice = 0;
-	memset(QuestSlot->Counter, 0, sizeof(UInt8) * RUNTIME_MAX_QUEST_COUNTER_COUNT);
+	Int32 NpcActionIndex = 0;
+	if (Quest->QuestBeginNpcIndex >= 0) {
+		assert(Quest->QuestBeginNpcIndex < Quest->NpcSet.Count);
 
-	Character->SyncMask.QuestSlotInfo = true;
+		RTQuestNpcDataRef QuestNpc = &Quest->NpcSet.Npcs[Quest->QuestBeginNpcIndex];
+		RTNpcRef Npc = RTRuntimeGetNpcByWorldNpcID(Runtime, QuestNpc->WorldID, QuestNpc->NpcID);
+		if (!Npc) return false;
+
+		if (!RTMovementIsInRange(Runtime, &Character->Movement, Npc->X, Npc->Y)) {
+			return false;
+		}
+
+		NpcActionIndex = QuestNpc->NpcActionOrder;
+
+		if (Quest->QuestBeginNpcIndex + 1 < Quest->NpcSet.Count) {
+			RTQuestNpcDataRef NextQuestNpc = &Quest->NpcSet.Npcs[Quest->QuestBeginNpcIndex + 1];
+			NpcActionIndex = NextQuestNpc->NpcActionOrder;
+		}
+	}
+
+	QuestSlot = RTCharacterAddQuestSlot(Runtime, Character, QuestIndex, QuestSlotIndex);
+	if (!QuestSlot) return false;
+	
+	QuestSlot->NpcActionIndex = NpcActionIndex;
 
 	return true;
 }
@@ -183,8 +234,8 @@ Bool RTCharacterQuestClear(
 ) {
 	if (QuestSlotIndex < 0 || QuestSlotIndex >= RUNTIME_CHARACTER_MAX_QUEST_SLOT_COUNT) return false;
 
-	RTQuestSlotRef QuestSlot = &Character->Data.QuestSlotInfo.QuestSlot[QuestSlotIndex];
-	if (QuestSlot->QuestIndex != QuestIndex) return false;
+	RTQuestSlotRef QuestSlot = RTCharacterGetQuestSlot(Runtime, Character, QuestSlotIndex);
+	if (!QuestSlot || QuestSlot->QuestIndex != QuestIndex) return false;
 
 	RTQuestDataRef Quest = RTRuntimeGetQuestByIndex(Runtime, QuestIndex);
 	if (!Quest) return false;
@@ -305,9 +356,7 @@ Bool RTCharacterQuestClear(
 	RTCharacterAddSkillExp(Runtime, Character, Quest->Reward[RUNTIME_QUEST_REWARD_SKILL_EXP]);
 	RTCharacterAddHonorPoint(Runtime, Character, Quest->Reward[RUNTIME_QUEST_REWARD_HONOR_POINT]);
 	RTCharacterQuestFlagSet(Character, QuestIndex);
-
-	memset(QuestSlot, 0, sizeof(struct _RTQuestSlot));
-	Character->SyncMask.QuestSlotInfo = true;
+	RTCharacterRemoveQuestSlot(Runtime, Character, QuestSlotIndex);
 
 	return true;
 }
@@ -320,11 +369,10 @@ Bool RTCharacterQuestCancel(
 ) {
 	if (QuestSlotIndex < 0 || QuestSlotIndex >= RUNTIME_CHARACTER_MAX_QUEST_SLOT_COUNT) return false;
 
-	RTQuestSlotRef QuestSlot = &Character->Data.QuestSlotInfo.QuestSlot[QuestSlotIndex];
-	if (QuestSlot->QuestIndex != QuestIndex) return false;
+	RTQuestSlotRef QuestSlot = RTCharacterGetQuestSlot(Runtime, Character, QuestSlotIndex);
+	if (!QuestSlot || QuestSlot->QuestIndex != QuestIndex) return false;
 
-	memset(QuestSlot, 0, sizeof(struct _RTQuestSlot));
-	Character->SyncMask.QuestSlotInfo = true;
+	RTCharacterRemoveQuestSlot(Runtime, Character, QuestSlotIndex);
 
 	// TODO: Reset dungeon state!
 	// TODO: Reset added and removed items state!
@@ -354,8 +402,8 @@ Bool RTCharacterQuestAction(
 ) {
 	if (QuestSlotIndex < 0 || QuestSlotIndex >= RUNTIME_CHARACTER_MAX_QUEST_SLOT_COUNT) return false;
 
-	RTQuestSlotRef QuestSlot = &Character->Data.QuestSlotInfo.QuestSlot[QuestSlotIndex];
-	if (QuestSlot->QuestIndex != QuestIndex) return false;
+	RTQuestSlotRef QuestSlot = RTCharacterGetQuestSlot(Runtime, Character, QuestSlotIndex);
+	if (!QuestSlot || QuestSlot->QuestIndex != QuestIndex) return false;
 
 	RTQuestDataRef Quest = RTRuntimeGetQuestByIndex(Runtime, QuestIndex);
 	if (!Quest) return false;
@@ -391,7 +439,7 @@ Bool RTCharacterQuestAction(
 		QuestSlot->NpcActionIndex = NextQuestNpc->NpcActionOrder;
 	}
 
-	Character->SyncMask.QuestSlotInfo = true;
+	Character->SyncMask.QuestInfo = true;
 
 	return true;
 }
@@ -406,13 +454,12 @@ Bool RTCharacterSetQuestDisplayNotice(
 ) {
 	if (QuestSlotIndex < 0 || QuestSlotIndex >= RUNTIME_CHARACTER_MAX_QUEST_SLOT_COUNT) return false;
 
-	RTQuestSlotRef QuestSlot = &Character->Data.QuestSlotInfo.QuestSlot[QuestSlotIndex];
-	if (QuestSlot->QuestIndex != QuestIndex) return false;
+	RTQuestSlotRef QuestSlot = RTCharacterGetQuestSlot(Runtime, Character, QuestSlotIndex);
+	if (!QuestSlot || QuestSlot->QuestIndex != QuestIndex) return false;
 
 	QuestSlot->DisplayNotice = DisplayNotice;
 	QuestSlot->DisplayOpenNotice = DisplayOpenNotice;
-
-	Character->SyncMask.QuestSlotInfo = true;
+	Character->SyncMask.QuestInfo = true;
 
 	return true;
 }
@@ -423,24 +470,23 @@ Bool RTCharacterIncrementQuestMobCounter(
 	RTCharacterRef Character,
 	Index MobSpeciesIndex
 ) {
-	for (Int32 SlotIndex = 0; SlotIndex < RUNTIME_CHARACTER_MAX_QUEST_SLOT_COUNT; SlotIndex += 1) {
-		RTQuestSlotRef QuestSlot = &Character->Data.QuestSlotInfo.QuestSlot[SlotIndex];
-		if (!QuestSlot->QuestIndex) continue;
+	Bool Result = false;
 
+	for (Int32 SlotIndex = 0; SlotIndex < Character->Data.QuestInfo.Info.SlotCount; SlotIndex += 1) {
+		RTQuestSlotRef QuestSlot = &Character->Data.QuestInfo.Slots[SlotIndex];
 		RTQuestDataRef Quest = RTRuntimeGetQuestByIndex(Runtime, QuestSlot->QuestIndex);
-		if (!Quest) return false;
+		if (!Quest) continue;
 
 		Int32 QuestCounterIndex = 0;
 		for (Int32 MissionIndex = 0; MissionIndex < Quest->MissionMobCount; MissionIndex += 1) {
 			RTQuestMissionDataRef Mission = &Quest->MissionMobs[MissionIndex];
 			if (MobSpeciesIndex == Mission->Value[0]) {
-				Character->Data.QuestSlotInfo.QuestSlot[SlotIndex].Counter[QuestCounterIndex] = MIN(
+				Character->Data.QuestInfo.Slots[SlotIndex].Counter[QuestCounterIndex] = MIN(
 					Mission->Value[1],
-					Character->Data.QuestSlotInfo.QuestSlot[SlotIndex].Counter[QuestCounterIndex] + 1
+					Character->Data.QuestInfo.Slots[SlotIndex].Counter[QuestCounterIndex] + 1
 				);
-				Character->SyncMask.QuestSlotInfo = true;
-
-				return true;
+				Character->SyncMask.QuestInfo = true;
+				Result = true;
 			}
 
 			QuestCounterIndex += 1;
@@ -455,7 +501,7 @@ Bool RTCharacterIncrementQuestMobCounter(
 		assert(PatternPart);
 	}
 
-	return false;
+	return Result;
 }
 
 Bool RTCharacterUpdateQuestItemCounter(
@@ -464,26 +510,26 @@ Bool RTCharacterUpdateQuestItemCounter(
 	RTItem Item,
 	UInt64 ItemOptions
 ) {
-	for (Int32 SlotIndex = 0; SlotIndex < RUNTIME_CHARACTER_MAX_QUEST_SLOT_COUNT; SlotIndex += 1) {
-		RTQuestSlotRef QuestSlot = &Character->Data.QuestSlotInfo.QuestSlot[SlotIndex];
-		if (!QuestSlot->QuestIndex) continue;
+	Bool Result = false;
 
+	for (Int32 SlotIndex = 0; SlotIndex < Character->Data.QuestInfo.Info.SlotCount; SlotIndex += 1) {
+		RTQuestSlotRef QuestSlot = &Character->Data.QuestInfo.Slots[SlotIndex];
 		RTQuestDataRef Quest = RTRuntimeGetQuestByIndex(Runtime, QuestSlot->QuestIndex);
-		if (!Quest) return false;
+		if (!Quest) continue;
 
 		Int32 QuestCounterIndex = Quest->MissionMobCount;
 		for (Int32 MissionIndex = 0; MissionIndex < Quest->MissionItemCount; MissionIndex += 1) {
 			RTQuestMissionDataRef Mission = &Quest->MissionItems[MissionIndex];
 			if (Mission->Value[0] == Item.ID && Mission->Value[1] == RTQuestItemGetOptions(ItemOptions)) {
 				QuestSlot->Counter[QuestCounterIndex + MissionIndex] = RTQuestItemGetCount(ItemOptions);
-				return true;
+				Result = true;
 			}
 
 			QuestCounterIndex += 1;
 		}
 	}
 
-	return false;
+	return Result;
 }
 
 Bool RTCharacterHasQuestItemCounter(
@@ -492,12 +538,10 @@ Bool RTCharacterHasQuestItemCounter(
 	RTItem Item,
 	UInt64 ItemOptions
 ) {
-	for (Int32 SlotIndex = 0; SlotIndex < RUNTIME_CHARACTER_MAX_QUEST_SLOT_COUNT; SlotIndex += 1) {
-		RTQuestSlotRef QuestSlot = &Character->Data.QuestSlotInfo.QuestSlot[SlotIndex];
-		if (!QuestSlot->QuestIndex) continue;
-
+	for (Int32 SlotIndex = 0; SlotIndex < Character->Data.QuestInfo.Info.SlotCount; SlotIndex += 1) {
+		RTQuestSlotRef QuestSlot = &Character->Data.QuestInfo.Slots[SlotIndex];
 		RTQuestDataRef Quest = RTRuntimeGetQuestByIndex(Runtime, QuestSlot->QuestIndex);
-		if (!Quest) return false;
+		if (!Quest) continue;
 
 		Int32 QuestCounterIndex = Quest->MissionMobCount;
 		for (Int32 MissionIndex = 0; MissionIndex < Quest->MissionItemCount; MissionIndex += 1) {
@@ -518,12 +562,10 @@ Bool RTCharacterHasQuestDungeon(
 	RTCharacterRef Character,
 	Int32 DungeonID
 ) {
-	for (Int32 SlotIndex = 0; SlotIndex < RUNTIME_CHARACTER_MAX_QUEST_SLOT_COUNT; SlotIndex += 1) {
-		RTQuestSlotRef QuestSlot = &Character->Data.QuestSlotInfo.QuestSlot[SlotIndex];
-		if (!QuestSlot->QuestIndex) continue;
-
+	for (Int32 SlotIndex = 0; SlotIndex < Character->Data.QuestInfo.Info.SlotCount; SlotIndex += 1) {
+		RTQuestSlotRef QuestSlot = &Character->Data.QuestInfo.Slots[SlotIndex];
 		RTQuestDataRef Quest = RTRuntimeGetQuestByIndex(Runtime, QuestSlot->QuestIndex);
-		if (!Quest) return false;
+		if (!Quest) continue;
 
 		for (Int32 Index = 0; Index < Quest->DungeonIndexCount; Index += 1) {
 			if (Quest->DungeonIndex[Index] == DungeonID) {
@@ -589,8 +631,8 @@ Bool RTCharacterPartyQuestBegin(
 		Character->Data.Info.Basic.Level > Quest->Condition.MaxLevel ||
 		Character->Data.Info.Honor.Rank < Quest->Condition.MinHonorRank ||
 		Character->Data.Info.Honor.Rank > Quest->Condition.MaxHonorRank ||
-		Character->Data.Info.Overlord.Level < Quest->Condition.MinOverlordLevel ||
-		Character->Data.Info.Overlord.Level > Quest->Condition.MaxOverlordLevel) {
+		Character->Data.OverlordMasteryInfo.Info.Level < Quest->Condition.MinOverlordLevel ||
+		Character->Data.OverlordMasteryInfo.Info.Level > Quest->Condition.MaxOverlordLevel) {
 		return false;
 	}
 
@@ -846,12 +888,13 @@ Bool RTPartyIncrementQuestMobCounter(
 	RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, PartyID);
 	assert(Party);
 
+	Bool Result = false;
 	for (Int32 SlotIndex = 0; SlotIndex < RUNTIME_PARTY_MAX_QUEST_SLOT_COUNT; SlotIndex += 1) {
 		RTQuestSlotRef QuestSlot = &Party->QuestSlot[SlotIndex];
 		if (!QuestSlot->QuestIndex) continue;
 
 		RTQuestDataRef Quest = RTRuntimeGetQuestByIndex(Runtime, QuestSlot->QuestIndex);
-		if (!Quest) return false;
+		if (!Quest) continue;
 
 		Int32 QuestCounterIndex = 0;
 
@@ -870,14 +913,14 @@ Bool RTPartyIncrementQuestMobCounter(
 					RTNotificationDispatchToParty(Notification, Party);
 				}
 
-				return true;
+				Result = true;
 			}
 
 			QuestCounterIndex += 1;
 		}
 	}
 
-	return false;
+	return Result;
 }
 
 Bool RTPartyHasQuestItemCounter(
@@ -918,7 +961,7 @@ Bool RTCharacterHasPartyQuestDungeon(
 	Int32 DungeonID
 ) {
 	for (Int32 SlotIndex = 0; SlotIndex < RUNTIME_PARTY_MAX_QUEST_SLOT_COUNT; SlotIndex += 1) {
-		RTQuestSlotRef QuestSlot = &Character->Data.QuestSlotInfo.QuestSlot[SlotIndex];
+		RTQuestSlotRef QuestSlot = &Character->Data.QuestInfo.Slots[SlotIndex];
 		if (!QuestSlot->QuestIndex) continue;
 
 		RTQuestDataRef Quest = RTRuntimeGetQuestByIndex(Runtime, QuestSlot->QuestIndex);

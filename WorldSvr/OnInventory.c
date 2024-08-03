@@ -10,7 +10,7 @@
 // TODO: Add support for warehouse inventory!
 // 
 // NOTE: Currently we use this shared memory because we don't do parallel processing...
-static struct _RTCharacterEquipmentInfo kEquipmentInfoBackup;
+static struct _RTCharacterEquipmentData kEquipmentInfoBackup;
 static struct _RTCharacterInventoryInfo kInventoryInfoBackup;
 static struct _RTCharacterWarehouseInfo kWarehouseInfoBackup;
 static struct _RTCharacterVehicleInventoryInfo kVehicleInventoryInfoBackup;
@@ -24,7 +24,7 @@ Bool MoveInventoryItem(
     UInt32 DestinationSlotIndex
 ) {
     // TODO: Check if this is causing an issue when the client is not initialized!
-    memcpy(&kEquipmentInfoBackup, &Character->Data.EquipmentInfo, sizeof(struct _RTCharacterEquipmentInfo));
+    memcpy(&kEquipmentInfoBackup, &Character->Data.EquipmentInfo, sizeof(struct _RTCharacterEquipmentData));
     memcpy(&kInventoryInfoBackup, &Character->Data.InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
     memcpy(&kWarehouseInfoBackup, &Character->Data.WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
     memcpy(&kVehicleInventoryInfoBackup, &Character->Data.VehicleInventoryInfo, sizeof(struct _RTCharacterVehicleInventoryInfo));
@@ -105,7 +105,7 @@ Bool MoveInventoryItem(
     return true;
 
 error:
-    memcpy(&Character->Data.EquipmentInfo, &kEquipmentInfoBackup, sizeof(struct _RTCharacterEquipmentInfo));
+    memcpy(&Character->Data.EquipmentInfo, &kEquipmentInfoBackup, sizeof(struct _RTCharacterEquipmentData));
     memcpy(&Character->Data.InventoryInfo, &kInventoryInfoBackup, sizeof(struct _RTCharacterInventoryInfo));
     memcpy(&Character->Data.WarehouseInfo, &kWarehouseInfoBackup, sizeof(struct _RTCharacterWarehouseInfo));
     memcpy(&Character->Data.VehicleInventoryInfo, &kVehicleInventoryInfoBackup, sizeof(struct _RTCharacterVehicleInventoryInfo));
@@ -276,7 +276,7 @@ CLIENT_PROCEDURE_BINDING(SWAP_INVENTORY_ITEM) {
     }
 
     // TODO: Check if this is causing an issue when the client is not initialized!
-    memcpy(&kEquipmentInfoBackup, &Character->Data.EquipmentInfo, sizeof(struct _RTCharacterEquipmentInfo));
+    memcpy(&kEquipmentInfoBackup, &Character->Data.EquipmentInfo, sizeof(struct _RTCharacterEquipmentData));
     memcpy(&kInventoryInfoBackup, &Character->Data.InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
 
     S2C_DATA_SWAP_INVENTORY_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SWAP_INVENTORY_ITEM);
@@ -329,7 +329,7 @@ CLIENT_PROCEDURE_BINDING(SWAP_INVENTORY_ITEM) {
     return;
 
 error:
-    memcpy(&Character->Data.EquipmentInfo, &kEquipmentInfoBackup, sizeof(struct _RTCharacterEquipmentInfo));
+    memcpy(&Character->Data.EquipmentInfo, &kEquipmentInfoBackup, sizeof(struct _RTCharacterEquipmentData));
     memcpy(&Character->Data.InventoryInfo, &kInventoryInfoBackup, sizeof(struct _RTCharacterInventoryInfo));
     SocketDisconnect(Socket, Connection);
 }
@@ -473,7 +473,7 @@ CLIENT_PROCEDURE_BINDING(SORT_INVENTORY) {
 
     Bool InventoryOccupancyMask[RUNTIME_INVENTORY_TOTAL_SIZE] = { 0 };
     memset(InventoryOccupancyMask, 0, sizeof(Bool) * RUNTIME_INVENTORY_TOTAL_SIZE);
-    for (Int32 Index = 0; Index < Character->Data.InventoryInfo.Count; Index += 1) {
+    for (Int32 Index = 0; Index < Character->Data.InventoryInfo.Info.SlotCount; Index += 1) {
         InventoryOccupancyMask[Character->Data.InventoryInfo.Slots[Index].SlotIndex] = true;
     }
 

@@ -59,7 +59,7 @@ CLIENT_PROCEDURE_BINDING(ENTER_DUNGEON_GATE) {
     if (!World) goto error;
 
     RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, Packet->DungeonID);
-    if (DungeonData && DungeonData->WorldID == Packet->WorldID) {
+    if (DungeonData && DungeonData->WorldIndex == Packet->WorldID) {
         Response->Result = 1;
     }
 
@@ -129,7 +129,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_SPAWN) {
             // TODO: The inventory slot should also be checked inside the warp command
             RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Character->DungeonEntryItemSlotIndex);
             if (!ItemSlot) goto error;
-            if (ItemSlot->Item.Serial != DungeonData->EntryItemID.Serial ||
+            if ((ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX) != DungeonData->EntryItemID.Serial ||
                 ItemSlot->ItemOptions != DungeonData->EntryItemOption) goto error;
 
             RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);

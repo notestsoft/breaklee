@@ -11,8 +11,12 @@ struct _RTDailyQuestSlot {
     UInt16 QuestIndex;
 };
 
+struct _RTDailyQuestInfo {
+    UInt32 Count;
+};
+
 struct _RTCharacterDailyQuestInfo {
-    Int32 Count;
+    struct _RTDailyQuestInfo Info;
     struct _RTDailyQuestSlot Slots[RUNTIME_CHARACTER_MAX_DAILY_QUEST_SLOT_COUNT];
 };
 

@@ -11,8 +11,12 @@ struct _RTStellarMasterySlot {
     UInt8 Data[16];
 };
 
+struct _RTStellarMasteryInfo {
+    UInt8 SlotCount;
+};
+
 struct _RTCharacterStellarMasteryInfo {
-    Int32 Count;
+    struct _RTStellarMasteryInfo Info;
     struct _RTStellarMasterySlot Slots[RUNTIME_CHARACTER_MAX_STELLAR_SLOT_COUNT];
 };
 

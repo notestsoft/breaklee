@@ -60,9 +60,19 @@ enum {
     RUNTIME_MAX_EQUIPMENT_SLOT_INDEX_COUNT,
 };
 
-struct _RTCharacterEquipmentInfo {
-    UInt32 Count;
-    struct _RTItemSlot Slots[RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT];
+struct _RTEquipmentInfo {
+    UInt8 EquipmentSlotCount;
+    UInt8 InventorySlotCount;
+    UInt8 LinkSlotCount;
+    UInt8 Unknown1;
+    Int32 Unknown2;
+    UInt8 LockSlotCount;
+};
+
+struct _RTEquipmentLinkSlot {
+    UInt8 PresetIndex;
+    Int32 EquipmentSlotIndex;
+    Int32 InventorySlotIndex;
 };
 
 struct _RTEquipmentLockSlot {
@@ -70,43 +80,46 @@ struct _RTEquipmentLockSlot {
     UInt8 SlotFlags;
 };
 
-struct _RTCharacterEquipmentLockInfo {
-    UInt32 Count;
-    struct _RTEquipmentLockSlot Slots[RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT];
+struct _RTCharacterEquipmentData {
+    struct _RTEquipmentInfo Info;
+    struct _RTItemSlot EquipmentSlots[RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT];
+    struct _RTItemSlot InventorySlots[RUNTIME_CHARACTER_MAX_EQUIPMENT_PRESET_SLOT_COUNT];
+    struct _RTEquipmentLinkSlot LinkSlots[RUNTIME_CHARACTER_MAX_EQUIPMENT_PRESET_SLOT_COUNT];
+    struct _RTEquipmentLockSlot LockSlots[RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT];
 };
 
 #pragma pack(pop)
 
 Bool RTEquipmentIsSlotEmpty(
     RTRuntimeRef Runtime,
-    RTCharacterEquipmentInfoRef Equipment,
+    RTCharacterEquipmentDataRef Equipment,
     Int32 SlotIndex
 );
 
 RTItemSlotRef RTEquipmentGetSlot(
     RTRuntimeRef Runtime,
-    RTCharacterEquipmentInfoRef Equipment,
+    RTCharacterEquipmentDataRef Equipment,
     Int32 SlotIndex
 );
 
 Bool RTEquipmentSetSlot(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    RTCharacterEquipmentInfoRef Equipment,
+    RTCharacterEquipmentDataRef Equipment,
     RTItemSlotRef Slot
 );
 
 Bool RTEquipmentClearSlot(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    RTCharacterEquipmentInfoRef Equipment,
+    RTCharacterEquipmentDataRef Equipment,
     Int32 SlotIndex
 );
 
 Bool RTEquipmentRemoveSlot(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    RTCharacterEquipmentInfoRef Equipment,
+    RTCharacterEquipmentDataRef Equipment,
     Int32 SlotIndex,
     RTItemSlotRef Result
 );

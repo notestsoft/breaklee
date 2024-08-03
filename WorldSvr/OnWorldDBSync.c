@@ -24,10 +24,16 @@ Void ServerSyncCharacter(
 	Request->CharacterID = Client->CharacterDatabaseID;
 	Request->SyncMask = Character->SyncMask;
 
-#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__, __SCOPE__) \
+#define ACCOUNT_DATA_PROTOCOL(__TYPE__, __NAME__) \
     if (Character->SyncMask.__NAME__) { \
         IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.__NAME__, sizeof(__TYPE__)); \
     }
+
+#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__) \
+    if (Character->SyncMask.__NAME__) { \
+        IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.__NAME__, sizeof(__TYPE__)); \
+    }
+
 #include "RuntimeLib/CharacterDataDefinition.h"
 
 	Character->SyncMask.RawValue = 0;

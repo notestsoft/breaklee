@@ -135,9 +135,28 @@ Bool RTDungeonFail(
     return true;
 }
 
+Bool RTWorldContextCheckMobListState(
+    RTWorldContextRef WorldContext,
+    Int32 MobIndexCount,
+    Int32* MobIndexList,
+    Bool IsAlive
+) {
+    for (Int32 Index = 0; Index < MobIndexCount; Index += 1) {
+        RTEntityID MobID = { 0 };
+        MobID.EntityIndex = MobIndexList[Index];
+        MobID.WorldIndex = WorldContext->WorldData->WorldIndex;
+        MobID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
+
+        RTMobRef Mob = RTWorldContextGetMob(WorldContext, MobID);
+        if (!Mob || RTMobIsAlive(Mob) != IsAlive) return false;
+    }
+
+    return true;
+}
+
 Bool RTDungeonTriggerEvent(
     RTWorldContextRef World,
-    Int32 TriggerID
+    Index TriggerIndex
 ) {
     assert(
         World->WorldData->Type == RUNTIME_WORLD_TYPE_DUNGEON ||
@@ -147,47 +166,41 @@ Bool RTDungeonTriggerEvent(
     RTRuntimeRef Runtime = World->WorldManager->Runtime;
     Bool Triggered = false;
     RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, World->DungeonIndex);
-    for (Int32 Index = 0; Index < DungeonData->TriggerCount; Index++) {
-        RTDungeonTriggerDataRef TriggerData = &DungeonData->TriggerData[Index];
-        if (TriggerData->TriggerID != TriggerID) continue;
+    assert(DungeonData);
 
-        for (Int32 Index = 0; Index < TriggerData->LiveMobCount; Index += 1) {
-            RTEntityID MobID = { 0 };
-            MobID.EntityIndex = TriggerData->LiveMobs[Index];
-            MobID.WorldIndex = World->WorldData->WorldIndex;
-            MobID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
+    ArrayRef TriggerGroup = (ArrayRef)DictionaryLookup(DungeonData->TriggerGroups, &TriggerIndex);
+    assert(TriggerGroup);
 
-            RTMobRef Mob = RTWorldContextGetMob(World, MobID);
-            if (!Mob || Mob->IsDead) return false;
-        }
+    for (Int32 TriggerIndex = 0; TriggerIndex < ArrayGetElementCount(TriggerGroup); TriggerIndex += 1) {
+        RTDungeonTriggerDataRef TriggerData = (RTDungeonTriggerDataRef)ArrayGetElementAtIndex(TriggerGroup, TriggerIndex);
+        if (!RTWorldContextCheckMobListState(World, TriggerData->LiveMobCount, TriggerData->LiveMobIndexList, true)) continue;
+        if (!RTWorldContextCheckMobListState(World, TriggerData->DeadMobCount, TriggerData->DeadMobIndexList, false)) continue;
 
-        for (Int32 Index = 0; Index < TriggerData->DeadMobCount; Index += 1) {
-            RTEntityID MobID = { 0 };
-            MobID.EntityIndex = TriggerData->DeadMobs[Index];
-            MobID.WorldIndex = World->WorldData->WorldIndex;
-            MobID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
+        // TODO: Check how TriggerData->Type is supposed to work
+        // TODO: Evaluate TriggerData->NpcIndex
 
-            RTMobRef Mob = RTWorldContextGetMob(World, MobID);
-            if (!Mob || Mob->IsDead) return false;
-        }
+        Index ActionGroupIndex = TriggerData->ActionGroupIndex;
+        ArrayRef ActionGroup = (ArrayRef)DictionaryLookup(DungeonData->ActionGroups, &ActionGroupIndex);
+        assert(ActionGroup);
 
-        for (Int32 Index = 0; Index < DungeonData->TriggerActionCount; Index++) {
-            RTDungeonTriggerActionDataRef ActionData = &DungeonData->TriggerActionData[Index];
-            if (ActionData->ActionGroupID != TriggerData->ActionGroupID) continue;
+        for (Int32 ActionIndex = 0; ActionIndex < ArrayGetElementCount(ActionGroup); ActionIndex += 1) {
+            RTDungeonTriggerActionDataRef ActionData = (RTDungeonTriggerActionDataRef)ArrayGetElementAtIndex(ActionGroup, ActionIndex);
 
-            if (ActionData->ActionType == RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_EVENT_CALL) {
-                RTDungeonTriggerEvent(World, ActionData->TargetID);
+            if (ActionData->TargetAction == RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_EVENT_CALL) {
+                RTDungeonTriggerEvent(World, ActionData->TargetMobIndex);
                 Triggered = true;
+                continue;
             }
 
             RTEntityID MobID = { 0 };
-            MobID.EntityIndex = ActionData->TargetID;
+            MobID.EntityIndex = ActionData->TargetMobIndex;
             MobID.WorldIndex = World->WorldData->WorldIndex;
             MobID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
 
             RTMobRef Mob = RTWorldContextGetMob(World, MobID);
-            
-            if (ActionData->ActionType == RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_SPAWN) {
+            assert(Mob);
+
+            if (ActionData->TargetAction == RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_SPAWN) {
                 if (Mob->IsPermanentDeath) continue;
                 if (RTMobIsAlive(Mob)) continue;
 
@@ -195,29 +208,42 @@ Bool RTDungeonTriggerEvent(
                 Triggered = true;
             }
 
-            if (ActionData->ActionType == RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_KILL) {
+            if (ActionData->TargetAction == RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_KILL) {
                 if (!RTMobIsAlive(Mob)) continue;
-                
+
                 RTWorldDespawnMobEvent(Runtime, World, Mob, ActionData->Delay);
                 Triggered = true;
             }
 
-            if (ActionData->ActionType == RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_REVIVE) {
+            if (ActionData->TargetAction == RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_REVIVE) {
                 if (RTMobIsAlive(Mob)) continue;
 
                 RTWorldSpawnMobEvent(Runtime, World, Mob, ActionData->Delay);
                 Triggered = true;
             }
 
-            if (ActionData->ActionType == RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_DELETE) {
+            if (ActionData->TargetAction == RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_DELETE) {
                 Mob->IsPermanentDeath = true;
                 RTWorldDespawnMobEvent(Runtime, World, Mob, ActionData->Delay);
                 Triggered = true;
             }
         }
-
-        return Triggered;
     }
 
-    return false;
+    return Triggered;
+}
+
+Void RTDungeonAddTime(
+    RTWorldContextRef WorldContext,
+    Int32 Value
+) {
+    WorldContext->DungeonTimeout += Value;
+
+    RTRuntimeRef Runtime = WorldContext->WorldManager->Runtime;
+    RTPartyRef Party = RTRuntimeGetParty(Runtime, WorldContext->Party);
+    assert(Party);
+
+    NOTIFICATION_DATA_NFY_DUNGEON_TIMER* Notification = RTNotificationInit(NFY_DUNGEON_TIMER);
+    Notification->TimeAddition = Value;
+    RTNotificationDispatchToParty(Notification, Party);
 }

@@ -94,41 +94,27 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     if (!Packet->Success) goto error;
 
     if (Context->Config.WorldSvr.DebugSetQuestFlags) {
-        memset(Packet->CharacterData.QuestFlagInfo.FinishedQuests, 0xFF, RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT);
+        memset(Packet->CharacterData.QuestInfo.Info.FinishedQuests, 0xFF, RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT);
     }
 
-    /*
-    Int32 SlotIndex = Packet->CharacterData.SkillSlotInfo.Count;
-    for (Index Index = 144; Index < 148; Index++) {
-        RTSkillSlotRef GmSkill = &Packet->CharacterData.SkillSlotInfo.Skills[Packet->CharacterData.SkillSlotInfo.Count];
-        GmSkill->ID = Index;
-        GmSkill->Level = 1;
-        GmSkill->Index = SlotIndex++;
-        Packet->CharacterData.SkillSlotInfo.Count += 1;
-    }
+    Packet->CharacterData.Info.Profile.Nation = 1;
 
-    RTWorldRef TargetWorld = RTRuntimeGetWorldByID(Runtime, Packet->CharacterData.CharacterInfo.Position.WorldID);
-    if (TargetWorld->Type == RUNTIME_WORLD_TYPE_QUEST_DUNGEON) {
-        RTDungeonDataRef QuestDungeonData = RTRuntimeGetDungeonDataByID(Runtime, TargetWorld->DungeonID);
-        assert(QuestDungeonData);
+    assert(ClientConnection->ID < RUNTIME_MEMORY_MAX_CHARACTER_COUNT);
 
-        assert(0 <= QuestDungeonData->FailWarpNpcID - 1 && QuestDungeonData->FailWarpNpcID - 1 < Runtime->WarpIndexCount);
-        RTWarpIndexRef WarpIndex = &Runtime->WarpIndices[QuestDungeonData->FailWarpNpcID - 1];
-        RTPositionRef Position = &WarpIndex->Target[0];
-        RTWorldRef NewWorld = RTRuntimeGetWorldByID(Runtime, WarpIndex->WorldID);
-        assert(NewWorld);
+    Character = RTWorldManagerCreateCharacter(Context->Runtime->WorldManager, Packet->CharacterIndex);
 
-        Packet->CharacterData.CharacterInfo.Position.X = Position->X;
-        Packet->CharacterData.CharacterInfo.Position.Y = Position->Y;
-        Packet->CharacterData.CharacterInfo.Position.WorldID = WarpIndex->WorldID;
-    }
-    */
+    RTCharacterInitialize(
+        Runtime,
+        Character,
+        Packet->CharacterName,
+        &Packet->CharacterData
+    );
 
-    Packet->CharacterData.Info.Profile.Nation = 3;
+    Client->CharacterDatabaseID = Packet->CharacterID;
+    Client->CharacterIndex = Packet->CharacterIndex;
+    CStringCopySafe(Client->CharacterName, MAX_CHARACTER_NAME_LENGTH + 1, Packet->CharacterName);
 
     S2C_DATA_INITIALIZE* Response = PacketBufferInitExtended(ClientConnection->PacketBuffer, S2C, INITIALIZE);
-    // TODO: Populate correct data!!!
-
     /* Server Info */
     Response->WorldType = (UInt32)Runtime->Environment.RawValue;
     Response->Server.ServerID = Context->Config.WorldSvr.GroupIndex;
@@ -145,7 +131,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->Position.X = Packet->CharacterData.Info.Position.X;
     Response->Position.Y = Packet->CharacterData.Info.Position.Y;
     Response->Exp = Packet->CharacterData.Info.Basic.Exp;
-    Response->Alz = Packet->CharacterData.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
+    Response->Alz = Packet->CharacterData.Info.Alz;
     Response->Wexp = Packet->CharacterData.Info.Honor.Exp;
     Response->Level = Packet->CharacterData.Info.Basic.Level;
     Response->STR = Packet->CharacterData.Info.Stat[RUNTIME_CHARACTER_STAT_STR];
@@ -157,6 +143,10 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->SkillExp = (UInt32)Packet->CharacterData.Info.Skill.Exp;
     Response->SkillPoint = Packet->CharacterData.Info.Skill.Point;
     Response->RestExp = 0;
+    Response->Nation = Packet->CharacterData.Info.Profile.Nation;
+    Response->HonorPoint = Packet->CharacterData.Info.Honor.Point;
+    Response->WarpMask = Packet->CharacterData.Info.Profile.WarpMask;
+    Response->MapsMask = Packet->CharacterData.Info.Profile.MapsMask;
 
     memcpy(Response->ChatServerAddress.Host, Context->Config.ChatSvr.Host, strlen(Context->Config.ChatSvr.Host));
     Response->ChatServerAddress.Port = Context->Config.ChatSvr.Port;
@@ -167,116 +157,120 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     Response->CharacterStyle = SwapUInt32(Packet->CharacterData.Info.Style.RawValue);
     Response->CharacterLiveStyle = SwapUInt32(Packet->CharacterData.Info.LiveStyle.RawValue);
-    Response->AP = Packet->CharacterData.Info.Ability.Point;
-    Response->Axp = Packet->CharacterData.Info.Ability.Exp;
-    Response->CharacterCreationDate = Packet->CharacterCreationDate;
-    Response->ForceGem = (UInt32)Packet->CharacterData.Info.Currency[RUNTIME_CHARACTER_CURRENCY_GEM];
+    Response->ForceGem = Packet->CharacterData.AccountInfo.ForceGem;
 
-    // Response->SpecialGiftboxPoint = 0;
-    Response->TranscendencePoint = 0;
+    memcpy(&Response->ResearchSupportInfo, &Packet->CharacterData.ResearchSupportInfo, sizeof(struct _RTCharacterResearchSupportInfo));
+
     Response->NameLength = strlen(Packet->CharacterName) + 1;
     CString Name = (CString)PacketBufferAppend(ClientConnection->PacketBuffer, strlen(Packet->CharacterName));
     memcpy(Name, Packet->CharacterName, strlen(Packet->CharacterName));
 
-    Response->EquipmentSlotCount = Packet->CharacterData.EquipmentInfo.Count;
-    if (Packet->CharacterData.EquipmentInfo.Count > 0) {
+    Response->EquipmentInfo = Packet->CharacterData.EquipmentInfo.Info;
+    if (Packet->CharacterData.EquipmentInfo.Info.EquipmentSlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
-            Packet->CharacterData.EquipmentInfo.Slots,
-            sizeof(struct _RTItemSlot) * Packet->CharacterData.EquipmentInfo.Count
+            Packet->CharacterData.EquipmentInfo.EquipmentSlots,
+            sizeof(struct _RTItemSlot) * Packet->CharacterData.EquipmentInfo.Info.EquipmentSlotCount
         );
     }
 
-    Response->EquipmentLockCount = Packet->CharacterData.EquipmentLockInfo.Count;
-    if (Packet->CharacterData.EquipmentLockInfo.Count > 0) {
+    if (Packet->CharacterData.EquipmentInfo.Info.InventorySlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
-            Packet->CharacterData.EquipmentLockInfo.Slots,
-            sizeof(struct _RTEquipmentLockSlot) * Packet->CharacterData.EquipmentLockInfo.Count
+            Packet->CharacterData.EquipmentInfo.InventorySlots,
+            sizeof(struct _RTItemSlot) * Packet->CharacterData.EquipmentInfo.Info.InventorySlotCount
         );
     }
 
-    Response->InventorySlotCount = Packet->CharacterData.InventoryInfo.Count;
-    if (Packet->CharacterData.InventoryInfo.Count > 0) {
+    if (Packet->CharacterData.EquipmentInfo.Info.LinkSlotCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            Packet->CharacterData.EquipmentInfo.LinkSlots,
+            sizeof(struct _RTEquipmentLinkSlot) * Packet->CharacterData.EquipmentInfo.Info.LinkSlotCount
+        );
+    }
+
+    if (Packet->CharacterData.EquipmentInfo.Info.LockSlotCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            Packet->CharacterData.EquipmentInfo.LockSlots,
+            sizeof(struct _RTEquipmentLockSlot) * Packet->CharacterData.EquipmentInfo.Info.LockSlotCount
+        );
+    }
+
+    Response->InventoryInfo = Packet->CharacterData.InventoryInfo.Info;
+    if (Packet->CharacterData.InventoryInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
             Packet->CharacterData.InventoryInfo.Slots,
-            sizeof(struct _RTItemSlot) * Packet->CharacterData.InventoryInfo.Count
+            sizeof(struct _RTItemSlot) * Packet->CharacterData.InventoryInfo.Info.SlotCount
         );
     }
 
-    Response->SkillSlotCount = Packet->CharacterData.SkillSlotInfo.Count;
-    if (Packet->CharacterData.SkillSlotInfo.Count > 0) {
+    Response->SkillSlotInfo = Packet->CharacterData.SkillSlotInfo.Info;
+    if (Packet->CharacterData.SkillSlotInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
             Packet->CharacterData.SkillSlotInfo.Skills,
-            sizeof(struct _RTSkillSlot) * Packet->CharacterData.SkillSlotInfo.Count
+            sizeof(struct _RTSkillSlot) * Packet->CharacterData.SkillSlotInfo.Info.SlotCount
         );
     }
 
-    Response->QuickSlotCount = Packet->CharacterData.QuickSlotInfo.Count;
-    if (Packet->CharacterData.QuickSlotInfo.Count > 0) {
+    Response->QuickSlotInfo = Packet->CharacterData.QuickSlotInfo.Info;
+    if (Packet->CharacterData.QuickSlotInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
             Packet->CharacterData.QuickSlotInfo.QuickSlots,
-            sizeof(struct _RTQuickSlot) * Packet->CharacterData.QuickSlotInfo.Count
+            sizeof(struct _RTQuickSlot) * Packet->CharacterData.QuickSlotInfo.Info.SlotCount
         );
     }
 
-    Response->EssenceAbilityCount = Packet->CharacterData.EssenceAbilityInfo.Count;
-    Response->ExtendedEssenceAbilityCount = MAX(0, Packet->CharacterData.EssenceAbilityInfo.Count - RUNTIME_CHARACTER_ESSENCE_ABILITY_SLOT_COUNT);
-    if (Packet->CharacterData.EssenceAbilityInfo.Count > 0) {
+    Response->AbilityInfo = Packet->CharacterData.AbilityInfo.Info;
+    if (Packet->CharacterData.AbilityInfo.Info.EssenceAbilityCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
-            Packet->CharacterData.EssenceAbilityInfo.Slots,
-            sizeof(struct _RTEssenceAbilitySlot) * Packet->CharacterData.EssenceAbilityInfo.Count
+            Packet->CharacterData.AbilityInfo.EssenceAbilitySlots,
+            sizeof(struct _RTEssenceAbilitySlot) * Packet->CharacterData.AbilityInfo.Info.EssenceAbilityCount
         );
     }
 
-    Response->BlendedAbilityCount = Packet->CharacterData.BlendedAbilityInfo.Count;
-    Response->ExtendedBlendedAbilityCount = MAX(0, Packet->CharacterData.BlendedAbilityInfo.Count - RUNTIME_CHARACTER_BLENDED_ABILITY_SLOT_COUNT);
-    if (Packet->CharacterData.BlendedAbilityInfo.Count > 0) {
+    if (Packet->CharacterData.AbilityInfo.Info.BlendedAbilityCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
-            Packet->CharacterData.BlendedAbilityInfo.Slots,
-            sizeof(struct _RTBlendedAbilitySlot) * Packet->CharacterData.BlendedAbilityInfo.Count
+            Packet->CharacterData.AbilityInfo.BlendedAbilitySlots,
+            sizeof(struct _RTBlendedAbilitySlot) * Packet->CharacterData.AbilityInfo.Info.BlendedAbilityCount
         );
     }
 
-    Response->KarmaAbilityCount = Packet->CharacterData.KarmaAbilityInfo.Count;
-    Response->ExtendedKarmaAbilityCount = MAX(0, Packet->CharacterData.KarmaAbilityInfo.Count - RUNTIME_CHARACTER_KARMA_ABILITY_SLOT_COUNT);
-    if (Packet->CharacterData.KarmaAbilityInfo.Count > 0) {
+    if (Packet->CharacterData.AbilityInfo.Info.KarmaAbilityCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
-            Packet->CharacterData.KarmaAbilityInfo.Slots,
-            sizeof(struct _RTKarmaAbilitySlot) * Packet->CharacterData.KarmaAbilityInfo.Count
+            Packet->CharacterData.AbilityInfo.KarmaAbilitySlots,
+            sizeof(struct _RTKarmaAbilitySlot) * Packet->CharacterData.AbilityInfo.Info.KarmaAbilityCount
         );
     }
-
-    Response->BlessingBeadCount = Packet->CharacterData.BlessingBeadInfo.Count;
-    if (Packet->CharacterData.BlessingBeadInfo.Count > 0) {
+    
+    Response->BlessingBeadInfo = Packet->CharacterData.BlessingBeadInfo.Info;
+    if (Packet->CharacterData.BlessingBeadInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
             Packet->CharacterData.BlessingBeadInfo.Slots,
-            sizeof(struct _RTBlessingBeadSlot) * Packet->CharacterData.BlessingBeadInfo.Count
+            sizeof(struct _RTBlessingBeadSlot) * Packet->CharacterData.BlessingBeadInfo.Info.SlotCount
         );
     }
 
-    Response->PremiumServiceCount = Packet->CharacterData.PremiumServiceInfo.Count;
-    if (Packet->CharacterData.PremiumServiceInfo.Count > 0) {
+    Response->PremiumServiceInfo = Packet->CharacterData.PremiumServiceInfo.Info;
+    if (Packet->CharacterData.PremiumServiceInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
             Packet->CharacterData.PremiumServiceInfo.Slots,
-            sizeof(struct _RTPremiumServiceSlot) * Packet->CharacterData.PremiumServiceInfo.Count
+            sizeof(struct _RTPremiumServiceSlot) * Packet->CharacterData.PremiumServiceInfo.Info.SlotCount
         );
     }
 
-    memcpy(&Response->QuestFlagInfo, &Packet->CharacterData.QuestFlagInfo, sizeof(struct _RTCharacterQuestFlagInfo));
-    memcpy(&Response->DungeonQuestFlagInfo, &Packet->CharacterData.DungeonQuestFlagInfo, sizeof(struct _RTCharacterDungeonQuestFlagInfo));
-
-    Response->QuestSlotCount = 0;
-    for (Int32 Index = 0; Index < RUNTIME_CHARACTER_MAX_QUEST_SLOT_COUNT; Index += 1) {
-        RTQuestSlotRef QuestSlot = &Packet->CharacterData.QuestSlotInfo.QuestSlot[Index];
+    Response->QuestInfo = Packet->CharacterData.QuestInfo.Info;
+    for (Int32 Index = 0; Index < Packet->CharacterData.QuestInfo.Info.SlotCount; Index += 1) {
+        RTQuestSlotRef QuestSlot = &Packet->CharacterData.QuestInfo.Slots[Index];
         if (!QuestSlot->QuestIndex) continue;
 
         RTQuestDataRef Quest = RTRuntimeGetQuestByIndex(Runtime, QuestSlot->QuestIndex);
@@ -292,259 +286,327 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         QuestResponse->NpcActionFlags = NpcActionFlags;
         QuestResponse->DisplayNotice = QuestSlot->DisplayNotice;
         QuestResponse->DisplayOpenNotice = QuestSlot->DisplayOpenNotice;
-        QuestResponse->QuestSlotIndex = Index;
+        QuestResponse->QuestSlotIndex = QuestSlot->SlotIndex;
 
         Int32 CounterCount = Quest->MissionMobCount + Quest->MissionItemCount;
         for (Int32 CounterIndex = 0; CounterIndex < CounterCount; CounterIndex++) {
             PacketBufferAppendValue(ClientConnection->PacketBuffer, UInt8, QuestSlot->Counter[CounterIndex]);
         }
-
-        Response->QuestSlotCount += 1;
     }
 
-    Response->MercenaryCount = Packet->CharacterData.MercenaryInfo.Count;
-    if (Packet->CharacterData.BlessingBeadInfo.Count > 0) {
-        PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
-            Packet->CharacterData.MercenaryInfo.Slots,
-            sizeof(struct _RTMercenarySlot) * Packet->CharacterData.MercenaryInfo.Count
-        );
-    }
-
-    Response->EquipmentAppearanceCount = Packet->CharacterData.EquipmentAppearanceInfo.Count;
-    if (Packet->CharacterData.EquipmentAppearanceInfo.Count > 0) {
-        PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
-            Packet->CharacterData.EquipmentAppearanceInfo.Slots,
-            sizeof(struct _RTItemSlotAppearance) * Packet->CharacterData.EquipmentAppearanceInfo.Count
-        );
-    }
-
-    Response->InventoryAppearanceCount = Packet->CharacterData.InventoryAppearanceInfo.Count;
-    if (Packet->CharacterData.InventoryAppearanceInfo.Count > 0) {
-        PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
-            Packet->CharacterData.InventoryAppearanceInfo.Slots,
-            sizeof(struct _RTItemSlotAppearance) * Packet->CharacterData.InventoryAppearanceInfo.Count
-        );
-    }
-    
-    Response->DailyQuestCount = Packet->CharacterData.DailyQuestInfo.Count;
-    if (Packet->CharacterData.DailyQuestInfo.Count > 0) {
+    Response->DailyQuestInfo = Packet->CharacterData.DailyQuestInfo.Info;
+    if (Packet->CharacterData.DailyQuestInfo.Info.Count > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
             Packet->CharacterData.DailyQuestInfo.Slots,
-            sizeof(struct _RTItemSlotAppearance)* Packet->CharacterData.DailyQuestInfo.Count
+            sizeof(struct _RTDailyQuestSlot) * Packet->CharacterData.DailyQuestInfo.Info.Count
         );
     }
 
-    Response->AchievementCount = Packet->CharacterData.AchievementInfo.AchievementCount;
-    if (Packet->CharacterData.AchievementInfo.AchievementCount > 0) {
+    Response->MercenaryInfo = Packet->CharacterData.MercenaryInfo.Info;
+    if (Packet->CharacterData.BlessingBeadInfo.Info.SlotCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            Packet->CharacterData.MercenaryInfo.Slots,
+            sizeof(struct _RTMercenarySlot) * Packet->CharacterData.MercenaryInfo.Info.SlotCount
+        );
+    }
+
+    Response->AppearanceInfo = Packet->CharacterData.AppearanceInfo.Info;
+    if (Packet->CharacterData.AppearanceInfo.Info.EquipmentAppearanceCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            Packet->CharacterData.AppearanceInfo.EquipmentSlots,
+            sizeof(struct _RTItemSlotAppearance) * Packet->CharacterData.AppearanceInfo.Info.EquipmentAppearanceCount
+        );
+    }
+
+    if (Packet->CharacterData.AppearanceInfo.Info.InventoryAppearanceCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            Packet->CharacterData.AppearanceInfo.InventorySlots,
+            sizeof(struct _RTItemSlotAppearance) * Packet->CharacterData.AppearanceInfo.Info.InventoryAppearanceCount
+        );
+    }
+    
+    Response->AchievementInfo = Packet->CharacterData.AchievementInfo.Info;
+    if (Packet->CharacterData.AchievementInfo.Info.AchievementCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
             Packet->CharacterData.AchievementInfo.AchievementSlots,
-            sizeof(struct _RTAchievementSlot) * Packet->CharacterData.AchievementInfo.AchievementCount
+            sizeof(struct _RTAchievementSlot) * Packet->CharacterData.AchievementInfo.Info.AchievementCount
         );
     }
 
-    Response->AchievementRewardCount = Packet->CharacterData.AchievementInfo.AchievementRewardCount;
-    if (Packet->CharacterData.AchievementInfo.AchievementCount > 0) {
+    if (Packet->CharacterData.AchievementInfo.Info.AchievementCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
             Packet->CharacterData.AchievementInfo.AchievementRewardSlots,
-            sizeof(struct _RTAchievementRewardSlot) * Packet->CharacterData.AchievementInfo.AchievementRewardCount
+            sizeof(struct _RTAchievementRewardSlot) * Packet->CharacterData.AchievementInfo.Info.AchievementRewardCount
         );
     }
 
-    Response->ExtendedAchievementRewardCount = Packet->CharacterData.AchievementInfo.AchievementExtendedRewardCount;
-    if (Packet->CharacterData.AchievementInfo.AchievementCount > 0) {
+    Response->AchievementExtendedInfo = Packet->CharacterData.AchievementExtendedInfo.Info;
+    if (Packet->CharacterData.AchievementExtendedInfo.Info.AchievementExtendedRewardCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
-            Packet->CharacterData.AchievementInfo.AchievementExtendedRewardSlots,
-            sizeof(struct _RTAchievementExtendedRewardSlot) * Packet->CharacterData.AchievementInfo.AchievementExtendedRewardCount
+            Packet->CharacterData.AchievementExtendedInfo.AchievementExtendedRewardSlots,
+            sizeof(struct _RTAchievementExtendedRewardSlot) * Packet->CharacterData.AchievementExtendedInfo.Info.AchievementExtendedRewardCount
         );
     }
 
-    Response->CraftCount = 0;
+    // TODO: BuffData
 
-    Response->RequestCraftCount = Packet->CharacterData.RequestCraftInfo.RequestCraftCount;
-    Response->RequestCraftExp = Packet->CharacterData.RequestCraftInfo.RequestCraftExp;
-    memcpy(Response->RequestCraftFlags, Packet->CharacterData.RequestCraftInfo.RequestCraftFlags, 1024);
-    memcpy(Response->RequestCraftFavoriteFlags, Packet->CharacterData.RequestCraftInfo.RequestCraftFavoriteFlags, 1024);
-    Response->RequestCraftSortOrder = Packet->CharacterData.RequestCraftInfo.RequestCraftSortOrder;
+    Response->CraftInfo = Packet->CharacterData.CraftInfo.Info;
+    // TODO: CraftData
+    
+    Response->RequestCraftInfo = Packet->CharacterData.RequestCraftInfo.Info;
+    // TODO: RequestCraftData
 
-    Response->VehicleInventorySlotCount = Packet->CharacterData.VehicleInventoryInfo.Count;
-    if (Packet->CharacterData.VehicleInventoryInfo.Count > 0) {
+    Response->VehicleInventoryInfo = Packet->CharacterData.VehicleInventoryInfo.Info;
+    if (Packet->CharacterData.VehicleInventoryInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
             Packet->CharacterData.VehicleInventoryInfo.Slots,
-            sizeof(struct _RTItemSlot) * Packet->CharacterData.VehicleInventoryInfo.Count
+            sizeof(struct _RTItemSlot) * Packet->CharacterData.VehicleInventoryInfo.Info.SlotCount
         );
     }
 
-    Response->GoldMeritCount = Packet->CharacterData.GoldMeritMasteryInfo.Count;
-    if (Packet->CharacterData.GoldMeritMasteryInfo.Count > 0) {
+    Response->GoldMeritMasteryInfo = Packet->CharacterData.GoldMeritMasteryInfo.Info;
+    if (Packet->CharacterData.GoldMeritMasteryInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
             Packet->CharacterData.GoldMeritMasteryInfo.Slots,
-            sizeof(struct _RTGoldMeritMasterySlot) * Packet->CharacterData.GoldMeritMasteryInfo.Count
+            sizeof(struct _RTGoldMeritMasterySlot) * Packet->CharacterData.GoldMeritMasteryInfo.Info.SlotCount
         );
     }
 
-    Response->PlatinumMeritSlotCount = 0;
-    Response->UnknownMeritMasteryCount = 0;
-
-    Response->Nation = Packet->CharacterData.Info.Profile.Nation;
-    Response->HonorPoint = Packet->CharacterData.Info.Honor.Point;
-    Response->HonorMedalExp = Packet->CharacterData.HonorMedalInfo.Score;
-    Response->HonorMedalCount = Packet->CharacterData.HonorMedalInfo.SlotCount;
-    if (Packet->CharacterData.HonorMedalInfo.SlotCount > 0) {
+    Response->PlatinumMeritMasteryInfo = Packet->CharacterData.PlatinumMeritMasteryInfo.Info;
+    if (Packet->CharacterData.PlatinumMeritMasteryInfo.Info.ExtendedMemorizeCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
-            Packet->CharacterData.HonorMedalInfo.Slots,
-            sizeof(struct _RTHonorMedalSlot) * Packet->CharacterData.HonorMedalInfo.SlotCount
+            Packet->CharacterData.PlatinumMeritMasteryInfo.ExtendedMemorizeSlots,
+            sizeof(struct _RTPlatinumMeritExtendedMemorizeSlot) * Packet->CharacterData.PlatinumMeritMasteryInfo.Info.ExtendedMemorizeCount
         );
     }
 
-    // TODO: Add warp services
-    Response->WarpMask = Packet->CharacterData.Info.Profile.WarpMask;
-    Response->MapsMask = Packet->CharacterData.Info.Profile.MapsMask;
+    if (Packet->CharacterData.PlatinumMeritMasteryInfo.Info.UnlockedSlotCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            Packet->CharacterData.PlatinumMeritMasteryInfo.UnlockedSlots,
+            sizeof(struct _RTPlatinumMeritUnlockedSlot) * Packet->CharacterData.PlatinumMeritMasteryInfo.Info.UnlockedSlotCount
+        );
+    }
 
-    Response->OverlordLevel = Packet->CharacterData.Info.Overlord.Level;
-    Response->OverlordExp = Packet->CharacterData.Info.Overlord.Exp;
-    Response->OverlordPoint = Packet->CharacterData.Info.Overlord.Point; 
-    Response->OverlordMasteryCount = Packet->CharacterData.OverlordMasteryInfo.Count;
-    if (Packet->CharacterData.OverlordMasteryInfo.Count > 0) {
+    if (Packet->CharacterData.PlatinumMeritMasteryInfo.Info.MasterySlotCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            Packet->CharacterData.PlatinumMeritMasteryInfo.MasterySlots,
+            sizeof(struct _RTPlatinumMeritMasterySlot) * Packet->CharacterData.PlatinumMeritMasteryInfo.Info.MasterySlotCount
+        );
+    }
+
+    if (Packet->CharacterData.PlatinumMeritMasteryInfo.Info.SpecialMasterySlotCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            Packet->CharacterData.PlatinumMeritMasteryInfo.SpecialMasterySlots,
+            sizeof(struct _RTPlatinumMeritSpecialMasterySlot) * Packet->CharacterData.PlatinumMeritMasteryInfo.Info.SpecialMasterySlotCount
+        );
+    }
+
+    Response->DiamondMeritMasteryInfo = Packet->CharacterData.DiamondMeritMasteryInfo.Info;
+    if (Packet->CharacterData.DiamondMeritMasteryInfo.Info.ExtendedMemorizeCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            Packet->CharacterData.DiamondMeritMasteryInfo.ExtendedMemorizeSlots,
+            sizeof(struct _RTPlatinumMeritExtendedMemorizeSlot) * Packet->CharacterData.DiamondMeritMasteryInfo.Info.ExtendedMemorizeCount
+        );
+    }
+
+    if (Packet->CharacterData.DiamondMeritMasteryInfo.Info.UnlockedSlotCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            Packet->CharacterData.DiamondMeritMasteryInfo.UnlockedSlots,
+            sizeof(struct _RTPlatinumMeritUnlockedSlot) * Packet->CharacterData.DiamondMeritMasteryInfo.Info.UnlockedSlotCount
+        );
+    }
+
+    if (Packet->CharacterData.DiamondMeritMasteryInfo.Info.MasterySlotCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            Packet->CharacterData.DiamondMeritMasteryInfo.MasterySlots,
+            sizeof(struct _RTPlatinumMeritMasterySlot) * Packet->CharacterData.DiamondMeritMasteryInfo.Info.MasterySlotCount
+        );
+    }
+
+    if (Packet->CharacterData.DiamondMeritMasteryInfo.Info.SpecialMasterySlotCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            Packet->CharacterData.DiamondMeritMasteryInfo.SpecialMasterySlots,
+            sizeof(struct _RTPlatinumMeritSpecialMasterySlot) * Packet->CharacterData.DiamondMeritMasteryInfo.Info.SpecialMasterySlotCount
+        );
+    }
+
+    Response->WarpServiceInfo = Packet->CharacterData.WarpServiceInfo.Info;
+    if (Packet->CharacterData.WarpServiceInfo.Info.SlotCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            Packet->CharacterData.WarpServiceInfo.Slots,
+            sizeof(struct _RTWarpServiceSlot) * Packet->CharacterData.WarpServiceInfo.Info.SlotCount
+        );
+    }
+
+    Response->OverlordMasteryInfo = Packet->CharacterData.OverlordMasteryInfo.Info;
+    if (Packet->CharacterData.OverlordMasteryInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
             Packet->CharacterData.OverlordMasteryInfo.Slots,
-            sizeof(struct _RTOverlordMasterySlot) * Packet->CharacterData.OverlordMasteryInfo.Count
+            sizeof(struct _RTOverlordMasterySlot) * Packet->CharacterData.OverlordMasteryInfo.Info.SlotCount
         );
     }
 
-    Response->ForceWingGrade = Packet->CharacterData.ForceWingInfo.Grade;
-    Response->ForceWingLevel = Packet->CharacterData.ForceWingInfo.Level;
-    Response->ForceWingExp = Packet->CharacterData.ForceWingInfo.Exp;
-    Response->ForceWingUnknown1 = 0;
-    Response->ForceWingActivePresetIndex = Packet->CharacterData.ForceWingInfo.ActivePresetIndex;
-
-    for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT; Index += 1) {
-        Response->ForceWingPresetEnabled[Index] = Packet->CharacterData.ForceWingInfo.PresetEnabled[Index];
-        Response->ForceWingPresetTrainingPoints[Index] = Packet->CharacterData.ForceWingInfo.PresetTrainingPointCount[Index];
+    Response->HonorMedalInfo = Packet->CharacterData.HonorMedalInfo.Info;
+    if (Packet->CharacterData.HonorMedalInfo.Info.SlotCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            Packet->CharacterData.HonorMedalInfo.Slots,
+            sizeof(struct _RTHonorMedalSlot) * Packet->CharacterData.HonorMedalInfo.Info.SlotCount
+        );
     }
 
-    memcpy(
-        Response->ForceWingArrivalSkillSlots,
-        Packet->CharacterData.ForceWingInfo.ArrivalSkillSlots,
-        sizeof(struct _RTForceWingArrivalSkillSlot) * RUNTIME_CHARACTER_MAX_FORCE_WING_ARRIVAL_SKILL_COUNT
-    );
-
-    memcpy(
-        &Response->RestoreForceWingArrivalSkillSlot,
-        &Packet->CharacterData.ForceWingInfo.ArrivalSkillRestoreSlot,
-        sizeof(struct _RTForceWingArrivalSkillSlot)
-    );
-
-    for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_SIZE; Index += 1) {
-        Response->ForceWingTrainingUnlockFlags[Index] = Packet->CharacterData.ForceWingInfo.TrainingUnlockFlags[Index];
-    }
-
-    Response->ForceWingPresetSlotCount = Packet->CharacterData.ForceWingInfo.PresetSlotCount;
-    if (Packet->CharacterData.ForceWingInfo.PresetSlotCount > 0) {
+    Response->ForceWingInfo = Packet->CharacterData.ForceWingInfo.Info;
+    if (Packet->CharacterData.ForceWingInfo.Info.PresetSlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
             Packet->CharacterData.ForceWingInfo.PresetSlots,
-            sizeof(struct _RTForceWingPresetSlot) * Packet->CharacterData.ForceWingInfo.PresetSlotCount
+            sizeof(struct _RTForceWingPresetSlot) * Packet->CharacterData.ForceWingInfo.Info.PresetSlotCount
         );
     }
 
-    Response->ForceWingTrainingSlotCount = Packet->CharacterData.ForceWingInfo.TrainingSlotCount;
-    if (Packet->CharacterData.ForceWingInfo.TrainingSlotCount > 0) {
+    if (Packet->CharacterData.ForceWingInfo.Info.TrainingSlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
             Packet->CharacterData.ForceWingInfo.TrainingSlots,
-            sizeof(struct _RTForceWingTrainingSlot) * Packet->CharacterData.ForceWingInfo.TrainingSlotCount
+            sizeof(struct _RTForceWingTrainingSlot) * Packet->CharacterData.ForceWingInfo.Info.TrainingSlotCount
         );
     }
 
-    Response->SpecialGiftboxCount = Packet->CharacterData.GiftboxInfo.Count;
-    if (Packet->CharacterData.GiftboxInfo.Count > 0) {
+    Response->GiftBoxInfo = Character->Data.GiftboxInfo.Info;
+    if (Character->Data.GiftboxInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
-            Packet->CharacterData.GiftboxInfo.Slots,
-            sizeof(struct _RTGiftBoxSlot) * Packet->CharacterData.GiftboxInfo.Count
+            Character->Data.GiftboxInfo.Slots,
+            sizeof(struct _RTGiftBoxSlot) * Character->Data.GiftboxInfo.Info.SlotCount
         );
     }
 
-    Response->CollectionCount = Packet->CharacterData.CollectionInfo.Count;
-    if (Packet->CharacterData.CollectionInfo.Count > 0) {
+    Response->CollectionInfo = Packet->CharacterData.CollectionInfo.Info;
+    if (Packet->CharacterData.CollectionInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
             Packet->CharacterData.CollectionInfo.Slots,
-            sizeof(struct _RTCollectionSlot) * Packet->CharacterData.CollectionInfo.Count
+            sizeof(struct _RTCollectionSlot) * Packet->CharacterData.CollectionInfo.Info.SlotCount
         );
     }
 
-    Response->TransformCount = Packet->CharacterData.TransformInfo.Count;
-    if (Packet->CharacterData.TransformInfo.Count > 0) {
+    Response->TransformInfo = Packet->CharacterData.TransformInfo.Info;
+    if (Packet->CharacterData.TransformInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
             Packet->CharacterData.TransformInfo.Slots,
-            sizeof(struct _RTTransformSlot) * Packet->CharacterData.TransformInfo.Count
+            sizeof(struct _RTTransformSlot) * Packet->CharacterData.TransformInfo.Info.SlotCount
         );
     }
 
-    Response->TranscendenceCount = Packet->CharacterData.TranscendenceInfo.Count;
-    if (Packet->CharacterData.TranscendenceInfo.Count > 0) {
+    Response->TranscendenceInfo = Packet->CharacterData.TranscendenceInfo.Info;
+    if (Packet->CharacterData.TranscendenceInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
             Packet->CharacterData.TranscendenceInfo.Slots,
-            sizeof(struct _RTTranscendenceSlot) * Packet->CharacterData.TranscendenceInfo.Count
+            sizeof(struct _RTTranscendenceSlot) * Packet->CharacterData.TranscendenceInfo.Info.SlotCount
         );
     }
 
-    memcpy(&Response->ResearchSupportInfo, &Packet->CharacterData.ResearchSupportInfo, sizeof(struct _RTCharacterResearchSupportInfo));
+    // TODO: Add missing data...
 
-    Response->StellarSlotCount = Packet->CharacterData.StellarMasteryInfo.Count;
-    if (Packet->CharacterData.StellarMasteryInfo.Count > 0) {
+    Response->StellarMasteryInfo = Packet->CharacterData.StellarMasteryInfo.Info;
+    if (Packet->CharacterData.StellarMasteryInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
             Packet->CharacterData.StellarMasteryInfo.Slots,
-            sizeof(struct _RTStellarMasterySlot) * Packet->CharacterData.StellarMasteryInfo.Count
+            sizeof(struct _RTStellarMasterySlot) * Packet->CharacterData.StellarMasteryInfo.Info.SlotCount
         );
     }
 
-    Response->MythRebirth = Packet->CharacterData.MythMasteryInfo.Rebirth;
-    Response->MythHolyPower = Packet->CharacterData.MythMasteryInfo.HolyPower;
-    Response->MythLevel = Packet->CharacterData.MythMasteryInfo.Level;
-    Response->MythExp = Packet->CharacterData.MythMasteryInfo.Exp;
-    Response->MythPoints = Packet->CharacterData.MythMasteryInfo.Points;
-    Response->MythStigmaGrade = Packet->CharacterData.MythMasteryInfo.StigmaGrade;
-    Response->MythStigmaExp = Packet->CharacterData.MythMasteryInfo.StigmaExp;
-    Response->MythUnlockedPageCount = Packet->CharacterData.MythMasteryInfo.UnlockedPageCount;
-    Response->MythPropertySlotCount = Packet->CharacterData.MythMasteryInfo.Count;
-    if (Packet->CharacterData.MythMasteryInfo.Count > 0) {
+    Response->MythMasteryInfo = Packet->CharacterData.MythMasteryInfo.Info;
+    if (Packet->CharacterData.MythMasteryInfo.Info.PropertySlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
             Packet->CharacterData.MythMasteryInfo.Slots,
-            sizeof(struct _RTMythMasterySlot) * Packet->CharacterData.MythMasteryInfo.Count
+            sizeof(struct _RTMythMasterySlot) * Packet->CharacterData.MythMasteryInfo.Info.PropertySlotCount
         );
     }
 
-    Response->NewbieSupportTimestamp = Packet->CharacterData.NewbieSupportInfo.Timestamp;
-    Response->NewbieSupportSlotCount = Packet->CharacterData.NewbieSupportInfo.Count;
-    if (Packet->CharacterData.NewbieSupportInfo.Count > 0) {
+    Response->NewbieSupportInfo = Packet->CharacterData.NewbieSupportInfo.Info;
+    if (Packet->CharacterData.NewbieSupportInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
             Packet->CharacterData.NewbieSupportInfo.Slots,
-            sizeof(struct _RTNewbieSupportSlot) * Packet->CharacterData.NewbieSupportInfo.Count
+            sizeof(struct _RTNewbieSupportSlot) * Packet->CharacterData.NewbieSupportInfo.Info.SlotCount
         );
     }
 
-    Response->AccountCostumeSlotCount = Packet->CharacterData.CostumeInfo.PageCount;
+    Response->EventPassInfo = Packet->CharacterData.EventPassInfo.Info;
+    if (Packet->CharacterData.EventPassInfo.Info.MissionSlotCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            Packet->CharacterData.EventPassInfo.MissionSlots,
+            sizeof(struct _RTEventPassMissionSlot) * Packet->CharacterData.EventPassInfo.Info.MissionSlotCount
+        );
+    }
 
-    memcpy(&Response->AnimaMasteryInfo, &Packet->CharacterData.AnimaMasteryInfo.Info, sizeof(struct _RTAnimaMasteryInfo));
+    if (Packet->CharacterData.EventPassInfo.Info.RewardSlotCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            Packet->CharacterData.EventPassInfo.RewardSlots,
+            sizeof(struct _RTEventPassRewardSlot) * Packet->CharacterData.EventPassInfo.Info.RewardSlotCount
+        );
+    }
 
+    Response->CostumeWarehouseInfo = Packet->CharacterData.CostumeWarehouseInfo.Info;
+
+    Response->CostumeInfo = Packet->CharacterData.CostumeInfo.Info;
+    /*
+    
+struct _RTAccountCostumeSlot {
+    UInt32 ItemID;
+    UInt32 Unknown1;
+};
+
+struct _RTCostumePage {
+    Int32 PageIndex;
+    UInt32 CostumeSlots[RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT];
+};
+
+struct _RTAppliedCostumeSlot {
+    UInt32 ItemID;
+};
+
+struct _RTCharacterCostumeWarehouseInfo {
+    Int32 AccountCostumeSlotCount;
+    struct _RTAccountCostumeSlot AccountCostumeSlots[RUNTIME_CHARACTER_MAX_ACCOUNT_COSTUME_SLOT_COUNT];
+};
+
+struct _RTCharacterCostumeInfo {
+    Int32 ActivePageIndex;
+    Int32 PageCount;
+    struct _RTCostumePage Pages[RUNTIME_CHARACTER_MAX_COSTUME_PAGE_COUNT];
+    Int32 AppliedSlotCount;
+    struct _RTAppliedCostumeSlot AppliedSlots[RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT];
+};
+*/
+
+    Response->AnimaMasteryInfo = Packet->CharacterData.AnimaMasteryInfo.Info;
     if (Packet->CharacterData.AnimaMasteryInfo.Info.PresetCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
@@ -560,21 +622,6 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
             sizeof(struct _RTAnimaMasteryCategoryData) * Packet->CharacterData.AnimaMasteryInfo.Info.StorageCount
         );
     }
-
-    assert(ClientConnection->ID < RUNTIME_MEMORY_MAX_CHARACTER_COUNT);
-
-    Character = RTWorldManagerCreateCharacter(Context->Runtime->WorldManager, Packet->CharacterIndex);
-
-    RTCharacterInitialize(
-        Runtime, 
-        Character,
-        Packet->CharacterName,
-        &Packet->CharacterData
-    );
-
-    Client->CharacterDatabaseID = Packet->CharacterID;
-    Client->CharacterIndex = Packet->CharacterIndex;
-    CStringCopySafe(Client->CharacterName, MAX_CHARACTER_NAME_LENGTH + 1, Packet->CharacterName);
 
     Response->Entity = Character->ID;
 
@@ -675,6 +722,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     // TODO: Move event data to database and trigger request on init
     SendEventInfo(Context, Client);
     SendEventList(Context, Client);
+    SendGiftBoxPricePoolList(Context, Client);
     SendPremiumServiceList(Context, Server->ClientSocket, Client->Connection);
     BroadcastUserList(Server, Context);
 

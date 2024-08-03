@@ -300,8 +300,9 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM_SAVER) {
 			break;
 
 		case RUNTIME_ITEM_SUBTYPE_SAVER_AP:
-			if (Character->Data.Info.Ability.Point < TotalAmount) goto error;
-			Character->Data.Info.Ability.Point -= TotalAmount;
+			if (Character->Data.AbilityInfo.Info.AP < TotalAmount) goto error;
+			Character->Data.AbilityInfo.Info.AP -= TotalAmount;
+			Character->SyncMask.AbilityInfo = true;
 			break;
 
 		case RUNTIME_ITEM_SUBTYPE_SAVER_WEXP:
@@ -320,7 +321,8 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM_SAVER) {
 			break;
 
 		case RUNTIME_ITEM_SUBTYPE_SAVER_AP:
-			Character->Data.Info.Ability.Point += TotalAmount;
+			Character->Data.AbilityInfo.Info.AP += TotalAmount;
+			Character->SyncMask.AbilityInfo = true;
 			break;
 
 		case RUNTIME_ITEM_SUBTYPE_SAVER_WEXP:

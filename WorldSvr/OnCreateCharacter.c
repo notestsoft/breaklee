@@ -14,8 +14,11 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 		return;
 	}
 
-	// TODO: CharacterSlotFlags is not set correctly?!
-	if (!(Client->Account.CharacterSlotFlags & (1 << Packet->SlotIndex)) ||
+	if (Character) {
+		Client->AccountInfo = Character->Data.AccountInfo;
+	}
+
+	if (!(Client->AccountInfo.CharacterSlotOpenMask & (1 << Packet->SlotIndex)) ||
 		Client->Characters[Packet->SlotIndex].ID > 0) {
 		Response->CharacterStatus = CREATE_CHARACTER_STATUS_NOT_ALLOWED;
 		SocketSend(Socket, Connection, Response);
@@ -83,59 +86,44 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 	Request->CharacterData.Info.Skill.Level = 0;
 	Request->CharacterData.Info.Style = Style;
 
-	RTDataPassiveAbilitySlotLimitRef PassiveAbilitySlotLimit = RTRuntimeDataPassiveAbilitySlotLimitGet(Runtime->Context);
-	if (PassiveAbilitySlotLimit) {
-		Request->CharacterData.Info.Ability.MaxEssenceAbilitySlotCount = PassiveAbilitySlotLimit->MinCount;
-	}
-
-	RTDataBlendedAbilitySlotLimitRef BlendedAbilitySlotLimit = RTRuntimeDataBlendedAbilitySlotLimitGet(Runtime->Context);
-	if (BlendedAbilitySlotLimit) {
-		Request->CharacterData.Info.Ability.MaxBlendedAbilitySlotCount = BlendedAbilitySlotLimit->MinCount;
-	}
-
-	RTDataKarmaAbilitySlotLimitRef KarmaAbilitySlotLimit = RTRuntimeDataKarmaAbilitySlotLimitGet(Runtime->Context);
-	if (KarmaAbilitySlotLimit) {
-		Request->CharacterData.Info.Ability.MaxKarmaAbilitySlotCount = KarmaAbilitySlotLimit->MinCount;
-	}
-
 	RTDataCharacterInitRef CharacterInit = RTRuntimeDataCharacterInitGet(Context->Runtime->Context, BattleStyleIndex);
 	Request->CharacterData.Info.Position.WorldID = CharacterInit->WorldID;
 	Request->CharacterData.Info.Position.X = CharacterInit->X;
 	Request->CharacterData.Info.Position.Y = CharacterInit->Y;
 
 	if (CharacterInit->Suit > 0) {
-		RTItemSlotRef ItemSlot = &Request->CharacterData.EquipmentInfo.Slots[Request->CharacterData.EquipmentInfo.Count];
+		RTItemSlotRef ItemSlot = &Request->CharacterData.EquipmentInfo.EquipmentSlots[Request->CharacterData.EquipmentInfo.Info.EquipmentSlotCount];
 		ItemSlot->Item.ID = CharacterInit->Suit;
 		ItemSlot->SlotIndex = RUNTIME_EQUIPMENT_SLOT_INDEX_SUIT;
-		Request->CharacterData.EquipmentInfo.Count += 1;
+		Request->CharacterData.EquipmentInfo.Info.EquipmentSlotCount += 1;
 	}
 
 	if (CharacterInit->Glove > 0) {
-		RTItemSlotRef ItemSlot = &Request->CharacterData.EquipmentInfo.Slots[Request->CharacterData.EquipmentInfo.Count];
+		RTItemSlotRef ItemSlot = &Request->CharacterData.EquipmentInfo.EquipmentSlots[Request->CharacterData.EquipmentInfo.Info.EquipmentSlotCount];
 		ItemSlot->Item.ID = CharacterInit->Glove;
 		ItemSlot->SlotIndex = RUNTIME_EQUIPMENT_SLOT_INDEX_GLOVES;
-		Request->CharacterData.EquipmentInfo.Count += 1;
+		Request->CharacterData.EquipmentInfo.Info.EquipmentSlotCount += 1;
 	}
 
 	if (CharacterInit->Boot > 0) {
-		RTItemSlotRef ItemSlot = &Request->CharacterData.EquipmentInfo.Slots[Request->CharacterData.EquipmentInfo.Count];
+		RTItemSlotRef ItemSlot = &Request->CharacterData.EquipmentInfo.EquipmentSlots[Request->CharacterData.EquipmentInfo.Info.EquipmentSlotCount];
 		ItemSlot->Item.ID = CharacterInit->Boot;
 		ItemSlot->SlotIndex = RUNTIME_EQUIPMENT_SLOT_INDEX_BOOTS;
-		Request->CharacterData.EquipmentInfo.Count += 1;
+		Request->CharacterData.EquipmentInfo.Info.EquipmentSlotCount += 1;
 	}
 
 	if (CharacterInit->RightHand > 0) {
-		RTItemSlotRef ItemSlot = &Request->CharacterData.EquipmentInfo.Slots[Request->CharacterData.EquipmentInfo.Count];
+		RTItemSlotRef ItemSlot = &Request->CharacterData.EquipmentInfo.EquipmentSlots[Request->CharacterData.EquipmentInfo.Info.EquipmentSlotCount];
 		ItemSlot->Item.ID = CharacterInit->RightHand;
 		ItemSlot->SlotIndex = RUNTIME_EQUIPMENT_SLOT_INDEX_WEAPON_RIGHT;
-		Request->CharacterData.EquipmentInfo.Count += 1;
+		Request->CharacterData.EquipmentInfo.Info.EquipmentSlotCount += 1;
 	}
 
 	if (CharacterInit->LeftHand > 0) {
-		RTItemSlotRef ItemSlot = &Request->CharacterData.EquipmentInfo.Slots[Request->CharacterData.EquipmentInfo.Count];
+		RTItemSlotRef ItemSlot = &Request->CharacterData.EquipmentInfo.EquipmentSlots[Request->CharacterData.EquipmentInfo.Info.EquipmentSlotCount];
 		ItemSlot->Item.ID = CharacterInit->LeftHand;
 		ItemSlot->SlotIndex = RUNTIME_EQUIPMENT_SLOT_INDEX_WEAPON_LEFT;
-		Request->CharacterData.EquipmentInfo.Count += 1;
+		Request->CharacterData.EquipmentInfo.Info.EquipmentSlotCount += 1;
 	}
 
 	RTDataCharacterInitStatRef CharacterInitStat = RTRuntimeDataCharacterInitStatGet(Context->Runtime->Context, BattleStyleIndex);
@@ -159,7 +147,77 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 	}
 
 	if (Packet->CreateSpecialCharacter && Context->Config.WorldSvr.DebugCharacter) {
-		Request->CharacterData.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] = 999999999;
+		memset(Request->CharacterData.QuestInfo.Info.FinishedQuests, 0xFF, RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT);
+		Request->CharacterData.Info.Style.BattleRank = 20;
+		Request->CharacterData.Info.Basic.Level = Runtime->Context->LevelList[Runtime->Context->LevelCount - 1].Level;
+		Request->CharacterData.Info.Basic.Exp = Runtime->Context->LevelList[Runtime->Context->LevelCount - 1].AccumulatedExp;
+		Request->CharacterData.OverlordMasteryInfo.Info.Level = Runtime->Context->OverlordMasteryExpList[Runtime->Context->OverlordMasteryExpCount - 1].Level;
+		Request->CharacterData.OverlordMasteryInfo.Info.Exp = Runtime->Context->OverlordMasteryExpList[Runtime->Context->OverlordMasteryExpCount - 1].AccumulatedExp;
+		Request->CharacterData.Info.Skill.Rank = 10;
+		Request->CharacterData.ForceWingInfo.Info.Grade = 1;
+		Request->CharacterData.ForceWingInfo.Info.Level = 1;
+		Request->CharacterData.MythMasteryInfo.Info.Level = 94;
+		Request->CharacterData.MythMasteryInfo.Info.Exp = 0;
+		Request->CharacterData.MythMasteryInfo.Info.Rebirth = 1000;
+		Request->CharacterData.MythMasteryInfo.Info.HolyPower = 27500;
+		Request->CharacterData.MythMasteryInfo.Info.UnlockedPageCount = 4;
+
+		Request->CharacterData.Info.Profile.MapsMask = 0xFFFFFFFF;
+		Request->CharacterData.Info.Profile.WarpMask = 0xFFFFFFFF;
+		Request->CharacterData.Info.Profile.Nation = 3;
+		Request->CharacterData.Info.Stat[RUNTIME_CHARACTER_STAT_PNT] = 2000;
+
+		Request->CharacterData.AbilityInfo.Info.EssenceAbilityCount = MIN(Runtime->Context->PassiveAbilityCostCount, RUNTIME_CHARACTER_MAX_ESSENCE_ABILITY_SLOT_COUNT);
+		Request->CharacterData.AbilityInfo.Info.ExtendedEssenceAbilityCount = MAX(0, Request->CharacterData.AbilityInfo.Info.EssenceAbilityCount - RUNTIME_CHARACTER_ESSENCE_ABILITY_SLOT_COUNT);
+		for (Int32 Index = 0; Index < Request->CharacterData.AbilityInfo.Info.EssenceAbilityCount; Index += 1) {
+			Request->CharacterData.AbilityInfo.EssenceAbilitySlots[Index].AbilityID = Runtime->Context->PassiveAbilityCostList[Index].Index;
+			Request->CharacterData.AbilityInfo.EssenceAbilitySlots[Index].Level = Runtime->Context->PassiveAbilityCostList[Index].PassiveAbilityCostLevelList[Runtime->Context->PassiveAbilityCostList[Index].PassiveAbilityCostLevelCount - 1].Level;
+		}
+
+		Request->CharacterData.AbilityInfo.Info.BlendedAbilityCount = MIN(Runtime->Context->BlendedAbilityCostCount, RUNTIME_CHARACTER_MAX_BLENDED_ABILITY_SLOT_COUNT);
+		Request->CharacterData.AbilityInfo.Info.ExtendedBlendedAbilityCount = MAX(0, Request->CharacterData.AbilityInfo.Info.BlendedAbilityCount - RUNTIME_CHARACTER_BLENDED_ABILITY_SLOT_COUNT);
+		for (Int32 Index = 0; Index < Request->CharacterData.AbilityInfo.Info.BlendedAbilityCount; Index += 1) {
+			Request->CharacterData.AbilityInfo.BlendedAbilitySlots[Index].AbilityID = Runtime->Context->BlendedAbilityCostList[Index].Index;
+		}
+
+		Request->CharacterData.AbilityInfo.Info.KarmaAbilityCount = MIN(Runtime->Context->KarmaAbilityCostCount, RUNTIME_CHARACTER_MAX_KARMA_ABILITY_SLOT_COUNT);
+		Request->CharacterData.AbilityInfo.Info.ExtendedKarmaAbilityCount = MAX(0, Request->CharacterData.AbilityInfo.Info.KarmaAbilityCount - RUNTIME_CHARACTER_KARMA_ABILITY_SLOT_COUNT);
+		for (Int32 Index = 0; Index < Request->CharacterData.AbilityInfo.Info.KarmaAbilityCount; Index += 1) {
+			Request->CharacterData.AbilityInfo.KarmaAbilitySlots[Index].AbilityID = Runtime->Context->KarmaAbilityCostList[Index].Index;
+			Request->CharacterData.AbilityInfo.KarmaAbilitySlots[Index].Level = Runtime->Context->KarmaAbilityCostList[Index].KarmaAbilityCostLevelList[Runtime->Context->KarmaAbilityCostList[Index].KarmaAbilityCostLevelCount - 1].Level;
+		}
+
+		Request->CharacterData.Info.Profile.Nation = 2;
+		Request->CharacterData.Info.Honor.Rank = Runtime->Context->HonorLevelFormulaList[Runtime->Context->HonorLevelFormulaCount - 1].Rank;
+		Request->CharacterData.Info.Honor.Point = Runtime->Context->HonorLevelFormulaList[Runtime->Context->HonorLevelFormulaCount - 1].MaxPoint - 1;
+		Request->CharacterData.HonorMedalInfo.Info.Score = Runtime->Context->HonorMedalScoreCategoryList[0].HonorMedalScoreMedalList[Runtime->Context->HonorMedalScoreCategoryList[0].HonorMedalScoreMedalCount - 1].AccumulatedRequiredScore - 1;
+		Request->CharacterData.HonorMedalInfo.Info.SlotCount = 0;
+		for (Int32 Index = 0; Index < 4; Index += 1) {
+			RTHonorMedalSlotRef Slot = &Request->CharacterData.HonorMedalInfo.Slots[Request->CharacterData.HonorMedalInfo.Info.SlotCount];
+			Slot->CategoryIndex = 0;
+			Slot->GroupIndex = 1;
+			Slot->SlotIndex = Request->CharacterData.HonorMedalInfo.Info.SlotCount;
+			Slot->ForceEffectIndex = 45;
+			Slot->IsUnlocked = 1;
+			Request->CharacterData.HonorMedalInfo.Info.SlotCount += 1;
+		}
+
+		Int32 SlotIndex = Request->CharacterData.SkillSlotInfo.Info.SlotCount;
+		for (Index Index = 144; Index < 148; Index++) {
+			RTSkillSlotRef GmSkill = &Request->CharacterData.SkillSlotInfo.Skills[Request->CharacterData.SkillSlotInfo.Info.SlotCount];
+			GmSkill->ID = Index;
+			GmSkill->Level = 1;
+			GmSkill->Index = SlotIndex++;
+			Request->CharacterData.SkillSlotInfo.Info.SlotCount += 1;
+		}
+		/*
+		AchievementIndex = Request->CharacterData.AchievementInfo.AchievementExtendedRewardCount;
+		Request->CharacterData.AchievementInfo.AchievementRewardSlots[AchievementIndex].TitleIndex = AchievementReward->AchievementID;
+		Request->CharacterData.AchievementInfo.AchievementRewardSlots[AchievementIndex].Unknown1 = 0;
+		Request->CharacterData.AchievementInfo.AchievementRewardCount += 1;
+
+
+		Request->CharacterData.Info.Alz= 999999999;
 		Request->CharacterData.Info.Currency[RUNTIME_CHARACTER_CURRENCY_GEM] = 999999;
 		Request->CharacterData.Info.Basic.Level = 200;
 		Request->CharacterData.Info.Overlord.Level = 1;
@@ -175,6 +233,7 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 		Request->CharacterData.Info.Honor.Rank = HonorLevelFormula->Rank;
 		Request->CharacterData.Info.Honor.Point = HonorLevelFormula->MaxPoint;
 		Request->CharacterData.Info.Honor.Exp = 0;
+		*/
 	}
 
 	IPCSocketUnicast(Server->IPCSocket, Request);

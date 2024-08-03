@@ -21,12 +21,12 @@ CLIENT_PROCEDURE_BINDING(PARTY_INVITE) {
 	Request->Source.Info.CharacterIndex = Character->CharacterIndex;
 	Request->Source.Info.Level = Character->Data.Info.Basic.Level;
 	Request->Source.Info.BattleStyleIndex = BattleStyleIndex;
-	Request->Source.Info.OverlordLevel = Character->Data.Info.Overlord.Level;
-	Request->Source.Info.MythRebirth = Character->Data.MythMasteryInfo.Rebirth;
-	Request->Source.Info.MythHolyPower = Character->Data.MythMasteryInfo.HolyPower;
-	Request->Source.Info.MythLevel = Character->Data.MythMasteryInfo.Level;
-	Request->Source.Info.ForceWingGrade = Character->Data.ForceWingInfo.Grade;
-	Request->Source.Info.ForceWingLevel = Character->Data.ForceWingInfo.Level;
+	Request->Source.Info.OverlordLevel = Character->Data.OverlordMasteryInfo.Info.Level;
+	Request->Source.Info.MythRebirth = Character->Data.MythMasteryInfo.Info.Rebirth;
+	Request->Source.Info.MythHolyPower = Character->Data.MythMasteryInfo.Info.HolyPower;
+	Request->Source.Info.MythLevel = Character->Data.MythMasteryInfo.Info.Level;
+	Request->Source.Info.ForceWingGrade = Character->Data.ForceWingInfo.Info.Grade;
+	Request->Source.Info.ForceWingLevel = Character->Data.ForceWingInfo.Info.Level;
 	CStringCopySafe(Request->Source.Info.Name, MAX_CHARACTER_NAME_LENGTH + 1, Client->CharacterName);
 
 	Request->Target.NodeIndex = Packet->WorldServerID;
@@ -87,12 +87,12 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE) {
 	Response->Target.MemberID.Serial = TargetCharacter->ID.Serial;
 	Response->Target.Info.Level = TargetCharacter->Data.Info.Basic.Level;
 	Response->Target.Info.BattleStyleIndex = BattleStyleIndex;
-	Response->Target.Info.OverlordLevel = TargetCharacter->Data.Info.Overlord.Level;
-	Response->Target.Info.MythRebirth = TargetCharacter->Data.MythMasteryInfo.Rebirth;
-	Response->Target.Info.MythHolyPower = TargetCharacter->Data.MythMasteryInfo.HolyPower;
-	Response->Target.Info.MythLevel = TargetCharacter->Data.MythMasteryInfo.Level;
-	Response->Target.Info.ForceWingGrade = TargetCharacter->Data.ForceWingInfo.Grade;
-	Response->Target.Info.ForceWingLevel = TargetCharacter->Data.ForceWingInfo.Level;
+	Response->Target.Info.OverlordLevel = TargetCharacter->Data.OverlordMasteryInfo.Info.Level;
+	Response->Target.Info.MythRebirth = TargetCharacter->Data.MythMasteryInfo.Info.Rebirth;
+	Response->Target.Info.MythHolyPower = TargetCharacter->Data.MythMasteryInfo.Info.HolyPower;
+	Response->Target.Info.MythLevel = TargetCharacter->Data.MythMasteryInfo.Info.Level;
+	Response->Target.Info.ForceWingGrade = TargetCharacter->Data.ForceWingInfo.Info.Grade;
+	Response->Target.Info.ForceWingLevel = TargetCharacter->Data.ForceWingInfo.Info.Level;
 	Response->Success = true;
 	IPCSocketUnicast(Server->IPCSocket, Response);
 	return;
@@ -400,12 +400,12 @@ Void SendPartyData(
 			MemberSlot->Info.CharacterIndex = Character->CharacterIndex;
 			MemberSlot->Info.Level = Character->Data.Info.Basic.Level;
 			MemberSlot->Info.BattleStyleIndex = BattleStyleIndex;
-			MemberSlot->Info.OverlordLevel = Character->Data.Info.Overlord.Level;
-			MemberSlot->Info.MythRebirth = Character->Data.MythMasteryInfo.Rebirth;
-			MemberSlot->Info.MythHolyPower = Character->Data.MythMasteryInfo.HolyPower;
-			MemberSlot->Info.MythLevel = Character->Data.MythMasteryInfo.Level;
-			MemberSlot->Info.ForceWingGrade = Character->Data.ForceWingInfo.Grade;
-			MemberSlot->Info.ForceWingLevel = Character->Data.ForceWingInfo.Level;
+			MemberSlot->Info.OverlordLevel = Character->Data.OverlordMasteryInfo.Info.Level;
+			MemberSlot->Info.MythRebirth = Character->Data.MythMasteryInfo.Info.Rebirth;
+			MemberSlot->Info.MythHolyPower = Character->Data.MythMasteryInfo.Info.HolyPower;
+			MemberSlot->Info.MythLevel = Character->Data.MythMasteryInfo.Info.Level;
+			MemberSlot->Info.ForceWingGrade = Character->Data.ForceWingInfo.Info.Grade;
+			MemberSlot->Info.ForceWingLevel = Character->Data.ForceWingInfo.Info.Level;
 			CStringCopySafe(MemberSlot->Info.Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Character->Name);
 		}
 

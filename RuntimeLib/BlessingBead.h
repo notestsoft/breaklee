@@ -13,8 +13,12 @@ struct _RTBlessingBeadSlot {
     UInt32 Unknown2;
 };
 
+struct _RTBlessingBeadInfo {
+    UInt8 SlotCount;
+};
+
 struct _RTCharacterBlessingBeadInfo {
-    Int32 Count;
+    struct _RTBlessingBeadInfo Info;
     struct _RTBlessingBeadSlot Slots[RUNTIME_CHARACTER_MAX_BLESSING_BEAD_SLOT_COUNT];
 };
 

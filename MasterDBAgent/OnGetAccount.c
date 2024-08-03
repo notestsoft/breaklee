@@ -19,13 +19,11 @@ IPC_PROCEDURE_BINDING(W2D, GET_ACCOUNT) {
 		Response->Account.AccountID = Account.AccountID;
 		memcpy(Response->Account.SessionIP, Account.SessionIP, MAX_ADDRESSIP_LENGTH);
 		Response->Account.SessionTimeout = Account.SessionTimeout;
-		Response->Account.CharacterSlotID = Account.CharacterSlotID;
-		Response->Account.CharacterSlotOrder = Account.CharacterSlotOrder;
-		Response->Account.CharacterSlotFlags = Account.CharacterSlotFlags;
 		CStringCopySafe(Response->Account.CharacterPassword, MAX_SUBPASSWORD_LENGTH + 1, Account.CharacterPassword);
 		Response->Account.CharacterQuestion = Account.CharacterQuestion;
 		CStringCopySafe(Response->Account.CharacterAnswer, MAX_SUBPASSWORD_ANSWER_LENGTH + 1, Account.CharacterAnswer);
+		Response->AccountInfo = Account.AccountInfo;
 	}
- 
+
 	IPCSocketUnicast(Socket, Response);
 }

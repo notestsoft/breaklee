@@ -7,9 +7,9 @@ Void RTCharacterInitializeAnimaMastery(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 ) {
-    if (Character->Data.AnimaMasteryInfo.Info.PresetCount <= Character->Data.AnimaMasteryInfo.Info.ActivePresetIndex) return;
+    if (Character->Data.AnimaMasteryInfo.Info.PresetCount <= Character->Data.PresetInfo.ActiveAnimaMasteryPresetIndex) return;
 
-    RTAnimaMasteryPresetDataRef PresetData = &Character->Data.AnimaMasteryInfo.PresetData[Character->Data.AnimaMasteryInfo.Info.ActivePresetIndex];
+    RTAnimaMasteryPresetDataRef PresetData = &Character->Data.AnimaMasteryInfo.PresetData[Character->Data.PresetInfo.ActiveAnimaMasteryPresetIndex];
 
     for (Int32 Index = 0; Index < RUNTIME_MAX_ANIMA_MASTERY_CATEGORY_COUNT; Index += 1) {
         RTAnimaMasteryPresetSlot PresetSlot = PresetData->CategoryOrder[Index];
@@ -39,71 +39,84 @@ UInt8 RTCharacterAnimaMasteryTrainSlot(
     RTCharacterRef Character,
     Int32 CategoryIndex,
     Int32 MasterySlotIndex,
+    Int32 ConversionKitSlotIndex,
     Int32 MaterialSlotCount,
     UInt16* MaterialSlotIndex
 ) {
     if (CategoryIndex < 0 || CategoryIndex >= RUNTIME_MAX_ANIMA_MASTERY_CATEGORY_COUNT) return 0;
     if (MasterySlotIndex < 0 || MasterySlotIndex >= RUNTIME_MAX_ANIMA_MASTERY_SLOT_COUNT) return 0;
 
-    RTAnimaMasteryPresetDataRef PresetData = &Character->Data.AnimaMasteryInfo.PresetData[Character->Data.AnimaMasteryInfo.Info.ActivePresetIndex];
+    RTAnimaMasteryPresetDataRef PresetData = &Character->Data.AnimaMasteryInfo.PresetData[Character->Data.PresetInfo.ActiveAnimaMasteryPresetIndex];
     Int32 StorageIndex = PresetData->CategoryOrder[CategoryIndex].StorageIndex;
 
     RTAnimaMasteryCategoryDataRef CategoryData = RTCharacterAnimaMasteryGetCategoryData(Runtime, Character, StorageIndex, CategoryIndex);
     if (!CategoryData) return 0;
-
     if (MasterySlotIndex > 0 && CategoryData->MasterySlots[MasterySlotIndex - 1] < 1) return 0;
 
-    RTDataAnimaMasteryPriceRef Price = RTRuntimeDataAnimaMasteryPriceGet(Runtime->Context, CategoryIndex);
-    if (!Price) return 0;
+    if (CategoryData->MasterySlots[MasterySlotIndex] > 0) {
+        RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, ConversionKitSlotIndex);
+        RTItemDataRef ItemData = (ItemSlot) ? RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID) : NULL;
+        if (!ItemSlot || !ItemData) return 0;
+        if (ItemData->ItemType != RUNTIME_ITEM_TYPE_PET_UNTRAIN_KIT_OPTION_SELECTIVE) return 0;
+        if (ItemSlot->ItemOptions < 1) return 0;
 
-    if (Price->SlotPrice > 0 && Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < Price->SlotPrice) return 0;
-
-    if (Price->RequiredItemID > 0 && Price->RequiredItemCount > 0) {
-        Int32 ConsumableItemCount = 0;
-        for (Int32 Index = 0; Index < MaterialSlotCount; Index += 1) {
-            RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index]);
-            if (!ItemSlot) return 0;
-
-            RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
-            if (!ItemData) return 0;
-
-            UInt64 StackSizeMask = RTItemDataGetStackSizeMask(ItemData);
-            UInt64 StackSize = ItemSlot->ItemOptions & StackSizeMask;
-            ConsumableItemCount += StackSize;
-        }
-
-        if (ConsumableItemCount < Price->RequiredItemCount) return 0;
-    }
-
-    if (Price->SlotPrice > 0) {
-        Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= Price->SlotPrice;
-        Character->SyncMask.Info = true;
-    }
-
-    if (Price->RequiredItemID > 0 && Price->RequiredItemCount > 0) {
-        Int32 RemainingItemCount = Price->RequiredItemCount;
-        for (Int32 Index = 0; Index < MaterialSlotCount; Index += 1) {
-            RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index]);
-            if (!ItemSlot) return 0;
-
-            RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
-            if (!ItemData) return 0;
-
-            UInt64 StackSizeMask = RTItemDataGetStackSizeMask(ItemData);
-            Int64 StackSize = ItemSlot->ItemOptions & StackSizeMask;
-            Int64 ConsumedCount = MIN(RemainingItemCount, StackSize);
-            Int64 RemainingStackSize = StackSize - ConsumedCount;
-            if (RemainingStackSize <= 0) {
-                RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index]);
-            }
-            else {
-                ItemSlot->ItemOptions = (ItemSlot->ItemOptions & ~StackSizeMask) | RemainingStackSize;
-            }
-
-            RemainingItemCount -= ConsumedCount;
+        ItemSlot->ItemOptions -= 1;
+        if (ItemSlot->ItemOptions < 1) {
+            RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ConversionKitSlotIndex);
         }
 
         Character->SyncMask.InventoryInfo = true;
+    }
+    else {
+        RTDataAnimaMasteryPriceRef Price = RTRuntimeDataAnimaMasteryPriceGet(Runtime->Context, CategoryIndex);
+        if (!Price) return 0;
+        if (Price->SlotPrice > 0 && Character->Data.Info.Alz< Price->SlotPrice) return 0;
+
+        if (Price->RequiredItemID > 0 && Price->RequiredItemCount > 0) {
+            Int32 ConsumableItemCount = 0;
+            for (Int32 Index = 0; Index < MaterialSlotCount; Index += 1) {
+                RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index]);
+                if (!ItemSlot) return 0;
+
+                RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
+                if (!ItemData) return 0;
+
+                UInt64 StackSizeMask = RTItemDataGetStackSizeMask(ItemData);
+                UInt64 StackSize = ItemSlot->ItemOptions & StackSizeMask;
+                ConsumableItemCount += StackSize;
+            }
+
+            if (ConsumableItemCount < Price->RequiredItemCount) return 0;
+        }
+
+        if (Price->SlotPrice > 0) {
+            Character->Data.Info.Alz-= Price->SlotPrice;
+            Character->SyncMask.Info = true;
+        }
+
+        if (Price->RequiredItemID > 0 && Price->RequiredItemCount > 0) {
+            Int32 RemainingItemCount = Price->RequiredItemCount;
+            for (Int32 Index = 0; Index < MaterialSlotCount; Index += 1) {
+                RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index]);
+                RTItemDataRef ItemData = (ItemSlot) ? RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID) : NULL;
+                if (!ItemSlot || !ItemData) return 0;
+
+                UInt64 StackSizeMask = RTItemDataGetStackSizeMask(ItemData);
+                Int64 StackSize = ItemSlot->ItemOptions & StackSizeMask;
+                Int64 ConsumedCount = MIN(RemainingItemCount, StackSize);
+                Int64 RemainingStackSize = StackSize - ConsumedCount;
+                if (RemainingStackSize <= 0) {
+                    RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index]);
+                }
+                else {
+                    ItemSlot->ItemOptions = (ItemSlot->ItemOptions & ~StackSizeMask) | RemainingStackSize;
+                }
+
+                RemainingItemCount -= ConsumedCount;
+            }
+
+            Character->SyncMask.InventoryInfo = true;
+        }
     }
 
     Int32 ForceEffectCount = 0;
@@ -139,7 +152,8 @@ Bool RTCharacterAnimaMasteryResetSlot(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     Int32 CategoryIndex,
-    Int32 StorageIndex
+    Int32 StorageIndex,
+    Int32 InventorySlotIndex
 ) {
     if (!RTCharacterAnimaMasteryIsCategoryUnlocked(Runtime, Character, CategoryIndex)) return false;
     if (StorageIndex < 0 || StorageIndex >= RUNTIME_MAX_ANIMA_MASTERY_STORAGE_COUNT) return false;
@@ -147,7 +161,23 @@ Bool RTCharacterAnimaMasteryResetSlot(
     RTDataAnimaMasteryPriceRef Price = RTRuntimeDataAnimaMasteryPriceGet(Runtime->Context, CategoryIndex);
     if (!Price) return false;
 
-    // TODO: Consume force gem or reset kit!
+    if (InventorySlotIndex >= 0) {
+        RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, InventorySlotIndex);
+        RTItemDataRef ItemData = (ItemSlot) ? RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID) : NULL;
+        if (!ItemSlot || !ItemData) return false;
+        if (ItemData->ItemType != RUNTIME_ITEM_TYPE_PET_BUFF_REMOVER) return false;
+        if (ItemSlot->ItemOptions < 1) return false;
+
+        ItemSlot->ItemOptions -= 1;
+        if (ItemSlot->ItemOptions < 1) {
+            RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, InventorySlotIndex);
+        }
+
+        Character->SyncMask.InventoryInfo = true;
+    }
+    else {
+        // TODO: Consume force gem!
+    }
 
     RTAnimaMasteryCategoryDataRef CategoryData = RTCharacterAnimaMasteryGetCategoryData(Runtime, Character, StorageIndex, CategoryIndex);
     if (!CategoryData) return false;
@@ -182,9 +212,9 @@ Bool RTCharacterAnimaMasteryUnlockCategory(
     if (!Price) return false;
 
     if (Price->OpenPrice > 0) {
-        if (Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < Price->OpenPrice) return false;
+        if (Character->Data.Info.Alz< Price->OpenPrice) return false;
 
-        Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= Price->OpenPrice;
+        Character->Data.Info.Alz-= Price->OpenPrice;
         Character->SyncMask.Info = true;
     }
 
@@ -224,7 +254,11 @@ RTAnimaMasteryCategoryDataRef RTCharacterAnimaMasteryGetCategoryData(
     if (InsertionIndex >= 0) {
         Int32 TailLength = Character->Data.AnimaMasteryInfo.Info.StorageCount - InsertionIndex;
         if (TailLength > 0) {
-            memmove(&Character->Data.AnimaMasteryInfo.CategoryData[InsertionIndex + 1], &Character->Data.AnimaMasteryInfo.CategoryData[InsertionIndex], TailLength * sizeof(struct _RTAnimaMasteryCategoryData));
+            memmove(
+                &Character->Data.AnimaMasteryInfo.CategoryData[InsertionIndex + 1], 
+                &Character->Data.AnimaMasteryInfo.CategoryData[InsertionIndex], 
+                TailLength * sizeof(struct _RTAnimaMasteryCategoryData)
+            );
         }
     }
     else {
@@ -251,7 +285,7 @@ Bool RTCharacterAnimaMasterySetActiveStorageIndex(
 
     if (!RTCharacterAnimaMasteryGetCategoryData(Runtime, Character, StorageIndex, CategoryIndex)) return false;
 
-    RTAnimaMasteryPresetDataRef PresetData = &Character->Data.AnimaMasteryInfo.PresetData[Character->Data.AnimaMasteryInfo.Info.ActivePresetIndex];
+    RTAnimaMasteryPresetDataRef PresetData = &Character->Data.AnimaMasteryInfo.PresetData[Character->Data.PresetInfo.ActiveAnimaMasteryPresetIndex];
     PresetData->CategoryOrder[CategoryIndex].StorageIndex = StorageIndex;
     PresetData->CategoryOrder[CategoryIndex].CategoryIndex = CategoryIndex;
     Character->SyncMask.AnimaMasteryInfo = true;
@@ -266,8 +300,8 @@ Bool RTCharacterAnimaMasterySetActivePresetIndex(
 ) {
     if (PresetIndex < 0 || PresetIndex >= Character->Data.AnimaMasteryInfo.Info.PresetCount) return false;
     
-    Character->Data.AnimaMasteryInfo.Info.ActivePresetIndex = PresetIndex;
-    Character->SyncMask.AnimaMasteryInfo = true;
+    Character->Data.PresetInfo.ActiveAnimaMasteryPresetIndex = PresetIndex;
+    Character->SyncMask.PresetInfo = true;
     RTCharacterInitializeAttributes(Runtime, Character);
     return true;
 }

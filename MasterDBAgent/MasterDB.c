@@ -6,8 +6,12 @@ static StatementRef kStatementTable[MASTERDB_STATEMENT_COUNT];
 Void MasterDBMigrate(
     DatabaseRef Database
 ) {
-#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__, __SCOPE__) \
-    DatabaseCreateDataTable(Database, #__SCOPE__, #__NAME__);
+#define ACCOUNT_DATA_PROTOCOL(__TYPE__, __NAME__) \
+    DatabaseCreateDataTable(Database, TABLE_SCOPE_ACCOUNT, #__NAME__);
+
+#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__) \
+    DatabaseCreateDataTable(Database, TABLE_SCOPE_CHARACTER, #__NAME__);
+
 #include "RuntimeLib/CharacterDataDefinition.h"
 }
 
@@ -32,6 +36,36 @@ StatementRef MasterDBGetStatement(
     return kStatementTable[StatementID];
 }
 
+Bool MasterDBInsertAccountTables(
+    DatabaseRef Database,
+    Int64 AccountID
+) {
+#define ACCOUNT_DATA_PROTOCOL(__TYPE__, __NAME__)                                                     \
+	{                                                                                                 \
+        DataTableRef Table = DatabaseGetDataTable(Database, TABLE_SCOPE_ACCOUNT, #__NAME__); \
+        __TYPE__ Data = { 0 };                                                                        \
+        if (!Table || !DataTableInsert(Table, AccountID, (UInt8*)&Data, sizeof(__TYPE__))) {          \
+			DatabaseRollbackTransaction(Database);                                                    \
+			return false;                                                                             \
+        }                                                                                             \
+	}
+#include "RuntimeLib/CharacterDataDefinition.h"
+
+    DataTableRef Table = DatabaseGetDataTable(Database, TABLE_SCOPE_ACCOUNT, "AccountInfo");
+    if (!Table) return false;
+    {
+        struct _RTCharacterAccountInfo AccountInfo = { 0 };
+        if (!DataTableSelect(Table, AccountID, (UInt8*)&AccountInfo, sizeof(struct _RTCharacterAccountInfo))) return false;
+
+        AccountInfo.CharacterSlotOrder = 0x0123456789ABCDEF;
+        AccountInfo.CharacterSlotOpenMask = 0x3F;
+
+        if (!DataTableUpdate(Table, AccountID, (UInt8*)&AccountInfo, sizeof(struct _RTCharacterAccountInfo))) return false;
+    }
+    
+    return true;
+}
+
 Bool MasterDBGetOrCreateAccount(
     DatabaseRef Database,
     Int64 AccountID,
@@ -42,6 +76,7 @@ Bool MasterDBGetOrCreateAccount(
     if (!DatabaseBeginTransaction(Database)) goto error;
     {
         if (!MasterDBInsertAccount(Database, AccountID)) goto error;
+        if (!MasterDBInsertAccountTables(Database, AccountID)) goto error;
         if (!MasterDBInsertSubpassword(Database, Account->AccountID)) goto error;
     }
     if (!DatabaseCommitTransaction(Database)) goto error;
@@ -79,14 +114,12 @@ Bool MasterDBSelectAccountByID(
     StatementReadResultInt64(Statement, 0, &Data->AccountID);
     StatementReadResultString(Statement, 1, MAX_ADDRESSIP_LENGTH, Data->SessionIP);
     StatementReadResultTimestamp(Statement, 2, &Data->SessionTimeout);
-    StatementReadResultInt32(Statement, 3, &Data->CharacterSlotID);
-    StatementReadResultUInt64(Statement, 4, &Data->CharacterSlotOrder);
-    StatementReadResultUInt32(Statement, 5, &Data->CharacterSlotFlags);
-    StatementReadResultString(Statement, 6, MAX_SUBPASSWORD_LENGTH, Data->CharacterPassword);
-    StatementReadResultUInt32(Statement, 7, &Data->CharacterQuestion);
-    StatementReadResultString(Statement, 8, MAX_SUBPASSWORD_ANSWER_LENGTH, Data->CharacterAnswer);
-    StatementReadResultTimestamp(Statement, 9, &Data->CreatedAt);
-    StatementReadResultTimestamp(Statement, 10, &Data->UpdatedAt);
+    StatementReadResultString(Statement, 3, MAX_SUBPASSWORD_LENGTH, Data->CharacterPassword);
+    StatementReadResultUInt32(Statement, 4, &Data->CharacterQuestion);
+    StatementReadResultString(Statement, 5, MAX_SUBPASSWORD_ANSWER_LENGTH, Data->CharacterAnswer);
+    StatementReadResultTimestamp(Statement, 6, &Data->CreatedAt);
+    StatementReadResultTimestamp(Statement, 7, &Data->UpdatedAt);
+    StatementReadResultBinary(Statement, 8, sizeof(struct _RTCharacterAccountInfo), &Data->AccountInfo, NULL);
 
     StatementFlushResults(Statement);
 
@@ -101,19 +134,6 @@ Bool MasterDBUpdateAccountSession(
     StatementBindParameterString(Statement, 0, Data->SessionIP);
     StatementBindParameterUInt64(Statement, 1, Data->SessionTimeout);
     StatementBindParameterInt64(Statement, 2, Data->AccountID);
-
-    return StatementExecute(Statement);
-}
-
-Bool MasterDBUpdateAccountCharacterSlot(
-    DatabaseRef Database,
-    MASTERDB_DATA_ACCOUNT* Data
-) {
-    StatementRef Statement = MasterDBGetStatement(Database, MASTERDB_UPDATE_ACCOUNT_CHARACTER_SLOT);
-    StatementBindParameterInt32(Statement, 0, Data->CharacterSlotID);
-    StatementBindParameterUInt64(Statement, 1, Data->CharacterSlotOrder);
-    StatementBindParameterUInt32(Statement, 2, Data->CharacterSlotFlags);
-    StatementBindParameterInt64(Statement, 3, Data->AccountID);
 
     return StatementExecute(Statement);
 }
@@ -220,9 +240,10 @@ Bool MasterDBSelectCharacterIndexFetchNext(
     StatementReadResultString(Statement, 2, MAX_CHARACTER_NAME_LENGTH, Result->Name);
     StatementReadResultUInt8(Statement, 3, &Result->Index);
     StatementReadResultBinary(Statement, 4, sizeof(struct _RTCharacterInfo), &Result->CharacterData, NULL);
-    StatementReadResultBinary(Statement, 5, sizeof(struct _RTCharacterEquipmentInfo), &Result->EquipmentData, NULL);
-    StatementReadResultTimestamp(Statement, 6, &Result->CreatedAt);
-    StatementReadResultTimestamp(Statement, 7, &Result->UpdatedAt);
+    StatementReadResultBinary(Statement, 5, sizeof(struct _RTCharacterEquipmentData), &Result->EquipmentData, NULL);
+    StatementReadResultBinary(Statement, 6, sizeof(struct _RTCharacterOverlordMasteryInfo), &Result->OverlordMasteryInfo, NULL);
+    StatementReadResultTimestamp(Statement, 7, &Result->CreatedAt);
+    StatementReadResultTimestamp(Statement, 8, &Result->UpdatedAt);
 
     return true;
 }

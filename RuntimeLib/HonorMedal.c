@@ -42,7 +42,7 @@ Bool RTCharacterAddHonorMedalScore(
 
     Int32 MaxScore = RTRuntimeGetHonorMedalMaxScore(Runtime, CategoryIndex);
 
-    Character->Data.HonorMedalInfo.Score = MIN(MaxScore, Character->Data.HonorMedalInfo.Score + Score);
+    Character->Data.HonorMedalInfo.Info.Score = MIN(MaxScore, Character->Data.HonorMedalInfo.Info.Score + Score);
     Character->SyncMask.HonorMedalInfo = true;
 
     RTRuntimeBroadcastCharacterData(
@@ -68,7 +68,7 @@ Int32 RTCharacterGetHonorMedalGrade(
     for (Index Index = 0; Index < Category->HonorMedalScoreMedalCount; Index += 1) {
         Grade = MAX(Grade, Category->HonorMedalScoreMedalList[Index].Grade);
 
-        if (Category->HonorMedalScoreMedalList[Index].AccumulatedRequiredScore > Character->Data.HonorMedalInfo.Score) break;
+        if (Category->HonorMedalScoreMedalList[Index].AccumulatedRequiredScore > Character->Data.HonorMedalInfo.Info.Score) break;
     }
 
     return Grade;
@@ -105,7 +105,7 @@ Bool RTCharacterCanAddHonorMedalSlot(
     Int32 GroupIndex,
     Int32 SlotIndex
 ) {
-    if (Character->Data.HonorMedalInfo.SlotCount >= RUNTIME_CHARACTER_MAX_HONOR_MEDAL_SLOT_COUNT) return false;
+    if (Character->Data.HonorMedalInfo.Info.SlotCount >= RUNTIME_CHARACTER_MAX_HONOR_MEDAL_SLOT_COUNT) return false;
 
     Int32 MaxSlotCount = RTCharacterGetHonorMedalSlotCount(Runtime, Character, CategoryIndex, GroupIndex);
     if (SlotIndex < 0 || SlotIndex >= MaxSlotCount) return false;
@@ -125,13 +125,13 @@ Void RTCharacterAddHonorMedalSlot(
 ) {
     assert(RTCharacterCanAddHonorMedalSlot(Runtime, Character, CategoryIndex, GroupIndex, SlotIndex));
 
-    RTHonorMedalSlotRef Slot = &Character->Data.HonorMedalInfo.Slots[Character->Data.HonorMedalInfo.SlotCount];
+    RTHonorMedalSlotRef Slot = &Character->Data.HonorMedalInfo.Slots[Character->Data.HonorMedalInfo.Info.SlotCount];
     Slot->CategoryIndex = CategoryIndex;
     Slot->GroupIndex = GroupIndex;
     Slot->SlotIndex = SlotIndex;
     Slot->ForceEffectIndex = 0;
     Slot->IsUnlocked = true;
-    Character->Data.HonorMedalInfo.SlotCount += 1;
+    Character->Data.HonorMedalInfo.Info.SlotCount += 1;
     Character->SyncMask.HonorMedalInfo = true;
 }
 
@@ -142,7 +142,7 @@ RTHonorMedalSlotRef RTCharacterGetHonorMedalSlot(
     Int32 GroupIndex,
     Int32 SlotIndex
 ) {
-    for (Index Index = 0; Index < Character->Data.HonorMedalInfo.SlotCount; Index += 1) {
+    for (Index Index = 0; Index < Character->Data.HonorMedalInfo.Info.SlotCount; Index += 1) {
         RTHonorMedalSlotRef Slot = &Character->Data.HonorMedalInfo.Slots[Index];
         if (Slot->CategoryIndex != CategoryIndex) continue;
         if (Slot->GroupIndex != GroupIndex) continue;

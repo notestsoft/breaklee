@@ -21,16 +21,25 @@ struct _RTAppliedCostumeSlot {
     UInt32 ItemID;
 };
 
+struct _RTCostumeWarehouseInfo {
+    Int32 SlotCount;
+};
+
 struct _RTCharacterCostumeWarehouseInfo {
-    Int32 AccountCostumeSlotCount;
+    struct _RTCostumeWarehouseInfo Info;
     struct _RTAccountCostumeSlot AccountCostumeSlots[RUNTIME_CHARACTER_MAX_ACCOUNT_COSTUME_SLOT_COUNT];
 };
 
-struct _RTCharacterCostumeInfo {
-    Int32 ActivePageIndex;
+struct _RTCostumeInfo {
+    Int32 Unknown1;
     Int32 PageCount;
-    struct _RTCostumePage Pages[RUNTIME_CHARACTER_MAX_COSTUME_PAGE_COUNT];
     Int32 AppliedSlotCount;
+    Int32 ActivePageIndex;
+};
+
+struct _RTCharacterCostumeInfo {
+    struct _RTCostumeInfo Info;
+    struct _RTCostumePage Pages[RUNTIME_CHARACTER_MAX_COSTUME_PAGE_COUNT];
     struct _RTAppliedCostumeSlot AppliedSlots[RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT];
 };
 

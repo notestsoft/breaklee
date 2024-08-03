@@ -15,9 +15,13 @@ struct _RTNewbieSupportSlot {
     UInt8 RewardIndex;
 };
 
-struct _RTCharacterNewbieSupportInfo {
+struct _RTNewbieSupportInfo {
     Timestamp Timestamp;
-    UInt32 Count;
+    Int32 SlotCount;
+};
+
+struct _RTCharacterNewbieSupportInfo {
+    struct _RTNewbieSupportInfo Info;
     struct _RTNewbieSupportSlot Slots[RUNTIME_CHARACTER_MAX_NEWBIE_SUPPORT_SLOT_COUNT];
 };
 

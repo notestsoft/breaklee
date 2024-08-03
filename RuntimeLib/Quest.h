@@ -119,6 +119,7 @@ struct _RTQuestRewardItemSetData {
 };
 
 struct _RTQuestSlot {
+    UInt8 SlotIndex;
     UInt16 QuestIndex;
     UInt16 NpcActionIndex;
     UInt8 DisplayNotice;
@@ -126,17 +127,16 @@ struct _RTQuestSlot {
     UInt8 Counter[RUNTIME_MAX_QUEST_COUNTER_COUNT];
 };
 
-struct _RTCharacterQuestSlotInfo {
-    struct _RTQuestSlot QuestSlot[RUNTIME_CHARACTER_MAX_QUEST_SLOT_COUNT];
-};
-
-struct _RTCharacterQuestFlagInfo {
+struct _RTQuestInfo {
+    UInt16 SlotCount;
     UInt8 FinishedQuests[RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT];
     UInt8 DeletedQuests[RUNTIME_CHARACTER_MAX_NORMAL_QUEST_FLAG_COUNT];
+    UInt8 FinishedDungeons[RUNTIME_CHARACTER_MAX_QUEST_DUNGEON_FLAG_COUNT];
 };
 
-struct _RTCharacterDungeonQuestFlagInfo {
-    UInt8 FinishedDungeons[RUNTIME_CHARACTER_MAX_QUEST_DUNGEON_FLAG_COUNT];
+struct _RTCharacterQuestData {
+    struct _RTQuestInfo Info;
+    struct _RTQuestSlot Slots[RUNTIME_CHARACTER_MAX_QUEST_SLOT_COUNT];
 };
 
 #pragma pack(pop)
@@ -184,6 +184,12 @@ Void RTCharacterDungeonQuestFlagSet(
 Bool RTCharacterDungeonQuestFlagIsSet(
     RTCharacterRef Character,
     Int32 DungeonIndex
+);
+
+RTQuestSlotRef RTCharacterGetQuestSlot(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 QuestSlotIndex
 );
 
 Bool RTCharacterQuestBegin(

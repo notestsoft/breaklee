@@ -39,6 +39,8 @@ RTRuntimeRef RTRuntimeCreate(
     Runtime->NotificationManager = RTNotificationManagerCreate(Runtime);
     Runtime->SkillDataPool = MemoryPoolCreate(Allocator, sizeof(struct _RTCharacterSkillData), RUNTIME_MEMORY_MAX_CHARACTER_SKILL_DATA_COUNT);
     Runtime->ForceEffectFormulaPool = MemoryPoolCreate(Allocator, sizeof(struct _RTForceEffectFormula), RUNTIME_FORCE_EFFECT_COUNT);
+    Runtime->DungeonData = IndexDictionaryCreate(Allocator, 8);
+    Runtime->PatternPartData = IndexDictionaryCreate(Allocator, 8);
     Runtime->UserData = UserData;
     return Runtime;
 }
@@ -46,6 +48,55 @@ RTRuntimeRef RTRuntimeCreate(
 Void RTRuntimeDestroy(
     RTRuntimeRef Runtime
 ) {
+    DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(Runtime->DungeonData);
+    while (Iterator.Key) {
+        RTDungeonDataRef DungeonData = DictionaryLookup(Runtime->DungeonData, Iterator.Key);
+
+        DictionaryKeyIterator NodeIterator = DictionaryGetKeyIterator(DungeonData->TriggerGroups);
+        while (NodeIterator.Key) {
+            ArrayRef Array = DictionaryLookup(DungeonData->TriggerGroups, NodeIterator.Key);
+            ArrayDealloc(Array);
+            NodeIterator = DictionaryKeyIteratorNext(NodeIterator);
+        }
+
+        NodeIterator = DictionaryGetKeyIterator(DungeonData->ActionGroups);
+        while (NodeIterator.Key) {
+            ArrayRef Array = DictionaryLookup(DungeonData->ActionGroups, NodeIterator.Key);
+            ArrayDealloc(Array);
+            NodeIterator = DictionaryKeyIteratorNext(NodeIterator);
+        }
+
+        NodeIterator = DictionaryGetKeyIterator(DungeonData->DropTable.MobDropPool);
+        while (NodeIterator.Key) {
+            ArrayRef Array = DictionaryLookup(DungeonData->DropTable.MobDropPool, NodeIterator.Key);
+            ArrayDealloc(Array);
+            NodeIterator = DictionaryKeyIteratorNext(NodeIterator);
+        }
+
+        NodeIterator = DictionaryGetKeyIterator(DungeonData->DropTable.QuestDropPool);
+        while (NodeIterator.Key) {
+            ArrayRef Array = DictionaryLookup(DungeonData->DropTable.QuestDropPool, NodeIterator.Key);
+            ArrayDealloc(Array);
+            NodeIterator = DictionaryKeyIteratorNext(NodeIterator);
+        }
+
+        DictionaryDestroy(DungeonData->TriggerGroups);
+        DictionaryDestroy(DungeonData->ActionGroups);
+        DictionaryDestroy(DungeonData->TimeControls);
+        ArrayDestroy(DungeonData->DropTable.WorldDropPool);
+
+        Iterator = DictionaryKeyIteratorNext(Iterator);
+    }
+
+    Iterator = DictionaryGetKeyIterator(Runtime->PatternPartData);
+    while (Iterator.Key) {
+        RTMissionDungeonPatternPartDataRef PatternPartData = DictionaryLookup(Runtime->PatternPartData, Iterator.Key);
+        ArrayDestroy(PatternPartData->MobTable);
+        Iterator = DictionaryKeyIteratorNext(Iterator);
+    }
+
+    DictionaryDestroy(Runtime->DungeonData);
+    DictionaryDestroy(Runtime->PatternPartData);
     MemoryPoolDestroy(Runtime->ForceEffectFormulaPool);
     MemoryPoolDestroy(Runtime->SkillDataPool);
     RTNotificationManagerDestroy(Runtime->NotificationManager);
@@ -436,28 +487,16 @@ Void RTRuntimeCloseDungeon(
 
 RTDungeonDataRef RTRuntimeGetDungeonDataByID(
     RTRuntimeRef Runtime,
-    Index DungeonID
+    Index DungeonIndex
 ) {
-    for (Int32 Index = 0; Index < Runtime->DungeonDataCount; Index++) {
-        RTDungeonDataRef DungeonData = &Runtime->DungeonData[Index];
-        if (DungeonData->DungeonID == DungeonID) {
-            return DungeonData;
-        }
-    }
-
-    return NULL;
+    return (RTDungeonDataRef)DictionaryLookup(Runtime->DungeonData, &DungeonIndex);
 }
 
 RTMissionDungeonPatternPartDataRef RTRuntimeGetPatternPartByID(
     RTRuntimeRef Runtime,
-    Int32 PatternPartID
+    Index PatternPartIndex
 ) {
-    for (Int32 Index = 0; Index < Runtime->MissionDungeonPatternPartDataCount; Index++) {
-        RTMissionDungeonPatternPartDataRef PatternPartData = &Runtime->MissionDungeonPatternPartData[Index];
-        if (PatternPartData->ID == PatternPartID) return PatternPartData;
-    }
-
-    return NULL;
+    return (RTMissionDungeonPatternPartDataRef)DictionaryLookup(Runtime->PatternPartData, &PatternPartIndex);
 }
 
 Void RTRuntimeBroadcastCharacterData(
@@ -548,7 +587,7 @@ Void RTRuntimeBroadcastCharacterData(
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_OVERLORD_LEVEL) {
-        Notification->Level = Character->Data.Info.Overlord.Level;
+        Notification->Level = Character->Data.OverlordMasteryInfo.Info.Level;
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_HONOR_MEDAL) {

@@ -16,6 +16,7 @@ CLIENT_PROCEDURE_BINDING(ANIMA_MASTERY_TRAIN_SLOT) {
 		Character,
 		Packet->CategoryIndex,
 		Packet->MasterySlotIndex,
+		Packet->ConversionKitSlotIndex,
 		Packet->MaterialSlotCount,
 		Packet->MaterialSlotIndex
 	);
@@ -33,12 +34,7 @@ CLIENT_PROCEDURE_BINDING(ANIMA_MASTERY_RESET_SLOT) {
 	S2C_DATA_ANIMA_MASTERY_RESET_SLOT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ANIMA_MASTERY_RESET_SLOT);
 	if (!Character) goto error;
 
-	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
-	RTItemDataRef ItemData = (ItemSlot) ? RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID) : NULL;
-	if (!ItemData) goto error;
-
-	Response->Success = RTCharacterAnimaMasteryResetSlot(Runtime, Character, Packet->CategoryIndex, Packet->StorageIndex);
-
+	Response->Success = RTCharacterAnimaMasteryResetSlot(Runtime, Character, Packet->CategoryIndex, Packet->StorageIndex, Packet->InventorySlotIndex);
 	SocketSend(Socket, Connection, Response);
 	return;
 
@@ -83,4 +79,10 @@ CLIENT_PROCEDURE_BINDING(ANIMA_MASTERY_SET_ACTIVE_PRESET_INDEX) {
 
 error:
 	SocketSend(Socket, Connection, Response);
+}
+
+CLIENT_PROCEDURE_BINDING(ANIMA_MASTERY_UNSEALING) {
+}
+
+CLIENT_PROCEDURE_BINDING(ANIMA_MASTERY_SEALING) {
 }

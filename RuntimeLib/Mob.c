@@ -177,8 +177,16 @@ RTEntityID RTMobGetMaxAggroTarget(
 		if (!Character) {
 			Int32 TailLength = Mob->Aggro.Count - Index - 1;
 			if (TailLength > 0) {
-				memmove(&Mob->Aggro.Entities[Index], &Mob->Aggro.Entities[Index + 1], sizeof(RTEntityID));
-				memmove(&Mob->Aggro.ReceivedDamage[Index], &Mob->Aggro.ReceivedDamage[Index + 1], sizeof(Int64));
+				memmove(
+					&Mob->Aggro.Entities[Index], 
+					&Mob->Aggro.Entities[Index + 1], 
+					TailLength * sizeof(RTEntityID)
+				);
+				memmove(
+					&Mob->Aggro.ReceivedDamage[Index], 
+					&Mob->Aggro.ReceivedDamage[Index + 1], 
+					TailLength * sizeof(Int64)
+				);
 			}
 
 			Mob->Aggro.Count -= 1;
@@ -192,8 +200,16 @@ RTEntityID RTMobGetMaxAggroTarget(
 			Distance > Mob->SpeciesData->AlertRange) {
 			Int32 TailLength = Mob->Aggro.Count - Index - 1;
 			if (TailLength > 0) {
-				memmove(&Mob->Aggro.Entities[Index], &Mob->Aggro.Entities[Index + 1], sizeof(RTEntityID));
-				memmove(&Mob->Aggro.ReceivedDamage[Index], &Mob->Aggro.ReceivedDamage[Index + 1], sizeof(Int64));
+				memmove(
+					&Mob->Aggro.Entities[Index], 
+					&Mob->Aggro.Entities[Index + 1], 
+					TailLength * sizeof(RTEntityID)
+				);
+				memmove(
+					&Mob->Aggro.ReceivedDamage[Index], 
+					&Mob->Aggro.ReceivedDamage[Index + 1], 
+					TailLength * sizeof(Int64)
+				);
 			}
 
 			Mob->Aggro.Count -= 1;

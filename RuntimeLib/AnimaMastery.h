@@ -12,7 +12,6 @@ EXTERN_C_BEGIN
 struct _RTAnimaMasteryInfo {
     Int32 PresetCount;
     Int32 StorageCount;
-    Int32 ActivePresetIndex;
     UInt32 UnlockedCategoryFlags;
     Int32 Unknown2;
 };
@@ -54,6 +53,7 @@ UInt8 RTCharacterAnimaMasteryTrainSlot(
     RTCharacterRef Character,
     Int32 CategoryIndex,
     Int32 MasterySlotIndex,
+    Int32 ConversionKitSlotIndex,
     Int32 MaterialSlotCount,
     UInt16* MaterialSlotIndex
 );
@@ -62,7 +62,8 @@ Bool RTCharacterAnimaMasteryResetSlot(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     Int32 CategoryIndex,
-    Int32 StorageSlotIndex
+    Int32 StorageSlotIndex,
+    Int32 InventorySlotIndex
 );
 
 Bool RTCharacterAnimaMasteryIsCategoryUnlocked(

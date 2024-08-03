@@ -19,10 +19,17 @@ struct _RTEventPassRewardSlot {
     Int16 Status;
 };
 
-struct _RTCharacterEventPassInfo {
+struct _RTEventPassInfo {
+    Timestamp StartDate;
+    Timestamp EndDate;
+    Int32 UnknownA5;
     Int32 MissionSlotCount;
-    struct _RTEventPassMissionSlot MissionSlots[RUNTIME_CHARACTER_MAX_EVENT_PASS_MISSION_SLOT_COUNT];
     Int32 RewardSlotCount;
+};
+
+struct _RTCharacterEventPassInfo {
+    struct _RTEventPassInfo Info;
+    struct _RTEventPassMissionSlot MissionSlots[RUNTIME_CHARACTER_MAX_EVENT_PASS_MISSION_SLOT_COUNT];
     struct _RTEventPassRewardSlot RewardSlots[RUNTIME_CHARACTER_MAX_EVENT_PASS_REWARD_SLOT_COUNT];
 };
 

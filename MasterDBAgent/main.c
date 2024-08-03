@@ -62,8 +62,13 @@ Int32 main(Int32 argc, CString* argv) {
     );
 
     Int64 DatabaseResultBufferSize = 0;
-#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__, __SCOPE__) \
+
+#define ACCOUNT_DATA_PROTOCOL(__TYPE__, __NAME__) \
     DatabaseResultBufferSize = MAX(DatabaseResultBufferSize, sizeof(__TYPE__));
+    
+#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__) \
+    DatabaseResultBufferSize = MAX(DatabaseResultBufferSize, sizeof(__TYPE__));
+    
 #include "RuntimeLib/CharacterDataDefinition.h"
 
     ServerContext.Database = DatabaseConnect(

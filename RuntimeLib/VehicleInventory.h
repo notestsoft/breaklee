@@ -8,8 +8,12 @@ EXTERN_C_BEGIN
 
 #pragma pack(push, 1)
 
+struct _RTVehicleInventoryInfo {
+	Int16 SlotCount;
+};
+
 struct _RTCharacterVehicleInventoryInfo {
-	UInt32 Count;
+	struct _RTVehicleInventoryInfo Info;
 	struct _RTItemSlot Slots[RUNTIME_CHARACTER_MAX_VEHICLE_INVENTORY_SLOT_COUNT];
 };
 

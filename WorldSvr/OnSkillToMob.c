@@ -158,10 +158,10 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 	Response->Unknown4 = -1;
 	Response->CharacterMaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
 	Response->AccumulatedExp = Character->Data.Info.Basic.Exp;
-	Response->AccumulatedOxp = Character->Data.Info.Overlord.Exp;
+	Response->AccumulatedOxp = Character->Data.OverlordMasteryInfo.Info.Exp;
 	Response->ReceivedSkillExp = ReceivedSkillExp;
-	Response->AXP = Character->Data.Info.Ability.Exp;
-	Response->AP = Character->Data.Info.Ability.Point;
+	Response->AXP = Character->Data.AbilityInfo.Info.Axp;
+	Response->AP = Character->Data.AbilityInfo.Info.AP;
 	Response->TargetCount = TargetCount;
 	SocketSend(Socket, Connection, Response);
 

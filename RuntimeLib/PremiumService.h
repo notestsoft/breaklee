@@ -14,8 +14,12 @@ struct _RTPremiumServiceSlot {
 	UInt32 Duration;
 };
 
+struct _RTPremiumServiceInfo {
+	UInt8 SlotCount;
+};
+
 struct _RTCharacterPremiumServiceInfo {
-    Int32 Count;
+	struct _RTPremiumServiceInfo Info;
     struct _RTPremiumServiceSlot Slots[RUNTIME_CHARACTER_MAX_PREMIUM_SERVICE_SLOT_COUNT];
 };
 

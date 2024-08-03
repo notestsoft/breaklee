@@ -14,9 +14,6 @@ IPC_PROTOCOL_STRUCT(IPC_DATA_ACCOUNT,
 	Int64 AccountID;
 	Char SessionIP[MAX_ADDRESSIP_LENGTH + 1];
 	Timestamp SessionTimeout;
-	Int32 CharacterSlotID;
-	UInt64 CharacterSlotOrder;
-	UInt32 CharacterSlotFlags;
 	Char CharacterPassword[MAX_SUBPASSWORD_LENGTH + 1];
 	UInt32 CharacterQuestion;
 	Char CharacterAnswer[MAX_SUBPASSWORD_ANSWER_LENGTH + 1];
@@ -156,6 +153,7 @@ IPC_PROTOCOL(W2D, GET_CHARACTER_LIST,
 )
 
 IPC_PROTOCOL(D2W, GET_CHARACTER_LIST,
+	struct _RTCharacterAccountInfo AccountInfo;
 	IPC_DATA_CHARACTER_INFO Characters[MAX_CHARACTER_COUNT];
 )
 
@@ -191,13 +189,6 @@ IPC_PROTOCOL(W2D, UPDATE_ACCOUNT_SESSION,
 	Timestamp SessionTimeout;
 )
 
-IPC_PROTOCOL(W2D, UPDATE_CHARACTER_SLOT,
-	Int32 AccountID;
-	Int32 CharacterSlotID;
-	UInt64 CharacterSlotOrder;
-	UInt32 CharacterSlotFlags;
-)
-
 IPC_PROTOCOL(W2D, UPDATE_SUBPASSWORD,
 	Int64 AccountID;
 	Char CharacterPassword[MAX_SUBPASSWORD_LENGTH + 1];
@@ -218,6 +209,7 @@ IPC_PROTOCOL(D2W, GET_ACCOUNT,
 	UInt8 GroupIndex;
 	Index LinkConnectionID;
 	Bool Success;
+	struct _RTCharacterAccountInfo AccountInfo;
     IPC_DATA_ACCOUNT Account;
 )
 

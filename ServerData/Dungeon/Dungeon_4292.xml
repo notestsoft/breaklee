@@ -1,0 +1,941 @@
+<?xml version="1.0" ?>
+<Dungeon DungeonIndex="4292">
+	<WorldDropPool>
+		<Item ItemID="733" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="734" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="735" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="736" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="737" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="738" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="739" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="740" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="516" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".0015"/>
+		<Item ItemID="436" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".0015"/>
+		<Item ItemID="753" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".0015"/>
+		<Item ItemID="4023" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02"/>
+		<Item ItemID="3749" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02"/>
+		<Item ItemID="1155" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05000000000000"/>
+		<Item ItemID="1156" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05000000000000"/>
+		<Item ItemID="3660" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3661" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3662" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3663" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3664" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3665" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3666" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3857" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3884" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3885" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3886" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3887" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3897" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3898" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3811" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3812" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3999" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3817" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="2948" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3934" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00000190000000"/>
+		<Item ItemID="3935" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00000190000000"/>
+		<Item ItemID="3936" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00000190000000"/>
+		<Item ItemID="455" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00010000000000"/>
+		<Item ItemID="614" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
+		<Item ItemID="4003" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
+		<Item ItemID="625" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
+		<Item ItemID="4004" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
+		<Item ItemID="683" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="684" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="685" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="686" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="687" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="688" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="689" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="690" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="691" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="692" ItemOption="9729" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="692" ItemOption="9857" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="692" ItemOption="9985" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="692" ItemOption="10113" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="692" ItemOption="10241" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="3557" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3666" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3667" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3668" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3851" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3558" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3669" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3670" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3671" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3852" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3559" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3853" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3854" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3560" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3855" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3856" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="1835" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05000000000000"/>
+		<Item ItemID="1837" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05000000000000"/>
+		<Item ItemID="3904" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".03312500000000"/>
+		<Item ItemID="3905" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".03312500000000"/>
+		<Item ItemID="3906" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".03312500000000"/>
+		<Item ItemID="3907" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".03312500000000"/>
+		<Item ItemID="3908" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".02037500000000"/>
+		<Item ItemID="3909" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".02037500000000"/>
+		<Item ItemID="3910" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00015000000000"/>
+		<Item ItemID="3911" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00015000000000"/>
+		<Item ItemID="3912" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00015000000000"/>
+		<Item ItemID="3913" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00015000000000"/>
+		<Item ItemID="3914" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00015000000000"/>
+		<Item ItemID="3915" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00015000000000"/>
+		<Item ItemID="3916" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00052500000000"/>
+		<Item ItemID="3917" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00052500000000"/>
+		<Item ItemID="3918" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00052500000000"/>
+		<Item ItemID="3919" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00052500000000"/>
+		<Item ItemID="3920" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00052500000000"/>
+		<Item ItemID="3921" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00052500000000"/>
+		<Item ItemID="3922" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00040500000000"/>
+		<Item ItemID="3923" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00040500000000"/>
+		<Item ItemID="3924" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00040500000000"/>
+		<Item ItemID="3925" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00040500000000"/>
+		<Item ItemID="3926" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00040500000000"/>
+		<Item ItemID="3927" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00040500000000"/>
+		<Item ItemID="3928" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00030000000000"/>
+		<Item ItemID="3929" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00030000000000"/>
+		<Item ItemID="3930" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00030000000000"/>
+		<Item ItemID="3931" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00030000000000"/>
+		<Item ItemID="3932" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00030000000000"/>
+		<Item ItemID="3933" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00030000000000"/>
+		<Item ItemID="3610" ItemOption="257" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".10000000000000"/>
+		<Item ItemID="3611" ItemOption="257" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".10000000000000"/>
+		<Item ItemID="3612" ItemOption="257" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".10000000000000"/>
+		<Item ItemID="3980" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".01000000000000"/>
+		<Item ItemID="1500" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="733" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="734" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="735" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="736" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="737" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="738" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="739" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="740" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="516" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".0015"/>
+		<Item ItemID="436" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".0015"/>
+		<Item ItemID="753" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".0015"/>
+		<Item ItemID="4023" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02"/>
+		<Item ItemID="3749" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02"/>
+		<Item ItemID="1155" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05000000000000"/>
+		<Item ItemID="1156" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05000000000000"/>
+		<Item ItemID="3660" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3661" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3662" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3663" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3664" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3665" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3666" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3857" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3884" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3885" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3886" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3887" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3897" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3898" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3811" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3812" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3999" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3817" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="2948" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3934" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00000190000000"/>
+		<Item ItemID="3935" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00000190000000"/>
+		<Item ItemID="3936" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00000190000000"/>
+		<Item ItemID="455" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00010000000000"/>
+		<Item ItemID="614" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
+		<Item ItemID="4003" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
+		<Item ItemID="625" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
+		<Item ItemID="4004" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
+		<Item ItemID="683" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="684" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="685" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="686" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="687" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="688" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="689" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="690" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="691" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="692" ItemOption="9729" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="692" ItemOption="9857" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="692" ItemOption="9985" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="692" ItemOption="10113" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="692" ItemOption="10241" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="3557" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3666" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3667" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3668" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3851" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3558" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3669" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3670" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3671" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3852" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3559" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3853" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3854" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3560" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3855" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3856" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="1835" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05000000000000"/>
+		<Item ItemID="1837" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05000000000000"/>
+		<Item ItemID="3904" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".03312500000000"/>
+		<Item ItemID="3905" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".03312500000000"/>
+		<Item ItemID="3906" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".03312500000000"/>
+		<Item ItemID="3907" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".03312500000000"/>
+		<Item ItemID="3908" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".02037500000000"/>
+		<Item ItemID="3909" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".02037500000000"/>
+		<Item ItemID="3910" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00015000000000"/>
+		<Item ItemID="3911" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00015000000000"/>
+		<Item ItemID="3912" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00015000000000"/>
+		<Item ItemID="3913" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00015000000000"/>
+		<Item ItemID="3914" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00015000000000"/>
+		<Item ItemID="3915" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00015000000000"/>
+		<Item ItemID="3916" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00052500000000"/>
+		<Item ItemID="3917" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00052500000000"/>
+		<Item ItemID="3918" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00052500000000"/>
+		<Item ItemID="3919" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00052500000000"/>
+		<Item ItemID="3920" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00052500000000"/>
+		<Item ItemID="3921" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00052500000000"/>
+		<Item ItemID="3922" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00040500000000"/>
+		<Item ItemID="3923" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00040500000000"/>
+		<Item ItemID="3924" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00040500000000"/>
+		<Item ItemID="3925" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00040500000000"/>
+		<Item ItemID="3926" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00040500000000"/>
+		<Item ItemID="3927" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00040500000000"/>
+		<Item ItemID="3928" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00030000000000"/>
+		<Item ItemID="3929" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00030000000000"/>
+		<Item ItemID="3930" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00030000000000"/>
+		<Item ItemID="3931" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00030000000000"/>
+		<Item ItemID="3932" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00030000000000"/>
+		<Item ItemID="3933" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00030000000000"/>
+		<Item ItemID="3610" ItemOption="257" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".10000000000000"/>
+		<Item ItemID="3611" ItemOption="257" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".10000000000000"/>
+		<Item ItemID="3612" ItemOption="257" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".10000000000000"/>
+		<Item ItemID="3980" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".01000000000000"/>
+		<Item ItemID="1500" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="733" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="734" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="735" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="736" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="737" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="738" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="739" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="740" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
+		<Item ItemID="516" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".0015"/>
+		<Item ItemID="436" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".0015"/>
+		<Item ItemID="753" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".0015"/>
+		<Item ItemID="4023" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02"/>
+		<Item ItemID="3749" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02"/>
+		<Item ItemID="1155" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05000000000000"/>
+		<Item ItemID="1156" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05000000000000"/>
+		<Item ItemID="3660" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3661" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3662" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3663" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3664" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3665" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3666" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3857" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3884" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3885" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3886" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3887" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3897" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3898" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3811" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3812" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3999" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3817" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="2948" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00181250000000"/>
+		<Item ItemID="3934" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00000190000000"/>
+		<Item ItemID="3935" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00000190000000"/>
+		<Item ItemID="3936" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00000190000000"/>
+		<Item ItemID="455" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00010000000000"/>
+		<Item ItemID="614" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
+		<Item ItemID="4003" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
+		<Item ItemID="625" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
+		<Item ItemID="4004" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
+		<Item ItemID="683" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="684" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="685" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="686" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="687" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="688" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="689" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="690" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="691" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="692" ItemOption="9729" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="692" ItemOption="9857" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="692" ItemOption="9985" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="692" ItemOption="10113" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="692" ItemOption="10241" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+		<Item ItemID="3557" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3666" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3667" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3668" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3851" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3558" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3669" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3670" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3671" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3852" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3559" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3853" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3854" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3560" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3855" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="3856" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
+		<Item ItemID="1835" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05000000000000"/>
+		<Item ItemID="1837" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05000000000000"/>
+		<Item ItemID="3904" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".03312500000000"/>
+		<Item ItemID="3905" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".03312500000000"/>
+		<Item ItemID="3906" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".03312500000000"/>
+		<Item ItemID="3907" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".03312500000000"/>
+		<Item ItemID="3908" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".02037500000000"/>
+		<Item ItemID="3909" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".02037500000000"/>
+		<Item ItemID="3910" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00015000000000"/>
+		<Item ItemID="3911" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00015000000000"/>
+		<Item ItemID="3912" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00015000000000"/>
+		<Item ItemID="3913" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00015000000000"/>
+		<Item ItemID="3914" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00015000000000"/>
+		<Item ItemID="3915" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00015000000000"/>
+		<Item ItemID="3916" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00052500000000"/>
+		<Item ItemID="3917" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00052500000000"/>
+		<Item ItemID="3918" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00052500000000"/>
+		<Item ItemID="3919" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00052500000000"/>
+		<Item ItemID="3920" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00052500000000"/>
+		<Item ItemID="3921" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00052500000000"/>
+		<Item ItemID="3922" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00040500000000"/>
+		<Item ItemID="3923" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00040500000000"/>
+		<Item ItemID="3924" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00040500000000"/>
+		<Item ItemID="3925" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00040500000000"/>
+		<Item ItemID="3926" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00040500000000"/>
+		<Item ItemID="3927" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00040500000000"/>
+		<Item ItemID="3928" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00030000000000"/>
+		<Item ItemID="3929" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00030000000000"/>
+		<Item ItemID="3930" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00030000000000"/>
+		<Item ItemID="3931" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00030000000000"/>
+		<Item ItemID="3932" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00030000000000"/>
+		<Item ItemID="3933" ItemOption="0" ItemDuration="0" OptionPoolID="59" MinMobLevel="1" MaxMobLevel="250" Rate=".00030000000000"/>
+		<Item ItemID="3610" ItemOption="257" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".10000000000000"/>
+		<Item ItemID="3611" ItemOption="257" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".10000000000000"/>
+		<Item ItemID="3612" ItemOption="257" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".10000000000000"/>
+		<Item ItemID="3980" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".01000000000000"/>
+		<Item ItemID="1500" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
+	</WorldDropPool>
+	<MobDropPool MobSpeciesIndex="648">
+		<Item ItemID="3910" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3911" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3912" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3913" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3914" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3915" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3916" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3917" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3918" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3919" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3920" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3921" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3922" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3923" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3924" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3925" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3926" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3927" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3928" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3929" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3930" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3931" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3932" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3933" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3904" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="2"/>
+		<Item ItemID="3905" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="2"/>
+		<Item ItemID="3906" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="2"/>
+		<Item ItemID="3907" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="2"/>
+		<Item ItemID="3908" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="2"/>
+		<Item ItemID="3909" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="2"/>
+		<Item ItemID="2941" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="2629" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="3867" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="3934" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3935" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3936" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3140" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1839" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1216" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1835" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
+		<Item ItemID="1837" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
+		<Item ItemID="3910" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3911" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3912" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3913" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3914" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3915" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3916" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3917" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3918" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3919" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3920" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3921" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3922" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3923" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3924" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3925" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3926" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3927" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3928" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3929" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3930" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3931" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3932" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3933" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3904" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="2"/>
+		<Item ItemID="3905" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="2"/>
+		<Item ItemID="3906" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="2"/>
+		<Item ItemID="3907" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="2"/>
+		<Item ItemID="3908" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="2"/>
+		<Item ItemID="3909" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="2"/>
+		<Item ItemID="2941" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="2629" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="3867" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="3934" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3935" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3936" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3140" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1839" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1216" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1835" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
+		<Item ItemID="1837" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
+		<Item ItemID="3910" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3911" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3912" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3913" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3914" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3915" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3916" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3917" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3918" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3919" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3920" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3921" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3922" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3923" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3924" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3925" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3926" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3927" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3928" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3929" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3930" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3931" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3932" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3933" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1.5"/>
+		<Item ItemID="3904" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="2"/>
+		<Item ItemID="3905" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="2"/>
+		<Item ItemID="3906" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="2"/>
+		<Item ItemID="3907" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="2"/>
+		<Item ItemID="3908" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="2"/>
+		<Item ItemID="3909" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="2"/>
+		<Item ItemID="2941" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="2629" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="3867" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="3934" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3935" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3936" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3140" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1839" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1216" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1835" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
+		<Item ItemID="1837" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="649">
+		<Item ItemID="3910" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3911" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3912" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3913" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3914" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3915" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3916" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3917" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3918" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3919" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3920" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3921" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3922" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3923" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3924" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3925" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3926" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3927" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3928" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3929" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3930" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3931" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3932" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3933" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3904" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3905" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3906" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3907" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3908" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3909" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="1056582" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056583" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056584" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056585" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056586" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056587" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056588" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056589" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056590" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056591" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056592" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056593" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056594" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056595" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056596" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056597" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056598" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056599" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056600" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056601" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056602" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056603" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056604" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056605" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056576" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="1056577" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="1056578" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="1056579" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="1056580" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="1056581" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="2941" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="2629" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="3867" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="3934" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3935" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3936" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3140" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1839" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1216" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1835" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
+		<Item ItemID="1837" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
+		<Item ItemID="3910" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3911" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3912" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3913" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3914" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3915" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3916" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3917" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3918" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3919" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3920" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3921" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3922" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3923" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3924" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3925" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3926" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3927" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3928" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3929" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3930" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3931" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3932" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3933" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3904" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3905" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3906" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3907" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3908" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3909" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="1056582" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056583" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056584" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056585" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056586" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056587" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056588" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056589" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056590" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056591" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056592" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056593" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056594" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056595" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056596" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056597" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056598" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056599" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056600" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056601" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056602" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056603" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056604" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056605" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056576" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="1056577" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="1056578" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="1056579" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="1056580" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="1056581" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="2941" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="2629" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="3867" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="3934" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3935" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3936" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3140" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1839" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1216" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1835" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
+		<Item ItemID="1837" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
+		<Item ItemID="3910" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3911" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3912" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3913" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3914" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3915" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3916" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3917" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3918" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3919" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3920" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3921" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3922" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3923" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3924" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3925" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3926" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3927" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3928" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3929" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3930" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3931" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3932" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3933" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3904" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3905" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3906" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3907" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3908" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="3909" ItemOption="0" ItemDuration="0" OptionPoolID="60" Rate="1"/>
+		<Item ItemID="1056582" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056583" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056584" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056585" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056586" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056587" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056588" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056589" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056590" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056591" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056592" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056593" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056594" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056595" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056596" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056597" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056598" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056599" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056600" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056601" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056602" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056603" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056604" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056605" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056576" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="1056577" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="1056578" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="1056579" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="1056580" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="1056581" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="2941" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="2629" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="3867" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="3934" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3935" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3936" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3140" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1839" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1216" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1835" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
+		<Item ItemID="1837" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="1177">
+		<Item ItemID="3910" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3911" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3912" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3913" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3914" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3915" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3916" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3917" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3918" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3919" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3920" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3921" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3922" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3923" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3924" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3925" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3926" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3927" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3928" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3929" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3930" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3931" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3932" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3933" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3904" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3905" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3906" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3907" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3908" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3909" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="1056576" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056577" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056578" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056579" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056580" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056581" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056582" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056583" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056584" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056585" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056586" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056587" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056588" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056589" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056590" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056591" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056592" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056593" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056594" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056595" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056596" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056597" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056598" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056599" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056600" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056601" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056602" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056603" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056604" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056605" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="2941" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="2629" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="3867" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="3934" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3935" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3936" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3140" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1839" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1216" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="737" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate=".5"/>
+		<Item ItemID="738" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate=".5"/>
+		<Item ItemID="1835" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
+		<Item ItemID="1837" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
+		<Item ItemID="3557" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3666" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3667" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3668" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3851" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3558" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3669" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3670" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3671" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3852" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3559" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3853" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3854" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3560" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3855" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3856" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3910" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3911" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3912" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3913" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3914" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3915" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3916" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3917" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3918" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3919" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3920" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3921" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3922" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3923" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3924" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3925" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3926" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3927" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3928" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3929" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3930" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3931" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3932" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3933" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3904" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3905" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3906" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3907" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3908" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3909" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="1056576" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056577" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056578" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056579" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056580" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056581" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056582" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056583" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056584" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056585" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056586" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056587" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056588" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056589" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056590" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056591" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056592" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056593" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056594" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056595" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056596" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056597" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056598" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056599" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056600" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056601" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056602" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056603" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056604" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056605" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="2941" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="2629" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="3867" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="3934" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3935" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3936" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3140" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1839" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1216" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="737" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate=".5"/>
+		<Item ItemID="738" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate=".5"/>
+		<Item ItemID="1835" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
+		<Item ItemID="1837" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
+		<Item ItemID="3557" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3666" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3667" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3668" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3851" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3558" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3669" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3670" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3671" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3852" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3559" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3853" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3854" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3560" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3855" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3856" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3910" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3911" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3912" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3913" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3914" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3915" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3916" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3917" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3918" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3919" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3920" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3921" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3922" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3923" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3924" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3925" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3926" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3927" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3928" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3929" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3930" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3931" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3932" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3933" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3904" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3905" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3906" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3907" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3908" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="3909" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate="1"/>
+		<Item ItemID="1056576" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056577" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056578" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056579" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056580" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056581" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056582" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056583" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056584" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056585" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056586" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056587" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056588" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056589" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056590" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056591" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056592" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056593" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056594" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056595" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056596" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056597" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056598" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056599" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056600" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056601" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056602" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056603" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056604" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="1056605" ItemOption="0" ItemDuration="0" OptionPoolID="61" Rate=".5"/>
+		<Item ItemID="2941" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="2629" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="3867" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
+		<Item ItemID="3934" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3935" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3936" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3140" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1839" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="1216" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="737" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate=".5"/>
+		<Item ItemID="738" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate=".5"/>
+		<Item ItemID="1835" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
+		<Item ItemID="1837" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
+		<Item ItemID="3557" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3666" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3667" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3668" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3851" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3558" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3669" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3670" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3671" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3852" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3559" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3853" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3854" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3560" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3855" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+		<Item ItemID="3856" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
+	</MobDropPool>
+</Dungeon>

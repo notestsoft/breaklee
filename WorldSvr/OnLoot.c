@@ -70,8 +70,7 @@ CLIENT_PROCEDURE_BINDING(LOOT_CURRENCY_ITEM) {
         
         if (Item->Item.ID != RUNTIME_ITEM_ID_CURRENCY) continue;
 
-        Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] += Item->ItemOptions;
-
+        Character->Data.Info.Alz += Item->ItemOptions;
         Character->SyncMask.Info = true;
 
         Response->Count += 1;
@@ -79,8 +78,7 @@ CLIENT_PROCEDURE_BINDING(LOOT_CURRENCY_ITEM) {
         RTWorldDespawnItem(Runtime, World, Item);
     }
 
-    Response->Currency = Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
-
+    Response->Currency = Character->Data.Info.Alz;
     SocketSend(Socket, Connection, Response);
     return;
 

@@ -1,21 +1,20 @@
 #pragma once
 
+#include <RuntimeLib/Account.h>
+#include <RuntimeLib/Ability.h>
 #include <RuntimeLib/AnimaMastery.h>
 #include <RuntimeLib/Constants.h>
 #include <RuntimeLib/BattleSystem.h>
-#include <RuntimeLib/BlendedAbility.h>
 #include <RuntimeLib/Character.h>
 #include <RuntimeLib/Collection.h>
 #include <RuntimeLib/Drop.h>
 #include <RuntimeLib/Dungeon.h>
 #include <RuntimeLib/Equipment.h>
-#include <RuntimeLib/EssenceAbility.h>
 #include <RuntimeLib/Force.h>
 #include <RuntimeLib/ForceWing.h>
 #include <RuntimeLib/GiftBox.h>
 #include <RuntimeLib/Inventory.h>
 #include <RuntimeLib/Item.h>
-#include <RuntimeLib/KarmaAbility.h>
 #include <RuntimeLib/Level.h>
 #include <RuntimeLib/Mob.h>
 #include <RuntimeLib/NewbieSupport.h>

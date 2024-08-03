@@ -162,10 +162,9 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     ServerContext.Runtime->Environment.IsNoviceEnabled = Config.Environment.IsNoviceEnabled;
     ServerContext.Runtime->Environment.IsOnly2FAEnabled = Config.Environment.IsOnly2FAEnabled;
     ServerContext.Runtime->Environment.IsRaidBossEnabled = Config.Environment.IsRaidBossEnabled;
-    ServerContext.Runtime->Config.ExpMultiplier = Config.WorldSvr.ExpMultiplier;
-    ServerContext.Runtime->Config.SkillExpMultiplier = Config.WorldSvr.SkillExpMultiplier;
     ServerContext.Runtime->Config.IsSkillRankUpLimitEnabled = Config.Environment.IsSkillRankUpLimitEnabled;
     ServerContext.Runtime->Config.WorldItemDespawnInterval = Config.WorldSvr.WorldItemDespawnInterval;
+    ServerContext.Runtime->Config.NewbieSupportTimeout = Config.WorldSvr.NewbieSupportTimeout;
 
     IPCNodeID NodeID = kIPCNodeIDNull;
     NodeID.Group = Config.WorldSvr.GroupIndex;
@@ -252,18 +251,6 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     ServerLoadRuntimeData(Config, &ServerContext);
     ServerLoadScriptData(Config, &ServerContext);
     ServerRun(Server);
-
-    for (Index WorldIndex = 0; WorldIndex < ServerContext.Runtime->WorldManager->MaxWorldDataCount; WorldIndex += 1) {
-        if (!RTWorldDataExists(ServerContext.Runtime->WorldManager, WorldIndex)) continue;
-
-        RTWorldDataRef World = RTWorldDataGet(ServerContext.Runtime->WorldManager, WorldIndex);
-        ArrayDestroy(World->MobTable);
-    }
-
-    for (Int32 Index = 0; Index < ServerContext.Runtime->MissionDungeonPatternPartDataCount; Index += 1) {
-        ArrayDestroy(ServerContext.Runtime->MissionDungeonPatternPartData[Index].MobTable);
-    }
-
     RTRuntimeDestroy(ServerContext.Runtime);
     AllocatorDeallocate(Allocator, ServerContext.RuntimeData);
     EncryptionUnloadLibrary();

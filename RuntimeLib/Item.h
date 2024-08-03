@@ -88,6 +88,12 @@ enum {
 };
 
 enum {
+	RUNTIME_ITEM_MERIT_MEDAL_TYPE_NORMAL = 1,
+	RUNTIME_ITEM_MERIT_MEDAL_TYPE_PREMIUM = 2,
+	RUNTIME_ITEM_MERIT_MEDAL_TYPE_GM = 3,
+};
+
+enum {
 	RUNTIME_ITEM_ID_CURRENCY = 13,
 };
 
@@ -294,6 +300,21 @@ struct _RTItemData {
 		struct {
 			Int32 UpgradeType;
 		} CoreEnhancer;
+
+		struct {
+			Int32 AbilityType;
+		} RuneSlotExtender;
+
+		struct {
+			Int32 Nation;
+			Int32 Unknown1;
+			Int32 Unknown2;
+			Int32 Unknown3;
+			Int32 Type;
+			Int32 Unknown4;
+			Int32 MaxEvaluationCount;
+		} MeritMedal;
+
 		// TODO: Add other item types like potion, pet, ...
 
 		struct { Int32 Options[22]; };
@@ -423,6 +444,11 @@ struct _RTItemOptions {
 			UInt64 StackSize : 7;
 			UInt64 Option : 25;
 		} OptionStack;
+
+		struct {
+			UInt64 StackSize : 16;
+			UInt64 EvaluationCount : 16;
+		} MeritMedal;
 
 		RTItemOptionFrontierStone FrontierStone;
 	};
@@ -571,6 +597,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStub);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemPotion);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSkillBook);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemImmediateReward);
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemCharacterSlotExtender);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemWeapon);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemArmor);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemAccessory);
@@ -603,6 +630,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemLotto);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemCoreEnhancer);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemForceGemPackage);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemRemoteNpc);
+RUNTIME_ITEM_PROCEDURE_BINDING(RTRuneSlotExtender);
 
 #pragma pack(pop)
 

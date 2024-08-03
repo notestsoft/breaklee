@@ -26,19 +26,24 @@ struct _RTForceWingTrainingSlot {
     UInt8 TrainingIndex;
 };
 
-struct _RTCharacterForceWingInfo {
+struct _RTForceWingInfo {
     UInt8 Grade;
     UInt8 Level;
     Int64 Exp;
+    Int64 Unknown1;
     UInt8 ActivePresetIndex;
-    UInt8 PresetSlotCount;
-    UInt8 TrainingSlotCount;
-    UInt8 TrainingUnlockFlags[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_SIZE];
     UInt8 PresetEnabled[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT];
     Int32 PresetTrainingPointCount[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT];
-    struct _RTForceWingPresetSlot PresetSlots[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_SLOT_COUNT];
+    UInt8 PresetSlotCount;
+    UInt8 TrainingSlotCount;
     struct _RTForceWingArrivalSkillSlot ArrivalSkillSlots[RUNTIME_CHARACTER_MAX_FORCE_WING_ARRIVAL_SKILL_COUNT];
     struct _RTForceWingArrivalSkillSlot ArrivalSkillRestoreSlot;
+    UInt8 TrainingUnlockFlags[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_SIZE];
+};
+
+struct _RTCharacterForceWingInfo {
+    struct _RTForceWingInfo Info;
+    struct _RTForceWingPresetSlot PresetSlots[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_SLOT_COUNT];
     struct _RTForceWingTrainingSlot TrainingSlots[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_SLOT_COUNT];
 };
 

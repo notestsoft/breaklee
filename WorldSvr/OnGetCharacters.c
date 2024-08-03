@@ -28,12 +28,12 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER_LIST) {
 
     memcpy(Client->Characters, Packet->Characters, sizeof(Packet->Characters));
     Client->Flags |= CLIENT_FLAGS_CHARACTER_INDEX_LOADED;
+    Client->AccountInfo = Packet->AccountInfo;
 
     S2C_DATA_GET_CHARACTERS* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, GET_CHARACTERS);
     Response->IsSubpasswordSet = strlen(Client->Account.CharacterPassword) > 0;
     Response->Unknown2 = 1;
-    Response->CharacterSlotID = Client->Account.CharacterSlotID;
-    Response->CharacterSlotOrder = Client->Account.CharacterSlotOrder;
+    Response->AccountInfo = Packet->AccountInfo;
 
     for (Int32 Index = 0; Index < MAX_CHARACTER_COUNT; Index++) {
         IPC_DATA_CHARACTER_INFO* Character = &Packet->Characters[Index];

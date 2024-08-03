@@ -8,12 +8,12 @@
 CLIENT_PROCEDURE_BINDING(ADD_OVERLORD_MASTERY_SLOT) {
     if (!Character) goto error;
 
-	if (Character->Data.Info.Overlord.Level < 1) goto error;
+	if (Character->Data.OverlordMasteryInfo.Info.Level < 1) goto error;
 
 	RTDataOverlordMasteryBaseRef Mastery = RTRuntimeDataOverlordMasteryBaseGet(Runtime->Context, Packet->MasteryIndex);
 	if (!Mastery) goto error;
  
-	if (Character->Data.Info.Overlord.Level < Mastery->RequiredLevel) goto error;
+	if (Character->Data.OverlordMasteryInfo.Info.Level < Mastery->RequiredLevel) goto error;
 
 	if (Mastery->PreMasteryIndex > 0) {
 		RTDataOverlordMasteryBaseRef PreMastery = RTRuntimeDataOverlordMasteryBaseGet(Runtime->Context, Mastery->PreMasteryIndex);
@@ -26,10 +26,10 @@ CLIENT_PROCEDURE_BINDING(ADD_OVERLORD_MASTERY_SLOT) {
   
 	RTOverlordMasterySlotRef Slot = RTCharacterGetOverlordMasterySlot(Runtime, Character, Packet->MasteryIndex);
 	if (!Slot) {
-		Slot = &Character->Data.OverlordMasteryInfo.Slots[Character->Data.OverlordMasteryInfo.Count];
+		Slot = &Character->Data.OverlordMasteryInfo.Slots[Character->Data.OverlordMasteryInfo.Info.SlotCount];
 		memset(Slot, 0, sizeof(struct _RTOverlordMasterySlot));
 		Slot->MasteryIndex = Mastery->MasteryIndex;
-		Character->Data.OverlordMasteryInfo.Count += 1;
+		Character->Data.OverlordMasteryInfo.Info.SlotCount += 1;
 	}
  
     RTDataOverlordMasteryValueRef MasteryValue = RTRuntimeDataOverlordMasteryValueGet(Runtime->Context, Packet->MasteryIndex);
@@ -38,11 +38,10 @@ CLIENT_PROCEDURE_BINDING(ADD_OVERLORD_MASTERY_SLOT) {
     RTDataOverlordMasteryValueLevelRef MasteryValueLevel = RTRuntimeDataOverlordMasteryValueLevelGet(MasteryValue, Slot->Level + 1);
     if (!MasteryValueLevel) goto error;
     
-	if (Character->Data.Info.Overlord.Point < MasteryValueLevel->RequiredMasteryPointCount) goto error;
+	if (Character->Data.OverlordMasteryInfo.Info.Point < MasteryValueLevel->RequiredMasteryPointCount) goto error;
 
 	Slot->Level += 1;
-	Character->Data.Info.Overlord.Point -= MasteryValueLevel->RequiredMasteryPointCount;
-	Character->SyncMask.Info = true;
+	Character->Data.OverlordMasteryInfo.Info.Point -= MasteryValueLevel->RequiredMasteryPointCount;
 	Character->SyncMask.OverlordMasteryInfo = true;
 
 	S2C_DATA_ADD_OVERLORD_MASTERY_SLOT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ADD_OVERLORD_MASTERY_SLOT);

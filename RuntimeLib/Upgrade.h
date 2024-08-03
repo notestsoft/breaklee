@@ -64,6 +64,11 @@ enum {
     RUNTIME_DIVINE_UPGRADE_RESULT_ERROR     = 4,
 };
 
+struct _RTUpgradeInfo {
+    Int32 UpgradePoints;
+    Timestamp UpgradePointTimestamp;
+};
+
 #pragma pack(pop)
 
 Int32 RTItemUpgradeNormal(

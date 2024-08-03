@@ -3,27 +3,29 @@
 
 #include "Base.h"
 
+#include "Ability.h"
+#include "Account.h"
 #include "Achievement.h"
 #include "AnimaMastery.h"
 #include "Appearance.h"
+#include "AuraMastery.h"
 #include "BattleSystem.h"
-#include "BlendedAbility.h"
 #include "BlessingBead.h"
 #include "Buff.h"
 #include "Collection.h"
 #include "Costume.h"
+#include "Craft.h"
 #include "DailyQuest.h"
-#include "Warehouse.h"
+#include "DamageBooster.h"
 #include "Entity.h"
 #include "Equipment.h"
-#include "EssenceAbility.h"
 #include "EventPass.h"
+#include "Exploration.h"
 #include "ForceWing.h"
 #include "GiftBox.h"
 #include "HonorMedal.h"
 #include "Inventory.h"
 #include "Item.h"
-#include "KarmaAbility.h"
 #include "Mercenary.h"
 #include "MeritMastery.h"
 #include "Movement.h"
@@ -31,18 +33,22 @@
 #include "NewbieSupport.h"
 #include "OverlordMastery.h"
 #include "PremiumService.h"
+#include "Preset.h"
 #include "Quest.h"
 #include "Quickslot.h"
 #include "Recovery.h"
 #include "RequestCraft.h"
 #include "ResearchSupport.h"
+#include "SecretShop.h"
 #include "Settings.h"
 #include "Skill.h"
 #include "SkillSlot.h"
 #include "StellarMastery.h"
 #include "Transcendence.h"
 #include "Transform.h"
+#include "Upgrade.h"
 #include "VehicleInventory.h"
+#include "Warehouse.h"
 #include "WarpService.h"
 
 EXTERN_C_BEGIN
@@ -64,13 +70,6 @@ enum {
     RUNTIME_CHARACTER_STAT_PNT,
 
     RUNTIME_CHARACTER_STAT_COUNT
-};
-
-enum {
-    RUNTIME_CHARACTER_CURRENCY_ALZ,
-    RUNTIME_CHARACTER_CURRENCY_GEM,
-
-    RUNTIME_CHARACTER_CURRENCY_COUNT
 };
 
 union _RTCharacterStyle {
@@ -145,14 +144,6 @@ struct _RTCharacterHonor {
     Int64 Exp;
 };
 
-struct _RTCharacterAbility {
-    UInt16 Point;
-    UInt32 Exp;
-    UInt32 MaxEssenceAbilitySlotCount;
-    UInt32 MaxBlendedAbilitySlotCount;
-    UInt32 MaxKarmaAbilitySlotCount;
-};
-
 struct _RTCharacterResource {
     Int64 HP;
     Int64 MP;
@@ -183,26 +174,32 @@ struct _RTCharacterInfo {
     union _RTCharacterPKState PKState;
     struct _RTCharacterProfile Profile;
     struct _RTCharacterLevel Basic;
-    struct _RTCharacterLevel Overlord;
     struct _RTCharacterHonor Honor;
-    struct _RTCharacterAbility Ability;
     struct _RTCharacterSkill Skill;
     struct _RTCharacterResource Resource;
     UInt16 Stat[RUNTIME_CHARACTER_STAT_COUNT];
-    UInt64 Currency[RUNTIME_CHARACTER_CURRENCY_COUNT]; // TODO: Gems are account binding
+    UInt64 Alz;
     struct _RTCharacterPosition Position;
 };
 
 struct _RTCharacterData {
-#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__, __SCOPE__) \
+#define ACCOUNT_DATA_PROTOCOL(__TYPE__, __NAME__) \
     __TYPE__ __NAME__;
+
+#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__) \
+    __TYPE__ __NAME__;
+    
 #include "CharacterDataDefinition.h"
 };
 
 union _RTCharacterSyncMask {
     struct {
-        #define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__, __SCOPE__) \
+        #define ACCOUNT_DATA_PROTOCOL(__TYPE__, __NAME__) \
             UInt64 __NAME__ : 1;
+
+        #define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__) \
+            UInt64 __NAME__ : 1;
+
         #include "CharacterDataDefinition.h"
     };
     UInt64 RawValue;
@@ -225,13 +222,13 @@ struct _RTCharacter {
 
     struct _RTMovement Movement;
     struct _RTBattleAttributes Attributes;
-
     Int32 AxpFieldRate;
     Int32 SkillComboLevel;
     Timestamp DebugSpRegenTimeout;
 
     Int32 BattleModeSkillIndex;
     Timestamp BattleModeTimeout; // TODO: Replace timeout with skill timer pool
+    Timestamp GiftBoxUpdateTimestamps[RUNTIME_CHARACTER_MAX_GIFT_BOX_SLOT_COUNT];
 };
 
 #pragma pack(pop)
@@ -321,13 +318,6 @@ Int32 RTCharacterCalculateRequiredMP(
 Bool RTCharacterBattleRankUp(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
-);
-
-Void RTCharacterAddCurrency(
-    RTRuntimeRef Runtime,
-    RTCharacterRef Character,
-    Int32 CurrencyType,
-    UInt64 Amount
 );
 
 Void RTCharacterAddExp(

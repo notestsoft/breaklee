@@ -211,7 +211,7 @@ Void RTWorldSpawnMob(
     Int32 X = Mob->Spawn.AreaX;
     Int32 Y = Mob->Spawn.AreaY;
 
-    if (!Mob->Spawn.MissionGate) {
+    if (!Mob->Spawn.IsMissionGate && (Mob->Spawn.AreaWidth > 1 || Mob->Spawn.AreaHeight > 1)) {
         Int32 RemainingRandomCount = 3;
         while (RemainingRandomCount >= 0) {
             Int32 RandomX = RandomRange(&WorldContext->Seed, Mob->Spawn.AreaX, Mob->Spawn.AreaX + Mob->Spawn.AreaWidth);
@@ -252,6 +252,17 @@ Void RTWorldSpawnMob(
 
     if (Mob->Spawn.SpawnTriggerID) {
         RTDungeonTriggerEvent(WorldContext, Mob->Spawn.SpawnTriggerID);
+    }
+
+    if (WorldContext->DungeonIndex) {
+        RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, WorldContext->DungeonIndex);
+        assert(DungeonData);
+
+        Index MobIndex = Mob->ID.EntityIndex;
+        RTDungeonTimeControlDataRef TimeControl = (RTDungeonTimeControlDataRef)DictionaryLookup(DungeonData->TimeControls, &MobIndex);
+        if (TimeControl && TimeControl->Event == RUNTIME_DUNGEON_TIME_CONTROL_TYPE_SPAWN) {
+            RTDungeonAddTime(WorldContext, TimeControl->Value);
+        }
     }
 
     RTMobOnEvent(Runtime, WorldContext, Mob, MOB_EVENT_SPAWN);
@@ -391,6 +402,17 @@ Void RTWorldDespawnMob(
     }
 
     RTWorldIncrementQuestMobCounter(Runtime, WorldContext, Mob->Spawn.MobSpeciesIndex);
+
+    if (WorldContext->DungeonIndex) {
+        RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, WorldContext->DungeonIndex);
+        assert(DungeonData);
+
+        Index MobIndex = Mob->ID.EntityIndex;
+        RTDungeonTimeControlDataRef TimeControl = (RTDungeonTimeControlDataRef)DictionaryLookup(DungeonData->TimeControls, &MobIndex);
+        if (TimeControl && TimeControl->Event == RUNTIME_DUNGEON_TIME_CONTROL_TYPE_DESPAWN) {
+            RTDungeonAddTime(WorldContext, TimeControl->Value);
+        }
+    }
 }
 
 RTWorldItemRef RTWorldContextGetItem(

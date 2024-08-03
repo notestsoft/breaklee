@@ -11,8 +11,12 @@ struct _RTTransformSlot {
     UInt8 TransformIndex;
 };
 
+struct _RTTransformInfo {
+    UInt16 SlotCount;
+};
+
 struct _RTCharacterTransformInfo {
-    Int32 Count;
+    struct _RTTransformInfo Info;
     struct _RTTransformSlot Slots[RUNTIME_CHARACTER_MAX_TRANSFORM_SLOT_COUNT];
 };
 

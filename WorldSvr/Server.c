@@ -79,7 +79,23 @@ Void ServerLoadRuntimeData(
     Loaded &= ServerLoadWorldDropData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
     // TODO: Enable file loading check after finishing migration to new data structure!
     if (!Loaded) Fatal("Runtime data loading failed!");
+    /*
+    IndexSetRef IndexSet = IndexSetCreate(AllocatorGetDefault(), 256);
 
+    for (Int32 Index = 0; Index < Context->Runtime->ItemDataCount; Index++) {
+        RTItemDataRef ItemData = &Context->Runtime->ItemData[Index];
+        if (ItemData.) {
+            IndexSetInsert(IndexSet, ItemData->ItemType);
+        }
+    }
+
+    IndexSetIteratorRef Iterator = IndexSetGetIterator(IndexSet);
+    while (Iterator) {
+        Trace("StackableItem(%d)", Iterator->Value);
+        Iterator = IndexSetIteratorNext(IndexSet, Iterator);
+    }
+    IndexSetDestroy(IndexSet);
+    */
     ArchiveDestroy(MainArchive);
     ArchiveDestroy(Cont1Archive);
     ArchiveDestroy(Cont2Archive);

@@ -97,13 +97,14 @@ CLIENT_PROCEDURE_BINDING(QUEST_ACTION) {
 
 	if (!Success) goto error;
 
-	RTQuestSlotRef QuestSlot = &Character->Data.QuestSlotInfo.QuestSlot[Packet->SlotIndex];
+	RTQuestSlotRef QuestSlot = RTCharacterGetQuestSlot(Runtime, Character, Packet->SlotIndex);
+	if (!QuestSlot) goto error;
 
 	S2C_DATA_QUEST_ACTION* Response = PacketBufferInit(Connection->PacketBuffer, S2C, QUEST_ACTION);
 	Response->QuestID = Packet->QuestID;
 	Response->NpcFlags = 0;
 
-	for (Int32 Index = 0; Index < QuestSlot->NpcActionIndex; Index++) {
+	for (Int32 Index = 0; Index < QuestSlot->NpcActionIndex; Index += 1) {
 		Response->NpcFlags |= 1 << Index;
 	}
     

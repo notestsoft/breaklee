@@ -40,9 +40,8 @@ typedef union _RTRuntimeEnvironment RTRuntimeEnvironment;
 
 struct _RTRuntimeConfig {
     Bool IsSkillRankUpLimitEnabled;
-    UInt64 ExpMultiplier;
-    UInt64 SkillExpMultiplier;
     UInt64 WorldItemDespawnInterval;
+    Int32 NewbieSupportTimeout;
 };
 
 struct _RTRuntime {
@@ -63,10 +62,6 @@ struct _RTRuntime {
     Int32 QuestRewardItemSetDataCount;
     Int32 TrainerDataCount;
     Int32 WarpCount;
-    Int32 WorldCount;
-    Int32 DungeonDataCount;
-    Int32 DungeonMobSpawnDataCount;
-    Int32 MissionDungeonPatternPartDataCount;
 
     struct _RTBattleStyleLevelFormulaData BattleStyleLevelFormulaData[RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX];
     struct _RTBattleStyleClassFormulaData BattleStyleClassFormulaData[RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX];
@@ -81,12 +76,11 @@ struct _RTRuntime {
     struct _RTQuestRewardItemSetData QuestRewardItemSetData[RUNTIME_MEMORY_MAX_QUEST_REWARD_ITEM_SET_DATA_COUNT];
     struct _RTTrainerData TrainerData[RUNTIME_MEMORY_MAX_TRAINER_DATA_COUNT];
     struct _RTWarp Warps[RUNTIME_MEMORY_MAX_WARP_COUNT];
-    struct _RTDungeonData DungeonData[RUNTIME_MEMORY_MAX_DUNGEON_COUNT];
-    struct _RTMissionDungeonPatternPartData MissionDungeonPatternPartData[RUNTIME_MEMORY_MAX_DUNGEON_PATTERN_PART_COUNT];
     Float32 MovementDistanceCache[RUNTIME_MOVEMENT_MAX_DISTANCE_LENGTH * RUNTIME_MOVEMENT_MAX_DISTANCE_LENGTH];
     MemoryPoolRef SkillDataPool;
     MemoryPoolRef ForceEffectFormulaPool;
-
+    DictionaryRef DungeonData;
+    DictionaryRef PatternPartData;
     Void* UserData;
 };
 
@@ -245,12 +239,12 @@ Void RTRuntimeCloseDungeon(
 
 RTDungeonDataRef RTRuntimeGetDungeonDataByID(
     RTRuntimeRef Runtime,
-    Index DungeonID
+    Index DungeonIndex
 );
 
 RTMissionDungeonPatternPartDataRef RTRuntimeGetPatternPartByID(
     RTRuntimeRef Runtime,
-    Int32 PatternPartID
+    Index PatternPartIndex
 );
 
 Void RTRuntimeBroadcastCharacterData(

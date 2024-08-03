@@ -7,6 +7,10 @@ EXTERN_C_BEGIN
 
 #pragma pack(push, 1)
 
+struct _RTWarpServiceInfo {
+    Int32 SlotCount;
+};
+
 struct _RTWarpServiceSlot {
     Int32 Type;
 
@@ -19,7 +23,7 @@ struct _RTWarpServiceSlot {
 };
 
 struct _RTCharacterWarpServiceInfo {
-    Int32 Count;
+    struct _RTWarpServiceInfo Info;
     struct _RTWarpServiceSlot Slots[RUNTIME_CHARACTER_MAX_WARP_SERVICE_SLOT_COUNT];
 };
 

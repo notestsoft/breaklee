@@ -240,8 +240,6 @@ Void RTCalculateNormalAttackResult(
 	Float64 Exp = Defender->Values[RUNTIME_ATTRIBUTE_EXP];
 	Exp *= Result->AppliedDamage;
 	Exp /= MAX(1, Defender->Values[RUNTIME_ATTRIBUTE_HP_MAX]);
-	Exp *= Runtime->Config.ExpMultiplier;
-
 	Result->Exp = (Int64)Exp;
 }
 
@@ -295,9 +293,9 @@ Void RTCalculateSkillAttackResult(
 	Attacker->Values[RUNTIME_ATTRIBUTE_CRITICAL_DAMAGE] -= CriticalDamage;
 
 	if (Result->AttackType == RUNTIME_ATTACK_TYPE_NORMAL) {
-		Result->SkillExp = Skill->SkillExp1 * (Int32)Runtime->Config.SkillExpMultiplier;
+		Result->SkillExp = Skill->SkillExp1;
 	}
 	else {
-		Result->SkillExp = Skill->SkillExp2 * (Int32)Runtime->Config.SkillExpMultiplier;
+		Result->SkillExp = Skill->SkillExp2;
 	}
 }

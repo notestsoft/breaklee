@@ -14,17 +14,17 @@ CLIENT_PROCEDURE_BINDING(FORCE_WING_GRADE_UP) {
 	S2C_DATA_FORCE_WING_GRADE_UP* Response = PacketBufferInit(Connection->PacketBuffer, S2C, FORCE_WING_GRADE_UP);
 	Response->Success = false;
 
-	if (Character->Data.ForceWingInfo.Grade < 1) goto error;
+	if (Character->Data.ForceWingInfo.Info.Grade < 1) goto error;
 
-	RTDataForceWingGradeInfoRef GradeInfoData = RTRuntimeDataForceWingGradeInfoGet(Runtime->Context, Character->Data.ForceWingInfo.Grade);
+	RTDataForceWingGradeInfoRef GradeInfoData = RTRuntimeDataForceWingGradeInfoGet(Runtime->Context, Character->Data.ForceWingInfo.Info.Grade);
 	if (!GradeInfoData) goto error;
 
-	if (Character->Data.ForceWingInfo.Level < GradeInfoData->MaxLevel) goto error;
+	if (Character->Data.ForceWingInfo.Info.Level < GradeInfoData->MaxLevel) goto error;
 
-	RTDataForceWingGradeInfoRef NextGradeInfoData = RTRuntimeDataForceWingGradeInfoGet(Runtime->Context, Character->Data.ForceWingInfo.Grade + 1);
+	RTDataForceWingGradeInfoRef NextGradeInfoData = RTRuntimeDataForceWingGradeInfoGet(Runtime->Context, Character->Data.ForceWingInfo.Info.Grade + 1);
 	if (!NextGradeInfoData) goto error;
 
-	RTDataForceWingUpgradeRef UpgradeData = RTRuntimeDataForceWingUpgradeGet(Runtime->Context, Character->Data.ForceWingInfo.Grade);
+	RTDataForceWingUpgradeRef UpgradeData = RTRuntimeDataForceWingUpgradeGet(Runtime->Context, Character->Data.ForceWingInfo.Info.Grade);
 	if (!UpgradeData) goto error;
 
 	Int64 RequiredItemCount[RUNTIME_DATA_MAX_FORCE_WING_UPGRADE_MATERIAL_COUNT] = { 0 };
@@ -81,20 +81,20 @@ CLIENT_PROCEDURE_BINDING(FORCE_WING_GRADE_UP) {
 		}
 	}
 
-	Character->Data.ForceWingInfo.Grade = NextGradeInfoData->Grade;
-	Character->Data.ForceWingInfo.Level = NextGradeInfoData->MinLevel;
+	Character->Data.ForceWingInfo.Info.Grade = NextGradeInfoData->Grade;
+	Character->Data.ForceWingInfo.Info.Level = NextGradeInfoData->MinLevel;
 
 	Int32 AddedTrainingPointCount = NextGradeInfoData->Grade * RUNTIME_CHARACTER_FORCE_WING_GRADE_TRAINING_POINT_COUNT;
 
 	for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT; Index += 1) {
-		Character->Data.ForceWingInfo.PresetTrainingPointCount[Index] += AddedTrainingPointCount;
+		Character->Data.ForceWingInfo.Info.PresetTrainingPointCount[Index] += AddedTrainingPointCount;
 	}
 
-	RTDataForceWingSkillRef SkillData = RTRuntimeDataForceWingSkillGet(Runtime->Context, Character->Data.ForceWingInfo.Grade);
+	RTDataForceWingSkillRef SkillData = RTRuntimeDataForceWingSkillGet(Runtime->Context, Character->Data.ForceWingInfo.Info.Grade);
 	if (SkillData) {
 		assert(0 <= SkillData->SlotIndex && SkillData->SlotIndex < RUNTIME_CHARACTER_MAX_FORCE_WING_ARRIVAL_SKILL_COUNT);
 
-		RTForceWingArrivalSkillSlotRef SkillSlot = &Character->Data.ForceWingInfo.ArrivalSkillSlots[SkillData->SlotIndex];
+		RTForceWingArrivalSkillSlotRef SkillSlot = &Character->Data.ForceWingInfo.Info.ArrivalSkillSlots[SkillData->SlotIndex];
 		memset(SkillSlot, 0, sizeof(struct _RTForceWingArrivalSkillSlot));
 		SkillSlot->SlotIndex = SkillData->SlotIndex;
 	}
@@ -103,9 +103,9 @@ CLIENT_PROCEDURE_BINDING(FORCE_WING_GRADE_UP) {
 	Character->SyncMask.ForceWingInfo = true;
 
 	Response->Success = 1;
-	Response->ForceWingGrade = Character->Data.ForceWingInfo.Grade;
-	Response->ForceWingLevel = Character->Data.ForceWingInfo.Level;
-	Response->ForceWingExp = Character->Data.ForceWingInfo.Exp;
+	Response->ForceWingGrade = Character->Data.ForceWingInfo.Info.Grade;
+	Response->ForceWingLevel = Character->Data.ForceWingInfo.Info.Level;
+	Response->ForceWingExp = Character->Data.ForceWingInfo.Info.Exp;
 	Response->Unknown1 = 0;
 	Response->AddedTrainingPointCount = AddedTrainingPointCount;
 	SocketSend(Socket, Connection, Response);
@@ -132,9 +132,9 @@ CLIENT_PROCEDURE_BINDING(FORCE_WING_LEVEL_UP) {
 		Packet->InventorySlotCount2,
 		&Packet->InventorySlotIndex[Packet->InventorySlotCount1]
 	);
-	Response->ForceWingGrade = Character->Data.ForceWingInfo.Grade;
-	Response->ForceWingLevel = Character->Data.ForceWingInfo.Level;
-	Response->ForceWingExp = Character->Data.ForceWingInfo.Exp;
+	Response->ForceWingGrade = Character->Data.ForceWingInfo.Info.Grade;
+	Response->ForceWingLevel = Character->Data.ForceWingInfo.Info.Level;
+	Response->ForceWingExp = Character->Data.ForceWingInfo.Info.Exp;
 	Response->Unknown1 = 0;
 	Response->AddedTrainingPointCount = (Response->Success) ? RUNTIME_CHARACTER_FORCE_WING_LEVEL_TRAINING_POINT_COUNT : 0;
 	SocketSend(Socket, Connection, Response);
@@ -167,7 +167,7 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCEWING_TRAINING_LEVEL) {
 		Response->Result = 1;
 	}
 	else {
-		Response->RemainingTrainingPointCount = Character->Data.ForceWingInfo.PresetTrainingPointCount[Packet->PresetPageIndex];
+		Response->RemainingTrainingPointCount = Character->Data.ForceWingInfo.Info.PresetTrainingPointCount[Packet->PresetPageIndex];
 	}
 
 	SocketSend(Socket, Connection, Response);
@@ -202,7 +202,7 @@ CLIENT_PROCEDURE_BINDING(ROLL_FORCEWING_ARRIVAL_SKILL) {
 	else {
 		memcpy(
 			&Response->SkillSlot,
-			&Character->Data.ForceWingInfo.ArrivalSkillSlots[Packet->SkillSlotIndex],
+			&Character->Data.ForceWingInfo.Info.ArrivalSkillSlots[Packet->SkillSlotIndex],
 			sizeof(struct _RTForceWingArrivalSkillSlot)
 		);
 	}
@@ -230,7 +230,7 @@ CLIENT_PROCEDURE_BINDING(SET_FORCEWING_TRAINING_SLOT_FLAGS) {
 	if (!Character) goto error;
 
 	for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_SIZE; Index += 1) {
-		Character->Data.ForceWingInfo.TrainingUnlockFlags[Index] = Packet->Flags[Index];
+		Character->Data.ForceWingInfo.Info.TrainingUnlockFlags[Index] = Packet->Flags[Index];
 	}
 
 	Character->SyncMask.ForceWingInfo = true;

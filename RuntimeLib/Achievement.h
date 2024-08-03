@@ -18,18 +18,47 @@ struct _RTAchievementRewardSlot {
     UInt32 Unknown1;
 };
 
+struct _RTAchievementInfo {
+    Int32 AllAchievementScore;
+    Int32 NormalAchievementScore;
+    Int32 QuestAchievementScore;
+    Int32 DungeonAchievementScore;
+    Int32 ItemsAchievementScore;
+    Int32 PvpAchievementScore;
+    Int32 WarAchievementScore;
+    Int32 HuntingAchievementScore;
+    Int32 CraftAchievementScore;
+    Int32 CommunityAchievementScore;
+    Int32 SharedAchievementScore;
+    Int32 SpecialAchievementScore;
+    Int32 GeneralMemoirAchievementScore;
+    Int32 SharedMemoirAchievementScore;
+    UInt16 DisplayTitle;
+    UInt16 EventTitle;
+    UInt16 GuildTitle;
+    UInt16 WarTitle;
+    Int32 AchievementCount;
+    Int32 AchievementRewardCount;
+};
+
+struct _RTCharacterAchievementInfo {
+    struct _RTAchievementInfo Info;
+    struct _RTAchievementSlot AchievementSlots[RUNTIME_CHARACTER_MAX_ACHIEVEMENT_SLOT_COUNT];
+    struct _RTAchievementRewardSlot AchievementRewardSlots[RUNTIME_CHARACTER_MAX_ACHIEVEMENT_SLOT_COUNT];
+};
+
 struct _RTAchievementExtendedRewardSlot {
     UInt16 TitleIndex;
     UInt32 Unknown1;
     UInt8 IsRewardTaken;
 };
 
-struct _RTCharacterAchievementInfo {
-    Int32 AchievementCount;
-    struct _RTAchievementSlot AchievementSlots[RUNTIME_CHARACTER_MAX_ACHIEVEMENT_SLOT_COUNT];
-    Int32 AchievementRewardCount;
-    struct _RTAchievementRewardSlot AchievementRewardSlots[RUNTIME_CHARACTER_MAX_ACHIEVEMENT_SLOT_COUNT];
+struct _RTAchievementExtendedInfo {
     Int32 AchievementExtendedRewardCount;
+};
+
+struct _RTCharacterAchievementExtendedInfo {
+    struct _RTAchievementExtendedInfo Info;
     struct _RTAchievementExtendedRewardSlot AchievementExtendedRewardSlots[RUNTIME_CHARACTER_MAX_ACHIEVEMENT_SLOT_COUNT];
 };
 

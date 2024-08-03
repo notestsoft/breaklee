@@ -107,7 +107,7 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 				struct _RTItemSlot Slot = { 0 };
 				Slot.Item.ID = ItemResult->ItemKind;
 				Slot.ItemOptions = ItemOptions ? ItemOptions : ItemCount;
-				Slot.SlotIndex = Character->Data.TemporaryInventoryInfo.Count;
+				Slot.SlotIndex = Character->Data.TemporaryInventoryInfo.Info.SlotCount;
 
 				if (RTInventorySetSlot(Runtime, &Character->Data.TemporaryInventoryInfo, &Slot)) {
 					S2C_EXTRACT_ITEM_SLOT_INDEX* ResponseItemSlot = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_EXTRACT_ITEM_SLOT_INDEX);
@@ -122,7 +122,7 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 					struct _RTItemSlot Slot = { 0 };
 					Slot.Item.ID = ItemResult->ItemKind;
 					Slot.ItemOptions = ItemOptions;
-					Slot.SlotIndex = Character->Data.TemporaryInventoryInfo.Count;
+					Slot.SlotIndex = Character->Data.TemporaryInventoryInfo.Info.SlotCount;
 
 					if (RTInventorySetSlot(Runtime, &Character->Data.TemporaryInventoryInfo, &Slot)) {
 						S2C_EXTRACT_ITEM_SLOT_INDEX* ResponseItemSlot = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_EXTRACT_ITEM_SLOT_INDEX);

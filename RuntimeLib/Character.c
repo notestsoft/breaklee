@@ -17,8 +17,12 @@ Void RTCharacterInitialize(
 
     CStringCopySafe(Character->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Name);
 
-#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__, __SCOPE__) \
+#define ACCOUNT_DATA_PROTOCOL(__TYPE__, __NAME__) \
 	memcpy(&Character->Data.__NAME__, &Data->__NAME__, sizeof(__TYPE__));
+
+#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__) \
+	memcpy(&Character->Data.__NAME__, &Data->__NAME__, sizeof(__TYPE__));
+
 #include "CharacterDataDefinition.h"
 
 	RTCharacterInitializeAttributes(Runtime, Character);
@@ -30,6 +34,7 @@ Void RTCharacterInitialize(
 		RUNTIME_MOVEMENT_SPEED_BASE,
 		RUNTIME_WORLD_TILE_WALL
 	);
+	RTCharacterUpdateGiftBox(Runtime, Character);
 }
 
 Void RTCharacterInitializeConstantAttributes(
@@ -162,8 +167,10 @@ Void RTCharacterInitializeEquipment(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 ) {
-    for (Int32 Index = 0; Index < Character->Data.EquipmentInfo.Count; Index += 1) {
-        RTItemSlotRef ItemSlot = &Character->Data.EquipmentInfo.Slots[Index];
+	// TODO: Apply equipment preset slots
+
+    for (Int32 Index = 0; Index < Character->Data.EquipmentInfo.Info.EquipmentSlotCount; Index += 1) {
+        RTItemSlotRef ItemSlot = &Character->Data.EquipmentInfo.EquipmentSlots[Index];
         RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
 		if (ItemData->MinLevel > Character->Data.Info.Basic.Level) continue;
 
@@ -180,7 +187,7 @@ Void RTCharacterInitializeSkillStats(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 ) {
-	for (Int32 Index = 0; Index < Character->Data.SkillSlotInfo.Count; Index += 1) {
+	for (Int32 Index = 0; Index < Character->Data.SkillSlotInfo.Info.SlotCount; Index += 1) {
 		RTSkillSlotRef SkillSlot = &Character->Data.SkillSlotInfo.Skills[Index];
 		assert(SkillSlot);
 
@@ -208,8 +215,8 @@ Void RTCharacterInitializeEssenceAbilities(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 ) {
-    for (Int32 Index = 0; Index < Character->Data.EssenceAbilityInfo.Count; Index += 1) {
-		RTEssenceAbilitySlotRef AbilitySlot = &Character->Data.EssenceAbilityInfo.Slots[Index];
+    for (Int32 Index = 0; Index < Character->Data.AbilityInfo.Info.EssenceAbilityCount; Index += 1) {
+		RTEssenceAbilitySlotRef AbilitySlot = &Character->Data.AbilityInfo.EssenceAbilitySlots[Index];
 
 		RTDataPassiveAbilityValueRef AbilityValue = RTRuntimeDataPassiveAbilityValueGet(
 			Runtime->Context, 
@@ -244,8 +251,8 @@ Void RTCharacterInitializeKarmaAbilities(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 ) {
-	for (Int32 Index = 0; Index < Character->Data.KarmaAbilityInfo.Count; Index += 1) {
-		RTKarmaAbilitySlotRef AbilitySlot = &Character->Data.KarmaAbilityInfo.Slots[Index];
+	for (Int32 Index = 0; Index < Character->Data.AbilityInfo.Info.KarmaAbilityCount; Index += 1) {
+		RTKarmaAbilitySlotRef AbilitySlot = &Character->Data.AbilityInfo.KarmaAbilitySlots[Index];
 
 		RTDataKarmaAbilityValueRef AbilityValue = RTRuntimeDataKarmaAbilityValueGet(
 			Runtime->Context,
@@ -311,11 +318,18 @@ Void RTCharacterInitializePlatinumMeritMastery(
     // TODO: Platinum merit values
 }
 
+Void RTCharacterInitializeDiamondMeritMastery(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+	// TODO: Diamond merit values
+}
+
 Void RTCharacterInitializeOverlordMastery(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 ) {
-	for (Int32 Index = 0; Index < Character->Data.OverlordMasteryInfo.Count; Index += 1) {
+	for (Int32 Index = 0; Index < Character->Data.OverlordMasteryInfo.Info.SlotCount; Index += 1) {
 		RTOverlordMasterySlotRef MasterySlot = &Character->Data.OverlordMasteryInfo.Slots[Index];
 		RTDataOverlordMasteryValueRef MasteryValue = RTRuntimeDataOverlordMasteryValueGet(Runtime->Context, MasterySlot->MasteryIndex);
 
@@ -354,14 +368,14 @@ Void RTCharacterInitializeForceWingMastery(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 ) {
-    // TODO: Honor medal values
+    // TODO: Force wing values
 }
 
 Void RTCharacterInitializeCollection(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 ) {
-    // TODO: Honor medal values
+    // TODO: Collection values
 }
 
 Void RTCharacterInitializeTranscendenceMastery(
@@ -405,6 +419,7 @@ Void RTCharacterInitializeAttributes(
     RTCharacterInitializeBuffs(Runtime, Character);
     RTCharacterInitializeGoldMeritMastery(Runtime, Character);
     RTCharacterInitializePlatinumMeritMastery(Runtime, Character);
+	RTCharacterInitializeDiamondMeritMastery(Runtime, Character);
     RTCharacterInitializeOverlordMastery(Runtime, Character);
     RTCharacterInitializeHonorMedalMastery(Runtime, Character);
     RTCharacterInitializeForceWingMastery(Runtime, Character);
@@ -913,17 +928,6 @@ Bool RTCharacterBattleRankUp(
 	return true;
 }
 
-Void RTCharacterAddCurrency(
-	RTRuntimeRef Runtime,
-	RTCharacterRef Character,
-	Int32 CurrencyType,
-	UInt64 Amount
-) {
-	assert(0 <= CurrencyType && CurrencyType < RUNTIME_CHARACTER_CURRENCY_COUNT);
-
-	Character->Data.Info.Currency[CurrencyType] += Amount;
-}
-
 Void RTCharacterAddExp(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
@@ -932,17 +936,15 @@ Void RTCharacterAddExp(
 	UInt64 Axp = (Exp / 100) * Character->AxpFieldRate;
 	RTCharacterAddAbilityExp(Runtime, Character, Axp);
 
-	if (Character->Data.Info.Overlord.Level > 0) {
+	if (Character->Data.OverlordMasteryInfo.Info.Level > 0) {
 		RTCharacterAddOverlordExp(Runtime, Character, Exp);
 		return;
 	}
 
 	Int32 CurrentLevel = Character->Data.Info.Basic.Level;
 	
-	// TODO: Limit exp accumulation to the max reachable value from data!
 	Character->Data.Info.Basic.Exp += Exp;
-	Character->Data.Info.Basic.Level = RTRuntimeGetLevelByExp(Runtime, CurrentLevel, Character->Data.Info.Basic.Exp);
-
+	Character->Data.Info.Basic.Level = RTRuntimeGetLevelByExp(Runtime, CurrentLevel, &Character->Data.Info.Basic.Exp);
 	Character->SyncMask.Info = true;
 
 	Int32 LevelDiff = Character->Data.Info.Basic.Level - CurrentLevel;
@@ -967,12 +969,20 @@ Void RTCharacterAddExp(
 			}
 		}
 
-		if (Character->Data.Info.Overlord.Level < 1) {
+		RTDataLevelRef NextLevelData = RTRuntimeDataLevelGet(Runtime->Context, Character->Data.Info.Basic.Level + 1);
+		if (!NextLevelData) {
+			Character->Data.NewbieSupportInfo.Info.Timestamp = GetTimestamp() + Runtime->Config.NewbieSupportTimeout;
+			Character->SyncMask.NewbieSupportInfo = true;
+		}
+
+		if (Character->Data.OverlordMasteryInfo.Info.Level < 1) {
 			RTDataOverlordMasteryStartRef Start = RTRuntimeDataOverlordMasteryStartGet(Runtime->Context);
 			if (Character->Data.Info.Basic.Level == Start->RequiredLevel) {
-				Character->Data.Info.Overlord.Level = 1;
-				Character->Data.Info.Overlord.Exp = 0;
-				Character->Data.Info.Overlord.Point = Start->MasteryPointCount;
+				Character->Data.OverlordMasteryInfo.Info.Level = 1;
+				Character->Data.OverlordMasteryInfo.Info.Exp = 0;
+				Character->Data.OverlordMasteryInfo.Info.Point = Start->MasteryPointCount;
+				Character->SyncMask.OverlordMasteryInfo = true;
+
 				RTRuntimeBroadcastCharacterData(
 					Runtime,
 					Character,
@@ -1124,14 +1134,14 @@ Void RTCharacterAddAbilityExp(
 ) {
 	if (Exp < 1) return;
 
-	Character->Data.Info.Ability.Exp += Exp;
+	Character->Data.AbilityInfo.Info.Axp += Exp;
 
-	while (Character->Data.Info.Ability.Exp >= RUNTIME_CHARACTER_AXP_PER_LEVEL) {
-		Character->Data.Info.Ability.Exp -= RUNTIME_CHARACTER_AXP_PER_LEVEL;
-		Character->Data.Info.Ability.Point += 1;
+	while (Character->Data.AbilityInfo.Info.Axp >= RUNTIME_CHARACTER_AXP_PER_LEVEL) {
+		Character->Data.AbilityInfo.Info.Axp -= RUNTIME_CHARACTER_AXP_PER_LEVEL;
+		Character->Data.AbilityInfo.Info.AP += 1;
 	}
 
-	Character->SyncMask.Info = true;
+	Character->SyncMask.AbilityInfo = true;
 }
 
 Bool RTCharacterAddStats(

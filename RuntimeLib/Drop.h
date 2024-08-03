@@ -13,31 +13,14 @@ struct _RTDropItem {
     Int32 DropRate;
     Int32 OptionPoolIndex;
     Int32 DurationIndex;
-};
-
-struct _RTWorldDropItem {
-    struct _RTDropItem Item;
     Int32 MinMobLevel;
     Int32 MaxMobLevel;
 };
 
-struct _RTMobDropItem {
-    struct _RTDropItem Item;
-    Int32 MobSpeciesIndex;
-};
-
-struct _RTQuestDropItem {
-    struct _RTDropItem Item;
-    Int32 MobSpeciesIndex;
-};
-
 struct _RTDropTable {
-    Int32 WorldItemCount;
-    Int32 MobItemCount;
-    Int32 QuestItemCount;
-    struct _RTWorldDropItem WorldItems[RUNTIME_MEMORY_MAX_WORLD_DROP_ITEM_COUNT];
-    struct _RTMobDropItem MobItems[RUNTIME_MEMORY_MAX_MOB_DROP_ITEM_COUNT];
-    struct _RTQuestDropItem QuestItems[RUNTIME_MEMORY_MAX_QUEST_DROP_ITEM_COUNT];
+    ArrayRef WorldDropPool;
+    DictionaryRef MobDropPool;
+    DictionaryRef QuestDropPool;
 };
 
 struct _RTDropResult {

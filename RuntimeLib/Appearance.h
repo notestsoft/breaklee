@@ -8,14 +8,15 @@ EXTERN_C_BEGIN
 
 #pragma pack(push, 1)
 
-struct _RTCharacterEquipmentAppearanceInfo {
-    Int32 Count;
-    struct _RTItemSlotAppearance Slots[RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT];
+struct _RTAppearanceInfo {
+    UInt8 EquipmentAppearanceCount;
+    Int16 InventoryAppearanceCount;
 };
 
-struct _RTCharacterInventoryAppearanceInfo {
-    Int32 Count;
-    struct _RTItemSlotAppearance Slots[RUNTIME_INVENTORY_TOTAL_SIZE];
+struct _RTCharacterAppearanceData {
+    struct _RTAppearanceInfo Info;
+    struct _RTItemSlotAppearance EquipmentSlots[RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT];
+    struct _RTItemSlotAppearance InventorySlots[RUNTIME_INVENTORY_TOTAL_SIZE];
 };
 
 #pragma pack(pop)

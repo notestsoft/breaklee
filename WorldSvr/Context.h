@@ -46,6 +46,7 @@ struct _ClientContext {
     UInt32 AuthKey;
     UInt8 SubpasswordFailureCount;
     IPC_DATA_ACCOUNT Account;
+    struct _RTCharacterAccountInfo AccountInfo;
     IPC_DATA_CHARACTER_INFO Characters[MAX_CHARACTER_COUNT];
     // TODO: Store upgrade point & expiration time in temp memory
     Int32 UpgradePoint;

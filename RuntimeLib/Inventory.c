@@ -11,7 +11,7 @@ Int32 RTInventoryGetNextFreeSlotIndex(
 	RTRuntimeRef Runtime,
 	RTCharacterInventoryInfoRef Inventory
 ) {
-	for (Int32 Index = 0; Index < Inventory->Count - 1; Index += 1) {
+	for (Int32 Index = 0; Index < Inventory->Info.SlotCount - 1; Index += 1) {
 		RTItemSlotRef InventorySlot = &Inventory->Slots[Index];
 		RTItemSlotRef NextInventorySlot = &Inventory->Slots[Index + 1];
 		Int32 SlotOffset = NextInventorySlot->SlotIndex - InventorySlot->SlotIndex;
@@ -20,14 +20,14 @@ Int32 RTInventoryGetNextFreeSlotIndex(
 		}
 	}
 
-	return Inventory->Count;
+	return Inventory->Info.SlotCount;
 }
 
 Void RTInventorySort(
 	RTRuntimeRef Runtime,
 	RTCharacterInventoryInfoRef Inventory
 ) {
-	for (Int32 Offset = 1; Offset < Inventory->Count; Offset += 1) {
+	for (Int32 Offset = 1; Offset < Inventory->Info.SlotCount; Offset += 1) {
 		Int32 Index = Offset;
 		while (Index > 0 && Inventory->Slots[Index].SlotIndex <= Inventory->Slots[Index - 1].SlotIndex) {
 			struct _RTItemSlot TempSlot = Inventory->Slots[Index];
@@ -43,11 +43,11 @@ Bool RTInventoryInsertSlot(
 	RTCharacterInventoryInfoRef Inventory,
 	RTItemSlotRef Slot
 ) {
-	if (Inventory->Count >= RUNTIME_INVENTORY_TOTAL_SIZE) 
+	if (Inventory->Info.SlotCount >= RUNTIME_INVENTORY_TOTAL_SIZE) 
 		return false;
 
 	Int32 InsertionIndex = -1;
-	for (Int32 Offset = 0; Offset < Inventory->Count; Offset += 1) {
+	for (Int32 Offset = 0; Offset < Inventory->Info.SlotCount; Offset += 1) {
 		if (Inventory->Slots[Offset].SlotIndex < Slot->SlotIndex) continue;
 
 		InsertionIndex = Offset;
@@ -57,7 +57,7 @@ Bool RTInventoryInsertSlot(
 		}
 
 		Int32 SlotIndex = Slot->SlotIndex + 1;
-		for (Int32 Index = Offset; Index < Inventory->Count - 1; Index += 1) {
+		for (Int32 Index = Offset; Index < Inventory->Info.SlotCount - 1; Index += 1) {
 			Inventory->Slots[Index].SlotIndex = SlotIndex;
 
 			SlotIndex += 1;
@@ -73,13 +73,17 @@ Bool RTInventoryInsertSlot(
 		return true;
 	}
 
-	Int32 TailLength = Inventory->Count - InsertionIndex;
+	Int32 TailLength = Inventory->Info.SlotCount - InsertionIndex;
 	if (TailLength > 0) {
-		memmove(&Inventory->Slots[InsertionIndex + 1], &Inventory->Slots[InsertionIndex], sizeof(struct _RTItemSlot) * TailLength);
+		memmove(
+			&Inventory->Slots[InsertionIndex + 1], 
+			&Inventory->Slots[InsertionIndex], 
+			TailLength * sizeof(struct _RTItemSlot)
+		);
 	}
 
 	memcpy(&Inventory->Slots[InsertionIndex], Slot, sizeof(struct _RTItemSlot));
-	Inventory->Count += 1;
+	Inventory->Info.SlotCount += 1;
 	return true;
 }
 
@@ -96,7 +100,7 @@ Int32 RTInventoryGetSlotIndex(
 	RTCharacterInventoryInfoRef Inventory,
 	Int32 SlotIndex
 ) {
-	for (Int32 Index = 0; Index < Inventory->Count; Index++) {
+	for (Int32 Index = 0; Index < Inventory->Info.SlotCount; Index += 1) {
 		RTItemSlotRef Slot = &Inventory->Slots[Index];
 		if (Slot->SlotIndex == SlotIndex) {
 			return Index;
@@ -132,9 +136,8 @@ Bool RTInventorySetSlot(
 
 	RTItemSlotRef InventorySlot = RTInventoryGetSlot(Runtime, Inventory, Slot->SlotIndex);
 	if (InventorySlot) {
-		if (Slot->Item.ID != InventorySlot->Item.ID) return false;
+		if (Slot->Item.Serial != InventorySlot->Item.Serial) return false;
 
-		// TODO: Check if we need more merging options here!
 		if (ItemData->ItemType == RUNTIME_ITEM_TYPE_QUEST_S) {
 			UInt64 ItemOptions = RTQuestItemGetOptions(Slot->ItemOptions);
 			UInt64 InventoryItemOptions = RTQuestItemGetOptions(InventorySlot->ItemOptions);
@@ -149,13 +152,27 @@ Bool RTInventorySetSlot(
 			memcpy(Slot, InventorySlot, sizeof(struct _RTItemSlot));
 			return true;
 		}
+
+		if (ItemData->MaxStackSize > 1) {
+			UInt64 ItemStackSizeMask = RTItemDataGetStackSizeMask(ItemData);
+			Int64 ItemStackSize = Slot->ItemOptions & ItemStackSizeMask;
+			UInt64 ItemOptions = Slot->ItemOptions & ~ItemStackSizeMask;
+			Int64 InventoryItemStackSize = InventorySlot->ItemOptions & ItemStackSizeMask;
+			UInt64 InventoryItemOptions = InventorySlot->ItemOptions & ~ItemStackSizeMask;
+			if (ItemOptions != InventoryItemOptions) return false;
+
+			Int64 TotalItemStackSize = ItemStackSize + InventoryItemStackSize;
+			if (TotalItemStackSize > ItemData->MaxStackSize) return false;
+			InventorySlot->ItemOptions = ItemOptions | ((ItemStackSize + InventoryItemStackSize) & ItemStackSizeMask);
+			return true;
+		}
 		
 		return false;
 	}
 
-	InventorySlot = &Inventory->Slots[Inventory->Count];
+	InventorySlot = &Inventory->Slots[Inventory->Info.SlotCount];
 	memcpy(InventorySlot, Slot, sizeof(struct _RTItemSlot));
-	Inventory->Count += 1;
+	Inventory->Info.SlotCount += 1;
 	return true;
 }
 
@@ -176,16 +193,16 @@ Bool RTInventoryClearSlot(
 	);
 	if (InventoryIndex < 0) return false;
 
-	Int32 TailLength = Inventory->Count - InventoryIndex - 1;
+	Int32 TailLength = Inventory->Info.SlotCount - InventoryIndex - 1;
 	if (TailLength > 0) {
 		memmove(
 			&Inventory->Slots[InventoryIndex],
 			&Inventory->Slots[InventoryIndex + 1],
-			sizeof(struct _RTItemSlot) * TailLength
+			TailLength * sizeof(struct _RTItemSlot)
 		);
 	}
 
-	Inventory->Count -= 1;
+	Inventory->Info.SlotCount -= 1;
 	return true;
 }
 
@@ -278,7 +295,7 @@ Void RTInventoryFindItems(
 
 	*Count = 0;
 
-	for (Int32 Index = 0; Index < Inventory->Count; Index++) {
+	for (Int32 Index = 0; Index < Inventory->Info.SlotCount; Index++) {
 		RTItemSlotRef InventorySlot = &Inventory->Slots[Index];
 		if (InventorySlot->Item.ID == ItemID) {
 			memcpy(&Results[*Count], InventorySlot, sizeof(struct _RTItemSlot));

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base.h"
+#include "Constants.h"
 
 EXTERN_C_BEGIN
 
@@ -12,8 +13,12 @@ struct _RTSkillSlot {
     UInt16 Index;
 };
 
+struct _RTSkillSlotInfo {
+    UInt16 SlotCount;
+};
+
 struct _RTCharacterSkillSlotInfo {
-    UInt32 Count;
+    struct _RTSkillSlotInfo Info;
     struct _RTSkillSlot Skills[RUNTIME_CHARACTER_MAX_SKILL_SLOT_COUNT];
 };
 

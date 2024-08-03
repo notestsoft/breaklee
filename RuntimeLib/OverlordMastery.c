@@ -10,20 +10,20 @@ Void RTCharacterAddOverlordExp(
 	UInt64 Exp
 ) {
 	while (Exp > 0) {
-		RTDataOverlordMasteryExpRef Mastery = RTRuntimeDataOverlordMasteryExpGet(Runtime->Context, Character->Data.Info.Overlord.Level);
+		RTDataOverlordMasteryExpRef Mastery = RTRuntimeDataOverlordMasteryExpGet(Runtime->Context, Character->Data.OverlordMasteryInfo.Info.Level);
 		assert(Mastery);
 
-		RTDataOverlordMasteryExpRef NextMastery = RTRuntimeDataOverlordMasteryExpGet(Runtime->Context, Character->Data.Info.Overlord.Level + 1);
+		RTDataOverlordMasteryExpRef NextMastery = RTRuntimeDataOverlordMasteryExpGet(Runtime->Context, Character->Data.OverlordMasteryInfo.Info.Level + 1);
 		if (!NextMastery) break;
 
-		UInt64 RequiredExp = NextMastery->AccumulatedExp - Character->Data.Info.Overlord.Exp;
-		Character->Data.Info.Overlord.Exp += MIN(Exp, RequiredExp);
+		UInt64 RequiredExp = NextMastery->AccumulatedExp - Character->Data.OverlordMasteryInfo.Info.Exp;
+		Character->Data.OverlordMasteryInfo.Info.Exp += MIN(Exp, RequiredExp);
 		Exp -= MIN(Exp, RequiredExp);
 
-		if (Character->Data.Info.Overlord.Exp >= Mastery->AccumulatedExp) {
-			Character->Data.Info.Overlord.Point += Mastery->MasteryPointCount;
-			Character->Data.Info.Overlord.Level = NextMastery->Level;
-			Character->SyncMask.Info = true;
+		if (Character->Data.OverlordMasteryInfo.Info.Exp >= Mastery->AccumulatedExp) {
+			Character->Data.OverlordMasteryInfo.Info.Point += Mastery->MasteryPointCount;
+			Character->Data.OverlordMasteryInfo.Info.Level = NextMastery->Level;
+			Character->SyncMask.OverlordMasteryInfo = true;
 
 			RTCharacterInitializeAttributes(Runtime, Character);
             RTRuntimeBroadcastCharacterData(
@@ -50,7 +50,7 @@ RTOverlordMasterySlotRef RTCharacterGetOverlordMasterySlot(
 	RTCharacterRef Character,
 	Int32 MasteryIndex
 ) {
-	for (Int32 Index = 0; Index < Character->Data.OverlordMasteryInfo.Count; Index += 1) {
+	for (Int32 Index = 0; Index < Character->Data.OverlordMasteryInfo.Info.SlotCount; Index += 1) {
 		if (Character->Data.OverlordMasteryInfo.Slots[Index].MasteryIndex == MasteryIndex) {
 			return &Character->Data.OverlordMasteryInfo.Slots[Index];
 		}

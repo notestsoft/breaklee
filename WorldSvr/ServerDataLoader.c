@@ -263,31 +263,31 @@ Bool ServerLoadCharacterTemplateData(
 
         struct _RuntimeDataCharacterTemplate* CharacterTemplate = &Context->RuntimeData->CharacterTemplate[BattleStyleIndex - 1];
         CharacterTemplate->BattleStyleIndex = BattleStyleIndex;
-        CharacterTemplate->SkillSlots.Count = 0;
+        CharacterTemplate->SkillSlots.Info.SlotCount = 0;
 
         ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, "skill");
         while (ChildIterator) {
-            RTSkillSlotRef SkillSlot = &CharacterTemplate->SkillSlots.Skills[CharacterTemplate->SkillSlots.Count];
+            RTSkillSlotRef SkillSlot = &CharacterTemplate->SkillSlots.Skills[CharacterTemplate->SkillSlots.Info.SlotCount];
 
             if (!ParseAttributeUInt16(Archive, ChildIterator->Index, "id", &SkillSlot->ID)) goto error;
             if (!ParseAttributeUInt8(Archive, ChildIterator->Index, "level", &SkillSlot->Level)) goto error;
             if (!ParseAttributeUInt16(Archive, ChildIterator->Index, "slot", &SkillSlot->Index)) goto error;
 
-            CharacterTemplate->SkillSlots.Count += 1;
+            CharacterTemplate->SkillSlots.Info.SlotCount += 1;
 
             ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
         }
 
-        CharacterTemplate->QuickSlots.Count = 0;
+        CharacterTemplate->QuickSlots.Info.SlotCount = 0;
 
         ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, "quickslot");
         while (ChildIterator) {
-            RTQuickSlotRef QuickSlot = &CharacterTemplate->QuickSlots.QuickSlots[CharacterTemplate->QuickSlots.Count];
+            RTQuickSlotRef QuickSlot = &CharacterTemplate->QuickSlots.QuickSlots[CharacterTemplate->QuickSlots.Info.SlotCount];
 
             if (!ParseAttributeUInt16(Archive, ChildIterator->Index, "skill", &QuickSlot->SkillIndex)) goto error;
             if (!ParseAttributeUInt16(Archive, ChildIterator->Index, "slot", &QuickSlot->SlotIndex)) goto error;
 
-            CharacterTemplate->QuickSlots.Count += 1;
+            CharacterTemplate->QuickSlots.Info.SlotCount += 1;
 
             ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
         }
@@ -1127,15 +1127,16 @@ Bool ServerLoadWorldData(
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(TerrainArchive, ParentIndex, "map_index");
     while (Iterator) {
         Index WorldIndex = 0;
-
         if (!ParseAttributeIndex(TerrainArchive, Iterator->Index, "world_id", &WorldIndex)) goto error;
 
         RTWorldDataRef World = RTWorldDataCreate(Runtime->WorldManager, WorldIndex);
         World->WorldIndex = WorldIndex;
         World->MobTable = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTMob), 8);
+        World->DropTable.WorldDropPool = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTDropItem), 8);
+        World->DropTable.MobDropPool = IndexDictionaryCreate(Runtime->Allocator, 8);
+        World->DropTable.QuestDropPool = IndexDictionaryCreate(Runtime->Allocator, 8);
 
         Char WorldFileName[MAX_PATH];
-
         if (!ParseAttributeInt32(TerrainArchive, Iterator->Index, "dead_warp", &World->DeadWarpIndex)) goto error;
         if (!ParseAttributeString(TerrainArchive, Iterator->Index, "name", WorldFileName, MAX_PATH)) goto error;
         if (!ParseAttributeInt32(TerrainArchive, Iterator->Index, "return_warp", &World->ReturnWarpIndex)) goto error;
@@ -1323,13 +1324,9 @@ Bool ServerLoadWorldData(
                 if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Height", &Mob->Spawn.AreaHeight)) goto error;
                 if (!ParseAttributeInt32(Archive, ChildIterator->Index, "SpwnInterval", &Mob->Spawn.SpawnInterval)) goto error;
                 if (!ParseAttributeInt32(Archive, ChildIterator->Index, "SpawnDefault", &Mob->Spawn.SpawnDefault)) goto error;
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "MissionGate", &Mob->Spawn.MissionGate)) goto error;
+                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "MissionGate", &Mob->Spawn.IsMissionGate)) goto error;
                 if (!ParseAttributeInt32(Archive, ChildIterator->Index, "PerfectDrop", &Mob->Spawn.PerfectDrop)) goto error;
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Type", &Mob->Spawn.Type)) goto error;
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Min", &Mob->Spawn.Min)) goto error;
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Max", &Mob->Spawn.Max)) goto error;
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Authority", &Mob->Spawn.Authority)) goto error;
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Server_Mob", &Mob->Spawn.ServerMobID)) goto error;
+                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Server_Mob", &Mob->Spawn.ServerMobIndex)) goto error;
                 if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Loot_Delay", &Mob->Spawn.LootDelay)) goto error;
 
                 if (ParseAttributeString(Archive, ChildIterator->Index, "Script", MobScriptFileName, MAX_PATH)) {
@@ -1362,23 +1359,21 @@ Bool ServerLoadWorldData(
 
             ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "item");
             while (ChildIterator) {
-                assert(World->DropTable.WorldItemCount < RUNTIME_MEMORY_MAX_WORLD_DROP_ITEM_COUNT);
+                RTDropItemRef DropItem = (RTDropItemRef)ArrayAppendUninitializedElement(World->DropTable.WorldDropPool);
+                memset(DropItem, 0, sizeof(struct _RTDropItem));
 
-                RTWorldDropItemRef DropItem = &World->DropTable.WorldItems[World->DropTable.WorldItemCount];
-
-                if (!ParseAttributeUInt32(Archive, ChildIterator->Index, "ItemKind", &DropItem->Item.ItemID.ID)) goto error;
-                if (!ParseAttributeUInt64(Archive, ChildIterator->Index, "ItemOpt", &DropItem->Item.ItemOptions)) goto error;
+                if (!ParseAttributeUInt32(Archive, ChildIterator->Index, "ItemKind", &DropItem->ItemID.ID)) goto error;
+                if (!ParseAttributeUInt64(Archive, ChildIterator->Index, "ItemOpt", &DropItem->ItemOptions)) goto error;
 
                 Float64 ScalarDropRate = 0.0;
                 if (!ParseAttributeFloat64(Archive, ChildIterator->Index, "DropRate", &ScalarDropRate)) goto error;
-                DropItem->Item.DropRate = (Int32)(ScalarDropRate / 100.0 * INT32_MAX);
+                DropItem->DropRate = (Int32)(ScalarDropRate / 100.0 * INT32_MAX);
 
                 if (!ParseAttributeInt32(Archive, ChildIterator->Index, "MinLv", &DropItem->MinMobLevel)) goto error;
                 if (!ParseAttributeInt32(Archive, ChildIterator->Index, "MaxLv", &DropItem->MaxMobLevel)) goto error;
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "OptPoolIdx", &DropItem->Item.OptionPoolIndex)) goto error;
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "DurationIdx", &DropItem->Item.DurationIndex)) goto error;
+                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "OptPoolIdx", &DropItem->OptionPoolIndex)) goto error;
+                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "DurationIdx", &DropItem->DurationIndex)) goto error;
 
-                World->DropTable.WorldItemCount += 1;
                 ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
             }
 
@@ -1398,22 +1393,29 @@ Bool ServerLoadWorldData(
 
             ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "item");
             while (ChildIterator) {
-                assert(World->DropTable.MobItemCount < RUNTIME_MEMORY_MAX_MOB_DROP_ITEM_COUNT);
+                Index DropPoolIndex = 0;
+                if (!ParseAttributeIndex(Archive, ChildIterator->Index, "SpeciesIdx", &DropPoolIndex)) goto error;
+                ArrayRef DropPool = (ArrayRef)DictionaryLookup(World->DropTable.MobDropPool, &DropPoolIndex);
+                if (!DropPool) {
+                    struct _Array TempArray = { 0 };
+                    DictionaryInsert(World->DropTable.MobDropPool, &DropPoolIndex, &TempArray, sizeof(struct _Array));
+                    DropPool = DictionaryLookup(World->DropTable.MobDropPool, &DropPoolIndex);
+                    ArrayInitializeEmpty(DropPool, Runtime->Allocator, sizeof(struct _RTDropItem), 8);
+                }
 
-                RTMobDropItemRef DropItem = &World->DropTable.MobItems[World->DropTable.MobItemCount];
+                RTDropItemRef DropItem = (RTDropItemRef)ArrayAppendUninitializedElement(DropPool);
+                memset(DropItem, 0, sizeof(struct _RTDropItem));
 
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "SpeciesIdx", &DropItem->MobSpeciesIndex)) goto error;
-                if (!ParseAttributeUInt32(Archive, ChildIterator->Index, "ItemKind", &DropItem->Item.ItemID.ID)) goto error;
-                if (!ParseAttributeUInt64(Archive, ChildIterator->Index, "ItemOpt", &DropItem->Item.ItemOptions)) goto error;
+                if (!ParseAttributeUInt32(Archive, ChildIterator->Index, "ItemKind", &DropItem->ItemID.ID)) goto error;
+                if (!ParseAttributeUInt64(Archive, ChildIterator->Index, "ItemOpt", &DropItem->ItemOptions)) goto error;
 
                 Float64 ScalarDropRate = 0.0;
                 if (!ParseAttributeFloat64(Archive, ChildIterator->Index, "DropRate", &ScalarDropRate)) goto error;
-                DropItem->Item.DropRate = (Int32)(ScalarDropRate / 100.0 * INT32_MAX);
+                DropItem->DropRate = (Int32)(ScalarDropRate / 100.0 * INT32_MAX);
 
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "OptPoolIdx", &DropItem->Item.OptionPoolIndex)) goto error;
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "DurationIdx", &DropItem->Item.DurationIndex)) goto error;
+                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "OptPoolIdx", &DropItem->OptionPoolIndex)) goto error;
+                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "DurationIdx", &DropItem->DurationIndex)) goto error;
 
-                World->DropTable.MobItemCount += 1;
                 ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
             }
 
@@ -1433,19 +1435,26 @@ Bool ServerLoadWorldData(
 
             ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "item");
             while (ChildIterator) {
-                assert(World->DropTable.QuestItemCount < RUNTIME_MEMORY_MAX_QUEST_DROP_ITEM_COUNT);
+                Index DropPoolIndex = 0;
+                if (!ParseAttributeIndex(Archive, ChildIterator->Index, "SpeciesIdx", &DropPoolIndex)) goto error;
+                ArrayRef DropPool = (ArrayRef)DictionaryLookup(World->DropTable.QuestDropPool, &DropPoolIndex);
+                if (!DropPool) {
+                    struct _Array TempArray = { 0 };
+                    DictionaryInsert(World->DropTable.MobDropPool, &DropPoolIndex, &TempArray, sizeof(struct _Array));
+                    DropPool = DictionaryLookup(World->DropTable.MobDropPool, &DropPoolIndex);
+                    ArrayInitializeEmpty(DropPool, Runtime->Allocator, sizeof(struct _RTDropItem), 8);
+                }
 
-                RTQuestDropItemRef DropItem = &World->DropTable.QuestItems[World->DropTable.QuestItemCount];
+                RTDropItemRef DropItem = (RTDropItemRef)ArrayAppendUninitializedElement(DropPool);
+                memset(DropItem, 0, sizeof(struct _RTDropItem));
 
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "SpeciesIdx", &DropItem->MobSpeciesIndex)) goto error;
-                if (!ParseAttributeUInt32(Archive, ChildIterator->Index, "ItemKind", &DropItem->Item.ItemID.ID)) goto error;
-                if (!ParseAttributeUInt64(Archive, ChildIterator->Index, "ItemOpt", &DropItem->Item.ItemOptions)) goto error;
+                if (!ParseAttributeUInt32(Archive, ChildIterator->Index, "ItemKind", &DropItem->ItemID.ID)) goto error;
+                if (!ParseAttributeUInt64(Archive, ChildIterator->Index, "ItemOpt", &DropItem->ItemOptions)) goto error;
 
                 Float64 ScalarDropRate = 0.0;
                 if (!ParseAttributeFloat64(Archive, ChildIterator->Index, "DropRate", &ScalarDropRate)) goto error;
-                DropItem->Item.DropRate = (Int32)(ScalarDropRate / 100.0 * INT32_MAX);
+                DropItem->DropRate = (Int32)(ScalarDropRate / 100.0 * INT32_MAX);
 
-                World->DropTable.QuestItemCount += 1;
                 ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
             }
 
@@ -1658,681 +1667,488 @@ error:
     return false;
 }
 
-Bool ServerLoadDungeonData(
+Bool ServerLoadDungeonExtraData(
     ServerContextRef Context,
     CString RuntimeDirectory,
     CString ServerDirectory,
-    ArchiveRef Cont1Archive,
-    ArchiveRef Cont2Archive,
-    ArchiveRef Cont3Archive
+    RTDungeonDataRef DungeonData
+) {
+    ArchiveRef Archive = ArchiveCreateEmpty(Context->Runtime->Allocator);
+
+    Char FilePath[MAX_PATH] = { 0 };
+    sprintf(FilePath, "%s\\Dungeon\\Dungeon_%d.xml", ServerDirectory, DungeonData->DungeonIndex);
+
+    if (ArchiveLoadFromFile(Archive, FilePath, false)) {
+        Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "Dungeon");
+        if (ParentIndex < 0) goto error;
+
+        ArchiveIteratorRef GroupIterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "TriggerGroup");
+        while (GroupIterator) {
+            Index TriggerGroupIndex = 0;
+            if (!ParseAttributeIndex(Archive, GroupIterator->Index, "Index", &TriggerGroupIndex)) {
+                Error("Loading '%s' in '%s' failed!", "Index", FilePath);
+                goto error;
+            }
+            assert(!DictionaryLookup(DungeonData->TriggerGroups, &TriggerGroupIndex));
+
+            struct _Array TempArray = { 0 };
+            DictionaryInsert(DungeonData->TriggerGroups, &TriggerGroupIndex, &TempArray, sizeof(struct _Array));
+            ArrayRef TriggerGroup = DictionaryLookup(DungeonData->TriggerGroups, &TriggerGroupIndex);
+            ArrayInitializeEmpty(TriggerGroup, Context->Runtime->Allocator, sizeof(struct _RTDungeonTriggerData), 8);
+
+            ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, GroupIterator->Index, "Trigger");
+            while (Iterator) {
+                RTDungeonTriggerDataRef TriggerData = ArrayAppendUninitializedElement(TriggerGroup);
+                memset(TriggerData, 0, sizeof(struct _RTDungeonTriggerData));
+
+                if (!ParseAttributeInt32(Archive, Iterator->Index, "Type", &TriggerData->Type)) {
+                    Error("Loading '%s' in '%s' failed!", "Type", FilePath);
+                    goto error;
+                }
+
+                TriggerData->LiveMobCount = ParseAttributeInt32ArrayCounted(
+                    Archive,
+                    Iterator->Index,
+                    "LiveMobIndexList",
+                    TriggerData->LiveMobIndexList,
+                    RUNTIME_DUNGEON_TRIGGER_MAX_MOB_COUNT,
+                    ','
+                );
+
+                TriggerData->DeadMobCount = ParseAttributeInt32ArrayCounted(
+                    Archive,
+                    Iterator->Index,
+                    "DeadMobIndexList",
+                    TriggerData->DeadMobIndexList,
+                    RUNTIME_DUNGEON_TRIGGER_MAX_MOB_COUNT,
+                    ','
+                );
+
+                if (!ParseAttributeInt32(Archive, Iterator->Index, "NpcIndex", &TriggerData->NpcIndex)) {
+                    Error("Loading '%s' in '%s' failed!", "NpcIndex", FilePath);
+                    goto error;
+                }
+
+                if (!ParseAttributeInt32(Archive, Iterator->Index, "ActionGroupIndex", &TriggerData->ActionGroupIndex)) {
+                    Error("Loading '%s' in '%s' failed!", "ActionGroupIndex", FilePath);
+                    goto error;
+                }
+
+                Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+            }
+
+            GroupIterator = ArchiveQueryNodeIteratorNext(Archive, GroupIterator);
+        }
+
+        GroupIterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "ActionGroup");
+        while (GroupIterator) {
+            Index ActionGroupIndex = 0;
+            if (!ParseAttributeIndex(Archive, GroupIterator->Index, "Index", &ActionGroupIndex)) {
+                Error("Loading '%s' in '%s' failed!", "Index", FilePath);
+                goto error;
+            }
+            assert(!DictionaryLookup(DungeonData->ActionGroups, &ActionGroupIndex));
+
+            struct _Array TempArray = { 0 };
+            DictionaryInsert(DungeonData->ActionGroups, &ActionGroupIndex, &TempArray, sizeof(struct _Array));
+            ArrayRef ActionGroup = DictionaryLookup(DungeonData->ActionGroups, &ActionGroupIndex);
+            ArrayInitializeEmpty(ActionGroup, Context->Runtime->Allocator, sizeof(struct _RTDungeonTriggerActionData), 8);
+
+            ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, GroupIterator->Index, "Action");
+            while (Iterator) {
+                RTDungeonTriggerActionDataRef ActionData = ArrayAppendUninitializedElement(ActionGroup);
+                memset(ActionData, 0, sizeof(struct _RTDungeonTriggerActionData));
+
+                if (!ParseAttributeUInt64(Archive, Iterator->Index, "Delay", &ActionData->Delay)) {
+                    Error("Loading '%s' in '%s' failed!", "Delay", FilePath);
+                    goto error;
+                }
+
+                if (!ParseAttributeInt32(Archive, Iterator->Index, "TargetMobIndex", &ActionData->TargetMobIndex)) {
+                    Error("Loading '%s' in '%s' failed!", "TargetMobIndex", FilePath);
+                    goto error;
+                }
+
+                if (!ParseAttributeInt32(Archive, Iterator->Index, "TargetAction", &ActionData->TargetAction)) {
+                    Error("Loading '%s' in '%s' failed!", "TargetAction", FilePath);
+                    goto error;
+                }
+
+                if (!ParseAttributeInt32(Archive, Iterator->Index, "TargetSpawnInterval", &ActionData->TargetSpawnInterval)) {
+                    Error("Loading '%s' in '%s' failed!", "TargetSpawnInterval", FilePath);
+                    goto error;
+                }
+
+                if (!ParseAttributeInt32(Archive, Iterator->Index, "TargetSpawnCount", &ActionData->TargetSpawnCount)) {
+                    Error("Loading '%s' in '%s' failed!", "TargetSpawnCount", FilePath);
+                    goto error;
+                }
+
+                Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+            }
+
+            GroupIterator = ArchiveQueryNodeIteratorNext(Archive, GroupIterator);
+        }
+
+        struct _RTDungeonTimeControlData TimeControlData = { 0 };
+
+        GroupIterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "TimeControl");
+        while (GroupIterator) {
+            Index MobIndex = 0;
+            if (!ParseAttributeIndex(Archive, GroupIterator->Index, "MobIndex", &MobIndex)) {
+                Error("Loading '%s' in '%s' failed!", "MobIndex", FilePath);
+                goto error;
+            }
+
+            if (DictionaryLookup(DungeonData->TimeControls, &MobIndex)) {
+                Error("MobIndex %llu already has a TimeControl in Dungeon %d!", MobIndex, DungeonData->DungeonIndex);
+                GroupIterator = ArchiveQueryNodeIteratorNext(Archive, GroupIterator);
+                continue;
+            }
+
+            if (!ParseAttributeInt32(Archive, GroupIterator->Index, "Event", &TimeControlData.Event)) {
+                Error("Loading '%s' in '%s' failed!", "Event", FilePath);
+                goto error;
+            }
+
+            if (!ParseAttributeInt32(Archive, GroupIterator->Index, "Value", &TimeControlData.Value)) {
+                Error("Loading '%s' in '%s' failed!", "Value", FilePath);
+                goto error;
+            }
+
+            DictionaryInsert(DungeonData->TimeControls, &MobIndex, &TimeControlData, sizeof(struct _RTDungeonTimeControlData));
+
+            GroupIterator = ArchiveQueryNodeIteratorNext(Archive, GroupIterator);
+        }
+
+        GroupIterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "WorldDropPool.Item");
+        while (GroupIterator) {
+            RTDropItemRef DropItem = (RTDropItemRef)ArrayAppendUninitializedElement(DungeonData->DropTable.WorldDropPool);
+            memset(DropItem, 0, sizeof(struct _RTDropItem));
+
+            if (!ParseAttributeUInt64(Archive, GroupIterator->Index, "ItemID", &DropItem->ItemID.Serial)) {
+                Error("Loading '%s' in '%s' failed!", "ItemID", FilePath);
+                goto error;
+            }
+            if (!ParseAttributeUInt64(Archive, GroupIterator->Index, "ItemOption", &DropItem->ItemOptions)) {
+                Error("Loading '%s' in '%s' failed!", "ItemOption", FilePath);
+                goto error;
+            }
+            if (!ParseAttributeInt32(Archive, GroupIterator->Index, "ItemDuration", &DropItem->DurationIndex)) {
+                Error("Loading '%s' in '%s' failed!", "ItemDuration", FilePath);
+                goto error;
+            }
+            if (!ParseAttributeInt32(Archive, GroupIterator->Index, "MinMobLevel", &DropItem->MinMobLevel)) {
+                Error("Loading '%s' in '%s' failed!", "MinMobLevel", FilePath);
+                goto error;
+            }
+            if (!ParseAttributeInt32(Archive, GroupIterator->Index, "MaxMobLevel", &DropItem->MaxMobLevel)) {
+                Error("Loading '%s' in '%s' failed!", "MaxMobLevel", FilePath);
+                goto error;
+            }
+            if (!ParseAttributeInt32(Archive, GroupIterator->Index, "OptionPoolID", &DropItem->OptionPoolIndex)) {
+                Error("Loading '%s' in '%s' failed!", "OptionPoolID", FilePath);
+                goto error;
+            }
+            
+            Float64 ScalarDropRate = 0.0;
+            if (!ParseAttributeFloat64(Archive, GroupIterator->Index, "Rate", &ScalarDropRate)) {
+                Error("Loading '%s' in '%s' failed!", "Rate", FilePath);
+                goto error;
+            }
+            DropItem->DropRate = (Int32)(ScalarDropRate / 100.0 * INT32_MAX);
+
+            GroupIterator = ArchiveQueryNodeIteratorNext(Archive, GroupIterator);
+        }
+
+        GroupIterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "MobDropPool");
+        while (GroupIterator) {
+            Index MobSpeciesIndex = 0;
+            if (!ParseAttributeIndex(Archive, GroupIterator->Index, "MobSpeciesIndex", &MobSpeciesIndex)) goto error;
+
+            Index DropPoolIndex = MobSpeciesIndex;
+            ArrayRef DropPool = DictionaryLookup(DungeonData->DropTable.MobDropPool, &DropPoolIndex);
+            if (!DropPool) {
+                struct _Array TempArray = { 0 };
+                DictionaryInsert(DungeonData->DropTable.MobDropPool, &DropPoolIndex, &TempArray, sizeof(struct _Array));
+                DropPool = DictionaryLookup(DungeonData->DropTable.MobDropPool, &DropPoolIndex);
+                ArrayInitializeEmpty(DropPool, Context->Runtime->Allocator, sizeof(struct _RTDropItem), 8);
+            }
+
+            ArchiveIteratorRef ItemIterator = ArchiveQueryNodeIteratorFirst(Archive, GroupIterator->Index, "Item");
+            while (ItemIterator) {
+                RTDropItemRef DropItem = (RTDropItemRef)ArrayAppendUninitializedElement(DropPool);
+                memset(DropItem, 0, sizeof(struct _RTDropItem));
+
+                if (!ParseAttributeUInt64(Archive, ItemIterator->Index, "ItemID", &DropItem->ItemID.Serial)) {
+                    Error("Loading '%s' in '%s' failed!", "ItemID", FilePath);
+                    goto error;
+                }
+                if (!ParseAttributeUInt64(Archive, ItemIterator->Index, "ItemOption", &DropItem->ItemOptions)) {
+                    Error("Loading '%s' in '%s' failed!", "ItemOption", FilePath);
+                    goto error;
+                }
+                if (!ParseAttributeInt32(Archive, ItemIterator->Index, "ItemDuration", &DropItem->DurationIndex)) {
+                    Error("Loading '%s' in '%s' failed!", "ItemDuration", FilePath);
+                    goto error;
+                }
+                if (!ParseAttributeInt32(Archive, ItemIterator->Index, "OptionPoolID", &DropItem->OptionPoolIndex)) {
+                    Error("Loading '%s' in '%s' failed!", "OptionPoolID", FilePath);
+                    goto error;
+                }
+
+                Float64 ScalarDropRate = 0.0;
+                if (!ParseAttributeFloat64(Archive, ItemIterator->Index, "Rate", &ScalarDropRate)) {
+                    Error("Loading '%s' in '%s' failed!", "Rate", FilePath);
+                    goto error;
+                }
+                DropItem->DropRate = (Int32)(ScalarDropRate / 100.0 * INT32_MAX);
+                DropItem->MinMobLevel = 0;
+                DropItem->MaxMobLevel = 1000;
+
+                ItemIterator = ArchiveQueryNodeIteratorNext(Archive, ItemIterator);
+            }
+
+            GroupIterator = ArchiveQueryNodeIteratorNext(Archive, GroupIterator);
+        }
+    }
+
+    ArchiveDestroy(Archive);
+    return true;
+
+error:
+    ArchiveDestroy(Archive);
+    return false;
+}
+
+Bool ServerLoadPatternPartData(
+    ServerContextRef Context,
+    CString FilePath
 ) {
     RTRuntimeRef Runtime = Context->Runtime;
-    ArchiveRef Archive = Cont1Archive;
-    ArchiveRef TempArchive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
+    ArchiveRef Archive = ArchiveCreateEmpty(Context->Runtime->Allocator);
+
+    if (ArchiveLoadFromFile(Archive, FilePath, false)) {
+        Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "PatternPart");
+        if (ParentIndex < 0) 
+            goto error;
+
+        Index PatternPartIndex = 0;
+        if (!ParseAttributeIndex(Archive, ParentIndex, "Index", &PatternPartIndex)) 
+            goto error;
+
+        RTMissionDungeonPatternPartDataRef PatternPartData = (RTMissionDungeonPatternPartDataRef)DictionaryLookup(Runtime->PatternPartData, &PatternPartIndex);
+        if (!PatternPartData) 
+            goto error;
+
+        ArchiveIteratorRef MobIterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "Mob");
+        while (MobIterator) {
+            RTMobRef Mob = (RTMobRef)ArrayAppendUninitializedElement(PatternPartData->MobTable);
+            memset(Mob, 0, sizeof(struct _RTMob));
+            Mob->ID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
+            Mob->Spawn.PatternPartIndex = PatternPartIndex;
+
+            if (!ParseAttributeUInt16(Archive, MobIterator->Index, "MobIndex", &Mob->ID.EntityIndex)) {
+                Error("Loading '%s' in '%s' failed!", "MobIndex", FilePath);
+                goto error;
+            }
+
+            if (!ParseAttributeIndex(Archive, MobIterator->Index, "SpeciesIndex", &Mob->Spawn.MobSpeciesIndex)) {
+                Error("Loading '%s' in '%s' failed!", "SpeciesIndex", FilePath);
+                goto error;
+            }
+
+            if (!ParseAttributeInt32(Archive, MobIterator->Index, "X", &Mob->Spawn.AreaX)) {
+                Error("Loading '%s' in '%s' failed!", "X", FilePath);
+                goto error;
+            }
+
+            if (!ParseAttributeInt32(Archive, MobIterator->Index, "Y", &Mob->Spawn.AreaY)) {
+                Error("Loading '%s' in '%s' failed!", "Y", FilePath);
+                goto error;
+            }
+
+            if (!ParseAttributeInt32(Archive, MobIterator->Index, "Width", &Mob->Spawn.AreaWidth)) {
+                Error("Loading '%s' in '%s' failed!", "Width", FilePath);
+                goto error;
+            }
+
+            if (!ParseAttributeInt32(Archive, MobIterator->Index, "Height", &Mob->Spawn.AreaHeight)) {
+                Error("Loading '%s' in '%s' failed!", "Height", FilePath);
+                goto error;
+            }
+
+            if (!ParseAttributeInt32(Archive, MobIterator->Index, "SpawnInterval", &Mob->Spawn.SpawnInterval)) {
+                Error("Loading '%s' in '%s' failed!", "SpawnInterval", FilePath);
+                goto error;
+            }
+
+            if (!ParseAttributeInt32(Archive, MobIterator->Index, "SpawnCount", &Mob->Spawn.SpawnCount)) {
+                Error("Loading '%s' in '%s' failed!", "SpawnCount", FilePath);
+                goto error;
+            }
+
+            if (!ParseAttributeInt32(Archive, MobIterator->Index, "SpawnDefault", &Mob->Spawn.SpawnDefault)) {
+                Error("Loading '%s' in '%s' failed!", "SpawnDefault", FilePath);
+                goto error;
+            }
+
+            if (!ParseAttributeInt32(Archive, MobIterator->Index, "Level", &Mob->Spawn.Level)) {
+                Error("Loading '%s' in '%s' failed!", "Level", FilePath);
+                goto error;
+            }
+
+            if (!ParseAttributeInt32(Archive, MobIterator->Index, "PerfectDrop", &Mob->Spawn.PerfectDrop)) {
+                Error("Loading '%s' in '%s' failed!", "PerfectDrop", FilePath);
+                goto error;
+            }
+
+            ParseAttributeInt32(Archive, MobIterator->Index, "SpawnTriggerIndex", &Mob->Spawn.SpawnTriggerID);
+            ParseAttributeInt32(Archive, MobIterator->Index, "KillTriggerIndex", &Mob->Spawn.KillTriggerID);
+            ParseAttributeInt32(Archive, MobIterator->Index, "ServerMobIndex", &Mob->Spawn.ServerMobIndex);
+            ParseAttributeInt32(Archive, MobIterator->Index, "LootDelay", &Mob->Spawn.LootDelay);
+
+            ParseAttributeInt32Array(Archive, MobIterator->Index, "EventProperty", Mob->Spawn.EventProperty, RUNTIME_MOB_MAX_EVENT_COUNT, ',');
+            ParseAttributeInt32Array(Archive, MobIterator->Index, "EventMobList", Mob->Spawn.EventMobs, RUNTIME_MOB_MAX_EVENT_COUNT, ',');
+            ParseAttributeInt32Array(Archive, MobIterator->Index, "EventInterval", Mob->Spawn.EventInterval, RUNTIME_MOB_MAX_EVENT_COUNT, ',');
+            ParseAttributeString(Archive, MobIterator->Index, "Script", Mob->Spawn.Script, MAX_PATH);
+
+            Mob->SpeciesData = &Context->Runtime->MobData[Mob->Spawn.MobSpeciesIndex];
+            Mob->IsInfiniteSpawn = true;
+            Mob->IsPermanentDeath = false;
+            Mob->RemainingSpawnCount = 0;
+
+            MobIterator = ArchiveQueryNodeIteratorNext(Archive, MobIterator);
+        }
+    }
+
+    ArchiveDestroy(Archive);
+    return true;
+
+error:
+    ArchiveDestroy(Archive);
+    return false;
+}
+
+Bool ServerLoadQuestDungeonData(
+    ServerContextRef Context,
+    CString RuntimeDirectory,
+    CString ServerDirectory,
+    ArchiveRef Archive
+) {
+    RTRuntimeRef Runtime = Context->Runtime;
+    ArchiveRef TempArchive = ArchiveCreateEmpty(Runtime->Allocator);
 
     Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.cabal_quest_dungeon");
     if (ParentIndex < 0) goto error;
 
+    struct _RTDungeonData DungeonData = { 0 };
+
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "dungeon");
     while (Iterator) {
-        assert(Runtime->DungeonDataCount < RUNTIME_MEMORY_MAX_DUNGEON_COUNT);
-
-        RTDungeonDataRef DungeonData = &Runtime->DungeonData[Runtime->DungeonDataCount];
-        memset(DungeonData, 0, sizeof(struct _RTDungeonData));
+        Index DungeonIndex = 0;
+        if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
+        assert(!DictionaryLookup(Runtime->DungeonData, &DungeonIndex));
+        memset(&DungeonData, 0, sizeof(struct _RTDungeonData));
+        DungeonData.DungeonIndex = DungeonIndex;
 
         Int32 EntryItem[2];
         if (ParseAttributeInt32Array(Archive, Iterator->Index, "enter_cd_item", EntryItem, 2, ':')) {
-            DungeonData->EntryItemID.ID = EntryItem[0];
-            DungeonData->EntryItemOption = EntryItem[1];
+            DungeonData.EntryItemID.ID = EntryItem[0];
+            DungeonData.EntryItemOption = EntryItem[1];
         }
 
-        ParseAttributeInt32(Archive, Iterator->Index, "create_type", &DungeonData->CreateType);
-        ParseAttributeInt32(Archive, Iterator->Index, "enter_type", &DungeonData->EntryType);
-        ParseAttributeInt32(Archive, Iterator->Index, "user_type", &DungeonData->PlayerType);
+        ParseAttributeInt32(Archive, Iterator->Index, "create_type", &DungeonData.CreateType);
+        ParseAttributeInt32(Archive, Iterator->Index, "enter_type", &DungeonData.EntryType);
+        ParseAttributeInt32(Archive, Iterator->Index, "user_type", &DungeonData.PlayerType);
 
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "user_count", &DungeonData->MaxPlayerCount)) {
-            DungeonData->MaxPlayerCount = 1;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "user_count", &DungeonData.MaxPlayerCount)) {
+            DungeonData.MaxPlayerCount = 1;
         }
 
-        ParseAttributeInt32(Archive, Iterator->Index, "ObjCount", &DungeonData->ObjectCount);
+        ParseAttributeInt32(Archive, Iterator->Index, "ObjCount", &DungeonData.ObjectCount);
 
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "RemoveItem", &DungeonData->RemoveItem)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "enter_cd_level", &DungeonData->EntryConditionLevel)) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "enter_cd_class", DungeonData->EntryConditionClass, 2, ':')) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "enter_warp_id", &DungeonData->EntryWarpID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "fail_warp_npc_id", &DungeonData->FailWarpNpcID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "dead_warp_id", &DungeonData->DeadWarpID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "id", &DungeonData->DungeonID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "penalty_value", &DungeonData->PenaltyValue)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "RemoveItem", &DungeonData.RemoveItem)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "enter_cd_level", &DungeonData.EntryConditionLevel)) goto error;
+        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "enter_cd_class", DungeonData.EntryConditionClass, 2, ':')) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "enter_warp_id", &DungeonData.EntryWarpID)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "fail_warp_npc_id", &DungeonData.FailWarpNpcID)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "dead_warp_id", &DungeonData.DeadWarpID)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "penalty_value", &DungeonData.PenaltyValue)) goto error;
 
-        DungeonData->PatternPartCount = ParseAttributeInt32ArrayCounted(
+        DungeonData.PatternPartCount = ParseAttributeInt32ArrayCounted(
             Archive,
             Iterator->Index,
             "pp_id",
-            DungeonData->PatternPartIndices,
+            DungeonData
+            .PatternPartIndices,
             RUNTIME_DUNGEON_MAX_PATTERN_PART_COUNT,
             ','
         );
 
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "reward", DungeonData->Reward, 8, ':')) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "success_warp_npc_id", &DungeonData->SuccessWarpNpcID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "world_id", &DungeonData->WorldID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "next_dungeon_id", &DungeonData->NextDungeonID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "dungeon_type", &DungeonData->DungeonType)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "is_elite", &DungeonData->IsElite)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "elite_dungeon_boost", &DungeonData->EliteDungeonBoost)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "mission_timeout", &DungeonData->MissionTimeout)) goto error;
+        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "reward", DungeonData.Reward, 8, ':')) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "success_warp_npc_id", &DungeonData.SuccessWarpNpcID)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "world_id", &DungeonData.WorldIndex)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "next_dungeon_id", &DungeonData.NextDungeonIndex)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "dungeon_type", &DungeonData.DungeonType)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "is_elite", &DungeonData.IsElite)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "elite_dungeon_boost", &DungeonData.EliteDungeonBoost)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "mission_timeout", &DungeonData.MissionTimeout)) goto error;
 
-        RTWorldDataRef WorldData = RTWorldDataGet(Runtime->WorldManager, DungeonData->WorldID);
+        RTWorldDataRef WorldData = RTWorldDataGet(Runtime->WorldManager, DungeonData.WorldIndex);
         WorldData->HasQuestDungeon = true;
 
-        Runtime->DungeonDataCount += 1;
+        DungeonData.TriggerGroups = IndexDictionaryCreate(Runtime->Allocator, 8);
+        DungeonData.ActionGroups = IndexDictionaryCreate(Runtime->Allocator, 8);
+        DungeonData.TimeControls = IndexDictionaryCreate(Runtime->Allocator, 8);
+        DungeonData.DropTable.WorldDropPool = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTDropItem), 8);
+        DungeonData.DropTable.MobDropPool = IndexDictionaryCreate(Runtime->Allocator, 8);
+        DungeonData.DropTable.QuestDropPool = IndexDictionaryCreate(Runtime->Allocator, 8);
+        DictionaryInsert(Runtime->DungeonData, &DungeonIndex, &DungeonData, sizeof(struct _RTDungeonData));
+
+        if (!ServerLoadDungeonExtraData(Context, RuntimeDirectory, ServerDirectory, &DungeonData)) goto error;
+
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
     }
 
-    // TODO: Load additional pattern part data
+    struct _RTMissionDungeonPatternPartData PatternPartData = { 0 };
+
     Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "pp");
     while (Iterator) {
-        assert(Runtime->MissionDungeonPatternPartDataCount < RUNTIME_MEMORY_MAX_DUNGEON_PATTERN_PART_COUNT);
-
-        RTMissionDungeonPatternPartDataRef PatternPartData = &Runtime->MissionDungeonPatternPartData[Runtime->MissionDungeonPatternPartDataCount];
-        memset(PatternPartData, 0, sizeof(struct _RTMissionDungeonPatternPartData));
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "id", &PatternPartData->ID)) goto error;
-
-        PatternPartData->MobTable = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTMob), 8);
+        Index PatternPartIndex = 0;
+        if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &PatternPartIndex)) goto error;
+        assert(!DictionaryLookup(Runtime->PatternPartData, &PatternPartIndex));
+        memset(&PatternPartData, 0, sizeof(struct _RTMissionDungeonPatternPartData));
+        PatternPartData.MobTable = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTMob), 8);
 
         struct {
             Int32 MobID;
             Int32 MaxCount;
         } MissionMobs[RUNTIME_MAX_QUEST_COUNTER_COUNT];
 
-        PatternPartData->MissionMobCount = ParseAttributeInt32Array2D(
+        PatternPartData.MissionMobCount = ParseAttributeInt32Array2D(
             Archive,
             Iterator->Index,
             "mission_mobs",
-            (Int32 *)&MissionMobs[0],
+            (Int32*)&MissionMobs[0],
             2, // NOTE: The old quest dungeon data has old format for mission mobs field.
             RUNTIME_MAX_QUEST_COUNTER_COUNT,
             ':',
             ','
         );
 
-        for (Index Index = 0; Index < PatternPartData->MissionMobCount; Index += 1) {
-            PatternPartData->MissionMobs[Index].MobID = MissionMobs[Index].MobID;
-            PatternPartData->MissionMobs[Index].Count = MissionMobs[Index].MaxCount;
-            PatternPartData->MissionMobs[Index].MaxCount = MissionMobs[Index].MaxCount;
+        for (Index Index = 0; Index < PatternPartData.MissionMobCount; Index += 1) {
+            PatternPartData.MissionMobs[Index].MobID = MissionMobs[Index].MobID;
+            PatternPartData.MissionMobs[Index].Count = MissionMobs[Index].MaxCount;
+            PatternPartData.MissionMobs[Index].MaxCount = MissionMobs[Index].MaxCount;
         }
 
-        ParseAttributeInt32(Archive, Iterator->Index, "mission_npc", &PatternPartData->MissionNpcID);
-
-        Runtime->MissionDungeonPatternPartDataCount += 1;
-        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
-    }
-
-    Archive = Cont2Archive;
-
-    ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.cabal_mission_dungeon");
-    if (ParentIndex < 0) goto error;
-
-    Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "dungeon");
-    while (Iterator) {
-        assert(Runtime->DungeonDataCount < RUNTIME_MEMORY_MAX_DUNGEON_COUNT);
-
-        RTDungeonDataRef DungeonData = &Runtime->DungeonData[Runtime->DungeonDataCount];
-        memset(DungeonData, 0, sizeof(struct _RTDungeonData));
-        
-        Int32 EntryItem[2];
-        if (ParseAttributeInt32Array(Archive, Iterator->Index, "enter_cd_item", EntryItem, 2, ':')) {
-            DungeonData->EntryItemID.ID = EntryItem[0];
-            DungeonData->EntryItemOption = EntryItem[1];
-        }
-
-        ParseAttributeInt32(Archive, Iterator->Index, "create_type", &DungeonData->CreateType);
-        ParseAttributeInt32(Archive, Iterator->Index, "enter_type", &DungeonData->EntryType);
-        ParseAttributeInt32(Archive, Iterator->Index, "user_type", &DungeonData->PlayerType);
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "user_count", &DungeonData->MaxPlayerCount)) {
-            DungeonData->MaxPlayerCount = 1;
-        }
-        
-        ParseAttributeInt32(Archive, Iterator->Index, "ObjCount", &DungeonData->ObjectCount);
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "RemoveItem", &DungeonData->RemoveItem)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "enter_cd_level", &DungeonData->EntryConditionLevel)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "max_user", &DungeonData->MaxPlayerCount)) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "enter_cd_class", DungeonData->EntryConditionClass, 2, ':')) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "enter_warp_id", &DungeonData->EntryWarpID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "fail_warp_npc_id", &DungeonData->FailWarpNpcID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "dead_warp_id", &DungeonData->DeadWarpID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "id", &DungeonData->DungeonID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "penalty_value", &DungeonData->PenaltyValue)) goto error;
-        
-        DungeonData->PatternPartCount = ParseAttributeInt32ArrayCounted(
-            Archive,
-            Iterator->Index,
-            "pp_id",
-            DungeonData->PatternPartIndices,
-            RUNTIME_DUNGEON_MAX_PATTERN_PART_COUNT,
-            ','
-        );
-
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "reward", DungeonData->Reward, 8, ':')) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "success_warp_npc_id", &DungeonData->SuccessWarpNpcID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "world_id", &DungeonData->WorldID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "next_dungeon_id", &DungeonData->NextDungeonID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "warpnpc_set", &DungeonData->WarpNpcSetID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "useoddcircle_count", &DungeonData->UseOddCircleCount)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "dungeon_type", &DungeonData->DungeonType)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "useveradrix_count", &DungeonData->UseVeradrixCount)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "is_elite", &DungeonData->IsElite)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "elite_dungeon_boost", &DungeonData->EliteDungeonBoost)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "mission_timeout", &DungeonData->MissionTimeout)) goto error;
-
-        RTWorldDataRef WorldData = RTWorldDataGet(Runtime->WorldManager, DungeonData->WorldID);
-        WorldData->HasMissionDungeon = true;
-
-        Runtime->DungeonDataCount += 1;
-        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
-    }
-
-    Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "pp");
-    while (Iterator) {
-        assert(Runtime->MissionDungeonPatternPartDataCount < RUNTIME_MEMORY_MAX_DUNGEON_PATTERN_PART_COUNT);
-
-        RTMissionDungeonPatternPartDataRef PatternPartData = &Runtime->MissionDungeonPatternPartData[Runtime->MissionDungeonPatternPartDataCount];
-        memset(PatternPartData, 0, sizeof(struct _RTMissionDungeonPatternPartData));
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "id", &PatternPartData->ID)) goto error;
-
-        PatternPartData->MobTable = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTMob), 8);
-        PatternPartData->MissionMobCount = ParseAttributeInt32Array2D(
-            Archive,
-            Iterator->Index,
-            "mission_mobs",
-            (Int32 *)&PatternPartData->MissionMobs[0],
-            sizeof(struct _RTQuestUnitMobData) / sizeof(Int32),
-            RUNTIME_MAX_QUEST_COUNTER_COUNT,
-            ':',
-            ','
-        );
-
-        ParseAttributeInt32(Archive, Iterator->Index, "mission_npc", &PatternPartData->MissionNpcID);
-
-        Runtime->MissionDungeonPatternPartDataCount += 1;
-        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
-    }
-
-    Archive = Cont3Archive;
-
-    ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.cabal_mission_dungeon");
-    if (ParentIndex < 0) goto error;
-
-    Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "dungeon");
-    while (Iterator) {
-        assert(Runtime->DungeonDataCount < RUNTIME_MEMORY_MAX_DUNGEON_COUNT);
-
-        RTDungeonDataRef DungeonData = &Runtime->DungeonData[Runtime->DungeonDataCount];
-        memset(DungeonData, 0, sizeof(struct _RTDungeonData));
-
-        Int32 EntryItem[2];
-        if (ParseAttributeInt32Array(Archive, Iterator->Index, "enter_cd_item", EntryItem, 2, ':')) {
-            DungeonData->EntryItemID.ID = EntryItem[0];
-            DungeonData->EntryItemOption = EntryItem[1];
-        }
-
-        ParseAttributeInt32(Archive, Iterator->Index, "create_type", &DungeonData->CreateType);
-        ParseAttributeInt32(Archive, Iterator->Index, "enter_type", &DungeonData->EntryType);
-        ParseAttributeInt32(Archive, Iterator->Index, "user_type", &DungeonData->PlayerType);
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "user_count", &DungeonData->MaxPlayerCount)) {
-            DungeonData->MaxPlayerCount = 1;
-        }
-
-        ParseAttributeInt32(Archive, Iterator->Index, "ObjCount", &DungeonData->ObjectCount);
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "RemoveItem", &DungeonData->RemoveItem)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "enter_cd_level", &DungeonData->EntryConditionLevel)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "max_user", &DungeonData->MaxPlayerCount)) goto error;
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "enter_cd_class", DungeonData->EntryConditionClass, 2, ':')) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "enter_warp_id", &DungeonData->EntryWarpID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "fail_warp_npc_id", &DungeonData->FailWarpNpcID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "dead_warp_id", &DungeonData->DeadWarpID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "id", &DungeonData->DungeonID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "penalty_value", &DungeonData->PenaltyValue)) goto error;
-
-        DungeonData->PatternPartCount = ParseAttributeInt32ArrayCounted(
-            Archive,
-            Iterator->Index,
-            "pp_id",
-            DungeonData->PatternPartIndices,
-            RUNTIME_DUNGEON_MAX_PATTERN_PART_COUNT,
-            ','
-        );
-
-        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "reward", DungeonData->Reward, 8, ':')) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "success_warp_npc_id", &DungeonData->SuccessWarpNpcID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "world_id", &DungeonData->WorldID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "next_dungeon_id", &DungeonData->NextDungeonID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "warpnpc_set", &DungeonData->WarpNpcSetID)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "useoddcircle_count", &DungeonData->UseOddCircleCount)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "dungeon_type", &DungeonData->DungeonType)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "useveradrix_count", &DungeonData->UseVeradrixCount)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "is_elite", &DungeonData->IsElite)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "elite_dungeon_boost", &DungeonData->EliteDungeonBoost)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "mission_timeout", &DungeonData->MissionTimeout)) goto error;
-
-        RTWorldDataRef WorldData = RTWorldDataGet(Runtime->WorldManager, DungeonData->WorldID);
-        if (!WorldData) {
-            Info("No world (%d) found for dungeon (%d)", DungeonData->WorldID, DungeonData->DungeonID);
-            Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
-            continue;
-        }
-
-        WorldData->HasMissionDungeon = true;
-
-        Runtime->DungeonDataCount += 1;
-        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
-    }
-
-    Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "pp");
-    while (Iterator) {
-        assert(Runtime->MissionDungeonPatternPartDataCount < RUNTIME_MEMORY_MAX_DUNGEON_PATTERN_PART_COUNT);
-
-        RTMissionDungeonPatternPartDataRef PatternPartData = &Runtime->MissionDungeonPatternPartData[Runtime->MissionDungeonPatternPartDataCount];
-        memset(PatternPartData, 0, sizeof(struct _RTMissionDungeonPatternPartData));
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "id", &PatternPartData->ID)) goto error;
-
-        PatternPartData->MobTable = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTMob), 8);
-        PatternPartData->MissionMobCount = ParseAttributeInt32Array2D(
-            Archive,
-            Iterator->Index,
-            "mission_mobs",
-            (Int32 *)&PatternPartData->MissionMobs[0],
-            sizeof(struct _RTQuestUnitMobData) / sizeof(Int32),
-            RUNTIME_MAX_QUEST_COUNTER_COUNT,
-            ':',
-            ','
-        );
-
-        ParseAttributeInt32(Archive, Iterator->Index, "mission_npc", &PatternPartData->MissionNpcID);
-
-        Runtime->MissionDungeonPatternPartDataCount += 1;
-        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
-    }
-
-
-    Char FilePath[MAX_PATH];
-    ArchiveClear(Archive, true);
-    PathCombine(ServerDirectory, "quest_dungeon_mobs.xml", FilePath);
-
-    Archive = TempArchive;
-    if (!ArchiveLoadFromFile(Archive, FilePath, false)) goto error;
-
-    ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "quest_dungeon_mobs");
-    if (ParentIndex < 0) goto error;
-
-    Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "mob");
-    while (Iterator) {
-        Int32 PatternPartID;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "PPIdx", &PatternPartID)) goto error;
-
-        RTMissionDungeonPatternPartDataRef PatternPartData = RTRuntimeGetPatternPartByID(Runtime, PatternPartID);
-        assert(PatternPartData);
-
-        RTMobRef Mob = (RTMobRef)ArrayAppendUninitializedElement(PatternPartData->MobTable);
-        memset(Mob, 0, sizeof(struct _RTMob));
-
-        Mob->ID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
-
-        if (!ParseAttributeUInt16(Archive, Iterator->Index, "MobIdx", &Mob->ID.EntityIndex)) {
-            Error("Loading '%s' in '%s' failed!", "MobIdx", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "PPIdx", &Mob->Spawn.PatternPartIndex)) {
-            Error("Loading '%s' in '%s' failed!", "PPIdx", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "SpeciesIdx", &Mob->Spawn.MobSpeciesIndex)) {
-            Error("Loading '%s' in '%s' failed!", "SpeciesIdx", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "PosX", &Mob->Spawn.AreaX)) {
-            Error("Loading '%s' in '%s' failed!", "PosX", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "PosY", &Mob->Spawn.AreaY)) {
-            Error("Loading '%s' in '%s' failed!", "PosY", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Width", &Mob->Spawn.AreaWidth)) {
-            Error("Loading '%s' in '%s' failed!", "Width", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Height", &Mob->Spawn.AreaHeight)) {
-            Error("Loading '%s' in '%s' failed!", "Height", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpwnInterval", &Mob->Spawn.SpawnInterval)) {
-            Error("Loading '%s' in '%s' failed!", "SpwnInterval", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpwnCount", &Mob->Spawn.SpawnCount)) {
-            Error("Loading '%s' in '%s' failed!", "SpwnCount", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpawnDefault", &Mob->Spawn.SpawnDefault)) {
-            Error("Loading '%s' in '%s' failed!", "SpawnDefault", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Grade", &Mob->Spawn.Grade)) {
-            Error("Loading '%s' in '%s' failed!", "Grade", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Lv", &Mob->Spawn.Level)) {
-            Error("Loading '%s' in '%s' failed!", "Lv", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "MissionGate", &Mob->Spawn.MissionGate)) {
-            Error("Loading '%s' in '%s' failed!", "MissionGate", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "PerfectDrop", &Mob->Spawn.PerfectDrop)) {
-            Error("Loading '%s' in '%s' failed!", "PerfectDrop", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Type", &Mob->Spawn.Type)) {
-            Error("Loading '%s' in '%s' failed!", "Type", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Min", &Mob->Spawn.Min)) {
-            Error("Loading '%s' in '%s' failed!", "Min", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Max", &Mob->Spawn.Max)) {
-            Error("Loading '%s' in '%s' failed!", "Max", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Authority", &Mob->Spawn.Authority)) {
-            Error("Loading '%s' in '%s' failed!", "Authority", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        ParseAttributeInt32(Archive, Iterator->Index, "TrgIdxSpawn", &Mob->Spawn.SpawnTriggerID);
-        ParseAttributeInt32(Archive, Iterator->Index, "TrgIdxKill", &Mob->Spawn.KillTriggerID);
-        ParseAttributeInt32(Archive, Iterator->Index, "Server_Mob", &Mob->Spawn.ServerMobID);
-        ParseAttributeInt32(Archive, Iterator->Index, "Loot_Delay", &Mob->Spawn.LootDelay);
-
-        ParseAttributeInt32Array(Archive, Iterator->Index, "EvtProperty", Mob->Spawn.EventProperty, RUNTIME_MOB_MAX_EVENT_COUNT, ',');
-        ParseAttributeInt32Array(Archive, Iterator->Index, "EvtMobs", Mob->Spawn.EventMobs, RUNTIME_MOB_MAX_EVENT_COUNT, ',');
-        ParseAttributeInt32Array(Archive, Iterator->Index, "EvtInterval", Mob->Spawn.EventInterval, RUNTIME_MOB_MAX_EVENT_COUNT, ',');
-
-        Mob->SpeciesData = &Runtime->MobData[Mob->Spawn.MobSpeciesIndex];
-        Mob->IsInfiniteSpawn = true;
-        Mob->IsPermanentDeath = false;
-        Mob->RemainingSpawnCount = 0;
-
-        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
-    }
-
-    PathCombine(ServerDirectory, "mission_dungeon_trigger_to_event.xml", FilePath);
-
-    Archive = TempArchive;
-    if (!ArchiveLoadFromFile(Archive, FilePath, false)) {
-        Error("Loading archive '%s' failed!", "mission_dungeon_trigger_to_event.xml");
-        goto error;
-    }
-
-    ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "quest_dungeon_trigger_to_event");
-    if (ParentIndex < 0) goto error;
-
-    Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "trigger");
-    while (Iterator) {
-        Int32 DungeonID;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "QDungeonIdx", &DungeonID)) {
-            Error("Loading '%s' in '%s' failed!", "QDungeonIdx", "quest_dungeon_trigger_to_event.xml");
-            goto error;
-        }
-
-        RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, DungeonID);
-        assert(DungeonData);
-        assert(DungeonData->TriggerCount < RUNTIME_MEMORY_DUNGEON_TRIGGER_DATA_COUNT);
-
-        RTDungeonTriggerDataRef TriggerData = &DungeonData->TriggerData[DungeonData->TriggerCount];
-        memset(TriggerData, 0, sizeof(struct _RTDungeonTriggerData));        
-        TriggerData->DungeonID = DungeonID;
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "TrgIdx", &TriggerData->TriggerID)) {
-            Error("Loading '%s' in '%s' failed!", "TrgIdx", "quest_dungeon_trigger_to_event.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "TrgType", &TriggerData->TriggerType)) {
-            Error("Loading '%s' in '%s' failed!", "TrgType", "quest_dungeon_trigger_to_event.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "TrgNpcIdx", &TriggerData->TriggerNpcID)) {
-            Error("Loading '%s' in '%s' failed!", "TrgNpcIdx", "quest_dungeon_trigger_to_event.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "EvtActGroupIdx", &TriggerData->ActionGroupID)) {
-            Error("Loading '%s' in '%s' failed!", "EvtActGroupIdx", "quest_dungeon_trigger_to_event.xml");
-            goto error;
-        }
-        
-        TriggerData->LiveMobCount = ParseAttributeInt32ArrayCounted(
-            Archive,
-            Iterator->Index,
-            "LiveStateMMapIdx",
-            TriggerData->LiveMobs,
-            RUNTIME_DUNGEON_TRIGGER_MAX_MOB_COUNT,
-            ','
-        );
-
-        TriggerData->DeadMobCount = ParseAttributeInt32ArrayCounted(
-            Archive,
-            Iterator->Index,
-            "DeadStateMMapIdx",
-            TriggerData->DeadMobs,
-            RUNTIME_DUNGEON_TRIGGER_MAX_MOB_COUNT,
-            ','
-        );
-
-        DungeonData->TriggerCount += 1;
-        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
-    }
-
-    ArchiveClear(Archive, true);
-    PathCombine(ServerDirectory, "mission_dungeon_act_group.xml", FilePath);
-
-    Archive = TempArchive;
-    if (!ArchiveLoadFromFile(Archive, FilePath, false)) goto error;
-
-    ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "quest_dungeon_act_group");
-    if (ParentIndex < 0) goto error;
-
-    Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "act");
-    while (Iterator) {
-        Int32 DungeonID;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "QDungeonIdx", &DungeonID)) goto error;
-
-        RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, DungeonID);
-        assert(DungeonData);
-        assert(DungeonData->TriggerActionCount < RUNTIME_MEMORY_DUNGEON_TRIGGER_ACTION_DATA_COUNT);
-        
-        RTDungeonTriggerActionDataRef TriggerActionData = &DungeonData->TriggerActionData[DungeonData->TriggerActionCount];
-        memset(TriggerActionData, 0, sizeof(struct _RTDungeonTriggerActionData));
-        TriggerActionData->DungeonID = DungeonID;
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "EvtActGroupIdx", &TriggerActionData->ActionGroupID)) {
-            Error("Loading '%s' in '%s' failed!", "EvtActGroupIdx", "quest_dungeon_act_group.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "TgtAction", &TriggerActionData->ActionType)) {
-            Error("Loading '%s' in '%s' failed!", "TgtAction", "quest_dungeon_act_group.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "TgtMMapIdx", &TriggerActionData->TargetID)) {
-            Error("Loading '%s' in '%s' failed!", "TgtMMapIdx", "quest_dungeon_act_group.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeUInt64(Archive, Iterator->Index, "EvtDelay", &TriggerActionData->Delay)) {
-            Error("Loading '%s' in '%s' failed!", "EvtDelay", "quest_dungeon_act_group.xml");
-            goto error;
-        }
-
-        DungeonData->TriggerActionCount += 1;
-        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
-    }
-
-    ArchiveClear(Archive, true);
-    PathCombine(ServerDirectory, "mission_dungeon_mobs.xml", FilePath);
-
-    Archive = TempArchive;
-    if (!ArchiveLoadFromFile(Archive, FilePath, false)) goto error;
-
-    ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "quest_dungeon_mobs");
-    if (ParentIndex < 0) goto error;
-
-    Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "mob");
-    while (Iterator) {
-        Int32 PatternPartID;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "PPIdx", &PatternPartID)) goto error;
-
-        RTMissionDungeonPatternPartDataRef PatternPartData = RTRuntimeGetPatternPartByID(Runtime, PatternPartID);
-        assert(PatternPartData);
-
-        RTMobRef Mob = (RTMobRef)ArrayAppendUninitializedElement(PatternPartData->MobTable);
-        memset(Mob, 0, sizeof(struct _RTMob));
-
-        Mob->ID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
-
-        if (!ParseAttributeUInt16(Archive, Iterator->Index, "MobIdx", &Mob->ID.EntityIndex)) {
-            Error("Loading '%s' in '%s' failed!", "MobIdx", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "PPIdx", &Mob->Spawn.PatternPartIndex)) {
-            Error("Loading '%s' in '%s' failed!", "PPIdx", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "SpeciesIdx", &Mob->Spawn.MobSpeciesIndex)) {
-            Error("Loading '%s' in '%s' failed!", "SpeciesIdx", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "PosX", &Mob->Spawn.AreaX)) {
-            Error("Loading '%s' in '%s' failed!", "PosX", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "PosY", &Mob->Spawn.AreaY)) {
-            Error("Loading '%s' in '%s' failed!", "PosY", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Width", &Mob->Spawn.AreaWidth)) {
-            Error("Loading '%s' in '%s' failed!", "Width", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Height", &Mob->Spawn.AreaHeight)) {
-            Error("Loading '%s' in '%s' failed!", "Height", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpwnInterval", &Mob->Spawn.SpawnInterval)) {
-            Error("Loading '%s' in '%s' failed!", "SpwnInterval", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpwnCount", &Mob->Spawn.SpawnCount)) {
-            Error("Loading '%s' in '%s' failed!", "SpwnCount", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "SpawnDefault", &Mob->Spawn.SpawnDefault)) {
-            Error("Loading '%s' in '%s' failed!", "SpawnDefault", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Grade", &Mob->Spawn.Grade)) {
-            Error("Loading '%s' in '%s' failed!", "Grade", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Lv", &Mob->Spawn.Level)) {
-            Error("Loading '%s' in '%s' failed!", "Lv", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "MissionGate", &Mob->Spawn.MissionGate)) {
-            Error("Loading '%s' in '%s' failed!", "MissionGate", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "PerfectDrop", &Mob->Spawn.PerfectDrop)) {
-            Error("Loading '%s' in '%s' failed!", "PerfectDrop", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Type", &Mob->Spawn.Type)) {
-            Error("Loading '%s' in '%s' failed!", "Type", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Min", &Mob->Spawn.Min)) {
-            Error("Loading '%s' in '%s' failed!", "Min", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Max", &Mob->Spawn.Max)) {
-            Error("Loading '%s' in '%s' failed!", "Max", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "Authority", &Mob->Spawn.Authority)) {
-            Error("Loading '%s' in '%s' failed!", "Authority", "quest_dungeon_mobs.xml");
-            goto error;
-        }
-
-        ParseAttributeInt32(Archive, Iterator->Index, "TrgIdxSpawn", &Mob->Spawn.SpawnTriggerID);
-        ParseAttributeInt32(Archive, Iterator->Index, "TrgIdxKill", &Mob->Spawn.KillTriggerID);
-        ParseAttributeInt32(Archive, Iterator->Index, "Server_Mob", &Mob->Spawn.ServerMobID);
-        ParseAttributeInt32(Archive, Iterator->Index, "Loot_Delay", &Mob->Spawn.LootDelay);
-
-        ParseAttributeInt32Array(Archive, Iterator->Index, "EvtProperty", Mob->Spawn.EventProperty, RUNTIME_MOB_MAX_EVENT_COUNT, ',');
-        ParseAttributeInt32Array(Archive, Iterator->Index, "EvtMobs", Mob->Spawn.EventMobs, RUNTIME_MOB_MAX_EVENT_COUNT, ',');
-        ParseAttributeInt32Array(Archive, Iterator->Index, "EvtInterval", Mob->Spawn.EventInterval, RUNTIME_MOB_MAX_EVENT_COUNT, ',');
-
-        Mob->SpeciesData = &Runtime->MobData[Mob->Spawn.MobSpeciesIndex];
-        Mob->IsInfiniteSpawn = true;
-        Mob->IsPermanentDeath = false;
-        Mob->RemainingSpawnCount = 0;
+        ParseAttributeInt32(Archive, Iterator->Index, "mission_npc", &PatternPartData.MissionNpcIndex);
+        DictionaryInsert(Runtime->PatternPartData, &PatternPartIndex, &PatternPartData, sizeof(struct _RTMissionDungeonPatternPartData));
+
+        Char FilePath[MAX_PATH] = { 0 };
+        sprintf(FilePath, "%s\\Dungeon\\PatternPart_%llu.xml", ServerDirectory, PatternPartIndex);
+        if (!ServerLoadPatternPartData(Context, FilePath)) goto error;
 
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
     }
@@ -2341,12 +2157,144 @@ Bool ServerLoadDungeonData(
     return true;
 
 error:
-    for (Int32 Index = 0; Index < Runtime->MissionDungeonPatternPartDataCount; Index += 1) {
-        ArrayDestroy(Runtime->MissionDungeonPatternPartData[Index].MobTable);
-    }
-
     ArchiveDestroy(TempArchive);
     return false;
+}
+
+Bool ServerLoadMissionDungeonData(
+    ServerContextRef Context,
+    CString RuntimeDirectory,
+    CString ServerDirectory,
+    ArchiveRef Archive
+) {
+    RTRuntimeRef Runtime = Context->Runtime;
+    Int32 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.cabal_mission_dungeon");
+    if (ParentIndex < 0) goto error;
+
+    struct _RTDungeonData DungeonData = { 0 };
+
+    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "dungeon");
+    while (Iterator) {
+        Index DungeonIndex = 0;
+        if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
+        assert(!DictionaryLookup(Runtime->DungeonData, &DungeonIndex));
+        memset(&DungeonData, 0, sizeof(struct _RTDungeonData));
+        DungeonData.DungeonIndex = DungeonIndex;
+
+        Int32 EntryItem[2];
+        if (ParseAttributeInt32Array(Archive, Iterator->Index, "enter_cd_item", EntryItem, 2, ':')) {
+            DungeonData.EntryItemID.ID = EntryItem[0];
+            DungeonData.EntryItemOption = EntryItem[1];
+        }
+
+        ParseAttributeInt32(Archive, Iterator->Index, "create_type", &DungeonData.CreateType);
+        ParseAttributeInt32(Archive, Iterator->Index, "enter_type", &DungeonData.EntryType);
+        ParseAttributeInt32(Archive, Iterator->Index, "user_type", &DungeonData.PlayerType);
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "user_count", &DungeonData.MaxPlayerCount)) {
+            DungeonData.MaxPlayerCount = 1;
+        }
+
+        ParseAttributeInt32(Archive, Iterator->Index, "ObjCount", &DungeonData.ObjectCount);
+
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "RemoveItem", &DungeonData.RemoveItem)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "enter_cd_level", &DungeonData.EntryConditionLevel)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "max_user", &DungeonData.MaxPlayerCount)) goto error;
+        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "enter_cd_class", DungeonData.EntryConditionClass, 2, ':')) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "enter_warp_id", &DungeonData.EntryWarpID)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "fail_warp_npc_id", &DungeonData.FailWarpNpcID)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "dead_warp_id", &DungeonData.DeadWarpID)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "id", &DungeonData.DungeonIndex)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "penalty_value", &DungeonData.PenaltyValue)) goto error;
+
+        DungeonData.PatternPartCount = ParseAttributeInt32ArrayCounted(
+            Archive,
+            Iterator->Index,
+            "pp_id",
+            DungeonData.PatternPartIndices,
+            RUNTIME_DUNGEON_MAX_PATTERN_PART_COUNT,
+            ','
+        );
+
+        if (!ParseAttributeInt32Array(Archive, Iterator->Index, "reward", DungeonData.Reward, 8, ':')) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "success_warp_npc_id", &DungeonData.SuccessWarpNpcID)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "world_id", &DungeonData.WorldIndex)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "next_dungeon_id", &DungeonData.NextDungeonIndex)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "warpnpc_set", &DungeonData.WarpNpcSetID)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "useoddcircle_count", &DungeonData.UseOddCircleCount)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "dungeon_type", &DungeonData.DungeonType)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "useveradrix_count", &DungeonData.UseVeradrixCount)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "is_elite", &DungeonData.IsElite)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "elite_dungeon_boost", &DungeonData.EliteDungeonBoost)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "mission_timeout", &DungeonData.MissionTimeout)) goto error;
+
+        RTWorldDataRef WorldData = RTWorldDataGet(Runtime->WorldManager, DungeonData.WorldIndex);
+        WorldData->HasMissionDungeon = true;
+
+        DungeonData.TriggerGroups = IndexDictionaryCreate(Runtime->Allocator, 8);
+        DungeonData.ActionGroups = IndexDictionaryCreate(Runtime->Allocator, 8);
+        DungeonData.TimeControls = IndexDictionaryCreate(Runtime->Allocator, 8);
+        DungeonData.DropTable.WorldDropPool = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTDropItem), 8);
+        DungeonData.DropTable.MobDropPool = IndexDictionaryCreate(Runtime->Allocator, 8);
+        DungeonData.DropTable.QuestDropPool = IndexDictionaryCreate(Runtime->Allocator, 8);
+        DictionaryInsert(Runtime->DungeonData, &DungeonIndex, &DungeonData, sizeof(struct _RTDungeonData));
+
+        if (!ServerLoadDungeonExtraData(Context, RuntimeDirectory, ServerDirectory, &DungeonData)) goto error;
+
+        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+    }
+
+    struct _RTMissionDungeonPatternPartData PatternPartData = { 0 };
+
+    Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "pp");
+    while (Iterator) {
+        Index PatternPartIndex = 0;
+        if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &PatternPartIndex)) goto error;
+        assert(!DictionaryLookup(Runtime->PatternPartData, &PatternPartIndex));
+        memset(&PatternPartData, 0, sizeof(struct _RTMissionDungeonPatternPartData));
+
+        PatternPartData.MobTable = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTMob), 8);
+        PatternPartData.MissionMobCount = ParseAttributeInt32Array2D(
+            Archive,
+            Iterator->Index,
+            "mission_mobs",
+            (Int32*)&PatternPartData.MissionMobs[0],
+            sizeof(struct _RTQuestUnitMobData) / sizeof(Int32),
+            RUNTIME_MAX_QUEST_COUNTER_COUNT,
+            ':',
+            ','
+        );
+
+        ParseAttributeInt32(Archive, Iterator->Index, "mission_npc", &PatternPartData.MissionNpcIndex);
+
+        DictionaryInsert(Runtime->PatternPartData, &PatternPartIndex, &PatternPartData, sizeof(struct _RTMissionDungeonPatternPartData));
+
+        Char FilePath[MAX_PATH] = { 0 };
+        sprintf(FilePath, "%s\\Dungeon\\PatternPart_%llu.xml", ServerDirectory, PatternPartIndex);
+        if (!ServerLoadPatternPartData(Context, FilePath)) goto error;
+
+        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+    }
+
+    return true;
+
+error:
+    return false;
+}
+
+Bool ServerLoadDungeonData(
+    ServerContextRef Context,
+    CString RuntimeDirectory,
+    CString ServerDirectory,
+    ArchiveRef Cont1Archive,
+    ArchiveRef Cont2Archive,
+    ArchiveRef Cont3Archive
+) {
+    if (!ServerLoadQuestDungeonData(Context, RuntimeDirectory, ServerDirectory, Cont1Archive)) return false;
+    if (!ServerLoadMissionDungeonData(Context, RuntimeDirectory, ServerDirectory, Cont2Archive)) return false;
+    if (!ServerLoadMissionDungeonData(Context, RuntimeDirectory, ServerDirectory, Cont3Archive)) return false;
+
+    return true;
 }
 
 Bool ServerLoadWorldDropData(
@@ -2379,27 +2327,21 @@ Bool ServerLoadWorldDropData(
         RTWorldDataRef World = RTWorldDataGet(Runtime->WorldManager, WorldIndex);
         RTDropTableRef DropTable = &World->DropTable;
         
-        Int32 DungeonIndex = -1;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "DungeonID", &DungeonIndex)) goto error;
+        Index DungeonIndex = UINT64_MAX;
+        if (!ParseAttributeIndex(Archive, Iterator->Index, "DungeonID", &DungeonIndex)) goto error;
 
-        if (DungeonIndex > 0) {
+        if (DungeonIndex != UINT64_MAX && DungeonIndex != 0) {
             if (!World->HasQuestDungeon && !World->HasMissionDungeon) {
-                Error("WorldDrop: World %d has no dungeon %d!", WorldIndex, DungeonIndex);
+                Error("WorldDrop: World %d has no dungeon %llu!", WorldIndex, DungeonIndex);
                 Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
                 continue;
             }
 
-            Bool Found = false;
-            for (Int32 Index = 0; Index < Runtime->DungeonDataCount; Index += 1) {
-                RTDungeonDataRef DungeonData = &Runtime->DungeonData[Index];
-                if (DungeonData->WorldID == WorldIndex && DungeonData->DungeonID == DungeonIndex) {
-                    DropTable = &DungeonData->DropTable;
-                    Found = true;
-                }
-            }
+            RTDungeonDataRef DungeonData = (RTDungeonDataRef)DictionaryLookup(Runtime->DungeonData, &DungeonIndex);
+            DropTable = &DungeonData->DropTable;
 
-            if (!Found) {
-                Error("WorldDrop: World %d has no dungeon %d!", WorldIndex, DungeonIndex);
+            if (!DungeonData) {
+                Error("WorldDrop: World %d has no dungeon %llu!", WorldIndex, DungeonIndex);
                 Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
                 continue;
             }
@@ -2410,20 +2352,24 @@ Bool ServerLoadWorldDropData(
 
         RTDropItemRef DropItem = NULL;
         if (MobSpeciesIndex > 0) {
-            assert(DropTable->MobItemCount < RUNTIME_MEMORY_MAX_MOB_DROP_ITEM_COUNT);
-            RTMobDropItemRef MobDropItem = &DropTable->MobItems[DropTable->MobItemCount];
-            MobDropItem->MobSpeciesIndex = MobSpeciesIndex;
-            DropItem = &MobDropItem->Item;
-            DropTable->MobItemCount += 1;
+            Index DropPoolIndex = MobSpeciesIndex;
+            ArrayRef DropPool = DictionaryLookup(World->DropTable.MobDropPool, &DropPoolIndex);
+            if (!DropPool) {
+                struct _Array TempArray = { 0 };
+                DictionaryInsert(World->DropTable.MobDropPool, &DropPoolIndex, &TempArray, sizeof(struct _Array));
+                DropPool = DictionaryLookup(World->DropTable.MobDropPool, &DropPoolIndex);
+                ArrayInitializeEmpty(DropPool, Runtime->Allocator, sizeof(struct _RTDropItem), 8);
+            }
+
+            DropItem = (RTDropItemRef)ArrayAppendUninitializedElement(DropPool);
+            memset(DropItem, 0, sizeof(struct _RTDropItem));
         }
         else {
-            // TODO: Add Group property for drops
-            assert(DropTable->WorldItemCount < RUNTIME_MEMORY_MAX_WORLD_DROP_ITEM_COUNT);
-            RTWorldDropItemRef WorldDropItem = &DropTable->WorldItems[DropTable->WorldItemCount];
-            if (!ParseAttributeInt32(Archive, Iterator->Index, "MinLv", &WorldDropItem->MinMobLevel)) goto error;
-            if (!ParseAttributeInt32(Archive, Iterator->Index, "MaxLv", &WorldDropItem->MaxMobLevel)) goto error;
-            DropItem = &WorldDropItem->Item;
-            DropTable->WorldItemCount += 1;
+            DropItem = (RTDropItemRef)ArrayAppendUninitializedElement(World->DropTable.WorldDropPool);
+            memset(DropItem, 0, sizeof(struct _RTDropItem));
+
+            if (!ParseAttributeInt32(Archive, Iterator->Index, "MinLv", &DropItem->MinMobLevel)) goto error;
+            if (!ParseAttributeInt32(Archive, Iterator->Index, "MaxLv", &DropItem->MaxMobLevel)) goto error;
         }
 
         if (!ParseAttributeUInt64(Archive, Iterator->Index, "ItemKind", &DropItem->ItemID.Serial)) goto error;

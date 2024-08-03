@@ -11,6 +11,8 @@ CLIENT_PROCEDURE_BINDING(DEINITIALIZE) {
     // TODO: Save solo dungeon to party svr
 
     if (Character) {
+        RTCharacterUpdateGiftBox(Runtime, Character);
+
         ServerSyncCharacter(Server, Context, Client, Character);
 
         RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Context->Runtime, Character);

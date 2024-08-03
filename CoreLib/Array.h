@@ -6,6 +6,14 @@
 
 EXTERN_C_BEGIN
 
+struct _Array {
+    AllocatorRef Allocator;
+    Index Size;
+    Index Count;
+    Index Capacity;
+    UInt8* Memory;
+};
+
 typedef struct _Array* ArrayRef;
 
 typedef Bool (*ArrayPredicate)(
@@ -24,6 +32,17 @@ ArrayRef ArrayCreateEmpty(
     AllocatorRef Allocator,
     Index Size,
     Index Capacity
+);
+
+Void ArrayInitializeEmpty(
+    ArrayRef Array,
+    AllocatorRef Allocator,
+    Index Size,
+    Index Capacity
+);
+
+Void ArrayDealloc(
+    ArrayRef Array
 );
 
 Void ArrayDestroy(

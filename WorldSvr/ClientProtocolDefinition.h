@@ -40,11 +40,7 @@ CLIENT_PROTOCOL(S2C, GET_CHARACTERS, DEFAULT, 133,
     UInt64 BattleFieldEntryFee;
     UInt8 Unknown1;
     UInt8 Unknown2;
-    UInt32 CharacterSlotID;
-    UInt64 CharacterSlotOrder;
-    UInt32 CharacterSlotOpenMask;
-    UInt32 Unknown4;
-    UInt32 ForceGem;
+    struct _RTCharacterAccountInfo AccountInfo;
     // TODO: Replace with CLIENT_PROTOCOL_STRUCT
     IPC_DATA_CHARACTER_INFO Characters[MAX_CHARACTER_COUNT];
 )
@@ -116,11 +112,6 @@ CLIENT_PROTOCOL(C2S, INITIALIZE, DEFAULT, 142,
     UInt32 CharacterIndex;
 )
 
-CLIENT_PROTOCOL_STRUCT(S2C_DATA_SECRET_SHOP_INDEX,
-    UInt16 SlotIndex;
-    UInt32 ShopItemID;
-)
-
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_WAR_TIMER,
     UInt32 TimeRemainingTimer;
     UInt32 TimeAttackTimer;
@@ -178,12 +169,6 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_BLENDED_ABILITY_SLOT,
     UInt32 AbilityID;
     UInt32 Level;
     UInt32 Unknown1;
-)
-
-CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_KARMA_ABILITY_SLOT,
-    UInt32 AbilityID;
-    UInt16 Level;
-    UInt16 Unknown1;
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_PREMIUM_SERVICE_SLOT,
@@ -282,157 +267,56 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     UInt32 CharacterStyle;
     UInt32 CharacterLiveStyle;
     UInt8 Unknown14[282];
-    UInt16 EquipmentSlotCount;
-    UInt8 EquipmentLockCount;
-    UInt16 InventorySlotCount;
-    UInt16 VehicleInventorySlotCount;
-    UInt16 SkillSlotCount;
-    UInt16 QuickSlotCount;
-    UInt16 MercenaryCount;
+    struct _RTEquipmentInfo EquipmentInfo;
+    struct _RTInventoryInfo InventoryInfo;
+    struct _RTVehicleInventoryInfo VehicleInventoryInfo;
+    struct _RTSkillSlotInfo SkillSlotInfo;
+    struct _RTQuickSlotInfo QuickSlotInfo;
+    struct _RTMercenaryInfo MercenaryInfo;
     UInt16 ItemPeriodCount;
-    UInt16 APTotal;
-    UInt16 AP;
-    UInt32 Axp;
-    UInt8 EssenceAbilityCount;
-    UInt8 ExtendedEssenceAbilityCount;
-    UInt8 BlendedAbilityCount;
-    UInt8 ExtendedBlendedAbilityCount;
-    UInt8 KarmaAbilityCount;
-    UInt8 ExtendedKarmaAbilityCount;
-    UInt8 BlessingBeadCount;
-    UInt8 PremiumServiceCount;
-    UInt16 QuestSlotCount;
-    struct _RTCharacterQuestFlagInfo QuestFlagInfo;
-    struct _RTCharacterDungeonQuestFlagInfo DungeonQuestFlagInfo;
+    struct _RTAbilityInfo AbilityInfo;
+    struct _RTBlessingBeadInfo BlessingBeadInfo;
+    struct _RTPremiumServiceInfo PremiumServiceInfo;
+    struct _RTQuestInfo QuestInfo;
     UInt8 Unknown15[4097];
-    UInt32 DailyQuestCount;
+    struct _RTDailyQuestInfo DailyQuestInfo;
     UInt32 HelpWindow;
-    UInt8 EquipmentAppearanceCount;
-    UInt16 InventoryAppearanceCount;
-    Int32 AllAchievementScore;
-    Int32 NormalAchievementScore;
-    Int32 QuestAchievementScore;
-    Int32 DungeonAchievementScore;
-    Int32 ItemsAchievementScore;
-    Int32 PvpAchievementScore;
-    Int32 WarAchievementScore;
-    Int32 HuntingAchievementScore;
-    Int32 CraftAchievementScore;
-    Int32 CommunityAchievementScore;
-    Int32 SharedAchievementScore;
-    Int32 SpecialAchievementScore;
-    Int32 GeneralMemoirAchievementScore;
-    Int32 SharedMemoirAchievementScore;
-    UInt16 DisplayTitle;
-    UInt16 EventTitle;
-    UInt16 GuildTitle;
-    UInt16 WarTitle;
-    UInt32 AchievementCount;
-    UInt32 AchievementRewardCount;
-    UInt32 UnknownCount5;
-    UInt32 CraftCount;
-    UInt8 Unknown16;
-    UInt32 CraftEnergy;
-    UInt8 Unknown17[6];
-    UInt8 SortingOrderMask;
-    UInt8 Unknown18[2];
-    UInt8 RequestCraftCount;
-    UInt16 RequestCraftExp;
-    UInt8 RequestCraftFlags[1024];
-    UInt8 RequestCraftFavoriteFlags[1024];
-    UInt16 RequestCraftSortOrder;
-    UInt8 SkillCooldownCount;
-    UInt16 Unknown2389;
-    UInt16 BuffCount;
-    UInt32 SpiritRaiseBuffCooldown;
-    UInt32 UpgradePoints;
-    Timestamp UpgradePointTimestamp;
-    UInt32 GoldMeritCount;
-    UInt32 GoldMeritExp;
-    UInt32 GoldMeritPoint;
-    UInt8 IsPlatinumMeritActive;
-    UInt32 PlatinumMeritExp;
-    UInt32 PlatinumMeritPoint[2];
-    UInt8 Unknown21;
-    Timestamp CharacterCreationDate;
-    UInt16 PlatinumMeritUnknownCount;
-    UInt16 PlatinumMeritSlotCount;
-    UInt16 PlatinumMeritUnknownCount2;
-    UInt16 PlatinumMeritUnknownCount3;
-    UInt8 Unknown22B;
-    UInt16 Unknown23;
-    UInt32 Unknown33;
-    UInt64 Unknown3874;
-    Timestamp UnknownTimestamp2;
-    UInt8 Unknown34;
-    Int32 Unknown35;
-    UInt64 Unknown36;
-    UInt32 ExtendedAchievementRewardCount;
+    struct _RTAppearanceInfo AppearanceInfo;
+    struct _RTAchievementInfo AchievementInfo;
+    struct _RTCraftInfo CraftInfo;
+    struct _RTRequestCraftInfo RequestCraftInfo;
+    struct _RTBuffInfo BuffInfo;
+    struct _RTUpgradeInfo UpgradeInfo;
+    struct _RTGoldMeritMasteryInfo GoldMeritMasteryInfo;
+    struct _RTPlatinumMeritMasteryInfo PlatinumMeritMasteryInfo;
+    struct _RTDiamondMeritMasteryInfo DiamondMeritMasteryInfo;
+    struct _RTAchievementExtendedInfo AchievementExtendedInfo;
     UInt32 ForceGem;
-    UInt32 WarpServiceCount;
+    struct _RTWarpServiceInfo WarpServiceInfo;
     UInt16 Unknown3332[5];
-    UInt16 OverlordLevel;
-    UInt64 OverlordExp;
-    UInt16 OverlordPoint;
-    UInt8 OverlordMasteryCount;
-    UInt32 UnknownMeritMasteryCount;
-    UInt32 HonorMedalExp;
-    UInt8 HonorMedalCount;
-    UInt8 ForceWingGrade;
-    UInt8 ForceWingLevel;
-    Int64 ForceWingExp;
-    UInt64 ForceWingUnknown1;
-    // TODO: Store the force wing data just in the same memory layout and make the fixed size part of 142 dynamic
-    UInt8 ForceWingActivePresetIndex;
-    UInt8 ForceWingPresetEnabled[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT];
-    Int32 ForceWingPresetTrainingPoints[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT];
-    UInt8 ForceWingPresetSlotCount;
-    UInt8 ForceWingTrainingSlotCount;
-    struct _RTForceWingArrivalSkillSlot ForceWingArrivalSkillSlots[RUNTIME_CHARACTER_MAX_FORCE_WING_ARRIVAL_SKILL_COUNT];
-    struct _RTForceWingArrivalSkillSlot RestoreForceWingArrivalSkillSlot;
-    UInt8 ForceWingTrainingUnlockFlags[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_SIZE];
+    struct _RTOverlordMasteryInfo OverlordMasteryInfo;
+    struct _RTHonorMedalInfo HonorMedalInfo;
+    struct _RTForceWingInfo ForceWingInfo;
     UInt8 Unknown2111[21];
-    UInt16 SpecialGiftboxPoint;
-    UInt8 SpecialGiftboxCount;
+    struct _RTGiftBoxInfo GiftBoxInfo;
     UInt32 Unknown2733[9];
-    UInt16 CollectionCount;
-    UInt16 TransformCount;
+    struct _RTCollectionInfo CollectionInfo;
+    struct _RTTransformInfo TransformInfo;
     UInt8 Unknown32[6];
-    UInt8 SecretShopRefreshCost;
-    Timestamp SecretShopResetTime;
-    UInt8 Unknown1111;
-    S2C_DATA_SECRET_SHOP_INDEX SecretShops[MAX_SECRET_SHOP_COUNT];
-    UInt8 Unknown44[9];
-    Int32 TranscendencePoint;
-    Int32 TranscendenceCount;
-    UInt8 Unknown55[18];
+    struct _RTCharacterSecretShopData SecretShopData;
+    struct _RTAuraMasteryInfo AuraMasteryInfo;
+    struct _RTTranscendenceInfo TranscendenceInfo;
+    struct _RTDamageBoosterInfo DamageBoosterInfo;
     struct _RTCharacterResearchSupportInfo ResearchSupportInfo;
-    UInt8 StellarSlotCount;
-    Int32 MythRebirth;
-    Int32 MythHolyPower;
-    Int32 MythLevel;
-    UInt64 MythExp;
-    Int32 MythPoints;
-    Int32 MythUnlockedPageCount;
-    UInt8 Poop[13];
-    UInt8 MythPropertySlotCount;
-    Int32 MythStigmaGrade;
-    Int32 MythStigmaExp;
-    Timestamp NewbieSupportTimestamp;
-    Int32 NewbieSupportSlotCount;
-    Timestamp ExplorationStartTimestamp;
-    Timestamp ExplorationEndTimestamp;
-    Int32 UnknownA5;
-    Int32 EventPassMissionCount;
-    Int32 EventPassRewardCount;
-    Int32 AccountCostumeSlotCount;
-    Int32 Unknown1293;
-    Int32 CostumePageCount;
-    Int32 CostumeUnknownSlotCount;
-    Int32 CostumeActivePageIndex;
-    Timestamp Unknown1231Timestamp;
-    UInt8 Unknown8182[12];
+    struct _RTStellarMasteryInfo StellarMasteryInfo;
+    struct _RTMythMasteryInfo MythMasteryInfo;
+    struct _RTNewbieSupportInfo NewbieSupportInfo;
+    struct _RTEventPassInfo EventPassInfo;
+    struct _RTCostumeWarehouseInfo CostumeWarehouseInfo;
+    struct _RTCostumeInfo CostumeInfo;
+    struct _RTExporationInfo ExplorationInfo;
     struct _RTAnimaMasteryInfo AnimaMasteryInfo;
+    struct _RTCharacterPresetInfo PresetInfo;
     UInt8 NameLength;
     Char Name[0];
 )
@@ -3283,8 +3167,8 @@ CLIENT_PROTOCOL(C2S, MERIT_MEDAL_EVALUATION, DEFAULT, 2543,
 
 CLIENT_PROTOCOL(S2C, MERIT_MEDAL_EVALUATION, DEFAULT, 2543,
     UInt8 Success;
-    UInt64 Unknown1;
-    UInt64 Unknown2;
+    UInt64 ItemID;
+    UInt64 ItemOptions;
 )
 
 CLIENT_PROTOCOL(C2S, UNKNOWN_2559, DEFAULT, 2559,
@@ -3300,6 +3184,27 @@ CLIENT_PROTOCOL(C2S, UNKNOWN_2566, DEFAULT, 2566,
 
 CLIENT_PROTOCOL(S2C, UNKNOWN_2566, DEFAULT, 2566,
     UInt16 Unknown1;
+)
+
+CLIENT_PROTOCOL_ENUM(
+    CSC_PURCHASE_PREMIUM_SERVICE_TYPE_GIFTBOX_COMPLETE = 23,
+    CSC_PURCHASE_PREMIUM_SERVICE_TYPE_ANIMAMASTERY_RESET = 41,
+)
+
+CLIENT_PROTOCOL_STRUCT(C2S_DATA_PURCHASE_PREMIUM_SERVICE_GIFTBOX,
+    Int32 SlotIndex;
+)
+
+CLIENT_PROTOCOL(C2S, PURCHASE_PREMIUM_SERVICE, DEFAULT, 2569,
+    Int32 ServiceType;
+    UInt8 Data[0];
+)
+
+CLIENT_PROTOCOL(S2C, PURCHASE_PREMIUM_SERVICE, DEFAULT, 2569,
+    Int32 Result;
+    Int32 ServiceType;
+    Int32 ForceGemCount;
+    Int32 Unknown1;
 )
 
 CLIENT_PROTOCOL(C2S, GET_UNKNOWN_2571, DEFAULT, 2571,
@@ -3579,6 +3484,17 @@ CLIENT_PROTOCOL(S2C, SORT_INVENTORY, DEFAULT, 2800,
     UInt8 Success;
 )
 
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_GIFTBOX_PRICE_POOL,
+    Int32 SlotIndex;
+    Int32 PriceCount;
+    // Int32 PriceList[0];
+)
+
+CLIENT_PROTOCOL(S2C, GIFTBOX_PRICE_POOL_LIST, DEFAULT, 2801,
+    Int32 Count;
+    S2C_DATA_GIFTBOX_PRICE_POOL Data[0];
+)
+
 CLIENT_PROTOCOL(C2S, SORT_WAREHOUSE, DEFAULT, 2802,
     UInt16 Count;
     UInt16 WarehouseSlots[2048];
@@ -3603,7 +3519,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_OPEN_GIFTBOX_RECEIVE_ITEMSLOT,
     UInt64 ItemID;
     UInt64 ItemOptions;
     UInt16 InventorySlotIndex;
-    UInt32 Unknown2;
+    UInt32 ItemDuration;
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_OPEN_GIFTBOX_RECEIVE_SLOT,
@@ -3869,7 +3785,7 @@ CLIENT_PROTOCOL(S2C, ANIMA_MASTERY_SEALING, DEFAULT, 3051,
 CLIENT_PROTOCOL(C2S, ANIMA_MASTERY_TRAIN_SLOT, DEFAULT, 3052,
     Int8 CategoryIndex;
     Int8 MasterySlotIndex;
-    Int32 Unknown1;
+    Int32 ConversionKitSlotIndex;
     UInt16 MaterialSlotCount;
     UInt16 MaterialSlotIndex[0];
 )

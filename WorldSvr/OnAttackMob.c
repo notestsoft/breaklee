@@ -41,7 +41,7 @@ CLIENT_PROCEDURE_BINDING(ATTACK_TO_MOB) {
 	Response->MobTotalDamage = (UInt32)Result.TotalDamage;
 	Response->MobAdditionalDamage = (UInt32)Result.AdditionalDamage;
 	Response->AccumulatedExp = Character->Data.Info.Basic.Exp;
-	Response->AccumulatedOxp = Character->Data.Info.Overlord.Exp;
+	Response->AccumulatedOxp = Character->Data.OverlordMasteryInfo.Info.Exp;
 	Response->CharacterHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
 	Response->CharacterMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 	Response->CharacterSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];

@@ -15,19 +15,34 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 
     if (Packet->IsTransaction) DatabaseBeginTransaction(Context->Database); 
     {
-#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__, __SCOPE__) \
+#define ACCOUNT_DATA_PROTOCOL(__TYPE__, __NAME__) \
         if (Packet->SyncMask.__NAME__) { \
             __TYPE__* Data = (__TYPE__*)&Packet->Data[DataOffset]; \
             DataOffset += sizeof(__TYPE__); \
-            DataTableRef Table = DatabaseGetDataTable(Context->Database, #__SCOPE__, #__NAME__); \
+            DataTableRef Table = DatabaseGetDataTable(Context->Database, TABLE_SCOPE_ACCOUNT, #__NAME__); \
             if (Table) { \
-                if (!DataTableUpdate(Table, Packet->CONCAT(__SCOPE__, ID), (UInt8*)Data, sizeof(__TYPE__))) { \
+                if (!DataTableUpdate(Table, Packet->AccountID, (UInt8*)Data, sizeof(__TYPE__))) { \
                     Response->SyncMaskFailed.__NAME__ = true; \
                 } \
             } else { \
                 Response->SyncMaskFailed.__NAME__ = true; \
             } \
         }
+        
+#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__) \
+        if (Packet->SyncMask.__NAME__) { \
+            __TYPE__* Data = (__TYPE__*)&Packet->Data[DataOffset]; \
+            DataOffset += sizeof(__TYPE__); \
+            DataTableRef Table = DatabaseGetDataTable(Context->Database, TABLE_SCOPE_CHARACTER, #__NAME__); \
+            if (Table) { \
+                if (!DataTableUpdate(Table, Packet->CharacterID, (UInt8*)Data, sizeof(__TYPE__))) { \
+                    Response->SyncMaskFailed.__NAME__ = true; \
+                } \
+            } else { \
+                Response->SyncMaskFailed.__NAME__ = true; \
+            } \
+        }
+
 #include "RuntimeLib/CharacterDataDefinition.h"
     }
 

@@ -8,7 +8,7 @@ EXTERN_C_BEGIN
 UInt8 RTRuntimeGetLevelByExp(
     RTRuntimeRef Runtime,
     UInt8 Level,
-    UInt64 Exp
+    UInt64* Exp
 );
 
 UInt64 RTRuntimeGetExpByLevel(

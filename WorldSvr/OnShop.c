@@ -36,12 +36,12 @@ CLIENT_PROCEDURE_BINDING(BUY_ITEM) {
     Int64 PriceCash = ShopItem->PriceCash * Packet->ItemCount;
     Int64 PriceGem = ShopItem->PriceGem * Packet->ItemCount;
 
-    if (PriceAlz > Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ]) goto error;
+    if (PriceAlz > Character->Data.Info.Alz) goto error;
     if (PriceWexp > Character->Data.Info.Honor.Exp) goto error;
-    if (PriceAP > Character->Data.Info.Ability.Point) goto error;
+    if (PriceAP > Character->Data.AbilityInfo.Info.AP) goto error;
     // if (PriceDP > /* TODO: Check Character DP Amount */) goto error;
     // if (PriceCash > /* TODO: Check Character Cash Amount */) goto error;
-    if (PriceGem > Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_GEM]) goto error;
+    if (PriceGem > Character->Data.AccountInfo.ForceGem) goto error;
 
     if (ShopItem->ShopPricePoolIndex) {
         Int32 ItemPriceIndex = 0;
@@ -129,13 +129,14 @@ CLIENT_PROCEDURE_BINDING(BUY_ITEM) {
 
     if (!Success) goto error;
 
-    Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= PriceAlz;
+    Character->Data.Info.Alz-= PriceAlz;
     Character->Data.Info.Honor.Exp -= PriceWexp;
-    Character->Data.Info.Ability.Point -= PriceAP;
+    Character->Data.AbilityInfo.Info.AP -= PriceAP;
     // TODO: Consume DP
     // TODO: Consume Cash
-    Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_GEM] -= PriceGem;
+    RTCharacterConsumeForceGem(Runtime, Character, PriceGem);
     Character->SyncMask.Info = true;
+    Character->SyncMask.AbilityInfo = true;
     Character->SyncMask.InventoryInfo = true;
 
     S2C_DATA_BUY_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, BUY_ITEM);
@@ -194,13 +195,13 @@ CLIENT_PROCEDURE_BINDING(SELL_ITEM) {
         RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlotIndex);
 
         // TODO: Calculate sell price based on upgrade level ...
-        Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] += ItemData->SellPrice;
+        Character->Data.Info.Alz += ItemData->SellPrice;
         Character->SyncMask.Info = true;
         Character->SyncMask.InventoryInfo = true;
     }
 
     S2C_DATA_SELL_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SELL_ITEM);
-    Response->Currency = Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
+    Response->Currency = Character->Data.Info.Alz;
     SocketSend(Socket, Connection, Response);
     return;
 
@@ -336,7 +337,7 @@ CLIENT_PROCEDURE_BINDING(RECOVER_ITEM) {
     if (!RecoverySlot->Item.Serial) goto error;
 
     UInt64 RecoveryPrice = Character->Data.RecoveryInfo.Prices[Packet->RecoverySlotIndex];
-    if (Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < RecoveryPrice) goto error;
+    if (Character->Data.Info.Alz< RecoveryPrice) goto error;
 
     RecoverySlot->SlotIndex = Packet->InventorySlotIndex;
 
@@ -347,7 +348,7 @@ CLIENT_PROCEDURE_BINDING(RECOVER_ITEM) {
 
     RTCharacterUpdateQuestItemCounter(Runtime, Character, RecoverySlot->Item, RecoverySlot->ItemOptions);
 
-    Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= RecoveryPrice;
+    Character->Data.Info.Alz-= RecoveryPrice;
     Character->SyncMask.Info = true;
     Character->SyncMask.InventoryInfo = true;
 

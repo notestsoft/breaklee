@@ -194,21 +194,20 @@ struct _RTMobSpawnData {
 	Int32 SpawnInterval;
 	Int32 SpawnCount;
 	Int32 SpawnDefault;
-	Int32 Grade;
 	Int32 Level;
-	Int32 MissionGate;
+	Int32 IsMissionGate;
 	Int32 PerfectDrop;
 	Int32 SpawnTriggerID;
 	Int32 KillTriggerID;
-	Int32 Type;
-	Int32 Min;
-	Int32 Max;
-	Int32 Authority;
-	Int32 ServerMobID;
+	Int32 ServerMobIndex;
 	Int32 LootDelay;
+	Int32 TileCount;
+	UInt32 TileAttributes;
+	RTPosition Tiles[RUNTIME_MOB_MAX_TILE_COUNT];
 	Int32 EventProperty[RUNTIME_MOB_MAX_EVENT_COUNT];
 	Int32 EventMobs[RUNTIME_MOB_MAX_EVENT_COUNT];
 	Int32 EventInterval[RUNTIME_MOB_MAX_EVENT_COUNT];
+	Char Script[MAX_PATH];
 };
 
 struct _RTMobAggroData {

@@ -251,6 +251,10 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTER_FORCE_WING_EXP) {
     }
 }
 
+NOTIFICATION_PROCEDURE_BINDING(NFY_DUNGEON_TIMER) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
 Void BroadcastMessage(
     ServerContextRef Context,
     CString Message

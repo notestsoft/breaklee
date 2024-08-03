@@ -39,7 +39,7 @@ RUNTIME_DATA_TYPE_BEGIN(MobAttackIndex, "cabal_mob.mob_atk_index.mob_num", 1024)
 RUNTIME_DATA_TYPE_END(MobAttackIndex)
 RUNTIME_DATA_TYPE_INDEX(MobAttackIndex, UInt32, MobID)
 
-RUNTIME_DATA_TYPE_BEGIN(MobEffectIndex, "cabal_mob.mob_efx_index.mob_num", 128)
+RUNTIME_DATA_TYPE_BEGIN(MobEffectIndex, "cabal_mob.mob_efx_index.mob_num", 256)
 	RUNTIME_DATA_PROPERTY(UInt32, MobID, "speciesIdx")
 	RUNTIME_DATA_TYPE_BEGIN_CHILD(MobEffectLink, "mob_efx_link", 8)
 		RUNTIME_DATA_PROPERTY(Int32, MobEffectID, "effect_num")

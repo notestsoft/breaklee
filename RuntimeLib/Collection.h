@@ -15,8 +15,12 @@ struct _RTCollectionSlot {
     UInt16 MissionItemCounts[RUNTIME_CHARACTER_MAX_COLLECTION_ITEM_COUNT];
 };
 
+struct _RTCollectionInfo {
+    UInt16 SlotCount;
+};
+
 struct _RTCharacterCollectionInfo {
-    Int32 Count;
+    struct _RTCollectionInfo Info;
     struct _RTCollectionSlot Slots[RUNTIME_CHARACTER_MAX_COLLECTION_SLOT_COUNT];
 };
 

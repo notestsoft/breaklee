@@ -75,6 +75,30 @@ Void RTWorldManagerDestroy(
         Iterator = DictionaryKeyIteratorNext(Iterator);
     }
 
+    for (Index WorldIndex = 0; WorldIndex < WorldManager->MaxWorldDataCount; WorldIndex += 1) {
+        if (!MemoryPoolIsReserved(WorldManager->WorldDataPool, WorldIndex)) continue;
+        
+        RTWorldDataRef WorldData = (RTWorldDataRef)MemoryPoolFetch(WorldManager->WorldDataPool, WorldIndex);
+
+        DictionaryKeyIterator NodeIterator = DictionaryGetKeyIterator(WorldData->DropTable.MobDropPool);
+        while (NodeIterator.Key) {
+            ArrayRef Array = DictionaryLookup(WorldData->DropTable.MobDropPool, NodeIterator.Key);
+            ArrayDealloc(Array);
+            NodeIterator = DictionaryKeyIteratorNext(NodeIterator);
+        }
+
+        NodeIterator = DictionaryGetKeyIterator(WorldData->DropTable.QuestDropPool);
+        while (NodeIterator.Key) {
+            ArrayRef Array = DictionaryLookup(WorldData->DropTable.QuestDropPool, NodeIterator.Key);
+            ArrayDealloc(Array);
+            NodeIterator = DictionaryKeyIteratorNext(NodeIterator);
+        }
+
+        ArrayDestroy(WorldData->DropTable.WorldDropPool);
+        ArrayDestroy(WorldData->MobTable);
+        ArrayDestroy(WorldData->MobScriptTable);
+    }
+
     MemoryPoolDestroy(WorldManager->WorldDataPool);
     MemoryPoolDestroy(WorldManager->GlobalWorldContextPool);
     MemoryPoolDestroy(WorldManager->PartyWorldContextPool);

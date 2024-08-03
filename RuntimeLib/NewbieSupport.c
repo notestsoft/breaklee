@@ -9,9 +9,10 @@ Bool RTCharacterCanTakenNewbieSupportReward(
 	UInt8 ConditionValue1,
 	UInt8 ConditionValue2
 ) {
-	if (Character->Data.NewbieSupportInfo.Count >= RUNTIME_CHARACTER_MAX_NEWBIE_SUPPORT_SLOT_COUNT) return false;
+	if (Character->Data.NewbieSupportInfo.Info.SlotCount >= RUNTIME_CHARACTER_MAX_NEWBIE_SUPPORT_SLOT_COUNT) return false;
+	if (Character->Data.NewbieSupportInfo.Info.Timestamp > 0 && Character->Data.NewbieSupportInfo.Info.Timestamp < GetTimestamp()) return false;
 
-	for (Index Index = 0; Index < Character->Data.NewbieSupportInfo.Count; Index += 1) {
+	for (Index Index = 0; Index < Character->Data.NewbieSupportInfo.Info.SlotCount; Index += 1) {
 		RTNewbieSupportSlotRef Slot = &Character->Data.NewbieSupportInfo.Slots[Index];
 		if (Slot->CategoryType != CategoryType) continue;
 		if (Slot->RewardIndex != RewardIndex) continue;
@@ -83,12 +84,12 @@ Bool RTCharacterTakeNewbieSupportReward(
 		assert(Success);
 	}
 
-	RTNewbieSupportSlotRef NewbieSupportSlot = &Character->Data.NewbieSupportInfo.Slots[Character->Data.NewbieSupportInfo.Count];
+	RTNewbieSupportSlotRef NewbieSupportSlot = &Character->Data.NewbieSupportInfo.Slots[Character->Data.NewbieSupportInfo.Info.SlotCount];
 	NewbieSupportSlot->CategoryType = CategoryType;
 	NewbieSupportSlot->ConditionValue1 = ConditionValue1;
 	NewbieSupportSlot->ConditionValue2 = ConditionValue2;
 	NewbieSupportSlot->RewardIndex = RewardIndex;
-	Character->Data.NewbieSupportInfo.Count += 1;
+	Character->Data.NewbieSupportInfo.Info.SlotCount += 1;
 
 	Character->SyncMask.NewbieSupportInfo = true;
 	Character->SyncMask.InventoryInfo = true;

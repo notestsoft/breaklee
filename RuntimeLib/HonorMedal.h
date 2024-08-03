@@ -15,10 +15,14 @@ struct _RTHonorMedalSlot {
     UInt8 IsUnlocked;
 };
 
-struct _RTCharacterHonorMedalInfo {
+struct _RTHonorMedalInfo {
     Int32 Grade;
     Int32 Score;
-    Int32 SlotCount;
+    Int8 SlotCount;
+};
+
+struct _RTCharacterHonorMedalInfo {
+    struct _RTHonorMedalInfo Info;
     struct _RTHonorMedalSlot Slots[RUNTIME_CHARACTER_MAX_HONOR_MEDAL_SLOT_COUNT];
 };
 

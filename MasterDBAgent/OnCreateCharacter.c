@@ -53,16 +53,17 @@ IPC_PROCEDURE_BINDING(W2D, CREATE_CHARACTER) {
 		return;
 	}
 
-#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__, __SCOPE__) \
+#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__) \
 	{ \
-        DataTableRef Table = DatabaseGetDataTable(Context->Database, #__SCOPE__, #__NAME__); \
-        if (!Table || !DataTableInsert(Table, Character.__SCOPE__ ## ID, (UInt8*)&Packet->CharacterData.__NAME__, sizeof(__TYPE__))) { \
+        DataTableRef Table = DatabaseGetDataTable(Context->Database, TABLE_SCOPE_CHARACTER, #__NAME__); \
+        if (!Table || !DataTableInsert(Table, Character.CharacterID, (UInt8*)&Packet->CharacterData.__NAME__, sizeof(__TYPE__))) { \
 			DatabaseRollbackTransaction(Context->Database); \
 			Response->Status = CREATE_CHARACTER_STATUS_DBERROR; \
 			IPCSocketUnicast(Socket, Response); \
 			return; \
         } \
 	}
+
 #include "RuntimeLib/CharacterDataDefinition.h"
 
 	if (!DatabaseCommitTransaction(Context->Database)) {
@@ -80,22 +81,22 @@ IPC_PROCEDURE_BINDING(W2D, CREATE_CHARACTER) {
 
 	Response->Character.Style = Packet->CharacterData.Info.Style.RawValue;
 	Response->Character.Level = Packet->CharacterData.Info.Basic.Level;
-	Response->Character.OverlordLevel = Packet->CharacterData.Info.Overlord.Level;
-	Response->Character.MythRebirth = Packet->CharacterData.MythMasteryInfo.Rebirth;
-	Response->Character.MythHolyPower = Packet->CharacterData.MythMasteryInfo.HolyPower;
-	Response->Character.MythLevel = Packet->CharacterData.MythMasteryInfo.Level;
+	Response->Character.OverlordLevel = Packet->CharacterData.OverlordMasteryInfo.Info.Level;
+	Response->Character.MythRebirth = Packet->CharacterData.MythMasteryInfo.Info.Rebirth;
+	Response->Character.MythHolyPower = Packet->CharacterData.MythMasteryInfo.Info.HolyPower;
+	Response->Character.MythLevel = Packet->CharacterData.MythMasteryInfo.Info.Level;
 	Response->Character.SkillRank = Packet->CharacterData.Info.Skill.Rank;
 	Response->Character.NationMask = Packet->CharacterData.Info.Profile.Nation;
 	Response->Character.HonorPoint = Packet->CharacterData.Info.Honor.Point;
-	Response->Character.CostumeActivePageIndex = Packet->CharacterData.CostumeInfo.ActivePageIndex;
+	Response->Character.CostumeActivePageIndex = Packet->CharacterData.CostumeInfo.Info.ActivePageIndex;
 	memcpy(Response->Character.CostumeAppliedSlots, Packet->CharacterData.CostumeInfo.AppliedSlots, sizeof(struct _RTAppliedCostumeSlot) * RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT);
-	Response->Character.Alz = Packet->CharacterData.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ];
+	Response->Character.Alz = Packet->CharacterData.Info.Alz;
 	Response->Character.MapID = Packet->CharacterData.Info.Position.WorldID;
 	Response->Character.PositionX = Packet->CharacterData.Info.Position.X;
 	Response->Character.PositionY = Packet->CharacterData.Info.Position.Y;
-	Response->Character.EquipmentCount = Packet->CharacterData.EquipmentInfo.Count;
-	memcpy(Response->Character.Equipment, Packet->CharacterData.EquipmentInfo.Slots, sizeof(struct _RTItemSlot) * RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT);
-	memcpy(Response->Character.EquipmentAppearance, Packet->CharacterData.EquipmentAppearanceInfo.Slots, sizeof(struct _RTItemSlotAppearance) * RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT);
+	Response->Character.EquipmentCount = Packet->CharacterData.EquipmentInfo.Info.EquipmentSlotCount;
+	memcpy(Response->Character.Equipment, Packet->CharacterData.EquipmentInfo.EquipmentSlots, sizeof(struct _RTItemSlot) * RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT);
+	memcpy(Response->Character.EquipmentAppearance, Packet->CharacterData.AppearanceInfo.EquipmentSlots, sizeof(struct _RTItemSlotAppearance) * RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT);
 
 	IPCSocketUnicast(Socket, Response);
 }

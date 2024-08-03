@@ -3,6 +3,9 @@
 #include "Base.h"
 #include "MasterDBProtocol.h"
 
+#define TABLE_SCOPE_ACCOUNT "Account"
+#define TABLE_SCOPE_CHARACTER "Character"
+
 EXTERN_C_BEGIN
 
 enum {
@@ -127,7 +130,7 @@ Bool MasterDBUpdateCharacterInfo(
 Bool MasterDBUpdateCharacterEquipmentData(
     DatabaseRef Database,
     Int32 CharacterID,
-    RTCharacterEquipmentInfoRef EquipmentInfo
+    RTCharacterEquipmentDataRef EquipmentInfo
 );
 
 Bool MasterDBUpdateCharacterInventoryData(

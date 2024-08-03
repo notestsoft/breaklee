@@ -49,7 +49,7 @@ Bool RTWarehouseSetSlot(
 		memmove(
 			&Warehouse->Slots[InsertionIndex + 1],
 			&Warehouse->Slots[InsertionIndex],
-			sizeof(struct _RTItemSlot) * InsertionTailLength
+			InsertionTailLength * sizeof(struct _RTItemSlot)
 		);
 	}
 
@@ -133,7 +133,7 @@ Bool RTWarehouseClearSlot(
 		memmove(
 			&Warehouse->Slots[WarehouseIndex],
 			&Warehouse->Slots[WarehouseIndex + 1],
-			sizeof(struct _RTItemSlot) * TailLength
+			TailLength * sizeof(struct _RTItemSlot)
 		);
 	}
 

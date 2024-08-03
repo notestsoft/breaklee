@@ -17,26 +17,32 @@ enum {
 	RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_EVENT_CALL = 6,
 };
 
+enum {
+	RUNTIME_DUNGEON_TIME_CONTROL_TYPE_SPAWN		= 1,
+	RUNTIME_DUNGEON_TIME_CONTROL_TYPE_DESPAWN	= 2,
+};
+
 struct _RTDungeonTriggerData {
-	Int32 DungeonID;
-	Int32 TriggerID;
-	Int32 TriggerType;
-	Int32 TriggerNpcID;
-	Int32 ActionGroupID;
+	Int32 Type;
 	Int32 LiveMobCount;
+	Int32 LiveMobIndexList[RUNTIME_DUNGEON_TRIGGER_MAX_MOB_COUNT];
 	Int32 DeadMobCount;
-	Int32 LiveMobs[RUNTIME_DUNGEON_TRIGGER_MAX_MOB_COUNT];
-	Int32 DeadMobs[RUNTIME_DUNGEON_TRIGGER_MAX_MOB_COUNT];
+	Int32 DeadMobIndexList[RUNTIME_DUNGEON_TRIGGER_MAX_MOB_COUNT];
+	Int32 NpcIndex;
+	Int32 ActionGroupIndex;
 };
 
 struct _RTDungeonTriggerActionData {
-	Int32 DungeonID;
-	Int32 ActionGroupID;
-	Int32 ActionType;
-	Int32 TargetID;
-	//Int32 SpawnInterval;
-	//Int32 SpawnCount;
 	Timestamp Delay;
+	Int32 TargetMobIndex;
+	Int32 TargetAction;
+	Int32 TargetSpawnInterval;
+	Int32 TargetSpawnCount;
+};
+
+struct _RTDungeonTimeControlData {
+	Int32 Event;
+	Int32 Value;
 };
 
 struct _RTDungeonData {
@@ -54,24 +60,23 @@ struct _RTDungeonData {
 	Int32 EntryWarpID;
 	Int32 FailWarpNpcID;
 	Int32 DeadWarpID;
-	Int32 DungeonID;
+	Int32 DungeonIndex;
 	Int32 PenaltyValue;
 	Int32 PatternPartCount;
 	Int32 PatternPartIndices[RUNTIME_DUNGEON_MAX_PATTERN_PART_COUNT];
 	Int32 Reward[8];
 	Int32 SuccessWarpNpcID;
-	Int32 WorldID;
-	Int32 NextDungeonID;
+	Int32 WorldIndex;
+	Int32 NextDungeonIndex;
 	Int32 WarpNpcSetID;
 	Int32 UseOddCircleCount;
 	Int32 UseVeradrixCount;
 	Int32 IsElite;
 	Int32 EliteDungeonBoost;
 	Int32 MissionTimeout;
-	Int32 TriggerCount;
-	Int32 TriggerActionCount;
-	struct _RTDungeonTriggerData TriggerData[RUNTIME_MEMORY_DUNGEON_TRIGGER_DATA_COUNT];
-	struct _RTDungeonTriggerActionData TriggerActionData[RUNTIME_MEMORY_DUNGEON_TRIGGER_ACTION_DATA_COUNT];
+	DictionaryRef TriggerGroups;
+	DictionaryRef ActionGroups;
+	DictionaryRef TimeControls;
 	struct _RTDropTable DropTable;
 };
 
@@ -101,8 +106,7 @@ struct _RTQuestDungeonPatternPartData {
 };
 
 struct _RTMissionDungeonPatternPartData {
-	Int32 ID;
-	Int32 MissionNpcID;
+	Int32 MissionNpcIndex;
 	Int32 MissionMobCount;
 	struct _RTQuestUnitMobData MissionMobs[RUNTIME_MAX_QUEST_COUNTER_COUNT];
 	ArrayRef MobTable;
@@ -130,7 +134,12 @@ Bool RTDungeonStartNextPatternPart(
 
 Bool RTDungeonTriggerEvent(
 	RTWorldContextRef World,
-	Int32 TriggerID
+	Index TriggerIndex
+);
+
+Void RTDungeonAddTime(
+	RTWorldContextRef WorldContext,
+	Int32 Value
 );
 
 EXTERN_C_END

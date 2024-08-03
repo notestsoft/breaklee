@@ -42,13 +42,13 @@ CLIENT_PROCEDURE_BINDING(WAREHOUSE_CURRENCY_DEPOSIT) {
 	// TODO: Calculate the tax for the deposit
 
 	if (Packet->Amount > 0) {
-		if (Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < Packet->Amount) {
+		if (Character->Data.Info.Alz< Packet->Amount) {
 			Response->Result = 0;
 			SocketSend(Socket, Connection, Response);
 			return;
 		}
 
-		Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= Packet->Amount;
+		Character->Data.Info.Alz-= Packet->Amount;
 		Character->Data.WarehouseInfo.Currency += Packet->Amount;
 	}
 	else {
@@ -56,7 +56,7 @@ CLIENT_PROCEDURE_BINDING(WAREHOUSE_CURRENCY_DEPOSIT) {
 
 		if (Character->Data.WarehouseInfo.Currency < AbsAmount) goto error;
 
-		Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] += AbsAmount;
+		Character->Data.Info.Alz+= AbsAmount;
 		Character->Data.WarehouseInfo.Currency -= AbsAmount;
 	}
 

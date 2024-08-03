@@ -102,7 +102,7 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_ROLL_SLOT) {
     RTDataHonorMedalUpgradeGroupRef Group = RTRuntimeDataHonorMedalUpgradeGroupGet(Category, Packet->GroupIndex);
     if (!Group) goto error;
 
-    if (Character->Data.Info.Ability.Point < PriceMedal->AP) goto error;
+    if (Character->Data.AbilityInfo.Info.AP < PriceMedal->AP) goto error;
     if (Character->Data.Info.Honor.Exp < PriceMedal->WarExp) goto error;
 
     Int32 Seed = (Int32)PlatformGetTickCount();
@@ -117,9 +117,10 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_ROLL_SLOT) {
         DropRateOffset += Group->HonorMedalUpgradeMedalList[Index].Rate;
     }
 
-    Character->Data.Info.Ability.Point -= PriceMedal->AP;
+    Character->Data.AbilityInfo.Info.AP -= PriceMedal->AP;
     Character->Data.Info.Honor.Exp -= PriceMedal->WarExp;
     Character->SyncMask.Info = true;
+    Character->SyncMask.AbilityInfo = true;
     Character->SyncMask.HonorMedalInfo = true;
 
     S2C_DATA_HONOR_MEDAL_ROLL_SLOT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, HONOR_MEDAL_ROLL_SLOT);
@@ -128,7 +129,7 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_ROLL_SLOT) {
     Response->SlotIndex = Packet->SlotIndex;
     Response->ForceEffectIndex = Slot->ForceEffectIndex;
     Response->WExp = Character->Data.Info.Honor.Exp;
-    Response->AP = Character->Data.Info.Ability.Point;
+    Response->AP = Character->Data.AbilityInfo.Info.AP;
     SocketSend(Socket, Connection, Response);
     return;
 

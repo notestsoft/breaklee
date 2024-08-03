@@ -13,8 +13,15 @@ struct _RTTranscendenceSlot {
     UInt16 Level;
 };
 
+struct _RTTranscendenceInfo {
+    Int32 Points;
+    Int32 Unknown1;
+    Int32 Unknown2;
+    Int32 SlotCount;
+};
+
 struct _RTCharacterTranscendenceInfo {
-    Int32 Count;
+    struct _RTTranscendenceInfo Info;
     struct _RTTranscendenceSlot Slots[RUNTIME_CHARACTER_MAX_TRANSCENDENCE_SLOT_COUNT];
 };
 

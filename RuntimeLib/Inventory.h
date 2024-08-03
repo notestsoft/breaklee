@@ -9,8 +9,12 @@ EXTERN_C_BEGIN
 
 #pragma pack(push, 1)
 
+struct _RTInventoryInfo {
+	UInt16 SlotCount;
+};
+
 struct _RTCharacterInventoryInfo {
-	Int32 Count;
+	struct _RTInventoryInfo Info;
 	struct _RTItemSlot Slots[RUNTIME_INVENTORY_PAGE_SIZE * RUNTIME_INVENTORY_PAGE_COUNT];
 };
 

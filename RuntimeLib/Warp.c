@@ -368,7 +368,7 @@ Bool RTRuntimeWarpCharacter(
     assert(Warp->Index == WarpIndex);
 
     if (Character->Data.Info.Basic.Level < Warp->Level) return false;
-    if (Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] < Warp->Fee) return false;
+    if (Character->Data.Info.Alz< Warp->Fee) return false;
 
     if (Warp->Type == RUNTIME_WARP_TYPE_GATE) {
         RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, Warp->TargetID);
@@ -381,7 +381,7 @@ Bool RTRuntimeWarpCharacter(
 
         RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 
-        Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= Warp->Fee;
+        Character->Data.Info.Alz-= Warp->Fee;
         Character->Data.Info.Position.X = WarpPoint.X;
         Character->Data.Info.Position.Y = WarpPoint.Y;
         Character->Data.Info.Position.WorldID = WarpPoint.WorldIndex;
@@ -420,10 +420,10 @@ Bool RTRuntimeWarpCharacter(
         RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, QuestDungeonData->EntryWarpID);
         RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 
-        RTWorldContextRef DungeonWorld = RTRuntimeOpenDungeon(Runtime, Character, WarpPoint.WorldIndex, QuestDungeonData->DungeonID);
+        RTWorldContextRef DungeonWorld = RTRuntimeOpenDungeon(Runtime, Character, WarpPoint.WorldIndex, QuestDungeonData->DungeonIndex);
         if (!DungeonWorld) return false;
 
-        Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= Warp->Fee;
+        Character->Data.Info.Alz-= Warp->Fee;
         Character->Data.Info.Position.X = WarpPoint.X;
         Character->Data.Info.Position.Y = WarpPoint.Y;
         Character->Data.Info.Position.WorldID = WarpPoint.WorldIndex;
@@ -467,10 +467,10 @@ Bool RTRuntimeWarpCharacter(
         RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, DungeonData->EntryWarpID);
         RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
         
-        RTWorldContextRef DungeonWorld = RTRuntimeOpenDungeon(Runtime, Character, WarpPoint.WorldIndex, DungeonData->DungeonID);
+        RTWorldContextRef DungeonWorld = RTRuntimeOpenDungeon(Runtime, Character, WarpPoint.WorldIndex, DungeonData->DungeonIndex);
         if (!DungeonWorld) return false;
 
-        Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_ALZ] -= Warp->Fee;
+        Character->Data.Info.Alz-= Warp->Fee;
         Character->Data.Info.Position.X = WarpPoint.X;
         Character->Data.Info.Position.Y = WarpPoint.Y;
         Character->Data.Info.Position.WorldID = WarpPoint.WorldIndex;

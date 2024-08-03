@@ -12,8 +12,15 @@ struct _RTOverlordMasterySlot {
     UInt8 Level;
 };
 
+struct _RTOverlordMasteryInfo {
+    Int16 Level;
+    Int64 Exp;
+    Int16 Point;
+    Int8 SlotCount;
+};
+
 struct _RTCharacterOverlordMasteryInfo {
-    Int32 Count;
+    struct _RTOverlordMasteryInfo Info;
     struct _RTOverlordMasterySlot Slots[RUNTIME_CHARACTER_MAX_OVERLORD_MASTERY_SLOT_COUNT];
 };
 

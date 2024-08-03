@@ -12,8 +12,15 @@ struct _RTBuffSlot {
     UInt32 Unknown2;
 };
 
+struct _RTBuffInfo {
+    UInt8 SkillCooldownCount;
+    UInt16 Unknown2389;
+    UInt16 BuffCount;
+    UInt32 SpiritRaiseBuffCooldown;
+};
+
 struct _RTCharacterBuffInfo {
-    Int32 Count;
+    struct _RTBuffInfo Info;
     struct _RTBuffSlot Slots[RUNTIME_CHARACTER_MAX_BUFF_SLOT_COUNT];
 };
 

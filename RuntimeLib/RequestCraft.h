@@ -16,13 +16,18 @@ struct _RTRequestCraftSlot {
     UInt8 Result;
 };
 
+struct _RTRequestCraftInfo {
+    UInt8 SlotCount;
+    UInt16 Exp;
+    UInt8 Unknown1;
+    UInt8 RegisteredFlags[1024];
+    UInt8 FavoriteFlags[1024];
+    UInt16 SortingOrder;
+};
+
 struct _RTCharacterRequestCraftInfo {
-    Int32 RequestCraftCount;
-    UInt16 RequestCraftExp;
-    UInt8 RequestCraftFlags[1024];
-    UInt8 RequestCraftFavoriteFlags[1024];
-    UInt16 RequestCraftSortOrder;
-    struct _RTRequestCraftSlot RequestCraftSlot[RUNTIME_CHARACTER_MAX_REQUEST_CRAFT_SLOT_COUNT];
+    struct _RTRequestCraftInfo Info;
+    struct _RTRequestCraftSlot Slots[RUNTIME_CHARACTER_MAX_REQUEST_CRAFT_SLOT_COUNT];
 };
 
 #pragma pack(pop)

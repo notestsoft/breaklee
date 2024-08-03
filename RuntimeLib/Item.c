@@ -153,7 +153,7 @@ Void RTCharacterApplyItemForceOptionEffect(
 		ForceSlotOffset = 1;
 	}
 
-	// TODO: Check check unique items
+	// TODO: Check unique items
 	// <unique_item	item_index="3343"	>
 
 	for (Int32 Index = ForceSlotOffset; Index < RUNTIME_ITEM_MAX_OPTION_COUNT; Index += 1) {
@@ -390,7 +390,11 @@ Bool RTItemForceOptionInsertForceIndex(
 
 		Int32 TailLength = RUNTIME_ITEM_MAX_OPTION_COUNT - Index - 2;
 		if (TailLength > 0) {
-			memmove(&Data->ForceSlots[Index + 2], &Data->ForceSlots[Index + 1], TailLength * sizeof(UInt8));
+			memmove(
+				&Data->ForceSlots[Index + 2], 
+				&Data->ForceSlots[Index + 1], 
+				TailLength * sizeof(UInt8)
+			);
 		}
 
 		Data->ForceSlots[Index + 1] = Data->ForceSlots[Index];
@@ -496,8 +500,7 @@ Int32 RTItemUseInternal(
 	RTItemDataRef ItemData,
 	Void* Payload
 ) {
-	// TODO: Check if it is a general option of an item that it been consumed from the inventory
-#define RUNTIME_ITEM_PROCEDURE(__NAME__, __TYPE__, __INTERNAL__)	\
+#define RUNTIME_ITEM_PROCEDURE(__NAME__, __TYPE__, __INTERNAL__)	    \
 	if (ItemData->ItemType == __TYPE__) {								\
 		return __NAME__(												\
 			Runtime,													\
@@ -868,7 +871,8 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSkillBook) {
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemImmediateReward) {
 	switch (ItemData->Options[0]) {
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_ALZ:
-		RTCharacterAddCurrency(Runtime, Character, RUNTIME_CHARACTER_CURRENCY_ALZ, ItemSlot->ItemOptions);
+		Character->Data.Info.Alz += ItemSlot->ItemOptions;
+		Character->SyncMask.Info = true;
 		break;
 
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_EXP:
@@ -903,7 +907,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemImmediateReward) {
 		break;
 
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_OXP: {
-		if (Character->Data.Info.Overlord.Level < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
+		if (Character->Data.OverlordMasteryInfo.Info.Level < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
 		RTCharacterAddOverlordExp(Runtime, Character, ItemSlot->ItemOptions);
 		break;
 	}
@@ -914,10 +918,18 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemImmediateReward) {
 
 	// TODO: Check if this item should be consumed and check if it is a stackable item
 	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
-
 	Character->SyncMask.InventoryInfo = true;
 
     return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+}
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemCharacterSlotExtender) {
+	if (!RTAccountOpenCharacterSlot(Runtime, Character)) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
+	Character->SyncMask.InventoryInfo = true;
+
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemWeapon) {
@@ -1477,31 +1489,32 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHolyWater) {
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
-	// TODO: Check payload length for inventory slot index 
+	// TODO: Check payload length bounds for inventory slot index 
 	struct {
 		UInt32 RegisteredStackSize;
 		UInt32 InventoryItemCount;
 		UInt16 InventorySlotIndex[0];
 	} *Data = Payload;
 
-	// TODO: Cleanup inventory slot processing
-	UInt64 StackSize = 0;
-	UInt64 Amount = 0;
+	UInt64 TotalStackSize = 0;
+	UInt64 Amount = ItemSlot->ItemOptions >> 16;
+
 	for (Index Index = 0; Index < Data->InventoryItemCount; Index += 1) {
 		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Data->InventorySlotIndex[Index]);
 		if (!ItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
+		if (Amount != ItemSlot->ItemOptions >> 16) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
-		StackSize += ItemSlot->ItemOptions & 0xFFFF;
-		Amount += ItemSlot->ItemOptions >> 16;
+		TotalStackSize += ItemSlot->ItemOptions & 0xFFFF;
 	}
 
-	if (Data->RegisteredStackSize > StackSize) return RUNTIME_ITEM_USE_RESULT_FAILED;
+	if (Data->RegisteredStackSize > TotalStackSize) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
 	UInt64 TotalAmount = Amount * Data->RegisteredStackSize;
 
 	switch (ItemData->Options[0]) {
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_ALZ:
-		RTCharacterAddCurrency(Runtime, Character, RUNTIME_CHARACTER_CURRENCY_ALZ, TotalAmount);
+		Character->Data.Info.Alz += TotalAmount;
+		Character->SyncMask.Info = true;
 		break;
 
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_EXP:
@@ -1536,13 +1549,13 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
 		break;
 
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_OXP: {
-		if (Character->Data.Info.Overlord.Level < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
+		if (Character->Data.OverlordMasteryInfo.Info.Level < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
 		RTCharacterAddOverlordExp(Runtime, Character, TotalAmount);
 		break;
 	}
 
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_WINGEXP: {
-		if (Character->Data.ForceWingInfo.Grade < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
+		if (Character->Data.ForceWingInfo.Info.Grade < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
 		RTCharacterAddWingExp(Runtime, Character, TotalAmount);
 		break;
 	}
@@ -1551,13 +1564,23 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
 		return RUNTIME_ITEM_USE_RESULT_FAILED;
 	}
 
-	// TODO: Add support for multiple item consumptions
-	StackSize -= Data->RegisteredStackSize;
-	if (StackSize < 1) {
-		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
-	}
-	else {
-		ItemSlot->ItemOptions = Amount << 16 | (StackSize & 0xFFFF);
+	Int32 RemainingStackSize = Data->RegisteredStackSize;
+	for (Index Index = 0; Index < Data->InventoryItemCount; Index += 1) {
+		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Data->InventorySlotIndex[Index]);
+
+		Int32 ItemStackSize = ItemSlot->ItemOptions & 0xFFFF;
+		Int32 ItemAmount = ItemSlot->ItemOptions >> 16;
+		Int32 ConsumableStackSize = MIN(ItemStackSize, RemainingStackSize);
+
+		ItemStackSize -= ConsumableStackSize;
+		RemainingStackSize -= ConsumableStackSize;
+
+		if (ItemStackSize < 1) {
+			RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
+		}
+		else {
+			ItemSlot->ItemOptions = Amount << 16 | (ItemStackSize & 0xFFFF);
+		}
 	}
 
 	Character->SyncMask.InventoryInfo = true;
@@ -1685,9 +1708,8 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemCoreEnhancer) {
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemForceGemPackage) {
-	Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_GEM] += ItemSlot->ItemOptions;
+    RTCharacterAddForceGem(Runtime, Character, ItemSlot->ItemOptions);
 	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
-	Character->SyncMask.Info = true;
 	Character->SyncMask.InventoryInfo = true;
 
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
@@ -1704,4 +1726,44 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemRemoteNpc) {
 	}
 
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+}
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTRuneSlotExtender) {
+	if (ItemData->RuneSlotExtender.AbilityType == RUNTIME_ABILITY_TYPE_ESSENCE) {
+		Int32 MaxSlotCount = RUNTIME_CHARACTER_MAX_ESSENCE_ABILITY_SLOT_COUNT - RUNTIME_CHARACTER_ESSENCE_ABILITY_SLOT_COUNT;
+		if (Character->Data.AbilityInfo.Info.ExtendedEssenceAbilityCount >= MaxSlotCount) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
+
+		Character->Data.AbilityInfo.Info.ExtendedEssenceAbilityCount += 1;
+		Character->SyncMask.AbilityInfo = true;
+		Character->SyncMask.InventoryInfo = true;
+		return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+	}
+
+	if (ItemData->RuneSlotExtender.AbilityType == RUNTIME_ABILITY_TYPE_BLENDED) {
+		Int32 MaxSlotCount = RUNTIME_CHARACTER_MAX_BLENDED_ABILITY_SLOT_COUNT - RUNTIME_CHARACTER_BLENDED_ABILITY_SLOT_COUNT;
+		if (Character->Data.AbilityInfo.Info.ExtendedBlendedAbilityCount >= MaxSlotCount) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
+
+		Character->Data.AbilityInfo.Info.ExtendedBlendedAbilityCount += 1;
+		Character->SyncMask.AbilityInfo = true;
+		Character->SyncMask.InventoryInfo = true;
+		return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+	}
+
+	if (ItemData->RuneSlotExtender.AbilityType == RUNTIME_ABILITY_TYPE_KARMA) {
+		Int32 MaxSlotCount = RUNTIME_CHARACTER_MAX_KARMA_ABILITY_SLOT_COUNT - RUNTIME_CHARACTER_KARMA_ABILITY_SLOT_COUNT;
+		if (Character->Data.AbilityInfo.Info.ExtendedKarmaAbilityCount >= MaxSlotCount) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
+
+		Character->Data.AbilityInfo.Info.ExtendedKarmaAbilityCount += 1;
+		Character->SyncMask.AbilityInfo = true;
+		Character->SyncMask.InventoryInfo = true;
+		return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+	}
+
+	return RUNTIME_ITEM_USE_RESULT_FAILED;
 }

@@ -3,14 +3,6 @@
 
 #define ARRAY_MIN_CAPACITY 8
 
-struct _Array {
-    AllocatorRef Allocator;
-    Index Size;
-    Index Count;
-    Index Capacity;
-    UInt8* Memory;
-};
-
 Void _ArrayReserveCapacity(
     ArrayRef Array,
     Index NewCapacity
@@ -47,21 +39,34 @@ ArrayRef ArrayCreateEmpty(
 ) {
     ArrayRef Array = AllocatorAllocate(Allocator, sizeof(struct _Array));
     if (!Array) Fatal("Memory allocation failed!");
-    
+    ArrayInitializeEmpty(Array, Allocator, Size, Capacity);    
+    return Array;
+}
+
+Void ArrayInitializeEmpty(
+    ArrayRef Array,
+    AllocatorRef Allocator,
+    Index Size,
+    Index Capacity
+) {
     Array->Allocator = Allocator;
     Array->Size = Size;
     Array->Count = 0;
     Array->Capacity = MAX(ARRAY_MIN_CAPACITY, Capacity);
-    Array->Memory = (UInt8 *)AllocatorAllocate(Allocator, Array->Capacity * Array->Size);
+    Array->Memory = (UInt8*)AllocatorAllocate(Allocator, Array->Capacity * Array->Size);
     if (!Array->Memory) Fatal("Memory allocation failed!");
-    
-    return Array;
+}
+
+Void ArrayDealloc(
+    ArrayRef Array
+) {
+    AllocatorDeallocate(Array->Allocator, Array->Memory);
 }
 
 Void ArrayDestroy(
     ArrayRef Array
 ) {
-    AllocatorDeallocate(Array->Allocator, Array->Memory);
+    ArrayDealloc(Array);
     AllocatorDeallocate(Array->Allocator, Array);
 }
 

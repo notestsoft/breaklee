@@ -13,8 +13,12 @@ struct _RTMercenarySlot {
     UInt8 Unknown2;
 };
 
+struct _RTMercenaryInfo {
+    UInt16 SlotCount;
+};
+
 struct _RTCharacterMercenaryInfo {
-    Int32 Count;
+    struct _RTMercenaryInfo Info;
     struct _RTMercenarySlot Slots[RUNTIME_CHARACTER_MAX_MERCENARY_SLOT_COUNT];
 };
 

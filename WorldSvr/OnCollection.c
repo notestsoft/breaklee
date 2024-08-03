@@ -269,13 +269,12 @@ CLIENT_PROCEDURE_BINDING(RECEIVE_COLLECTION_REWARD) {
         RTDataCollectionRewardCurrencyRef Reward = RTRuntimeDataCollectionRewardCurrencyGet(Runtime->Context, CollectionKindInfoDetail->RewardID);
 
         CollectionSlot->ReceivedReward = true;
-        Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_GEM] += Reward->Quantity;
-        Character->SyncMask.Info = true;
+        RTCharacterAddForceGem(Runtime, Character, Reward->Quantity);
         Character->SyncMask.CollectionInfo = true;
 
         Response->RewardType = CollectionKindInfoDetail->RewardType;
         S2C_DATA_RECEIVE_COLLECTION_REWARD_CURRENCY* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_RECEIVE_COLLECTION_REWARD_CURRENCY);
-        ResponseData->Currency = (UInt32)Character->Data.Info.Currency[RUNTIME_CHARACTER_CURRENCY_GEM];
+        ResponseData->Currency = Character->Data.AccountInfo.ForceGem;
     }
     else if (CollectionKindInfoDetail->RewardType == RUNTIME_DATA_COLLECTION_REWARD_TYPE_ITEM) {
         if (Packet->InventorySlotCount < 1) goto error;

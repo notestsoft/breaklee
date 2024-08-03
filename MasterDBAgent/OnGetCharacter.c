@@ -24,12 +24,20 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
     Response->CharacterCreationDate = Character.CreatedAt;
     CStringCopySafe(Response->CharacterName, MAX_CHARACTER_NAME_LENGTH + 1, Character.Name);
 
-#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__, __SCOPE__) \
+#define ACCOUNT_DATA_PROTOCOL(__TYPE__, __NAME__) \
     { \
-        DataTableRef Table = DatabaseGetDataTable(Context->Database, #__SCOPE__, #__NAME__); \
+        DataTableRef Table = DatabaseGetDataTable(Context->Database, TABLE_SCOPE_ACCOUNT, #__NAME__); \
         if (!Table) goto error; \
-        if (!DataTableSelect(Table, Packet->__SCOPE__##ID, (UInt8*)&Response->CharacterData.__NAME__, sizeof(__TYPE__))); \
+        if (!DataTableSelect(Table, Packet->AccountID, (UInt8*)&Response->CharacterData.__NAME__, sizeof(__TYPE__))); \
     }
+
+#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__) \
+    { \
+        DataTableRef Table = DatabaseGetDataTable(Context->Database, TABLE_SCOPE_CHARACTER, #__NAME__); \
+        if (!Table) goto error; \
+        if (!DataTableSelect(Table, Packet->CharacterID, (UInt8*)&Response->CharacterData.__NAME__, sizeof(__TYPE__))); \
+    }
+
 #include "RuntimeLib/CharacterDataDefinition.h"
 
     IPCSocketUnicast(Socket, Response);

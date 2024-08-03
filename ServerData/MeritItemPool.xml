@@ -1,0 +1,60 @@
+<MeritItemPool>
+    <Pool Type="1">
+        <ItemGroup EvaluationCount="0">
+            <Item ItemIDs="33554924,33554932,33554953" Rate="250" />
+            <Item ItemIDs="33554925,33554933,33554954" Rate="250" />
+            <Item ItemIDs="33554926,33554934,33554955" Rate="395" />
+            <Item ItemIDs="33554927,33554935,33554956" Rate="50" />
+            <Item ItemIDs="33554928,33554936,33554957" Rate="50" />
+            <Item ItemIDs="33554929,33554937,33554958" Rate="2" />
+            <Item ItemIDs="33554930,33554938,33554959" Rate="2" />
+            <Item ItemIDs="33554931,33554939,33554960" Rate="1" />
+        </ItemGroup>
+        <ItemGroup EvaluationCount="1">
+            <Item ItemIDs="33554924,33554932,33554953" Rate="225" />
+            <Item ItemIDs="33554925,33554933,33554954" Rate="225" />
+            <Item ItemIDs="33554926,33554934,33554955" Rate="39" />
+            <Item ItemIDs="33554927,33554935,33554956" Rate="75" />
+            <Item ItemIDs="33554928,33554936,33554957" Rate="75" />
+            <Item ItemIDs="33554929,33554937,33554958" Rate="4" />
+            <Item ItemIDs="33554930,33554938,33554959" Rate="4" />
+            <Item ItemIDs="33554931,33554939,33554960" Rate="2" />
+        </ItemGroup>
+        <ItemGroup EvaluationCount="2">
+            <Item ItemIDs="33554924,33554932,33554953" Rate="200" />
+            <Item ItemIDs="33554925,33554933,33554954" Rate="200" />
+            <Item ItemIDs="33554926,33554934,33554955" Rate="385" />
+            <Item ItemIDs="33554927,33554935,33554956" Rate="100" />
+            <Item ItemIDs="33554928,33554936,33554957" Rate="100" />
+            <Item ItemIDs="33554929,33554937,33554958" Rate="6" />
+            <Item ItemIDs="33554930,33554938,33554959" Rate="6" />
+            <Item ItemIDs="33554931,33554939,33554960" Rate="3" />
+        </ItemGroup>
+        <ItemGroup EvaluationCount="3">
+            <Item ItemIDs="33554924,33554932,33554953" Rate="175" />
+            <Item ItemIDs="33554925,33554933,33554954" Rate="175" />
+            <Item ItemIDs="33554926,33554934,33554955" Rate="375" />
+            <Item ItemIDs="33554927,33554935,33554956" Rate="125" />
+            <Item ItemIDs="33554928,33554936,33554957" Rate="125" />
+            <Item ItemIDs="33554929,33554937,33554958" Rate="10" />
+            <Item ItemIDs="33554930,33554938,33554959" Rate="10" />
+            <Item ItemIDs="33554931,33554939,33554960" Rate="5" />
+        </ItemGroup>
+    </Pool>
+    <Pool Type="2">
+        <ItemGroup EvaluationCount="0">
+            <Item ItemIDs="33554942,33554947,33554956" Rate="150" />
+            <Item ItemIDs="33554943,33554948,33554957" Rate="350" />
+            <Item ItemIDs="33554944,33554949,33554958" Rate="400" />
+            <Item ItemIDs="33554945,33554950,33554959" Rate="90" />
+            <Item ItemIDs="33554946,33554951,33554960" Rate="10" />
+        </ItemGroup>
+        <ItemGroup EvaluationCount="1">
+            <Item ItemIDs="33554942,33554947,33554956" Rate="100" />
+            <Item ItemIDs="33554943,33554948,33554957" Rate="300" />
+            <Item ItemIDs="33554944,33554949,33554958" Rate="500" />
+            <Item ItemIDs="33554945,33554950,33554959" Rate="90" />
+            <Item ItemIDs="33554946,33554951,33554960" Rate="10" />
+        </ItemGroup>
+    </Pool>
+</MeritItemPool>

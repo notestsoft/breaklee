@@ -95,7 +95,7 @@ Bool RTEquipmentSlotIndexMatchItemType(
 
 Bool RTEquipmentIsSlotEmpty(
     RTRuntimeRef Runtime,
-    RTCharacterEquipmentInfoRef Equipment,
+    RTCharacterEquipmentDataRef Equipment,
     Int32 SlotIndex
 ) {
     return RTEquipmentGetSlot(Runtime, Equipment, SlotIndex) == NULL;
@@ -103,13 +103,13 @@ Bool RTEquipmentIsSlotEmpty(
 
 RTItemSlotRef RTEquipmentGetSlot(
     RTRuntimeRef Runtime,
-    RTCharacterEquipmentInfoRef Equipment,
+    RTCharacterEquipmentDataRef Equipment,
     Int32 SlotIndex
 ) {
     if (SlotIndex < 0 || SlotIndex > RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT) return NULL;
 
-    for (Int32 Index = 0; Index < Equipment->Count; Index++) {
-        RTItemSlotRef Slot = &Equipment->Slots[Index];
+    for (Int32 Index = 0; Index < Equipment->Info.EquipmentSlotCount; Index += 1) {
+        RTItemSlotRef Slot = &Equipment->EquipmentSlots[Index];
         if (Slot->SlotIndex == SlotIndex) return Slot;
     }
 
@@ -119,19 +119,19 @@ RTItemSlotRef RTEquipmentGetSlot(
 Bool RTEquipmentSetSlot(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    RTCharacterEquipmentInfoRef Equipment,
+    RTCharacterEquipmentDataRef Equipment,
     RTItemSlotRef Slot
 ) {
     Info("RTEquipmentSetSlot(%d)", Slot->SlotIndex);
     if (Slot->SlotIndex < 0 || Slot->SlotIndex > RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT) return false;
-    if (Equipment->Count >= RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT) return false;
+    if (Equipment->Info.EquipmentSlotCount >= RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT) return false;
 
     RTItemSlotRef CurrentSlot = RTEquipmentGetSlot(Runtime, Equipment, Slot->SlotIndex);
     if (CurrentSlot) return false;
 
-    CurrentSlot = &Equipment->Slots[Equipment->Count];
+    CurrentSlot = &Equipment->EquipmentSlots[Equipment->Info.EquipmentSlotCount];
     memcpy(CurrentSlot, Slot, sizeof(struct _RTItemSlot));
-    Equipment->Count += 1;
+    Equipment->Info.EquipmentSlotCount += 1;
 
     {
         NOTIFICATION_DATA_CHARACTER_ITEM_EQUIP* Notification = RTNotificationInit(CHARACTER_ITEM_EQUIP);
@@ -150,14 +150,14 @@ Bool RTEquipmentSetSlot(
 Bool RTEquipmentClearSlot(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    RTCharacterEquipmentInfoRef Equipment,
+    RTCharacterEquipmentDataRef Equipment,
     Int32 SlotIndex
 ) {
     Info("RTEquipmentClearSlot(%d)", SlotIndex);
     if (SlotIndex < 0 || SlotIndex > RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT) return false;
 
-    for (Int32 Index = 0; Index < Equipment->Count; Index++) {
-        RTItemSlotRef Slot = &Equipment->Slots[Index];
+    for (Int32 Index = 0; Index < Equipment->Info.EquipmentSlotCount; Index += 1) {
+        RTItemSlotRef Slot = &Equipment->EquipmentSlots[Index];
         if (Slot->SlotIndex == SlotIndex) {
             {
                 NOTIFICATION_DATA_CHARACTER_ITEM_UNEQUIP* Notification = RTNotificationInit(CHARACTER_ITEM_UNEQUIP);
@@ -166,16 +166,16 @@ Bool RTEquipmentClearSlot(
                 RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
             }
 
-            Int32 TailLength = Equipment->Count - Index - 1;
+            Int32 TailLength = Equipment->Info.EquipmentSlotCount - Index - 1;
             if (TailLength > 0) {
                 memmove(
-                    &Equipment->Slots[Index],
-                    &Equipment->Slots[Index + 1],
-                    sizeof(struct _RTItemSlot) * TailLength
+                    &Equipment->EquipmentSlots[Index],
+                    &Equipment->EquipmentSlots[Index + 1],
+                    TailLength * sizeof(struct _RTItemSlot)
                 );
             }
 
-            Equipment->Count -= 1;
+            Equipment->Info.EquipmentSlotCount -= 1;
             return true;
         }
     }
@@ -186,7 +186,7 @@ Bool RTEquipmentClearSlot(
 Bool RTEquipmentRemoveSlot(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    RTCharacterEquipmentInfoRef Equipment,
+    RTCharacterEquipmentDataRef Equipment,
     Int32 SlotIndex,
     RTItemSlotRef Result
 ) {
@@ -221,8 +221,8 @@ Bool RTCharacterEquipmentIsLocked(
 ) {
     if (SlotIndex < 0 || SlotIndex > RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT) return false;
 
-    for (Int32 Index = 0; Index < Character->Data.EquipmentLockInfo.Count; Index += 1) {
-        RTEquipmentLockSlotRef LockSlot = &Character->Data.EquipmentLockInfo.Slots[Index];
+    for (Int32 Index = 0; Index < Character->Data.EquipmentInfo.Info.LockSlotCount; Index += 1) {
+        RTEquipmentLockSlotRef LockSlot = &Character->Data.EquipmentInfo.LockSlots[Index];
         if (LockSlot->SlotIndex != SlotIndex) continue;
 
         return true;
@@ -240,8 +240,8 @@ Bool RTCharacterEquipmentSetLocked(
     if (SlotIndex < 0 || SlotIndex > RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT) return false;
 
     Int32 LockSlotIndex = -1;
-    for (Int32 Index = 0; Index < Character->Data.EquipmentLockInfo.Count; Index += 1) {
-        RTEquipmentLockSlotRef LockSlot = &Character->Data.EquipmentLockInfo.Slots[Index];
+    for (Int32 Index = 0; Index < Character->Data.EquipmentInfo.Info.LockSlotCount; Index += 1) {
+        RTEquipmentLockSlotRef LockSlot = &Character->Data.EquipmentInfo.LockSlots[Index];
         if (LockSlot->SlotIndex != SlotIndex) continue;
 
         LockSlotIndex = Index;
@@ -249,23 +249,23 @@ Bool RTCharacterEquipmentSetLocked(
     }
 
     if (IsLocked && LockSlotIndex < 0) {
-        Character->Data.EquipmentLockInfo.Slots[Character->Data.EquipmentLockInfo.Count].SlotIndex = SlotIndex;
-        Character->Data.EquipmentLockInfo.Count += 1;
-        Character->SyncMask.EquipmentLockInfo = true;
+        Character->Data.EquipmentInfo.LockSlots[Character->Data.EquipmentInfo.Info.LockSlotCount].SlotIndex = SlotIndex;
+        Character->Data.EquipmentInfo.Info.LockSlotCount += 1;
+        Character->SyncMask.EquipmentInfo = true;
     }
 
     if (!IsLocked && LockSlotIndex >= 0) {
-        Int32 TailLength = sizeof(struct _RTEquipmentLockSlot) * (Character->Data.EquipmentLockInfo.Count - LockSlotIndex - 1);
+        Int32 TailLength = sizeof(struct _RTEquipmentLockSlot) * (Character->Data.EquipmentInfo.Info.LockSlotCount - LockSlotIndex - 1);
         if (TailLength > 0) {
             memmove(
-                &Character->Data.EquipmentLockInfo.Slots[LockSlotIndex], 
-                &Character->Data.EquipmentLockInfo.Slots[LockSlotIndex + 1], 
-                TailLength
+                &Character->Data.EquipmentInfo.LockSlots[LockSlotIndex],
+                &Character->Data.EquipmentInfo.LockSlots[LockSlotIndex + 1],
+                TailLength * sizeof(struct _RTEquipmentLockSlot)
             );
         }
 
-        Character->Data.EquipmentLockInfo.Count -= 1;
-        Character->SyncMask.EquipmentLockInfo = true;
+        Character->Data.EquipmentInfo.Info.LockSlotCount -= 1;
+        Character->SyncMask.EquipmentInfo = true;
     }
 
     return true;
