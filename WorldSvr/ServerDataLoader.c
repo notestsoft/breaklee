@@ -1159,10 +1159,12 @@ Bool ServerLoadWorldData(
         RTWorldDataRef World = RTWorldDataGet(Runtime->WorldManager, WorldIndex);
 
         Char WorldFilePath[MAX_PATH];
+        Char WorldFileDirectory[MAX_PATH];
         Char WorldFileName[MAX_PATH];
+
         sprintf(WorldFileName, "world%zu.enc", World->WorldIndex);
-        PathCombine(RuntimeDirectory, "World", WorldFilePath);
-        PathCombine(WorldFilePath, WorldFileName, WorldFilePath);
+        PathCombine(RuntimeDirectory, "World", WorldFileDirectory);
+        PathCombine(WorldFileDirectory, WorldFileName, WorldFilePath);
         ArchiveClear(Archive, true);
 
         if (!ArchiveLoadFromFileEncryptedNoAlloc(Archive, WorldFilePath, false)) {
