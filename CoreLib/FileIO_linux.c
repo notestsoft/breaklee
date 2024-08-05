@@ -14,8 +14,6 @@
 #include <dirent.h>
 #include <errno.h>
 
-typedef int FileRef;
-
 FileRef FileOpen(
     CString FilePath
 ) {
