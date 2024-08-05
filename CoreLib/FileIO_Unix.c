@@ -2,7 +2,7 @@
 #include "Diagnostic.h"
 #include "String.h"
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,7 +17,7 @@
 FileRef FileOpen(
     CString FilePath
 ) {
-    int Handle = open(FilePath, O_RDONLY);
+    Int32 Handle = open(FilePath, O_RDONLY);
     if (Handle == -1) {
         return NULL;
     }
@@ -29,7 +29,7 @@ FileRef FileOpen(
 FileRef FileCreate(
     CString FilePath
 ) {
-    int Handle = open(FilePath, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+    Int32 Handle = open(FilePath, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
     if (Handle == -1) {
         return NULL;
     }
@@ -42,8 +42,8 @@ Void FileClose(
     FileRef File
 ) {
     Info("FileClose(%d)", File);
-    assert(File != -1);
-    close(File);
+    assert((Int32)File != -1);
+    close((Int32)File);
 }
 
 Bool FileReadNoAlloc(
@@ -56,7 +56,7 @@ Bool FileReadNoAlloc(
 
     *Length = 0;
 
-    Int32 FileDescriptor = *(Int32*)File;
+    Int32 FileDescriptor = (Int32)File;
     struct stat FileStat;
     if (fstat(FileDescriptor, &FileStat) == -1) {
         perror("Error reading file size");
@@ -90,7 +90,7 @@ Bool FileRead(
     *Destination = NULL;
     *Length = 0;
 
-    Int32 FileDescriptor = *(Int32*)File;
+    Int32 FileDescriptor = (Int32)File;
     struct stat FileStat;
     if (fstat(FileDescriptor, &FileStat) == -1) {
         perror("Error reading file size");
@@ -122,16 +122,16 @@ Bool FileWrite(
     Int32 Length,
     Bool Append
 ) {
-    assert(File != -1);
+    assert((Int32)File != -1);
 
     if (Append) {
-        if (lseek(File, 0, SEEK_END) == -1) {
+        if (lseek((Int32)File, 0, SEEK_END) == -1) {
             Error("Error seeking to end of file!\n");
             return false;
         }
     }
 
-    ssize_t BytesWritten = write(File, Source, Length);
+    ssize_t BytesWritten = write((Int32)File, Source, Length);
     if (BytesWritten == -1) {
         Error("Error writing file!\n");
         return false;
@@ -155,14 +155,13 @@ Int32 FilesProcess(
     Void* UserData
 ) {
     DIR* Dir;
-    struct dirent* Entry;
     Int32 ProcessedFileCount = 0;
-    Char Buffer[PATH_MAX] = { 0 };
-
     if (!(Dir = opendir(Directory))) {
         return ProcessedFileCount;
     }
 
+    Char Buffer[PATH_MAX] = { 0 };
+    struct dirent* Entry;
     while ((Entry = readdir(Dir)) != NULL) {
         if (Entry->d_type == DT_REG) {
             snprintf(Buffer, PATH_MAX, "%s/%s", Directory, Entry->d_name);
@@ -212,7 +211,7 @@ Void PathAppend(
 Void PathAppendSeparator(
     CString Path
 ) {
-    Int32 Length = strlen(Path);
+    size_t Length = strlen(Path);
     if (Path[Length - 1] != '/') {
         strncat(Path, "/", PATH_MAX - Length - 1);
     }

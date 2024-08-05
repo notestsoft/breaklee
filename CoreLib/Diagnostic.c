@@ -3,8 +3,15 @@
 #include "FileIO.h"
 #include "Util.h"
 
-#ifdef __linux__
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <pthread.h>
+#include <unistd.h>
+#ifdef __APPLE__
+#include <mach/mach.h>
+#include <mach/mach_init.h>
+#endif
 #endif
 
 struct _DiagnosticEngine {
@@ -38,15 +45,16 @@ Void _DefaultDiagnosticHandler(
 ) {
     time_t NowTime = time(NULL);
     struct tm NowTm = { 0 };
-#ifdef _WIN32
-    gmtime_s(&NowTm, &NowTime);
-#else
-    gmtime_r(&NowTime, &NowTm);
-#endif
 
 #ifdef _WIN32
+    gmtime_s(&NowTm, &NowTime);
     DWORD ThreadID = GetCurrentThreadId();
+#elif __APPLE__
+    gmtime_r(&NowTime, &NowTm);
+    mach_port_t ThreadID = mach_thread_self();
+    mach_port_deallocate(mach_task_self(), ThreadID);
 #else
+    gmtime_r(&NowTime, &NowTm);
     pthread_t ThreadID = pthread_self();
 #endif
 

@@ -481,7 +481,7 @@ RTWorldItemRef RTWorldSpawnItem(
     if (SourceID.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) {
         RTCharacterRef Character = RTWorldManagerGetCharacter(Runtime->WorldManager, SourceID);
         if (Character) {
-            Item->ItemSourceIndex = Character->CharacterIndex;
+            Item->ItemSourceIndex = (UInt32)Character->CharacterIndex;
         }
 
         Item->ContextType = NOTIFICATION_ITEMS_SPAWN_CONTEXT_TYPE_USER;

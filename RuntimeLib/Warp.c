@@ -51,8 +51,8 @@ Bool RTRuntimeWarpCharacter(
     RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
     if (!World) return false;
 
-    if (RUNTIME_NPC_ID_RESERVED_BEGIN <= NpcID && NpcID <= RUNTIME_NPC_ID_RESERVED_END ||
-        RUNTIME_NPC_ID_RESERVED_BEGIN2 <= NpcID && NpcID <= RUNTIME_NPC_ID_RESERVED_END2) {
+    if ((RUNTIME_NPC_ID_RESERVED_BEGIN <= NpcID && NpcID <= RUNTIME_NPC_ID_RESERVED_END) ||
+        (RUNTIME_NPC_ID_RESERVED_BEGIN2 <= NpcID && NpcID <= RUNTIME_NPC_ID_RESERVED_END2)) {
         switch (NpcID) {
         case RUNTIME_NPC_ID_WAR_0: return false;
         case RUNTIME_NPC_ID_WAR_1: return false;

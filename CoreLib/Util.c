@@ -219,7 +219,7 @@ Void ReadConfigString(
 
     static UInt8 Data[CONFIG_DATA_BUFFER_SIZE] = { 0 };
     Int32 DataLength = 0;
-    if (!FileReadNoAlloc(File, Data, CONFIG_DATA_BUFFER_SIZE, &DataLength) || Data == NULL) {
+    if (!FileReadNoAlloc(File, Data, CONFIG_DATA_BUFFER_SIZE, &DataLength)) {
         CStringCopySafe(Result, ResultLength, Default);
         FileClose(File);
         return;
@@ -228,7 +228,7 @@ Void ReadConfigString(
     Char AppName[MAX_PATH] = { 0 };
     Char KeyName[MAX_PATH] = { 0 };
     Char Line[MAX_PATH] = { 0 };
-    Int32 AppNameLength = 0;
+    Int64 AppNameLength = 0;
     CString Cursor = strchr(KeyPath, '.');
     if (Cursor) {
         AppNameLength = Cursor - KeyPath;
@@ -236,8 +236,8 @@ Void ReadConfigString(
         AppName[AppNameLength] = '\0';
     }
 
-    Int32 KeyNameOffset = AppNameLength + 1;
-    Int32 KeyNameLength = strlen(KeyPath) - KeyNameOffset;
+    Int64 KeyNameOffset = AppNameLength + 1;
+    Int64 KeyNameLength = strlen(KeyPath) - KeyNameOffset;
     memcpy(KeyName, KeyPath + KeyNameOffset, KeyNameLength);
     KeyName[KeyNameLength] = '\0';
 
@@ -249,7 +249,7 @@ Void ReadConfigString(
         Char* NewLine = strchr(DataBegin, '\n');
         if (!NewLine) NewLine = DataEnd;
 
-        Int32 LineLength = NewLine - DataBegin;
+        Int64 LineLength = NewLine - DataBegin;
         if (LineLength > 0 && LineLength < MAX_PATH) {
             strncpy(Line, DataBegin, LineLength);
             Line[LineLength] = '\0';
