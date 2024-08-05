@@ -3,6 +3,10 @@
 #include "FileIO.h"
 #include "Util.h"
 
+#ifdef __linux__
+#include <pthread.h>
+#endif
+
 struct _DiagnosticEngine {
     FILE* Output;
     FILE* Error;
