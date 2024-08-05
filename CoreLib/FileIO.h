@@ -6,6 +6,8 @@
 #include <direct.h>
 #else
 #include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 #endif
 
 EXTERN_C_BEGIN
@@ -27,6 +29,13 @@ Void FileClose(
 Bool FileRead(
 	FileRef File,
 	UInt8** Destination,
+	Int32* Length
+);
+
+Bool FileReadNoAlloc(
+	FileRef File,
+	UInt8* Destination,
+	Int32 MaxLength,
 	Int32* Length
 );
 

@@ -67,6 +67,48 @@ Void FileClose(
     CloseHandle(File);
 }
 
+Bool FileReadNoAlloc(
+    FileRef File,
+    UInt8* Destination,
+    Int32 MaxLength,
+    Int32* Length
+) {
+    assert(File);
+
+    *Length = 0;
+
+    LARGE_INTEGER FileSize = { 0 };
+    if (!GetFileSizeEx(File, &FileSize)) {
+        Error("Error reading file size!\n");
+        return false;
+    }
+
+    if (FileSize.QuadPart + 1 > MaxLength) {
+        Error("Error reading file, not enough memory!");
+        return false;
+    }
+
+    OVERLAPPED Overlapped = { 0 };
+    *Length = (Int32)FileSize.QuadPart;
+
+    FileTransferByteCount = 0;
+    FileTransferCompleted = false;
+
+    if (!ReadFileEx(File, Destination, *Length, &Overlapped, (LPOVERLAPPED_COMPLETION_ROUTINE)IOCompletionRoutine)) {
+        Error("Error reading file!\n");
+        *Length = 0;
+        return false;
+    }
+
+    while (!FileTransferCompleted) {
+        SleepEx(1, true);
+    }
+
+    assert(*Length == FileTransferByteCount);
+    Destination[*Length] = '\0';
+    return true;
+}
+
 Bool FileRead(
     FileRef File,
     UInt8** Destination,
@@ -77,7 +119,7 @@ Bool FileRead(
     *Destination = NULL;
     *Length = 0;
 
-    LARGE_INTEGER FileSize;
+    LARGE_INTEGER FileSize = { 0 };
     if (!GetFileSizeEx(File, &FileSize)) {
         Error("Error reading file size!\n");
         return false;
@@ -85,31 +127,20 @@ Bool FileRead(
 
     OVERLAPPED Overlapped = { 0 };
     *Length = (Int32)FileSize.QuadPart;
-    *Destination = (UInt8*)malloc(*Length + 1);
+    Int32 MaxLength = *Length + 1;
+
+    *Destination = (UInt8*)malloc(MaxLength);
     if (*Destination == NULL) {
         Error("Memory allocation failed!\n");
         return false;
     }
 
-    FileTransferByteCount = 0;
-    FileTransferCompleted = false;
-
-    if (!ReadFileEx(File, *Destination, *Length, &Overlapped, (LPOVERLAPPED_COMPLETION_ROUTINE)IOCompletionRoutine)) {
-        Error("Error reading file!\n");
-
+    if (!FileReadNoAlloc(File, *Destination, MaxLength, Length)) {
         free(*Destination);
         *Destination = NULL;
         *Length = 0;
         return false;
     }
-
-    while (!FileTransferCompleted) {
-        SleepEx(1, true);
-    }
-
-    assert(*Length == FileTransferByteCount);
-
-    (*Destination)[*Length] = '\0';
 
     return true;
 }

@@ -46,40 +46,72 @@ Void FileClose(
     close(File);
 }
 
+Bool FileReadNoAlloc(
+    FileRef File,
+    UInt8* Destination,
+    Int32 MaxLength,
+    Int32* Length
+) {
+    assert(File != NULL);
+
+    *Length = 0;
+
+    Int32 FileDescriptor = *(Int32*)File;
+    struct stat FileStat;
+    if (fstat(FileDescriptor, &FileStat) == -1) {
+        perror("Error reading file size");
+        return false;
+    }
+
+    if (FileStat.st_size + 1 > MaxLength) {
+        fprintf(stderr, "Error reading file, not enough memory!\n");
+        return false;
+    }
+
+    ssize_t BytesRead = read(FileDescriptor, Destination, FileStat.st_size);
+    if (BytesRead == -1) {
+        perror("Error reading file");
+        return false;
+    }
+
+    *Length = (Int32)BytesRead;
+    Destination[*Length] = '\0';
+
+    return true;
+}
+
 Bool FileRead(
     FileRef File,
     UInt8** Destination,
     Int32* Length
 ) {
-    assert(File != -1);
+    assert(File != NULL);
 
     *Destination = NULL;
     *Length = 0;
 
+    Int32 FileDescriptor = *(Int32*)File;
     struct stat FileStat;
-    if (fstat(File, &FileStat) == -1) {
-        Error("Error reading file size!\n");
+    if (fstat(FileDescriptor, &FileStat) == -1) {
+        perror("Error reading file size");
         return false;
     }
 
     *Length = (Int32)FileStat.st_size;
-    *Destination = (UInt8*)malloc(*Length + 1);
+    Int32 MaxLength = *Length + 1;
+
+    *Destination = (UInt8*)malloc(MaxLength);
     if (*Destination == NULL) {
-        Error("Memory allocation failed!\n");
+        fprintf(stderr, "Memory allocation failed!\n");
         return false;
     }
 
-    ssize_t BytesRead = read(File, *Destination, *Length);
-    if (BytesRead == -1) {
-        Error("Error reading file!\n");
+    if (!FileReadNoAlloc(File, *Destination, MaxLength, Length)) {
         free(*Destination);
         *Destination = NULL;
         *Length = 0;
         return false;
     }
-
-    (*Destination)[*Length] = '\0';
-    assert(BytesRead == *Length);
 
     return true;
 }

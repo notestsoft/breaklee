@@ -33,12 +33,14 @@ enum {
 #define C2S_COMMAND(__NAME__, __COMMAND__) \
 	C2S_ ## __NAME__ = __COMMAND__,
 #include "ClientCommands.h"
+    C2S_COMMAND_END,
 };
 
 enum {
 #define S2C_COMMAND(__NAME__, __COMMAND__) \
 	S2C_ ## __NAME__ = __COMMAND__,
 #include "ClientCommands.h"
+    S2C_COMMAND_END,
 };
 
 #pragma pack(pop)

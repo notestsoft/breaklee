@@ -2,6 +2,7 @@
 #include <openssl/rand.h>
 
 #include "Diagnostic.h"
+#include "FileIO.h"
 #include "ParsePrimitives.h"
 #include "Util.h"
 #include "String.h"
@@ -210,9 +211,23 @@ Void ReadConfigString(
     CString Result,
     Int32 ResultLength
 ) {
-#if _WIN32
-    Char AppName[MAX_PATH] = { 0 };
+    FileRef File = FileOpen(FilePath);
+    if (!File) {
+        CStringCopySafe(Result, ResultLength, Default);
+        return;
+    }
 
+    static UInt8 Data[CONFIG_DATA_BUFFER_SIZE] = { 0 };
+    Int32 DataLength = 0;
+    if (!FileReadNoAlloc(File, Data, CONFIG_DATA_BUFFER_SIZE, &DataLength) || Data == NULL) {
+        CStringCopySafe(Result, ResultLength, Default);
+        FileClose(File);
+        return;
+    }
+
+    Char AppName[MAX_PATH] = { 0 };
+    Char KeyName[MAX_PATH] = { 0 };
+    Char Line[MAX_PATH] = { 0 };
     Int32 AppNameLength = 0;
     CString Cursor = strchr(KeyPath, '.');
     if (Cursor) {
@@ -223,22 +238,73 @@ Void ReadConfigString(
 
     Int32 KeyNameOffset = AppNameLength + 1;
     Int32 KeyNameLength = strlen(KeyPath) - KeyNameOffset;
-    Char KeyName[MAX_PATH] = { 0 };
     memcpy(KeyName, KeyPath + KeyNameOffset, KeyNameLength);
     KeyName[KeyNameLength] = '\0';
 
-    GetPrivateProfileStringA(
-        AppName,
-        KeyName,
-        Default,
-        Result,
-        ResultLength,
-        FilePath
-    );
-#else
-#warning Add ini parsing for non Win32 system
-    CStringCopySafe(Result, ResultLength, Default);
-#endif
+    Int32 FoundSection = 0;
+    Int32 FoundKey = 0;
+    Char* DataBegin = (Char*)Data;
+    Char* DataEnd = DataBegin + DataLength;
+    while (DataBegin < DataEnd) {
+        Char* NewLine = strchr(DataBegin, '\n');
+        if (!NewLine) NewLine = DataEnd;
+
+        Int32 LineLength = NewLine - DataBegin;
+        if (LineLength > 0 && LineLength < MAX_PATH) {
+            strncpy(Line, DataBegin, LineLength);
+            Line[LineLength] = '\0';
+
+            Char* Trimmed = Line;
+            while (*Trimmed == ' ' || *Trimmed == '\t' || *Trimmed == '\n' || *Trimmed == '\r') Trimmed++;
+
+            if (*Trimmed == '\0' || *Trimmed == ';' || *Trimmed == '#') {
+                DataBegin = NewLine + 1;
+                continue;
+            }
+
+            if (*Trimmed == '[') {
+                Char* EndBracket = strchr(Trimmed, ']');
+                if (EndBracket) {
+                    *EndBracket = '\0';
+                    FoundSection = strcmp(Trimmed + 1, AppName) == 0;
+                }
+
+                DataBegin = NewLine + 1;
+                continue;
+            }
+
+            if (FoundSection) {
+                Char* Equal = strchr(Trimmed, '=');
+                if (Equal) {
+                    *Equal = '\0';
+                    Char* KeyEnd = Equal - 1;
+                    while (*KeyEnd == ' ' || *KeyEnd == '\t') KeyEnd--;
+                    *(KeyEnd + 1) = '\0';
+
+                    if (strcmp(Trimmed, KeyName) == 0) {
+                        CString Value = Equal + 1;
+                        while (*Value == ' ' || *Value == '\t') Value++;
+
+                        Char* ValueEnd = Value + strlen(Value) - 1;
+                        while (*ValueEnd == ' ' || *ValueEnd == '\t' || *ValueEnd == '\n' || *ValueEnd == '\r') ValueEnd--;
+                        *(ValueEnd + 1) = '\0';
+
+                        CStringCopySafe(Result, ResultLength, Value);
+                        FoundKey = 1;
+                        break;
+                    }
+                }
+            }
+        }
+
+        DataBegin = NewLine + 1;
+    }
+
+    if (!FoundKey) {
+        CStringCopySafe(Result, ResultLength, Default);
+    }
+
+    FileClose(File);
 }
 
 Void ReadConfigCharArray(

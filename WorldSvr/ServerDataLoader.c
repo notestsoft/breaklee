@@ -940,6 +940,8 @@ Bool ServerLoadMobData(
     UInt8* Memory = NULL;
     Int32 MemoryLength;
     FileRef File = FileOpen(FilePath);
+    if (!File) return false;
+
     FileRead(File, &Memory, &MemoryLength);
 
     struct _ArchiveMobData* ArchiveMobMemory = (struct _ArchiveMobData*)Memory;

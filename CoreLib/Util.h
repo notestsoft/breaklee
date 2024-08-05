@@ -4,6 +4,8 @@
 
 EXTERN_C_BEGIN
 
+#define CONFIG_DATA_BUFFER_SIZE 4096
+
 #define BENCHMARK(__NAME__, __CODE__) \
 do { \
     LARGE_INTEGER _Start, _End, _Freq; \
