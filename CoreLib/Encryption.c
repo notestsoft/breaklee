@@ -49,7 +49,7 @@ Bool EncryptionLoadLibrary() {
 #ifdef __APPLE__
     Library = dlopen("zlib.dylib", RTLD_LAZY);
 #else
-    Library = dlopen("zlib.so", RTLD_LAZY);
+    Library = dlopen("libz.so", RTLD_LAZY);
 #endif
     if (!Library) return false;
 

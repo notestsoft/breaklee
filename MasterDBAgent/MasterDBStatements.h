@@ -9,9 +9,9 @@ STATEMENT(
 
 STATEMENT(
     MASTERDB_SELECT_ACCOUNT_BY_ID, 
-    "SELECT `account_id`, `session_ip`, `session_timeout`, `character_password`, `character_question`, `character_answer`, `created_at`, `updated_at`, `accountinfo`.`data` AS `accountinfo_data` "
+    "SELECT `account_id`, `session_ip`, `session_timeout`, `character_password`, `character_question`, `character_answer`, `created_at`, `updated_at`, `AccountInfo`.`data` AS `AccountInfo_data` "
     "FROM `accounts` "
-    "LEFT JOIN `accountaccountinfo` AS `accountinfo` ON `accountinfo`.`accountid` = `accounts`.`account_id` "
+    "LEFT JOIN `AccountAccountInfo` AS `AccountInfo` ON `AccountInfo`.`AccountID` = `accounts`.`account_id` "
     "WHERE `account_id` = ?;"
 )
 
@@ -44,9 +44,9 @@ STATEMENT(
     MASTERDB_SELECT_CHARACTER_INDEX_BY_ACCOUNT,
     "SELECT `characters`.`account_id`, `characters`.`id`, `characters`.`name`, `characters`.`index`, `info`.`data` AS `info_data`, `equipment`.`data` AS `equipment_data`, `overlordmastery`.`data` AS `overlordmastery_data`, `characters`.`created_at`, `characters`.`updated_at` "
     "FROM `characters` "
-    "LEFT JOIN `characterinfo` AS `info` ON `info`.`characterid` = `characters`.`id` "
-    "LEFT JOIN `characterequipmentinfo` AS `equipment` ON `equipment`.`characterid` = `characters`.`id` "
-    "LEFT JOIN `characteroverlordmasteryinfo` AS `overlordmastery` ON `overlordmastery`.`characterid` = `characters`.`id` "
+    "LEFT JOIN `CharacterInfo` AS `info` ON `info`.`CharacterID` = `characters`.`id` "
+    "LEFT JOIN `CharacterEquipmentInfo` AS `equipment` ON `equipment`.`CharacterID` = `characters`.`id` "
+    "LEFT JOIN `CharacterOverlordMasteryInfo` AS `overlordmastery` ON `overlordmastery`.`CharacterID` = `characters`.`id` "
     "WHERE `characters`.`account_id` = ? ;"
 )
 

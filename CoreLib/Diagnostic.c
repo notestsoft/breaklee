@@ -114,7 +114,14 @@ Void DiagnosticSetupLogFile(
 ) {
     Char Buffer[MAX_PATH] = { 0 };
     CString WorkingDirectory = PathGetCurrentDirectory(Buffer, MAX_PATH);
-    CString FilePath = CStringFormat("%s\\Logs\\%s_%d.log", WorkingDirectory, Namespace, (Int32)PlatformGetTickCount());
+    CString FilePath = CStringFormat(
+        "%s%cLogs%c%s_%d.log", 
+        WorkingDirectory, 
+        PLATFORM_PATH_SEPARATOR, 
+        PLATFORM_PATH_SEPARATOR, 
+        Namespace, 
+        (Int32)PlatformGetTickCount()
+    );
 
     if (!DirectoryCreate("Logs")) {
         Error("Error creating directory!\n");
