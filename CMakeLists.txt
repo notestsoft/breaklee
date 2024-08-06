@@ -68,8 +68,9 @@ else()
 
 	if(APPLE)
 		set(MARIADB_INCLUDE_NAME mysql)
-		add_definitions(-DUSE_MYSQL_INCLUDE)
 	endif()
+
+    add_definitions(-DUSE_MYSQL_INCLUDE)
 
 	find_path(MARIADB_INCLUDE_DIR NAMES ${MARIADB_INCLUDE_NAME}/mysql.h)
 	find_library(MARIADB_LIBRARY NAMES mariadb)

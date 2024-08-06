@@ -792,16 +792,15 @@ Bool ServerLoadItemData(
         Int32 BufferLength = 0;
 
         if (!EncryptionDecryptFile(FilePath, &Buffer, &BufferLength)) {
-            Error("Error loading file: %s", FilePath);
+            Fatal("Error loading file: %s", FilePath);
             goto error;
         }
 
-        struct _ArchiveItemData* ItemData = (struct _ArchiveItemData*)Buffer;
         Int32 ItemCount = BufferLength / sizeof(struct _ArchiveItemData);
         for (Int32 Index = 0; Index < ItemCount; Index += 1) {
             assert(Runtime->ItemDataCount < RUNTIME_MEMORY_MAX_ITEM_DATA_COUNT);
 
-            struct _ArchiveItemData* ArchiveItemData = &ItemData[Index];
+            struct _ArchiveItemData* ArchiveItemData = (struct _ArchiveItemData*)(Buffer + sizeof(struct _ArchiveItemData) * Index);
             RTItemDataRef ItemData = &Runtime->ItemData[Runtime->ItemDataCount];
             ItemData->ItemID = ArchiveItemData->ItemID;
             ItemData->ItemType = ArchiveItemData->ItemType;
