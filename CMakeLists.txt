@@ -121,10 +121,6 @@ add_library(RuntimeLib STATIC ${RUNTIME_LIB_HEADERS} ${RUNTIME_LIB_SOURCES})
 target_include_directories(RuntimeLib PUBLIC ${PROJECT_SOURCE_DIR} ${LUA_INCLUDE_DIR})
 target_link_libraries(RuntimeLib CoreLib RuntimeDataLib ${LUA_LIBRARY})
 
-if(NOT WIN32)
-	target_link_libraries(RuntimeLib m)
-endif()
-
 if(CONFIG_BUILD_TARGET_AUCTION_SVR)
     set(AUCTION_SVR_DIR ${PROJECT_SOURCE_DIR}/AuctionSvr)
     
@@ -263,5 +259,16 @@ if(CONFIG_BUILD_TARGET_WORLD_SVR)
 
     if(WIN32)
         target_link_libraries(WorldSvr ${WORLD_SVR_DIR}/main.res)
+    endif()
+endif()
+
+if(NOT WIN32)
+    target_link_libraries(CoreLib m)
+    target_link_libraries(NetLib m)
+    target_link_libraries(RuntimeDataLib m)
+    target_link_libraries(RuntimeLib m)
+
+    if(CONFIG_BUILD_TARGET_LOGIN_SVR)
+        target_link_libraries(LoginSvr m)
     endif()
 endif()
