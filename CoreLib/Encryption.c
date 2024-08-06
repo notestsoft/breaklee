@@ -34,39 +34,42 @@ static zlib_inflate_end_proc InflateEnd = zlib_inflate_end_stub;
 Bool EncryptionLoadLibrary() {
 #ifdef _WIN32
     Library = LoadLibrary(TEXT("zlib.dll"));
-    if (!Library) return false;
+    if (!Library) {
+        fprintf(stderr, "LoadLibrary failed: %lu\n", GetLastError());
+        return false;
+    }
 
-    zlib_inflate_init_proc InflateInitProc = (zlib_inflate_init_proc)GetProcAddress(Library, (LPCSTR)("inflateInit2_"));
-    zlib_inflate_proc InflateProc = (zlib_inflate_proc)GetProcAddress(Library, (LPCSTR)("inflate"));
-    zlib_inflate_end_proc InflateEndProc = (zlib_inflate_end_proc)GetProcAddress(Library, (LPCSTR)("inflateEnd"));
+    InflateInit = (zlib_inflate_init_proc)GetProcAddress(Library, "inflateInit2_");
+    Inflate = (zlib_inflate_proc)GetProcAddress(Library, "inflate");
+    InflateEnd = (zlib_inflate_end_proc)GetProcAddress(Library, "inflateEnd");
 
-    if (!InflateInitProc || !InflateProc || !InflateEndProc) {
+    if (!InflateInit || !Inflate || !InflateEnd) {
+        Error("GetProcAddress failed: %lu\n", GetLastError());
         FreeLibrary(Library);
         Library = NULL;
         return false;
     }
 #else
-#ifdef __APPLE__
-    Library = dlopen("zlib.dylib", RTLD_LAZY);
-#else
     Library = dlopen("libz.so", RTLD_LAZY);
-#endif
-    if (!Library) return false;
+    if (!Library) {
+        Char* Message = dlerror();
+        Error("dlopen failed: %s\n", Message ? Message : "Unknown error");
+        return false;
+    }
 
-    zlib_inflate_init_proc InflateInitProc = dlsym(Library, "inflateInit2_");
-    zlib_inflate_proc InflateProc = dlsym(Library, "inflate");
-    zlib_inflate_end_proc InflateEndProc = dlsym(Library, "inflateEnd");
+    InflateInit = (zlib_inflate_init_proc)dlsym(Library, "inflateInit2_");
+    Inflate = (zlib_inflate_proc)dlsym(Library, "inflate");
+    InflateEnd = (zlib_inflate_end_proc)dlsym(Library, "inflateEnd");
 
-    if (!InflateInitProc || !InflateProc || !InflateEndProc) {
+    if (!InflateInit || !Inflate || !InflateEnd) {
+        Char* Message = dlerror();
+        Error("dlsym failed: %s\n", Message ? Message : "Unknown error");
         dlclose(Library);
         Library = NULL;
         return false;
     }
 #endif
 
-    InflateInit = InflateInitProc;
-    Inflate = InflateProc;
-    InflateEnd = InflateEndProc;
     return true;
 }
 

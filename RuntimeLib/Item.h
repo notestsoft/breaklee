@@ -333,8 +333,6 @@ struct _RTItemData {
 		struct { Int32 ExtendedOptions[6]; };
 	};
 
-    Int32 Width;
-    Int32 Height;
 	Int32 MaxStackSize;
 	Int32 UniqueGrade;
 	Int32 MasterGrade;

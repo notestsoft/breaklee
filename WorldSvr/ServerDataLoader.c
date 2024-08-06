@@ -26,12 +26,7 @@ struct _ArchiveItemData {
     UInt8 UnknownB;
     Int32 BuyPrice;
     Int32 SellPrice;
-
-    struct {
-        UInt32 Height : 2;
-        UInt32 Width : 2;
-    } SlotSize;
-
+    UInt32 SlotSize; // 2bit height // 2bit width
     Int32 Level;
     Int32 Options[22];
     UInt32 Property;
@@ -809,8 +804,6 @@ Bool ServerLoadItemData(
             ItemData->BuyPrice = 0;
             ItemData->MinLevel = ArchiveItemData->MinLevel;
             memcpy(ItemData->Options, ArchiveItemData->Options, sizeof(ArchiveItemData->Options));
-            ItemData->Width = ArchiveItemData->SlotSize.Width;
-            ItemData->Height = ArchiveItemData->SlotSize.Height;
             ItemData->MaxStackSize = ArchiveItemData->MaxStackSize;
             ItemData->UniqueGrade = ArchiveItemData->UniqueGrade;
             ItemData->MasterGrade = ArchiveItemData->MeisterGrade;
