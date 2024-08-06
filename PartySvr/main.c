@@ -100,12 +100,12 @@ Void ServerOnUpdate(
 }
 
 Int32 main(Int32 argc, CString* argv) {
-    DiagnosticSetupLogFile("PartySvr", LOG_LEVEL_TRACE, NULL, NULL);
-
     Char Buffer[MAX_PATH] = { 0 };
     CString WorkingDirectory = PathGetCurrentDirectory(Buffer, MAX_PATH);
     CString ConfigFilePath = PathCombineNoAlloc(WorkingDirectory, "PartySvr.ini");
     ServerConfig Config = ServerConfigLoad(ConfigFilePath);
+
+    DiagnosticSetupLogFile(argv[0], Config.PartySvr.LogLevel, NULL, NULL);
 
     AllocatorRef Allocator = AllocatorGetSystemDefault();
     struct _ServerContext ServerContext = { 0 };

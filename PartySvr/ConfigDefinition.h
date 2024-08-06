@@ -21,6 +21,7 @@ CONFIG_PARAMETER(UInt16, Port, "PartySvr.Port", 38190)
 CONFIG_PARAMETER(Int32, MaxConnectionCount, "PartySvr.MaxConnectionCount", 64)
 CONFIG_PARAMETER(Int32, MaxPartyCount, "PartySvr.MaxPartyCount", 64)
 CONFIG_PARAMETER(UInt64, PartyInvitationTimeout, "PartySvr.PartyInvitationTimeout", 60000)
+CONFIG_PARAMETER(Int32, LogLevel, "WorldSvr.LogLevel", 5)
 CONFIG_END(PartySvr)
 
 CONFIG_BEGIN(MasterSvr)

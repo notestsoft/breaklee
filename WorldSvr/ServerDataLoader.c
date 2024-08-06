@@ -810,14 +810,10 @@ Bool ServerLoadItemData(
             ItemData->EnchantCodeLink = ArchiveItemData->EnchantCodeLink;
             memcpy(ItemData->ExtendedOptions, ArchiveItemData->ExtendedOptions, sizeof(ArchiveItemData->ExtendedOptions));
             Runtime->ItemDataCount += 1;
-
-            Trace("Loaded ItemData(%ld)", ItemData->ItemID);
         }
 
         free(Buffer);
     }
-
-    Trace("ItemData count: %d", Runtime->ItemDataCount);
 
     return true;
 

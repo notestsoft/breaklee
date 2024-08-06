@@ -14,6 +14,13 @@
 #endif
 #endif
 
+Void _DefaultDiagnosticHandler(
+    FILE* Output,
+    Int32 Level,
+    CString Message,
+    Void* Context
+);
+
 struct _DiagnosticEngine {
     FILE* Output;
     FILE* Error;
@@ -29,7 +36,7 @@ struct _DiagnosticEngine {
 static struct _DiagnosticEngine kDiagnosticEngine = {
     .Output = NULL,
     .Level = LOG_LEVEL_TRACE,
-    .Handler = NULL,
+    .Handler = _DefaultDiagnosticHandler,
     .Context = NULL,
     .Handle = NULL,
     .Colors = { 30, 41, 31, 33, 90, 46 },
@@ -58,27 +65,10 @@ Void _DefaultDiagnosticHandler(
     pthread_t ThreadID = pthread_self();
 #endif
 
-    fprintf(
-        Output,
-        "\033[%dm[%d-%02d-%02d %02d:%02d:%02d][Thread: %lu] [%s] : %s\033[0m\n",
-        kDiagnosticEngine.Colors[Level],
-        NowTm.tm_year + 1900, 
-        NowTm.tm_mon + 1, 
-        NowTm.tm_mday,
-        NowTm.tm_hour, 
-        NowTm.tm_min,
-        NowTm.tm_sec,
-        (unsigned long)ThreadID,
-        kDiagnosticEngine.Labels[Level],
-        Message
-    );
-
-    if (Output != stdout && Output != stderr) {
-        FILE* Stdout = (Level <= LOG_LEVEL_ERROR) ? stderr : stdout;
-
+    if (Output) {
         fprintf(
-            Stdout,
-            "\033[%dm[%d-%02d-%02d %02d:%02d:%02d] [%s] : %s\033[0m\n",
+            Output,
+            "\033[%dm[%d-%02d-%02d %02d:%02d:%02d][Thread: %lu] [%s] : %s\033[0m\n",
             kDiagnosticEngine.Colors[Level],
             NowTm.tm_year + 1900,
             NowTm.tm_mon + 1,
@@ -86,6 +76,26 @@ Void _DefaultDiagnosticHandler(
             NowTm.tm_hour,
             NowTm.tm_min,
             NowTm.tm_sec,
+            (unsigned long)ThreadID,
+            kDiagnosticEngine.Labels[Level],
+            Message
+        );
+    }
+
+    if (Output != stdout && Output != stderr) {
+        FILE* Stdout = (Level <= LOG_LEVEL_ERROR) ? stderr : stdout;
+
+        fprintf(
+            Stdout,
+            "\033[%dm[%d-%02d-%02d %02d:%02d:%02d][Thread: %lu] [%s] : %s\033[0m\n",
+            kDiagnosticEngine.Colors[Level],
+            NowTm.tm_year + 1900,
+            NowTm.tm_mon + 1,
+            NowTm.tm_mday,
+            NowTm.tm_hour,
+            NowTm.tm_min,
+            NowTm.tm_sec,
+            (unsigned long)ThreadID,
             kDiagnosticEngine.Labels[Level],
             Message
         );

@@ -132,8 +132,6 @@ Void ServerOnUpdate(
 }
 
 Int32 main(Int32 ArgumentCount, CString* Arguments) {
-    DiagnosticSetupLogFile("WorldSvr", LOG_LEVEL_TRACE, NULL, NULL);
-
     CString ConfigFileName = "WorldSvr.ini";
     if (ArgumentCount > 1) {
         ConfigFileName = Arguments[1];
@@ -147,6 +145,8 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     CString WorkingDirectory = PathGetCurrentDirectory(Buffer, MAX_PATH);
     CString ConfigFilePath = PathCombineNoAlloc(WorkingDirectory, ConfigFileName);
     ServerConfig Config = ServerConfigLoad(ConfigFilePath);
+
+    DiagnosticSetupLogFile(Arguments[0], Config.WorldSvr.LogLevel, NULL, NULL);
 
     AllocatorRef Allocator = AllocatorGetSystemDefault();
     struct _ServerContext ServerContext = { 0 };

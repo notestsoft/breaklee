@@ -34,6 +34,7 @@ CONFIG_PARAMETER(Bool, DBSyncTimer, "WorldSvr.DBSyncTimer", 1000)
 CONFIG_PARAMETER(UInt64, UserListBroadcastInterval, "WorldSvr.UserListBroadcastInterval", 1000)
 CONFIG_PARAMETER(UInt64, WorldItemDespawnInterval, "WorldSvr.WorldItemDespawnInterval", 30000)
 CONFIG_PARAMETER(Int32, NewbieSupportTimeout, "Environment.NewbieSupportTimeout", 10080)
+CONFIG_PARAMETER(Int32, LogLevel, "WorldSvr.LogLevel", 5)
 CONFIG_END(WorldSvr)
 
 CONFIG_BEGIN(Environment)

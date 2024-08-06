@@ -115,12 +115,12 @@ Void ContextAddCaptchaFile(
 }
 
 Int32 main(Int32 argc, CString* argv) {
-    DiagnosticSetupLogFile("LoginSvr", LOG_LEVEL_TRACE, NULL, NULL);
-
     Char Buffer[MAX_PATH] = { 0 };
     CString WorkingDirectory = PathGetCurrentDirectory(Buffer, MAX_PATH);
     CString ConfigFilePath = PathCombineNoAlloc(WorkingDirectory, "LoginSvr.ini");
     ServerConfig Config = ServerConfigLoad(ConfigFilePath);
+
+    DiagnosticSetupLogFile(argv[0], Config.Login.LogLevel, NULL, NULL);
 
     AllocatorRef Allocator = AllocatorGetSystemDefault();
     struct _ServerContext ServerContext = { 0 };

@@ -16,6 +16,7 @@
 
 CONFIG_BEGIN(MasterDBAgent)
 CONFIG_PARAMETER(UInt8, GroupIndex, "MasterDBAgent.GroupIndex", 21)
+CONFIG_PARAMETER(Int32, LogLevel, "WorldSvr.LogLevel", 5)
 CONFIG_END(MasterDBAgent)
 
 CONFIG_BEGIN(Database)
