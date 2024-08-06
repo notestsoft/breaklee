@@ -3,7 +3,7 @@
 #pragma pack(push, 1)
 
 struct _ArchiveItemData {
-    Int32 ItemID;
+    UInt32 ItemID;
     Char VisualID[60];
     Char ItemName[60];
     Char ItemDescription[60];
@@ -798,7 +798,6 @@ Bool ServerLoadItemData(
 
         struct _ArchiveItemData* ItemData = (struct _ArchiveItemData*)Buffer;
         Int32 ItemCount = BufferLength / sizeof(struct _ArchiveItemData);
-
         for (Int32 Index = 0; Index < ItemCount; Index += 1) {
             assert(Runtime->ItemDataCount < RUNTIME_MEMORY_MAX_ITEM_DATA_COUNT);
 
@@ -819,10 +818,14 @@ Bool ServerLoadItemData(
             ItemData->EnchantCodeLink = ArchiveItemData->EnchantCodeLink;
             memcpy(ItemData->ExtendedOptions, ArchiveItemData->ExtendedOptions, sizeof(ArchiveItemData->ExtendedOptions));
             Runtime->ItemDataCount += 1;
+
+            Trace("Loaded ItemData(%ld)", ItemData->ItemID);
         }
 
         free(Buffer);
     }
+
+    Trace("ItemData count: %d", Runtime->ItemDataCount);
 
     return true;
 
