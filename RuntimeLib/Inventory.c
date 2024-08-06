@@ -125,7 +125,7 @@ Bool RTInventorySetSlot(
 	RTCharacterInventoryInfoRef Inventory,
 	RTItemSlotRef Slot
 ) {
-	Info("InventorySetSlot(%llu, %llu, %d, %d)", Slot->Item.Serial, Slot->ItemOptions, Slot->ItemDuration, Slot->SlotIndex);
+	Info("InventorySetSlot(%llu, %llu, %d, %d)", Slot->Item.Serial, Slot->ItemOptions, Slot->ItemDuration.Serial, Slot->SlotIndex);
     assert(Inventory);
 	assert(0 <= Slot->SlotIndex && Slot->SlotIndex < RUNTIME_INVENTORY_TOTAL_SIZE);
 

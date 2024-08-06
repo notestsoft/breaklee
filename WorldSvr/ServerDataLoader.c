@@ -786,9 +786,6 @@ Bool ServerLoadItemData(
         "item4.enc"
     };
 
-    ArchiveRef Messages = ArchiveCreateEmpty(Context->Runtime->Allocator);
-    Bool Success = ArchiveLoadFromFile(Messages, PathCombineNoAlloc(RuntimeDirectory, "Language\\Korean\\cabal_msg.enc.xml"), false);
-
     for (Int32 FileIndex = 0; FileIndex < 4; FileIndex++) {
         Char FilePath[MAX_PATH];
         PathCombine(RuntimeDirectory, FileNames[FileIndex], FilePath);
@@ -823,105 +820,10 @@ Bool ServerLoadItemData(
             ItemData->EnchantCodeLink = ArchiveItemData->EnchantCodeLink;
             memcpy(ItemData->ExtendedOptions, ArchiveItemData->ExtendedOptions, sizeof(ArchiveItemData->ExtendedOptions));
             Runtime->ItemDataCount += 1;
-
-            if (ArchiveItemData->ItemType == RUNTIME_ITEM_TYPE_CHAOS_SAFEGUARD) {
-                Trace("ChaosSafeGuard(%d, %d, %s)",
-                    ItemData->ItemID,
-                    ArchiveItemData->Options[0],
-                    GetItemDescription(Messages, ArchiveItemData->ItemName)
-                );
-            }
-            /*
-            if (ArchiveItemData->MeisterGrade > 0) {
-                Trace("Meister(%d, %d, %s)",
-                    ItemData->ItemID,
-                    ArchiveItemData->MeisterGrade,
-                    GetItemDescription(Messages, ArchiveItemData->ItemName)
-                );
-            }
-
-            if (
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_WEAPON_FORCE_CONTROLLER ||
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_WEAPON_ONE_HAND ||
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_WEAPON_TWO_HAND ||
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_CHAKRAM
-            ) {
-                Trace("Weapon(%d) : Options(%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
-                    ItemData->ItemID,
-                    ItemData->Weapon.UnknownOptions1[0],
-                    ItemData->Weapon.UnknownOptions1[1],
-                    ItemData->Weapon.UnknownOptions1[2],
-                    ItemData->Weapon.UnknownOptions1[3],
-                    ItemData->Weapon.UnknownOptions1[4],
-                    ItemData->Weapon.UnknownOptions1[5],
-                    ItemData->Weapon.UnknownOptions2[0],
-                    ItemData->Weapon.UnknownOptions2[1],
-                    ItemData->Weapon.UnknownOptions2[2],
-                    ItemData->Weapon.UnknownOptions2[3],
-                    ItemData->Weapon.UnknownOptions2[4],
-                    ItemData->Weapon.UnknownOptions2[5]
-                );
-            }
-
-            if (
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_SUIT ||
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_GLOVES ||
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_BOOTS ||
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_HELMED1 ||
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_VEHICLE_BIKE ||
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_VEHICLE_BOARD
-            ) {
-                    Trace("Armor(%d) : Options(%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
-                        ItemData->ItemID,
-                        ItemData->Armor.UnknownOptions1[0],
-                        ItemData->Armor.UnknownOptions1[1],
-                        ItemData->Armor.UnknownOptions1[2],
-                        ItemData->Armor.UnknownOptions1[3],
-                        ItemData->Armor.UnknownOptions1[4],
-                        ItemData->Armor.UnknownOptions1[5],
-                        ItemData->Armor.UnknownOptions2[0],
-                        ItemData->Armor.UnknownOptions2[1],
-                        ItemData->Armor.UnknownOptions2[2],
-                        ItemData->Armor.UnknownOptions2[3],
-                        ItemData->Armor.UnknownOptions2[4],
-                        ItemData->Armor.UnknownOptions2[5]
-                    );
-                
-            }
-
-            if (
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_AMULET ||
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_BELT ||
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_BOOTS ||
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_BRACELET ||
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_BROOCH ||
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_CHARM ||
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_CREST ||
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_EARRING ||
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_EPAULET ||
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_RING ||
-                ItemData->ItemType == RUNTIME_ITEM_TYPE_ARTIFACT
-            ) {
-                    Trace("Accessory(%d) : Options(%d, %d, %d, %d, %d, %d, %d, %d, %d)",
-                        ItemData->ItemID,
-                        ItemData->Accessory.UnknownOptions1[0],
-                        ItemData->Accessory.UnknownOptions1[1], // Accessory Epaulet Dmg reduction
-                        ItemData->Accessory.UnknownOptions1[2],
-                        ItemData->Accessory.UnknownOptions2[0],
-                        ItemData->Accessory.UnknownOptions2[1],
-                        ItemData->Accessory.UnknownOptions2[2],
-                        ItemData->Accessory.UnknownOptions2[3],
-                        ItemData->Accessory.UnknownOptions2[4],
-                        ItemData->Accessory.UnknownOptions2[5]
-                    );
-            }
-                */
         }
 
         free(Buffer);
     }
-
-    ArchiveDestroy(Messages);
 
     return true;
 
