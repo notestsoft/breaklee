@@ -786,14 +786,13 @@ Bool ServerLoadItemData(
         "item4.enc"
     };
 
-    for (Int32 FileIndex = 0; FileIndex < 4; FileIndex++) {
-        Char FilePath[MAX_PATH];
-        PathCombine(RuntimeDirectory, FileNames[FileIndex], FilePath);
-
+    for (Int32 FileIndex = 0; FileIndex < 4; FileIndex += 1) {
+        CString FilePath = PathCombineNoAlloc(RuntimeDirectory, FileNames[FileIndex]);
         UInt8* Buffer = NULL;
         Int32 BufferLength = 0;
 
         if (!EncryptionDecryptFile(FilePath, &Buffer, &BufferLength)) {
+            Error("Error loading file: %s", FilePath);
             goto error;
         }
 

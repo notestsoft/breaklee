@@ -129,8 +129,6 @@ Bool RTInventorySetSlot(
     assert(Inventory);
 	assert(0 <= Slot->SlotIndex && Slot->SlotIndex < RUNTIME_INVENTORY_TOTAL_SIZE);
 
-	assert(RTRuntimeGetItemDataByIndex(Runtime, Slot->Item.ID));
-
 	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, Slot->Item.ID);
 	assert(ItemData);
 

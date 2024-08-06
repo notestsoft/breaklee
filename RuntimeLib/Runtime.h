@@ -150,7 +150,7 @@ RTWorldItemRef RTRuntimeGetItem(
 
 RTItemDataRef RTRuntimeGetItemDataByIndex(
     RTRuntimeRef Runtime,
-    Int32 ItemIndex
+    UInt32 ItemIndex
 );
 
 RTQuestDataRef RTRuntimeGetQuestByIndex(

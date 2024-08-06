@@ -219,7 +219,7 @@ RTWorldItemRef RTRuntimeGetItem(
 
 RTItemDataRef RTRuntimeGetItemDataByIndex(
     RTRuntimeRef Runtime,
-    Int32 ItemIndex
+    UInt32 ItemIndex
 ) {
     UInt32 ItemID = (ItemIndex & RUNTIME_ITEM_MASK_INDEX);
     for (Int32 Index = 0; Index < Runtime->ItemDataCount; Index++) {
