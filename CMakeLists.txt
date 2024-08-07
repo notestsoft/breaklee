@@ -62,7 +62,7 @@ if(WIN32)
 else()
     find_package(Lua 5.4.2 EXACT REQUIRED) 
 	find_package(ZLIB 1.2.8 EXACT REQUIRED)
-	find_package(OpenSSL 1.1.1l EXACT REQUIRED)
+	find_package(OpenSSL 1.1.1 EXACT REQUIRED)
 
 	set(MARIADB_INCLUDE_NAME mariadb)
 
