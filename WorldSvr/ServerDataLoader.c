@@ -1042,17 +1042,15 @@ Bool ServerLoadWorldData(
     Int32 GpsOrder = 0;
     Int32 WarAllowed = 0;
     Int32 WarControl = 0;
-    Char MapFileName[MAX_PATH];
-    Char MapFilePath[MAX_PATH];
 
     for (Index WorldIndex = 0; WorldIndex < Runtime->WorldManager->MaxWorldDataCount; WorldIndex += 1) {
         if (!RTWorldDataExists(Runtime->WorldManager, WorldIndex)) continue;
         
         RTWorldDataRef World = RTWorldDataGet(Runtime->WorldManager, WorldIndex);
 
-        Char WorldFilePath[MAX_PATH];
-        Char WorldFileDirectory[MAX_PATH];
-        Char WorldFileName[MAX_PATH];
+        Char WorldFilePath[MAX_PATH] = { 0 };
+        Char WorldFileDirectory[MAX_PATH] = { 0 };
+        Char WorldFileName[MAX_PATH] = { 0 };
 
         sprintf(WorldFileName, "world%zu.enc", World->WorldIndex);
         PathCombine(RuntimeDirectory, "World", WorldFileDirectory);
@@ -1092,9 +1090,14 @@ Bool ServerLoadWorldData(
         if (WarControl) World->Flags |= RUNTIME_WORLD_FLAGS_WAR_CONTROL;
 
         if (strlen(MapFileName) > 0) {
-            PathCombine(RuntimeDirectory, "Map", MapFilePath);
-            PathCombine(MapFilePath, MapFileName, MapFilePath);
-            Info("Loading map file: %s", MapFileName);
+            Char MapFilePath[MAX_PATH] = { 0 };
+            Char MapFileDirectory[MAX_PATH] = { 0 };
+            Char MapFileName[MAX_PATH] = { 0 };
+
+            sprintf(MapFileName, "world%zu.enc", World->WorldIndex);
+            PathCombine(RuntimeDirectory, "Map", MapFileDirectory);
+            PathCombine(MapFileDirectory, MapFileName, MapFilePath);
+            Info("Loading map file: %s", MapFilePath);
 
             FileRef MapFile = FileOpen(MapFilePath);
             if (!MapFile) goto error;
@@ -1196,6 +1199,7 @@ Bool ServerLoadWorldData(
         Char MobScriptFilePath[MAX_PATH];
         sprintf(MobFileName, "world%zu-mmap.xml", World->WorldIndex);
         PathCombine(ServerDirectory, MobFileName, MobFilePath);
+        Info("Loading mmap file: %s", MobFilePath);
         if (FileExists(MobFilePath)) {
             if (!ArchiveLoadFromFile(Archive, MobFilePath, false)) goto error;
 
@@ -1247,6 +1251,7 @@ Bool ServerLoadWorldData(
 
         sprintf(DropWorldFileName, "world%zu-terrain-world.xml", World->WorldIndex);
         PathCombine(ServerDirectory, DropWorldFileName, DropWorldFilePath);
+        Info("Loading terrain file: %s", DropWorldFilePath);
         if (FileExists(DropWorldFilePath)) {
             if (!ArchiveLoadFromFile(Archive, DropWorldFilePath, false)) goto error;
 
@@ -1281,6 +1286,7 @@ Bool ServerLoadWorldData(
 
         sprintf(DropMobFileName, "world%zu-terrain-mob.xml", World->WorldIndex);
         PathCombine(ServerDirectory, DropMobFileName, DropMobFilePath);
+        Info("Loading terrain mob file: %s", DropMobFilePath);
         if (FileExists(DropMobFilePath)) {
             if (!ArchiveLoadFromFile(Archive, DropMobFilePath, false)) goto error;
 
@@ -1323,6 +1329,7 @@ Bool ServerLoadWorldData(
 
         sprintf(DropQuestFileName, "world%zu-terrain-quest.xml", World->WorldIndex);
         PathCombine(ServerDirectory, DropQuestFileName, DropQuestFilePath);
+        Info("Loading terrain quest file: %s", DropQuestFilePath);
         if (FileExists(DropQuestFilePath)) {
             if (!ArchiveLoadFromFile(Archive, DropQuestFilePath, false)) goto error;
 
