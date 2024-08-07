@@ -263,7 +263,7 @@ if(CONFIG_BUILD_TARGET_WORLD_SVR)
 endif()
 
 if(NOT WIN32)
-    target_link_libraries(CoreLib m)
+    target_link_libraries(CoreLib m dl)
     target_link_libraries(NetLib m)
     target_link_libraries(RuntimeDataLib m)
     target_link_libraries(RuntimeLib m)
