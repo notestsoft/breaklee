@@ -1042,6 +1042,7 @@ Bool ServerLoadWorldData(
     Int32 GpsOrder = 0;
     Int32 WarAllowed = 0;
     Int32 WarControl = 0;
+    Char MapFileName[MAX_PATH] = { 0 };
 
     for (Index WorldIndex = 0; WorldIndex < Runtime->WorldManager->MaxWorldDataCount; WorldIndex += 1) {
         if (!RTWorldDataExists(Runtime->WorldManager, WorldIndex)) continue;
@@ -1092,9 +1093,7 @@ Bool ServerLoadWorldData(
         if (strlen(MapFileName) > 0) {
             Char MapFilePath[MAX_PATH] = { 0 };
             Char MapFileDirectory[MAX_PATH] = { 0 };
-            Char MapFileName[MAX_PATH] = { 0 };
 
-            sprintf(MapFileName, "world%zu.enc", World->WorldIndex);
             PathCombine(RuntimeDirectory, "Map", MapFileDirectory);
             PathCombine(MapFileDirectory, MapFileName, MapFilePath);
             Info("Loading map file: %s", MapFilePath);
