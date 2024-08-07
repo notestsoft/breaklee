@@ -60,9 +60,9 @@ if(WIN32)
 
 	file(COPY ${RUNTIME_LIBRARIES} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/)
 else()
-    find_package(Lua REQUIRED) 
-	find_package(ZLIB REQUIRED)
-	find_package(OpenSSL REQUIRED)
+    find_package(Lua 5.4.2 EXACT REQUIRED) 
+	find_package(ZLIB 1.2.8 EXACT REQUIRED)
+	find_package(OpenSSL 1.1.1l EXACT REQUIRED)
 
 	set(MARIADB_INCLUDE_NAME mariadb)
 
