@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21.0)
+cmake_minimum_required(VERSION 3.17.5)
 
 project(breaklee VERSION 1.0.0 LANGUAGES C CXX)
 
