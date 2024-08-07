@@ -69,16 +69,23 @@ Void ServerLoadRuntimeData(
         true
     );
     Loaded &= ServerLoadQuestData(Context->Runtime, QuestArchive);
+    if (!Loaded) Fatal("Failed to load runtime quest data!");
     Loaded &= ServerLoadBattleStyleFormulaData(Context->Runtime, RankArchive);
+    if (!Loaded) Fatal("Failed to load runtime battle style formula data!");
     Loaded &= ServerLoadItemData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
+    if (!Loaded) Fatal("Failed to load runtime item data!");
     Loaded &= ServerLoadMobData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
+    if (!Loaded) Fatal("Failed to load runtime mob data!");
     Loaded &= ServerLoadWorldData(Context->Runtime, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, Config.WorldSvr.ScriptDataPath, TerrainArchive, MainArchive, true);
+    if (!Loaded) Fatal("Failed to load runtime world data!");
     Loaded &= ServerLoadCharacterTemplateData(Context, RankArchive, CharacterInitArchive);
+    if (!Loaded) Fatal("Failed to load character init data!");
     Loaded &= ServerLoadSkillData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, SkillArchive);
+    if (!Loaded) Fatal("Failed to load skill data!");
     Loaded &= ServerLoadDungeonData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, Cont1Archive, Cont2Archive, Cont3Archive);
+    if (!Loaded) Fatal("Failed to load dungeon data!");
     Loaded &= ServerLoadWorldDropData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
-    // TODO: Enable file loading check after finishing migration to new data structure!
-    if (!Loaded) Fatal("Runtime data loading failed!");
+    if (!Loaded) Fatal("Failed to load world drop data!");
     /*
     IndexSetRef IndexSet = IndexSetCreate(AllocatorGetDefault(), 256);
 
