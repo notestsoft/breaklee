@@ -179,6 +179,7 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
         Config.MasterSvr.Timeout,
         Config.NetLib.ReadBufferSize,
         Config.NetLib.WriteBufferSize,
+        Config.MasterSvr.LogPackets,
         &ServerOnUpdate,
         &ServerContext
     );

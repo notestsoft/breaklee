@@ -89,6 +89,7 @@ ServerRef ServerCreate(
     Timestamp Timeout,
     Index ReadBufferSize,
     Index WriteBufferSize,
+    Bool LogPackets,
     ServerUpdateCallback OnUpdate,
     Void* ServerContext
 );

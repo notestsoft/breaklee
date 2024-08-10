@@ -59,6 +59,7 @@ Int32 main(Int32 argc, CString* argv) {
         0,
         Config.NetLib.ReadBufferSize,
         Config.NetLib.WriteBufferSize,
+        Config.NetLib.LogPackets,
         &ServerOnUpdate,
         &ServerContext
     );

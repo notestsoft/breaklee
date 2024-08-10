@@ -122,6 +122,7 @@ struct _IPCSocket {
     UInt16 Port;
     Timestamp Timeout;
     Int32 State;
+    Bool LogPackets;
     uv_timer_t* ReconnectTimer;
     IPCPacketBufferRef PacketBuffer;
     IndexSetRef ConnectionIndices;
@@ -160,6 +161,7 @@ IPCSocketRef IPCSocketCreate(
     UInt16 Port,
     Timestamp Timeout,
     Index MaxConnectionCount,
+    Bool LogPackets,
     Void* Userdata
 );
 

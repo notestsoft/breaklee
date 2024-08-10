@@ -91,6 +91,8 @@ Void IPCSocketOnReceived(
 ) {
     IPCNodeContextRef NodeContext = (IPCNodeContextRef)Connection->Userdata;
     
+    if (Socket->LogPackets) IPCPacketLogBytes(Packet);
+
     if (Packet->Command == IPC_COMMAND_REGISTER) {
         if (Packet->Source.Group != Socket->NodeID.Group) goto error;
 
@@ -317,6 +319,7 @@ IPCSocketRef IPCSocketCreate(
     UInt16 Port,
     Timestamp Timeout,
     Index MaxConnectionCount,
+    Bool LogPackets,
     Void* Userdata
 ) {
     if (MaxConnectionCount < 1) {
@@ -342,6 +345,7 @@ IPCSocketRef IPCSocketCreate(
     Socket->NextConnectionID = 1;
     Socket->Timeout = Timeout;
     Socket->State = IPC_SOCKET_STATE_DISCONNECTED;
+    Socket->LogPackets = LogPackets;
     Socket->PacketBuffer = IPCPacketBufferCreate(Allocator, 4, WriteBufferSize);
     Socket->ConnectionIndices = IndexSetCreate(Allocator, MaxConnectionCount);
     Socket->ConnectionPool = MemoryPoolCreate(Allocator, sizeof(struct _IPCSocketConnection), MaxConnectionCount);
@@ -481,6 +485,8 @@ Void IPCSocketSend(
     assert(Socket->State == IPC_SOCKET_STATE_CONNECTED);
     assert(!(Connection->Flags & IPC_SOCKET_CONNECTION_FLAGS_DISCONNECTED));
 
+    if (Socket->LogPackets) IPCPacketLogBytes(Packet);
+
     Int32 MemoryLength = sizeof(struct _IPCSocketConnectionWriteRequest) + Packet->Length;
     UInt8* Memory = AllocatorAllocate(Socket->Allocator, MemoryLength);
     if (!Memory) {
@@ -508,7 +514,7 @@ Void IPCSocketUnicast(
         IPCSocketConnectionRef Connection = IPCSocketGetConnection(Socket, *ConnectionID);
         if (Connection) {
             assert(!(Connection->Flags & IPC_SOCKET_CONNECTION_FLAGS_DISCONNECTED));
-            IPCSocketSend(Socket, Connection, IPCPacket);
+            IPCSocketSend(Socket, Connection, IPCPacket); 
         }
     }
     else if (!IsHost) {

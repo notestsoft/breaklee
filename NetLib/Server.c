@@ -25,6 +25,7 @@ ServerRef ServerCreate(
     Timestamp Timeout,
     Index ReadBufferSize,
     Index WriteBufferSize,
+    Bool LogPackets,
     ServerUpdateCallback OnUpdate,
     Void *ServerContext
 ) {
@@ -45,6 +46,7 @@ ServerRef ServerCreate(
         Port,
         Timeout,
         (Host) ? 1 : IPC_SOCKET_MAX_CONNECTION_COUNT,
+        LogPackets,
         Server
     ); 
 
