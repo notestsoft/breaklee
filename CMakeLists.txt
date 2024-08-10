@@ -107,8 +107,18 @@ add_library(NetLib STATIC ${NET_LIB_HEADERS} ${NET_LIB_SOURCES})
 target_include_directories(NetLib PUBLIC ${PROJECT_SOURCE_DIR} ${LUA_INCLUDE_DIR})
 target_link_libraries(NetLib CoreLib ${LUA_LIBRARY})
 
-if(WIN32) 
-    target_link_libraries(NetLib wsock32 ws2_32)
+set(LIBUV_DIR ${PROJECT_SOURCE_DIR}/Libraries/libuv)
+add_subdirectory(${LIBUV_DIR} ${CMAKE_BINARY_DIR}/libuv)
+
+target_include_directories(CoreLib PUBLIC ${LIBUV_DIR}/include)
+target_link_libraries(CoreLib uv_a)
+
+#target_include_directories(NetLib PUBLIC ${LIBUV_DIR}/include)
+#target_link_libraries(NetLib uv_a)
+
+if(WIN32)
+    target_link_libraries(CoreLib ws2_32 iphlpapi)
+#    target_link_libraries(NetLib ws2_32 iphlpapi)
 endif()
 
 add_library(RuntimeDataLib STATIC ${RUNTIME_DATA_LIB_HEADERS} ${RUNTIME_DATA_LIB_SOURCES})

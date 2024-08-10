@@ -19,6 +19,8 @@ typedef SSIZE_T ssize_t;
 #endif
 
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <windows.h>
 #elif (__linux__)
 #include <linux/limits.h>

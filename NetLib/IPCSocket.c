@@ -1,67 +1,11 @@
 #include "IPCSocket.h"
 
-static Index PacketLogIndex = 0;
-static struct _IPCPacket PacketLog[10000] = { 0 };
+// TODO: Remove usage of malloc for write requests!
 
-Void PrintNodeTable(
-    IPCSocketRef Socket
-) {
-    if (Socket->NodeID.Type != IPC_TYPE_MASTER) return;
-
-    CString IPCTypeNames[] = {
-        "NONE",
-        "AUCTION",
-        "CHAT",
-        "LOGIN",
-        "MASTER",
-        "PARTY",
-        "WORLD",
-        "MASTERDB"
-    };
-
-#ifdef _WIN32
-    system("cls");
-#else
-    system("clear");
-#endif
-
-    printf("+-------+-------+---------------+\n");
-    printf("| Type  | Group |     Index     |\n");
-    printf("+-------+-------+---------------+\n");
-
-    DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(Socket->NodeTable);
-    while (Iterator.Key) {
-        IPCNodeID Node = { 0 };
-        Node.Serial = *(Index*)Iterator.Key;
-
-        printf("|   %d   |   %d   | %08d      |\n", Node.Type, Node.Group, Node.Index);
-
-        Iterator = DictionaryKeyIteratorNext(Iterator);
-    }
-
-    printf("+-------+-------+---------------+\n");
-    /*
-    for (Index Index = 0; Index < PacketLogIndex; Index += 1) {
-        IPCPacketRef Packet = &PacketLog[Index];
-
-        printf(
-            "| %06d | %04d | %04d | %02d | %02d | %02d | %02d | %02d | %02d | %02d | %02d | %02d |\n",
-            (Int32)Packet->Length,
-            (Int32)Packet->Command,
-            (Int32)Packet->SubCommand,
-            (Int32)Packet->RouteType,
-            (Int32)Packet->Source.Index,
-            (Int32)Packet->Source.Group,
-            (Int32)Packet->Source.Type,
-            (Int32)Packet->SourceConnectionID,
-            (Int32)Packet->Target.Index,
-            (Int32)Packet->Target.Group,
-            (Int32)Packet->Target.Type,
-            (Int32)Packet->TargetConnectionID
-        );
-    }
-    */
-}
+struct _IPCSocketConnectionWriteRequest {
+    uv_write_t Request;
+    uv_buf_t Buffer;
+};
 
 Void IPCSocketConnect(
     IPCSocketRef Socket,
@@ -75,11 +19,24 @@ Void IPCSocketListen(
     UInt16 Port
 );
 
+IPCSocketConnectionRef IPCSocketReserveConnection(
+    IPCSocketRef Socket
+);
+
+Void IPCSocketReleaseConnection(
+    IPCSocketRef Socket,
+    IPCSocketConnectionRef Connection
+);
+
+Bool IPCSocketFetchReadBuffer(
+    IPCSocketRef Socket,
+    IPCSocketConnectionRef Connection
+);
+
 Void IPCSocketOnConnect(
     IPCSocketRef Socket,
     IPCSocketConnectionRef Connection
 ) {
-    Connection->HeartbeatTimestamp = GetTimestampMs() + IPC_SOCKET_HEARTBEAT_TIMEOUT;
     Connection->Userdata = MemoryPoolReserve(Socket->ConnectionContextPool, Connection->ConnectionPoolIndex);
     
     IPCNodeContextRef NodeContext = (IPCNodeContextRef)Connection->Userdata;
@@ -94,8 +51,23 @@ Void IPCSocketOnConnect(
     Packet.Target = NodeContext->NodeID;
     Packet.TargetConnectionID = 0;
     IPCSocketSend(Socket, Connection, &Packet);
+}
 
-    PrintNodeTable(Socket);
+Void OnReconnectTimerClose(
+    uv_handle_t* Handle
+) {
+    IPCSocketRef Socket = (IPCSocketRef)Handle->data;
+    AllocatorDeallocate(Socket->Allocator, Handle);
+    Socket->ReconnectTimer = NULL;
+    IPCSocketConnect(Socket, Socket->Host, Socket->Port, Socket->Timeout);
+}
+
+Void OnReconnect(
+    uv_timer_t* Timer
+) {
+    IPCSocketRef Socket = (IPCSocketRef)Timer->data;
+    uv_timer_stop(Socket->ReconnectTimer);
+    uv_close((uv_handle_t*)Socket->ReconnectTimer, OnReconnectTimerClose);
 }
 
 Void IPCSocketOnDisconnect(
@@ -110,8 +82,6 @@ Void IPCSocketOnDisconnect(
 
     MemoryPoolRelease(Socket->ConnectionContextPool, Connection->ConnectionPoolIndex);
     Connection->Userdata = NULL;
-
-    PrintNodeTable(Socket);
 }
 
 Void IPCSocketOnReceived(
@@ -120,45 +90,12 @@ Void IPCSocketOnReceived(
     IPCPacketRef Packet
 ) {
     IPCNodeContextRef NodeContext = (IPCNodeContextRef)Connection->Userdata;
-    /*
-    memcpy(&PacketLog[PacketLogIndex], Packet, sizeof(struct _IPCPacket));
-    PacketLogIndex++;
-    */
-    if (Socket->NodeID.Type == IPC_TYPE_MASTER)
-    printf(
-        "| %06d | %04d | %04d | %02d | %02d | %02d | %02d | %02d | %02d | %02d | %02d | %02d |\n",
-        (Int32)Packet->Length,
-        (Int32)Packet->Command,
-        (Int32)Packet->SubCommand,
-        (Int32)Packet->RouteType,
-        (Int32)Packet->Source.Index,
-        (Int32)Packet->Source.Group,
-        (Int32)Packet->Source.Type,
-        (Int32)Packet->SourceConnectionID,
-        (Int32)Packet->Target.Index,
-        (Int32)Packet->Target.Group,
-        (Int32)Packet->Target.Type,
-        (Int32)Packet->TargetConnectionID
-    );
-
+    
     if (Packet->Command == IPC_COMMAND_REGISTER) {
         if (Packet->Source.Group != Socket->NodeID.Group) goto error;
 
-        // TODO: Validate Packet->Source for integrity..
-
-        /*
-        if (DictionaryContains(Socket->NodeTable, &Packet->Source.Serial)) {
-            Index* ConnectionID = DictionaryLookup(Socket->NodeTable, &Packet->Source.Serial);
-            if (ConnectionID) {
-                IPCSocketConnectionRef Connection = IPCSocketGetConnection(Socket, *ConnectionID);
-                if (Connection) IPCSocketDisconnect(Socket, Connection);
-            }
-        }
-        */
-
         NodeContext->NodeID = Packet->Source;
         DictionaryInsert(Socket->NodeTable, &Packet->Source.Serial, &Connection->ID, sizeof(Index));
-        PrintNodeTable(Socket);
     }
 
     if (Packet->Command == IPC_COMMAND_ROUTE) {
@@ -206,12 +143,176 @@ error:
     IPCSocketDisconnect(Socket, Connection);
 }
 
+Void AllocateRecvBuffer(
+    uv_handle_t* Handle,
+    size_t SuggestedSize,
+    uv_buf_t* Buffer
+) {
+    IPCSocketConnectionRef Connection = (IPCSocketConnectionRef)Handle->data;
+    MemoryRef RecvBuffer = Connection->RecvBuffer;
+    Int32 RecvBufferLength = Connection->RecvBufferLength;
+    if (RecvBuffer) SuggestedSize = MAX(SuggestedSize, RecvBufferLength);
+
+    if (!RecvBuffer) {
+        RecvBuffer = AllocatorAllocate(Connection->Socket->Allocator, SuggestedSize);
+    } else if (RecvBufferLength < SuggestedSize) {
+        RecvBuffer = AllocatorReallocate(Connection->Socket->Allocator, RecvBuffer, SuggestedSize);
+    }
+
+    if (RecvBuffer) {
+        RecvBufferLength = SuggestedSize;
+        Connection->RecvBuffer = RecvBuffer;
+        Connection->RecvBufferLength = RecvBufferLength;
+    }
+
+    Buffer->base = RecvBuffer;
+    Buffer->len = RecvBufferLength;
+}
+
+Void OnClose(
+    uv_handle_t* Handle
+) {
+    IPCSocketConnectionRef Connection = (IPCSocketConnectionRef)Handle->data;
+    IPCSocketRef Socket = Connection->Socket;
+
+    Connection->Flags |= IPC_SOCKET_CONNECTION_FLAGS_DISCONNECTED_END;
+    IPCSocketOnDisconnect(Connection->Socket, Connection);
+    IPCSocketReleaseConnection(Connection->Socket, Connection);
+
+    if (Socket->Host && !Socket->ReconnectTimer) {
+        Socket->State = IPC_SOCKET_STATE_DISCONNECTED;
+        uv_tcp_close_reset(&Socket->Handle, NULL);
+        uv_tcp_init(Socket->Loop, &Socket->Handle);
+        uv_tcp_nodelay(&Socket->Handle, 1);
+        uv_tcp_keepalive(&Socket->Handle, 1, IPC_SOCKET_KEEP_ALIVE_TIMEOUT);
+        uv_tcp_simultaneous_accepts(&Socket->Handle, 1);
+        uv_recv_buffer_size(&Socket->Handle, &Socket->ReadBufferSize);
+        uv_send_buffer_size(&Socket->Handle, &Socket->WriteBufferSize);
+        Socket->Handle.data = Socket;
+
+        Socket->ReconnectTimer = (uv_timer_t*)AllocatorAllocate(Socket->Allocator, sizeof(uv_timer_t));
+        uv_timer_init(Socket->Loop, Socket->ReconnectTimer);
+        Socket->ReconnectTimer->data = Socket;
+        uv_timer_start(Socket->ReconnectTimer, OnReconnect, IPC_SOCKET_RECONNECT_DELAY, IPC_SOCKET_RECONNECT_DELAY);
+    }
+}
+
+Void OnRead(
+    uv_stream_t* Stream,
+    ssize_t RecvLength,
+    const uv_buf_t* Buffer
+) {
+    IPCSocketConnectionRef Connection = (IPCSocketConnectionRef)Stream->data;
+    assert(Connection->Handle == Stream);
+
+    if (RecvLength < 0) {
+        if (RecvLength != UV_EOF) {
+            Error("Read error: %s\n", uv_strerror(RecvLength));
+        }
+
+        IPCSocketDisconnect(Connection->Socket, Connection);
+        return;
+    }
+
+    if (RecvLength > 0) {
+        MemoryBufferAppendCopy(Connection->ReadBuffer, Buffer->base, RecvLength);
+    }
+
+    IPCSocketFetchReadBuffer(Connection->Socket, Connection);
+}
+
+Void OnNewConnection(
+    uv_stream_t* Stream, 
+    Int32 Status
+) {
+    if (Status < 0) {
+        Error("Socket new connection error: %s\n", uv_strerror(Status));
+        return;
+    }
+
+    IPCSocketRef Socket = (IPCSocketRef)Stream->data;
+    if (MemoryPoolIsFull(Socket->ConnectionPool)) {
+        return;
+    }
+
+    IPCSocketConnectionRef Connection = IPCSocketReserveConnection(Socket);
+    Connection->Handle = &Connection->HandleMemory;
+    uv_tcp_init(Socket->Loop, Connection->Handle);
+    Connection->Handle->data = Connection;
+
+    Int32 Result = uv_accept(&Socket->Handle, (uv_stream_t*)Connection->Handle);
+    if (Result == 0) {
+        struct sockaddr_storage ClientAddress = { 0 };
+        Int32 ClientAddressSize = sizeof(ClientAddress);
+        if (uv_tcp_getpeername(Connection->Handle, (struct sockaddr*)&ClientAddress, &ClientAddressSize) == 0) {
+            if (ClientAddress.ss_family == AF_INET) {
+                uv_ip4_name((struct sockaddr_in*)&ClientAddress, Connection->AddressIP, sizeof(Connection->AddressIP));
+            }
+            else if (ClientAddress.ss_family == AF_INET6) {
+                uv_ip6_name((struct sockaddr_in6*)&ClientAddress, Connection->AddressIP, sizeof(Connection->AddressIP));
+            }
+        }
+
+        Connection->ID = Socket->NextConnectionID;
+        Socket->NextConnectionID += 1;
+        IPCSocketOnConnect(Socket, Connection);
+        uv_read_start((uv_stream_t*)Connection->Handle, AllocateRecvBuffer, OnRead);
+    }
+    else {
+        IPCSocketDisconnect(Connection->Socket, Connection);
+    }
+}
+
+Void OnConnect(
+    uv_connect_t* Connect,
+    Int32 Status
+) {
+    IPCSocketRef Socket = (IPCSocketRef)Connect->data;
+
+    if (Status < 0) {
+        Socket->State = IPC_SOCKET_STATE_DISCONNECTED;
+        Error("Socket connection error: %s\n", uv_strerror(Status));
+
+        if (!Socket->ReconnectTimer) {
+            Socket->ReconnectTimer = (uv_timer_t*)AllocatorAllocate(Socket->Allocator, sizeof(uv_timer_t));
+            uv_timer_init(Socket->Loop, Socket->ReconnectTimer);
+            Socket->ReconnectTimer->data = Socket;
+            uv_timer_start(Socket->ReconnectTimer, OnReconnect, IPC_SOCKET_RECONNECT_DELAY, IPC_SOCKET_RECONNECT_DELAY);
+        }
+
+        return;
+    }
+
+    IPCSocketConnectionRef Connection = IPCSocketReserveConnection(Socket);
+    Connection->Handle = Connect->handle;
+    Connection->Handle->data = Connection;
+    Connection->ID = Socket->NextConnectionID;
+    Connection->ConnectRequest = Connect;
+    Socket->NextConnectionID += 1;
+    Socket->State = IPC_SOCKET_STATE_CONNECTED;
+
+    struct sockaddr_storage ClientAddress = { 0 };
+    Int32 ClientAddressSize = sizeof(ClientAddress);
+    if (uv_tcp_getpeername(Connection->Handle, (struct sockaddr*)&ClientAddress, &ClientAddressSize) == 0) {
+        if (ClientAddress.ss_family == AF_INET) {
+            uv_ip4_name((struct sockaddr_in*)&ClientAddress, Connection->AddressIP, sizeof(Connection->AddressIP));
+        }
+        else if (ClientAddress.ss_family == AF_INET6) {
+            uv_ip6_name((struct sockaddr_in6*)&ClientAddress, Connection->AddressIP, sizeof(Connection->AddressIP));
+        }
+    }
+
+    Info("Socket connection established");
+    IPCSocketOnConnect(Socket, Connection);
+    uv_read_start(Connect->handle, AllocateRecvBuffer, OnRead);
+}
+
 IPCSocketRef IPCSocketCreate(
     AllocatorRef Allocator, 
     IPCNodeID NodeID,
     UInt32 Flags,
-    Index ReadBufferSize,
-    Index WriteBufferSize,
+    Int32 ReadBufferSize,
+    Int32 WriteBufferSize,
     CString Host,
     UInt16 Port,
     Timestamp Timeout,
@@ -227,13 +328,20 @@ IPCSocketRef IPCSocketCreate(
     memset(Socket, 0, sizeof(struct _IPCSocket));
     Socket->Allocator = Allocator;
     Socket->NodeID = NodeID;
-    Socket->Handle = -1;
-    Socket->Flags = Flags;
+    Socket->Loop = uv_default_loop();
+    uv_tcp_init(Socket->Loop, &Socket->Handle);
+    uv_tcp_nodelay(&Socket->Handle, 1);
+    uv_tcp_keepalive(&Socket->Handle, 1, IPC_SOCKET_KEEP_ALIVE_TIMEOUT);
+    uv_tcp_simultaneous_accepts(&Socket->Handle, 1);
+    uv_recv_buffer_size(&Socket->Handle, &ReadBufferSize);
+    uv_send_buffer_size(&Socket->Handle, &WriteBufferSize);
+    Socket->Handle.data = Socket;
     Socket->ReadBufferSize = ReadBufferSize;
     Socket->WriteBufferSize = WriteBufferSize;
     Socket->MaxConnectionCount = MaxConnectionCount;
     Socket->NextConnectionID = 1;
     Socket->Timeout = Timeout;
+    Socket->State = IPC_SOCKET_STATE_DISCONNECTED;
     Socket->PacketBuffer = IPCPacketBufferCreate(Allocator, 4, WriteBufferSize);
     Socket->ConnectionIndices = IndexSetCreate(Allocator, MaxConnectionCount);
     Socket->ConnectionPool = MemoryPoolCreate(Allocator, sizeof(struct _IPCSocketConnection), MaxConnectionCount);
@@ -241,16 +349,6 @@ IPCSocketRef IPCSocketCreate(
     Socket->CommandRegistry = IndexDictionaryCreate(Allocator, 8);
     Socket->NodeTable = IndexDictionaryCreate(Allocator, MaxConnectionCount);
     Socket->Userdata = Userdata;
-
-    Socket->HeartbeatPacket.Length = sizeof(struct _IPCPacket);
-    Socket->HeartbeatPacket.Command = IPC_COMMAND_HEARTBEAT;
-    Socket->HeartbeatPacket.RouteType = IPC_ROUTE_TYPE_UNICAST;
-    Socket->HeartbeatPacket.Source = NodeID;
-    Socket->HeartbeatPacket.SourceConnectionID = 0;
-    Socket->HeartbeatPacket.Target = kIPCNodeIDNull;
-    Socket->HeartbeatPacket.TargetConnectionID = 0;
-
-    Trace("Node(%d, %d, %d)", NodeID.Group, NodeID.Index, NodeID.Type);
 
     if (Host) {
         IPCSocketConnect(Socket, Host, Port, Timeout);
@@ -266,6 +364,9 @@ Void IPCSocketDestroy(
     IPCSocketRef Socket
 ) {
     assert(Socket);
+    uv_tcp_close_reset(&Socket->Handle, NULL);
+    uv_loop_close(Socket->Loop);
+    free(Socket->Loop);
     DictionaryDestroy(Socket->CommandRegistry);
     DictionaryDestroy(Socket->NodeTable);
     IPCPacketBufferDestroy(Socket->PacketBuffer);
@@ -290,14 +391,10 @@ IPCSocketConnectionRef IPCSocketReserveConnection(
     IPCSocketConnectionRef Connection = (IPCSocketConnectionRef)MemoryPoolReserveNext(Socket->ConnectionPool, &ConnectionPoolIndex);
     IndexSetInsert(Socket->ConnectionIndices, ConnectionPoolIndex);
     memset(Connection, 0, sizeof(struct _IPCSocketConnection));
+    Connection->Socket = Socket;
     Connection->ConnectionPoolIndex = ConnectionPoolIndex;
-    Connection->PacketBuffer = IPCPacketBufferCreate(
-        Socket->Allocator,
-        4,
-        Socket->WriteBufferSize
-    );
+    Connection->PacketBuffer = IPCPacketBufferCreate(Socket->Allocator, 4, Socket->WriteBufferSize);
     Connection->ReadBuffer = MemoryBufferCreate(Socket->Allocator, 4, Socket->ReadBufferSize);
-    Connection->WriteBuffer = MemoryBufferCreate(Socket->Allocator, 4, Socket->WriteBufferSize);
     return Connection;
 }
 
@@ -307,7 +404,6 @@ Void IPCSocketReleaseConnection(
 ) {
     IPCPacketBufferDestroy(Connection->PacketBuffer);
     MemoryBufferDestroy(Connection->ReadBuffer);
-    MemoryBufferDestroy(Connection->WriteBuffer);
     IndexSetRemove(Socket->ConnectionIndices, Connection->ConnectionPoolIndex);
     MemoryPoolRelease(Socket->ConnectionPool, Connection->ConnectionPoolIndex);
 }
@@ -318,42 +414,21 @@ Void IPCSocketConnect(
     UInt16 Port,
     Timestamp Timeout
 ) {
-    assert(!(Socket->Flags & (IPC_SOCKET_FLAGS_LISTENING | IPC_SOCKET_FLAGS_CONNECTING | IPC_SOCKET_FLAGS_CONNECTED)));
-
+    if (Socket->State != IPC_SOCKET_STATE_DISCONNECTED) return;
+    
+    Socket->State = IPC_SOCKET_STATE_CONNECTING;
     Socket->Host = Host;
     Socket->Port = Port;
     Socket->Timeout = Timeout;
-    Socket->Handle = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (Socket->Handle < 0) Fatal("Socket creation failed");
-
-    PlatformSetSocketIOBlocking(Socket->Handle, false);
-
-    struct hostent* Server = (struct hostent*)gethostbyname(Host);
-    if (!Server) Fatal("Socket creation failed");
-
-    memset(&Socket->Address, 0, sizeof(Socket->Address));
-    Socket->Address.sin_family = AF_INET;
-
-    memmove(&Socket->Address.sin_addr.s_addr, Server->h_addr, Server->h_length);
-    Socket->Address.sin_port = htons(Port);
-
-    Socket->Flags |= IPC_SOCKET_FLAGS_CONNECTING;
+    uv_ip4_addr(Host, Port, &Socket->Address);
 
     Info("Socket connecting to port: %d", Port);
 
-    Int32 Result = PlatformSocketConnect(Socket->Handle, (struct sockaddr*)&Socket->Address, sizeof(Socket->Address));
-    if (Result == 0) {
-        // TODO: Add remote address to `Connection`!
-        IPCSocketConnectionRef Connection = IPCSocketReserveConnection(Socket);
-        Connection->ID = Socket->NextConnectionID;
-        Connection->Handle = Socket->Handle;
-        Socket->NextConnectionID += 1;
-        Socket->Flags &= ~IPC_SOCKET_FLAGS_CONNECTING;
-        Socket->Flags |= IPC_SOCKET_FLAGS_CONNECTED;
-        IPCSocketOnConnect(Socket, Connection);
-        Info("Socket connection established");
-    } else if (Result == -1) {
-        Fatal("Socket connection failed");
+    Socket->Connect.data = Socket;
+    Int32 Result = uv_tcp_connect(&Socket->Connect, &Socket->Handle, (const struct sockaddr*)&Socket->Address, OnConnect);
+    if (Result) {
+        Fatal("Socket connection failed: %s\n", uv_strerror(Result));
+        return;
     }
 }
 
@@ -361,32 +436,41 @@ Void IPCSocketListen(
     IPCSocketRef Socket,
     UInt16 Port
 ) {
-    assert(!(Socket->Flags & (IPC_SOCKET_FLAGS_LISTENING | IPC_SOCKET_FLAGS_CONNECTING | IPC_SOCKET_FLAGS_CONNECTED)));
+    if (Socket->State != IPC_SOCKET_STATE_DISCONNECTED) return;
 
-    Socket->Host = NULL;
     Socket->Port = Port;
-    Socket->Handle = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (Socket->Handle < 0) Fatal("Socket creation failed");
+    uv_ip4_addr("0.0.0.0", Socket->Port, &Socket->Address);
 
-    PlatformSetSocketIOBlocking(Socket->Handle, false);
-
-    Socket->Address.sin_family = AF_INET;
-    Socket->Address.sin_addr.s_addr = htonl(INADDR_ANY);
-    Socket->Address.sin_port = htons(Port);
-
-    Int32 Enabled = 1;
-    if (setsockopt(Socket->Handle, SOL_SOCKET, SO_REUSEADDR, (Char*)&Enabled, sizeof(Enabled)) != 0)
-        Fatal("Socket re-use address set failed");
-
-    if ((bind(Socket->Handle, (struct sockaddr*)&Socket->Address, sizeof(Socket->Address))) != 0)
-        Fatal("Socket binding failed");
-
-    if ((listen(Socket->Handle, (Int32)Socket->MaxConnectionCount)) != 0)
-        Fatal("Socket listening failed");
-
-    Socket->Flags |= IPC_SOCKET_FLAGS_LISTENING;
+    Int32 Result = uv_tcp_bind(&Socket->Handle, (const struct sockaddr*)&Socket->Address, 0);
+    if (Result) {
+        Fatal("Socket binding failed: %s\n", uv_strerror(Result));
+    }
+    
+    Result = uv_listen((uv_stream_t*)&Socket->Handle, Socket->MaxConnectionCount, OnNewConnection);
+    if (Result) {
+        Fatal("Socket listening failed: %s\n", uv_strerror(Result));
+    }
 
     Info("Socket started listening on port: %d", Port);
+    Socket->State = IPC_SOCKET_STATE_CONNECTED;
+}
+
+Void OnWrite(
+    uv_write_t* WriteRequest,
+    Int32 Status
+) {
+    IPCSocketConnectionRef Connection = (IPCSocketConnectionRef)WriteRequest->data;
+
+    if (Status < 0) {
+        Error("Write error: %s\n", uv_strerror(Status));
+
+        if (Status == UV_ECONNRESET || Status == UV_ECONNREFUSED) {
+            assert(Connection->Handle == WriteRequest->handle);
+            IPCSocketDisconnect(Connection->Socket, Connection);
+        }
+    }
+
+    AllocatorDeallocate(Connection->Socket->Allocator, WriteRequest);
 }
 
 Void IPCSocketSend(
@@ -394,17 +478,27 @@ Void IPCSocketSend(
     IPCSocketConnectionRef Connection,
     IPCPacketRef Packet
 ) {
-    if (!(Socket->Flags & (IPC_SOCKET_FLAGS_LISTENING | IPC_SOCKET_FLAGS_CONNECTED))) return;
+    assert(Socket->State == IPC_SOCKET_STATE_CONNECTED);
+    assert(!(Connection->Flags & IPC_SOCKET_CONNECTION_FLAGS_DISCONNECTED));
 
-    MemoryBufferAppendCopy(Connection->WriteBuffer, Packet, Packet->Length);
+    Int32 MemoryLength = sizeof(struct _IPCSocketConnectionWriteRequest) + Packet->Length;
+    UInt8* Memory = AllocatorAllocate(Socket->Allocator, MemoryLength);
+    if (!Memory) {
+        Fatal("Memory allocation failed!");
+    }
+
+    struct _IPCSocketConnectionWriteRequest* WriteRequest = (struct _IPCSocketConnectionWriteRequest*)Memory;
+    WriteRequest->Request.data = Connection;
+    WriteRequest->Buffer.base = Memory + sizeof(struct _IPCSocketConnectionWriteRequest);
+    WriteRequest->Buffer.len = Packet->Length;
+    memcpy(WriteRequest->Buffer.base, Packet, Packet->Length);
+    uv_write(&WriteRequest->Request, Connection->Handle, &WriteRequest->Buffer, 1, OnWrite);
 }
 
 Void IPCSocketUnicast(
     IPCSocketRef Socket,
     Void* Packet
 ) {
-    if (!(Socket->Flags & (IPC_SOCKET_FLAGS_LISTENING | IPC_SOCKET_FLAGS_CONNECTED))) return;
-
     IPCPacketRef IPCPacket = (IPCPacketRef)Packet;
     IPCPacket->RouteType = IPC_ROUTE_TYPE_UNICAST;
 
@@ -413,7 +507,8 @@ Void IPCSocketUnicast(
     if (ConnectionID) {
         IPCSocketConnectionRef Connection = IPCSocketGetConnection(Socket, *ConnectionID);
         if (Connection) {
-            MemoryBufferAppendCopy(Connection->WriteBuffer, IPCPacket, IPCPacket->Length);
+            assert(!(Connection->Flags & IPC_SOCKET_CONNECTION_FLAGS_DISCONNECTED));
+            IPCSocketSend(Socket, Connection, IPCPacket);
         }
     }
     else if (!IsHost) {
@@ -423,7 +518,8 @@ Void IPCSocketUnicast(
             Iterator = IndexSetIteratorNext(Socket->ConnectionIndices, Iterator);
 
             IPCSocketConnectionRef Connection = (IPCSocketConnectionRef)MemoryPoolFetch(Socket->ConnectionPool, ConnectionPoolIndex);
-            IPCSocketSend(Socket, Connection, Packet);
+            assert(!(Connection->Flags & IPC_SOCKET_CONNECTION_FLAGS_DISCONNECTED));
+            IPCSocketSend(Socket, Connection, IPCPacket);
         }
     }
 }
@@ -432,7 +528,7 @@ Void IPCSocketBroadcast(
     IPCSocketRef Socket,
     Void* Packet
 ) {
-    if (!(Socket->Flags & (IPC_SOCKET_FLAGS_LISTENING | IPC_SOCKET_FLAGS_CONNECTED))) return;
+    assert(Socket->State == IPC_SOCKET_STATE_CONNECTED);
 
     IPCPacketRef IPCPacket = (IPCPacketRef)Packet;
     IPCPacket->RouteType = IPC_ROUTE_TYPE_BROADCAST;
@@ -443,7 +539,8 @@ Void IPCSocketBroadcast(
         Iterator = IndexSetIteratorNext(Socket->ConnectionIndices, Iterator);
 
         IPCSocketConnectionRef Connection = (IPCSocketConnectionRef)MemoryPoolFetch(Socket->ConnectionPool, ConnectionPoolIndex);
-        IPCSocketSend(Socket, Connection, Packet);
+        assert(!(Connection->Flags & IPC_SOCKET_CONNECTION_FLAGS_DISCONNECTED));
+        IPCSocketSend(Socket, Connection, IPCPacket);
     }
 }
 
@@ -467,146 +564,19 @@ Bool IPCSocketFetchReadBuffer(
     return true;
 }
 
-Bool IPCSocketFlushWriteBuffer(
-    IPCSocketRef Socket,
-    IPCSocketConnectionRef Connection
-) {
-    while (MemoryBufferGetOffset(Connection->WriteBuffer) > 0) {
-        IPCPacketRef Packet = (IPCPacketRef)MemoryBufferGetMemory(Connection->WriteBuffer, 0);
-       
-        if (send(Connection->Handle, (Char*)Packet, Packet->Length, 0) == -1) {
-            IPCSocketDisconnect(Socket, Connection);
-            break;
-        }
-        
-        MemoryBufferPopFront(Connection->WriteBuffer, Packet->Length);
-    }
-
-    return true;
-}
-
-Void IPCSocketReleaseConnections(
-    IPCSocketRef Socket
-) {
-    IndexSetIteratorRef Iterator = IndexSetGetInverseIterator(Socket->ConnectionIndices);
-    while (Iterator) {
-        Index ConnectionPoolIndex = Iterator->Value;
-        Iterator = IndexSetInverseIteratorNext(Socket->ConnectionIndices, Iterator);
-
-        // TODO: Sometimes Connection can become null!!!
-        IPCSocketConnectionRef Connection = (IPCSocketConnectionRef)MemoryPoolFetch(Socket->ConnectionPool, ConnectionPoolIndex);
-        if (!Connection) continue;
-
-        if (Connection->Flags & IPC_SOCKET_CONNECTION_FLAGS_DISCONNECTED && !(Connection->Flags & IPC_SOCKET_CONNECTION_FLAGS_DISCONNECTED_END)) {
-            Connection->Flags &= ~IPC_SOCKET_CONNECTION_FLAGS_DISCONNECTED_END;
-            IPCSocketFlushWriteBuffer(Socket, Connection);
-            IPCSocketOnDisconnect(Socket, Connection);
-            Socket->Flags &= ~IPC_SOCKET_FLAGS_CONNECTED;
-            PlatformSocketClose(Connection->Handle);
-            IPCSocketReleaseConnection(Socket, Connection);
-        }
-    }
-}
-
 Void IPCSocketUpdate(
     IPCSocketRef Socket
 ) {
-    Bool IsListening = (Socket->Flags & IPC_SOCKET_FLAGS_LISTENING);
-    Bool IsConnected = (Socket->Flags & (IPC_SOCKET_FLAGS_CONNECTING | IPC_SOCKET_FLAGS_CONNECTED));
-    if (IsListening) {
-        if (!MemoryPoolIsFull(Socket->ConnectionPool)) {
-            SocketAddress ClientAddress = { 0 };
-            SocketHandle Client = 0;
-            if (PlatformSocketAccept(Socket->Handle, (struct sockaddr*)&ClientAddress, sizeof(ClientAddress), &Client)) {
-                IPCSocketConnectionRef Connection = IPCSocketReserveConnection(Socket);
-                Connection->ID = Socket->NextConnectionID;
-                Connection->Handle = Client;
-                Connection->Address = ClientAddress;
-                PlatformSocketAddressToString(ClientAddress, sizeof(Connection->AddressIP), Connection->AddressIP);
-
-                Socket->NextConnectionID += 1;
-                IPCSocketOnConnect(Socket, Connection);
-            }
-        }
-    }
-    else if (!IsConnected) {
-        IPCSocketConnect(Socket, Socket->Host, Socket->Port, Socket->Timeout);
-    }
-
-    if ((Socket->Flags & IPC_SOCKET_FLAGS_CONNECTING) && !(Socket->Flags & IPC_SOCKET_FLAGS_CONNECTED)) {
-        if (PlatformSocketSelect(Socket->Handle, Socket->Timeout)) {
-            IPCSocketConnectionRef Connection = IPCSocketReserveConnection(Socket);
-            Connection->ID = Socket->NextConnectionID;
-            Connection->Handle = Socket->Handle;
-
-            Socket->NextConnectionID += 1;
-            Socket->Flags &= ~IPC_SOCKET_FLAGS_CONNECTING;
-            Socket->Flags |= IPC_SOCKET_FLAGS_CONNECTED;
-            IPCSocketOnConnect(Socket, Connection);
-            Info("Socket connection established");
-        } else {
-            PlatformSocketConnect(Socket->Handle, (struct sockaddr*)&Socket->Address, sizeof(Socket->Address));
-        }
-
-        return;
-    }
-
-    Int64 RecvLength = 0;
-    UInt8 RecvBuffer[IPC_SOCKET_RECV_BUFFER_SIZE] = { 0 };
-
-    Timestamp CurrentTimestamp = GetTimestampMs();
-    IndexSetIteratorRef Iterator = IndexSetGetIterator(Socket->ConnectionIndices);
-    while (Iterator) {
-        Index ConnectionPoolIndex = Iterator->Value;
-        Iterator = IndexSetIteratorNext(Socket->ConnectionIndices, Iterator);
-
-        IPCSocketConnectionRef Connection = (IPCSocketConnectionRef)MemoryPoolFetch(Socket->ConnectionPool, ConnectionPoolIndex);        
-        IPCSocketFlushWriteBuffer(Socket, Connection);
-
-        Bool Success = PlatformSocketRecv(
-            Connection->Handle,
-            RecvBuffer,
-            IPC_SOCKET_RECV_BUFFER_SIZE,
-            &RecvLength
-        );
-        if (!Success) {
-            IPCSocketDisconnect(Socket, Connection);
-            continue;
-        }
-        
-        MemoryBufferAppendCopy(Connection->ReadBuffer, RecvBuffer, RecvLength);
-        IPCSocketFetchReadBuffer(Socket, Connection);
-
-        if (Connection->HeartbeatTimestamp < CurrentTimestamp) {
-            Connection->HeartbeatTimestamp = CurrentTimestamp + IPC_SOCKET_HEARTBEAT_TIMEOUT;
-
-            IPCNodeContextRef NodeContext = (IPCNodeContextRef)Connection->Userdata;
-            Socket->HeartbeatPacket.Target = NodeContext->NodeID;
-            //IPCSocketSend(Socket, Connection, &Socket->HeartbeatPacket);
-        }
-    }
-
-    IPCSocketReleaseConnections(Socket);
+    uv_run(Socket->Loop, UV_RUN_NOWAIT);
 }
 
 Void IPCSocketDisconnect(
     IPCSocketRef Socket,
     IPCSocketConnectionRef Connection
 ) {
+    if (Connection->Flags & IPC_SOCKET_CONNECTION_FLAGS_DISCONNECTED) return;
     Connection->Flags |= IPC_SOCKET_CONNECTION_FLAGS_DISCONNECTED;
-}
-
-Void IPCSocketClose(
-    IPCSocketRef Socket
-) {
-    IPCSocketReleaseConnections(Socket);
-
-    if (Socket->Handle >= 0) {
-        PlatformSocketClose(Socket->Handle);
-        Socket->Handle = -1;
-    }
-
-    Socket->Flags = 0;
+    uv_close(Connection->Handle, OnClose);
 }
 
 Index IPCSocketGetConnectionCount(

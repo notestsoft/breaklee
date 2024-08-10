@@ -31,12 +31,14 @@ UInt8* MemoryBufferGetMemory(
     Index Offset
 );
 
-Void MemoryBufferAlignOffset(
-    MemoryBufferRef MemoryBuffer
-);
-
 Void MemoryBufferPopFront(
     MemoryBufferRef MemoryBuffer,
+    Index Length
+);
+
+Void MemoryBufferRemove(
+    MemoryBufferRef MemoryBuffer,
+    Index Offset,
     Index Length
 );
 

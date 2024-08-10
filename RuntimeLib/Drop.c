@@ -144,9 +144,8 @@ Bool RTCalculateQuestDrop(
     if (World->DungeonIndex) {
         RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, World->DungeonIndex);
 
-        ArrayRef DropPool = (ArrayRef)DictionaryLookup(DungeonData->DropTable.MobDropPool, &DropPoolIndex);
+        ArrayRef DropPool = (ArrayRef)DictionaryLookup(DungeonData->DropTable.QuestDropPool, &DropPoolIndex);
         if (DropPool) {
-
             for (Int32 DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
                 RTDropItemRef DropItem = (RTDropItemRef)ArrayGetElementAtIndex(DropPool, DropIndex);
                 if (!RTCharacterHasQuestItemCounter(Runtime, Character, DropItem->ItemID, DropItem->ItemOptions)) continue;
@@ -164,7 +163,7 @@ Bool RTCalculateQuestDrop(
         }
     }
 
-    ArrayRef DropPool = (ArrayRef)DictionaryLookup(World->WorldData->DropTable.MobDropPool, &DropPoolIndex);
+    ArrayRef DropPool = (ArrayRef)DictionaryLookup(World->WorldData->DropTable.QuestDropPool, &DropPoolIndex);
     if (DropPool) {
         for (Int32 DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
             RTDropItemRef DropItem = (RTDropItemRef)ArrayGetElementAtIndex(DropPool, DropIndex);
@@ -200,7 +199,7 @@ Bool RTCalculatePartyQuestDrop(
     if (World->DungeonIndex) {
         RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, World->DungeonIndex);
 
-        ArrayRef DropPool = (ArrayRef)DictionaryLookup(DungeonData->DropTable.MobDropPool, &DropPoolIndex);
+        ArrayRef DropPool = (ArrayRef)DictionaryLookup(DungeonData->DropTable.QuestDropPool, &DropPoolIndex);
         if (DropPool) {
             for (Int32 DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
                 RTDropItemRef DropItem = (RTDropItemRef)ArrayGetElementAtIndex(DropPool, DropIndex);
@@ -219,7 +218,7 @@ Bool RTCalculatePartyQuestDrop(
         }
     }
 
-    ArrayRef DropPool = (ArrayRef)DictionaryLookup(World->WorldData->DropTable.MobDropPool, &DropPoolIndex);
+    ArrayRef DropPool = (ArrayRef)DictionaryLookup(World->WorldData->DropTable.QuestDropPool, &DropPoolIndex);
     if (DropPool) {
         for (Int32 DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
             RTDropItemRef DropItem = (RTDropItemRef)ArrayGetElementAtIndex(DropPool, DropIndex);

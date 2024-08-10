@@ -5,6 +5,18 @@
 #include "Notification.h"
 #include "Server.h"
 
+Void SendCharacterStatus(
+    ServerContextRef Context,
+    SocketRef Socket,
+    SocketConnectionRef Connection,
+    RTCharacterRef Character
+) {
+    S2C_DATA_NFY_CHARACTER_STATUS* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_CHARACTER_STATUS);
+    Notification->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+    Notification->CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+    SocketSend(Socket, Connection, Notification);
+}
+
 Void SendEventList(
     ServerContextRef Context,
     ClientContextRef Client
@@ -720,10 +732,11 @@ struct _RTCharacterCostumeInfo {
     );
 
     // TODO: Move event data to database and trigger request on init
+    SendCharacterStatus(Context, Context->ClientSocket, Client->Connection, Character);
     SendEventInfo(Context, Client);
     SendEventList(Context, Client);
     SendGiftBoxPricePoolList(Context, Client);
-    SendPremiumServiceList(Context, Server->ClientSocket, Client->Connection);
+    SendPremiumServiceList(Context, Context->ClientSocket, Client->Connection);
     BroadcastUserList(Server, Context);
 
     IPC_W2P_DATA_CLIENT_CONNECT* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2P, CLIENT_CONNECT);

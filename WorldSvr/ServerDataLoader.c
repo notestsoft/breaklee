@@ -1323,39 +1323,53 @@ Bool ServerLoadWorldData(
             ArchiveClear(Archive, true);
         }
 
-        Char DropQuestFilePath[MAX_PATH];
-        Char DropQuestFileName[MAX_PATH];
+        Char DropQuestFilePath[MAX_PATH] = { 0 };
+        Char DropQuestFileDirectory[MAX_PATH] = { 0 };
+        Char DropQuestFileName[MAX_PATH] = { 0 };
 
-        sprintf(DropQuestFileName, "world%zu-terrain-quest.xml", World->WorldIndex);
-        PathCombine(ServerDirectory, DropQuestFileName, DropQuestFilePath);
+        sprintf(DropQuestFileName, "World_%zu.xml", World->WorldIndex);
+        PathCombine(ServerDirectory, "World", DropQuestFileDirectory);
+        PathCombine(DropQuestFileDirectory, DropQuestFileName, DropQuestFilePath);
+
         Info("Loading terrain quest file: %s", DropQuestFilePath);
         if (FileExists(DropQuestFilePath)) {
             if (!ArchiveLoadFromFile(Archive, DropQuestFilePath, false)) goto error;
 
-            Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "drops");
+            Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "World");
             if (ParentIndex < 0) goto error;
 
-            ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "item");
+            ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "QuestDropPool");
             while (ChildIterator) {
                 Index DropPoolIndex = 0;
-                if (!ParseAttributeIndex(Archive, ChildIterator->Index, "SpeciesIdx", &DropPoolIndex)) goto error;
+                if (!ParseAttributeIndex(Archive, ChildIterator->Index, "MobSpeciesIndex", &DropPoolIndex)) goto error;
+
                 ArrayRef DropPool = (ArrayRef)DictionaryLookup(World->DropTable.QuestDropPool, &DropPoolIndex);
                 if (!DropPool) {
                     struct _Array TempArray = { 0 };
-                    DictionaryInsert(World->DropTable.MobDropPool, &DropPoolIndex, &TempArray, sizeof(struct _Array));
-                    DropPool = DictionaryLookup(World->DropTable.MobDropPool, &DropPoolIndex);
+                    DictionaryInsert(World->DropTable.QuestDropPool, &DropPoolIndex, &TempArray, sizeof(struct _Array));
+                    DropPool = DictionaryLookup(World->DropTable.QuestDropPool, &DropPoolIndex);
                     ArrayInitializeEmpty(DropPool, Runtime->Allocator, sizeof(struct _RTDropItem), 8);
                 }
 
-                RTDropItemRef DropItem = (RTDropItemRef)ArrayAppendUninitializedElement(DropPool);
-                memset(DropItem, 0, sizeof(struct _RTDropItem));
+                ArchiveIteratorRef ItemIterator = ArchiveQueryNodeIteratorFirst(Archive, ChildIterator->Index, "Item");
+                while (ItemIterator) {
+                    RTDropItemRef DropItem = (RTDropItemRef)ArrayAppendUninitializedElement(DropPool);
+                    memset(DropItem, 0, sizeof(struct _RTDropItem));
 
-                if (!ParseAttributeUInt32(Archive, ChildIterator->Index, "ItemKind", &DropItem->ItemID.ID)) goto error;
-                if (!ParseAttributeUInt64(Archive, ChildIterator->Index, "ItemOpt", &DropItem->ItemOptions)) goto error;
+                    if (!ParseAttributeUInt64(Archive, ItemIterator->Index, "ItemID", &DropItem->ItemID.ID)) goto error;
+                    if (!ParseAttributeUInt64(Archive, ItemIterator->Index, "ItemOption", &DropItem->ItemOptions)) goto error;
+                    if (!ParseAttributeUInt32(Archive, ItemIterator->Index, "ItemDuration", &DropItem->DurationIndex)) goto error;
+                    if (!ParseAttributeUInt32(Archive, ItemIterator->Index, "OptionPoolID", &DropItem->OptionPoolIndex)) goto error;
 
-                Float64 ScalarDropRate = 0.0;
-                if (!ParseAttributeFloat64(Archive, ChildIterator->Index, "DropRate", &ScalarDropRate)) goto error;
-                DropItem->DropRate = (Int32)(ScalarDropRate / 100.0 * INT32_MAX);
+                    DropItem->ItemID.IsCharacterBinding = true;
+                    DropItem->ItemOptions = RTQuestItemOptions(DropItem->ItemOptions, 1);
+
+                    Float64 ScalarDropRate = 0.0;
+                    if (!ParseAttributeFloat64(Archive, ItemIterator->Index, "Rate", &ScalarDropRate)) goto error;
+                    DropItem->DropRate = (Int32)(ScalarDropRate / 100.0 * INT32_MAX);
+
+                    ItemIterator = ArchiveQueryNodeIteratorNext(Archive, ItemIterator);
+                }
 
                 ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
             }

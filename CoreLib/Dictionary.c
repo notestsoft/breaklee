@@ -33,13 +33,6 @@ struct _Dictionary {
 const Int32 _kDictionaryBufferDefaultCapacity = 65535;
 const Float32 _kDictionaryBufferGrowthFactor = 1.5;
 
-static inline Void _DictionaryBufferRemoveElement(
-    DictionaryRef Dictionary,
-    DictionaryBuffer* Buffer,
-    Int32 Offset,
-    Int32 ElementSize
-);
-
 static inline Void _DictionaryBufferInit(
     DictionaryRef Dictionary,
     DictionaryBuffer* Buffer
@@ -217,7 +210,7 @@ Void DictionaryInsert(
     while (Bucket && Bucket->IsFilled) {
         Void* BucketKey = _DictionaryBufferGetElement(Dictionary, &Dictionary->KeyBuffer, Bucket->KeyOffset);
         if (Bucket->Hash == Hash && Dictionary->Comparator(BucketKey, Key)) {
-            _DictionaryBufferRemoveElement(Dictionary, &Dictionary->ElementBuffer, Bucket->ElementOffset, ElementSize);
+            // TODO: Remove old Element from Buffer and update all indices in Buckets
             Bucket->ElementOffset = _DictionaryBufferInsertElement(Dictionary, &Dictionary->ElementBuffer, Element, ElementSize);
             return;
         }
@@ -246,8 +239,8 @@ Void DictionaryInsert(
 }
 
 Bool DictionaryContains(
-    DictionaryRef Dictionary,
-    Void* Key
+    DictionaryRef Dictionary, 
+    Void *Key
 ) {
     return DictionaryLookup(Dictionary, Key) != NULL;
 }
@@ -299,7 +292,8 @@ Void DictionaryRemove(
                 PreviousBucket->Next = Bucket->Next;
             }
 
-            _DictionaryBufferRemoveElement(Dictionary, &Dictionary->KeyBuffer, Bucket->KeyOffset, Dictionary->KeySizeCallback(Key));
+            // TODO: Remove Key from Buffer and update all indices in Buckets
+
             Dictionary->ElementCount -= 1;
             return;
         }
@@ -312,6 +306,7 @@ Void DictionaryRemove(
 Void DictionaryRemoveAll(
     DictionaryRef Dictionary
 ) {
+    // TODO: This is a fallback solution for now...
     _DictionaryBufferDeinit(Dictionary, &Dictionary->ElementBuffer);
     _DictionaryBufferDeinit(Dictionary, &Dictionary->KeyBuffer);
     AllocatorDestroy(Dictionary->BucketAllocator);
@@ -400,7 +395,7 @@ DictionaryKeyIterator DictionaryKeyIteratorNext(
             Iterator.Key = _DictionaryBufferGetElement(
                 Iterator.Dictionary,
                 &Iterator.Dictionary->KeyBuffer,
-                Bucket->KeyOffset
+                Iterator.Bucket->KeyOffset
             );
             return Iterator;
         }
@@ -408,33 +403,4 @@ DictionaryKeyIterator DictionaryKeyIteratorNext(
 
     Iterator.Key = NULL;
     return Iterator;
-}
-
-static inline Void _DictionaryBufferRemoveElement(
-    DictionaryRef Dictionary,
-    DictionaryBuffer* Buffer,
-    Int32 Offset,
-    Int32 ElementSize
-) {
-    Int32 TailLength = Buffer->Offset - (Offset + ElementSize);
-    if (TailLength > 0) {
-        memmove((UInt8*)Buffer->Memory + Offset, (UInt8*)Buffer->Memory + Offset + ElementSize, TailLength);
-    }
-
-    Buffer->Offset -= ElementSize;
-
-    for (Index Index = 0; Index < Dictionary->Capacity; Index += 1) {
-        DictionaryBucketRef Bucket = (DictionaryBucketRef)(((UInt8*)Dictionary->Buckets) + sizeof(struct _DictionaryBucket) * Index);
-        while (Bucket && Bucket->IsFilled) {
-            if (Bucket->KeyOffset > Offset) {
-                Bucket->KeyOffset -= ElementSize;
-            }
-            
-            if (Bucket->ElementOffset > Offset) {
-                Bucket->ElementOffset -= ElementSize;
-            }
-
-            Bucket = Bucket->Next;
-        }
-    }
 }

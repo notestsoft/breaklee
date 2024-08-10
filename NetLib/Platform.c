@@ -64,7 +64,8 @@ Bool PlatformSocketAccept(
     UInt32 Length,
     SocketHandle* Result
 ) {
-    SocketHandle Client = accept(Handle, Address, &Length);
+    Int32 AddressLength = Length;
+    SocketHandle Client = accept(Handle, Address, &AddressLength);
 #if _WIN32
     if (Client == INVALID_SOCKET) return false;
 #else

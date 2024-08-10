@@ -45,8 +45,11 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 	);
 
 	if (Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] < RequiredMP) {
-		// TODO: Send error notification
-		// NotifyLastErrCode(pUserCtx, CSC_SKILLTOMOBS, pUserSkillData->_sgGroup, EC_MP_INSUFFICIENCY);
+		S2C_DATA_NFY_ERROR* Error = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_ERROR);
+		Error->ErrorCommand = Packet->Command;
+		Error->ErrorSubCommand = SkillData->SkillGroup;
+		Error->ErrorCode = 14; // Insufficient MP
+		SocketSend(Socket, Connection, Error);
 		return;
 	}
 

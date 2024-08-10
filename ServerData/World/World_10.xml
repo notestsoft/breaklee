@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<World WorldIndex="10">
+	<QuestDropPool MobSpeciesIndex="906">
+		<Item ItemID="758" ItemOption="1260" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="758" ItemOption="1263" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="758" ItemOption="1266" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+	</QuestDropPool>
+	<QuestDropPool MobSpeciesIndex="916">
+		<Item ItemID="590" ItemOption="3441" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="590" ItemOption="3535" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+	</QuestDropPool>
+	<QuestDropPool MobSpeciesIndex="917">
+		<Item ItemID="515" ItemOption="3443" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+	</QuestDropPool>
+	<QuestDropPool MobSpeciesIndex="910">
+		<Item ItemID="758" ItemOption="3447" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+	</QuestDropPool>
+	<QuestDropPool MobSpeciesIndex="912">
+		<Item ItemID="443" ItemOption="3447" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+	</QuestDropPool>
+	<QuestDropPool MobSpeciesIndex="911">
+		<Item ItemID="590" ItemOption="3448" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="599" ItemOption="3448" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+	</QuestDropPool>
+	<QuestDropPool MobSpeciesIndex="908">
+		<Item ItemID="758" ItemOption="3511" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="758" ItemOption="3512" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+	</QuestDropPool>
+</World>

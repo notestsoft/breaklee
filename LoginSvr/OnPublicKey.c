@@ -13,9 +13,7 @@ Bool GeneratePublicKey(
     BIO* BIO = BIO_new(BIO_s_mem());
 
     if (!RSA || !Exponent || !BIO) goto error;
-
-    BN_set_word(Exponent, RSA_F4);
-
+    if (!BN_set_word(Exponent, RSA_F4)) goto error;
     if (RSA_generate_key_ex(RSA, 2048, Exponent, NULL) != 1) goto error;
 
     i2d_RSAPublicKey_bio(BIO, RSA);

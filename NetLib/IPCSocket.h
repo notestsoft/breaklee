@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Base.h"
-#include "Platform.h"
 #include "IPCPacketBuffer.h"
 
 EXTERN_C_BEGIN
@@ -9,9 +8,9 @@ EXTERN_C_BEGIN
 #pragma pack(push, 1)
 
 #define IPC_SOCKET_MAX_CONNECTION_COUNT 512
-#define IPC_SOCKET_MAX_RECONNECT_COUNT  3
+#define IPC_SOCKET_RECONNECT_DELAY      1000
 #define IPC_SOCKET_RECV_BUFFER_SIZE     4096
-#define IPC_SOCKET_HEARTBEAT_TIMEOUT    1000
+#define IPC_SOCKET_KEEP_ALIVE_TIMEOUT   10
 
 enum {
     IPC_TYPE_ALL        = 0,
@@ -27,7 +26,6 @@ enum {
 enum {
     IPC_COMMAND_REGISTER    = 0,
     IPC_COMMAND_ROUTE       = 1,
-    IPC_COMMAND_HEARTBEAT   = 2,
 };
 
 enum {
@@ -76,6 +74,13 @@ enum {
 };
 
 enum {
+    IPC_SOCKET_STATE_DISCONNECTED,
+    IPC_SOCKET_STATE_CONNECTING,
+    IPC_SOCKET_STATE_CONNECTED,
+    IPC_SOCKET_STATE_DISCONNECTING,
+};
+
+enum {
     IPC_SOCKET_CONNECTION_FLAGS_DISCONNECTED     = 1 << 0,
     IPC_SOCKET_CONNECTION_FLAGS_DISCONNECTED_END = 1 << 1,
 };
@@ -102,20 +107,22 @@ typedef Void* IPCSocketConnectionIteratorRef;
 struct _IPCSocket {
     AllocatorRef Allocator;
     IPCNodeID NodeID;
-    SocketHandle Handle;
+    uv_loop_t* Loop;
+    uv_tcp_t Handle;
+    uv_connect_t Connect;
     SocketAddress Address;
-    UInt32 Flags;
     UInt16 ProtocolIdentifier;
     UInt16 ProtocolVersion;
     UInt16 ProtocolExtension;
-    Index ReadBufferSize;
-    Index WriteBufferSize;
+    Int32 ReadBufferSize;
+    Int32 WriteBufferSize;
     Index MaxConnectionCount;
     Index NextConnectionID;
     CString Host;
     UInt16 Port;
     Timestamp Timeout;
-    struct _IPCPacket HeartbeatPacket;
+    Int32 State;
+    uv_timer_t* ReconnectTimer;
     IPCPacketBufferRef PacketBuffer;
     IndexSetRef ConnectionIndices;
     MemoryPoolRef ConnectionPool; 
@@ -126,16 +133,18 @@ struct _IPCSocket {
 };
 
 struct _IPCSocketConnection {
+    IPCSocketRef Socket;
     Index ConnectionPoolIndex;
-    SocketHandle Handle;
-    SocketAddress Address;
-    Char AddressIP[16];
+    uv_tcp_t HandleMemory;
+    uv_tcp_t* Handle;
+    uv_connect_t* ConnectRequest; 
+    Char AddressIP[INET6_ADDRSTRLEN];
     Index ID;
     UInt32 Flags;
     IPCPacketBufferRef PacketBuffer;
+    MemoryRef RecvBuffer;
+    Int32 RecvBufferLength;
     MemoryBufferRef ReadBuffer;
-    MemoryBufferRef WriteBuffer;
-    Timestamp HeartbeatTimestamp;
     Void* Userdata;
 };
 
@@ -145,8 +154,8 @@ IPCSocketRef IPCSocketCreate(
     AllocatorRef Allocator,
     IPCNodeID NodeID,
     UInt32 Flags,
-    Index ReadBufferSize,
-    Index WriteBufferSize,
+    Int32 ReadBufferSize,
+    Int32 WriteBufferSize,
     CString Host,
     UInt16 Port,
     Timestamp Timeout,
@@ -187,10 +196,6 @@ Void IPCSocketUpdate(
 Void IPCSocketDisconnect(
     IPCSocketRef Socket,
     IPCSocketConnectionRef Connection
-);
-
-Void IPCSocketClose(
-    IPCSocketRef Socket
 );
 
 Index IPCSocketGetConnectionCount(

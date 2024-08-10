@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<World WorldIndex="1">
+	<QuestDropPool MobSpeciesIndex="2">
+		<Item ItemID="469" ItemOption="3010" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="468" ItemOption="3026" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="470" ItemOption="3043" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+	</QuestDropPool>
+	<QuestDropPool MobSpeciesIndex="153">
+		<Item ItemID="2817" ItemOption="3015" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+	</QuestDropPool>
+	<QuestDropPool MobSpeciesIndex="205">
+		<Item ItemID="569" ItemOption="3100" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+	</QuestDropPool>
+	<QuestDropPool MobSpeciesIndex="154">
+		<Item ItemID="452" ItemOption="3221" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="460" ItemOption="3222" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+	</QuestDropPool>
+	<QuestDropPool MobSpeciesIndex="221">
+		<Item ItemID="566" ItemOption="3237" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="2684" ItemOption="3238" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="2834" ItemOption="3239" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+	</QuestDropPool>
+	<QuestDropPool MobSpeciesIndex="172">
+		<Item ItemID="445" ItemOption="3248" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+	</QuestDropPool>
+	<QuestDropPool MobSpeciesIndex="176">
+		<Item ItemID="2868" ItemOption="3252" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+	</QuestDropPool>
+	<QuestDropPool MobSpeciesIndex="225">
+		<Item ItemID="565" ItemOption="3269" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="759" ItemOption="3270" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+	</QuestDropPool>
+	<QuestDropPool MobSpeciesIndex="195">
+		<Item ItemID="2819" ItemOption="3272" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+	</QuestDropPool>
+	<QuestDropPool MobSpeciesIndex="209">
+		<Item ItemID="2827" ItemOption="3280" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+	</QuestDropPool>
+</World>

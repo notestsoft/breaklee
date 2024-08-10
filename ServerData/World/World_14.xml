@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<World WorldIndex="14">
+	<QuestDropPool MobSpeciesIndex="666">
+		<Item ItemID="479" ItemOption="1086" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+	</QuestDropPool>
+	<QuestDropPool MobSpeciesIndex="667">
+		<Item ItemID="479" ItemOption="1087" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+	</QuestDropPool>
+	<QuestDropPool MobSpeciesIndex="661">
+		<Item ItemID="479" ItemOption="1182" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+	</QuestDropPool>
+</World>

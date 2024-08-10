@@ -60,27 +60,27 @@ UInt8* MemoryBufferGetMemory(
     return MemoryBuffer->Memory + sizeof(UInt8) * Offset;
 }
 
-Void MemoryBufferAlignOffset(
-    MemoryBufferRef MemoryBuffer
-) {
-    Index AlignedOffset = Align(MemoryBuffer->Offset, MemoryBuffer->Alignment);
-    assert(AlignedOffset <= MemoryBuffer->SizeAligned);
-    MemoryBuffer->Offset = AlignedOffset;
-}
-
 Void MemoryBufferPopFront(
     MemoryBufferRef MemoryBuffer,
     Index Length
 ) {
-    assert(Length <= MemoryBuffer->Offset);
+    MemoryBufferRemove(MemoryBuffer, 0, Length);
+}
 
-    if (MemoryBuffer->Offset > Length) {
-        UInt8* Destination = MemoryBufferGetMemory(MemoryBuffer, 0);
-        UInt8* Source = MemoryBufferGetMemory(MemoryBuffer, Length);
-        Index TailLength = MemoryBuffer->Offset - Length;
+Void MemoryBufferRemove(
+    MemoryBufferRef MemoryBuffer,
+    Index Offset,
+    Index Length
+) {
+    assert(Offset + Length <= MemoryBuffer->Offset);
+
+    if (Offset + Length < MemoryBuffer->Offset) {
+        UInt8* Destination = MemoryBufferGetMemory(MemoryBuffer, Offset);
+        UInt8* Source = MemoryBufferGetMemory(MemoryBuffer, Offset + Length);
+        Index TailLength = MemoryBuffer->Offset - (Offset + Length);
         memmove(Destination, Source, TailLength);
     }
-    
+
     MemoryBuffer->Offset -= Length;
 }
 
@@ -109,7 +109,12 @@ UInt8* MemoryBufferAppendCopy(
     Void* Source,
     Index Length
 ) {
-    UInt8* Memory = MemoryBufferAppend(MemoryBuffer, Length);
+    Index AppendedOffset = MemoryBuffer->Offset + Length;
+    assert(AppendedOffset <= MemoryBuffer->Size);
+
+    UInt8* Memory = MemoryBufferGetMemory(MemoryBuffer, MemoryBuffer->Offset);
     memcpy(Memory, Source, Length);
+
+    MemoryBuffer->Offset = AppendedOffset;
     return Memory;
 }

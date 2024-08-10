@@ -41,6 +41,13 @@ Void SendPremiumServiceList(
     SocketConnectionRef Connection
 );
 
+Void SendCharacterData(
+    ServerContextRef Context,
+    SocketRef Socket,
+    SocketConnectionRef Connection,
+    RTCharacterRef Character
+);
+
 Void SendPartyData(
     ServerContextRef Context,
     SocketRef Socket,

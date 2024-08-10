@@ -36,9 +36,9 @@ CLIENT_PROCEDURE_BINDING(LOOT_INVENTORY_ITEM) {
     }
 
     Character->SyncMask.Info = true;
+    Character->SyncMask.InventoryInfo = true;
 
     RTWorldDespawnItem(Runtime, World, Item);
-
     SocketSend(Socket, Connection, Response);
     return;
 
