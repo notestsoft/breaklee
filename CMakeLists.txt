@@ -12,10 +12,8 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG=1")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/CMake)
 
 option(CONFIG_BUILD_TARGET_AUCTION_SVR "Build Auction Server" OFF)
-option(CONFIG_BUILD_TARGET_BOT_SVR "Build Bot Server" OFF)
 option(CONFIG_BUILD_TARGET_BREAKLEE "Build Breaklee" OFF)
 option(CONFIG_BUILD_TARGET_CHAT_SVR "Build Chat Server" OFF)
-option(CONFIG_BUILD_TARGET_CLIENT "Build Client" OFF)
 option(CONFIG_BUILD_TARGET_LOGIN_SVR "Build Login Server" ON)
 option(CONFIG_BUILD_TARGET_MASTER_DBAGENT "Build Master DB Agent" ON)
 option(CONFIG_BUILD_TARGET_MASTER_SVR "Build Master Server" ON)
@@ -136,17 +134,6 @@ if(CONFIG_BUILD_TARGET_AUCTION_SVR)
     endif()
 endif()
 
-if(CONFIG_BUILD_TARGET_BOT_SVR)
-    set(BOT_SVR_DIR ${PROJECT_SOURCE_DIR}/BotSvr)
-    
-    file(GLOB BOT_SVR_HEADERS ${BOT_SVR_DIR}/*.h)
-    file(GLOB BOT_SVR_SOURCES ${BOT_SVR_DIR}/*.c)
-
-    add_executable(BotSvr ${BOT_SVR_HEADERS} ${BOT_SVR_SOURCES} ${SHARED_HEADERS})
-    target_include_directories(BotSvr PUBLIC ${PROJECT_SOURCE_DIR} ${SHARED_HEADERS_DIR})
-    target_link_libraries(BotSvr NetLib CoreLib)
-endif()
-
 if(CONFIG_BUILD_TARGET_BREAKLEE)
     set(BREAKLEE_DIR ${PROJECT_SOURCE_DIR}/Breaklee)
 
@@ -171,20 +158,6 @@ if(CONFIG_BUILD_TARGET_CHAT_SVR)
     if(WIN32)
         target_link_libraries(ChatSvr ${CHAT_SVR_DIR}/main.res)
     endif()
-endif()
-
-if(CONFIG_BUILD_TARGET_CLIENT)
-    find_package(DirectX REQUIRED)
-
-    set(CLIENT_DIR ${PROJECT_SOURCE_DIR}/Client)
-    
-    file(GLOB CLIENT_HEADERS ${CLIENT_DIR}/*.h)
-    file(GLOB CLIENT_SOURCES ${CLIENT_DIR}/*.c ${CLIENT_DIR}/*.cpp)
-
-	add_executable(Client ${CLIENT_HEADERS} ${CLIENT_SOURCES})
-	set_target_properties(Client PROPERTIES WIN32_EXECUTABLE TRUE)
-	target_include_directories(Client PUBLIC ${PROJECT_SOURCE_DIR} ${DirectX_INCLUDE_DIRS})
-	target_link_libraries(Client NetLib CoreLib RuntimeLib RuntimeDataLib ${DirectX_LIBRARIES})
 endif()
 
 if(CONFIG_BUILD_TARGET_LOGIN_SVR)
