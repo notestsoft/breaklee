@@ -41,7 +41,7 @@ Void SendPremiumServiceList(
     SocketConnectionRef Connection
 );
 
-Void SendCharacterData(
+Void SendCharacterStatus(
     ServerContextRef Context,
     SocketRef Socket,
     SocketConnectionRef Connection,
