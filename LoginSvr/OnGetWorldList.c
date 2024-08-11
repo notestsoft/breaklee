@@ -18,7 +18,10 @@ IPC_PROCEDURE_BINDING(M2L, GET_WORLD_LIST) {
             (Client->Flags & CLIENT_FLAGS_AUTHENTICATED) &&
             !(Connection->Flags & SOCKET_CONNECTION_FLAGS_DISCONNECTED)
         );
-        if (!IsAuthorized) continue;
+        if (!IsAuthorized) {
+            Trace("AuthorizationState(%d, %d)", (Client->Flags & CLIENT_FLAGS_AUTHENTICATED), !(Connection->Flags & SOCKET_CONNECTION_FLAGS_DISCONNECTED));
+            continue;
+        }
 
         S2C_DATA_SERVER_LIST* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, SERVER_LIST);
         Notification->ServerCount = Packet->GroupCount;
