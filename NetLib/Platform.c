@@ -133,8 +133,10 @@ Bool PlatformSocketRecv(
         return false;
     }
 #else
-    if (Result == -1 && errno != EINPROGRESS && errno != EAGAIN) {
-        return false;
+    if (Result == -1) {
+        if (errno != EINPROGRESS && errno != EAGAIN && errno != EINTR) {
+            return false;
+        }
     }
 #endif
 
