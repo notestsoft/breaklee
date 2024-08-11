@@ -19,7 +19,7 @@ Void StartAuthTimer(
     SocketSend(Socket, Connection, Response);
 
     Client->Flags |= CLIENT_FLAGS_CHECK_DISCONNECT_TIMER;
-    Client->DisconnectTimestamp = ServerGetTimestamp(Server) + Timeout;
+    Client->DisconnectTimestamp = GetTimestampMs() + Timeout;
 }
 
 Void SendURLList(

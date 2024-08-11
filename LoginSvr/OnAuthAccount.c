@@ -13,7 +13,7 @@ Void StartDisconnectTimer(
     S2C_DATA_DISCONNECT_TIMER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DISCONNECT_TIMER);
     Response->Timeout = Timeout;
     Client->Flags |= CLIENT_FLAGS_CHECK_DISCONNECT_TIMER;
-    Client->DisconnectTimestamp = ServerGetTimestamp(Server) + Timeout;
+    Client->DisconnectTimestamp = GetTimestampMs() + Timeout;
     SocketSend(Socket, Connection, Response);
 }
 

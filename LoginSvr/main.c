@@ -66,6 +66,8 @@ Void ServerOnUpdate(
     ServerRef Server,
     Void *ServerContext
 ) {
+    Timestamp CurrentTimestamp = GetTimestampMs();
+
     ServerContextRef Context = (ServerContextRef)ServerContext;
     SocketConnectionIteratorRef Iterator = SocketGetConnectionIterator(Context->ClientSocket);
     while (Iterator) {
@@ -74,7 +76,7 @@ Void ServerOnUpdate(
 
         ClientContextRef Client = (ClientContextRef)Connection->Userdata;
         if (Client->Flags & CLIENT_FLAGS_CHECK_DISCONNECT_TIMER) {
-            if (Client->DisconnectTimestamp < ServerGetTimestamp(Server)) {
+            if (Client->DisconnectTimestamp < CurrentTimestamp) {
                 Client->Flags &= ~CLIENT_FLAGS_CHECK_DISCONNECT_TIMER;
                 SocketDisconnect(Context->ClientSocket, Connection);
                 continue;
@@ -82,7 +84,6 @@ Void ServerOnUpdate(
         }
     }
 
-    Timestamp CurrentTimestamp = GetTimestampMs();
     if (Context->WorldListBroadcastTimestamp < CurrentTimestamp) {
         Context->WorldListBroadcastTimestamp = CurrentTimestamp + Context->Config.Login.WorldListBroadcastInterval;
         IPC_L2M_DATA_GET_WORLD_LIST* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, L2M, GET_WORLD_LIST);

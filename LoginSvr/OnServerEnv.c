@@ -36,7 +36,7 @@ DATA_PROCEDURE_BINDING(OnDataAccountInfo, IPC_DATA_ACCOUNTINFO, IPC_DATA_ACKACCO
 		Response->Timeout = Context->Config.Login.AutoDisconnectDelay;
 		Response->CaptchaSize = Client->Captcha->DataLength;
 		Client->Flags |= CLIENT_FLAGS_CHECK_DISCONNECT_TIMER;
-		Client->DisconnectTimestamp = ServerGetTimestamp(Server) + Response->Timeout;
+		Client->DisconnectTimestamp = GetTimestampMs() + Response->Timeout;
 		memcpy(Response->Captcha, Client->Captcha->Data, Response->CaptchaSize);
 	}
 	else {
@@ -66,7 +66,7 @@ CLIENT_PROCEDURE_BINDING(REFRESH_CAPTCHA) {
 		Response->Timeout = Context->Config.Login.AutoDisconnectDelay;
 		Response->CaptchaSize = Client->Captcha->DataLength;
 		Client->Flags |= CLIENT_FLAGS_CHECK_DISCONNECT_TIMER;
-		Client->DisconnectTimestamp = ServerGetTimestamp(Server) + Response->Timeout;
+		Client->DisconnectTimestamp = GetTimestampMs() + Response->Timeout;
 		memcpy(Response->Captcha, Client->Captcha->Data, Response->CaptchaSize);
 	}
 	else {
