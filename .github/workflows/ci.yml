@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: 'true'
 
     - name: Install build prerequisites
       run: sudo apt-get install gcc libssl-dev libmariadb-dev zlib1g-dev ninja-build cmake lua5.4 liblua5.4-dev
@@ -43,7 +45,9 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
-
+      with:
+        submodules: 'true'
+  
     - name: Install build prerequisites
       run: brew install openssl mariadb zlib ninja cmake lua@5.4
 
@@ -76,7 +80,9 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
-
+      with:
+        submodules: 'true'
+    
     - name: Configure project (Windows)
       run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64
 
@@ -122,6 +128,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          submodules: 'true'
 
       - name: Get commit message
         id: get_commit_message
@@ -152,6 +160,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          submodules: 'true'
 
       - name: Get commit message
         id: get_commit_message
@@ -182,6 +192,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          submodules: 'true'
 
       - name: Get commit message
         id: get_commit_message
