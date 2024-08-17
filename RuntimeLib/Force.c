@@ -448,7 +448,7 @@ Void RTRuntimeInitForceEffectFormulas(
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_ALZ_DROP_RATE_INCREASE, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_ALZ_DROP_RATE);
 
-    Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_ALZ_BOMP_RATE_INCREASE, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
+    Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_ALZ_BOMB_RATE_INCREASE, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_ALZ_BOMB_RATE);
 
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_RESIST_SKILL_AMP, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
@@ -503,7 +503,7 @@ Void RTRuntimeInitForceEffectFormulas(
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_IGNORE_RESIST_CRITICAL_DAMAGE, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_IGNORE_RESIST_CRITICAL_DAMAGE);
 
-    Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_INGORE_RESIST_SKILL_AMP, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
+    Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_IGNORE_RESIST_SKILL_AMP, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_IGNORE_RESIST_SKILL_AMP);
     
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_IGNORE_RESIST_DOWN, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
