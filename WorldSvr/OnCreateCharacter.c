@@ -154,6 +154,8 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 		Request->CharacterData.OverlordMasteryInfo.Info.Level = Runtime->Context->OverlordMasteryExpList[Runtime->Context->OverlordMasteryExpCount - 1].Level;
 		Request->CharacterData.OverlordMasteryInfo.Info.Exp = Runtime->Context->OverlordMasteryExpList[Runtime->Context->OverlordMasteryExpCount - 1].AccumulatedExp;
 		Request->CharacterData.Info.Skill.Rank = 10;
+		Request->CharacterData.Info.Skill.Point = 1000;
+		Request->CharacterData.Info.Skill.Level = 540;
 		Request->CharacterData.ForceWingInfo.Info.Grade = 1;
 		Request->CharacterData.ForceWingInfo.Info.Level = 1;
 		Request->CharacterData.MythMasteryInfo.Info.Level = 94;
