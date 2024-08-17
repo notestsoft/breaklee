@@ -44,25 +44,18 @@ CLIENT_PROCEDURE_BINDING(WAREHOUSE_CURRENCY_DEPOSIT) {
 		// TODO: Move tax to config?
 		Int64 MinimumTax = 1000;
 		Int64 MaximumTax = 10000;
-		double TaxPercent = 0.4;
+		Float64 TaxPercent = 0.4;
 
 		Int64 TaxAmount = ((TaxPercent / 100) * Packet->Amount);
 
-		// TODO: Replace with min/max macro
-		if (TaxAmount < MinimumTax) {
-			TaxAmount = MinimumTax;
-		}
-		else if (TaxAmount > MaximumTax) {
-			TaxAmount = MaximumTax;
-		}
+		TaxAmount = MAX(MinimumTax, TaxAmount);
+		TaxAmount = MIN(MaximumTax, TaxAmount);
 
 		Int64 RealDepositAmount = Packet->Amount;
 
 		// Error: Deposit more than available or smaller/equal than minimum amount
 		if (Character->Data.Info.Alz < Packet->Amount || MinimumTax >= Packet->Amount) {
-			Response->Result = 0;
-			SocketSend(Socket, Connection, Response);
-			return;
+			goto error;
 		}
 
 		// Subtract from inventory first, to match client behaviour
@@ -83,9 +76,7 @@ CLIENT_PROCEDURE_BINDING(WAREHOUSE_CURRENCY_DEPOSIT) {
 
 		// Error: Withdraw more than available
 		if (Character->Data.WarehouseInfo.Currency < AbsAmount) {
-			Response->Result = 0;
-			SocketSend(Socket, Connection, Response);
-			return;
+			goto error;
 		}
 
 		Character->Data.Info.Alz += AbsAmount;
@@ -97,6 +88,13 @@ CLIENT_PROCEDURE_BINDING(WAREHOUSE_CURRENCY_DEPOSIT) {
 
 	SocketSend(Socket, Connection, Response);
 	return;
+
+error:
+	{
+		Response->Result = 0;
+		SocketSend(Socket, Connection, Response);
+		return;
+	}
 }
 
 CLIENT_PROCEDURE_BINDING(SORT_WAREHOUSE) {
