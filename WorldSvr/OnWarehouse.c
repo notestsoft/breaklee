@@ -33,30 +33,51 @@ error:
 }
 
 CLIENT_PROCEDURE_BINDING(WAREHOUSE_CURRENCY_DEPOSIT) {
-	memcpy(&kWarehouseInfoBackup, &Character->Data.WarehouseInfo, sizeof(struct _RTCharacterWarehouseInfo));
-
 	S2C_DATA_WAREHOUSE_CURRENCY_DEPOSIT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, WAREHOUSE_CURRENCY_DEPOSIT);
 
 	Response->Result = 1;
 
-	// TODO: Calculate the tax for the deposit
-
+	// Deposit
 	if (Packet->Amount > 0) {
-		if (Character->Data.Info.Alz< Packet->Amount) {
-			Response->Result = 0;
-			SocketSend(Socket, Connection, Response);
-			return;
+		// TODO: Move tax to config?
+		Int64 MinimumTax = 1000;
+		Int64 MaximumTax = 10000;
+		Float64 TaxPercent = 0.4;
+
+		Int64 TaxAmount = ((TaxPercent / 100) * Packet->Amount);
+
+		TaxAmount = MAX(MinimumTax, TaxAmount);
+		TaxAmount = MIN(MaximumTax, TaxAmount);
+
+		Int64 RealDepositAmount = Packet->Amount;
+
+		// Error: Deposit more than available or smaller/equal than minimum amount
+		if (Character->Data.Info.Alz < Packet->Amount || MinimumTax >= Packet->Amount) {
+			goto error;
 		}
 
-		Character->Data.Info.Alz-= Packet->Amount;
-		Character->Data.WarehouseInfo.Currency += Packet->Amount;
+		// Subtract from inventory first, to match client behaviour
+		if (Character->Data.Info.Alz > (Packet->Amount + TaxAmount)) {
+			Character->Data.Info.Alz -= TaxAmount;
+		}
+		// Subtract from deposit
+		else {
+			RealDepositAmount -= TaxAmount;
+		}
+
+		Character->Data.Info.Alz -= Packet->Amount;
+		Character->Data.WarehouseInfo.Currency += RealDepositAmount;
 	}
+	// Withdraw
 	else {
 		Int64 AbsAmount = ABS(Packet->Amount);
 
-		if (Character->Data.WarehouseInfo.Currency < AbsAmount) goto error;
+		// Error: Withdraw more than available
+		if (Character->Data.WarehouseInfo.Currency < AbsAmount) {
+			goto error;
+		}
 
-		Character->Data.Info.Alz+= AbsAmount;
+		Character->Data.Info.Alz += AbsAmount;
 		Character->Data.WarehouseInfo.Currency -= AbsAmount;
 	}
 
@@ -67,8 +88,11 @@ CLIENT_PROCEDURE_BINDING(WAREHOUSE_CURRENCY_DEPOSIT) {
 	return;
 
 error:
-	memcpy(&Character->Data.WarehouseInfo, &kWarehouseInfoBackup, sizeof(struct _RTCharacterWarehouseInfo));
-	SocketDisconnect(Socket, Connection);
+	{
+		Response->Result = 0;
+		SocketSend(Socket, Connection, Response);
+		return;
+	}
 }
 
 CLIENT_PROCEDURE_BINDING(SORT_WAREHOUSE) {
