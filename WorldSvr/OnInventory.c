@@ -70,7 +70,22 @@ Bool MoveInventoryItem(
         if (!RTEquipmentSetSlot(Runtime, Character, &Character->Data.EquipmentInfo, &TempSlot)) goto error;
     }
     else if (DestinationStorageType == STORAGE_TYPE_WAREHOUSE) {
-        if (!RTWarehouseSetSlot(Runtime, &Character->Data.WarehouseInfo, &TempSlot)) goto error;
+        if (Character->Data.Info.Alz < 1000 && Character->Data.WarehouseInfo.Currency < 1000) {
+            goto error;
+        }
+
+        if (!RTWarehouseSetSlot(Runtime, &Character->Data.WarehouseInfo, &TempSlot)) {
+            goto error;
+        }
+        
+        if (Character->Data.Info.Alz >= 1000) {
+            Character->Data.Info.Alz -= 1000;
+            Character->SyncMask.Info = true;
+        }
+        else {
+            Character->Data.WarehouseInfo.Currency -= 1000;
+            Character->SyncMask.WarehouseInfo = true;
+        }
     }
     else if (DestinationStorageType == STORAGE_TYPE_VEHICLE_INVENTORY) {
         RTItemSlotRef VehicleSlot = RTEquipmentGetSlot(Runtime, &Character->Data.EquipmentInfo, EQUIPMENT_SLOT_INDEX_VEHICLE);
