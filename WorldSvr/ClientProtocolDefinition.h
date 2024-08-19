@@ -3621,6 +3621,27 @@ CLIENT_PROTOCOL(S2C, NFY_UPDATE_TRANSCENDENCE_POINTS, DEFAULT, 2926,
     UInt32 TranscendencePoints;
 )
 
+CLIENT_PROTOCOL(C2S, STELLAR_LINK_IMPRINT_SLOT, DEFAULT, 2936,
+    UInt8 GroupID;
+    UInt8 SlotLine;
+    UInt8 SlotIndex;
+    UInt32 MaterialCount;
+    UInt16 MaterialSlotCount1;
+    UInt16 MaterialSlotCount2;
+    UInt16 MaterialSlotIndex[0]; // MaterialSlotCount1 + MaterialSlotCount2
+)
+
+CLIENT_PROTOCOL(S2C, STELLAR_LINK_IMPRINT_SLOT, DEFAULT, 2936,
+    UInt8 GroupID;
+    UInt8 SlotLine;
+    UInt8 SlotIndex;
+    UInt8 StellarLinkGrade;
+    UInt32 StellarForceEffect; // See RuntimeLib/Force.h
+    UInt32 StellarForceValue;
+    UInt32 StellarForceValueType;
+    UInt32 ErrorCode;
+)
+
 CLIENT_PROTOCOL(C2S, ROLL_FORCEWING_ARRIVAL_SKILL, DEFAULT, 2965,
     UInt8 SkillSlotIndex;
     UInt32 Unknown1;

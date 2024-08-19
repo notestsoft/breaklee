@@ -124,6 +124,7 @@
 #include "Shop.h"
 #include "Skill.h"
 #include "SkillEnchant.h"
+#include "Stellar.h"
 #include "Title.h"
 #include "Transform.h"
 #include "WarAdvantage.h"
