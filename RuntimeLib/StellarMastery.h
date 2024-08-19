@@ -41,6 +41,18 @@ RTDataStellarLineGradeRef RTDataStellarMasteryGetLineGrade(
     UInt32 MaterialCount
 );
 
+RTStellarMasterySlotRef RTCharacterStellarMasteryGetSlot(
+	RTCharacterRef Character,
+	UInt8 GroupID,
+	UInt8 SlotLine,
+	UInt8 SlotIndex
+);
+
+Bool RTCharacterStellarMasterySetSlot(
+	RTCharacterRef Character,
+    RTStellarMasterySlotRef Slot
+);
+
 #pragma pack(pop)
 
 EXTERN_C_END
