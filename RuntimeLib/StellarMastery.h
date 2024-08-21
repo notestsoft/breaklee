@@ -16,6 +16,11 @@ enum {
     RUNTIME_STELLAR_MASTERY_SLOT_LINK_GRADE_VOID = 5,
 };
 
+enum {
+    RUNTIME_STELLAR_MASTERY_FORCE_VALUE_TYPE_MULTIPLICATIVE = 0,
+    RUNTIME_STELLAR_MASTERY_FORCE_VALUE_TYPE_ADDITIVE = 1,
+};
+
 struct _RTStellarMasterySlot {
     UInt8 GroupID;
     UInt8 SlotLine;
@@ -48,10 +53,25 @@ RTStellarMasterySlotRef RTCharacterStellarMasteryGetSlot(
 	UInt8 SlotIndex
 );
 
-Bool RTCharacterStellarMasterySetSlot(
-	RTCharacterRef Character,
-    RTStellarMasterySlotRef Slot
+RTStellarMasterySlotRef RTCharacterStellarMasteryAssertSlot(
+    RTCharacterRef Character,
+    UInt8 GroupID,
+    UInt8 SlotLine,
+    UInt8 SlotIndex
 );
+
+Void RTStellarMasteryRollLink(
+    RTRuntimeRef Runtime,
+    RTDataStellarLineGradeRef StellarLineGrade,
+    RTStellarMasterySlotRef MasterySlot
+);
+
+Void RTStellarMasteryRollForce(
+    RTRuntimeRef Runtime,
+    RTDataStellarLineGradeRef StellarLineGrade,
+    RTStellarMasterySlotRef MasterySlot
+);
+
 
 #pragma pack(pop)
 

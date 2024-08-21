@@ -41,6 +41,11 @@ CLIENT_PROCEDURE_BINDING(STELLAR_LINK_IMPRINT_SLOT) {
 		goto error;
 	}
 
+	if (Packet->SlotIndex >= 4 + Packet->SlotLine * 2) { // Each next line has 2 more slots, starting from 4
+		Error("[STELLAR_LINK_IMPRINT_SLOT]: Incorrect SlotIndex %d", Packet->SlotIndex);
+		goto error;
+	}
+
 	if (
 		!RTInventoryCanConsumeStackableItems(
 			Runtime,
@@ -54,11 +59,6 @@ CLIENT_PROCEDURE_BINDING(STELLAR_LINK_IMPRINT_SLOT) {
 		Error("[STELLAR_LINK_IMPRINT_SLOT]: Not enough materials");
 		goto error;
 	}
-
-	// TODO: Add slot index validation
-
-	// TODO: Add check of MaterialSlotCount2
-
 	RTInventoryConsumeStackableItems(
 		Runtime,
 		&Character->Data.InventoryInfo,
@@ -68,39 +68,40 @@ CLIENT_PROCEDURE_BINDING(STELLAR_LINK_IMPRINT_SLOT) {
 		Packet->MaterialSlotIndex
 	);
 
-	// TODO: Add usage of MaterialSlotCount2
-
 	Character->SyncMask.InventoryInfo = true;
 
-	// TODO: Randomize slot values
-	RTStellarMasterySlotRef MasterySlot = &(struct _RTStellarMasterySlot) {
-		.GroupID = StellarGroup->GroupID,
-		.SlotLine = StellarLine->LineID,
-		.SlotIndex = Packet->SlotIndex,
-		.StellarLinkGrade = RUNTIME_STELLAR_MASTERY_SLOT_LINK_GRADE_WRATH,
-		.StellarForceEffect = RUNTIME_FORCE_EFFECT_ATTACK_UP,
-		.StellarForceValue = 20,
-		.StellarForceValueType = RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
-	};
-
-
-	Bool SetSlotResult = RTCharacterStellarMasterySetSlot(
+	RTStellarMasterySlotRef MasterySlot = RTCharacterStellarMasteryAssertSlot(
 		Character,
+		StellarGroup->GroupID,
+		StellarLine->LineID,
+		Packet->SlotIndex
+	);
+
+	RTStellarMasteryRollLink(
+		Runtime,
+		StellarGroup,
+		StellarLine,
+		StellarLineGrade,
+		MasterySlot
+	);	
+	RTStellarMasteryRollForce(
+		Runtime,
+		StellarGroup,
+		StellarLine,
+		StellarLineGrade,
 		MasterySlot
 	);
-	if (!SetSlotResult) {
-		Error("[STELLAR_LINK_IMPRINT_SLOT]: Failed to set slot");
-		goto error;
-	}
+
 	Character->SyncMask.StellarMasteryInfo = true;
 
+
 	Response->GroupID = StellarGroup->GroupID;
-	Response->SlotLine = Packet->SlotLine;
+	Response->SlotLine = StellarLine->LineID;
 	Response->SlotIndex = Packet->SlotIndex;
 	Response->StellarLinkGrade = MasterySlot->StellarLinkGrade;
 	Response->StellarForceEffect = MasterySlot->StellarForceEffect;
-	Response->StellarForceValue = 20;
-	Response->StellarForceValueType = RUNTIME_FORCE_VALUE_TYPE_ADDITIVE;
+	Response->StellarForceValue = MasterySlot->StellarForceValue;
+	Response->StellarForceValueType = MasterySlot->StellarForceValueType;
 	Response->ErrorCode = 0;
 
 	SocketSend(Socket, Connection, Response);

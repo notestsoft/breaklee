@@ -3637,7 +3637,7 @@ CLIENT_PROTOCOL(S2C, STELLAR_LINK_IMPRINT_SLOT, DEFAULT, 2936,
     UInt8 SlotIndex;
     UInt8 StellarLinkGrade;
     UInt32 StellarForceEffect; // See RuntimeLib/Force.h
-    UInt32 StellarForceValue;
+    Int32 StellarForceValue;
     UInt32 StellarForceValueType;
     UInt32 ErrorCode;
 )

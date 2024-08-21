@@ -5,6 +5,37 @@
 #include "Force.h"
 
 
+/*
+Rolls single option from the pool.
+
+params:
+- Pool - pool to roll from.
+- Count - number of options in the pool.
+- GetChance - (*PoolItemType) -> Int32 - callback to get the chance of the option.
+- ResultRef - pointer to the result.
+*/
+#define ROLL_POOL(__POOL__, __COUNT__, __GET_CHANCE__, __RESULT_REF__)    \
+    {                                                                     \
+        Int32 MaxRandomValue = 0;                                         \
+        for (Int32 Index = 0; Index < __COUNT__; Index += 1) {            \
+            MaxRandomValue += __GET_CHANCE__(&__POOL__[Index]);           \
+        }                                                                 \
+                                                                          \
+        Int32 Seed = (Int32)PlatformGetTickCount();                       \
+        Int32 RandomValue = RandomRange(&Seed, 0, MaxRandomValue);        \
+        Int32 CumulativeChance = 0;                                       \
+                                                                          \
+        for (Int32 Index = 0; Index < __COUNT__; Index += 1) {            \
+            CumulativeChance += __GET_CHANCE__(&__POOL__[Index]);         \
+            if (RandomValue < CumulativeChance) {                         \
+                __RESULT_REF__ = &__POOL__[Index];                        \
+                break;                                                    \
+            }                                                             \
+        }                                                                 \
+    }
+
+
+
 RTDataStellarLineGradeRef RTDataStellarMasteryGetLineGrade(
 	RTRuntimeRef Runtime,
 	RTDataStellarLineRef StellarLine,
@@ -41,30 +72,77 @@ RTStellarMasterySlotRef RTCharacterStellarMasteryGetSlot(
 	return OutSlot;
 }
 
-Bool RTCharacterStellarMasterySetSlot(
+RTStellarMasterySlotRef RTCharacterStellarMasteryAssertSlot(
 	RTCharacterRef Character,
-	RTStellarMasterySlotRef Slot
+	UInt8 GroupID,
+	UInt8 SlotLine,
+	UInt8 SlotIndex
 ) {
-	Bool OutResult = false;
-
-	RTStellarMasterySlotRef ExistingSlot = RTCharacterStellarMasteryGetSlot(
-		Character,
-		Slot->GroupID,
-		Slot->SlotLine,
-		Slot->SlotIndex
-	);
-
-	if (ExistingSlot != NULL) {
-		ExistingSlot = Slot;
-		OutResult = true;
-	}
-	else {
+	RTStellarMasterySlotRef OutSlot = RTCharacterStellarMasteryGetSlot(Character, GroupID, SlotLine, SlotIndex);
+	if (OutSlot == NULL) {
 		if (Character->Data.StellarMasteryInfo.Info.SlotCount < RUNTIME_CHARACTER_MAX_STELLAR_SLOT_COUNT) {
-			Character->Data.StellarMasteryInfo.Slots[Character->Data.StellarMasteryInfo.Info.SlotCount] = *Slot;
+			OutSlot = &Character->Data.StellarMasteryInfo.Slots[Character->Data.StellarMasteryInfo.Info.SlotCount];
+			
+			OutSlot->GroupID = GroupID;
+			OutSlot->SlotLine = SlotLine;
+			OutSlot->SlotIndex = SlotIndex;
+
+			OutSlot->StellarLinkGrade = 0;
+			OutSlot->StellarForceEffect = 0;
+			OutSlot->StellarForceValue = 0;
+
 			Character->Data.StellarMasteryInfo.Info.SlotCount++;
-			OutResult = true;
 		}
 	}
+	return OutSlot;
+}
+
+
+static inline Int32 GetStellarForceEffectChance(const RTDataStellarForceEffectRef StellarForceEffect) {
+	return StellarForceEffect->Chance;
+}
+
+static inline Int32 GetStellarLinkChance(const RTDataStellarLinkRef StellarLink) {
+	return StellarLink->Chance;
+}
+
+
+Void RTStellarMasteryRollForce(
+	RTRuntimeRef Runtime,
+	RTDataStellarLineGradeRef StellarLineGrade,
+	RTStellarMasterySlotRef MasterySlot
+) {
+	RTDataStellarForcePoolRef StellarForcePool = RTRuntimeDataStellarForcePoolGet(Runtime->Context, StellarLineGrade->ForceCodePer);
 	
-	return OutResult;
+	RTDataStellarForceEffectRef StellarForceEffect = NULL;
+
+	ROLL_POOL(
+		StellarForcePool->StellarForceEffectList,
+		StellarForcePool->StellarForceEffectCount,
+		GetStellarForceEffectChance,
+		StellarForceEffect
+	);
+	
+	MasterySlot->StellarForceEffect = StellarForceEffect->ForceEffectID;
+	MasterySlot->StellarForceValue = StellarForceEffect->Value;
+	MasterySlot->StellarForceValueType = StellarForceEffect->ValueType;
+}
+
+Void RTStellarMasteryRollLink(
+	RTRuntimeRef Runtime,
+	RTDataStellarLineGradeRef StellarLineGrade,
+	RTStellarMasterySlotRef MasterySlot
+) {
+	RTDataStellarLinkPoolRef StellarLinkPool = RTRuntimeDataStellarLinkPoolGet(Runtime->Context, StellarLineGrade->Grade);
+
+	RTDataStellarLinkRef StellarLink = NULL;
+
+	ROLL_POOL(
+		StellarLinkPool->StellarLinkList,
+		StellarLinkPool->StellarLinkCount,
+		GetStellarLinkChance,
+		StellarLink
+	);
+
+	MasterySlot->StellarLinkGrade = StellarLink->Grade;
 }
