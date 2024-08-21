@@ -1,4 +1,3 @@
-#include "MasterDB.h"
 #include "IPCProtocol.h"
 #include "IPCProcedures.h"
 
@@ -7,15 +6,17 @@ IPC_PROCEDURE_BINDING(W2D, GET_PREMIUM_SERVICE) {
 	Response->Header.Source = Server->IPCSocket->NodeID;
 	Response->Header.Target = Packet->Header.Source;
 	Response->Header.TargetConnectionID = Packet->Header.SourceConnectionID;
-
-	MASTERDB_DATA_SERVICE Service = { 0 };
-	Service.AccountID = Packet->AccountID;
-	if (MasterDBSelectCurrentActiveServiceByAccount(Context->Database, &Service)) {
-		Response->HasService = true;
-		Response->ServiceType = Service.ServiceType;
-		Response->StartedAt = Service.StartedAt;
-		Response->ExpiredAt = Service.ExpiredAt;
-	}
+	Response->AccountID = Packet->AccountID;
+	Response->HasService = DatabaseCallProcedure(
+		Context->Database,
+		"GetPremiumService",
+		SQL_PARAM_INPUT, SQL_INTEGER, &Packet->AccountID,
+		SQL_PARAM_OUTPUT, SQL_INTEGER, &Response->ServiceType,
+		SQL_PARAM_OUTPUT, SQL_BIGINT, &Response->StartedAt,
+		SQL_PARAM_OUTPUT, SQL_BIGINT, &Response->ExpiredAt,
+		SQL_PARAM_OUTPUT, SQL_TINYINT, &Response->HasService,
+		SQL_END
+	);
 
     IPCSocketUnicast(Socket, Response);
 }

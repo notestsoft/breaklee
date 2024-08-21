@@ -6,7 +6,7 @@
 #include "Server.h"
 
 CLIENT_PROCEDURE_BINDING(GET_SERVER_STATUS) {
-	if (!(Client->Flags & CLIENT_FLAGS_VERIFIED) || Client->Account.AccountID < 1) goto error;
+	if (!(Client->Flags & CLIENT_FLAGS_VERIFIED) || Client->AccountID < 1) goto error;
 
 	IPC_W2W_DATA_REQUEST_SERVER_STATUS* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2W, REQUEST_SERVER_STATUS);
 	Request->Header.SourceConnectionID = Connection->ID;

@@ -5,8 +5,6 @@
 #include "Notification.h"
 #include "Server.h"
 
-// TODO: Sync vehicle inventory to database!
-
 Void ServerSyncCharacter(
 	ServerRef Server,
 	ServerContextRef Context,
@@ -20,7 +18,7 @@ Void ServerSyncCharacter(
 	Request->Header.Source = Server->IPCSocket->NodeID;
 	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
 	Request->Header.Target.Type = IPC_TYPE_MASTERDB;
-	Request->AccountID = Client->Account.AccountID;
+	Request->AccountID = Client->AccountID;
 	Request->CharacterID = Client->CharacterDatabaseID;
 	Request->SyncMask = Character->SyncMask;
 

@@ -9,7 +9,7 @@ RTWarpPointResult RTRuntimeGetWarpPoint(
     Int32 WarpIndex
 ) {
     assert(0 <= WarpIndex - 1 && WarpIndex - 1 < Runtime->Context->WarpPointCount);
-    assert(Character->Data.Info.Profile.Nation <= 3);
+    assert(Character->Data.StyleInfo.Nation <= 3);
 
     RTDataWarpPointRef WarpPoint = &Runtime->Context->WarpPointList[WarpIndex - 1];
     RTPosition Positions[] = {
@@ -19,8 +19,8 @@ RTWarpPointResult RTRuntimeGetWarpPoint(
         { WarpPoint->Nation3X, WarpPoint->Nation3Y },
     };
     RTWarpPointResult Result = { 0 };
-    Result.X = Positions[Character->Data.Info.Profile.Nation].X;
-    Result.Y = Positions[Character->Data.Info.Profile.Nation].Y;
+    Result.X = Positions[Character->Data.StyleInfo.Nation].X;
+    Result.Y = Positions[Character->Data.StyleInfo.Nation].Y;
     Result.Fee = WarpPoint->Fee;
     Result.WorldIndex = WarpPoint->WorldIndex;
     Result.Level = WarpPoint->Level;
@@ -71,10 +71,10 @@ Bool RTRuntimeWarpCharacter(
 
             RTCharacterSetHP(Runtime, Character, Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX], false);
             RTCharacterSetMP(Runtime, Character, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX], false);
-            Character->Data.Info.Position.X = WarpPoint.X;
-            Character->Data.Info.Position.Y = WarpPoint.Y;
-            Character->Data.Info.Position.WorldID = WarpPoint.WorldIndex;
-            Character->Data.Info.Position.DungeonIndex = TargetWorld->DungeonIndex;
+            Character->Data.Info.PositionX = WarpPoint.X;
+            Character->Data.Info.PositionY = WarpPoint.Y;
+            Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
+            Character->Data.Info.DungeonIndex = TargetWorld->DungeonIndex;
             Character->SyncMask.Info = true;
             RTCharacterInitializeAttributes(Runtime, Character);
 
@@ -126,10 +126,10 @@ Bool RTRuntimeWarpCharacter(
 
             RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 
-            Character->Data.Info.Position.X = WarpPoint.X;
-            Character->Data.Info.Position.Y = WarpPoint.Y;
-            Character->Data.Info.Position.WorldID = WarpPoint.WorldIndex;
-            Character->Data.Info.Position.DungeonIndex = NewWorld->DungeonIndex;
+            Character->Data.Info.PositionX = WarpPoint.X;
+            Character->Data.Info.PositionY = WarpPoint.Y;
+            Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
+            Character->Data.Info.DungeonIndex = NewWorld->DungeonIndex;
             Character->SyncMask.Info = true;
         
             RTMovementInitialize(
@@ -151,7 +151,7 @@ Bool RTRuntimeWarpCharacter(
             RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, DungeonIndex);
             if (!DungeonData) return false;
 
-            if (Character->Data.Info.Basic.Level < DungeonData->EntryConditionLevel) return false;
+            if (Character->Data.Info.Level < DungeonData->EntryConditionLevel) return false;
 
             RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, DungeonData->FailWarpNpcID);
             RTWorldContextRef TargetWorld = World;
@@ -164,10 +164,10 @@ Bool RTRuntimeWarpCharacter(
 
             RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 
-            Character->Data.Info.Position.X = WarpPoint.X;
-            Character->Data.Info.Position.Y = WarpPoint.Y;
-            Character->Data.Info.Position.WorldID = WarpPoint.WorldIndex;
-            Character->Data.Info.Position.DungeonIndex = TargetWorld->DungeonIndex;
+            Character->Data.Info.PositionX = WarpPoint.X;
+            Character->Data.Info.PositionY = WarpPoint.Y;
+            Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
+            Character->Data.Info.DungeonIndex = TargetWorld->DungeonIndex;
             Character->SyncMask.Info = true;
 
             RTMovementInitialize(
@@ -197,10 +197,10 @@ Bool RTRuntimeWarpCharacter(
 
             RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 
-            Character->Data.Info.Position.X = WarpPoint.X;
-            Character->Data.Info.Position.Y = WarpPoint.Y;
-            Character->Data.Info.Position.WorldID = WarpPoint.WorldIndex;
-            Character->Data.Info.Position.DungeonIndex = TargetWorld->DungeonIndex;
+            Character->Data.Info.PositionX = WarpPoint.X;
+            Character->Data.Info.PositionY = WarpPoint.Y;
+            Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
+            Character->Data.Info.DungeonIndex = TargetWorld->DungeonIndex;
             Character->SyncMask.Info = true;
 
             RTMovementInitialize(
@@ -252,10 +252,10 @@ Bool RTRuntimeWarpCharacter(
                 RTDungeonFail(World);
             }
 
-            Character->Data.Info.Position.X = WarpPoint.X;
-            Character->Data.Info.Position.Y = WarpPoint.Y;
-            Character->Data.Info.Position.WorldID = WarpPoint.WorldIndex;
-            Character->Data.Info.Position.DungeonIndex = TargetWorld->DungeonIndex;
+            Character->Data.Info.PositionX = WarpPoint.X;
+            Character->Data.Info.PositionY = WarpPoint.Y;
+            Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
+            Character->Data.Info.DungeonIndex = TargetWorld->DungeonIndex;
             Character->SyncMask.Info = true;
         
             RTMovementInitialize(
@@ -268,7 +268,7 @@ Bool RTRuntimeWarpCharacter(
             );
 
             if (World->Closed) {
-                assert(Character->Data.Info.Position.DungeonIndex != World->DungeonIndex);
+                assert(Character->Data.Info.DungeonIndex != World->DungeonIndex);
                 // TODO: This doesn't seam to be sufficient or maybe there is a warp center bug?
                 RTRuntimeCloseDungeon(Runtime, Character);
             }
@@ -286,7 +286,7 @@ Bool RTRuntimeWarpCharacter(
     }
     
     if (NpcID == RUNTIME_NPC_ID_GM2) {
-        if (Character->Data.Info.Profile.Nation != 3) return false;
+        if (Character->Data.StyleInfo.Nation != 3) return false;
 
         RTWorldContextRef TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpWorldID);
         if (!TargetWorld) return false;
@@ -295,10 +295,10 @@ Bool RTRuntimeWarpCharacter(
 
         RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 
-        Character->Data.Info.Position.X = WarpPositionX;
-        Character->Data.Info.Position.Y = WarpPositionY;
-        Character->Data.Info.Position.WorldID = WarpWorldID;
-        Character->Data.Info.Position.DungeonIndex = 0;
+        Character->Data.Info.PositionX = WarpPositionX;
+        Character->Data.Info.PositionY = WarpPositionY;
+        Character->Data.Info.WorldIndex = WarpWorldID;
+        Character->Data.Info.DungeonIndex = 0;
         Character->SyncMask.Info = true;
         
         RTMovementInitialize(
@@ -331,16 +331,16 @@ Bool RTRuntimeWarpCharacter(
 
         RTWorldContextRef TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpWorldID);
         if (!TargetWorld) return false;
-        if (TargetWorld->WorldData->WorldIndex != Character->Data.Info.Position.WorldID) return false;
+        if (TargetWorld->WorldData->WorldIndex != Character->Data.Info.WorldIndex) return false;
 
         if (RTWorldIsTileColliding(Runtime, TargetWorld, WarpPositionX, WarpPositionY, Character->Movement.CollisionMask)) return false;
 
         RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 
-        Character->Data.Info.Position.X = WarpPositionX;
-        Character->Data.Info.Position.Y = WarpPositionY;
-        Character->Data.Info.Position.WorldID = WarpWorldID;
-        Character->Data.Info.Position.DungeonIndex = 0;
+        Character->Data.Info.PositionX = WarpPositionX;
+        Character->Data.Info.PositionY = WarpPositionY;
+        Character->Data.Info.WorldIndex = WarpWorldID;
+        Character->Data.Info.DungeonIndex = 0;
         Character->SyncMask.Info = true;
 
         RTMovementInitialize(
@@ -357,17 +357,17 @@ Bool RTRuntimeWarpCharacter(
         return true;
     }
 
-    RTNpcRef Npc = RTRuntimeGetNpcByWorldNpcID(Runtime, Character->Data.Info.Position.WorldID, NpcID);
+    RTNpcRef Npc = RTRuntimeGetNpcByWorldNpcID(Runtime, Character->Data.Info.WorldIndex, NpcID);
     if (!Npc) return false;
 
     // TODO: Distance check if not working for quest dungeons from npcs...
     //if (!RTMovementIsInRange(Runtime, &Character->Movement, Npc->X, Npc->Y)) return false;
 
-    RTWarpRef Warp = RTRuntimeGetWarpByWorldNpcID(Runtime, Character->Data.Info.Position.WorldID, NpcID, WarpIndex);
+    RTWarpRef Warp = RTRuntimeGetWarpByWorldNpcID(Runtime, Character->Data.Info.WorldIndex, NpcID, WarpIndex);
     if (!Warp) return false;
     assert(Warp->Index == WarpIndex);
 
-    if (Character->Data.Info.Basic.Level < Warp->Level) return false;
+    if (Character->Data.Info.Level < Warp->Level) return false;
     if (Character->Data.Info.Alz< Warp->Fee) return false;
 
     if (Warp->Type == RUNTIME_WARP_TYPE_GATE) {
@@ -382,10 +382,10 @@ Bool RTRuntimeWarpCharacter(
         RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 
         Character->Data.Info.Alz-= Warp->Fee;
-        Character->Data.Info.Position.X = WarpPoint.X;
-        Character->Data.Info.Position.Y = WarpPoint.Y;
-        Character->Data.Info.Position.WorldID = WarpPoint.WorldIndex;
-        Character->Data.Info.Position.DungeonIndex = TargetWorld->DungeonIndex;
+        Character->Data.Info.PositionX = WarpPoint.X;
+        Character->Data.Info.PositionY = WarpPoint.Y;
+        Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
+        Character->Data.Info.DungeonIndex = TargetWorld->DungeonIndex;
         Character->SyncMask.Info = true;
         
         RTMovementInitialize(
@@ -411,7 +411,7 @@ Bool RTRuntimeWarpCharacter(
 
         // TODO: Check and remove EntryItem
 
-        if (Character->Data.Info.Basic.Level < QuestDungeonData->EntryConditionLevel) return false;
+        if (Character->Data.Info.Level < QuestDungeonData->EntryConditionLevel) return false;
 
         // TODO: Check if party has other dungeon
         // TODO: Check MaxPlayerCount & Party Size
@@ -424,10 +424,10 @@ Bool RTRuntimeWarpCharacter(
         if (!DungeonWorld) return false;
 
         Character->Data.Info.Alz-= Warp->Fee;
-        Character->Data.Info.Position.X = WarpPoint.X;
-        Character->Data.Info.Position.Y = WarpPoint.Y;
-        Character->Data.Info.Position.WorldID = WarpPoint.WorldIndex;
-        Character->Data.Info.Position.DungeonIndex = DungeonWorld->DungeonIndex;
+        Character->Data.Info.PositionX = WarpPoint.X;
+        Character->Data.Info.PositionY = WarpPoint.Y;
+        Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
+        Character->Data.Info.DungeonIndex = DungeonWorld->DungeonIndex;
         Character->SyncMask.Info = true;
         
         RTMovementInitialize(
@@ -458,7 +458,7 @@ Bool RTRuntimeWarpCharacter(
 
         // TODO: Check and remove EntryItem
 
-        if (Character->Data.Info.Basic.Level < DungeonData->EntryConditionLevel) return false;
+        if (Character->Data.Info.Level < DungeonData->EntryConditionLevel) return false;
 
         // TODO: Check if party has other dungeon
         // TODO: Check MaxPlayerCount & Party Size
@@ -471,10 +471,10 @@ Bool RTRuntimeWarpCharacter(
         if (!DungeonWorld) return false;
 
         Character->Data.Info.Alz-= Warp->Fee;
-        Character->Data.Info.Position.X = WarpPoint.X;
-        Character->Data.Info.Position.Y = WarpPoint.Y;
-        Character->Data.Info.Position.WorldID = WarpPoint.WorldIndex;
-        Character->Data.Info.Position.DungeonIndex = DungeonWorld->DungeonIndex;
+        Character->Data.Info.PositionX = WarpPoint.X;
+        Character->Data.Info.PositionY = WarpPoint.Y;
+        Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
+        Character->Data.Info.DungeonIndex = DungeonWorld->DungeonIndex;
         Character->DungeonEntryItemSlotIndex = SlotIndex;
         Character->SyncMask.Info = true;
         

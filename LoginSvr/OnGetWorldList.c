@@ -1,4 +1,3 @@
-#include "AuthDB.h"
 #include "ClientProtocol.h"
 #include "ClientProcedures.h"
 #include "ClientSocket.h"

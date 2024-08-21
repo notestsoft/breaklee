@@ -19,7 +19,7 @@ Bool RTCharacterAddQuickSlot(
 		return true;
 	}
 
-	QuickSlot = &Character->Data.QuickSlotInfo.QuickSlots[Character->Data.QuickSlotInfo.Info.SlotCount];
+	QuickSlot = &Character->Data.QuickSlotInfo.Slots[Character->Data.QuickSlotInfo.Info.SlotCount];
 	QuickSlot->SkillIndex = SkillIndex;
 	QuickSlot->SlotIndex = SlotIndex;
 	Character->Data.QuickSlotInfo.Info.SlotCount += 1;
@@ -35,8 +35,8 @@ RTQuickSlotRef RTCharacterGetQuickSlotByIndex(
 	Int32 SlotIndex
 ) {
 	for (Int32 Index = 0; Index < Character->Data.QuickSlotInfo.Info.SlotCount; Index += 1) {
-		if (Character->Data.QuickSlotInfo.QuickSlots[Index].SlotIndex == SlotIndex) {
-			return &Character->Data.QuickSlotInfo.QuickSlots[Index];
+		if (Character->Data.QuickSlotInfo.Slots[Index].SlotIndex == SlotIndex) {
+			return &Character->Data.QuickSlotInfo.Slots[Index];
 		}
 	}
 
@@ -68,12 +68,12 @@ Bool RTCharacterRemoveQuickSlot(
 	Int32 SlotIndex
 ) {
 	for (Int32 Index = 0; Index < Character->Data.QuickSlotInfo.Info.SlotCount; Index++) {
-		if (Character->Data.QuickSlotInfo.QuickSlots[Index].SlotIndex == SlotIndex) {
+		if (Character->Data.QuickSlotInfo.Slots[Index].SlotIndex == SlotIndex) {
 			Int32 TailLength = Character->Data.QuickSlotInfo.Info.SlotCount - Index - 1;
 			if (TailLength > 0) {
 				memmove(
-					&Character->Data.QuickSlotInfo.QuickSlots[Index],
-					&Character->Data.QuickSlotInfo.QuickSlots[Index + 1],
+					&Character->Data.QuickSlotInfo.Slots[Index],
+					&Character->Data.QuickSlotInfo.Slots[Index + 1],
 					TailLength * sizeof(struct _RTQuickSlot)
 				);
 			}

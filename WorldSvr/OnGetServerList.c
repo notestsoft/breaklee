@@ -6,7 +6,7 @@
 #include "Server.h"
 
 CLIENT_PROCEDURE_BINDING(GET_SERVER_LIST) {
-	if (!(Client->Flags & CLIENT_FLAGS_VERIFIED) || Client->Account.AccountID < 1) goto error;
+	if (!(Client->Flags & CLIENT_FLAGS_VERIFIED) || Client->AccountID < 1) goto error;
 
 	IPC_W2M_DATA_GET_WORLD_LIST* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2M, GET_WORLD_LIST);
 	Request->Header.SourceConnectionID = Connection->ID;

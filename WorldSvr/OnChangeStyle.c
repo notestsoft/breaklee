@@ -9,8 +9,8 @@ CLIENT_PROCEDURE_BINDING(CHANGE_STYLE) {
 	if (!Character) goto error;
 
 	// TODO: IMPORTANT VALIDATE THE CHANGE!
-	Character->Data.Info.Style.RawValue = SwapUInt32(Packet->CharacterStyle);
-	Character->Data.Info.LiveStyle.RawValue = SwapUInt32(Packet->CharacterLiveStyle);
+	Character->Data.StyleInfo.Style.RawValue = SwapUInt32(Packet->CharacterStyle);
+	Character->Data.StyleInfo.LiveStyle.RawValue = SwapUInt32(Packet->CharacterLiveStyle);
 
 	// TODO: Implementation missing!
 	S2C_DATA_CHANGE_STYLE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHANGE_STYLE);

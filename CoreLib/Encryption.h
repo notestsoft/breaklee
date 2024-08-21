@@ -2,10 +2,6 @@
 
 EXTERN_C_BEGIN
 
-Bool EncryptionLoadLibrary();
-
-Bool EncryptionUnloadLibrary();
-
 Bool InflateDecryptBuffer(
     UInt8* Source,
     Int32 SourceLength,

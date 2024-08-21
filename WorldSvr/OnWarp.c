@@ -21,13 +21,13 @@ CLIENT_PROCEDURE_BINDING(WARP) {
 
     S2C_DATA_WARP* Response = PacketBufferInit(Connection->PacketBuffer, S2C, WARP);
     Response->Result = Success ? 0 : 1;
-    Response->AccumulatedExp = Character->Data.Info.Basic.Exp;
+    Response->AccumulatedExp = Character->Data.Info.Exp;
     Response->AccumulatedOxp = Character->Data.OverlordMasteryInfo.Info.Exp;
     Response->Currency = Character->Data.Info.Alz;
-    Response->Position.X = Character->Data.Info.Position.X;
-    Response->Position.Y = Character->Data.Info.Position.Y;
-    Response->WorldID = Character->Data.Info.Position.WorldID;
-    Response->DungeonID = (UInt32)Character->Data.Info.Position.DungeonIndex;
+    Response->Position.X = Character->Data.Info.PositionX;
+    Response->Position.Y = Character->Data.Info.PositionY;
+    Response->WorldID = Character->Data.Info.WorldIndex;
+    Response->DungeonID = (UInt32)Character->Data.Info.DungeonIndex;
     SocketSend(Socket, Connection, Response);
     
     RTWorldChunkNotify(Character->Movement.WorldChunk, Character->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP, true);

@@ -2,6 +2,10 @@
 
 #include "Base.h"
 
+#define SALT_LENGTH 16
+#define HASH_LENGTH EVP_MAX_MD_SIZE
+#define SALTED_HASH_LENGTH (SALT_LENGTH + HASH_LENGTH)
+
 EXTERN_C_BEGIN
 
 #define CONFIG_DATA_BUFFER_SIZE 4096
@@ -42,25 +46,18 @@ Bool GetPlatformErrorMessage(
 
 Bool CreatePasswordHash(
     CString Password,
-    UInt8** Salt,
-    Int32* SaltLength,
-    UInt8* Hash,
-    Int32* HashLength
+    UInt8* PasswordHash
 );
 
 Bool ValidatePasswordHash(
     CString Password,
-    UInt8* Salt,
-    Int32 SaltLength,
-    UInt8* Hash,
-    Int32 HashLength
+    UInt8* PasswordHash
 );
 
 Void GenerateRandomKey(
     CString Buffer,
     Int32 Length
 );
-
 
 UInt32 SwapUInt32(
     UInt32 Value

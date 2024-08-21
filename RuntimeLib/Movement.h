@@ -58,6 +58,12 @@ Void RTMovementUpdateDeadReckoning(
     RTMovementRef Movement
 );
 
+Void RTMovementSetSpeed(
+    RTRuntimeRef Runtime,
+    RTMovementRef Movement,
+    Int32 Speed
+);
+
 Void RTMovementSetPosition(
     RTRuntimeRef Runtime,
     RTMovementRef Movement,

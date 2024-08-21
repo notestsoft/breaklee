@@ -14,7 +14,7 @@ CLIENT_PROCEDURE_BINDING(BUY_ITEM) {
     if (Packet->ItemCount < 1 || Packet->ItemCount > SERVER_CHARACTER_MAX_BUY_ITEM_COUNT) goto error;
     if (Packet->ItemPriceCount < 0 || Packet->ItemPriceCount > SERVER_CHARACTER_MAX_BUY_ITEM_PRICE_COUNT) goto error;
 
-    Int32 WorldIndex = (!Packet->IsRemoteShop) ? Character->Data.Info.Position.WorldID : 0;
+    Int32 WorldIndex = (!Packet->IsRemoteShop) ? Character->Data.Info.WorldIndex : 0;
     RTDataShopIndexRef ShopIndex = RTRuntimeDataShopIndexGet(Runtime->Context, WorldIndex, Packet->NpcIndex);
     RTDataShopPoolRef ShopPool = (ShopIndex) ? RTRuntimeDataShopPoolGet(Runtime->Context, ShopIndex->ShopIndex) : NULL;
     RTDataShopItemRef ShopItem = (ShopPool) ? RTRuntimeDataShopItemGet(ShopPool, Packet->TabIndex, Packet->SlotIndex) : NULL;
@@ -22,10 +22,12 @@ CLIENT_PROCEDURE_BINDING(BUY_ITEM) {
 
     if (ShopItem->ItemID != Packet->ItemID) goto error;
     if (ShopItem->ItemOptions != Packet->ItemOptions) goto error;
-    if (ShopItem->MinLevel && ShopItem->MinLevel > Character->Data.Info.Basic.Level) goto error;
-    if (ShopItem->MaxLevel && ShopItem->MaxLevel < Character->Data.Info.Basic.Level) goto error;
-    if (ShopItem->MinHonorRank > Character->Data.Info.Honor.Rank) goto error;
-    if (ShopItem->MaxHonorRank < Character->Data.Info.Honor.Rank) goto error;
+    if (ShopItem->MinLevel && ShopItem->MinLevel > Character->Data.Info.Level) goto error;
+    if (ShopItem->MaxLevel && ShopItem->MaxLevel < Character->Data.Info.Level) goto error;
+
+    Int32 HonorRank = RTCharacterGetHonorRank(Runtime, Character);
+    if (ShopItem->MinHonorRank > HonorRank) goto error;
+    if (ShopItem->MaxHonorRank < HonorRank) goto error;
     // if (ShopItem->IsPremiumOnly && /* TODO: Check Character Premium Service */) goto error;
     // if (ShopItem->IsWinningOnly && /* TODO: Check Character Bringer Status */) goto error;
 
@@ -37,7 +39,7 @@ CLIENT_PROCEDURE_BINDING(BUY_ITEM) {
     Int64 PriceGem = ShopItem->PriceGem * Packet->ItemCount;
 
     if (PriceAlz > Character->Data.Info.Alz) goto error;
-    if (PriceWexp > Character->Data.Info.Honor.Exp) goto error;
+    if (PriceWexp > Character->Data.Info.Wexp) goto error;
     if (PriceAP > Character->Data.AbilityInfo.Info.AP) goto error;
     // if (PriceDP > /* TODO: Check Character DP Amount */) goto error;
     // if (PriceCash > /* TODO: Check Character Cash Amount */) goto error;
@@ -130,7 +132,7 @@ CLIENT_PROCEDURE_BINDING(BUY_ITEM) {
     if (!Success) goto error;
 
     Character->Data.Info.Alz-= PriceAlz;
-    Character->Data.Info.Honor.Exp -= PriceWexp;
+    Character->Data.Info.Wexp -= PriceWexp;
     Character->Data.AbilityInfo.Info.AP -= PriceAP;
     // TODO: Consume DP
     // TODO: Consume Cash
@@ -156,7 +158,7 @@ CLIENT_PROCEDURE_BINDING(SELL_ITEM) {
     if (Packet->InventoryIndexCount < 1) goto error;
     // || Packet->InventoryIndexCount > SERVER_CHARACTER_MAX_SELL_ITEM_COUNT) goto error;
 
-    Int32 WorldIndex = (!Packet->IsRemoteShop) ? Character->Data.Info.Position.WorldID : 0;
+    Int32 WorldIndex = (!Packet->IsRemoteShop) ? Character->Data.Info.WorldIndex : 0;
     RTDataShopIndexRef ShopIndex = RTRuntimeDataShopIndexGet(Runtime->Context, WorldIndex, Packet->NpcIndex);
     if (!ShopIndex) {
         Bool Found = false;

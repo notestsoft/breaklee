@@ -11,7 +11,7 @@ struct _RTCharacterAccountInfo {
 	UInt32 CharacterSlotID;
 	UInt64 CharacterSlotOrder;
 	UInt32 CharacterSlotOpenMask;
-	UInt32 Unknown4;
+	UInt32 IsPremium;
 	UInt32 ForceGem;
 };
 

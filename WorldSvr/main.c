@@ -139,8 +139,6 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
 
     Info("Load config file: %s", ConfigFileName);
 
-    if (!EncryptionLoadLibrary()) Fatal("Error loading zlib library...\n");
-
     Char Buffer[MAX_PATH] = { 0 };
     CString WorkingDirectory = PathGetCurrentDirectory(Buffer, MAX_PATH);
     CString ConfigFilePath = PathCombineNoAlloc(WorkingDirectory, ConfigFileName);
@@ -254,7 +252,6 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     ServerRun(Server);
     RTRuntimeDestroy(ServerContext.Runtime);
     AllocatorDeallocate(Allocator, ServerContext.RuntimeData);
-    EncryptionUnloadLibrary();
     DiagnosticTeardown();
     
     return EXIT_SUCCESS;

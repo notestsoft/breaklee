@@ -12,7 +12,7 @@ RTSkillSlotRef RTCharacterAddSkillSlot(
 ) {
 	if (Character->Data.SkillSlotInfo.Info.SlotCount >= RUNTIME_CHARACTER_MAX_SKILL_SLOT_COUNT) return NULL;
 
-	RTSkillSlotRef SkillSlot = &Character->Data.SkillSlotInfo.Skills[Character->Data.SkillSlotInfo.Info.SlotCount];
+	RTSkillSlotRef SkillSlot = &Character->Data.SkillSlotInfo.Slots[Character->Data.SkillSlotInfo.Info.SlotCount];
 	SkillSlot->ID = SkillID;
 	SkillSlot->Level = Level;
 	SkillSlot->Index = SlotIndex;
@@ -28,8 +28,8 @@ RTSkillSlotRef RTCharacterGetSkillSlotByIndex(
 	Int32 SlotIndex
 ) {
 	for (Int32 Index = 0; Index < Character->Data.SkillSlotInfo.Info.SlotCount; Index += 1) {
-		if (Character->Data.SkillSlotInfo.Skills[Index].Index == SlotIndex) {
-			return &Character->Data.SkillSlotInfo.Skills[Index];
+		if (Character->Data.SkillSlotInfo.Slots[Index].Index == SlotIndex) {
+			return &Character->Data.SkillSlotInfo.Slots[Index];
 		}
 	}
 
@@ -43,12 +43,12 @@ Void RTCharacterRemoveSkillSlot(
 	Int32 SlotIndex
 ) {
 	for (Int32 Index = 0; Index < Character->Data.SkillSlotInfo.Info.SlotCount; Index += 1) {
-		if (Character->Data.SkillSlotInfo.Skills[Index].Index == SlotIndex) {
+		if (Character->Data.SkillSlotInfo.Slots[Index].Index == SlotIndex) {
 			Int32 TailLength = Character->Data.SkillSlotInfo.Info.SlotCount - Index - 1;
 			if (TailLength > 0) {
 				memmove(
-					&Character->Data.SkillSlotInfo.Skills[Index],
-					&Character->Data.SkillSlotInfo.Skills[Index + 1],
+					&Character->Data.SkillSlotInfo.Slots[Index],
+					&Character->Data.SkillSlotInfo.Slots[Index + 1],
 					TailLength * sizeof(struct _RTSkillSlot)
 				);
 			}
@@ -87,22 +87,22 @@ Bool RTCharacterChangeSkillLevel(
 			RTSkillLevelDataRef SkillLevelData = RTRuntimeGetSkillLevelDataByID(Runtime, SkillID, NextLevel);
 			if (!SkillLevelData) return false;
 
-			if (Character->Data.Info.Skill.Rank < SkillLevelData->SkillRank) return false;
+			if (Character->Data.Info.SkillRank < SkillLevelData->SkillRank) return false;
 
 			RequiredSkillPointCount += SkillLevelData->SkillPoint;
 			RequiredCurrencyAlz += LevelDiff < 0 ? SkillLevelData->UntrainPrice : SkillLevelData->TrainPrice;
 
 			// TODO: Check SkillLevelData->StyleMastery
 
-			Int32 BattleStyleIndex = Character->Data.Info.Style.BattleStyle | (Character->Data.Info.Style.ExtendedBattleStyle << 3);
+			Int32 BattleStyleIndex = Character->Data.StyleInfo.Style.BattleStyle | (Character->Data.StyleInfo.Style.ExtendedBattleStyle << 3);
 			if (SkillLevelData->BattleStyles[BattleStyleIndex - 1] <= 0) return false;
 		}
 	}
 
-	if (Character->Data.Info.Skill.Point < RequiredSkillPointCount) return false;
+	if (Character->Data.Info.SkillPoint < RequiredSkillPointCount) return false;
 	if (Character->Data.Info.Alz< RequiredCurrencyAlz) return false;
 
-	Character->Data.Info.Skill.Point -= RequiredSkillPointCount;
+	Character->Data.Info.SkillPoint -= RequiredSkillPointCount;
 	Character->Data.Info.Alz-= RequiredCurrencyAlz;
 	SkillSlot->Level = TargetSkillLevel;
 

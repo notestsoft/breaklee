@@ -1,0 +1,21 @@
+CREATE TABLE Ability (
+    CharacterID INT NOT NULL,
+    APTotal SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+    AP SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+    Axp INT UNSIGNED NOT NULL DEFAULT 0,
+    EssenceAbilityCount TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    ExtendedEssenceAbilityCount TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    BlendedAbilityCount TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    ExtendedBlendedAbilityCount TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    KarmaAbilityCount TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    ExtendedKarmaAbilityCount TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    EssenceAbilityData BLOB NOT NULL,
+    BlendedAbilityData BLOB NOT NULL,
+    KarmaAbilityData BLOB NOT NULL,
+
+    PRIMARY KEY (CharacterID),
+
+    CONSTRAINT FK_Character_Ability FOREIGN KEY (CharacterID)
+        REFERENCES Characters(CharacterID)
+        ON DELETE CASCADE
+) ENGINE = INNODB DEFAULT CHARSET = utf8;

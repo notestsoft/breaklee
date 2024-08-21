@@ -11,7 +11,7 @@ Bool RTCharacterEnableForceWing(
 	if (Character->Data.ForceWingInfo.Info.Level > 0) return false;
 
 	RTDataForceWingActivationRef ForceWingActivation = RTRuntimeDataForceWingActivationGet(Runtime->Context);
-	if (Character->Data.Info.Basic.Level < ForceWingActivation->MinLevel) return false;
+	if (Character->Data.Info.Level < ForceWingActivation->MinLevel) return false;
 
 	RTDataForceWingGradeInfoRef GradeInfoData = RTRuntimeDataForceWingGradeInfoGet(Runtime->Context, 1);
 	if (!GradeInfoData) return false;

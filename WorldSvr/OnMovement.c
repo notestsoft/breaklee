@@ -189,7 +189,7 @@ CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_BEGIN) {
 	Bool Success = RTCharacterMovementBegin(
 		Runtime,
 		Character,
-		Character->Data.Info.Position.WorldID,
+		Character->Data.Info.WorldIndex,
 		(Int32)Packet->PositionStartX,
 		(Int32)Packet->PositionStartY,
 		(Int32)Packet->PositionCurrentX,
@@ -262,7 +262,7 @@ CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_CHANGE) {
 	Bool Success = RTCharacterMovementChange(
 		Runtime,
 		Character,
-		Character->Data.Info.Position.WorldID,
+		Character->Data.Info.WorldIndex,
 		(Int32)Packet->PositionStartX,
 		(Int32)Packet->PositionStartY,
 		(Int32)Packet->PositionCurrentX,

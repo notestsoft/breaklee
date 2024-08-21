@@ -1,4 +1,3 @@
-#include "AuthDB.h"
 #include "ClientProtocol.h"
 #include "ClientProcedures.h"
 #include "ClientSocket.h"
@@ -69,8 +68,7 @@ IPC_PROCEDURE_BINDING(W2L, WORLD_VERIFY_LINKS) {
     ClientConnection = Client->Connection;
     assert(Client->Connection);
 
-    AUTHDB_DATA_ACCOUNT Account = { 0 };
-    if (!AuthDBSelectAccountByID(Context->Database, Packet->AccountID, &Account)) goto error;
+    if (Client->AccountStatus != ACCOUNT_STATUS_NORMAL || Client->LoginStatus != LOGIN_STATUS_SUCCESS) goto error;
 
     S2C_DATA_AUTH_TIMER* AuthTimerResponse = PacketBufferInit(ClientConnection->PacketBuffer, S2C, AUTH_TIMER);
     AuthTimerResponse->Timeout = Context->Config.Login.AutoDisconnectDelay;
@@ -78,18 +76,14 @@ IPC_PROCEDURE_BINDING(W2L, WORLD_VERIFY_LINKS) {
 
     Client->Flags |= CLIENT_FLAGS_CHECK_DISCONNECT_TIMER;
     Client->Flags |= CLIENT_FLAGS_CAPTCHA_VERIFIED;
-    Client->DisconnectTimestamp = GetTimestampMs() + Context->Config.Login.AutoDisconnectDelay;
     Client->Flags |= CLIENT_FLAGS_AUTHENTICATED;
-    Client->AccountID = Account.ID;
-    Client->AccountStatus = ACCOUNT_STATUS_NORMAL;
-    Client->LoginStatus = LOGIN_STATUS_SUCCESS;
+    Client->DisconnectTimestamp = GetTimestampMs() + Context->Config.Login.AutoDisconnectDelay;
 
     IPC_L2M_DATA_GET_WORLD_LIST* Request = IPCPacketBufferInit(Socket->PacketBuffer, L2M, GET_WORLD_LIST);
     Request->Header.Source = Server->IPCSocket->NodeID;
     Request->Header.Target.Group = Server->IPCSocket->NodeID.Group;
     Request->Header.Target.Type = IPC_TYPE_MASTER;
     IPCSocketUnicast(Socket, Request);
-
     return;
 
 error:

@@ -188,8 +188,8 @@ Void OnClose(
         uv_tcp_nodelay(&Socket->Handle, 1);
         uv_tcp_keepalive(&Socket->Handle, 1, IPC_SOCKET_KEEP_ALIVE_TIMEOUT);
         uv_tcp_simultaneous_accepts(&Socket->Handle, 1);
-        uv_recv_buffer_size(&Socket->Handle, &Socket->ReadBufferSize);
-        uv_send_buffer_size(&Socket->Handle, &Socket->WriteBufferSize);
+        uv_recv_buffer_size((uv_handle_t*)&Socket->Handle, &Socket->ReadBufferSize);
+        uv_send_buffer_size((uv_handle_t*)&Socket->Handle, &Socket->WriteBufferSize);
         Socket->Handle.data = Socket;
 
         Socket->ReconnectTimer = (uv_timer_t*)AllocatorAllocate(Socket->Allocator, sizeof(uv_timer_t));
@@ -205,7 +205,7 @@ Void OnRead(
     const uv_buf_t* Buffer
 ) {
     IPCSocketConnectionRef Connection = (IPCSocketConnectionRef)Stream->data;
-    assert(Connection->Handle == Stream);
+    assert((uv_stream_t*)Connection->Handle == Stream);
 
     if (RecvLength < 0) {
         if (RecvLength != UV_EOF) {
@@ -242,7 +242,7 @@ Void OnNewConnection(
     uv_tcp_init(Socket->Loop, Connection->Handle);
     Connection->Handle->data = Connection;
 
-    Int32 Result = uv_accept(&Socket->Handle, (uv_stream_t*)Connection->Handle);
+    Int32 Result = uv_accept((uv_stream_t*)&Socket->Handle, (uv_stream_t*)Connection->Handle);
     if (Result == 0) {
         struct sockaddr_storage ClientAddress = { 0 };
         Int32 ClientAddressSize = sizeof(ClientAddress);
@@ -286,7 +286,7 @@ Void OnConnect(
     }
 
     IPCSocketConnectionRef Connection = IPCSocketReserveConnection(Socket);
-    Connection->Handle = Connect->handle;
+    Connection->Handle = (uv_tcp_t*)Connect->handle;
     Connection->Handle->data = Connection;
     Connection->ID = Socket->NextConnectionID;
     Connection->ConnectRequest = Connect;
@@ -336,8 +336,8 @@ IPCSocketRef IPCSocketCreate(
     uv_tcp_nodelay(&Socket->Handle, 1);
     uv_tcp_keepalive(&Socket->Handle, 1, IPC_SOCKET_KEEP_ALIVE_TIMEOUT);
     uv_tcp_simultaneous_accepts(&Socket->Handle, 1);
-    uv_recv_buffer_size(&Socket->Handle, &ReadBufferSize);
-    uv_send_buffer_size(&Socket->Handle, &WriteBufferSize);
+    uv_recv_buffer_size((uv_handle_t*)&Socket->Handle, &ReadBufferSize);
+    uv_send_buffer_size((uv_handle_t*)&Socket->Handle, &WriteBufferSize);
     Socket->Handle.data = Socket;
     Socket->ReadBufferSize = ReadBufferSize;
     Socket->WriteBufferSize = WriteBufferSize;
@@ -469,7 +469,7 @@ Void OnWrite(
         Error("Write error: %s\n", uv_strerror(Status));
 
         if (Status == UV_ECONNRESET || Status == UV_ECONNREFUSED) {
-            assert(Connection->Handle == WriteRequest->handle);
+            assert((uv_stream_t*)Connection->Handle == WriteRequest->handle);
             IPCSocketDisconnect(Connection->Socket, Connection);
         }
     }
@@ -498,7 +498,7 @@ Void IPCSocketSend(
     WriteRequest->Buffer.base = Memory + sizeof(struct _IPCSocketConnectionWriteRequest);
     WriteRequest->Buffer.len = Packet->Length;
     memcpy(WriteRequest->Buffer.base, Packet, Packet->Length);
-    uv_write(&WriteRequest->Request, Connection->Handle, &WriteRequest->Buffer, 1, OnWrite);
+    uv_write(&WriteRequest->Request, (uv_stream_t*)Connection->Handle, &WriteRequest->Buffer, 1, OnWrite);
 }
 
 Void IPCSocketUnicast(
@@ -582,7 +582,7 @@ Void IPCSocketDisconnect(
 ) {
     if (Connection->Flags & IPC_SOCKET_CONNECTION_FLAGS_DISCONNECTED) return;
     Connection->Flags |= IPC_SOCKET_CONNECTION_FLAGS_DISCONNECTED;
-    uv_close(Connection->Handle, OnClose);
+    uv_close((uv_handle_t*)Connection->Handle, OnClose);
 }
 
 Index IPCSocketGetConnectionCount(

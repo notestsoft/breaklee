@@ -22,7 +22,7 @@ CLIENT_PROCEDURE_BINDING(ATTACK_TO_MOB) {
 	RTCalculateNormalAttackResult(
 		Runtime,
 		RUNTIME_BATTLE_SKILL_TYPE_SWORD,
-		Character->Data.Info.Basic.Level,
+		Character->Data.Info.Level,
 		&Character->Attributes,
 		Mob->SpeciesData->Level,
 		&Mob->Attributes,
@@ -40,7 +40,7 @@ CLIENT_PROCEDURE_BINDING(ATTACK_TO_MOB) {
 	Response->MobAppliedDamage = (UInt32)Result.AppliedDamage;
 	Response->MobTotalDamage = (UInt32)Result.TotalDamage;
 	Response->MobAdditionalDamage = (UInt32)Result.AdditionalDamage;
-	Response->AccumulatedExp = Character->Data.Info.Basic.Exp;
+	Response->AccumulatedExp = Character->Data.Info.Exp;
 	Response->AccumulatedOxp = Character->Data.OverlordMasteryInfo.Info.Exp;
 	Response->CharacterHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
 	Response->CharacterMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];

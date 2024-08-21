@@ -7,7 +7,7 @@
 
 CLIENT_PROCEDURE_BINDING(GM_COMMAND) {
     if (!Character) goto error;
-    if (Character->Data.Info.Profile.Nation != 3) goto error;
+    if (Character->Data.StyleInfo.Nation != 3) goto error;
 
     if (Packet->Command == 4) {
 
@@ -16,8 +16,8 @@ CLIENT_PROCEDURE_BINDING(GM_COMMAND) {
     if (Packet->GmCommand == 7) {
         Int32 Index = 0;
         S2C_DATA_NFY_CHARACTER_PARAMETERS* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_CHARACTER_PARAMETERS);
-        Notification->Exp = Character->Data.Info.Basic.Exp;
-        Notification->Level = Character->Data.Info.Basic.Level;
+        Notification->Exp = Character->Data.Info.Exp;
+        Notification->Level = Character->Data.Info.Level;
         Notification->Str = Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_STR];
         Notification->Dex = Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_DEX];
         Notification->Int = Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_INT];

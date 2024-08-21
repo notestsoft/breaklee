@@ -7,22 +7,21 @@
 #include "Server.h"
 
 CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
+	Int32 PacketLength = sizeof(C2S_DATA_CREATE_CHARACTER) + sizeof(Char) * Packet->NameLength;
+	if (Packet->Length != PacketLength) {
+		SocketDisconnect(Socket, Connection);
+		return;
+	}
+
 	S2C_DATA_CREATE_CHARACTER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CREATE_CHARACTER);
 
-	if (!(Client->Flags & CLIENT_FLAGS_CHARACTER_INDEX_LOADED) || Client->Account.AccountID < 1) {
+	if (!(Client->Flags & CLIENT_FLAGS_CHARACTER_INDEX_LOADED) || Client->AccountID < 1) {
 		SocketDisconnect(Socket, Connection);
 		return;
 	}
 
 	if (Character) {
 		Client->AccountInfo = Character->Data.AccountInfo;
-	}
-
-	if (!(Client->AccountInfo.CharacterSlotOpenMask & (1 << Packet->SlotIndex)) ||
-		Client->Characters[Packet->SlotIndex].ID > 0) {
-		Response->CharacterStatus = CREATE_CHARACTER_STATUS_NOT_ALLOWED;
-		SocketSend(Socket, Connection, Response);
-		return;
 	}
 
 	if (Packet->NameLength < MIN_CHARACTER_NAME_LENGTH ||
@@ -54,17 +53,13 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 		return;
 	}
 
-	if (Packet->CreateSpecialCharacter && Context->Config.WorldSvr.DebugCharacter) {
-		Style.BattleRank = 10;
-	}
-
 	IPC_W2D_DATA_CREATE_CHARACTER* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2D, CREATE_CHARACTER);
 	memset(&Request->CharacterData, 0, sizeof(struct _RTCharacterData));
 	Request->Header.SourceConnectionID = Connection->ID;
 	Request->Header.Source = Server->IPCSocket->NodeID;
 	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
 	Request->Header.Target.Type = IPC_TYPE_MASTERDB;
-	Request->AccountID = Client->Account.AccountID;
+	Request->AccountID = Client->AccountID;
 	Request->CharacterSlotIndex = Packet->SlotIndex;
 	Request->CharacterNameLength = Packet->NameLength;
 	memcpy(Request->CharacterName, Packet->Name, Packet->NameLength);
@@ -76,20 +71,20 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 		return;
 	}
 
-	Request->CharacterData.Info.Resource.HP = INT32_MAX;
-	Request->CharacterData.Info.Resource.MP = INT32_MAX;
-	Request->CharacterData.Info.Resource.SP = INT32_MAX;
-	Request->CharacterData.Info.Resource.BP = INT32_MAX;
-	Request->CharacterData.Info.Resource.DP = 0;
-	Request->CharacterData.Info.Basic.Level = 1;
-	Request->CharacterData.Info.Skill.Rank = 1;
-	Request->CharacterData.Info.Skill.Level = 0;
-	Request->CharacterData.Info.Style = Style;
+	Request->CharacterData.Info.CurrentHP = INT32_MAX;
+	Request->CharacterData.Info.CurrentMP = INT32_MAX;
+	Request->CharacterData.Info.CurrentSP = INT32_MAX;
+	Request->CharacterData.Info.CurrentBP = INT32_MAX;
+	Request->CharacterData.Info.DP = 0;
+	Request->CharacterData.Info.Level = 1;
+	Request->CharacterData.Info.SkillRank = 1;
+	Request->CharacterData.Info.SkillLevel = 0;
+	Request->CharacterData.StyleInfo.Style = Style;
 
 	RTDataCharacterInitRef CharacterInit = RTRuntimeDataCharacterInitGet(Context->Runtime->Context, BattleStyleIndex);
-	Request->CharacterData.Info.Position.WorldID = CharacterInit->WorldID;
-	Request->CharacterData.Info.Position.X = CharacterInit->X;
-	Request->CharacterData.Info.Position.Y = CharacterInit->Y;
+	Request->CharacterData.Info.WorldIndex = CharacterInit->WorldID;
+	Request->CharacterData.Info.PositionX = CharacterInit->X;
+	Request->CharacterData.Info.PositionY = CharacterInit->Y;
 
 	if (CharacterInit->Suit > 0) {
 		RTItemSlotRef ItemSlot = &Request->CharacterData.EquipmentInfo.EquipmentSlots[Request->CharacterData.EquipmentInfo.Info.EquipmentSlotCount];
@@ -135,8 +130,8 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 	memcpy(&Request->CharacterData.SkillSlotInfo, &CharacterTemplate->SkillSlots, sizeof(struct _RTCharacterSkillSlotInfo));
 	memcpy(&Request->CharacterData.QuickSlotInfo, &CharacterTemplate->QuickSlots, sizeof(struct _RTCharacterQuickSlotInfo));
 
-	Request->CharacterData.Info.Profile.MapsMask = 0xFFFFFFFF;
-	Request->CharacterData.Info.Profile.WarpMask = 0xFFFFFFFF;
+	Request->CharacterData.StyleInfo.MapsMask = 0xFFFFFFFF;
+	Request->CharacterData.StyleInfo.WarpMask = 0xFFFFFFFF;
 
 	Request->CharacterData.AnimaMasteryInfo.Info.PresetCount = 3;
 	for (Int32 PresetIndex = 0; PresetIndex < RUNTIME_MAX_ANIMA_MASTERY_PRESET_COUNT; PresetIndex += 1) {
@@ -147,15 +142,19 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 	}
 
 	if (Packet->CreateSpecialCharacter && Context->Config.WorldSvr.DebugCharacter) {
+		Style.BattleRank = 10;
+	}
+
+	if (Packet->CreateSpecialCharacter && Context->Config.WorldSvr.DebugCharacter) {
 		memset(Request->CharacterData.QuestInfo.Info.FinishedQuests, 0xFF, RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT);
-		Request->CharacterData.Info.Style.BattleRank = 20;
-		Request->CharacterData.Info.Basic.Level = Runtime->Context->LevelList[Runtime->Context->LevelCount - 1].Level;
-		Request->CharacterData.Info.Basic.Exp = Runtime->Context->LevelList[Runtime->Context->LevelCount - 1].AccumulatedExp;
+		Request->CharacterData.StyleInfo.Style.BattleRank = 20;
+		Request->CharacterData.Info.Level = Runtime->Context->LevelList[Runtime->Context->LevelCount - 1].Level;
+		Request->CharacterData.Info.Exp = Runtime->Context->LevelList[Runtime->Context->LevelCount - 1].AccumulatedExp;
 		Request->CharacterData.OverlordMasteryInfo.Info.Level = Runtime->Context->OverlordMasteryExpList[Runtime->Context->OverlordMasteryExpCount - 1].Level;
 		Request->CharacterData.OverlordMasteryInfo.Info.Exp = Runtime->Context->OverlordMasteryExpList[Runtime->Context->OverlordMasteryExpCount - 1].AccumulatedExp;
-		Request->CharacterData.Info.Skill.Rank = 10;
-		Request->CharacterData.Info.Skill.Point = 1000;
-		Request->CharacterData.Info.Skill.Level = 540;
+		Request->CharacterData.Info.SkillRank = 10;
+		Request->CharacterData.Info.SkillPoint = 1000;
+		Request->CharacterData.Info.SkillLevel = 540;
 		Request->CharacterData.ForceWingInfo.Info.Grade = 1;
 		Request->CharacterData.ForceWingInfo.Info.Level = 1;
 		Request->CharacterData.MythMasteryInfo.Info.Level = 94;
@@ -163,10 +162,9 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 		Request->CharacterData.MythMasteryInfo.Info.Rebirth = 1000;
 		Request->CharacterData.MythMasteryInfo.Info.HolyPower = 27500;
 		Request->CharacterData.MythMasteryInfo.Info.UnlockedPageCount = 4;
-
-		Request->CharacterData.Info.Profile.MapsMask = 0xFFFFFFFF;
-		Request->CharacterData.Info.Profile.WarpMask = 0xFFFFFFFF;
-		Request->CharacterData.Info.Profile.Nation = 3;
+		Request->CharacterData.StyleInfo.MapsMask = 0xFFFFFFFF;
+		Request->CharacterData.StyleInfo.WarpMask = 0xFFFFFFFF;
+		Request->CharacterData.StyleInfo.Nation = 3;
 		Request->CharacterData.Info.Stat[RUNTIME_CHARACTER_STAT_PNT] = 2000;
 
 		Request->CharacterData.AbilityInfo.Info.EssenceAbilityCount = MIN(Runtime->Context->PassiveAbilityCostCount, RUNTIME_CHARACTER_MAX_ESSENCE_ABILITY_SLOT_COUNT);
@@ -189,9 +187,8 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 			Request->CharacterData.AbilityInfo.KarmaAbilitySlots[Index].Level = Runtime->Context->KarmaAbilityCostList[Index].KarmaAbilityCostLevelList[Runtime->Context->KarmaAbilityCostList[Index].KarmaAbilityCostLevelCount - 1].Level;
 		}
 
-		Request->CharacterData.Info.Profile.Nation = 2;
-		Request->CharacterData.Info.Honor.Rank = Runtime->Context->HonorLevelFormulaList[Runtime->Context->HonorLevelFormulaCount - 1].Rank;
-		Request->CharacterData.Info.Honor.Point = Runtime->Context->HonorLevelFormulaList[Runtime->Context->HonorLevelFormulaCount - 1].MaxPoint - 1;
+		Request->CharacterData.StyleInfo.Nation = 2;
+		Request->CharacterData.Info.HonorPoint = Runtime->Context->HonorLevelFormulaList[Runtime->Context->HonorLevelFormulaCount - 1].MaxPoint - 1;
 		Request->CharacterData.HonorMedalInfo.Info.Score = Runtime->Context->HonorMedalScoreCategoryList[0].HonorMedalScoreMedalList[Runtime->Context->HonorMedalScoreCategoryList[0].HonorMedalScoreMedalCount - 1].AccumulatedRequiredScore - 1;
 		Request->CharacterData.HonorMedalInfo.Info.SlotCount = 0;
 		for (Int32 Index = 0; Index < 4; Index += 1) {
@@ -206,7 +203,7 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 
 		Int32 SlotIndex = Request->CharacterData.SkillSlotInfo.Info.SlotCount;
 		for (Index Index = 144; Index < 148; Index++) {
-			RTSkillSlotRef GmSkill = &Request->CharacterData.SkillSlotInfo.Skills[Request->CharacterData.SkillSlotInfo.Info.SlotCount];
+			RTSkillSlotRef GmSkill = &Request->CharacterData.SkillSlotInfo.Slots[Request->CharacterData.SkillSlotInfo.Info.SlotCount];
 			GmSkill->ID = Index;
 			GmSkill->Level = 1;
 			GmSkill->Index = SlotIndex++;
@@ -221,20 +218,20 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 
 		Request->CharacterData.Info.Alz= 999999999;
 		Request->CharacterData.Info.Currency[RUNTIME_CHARACTER_CURRENCY_GEM] = 999999;
-		Request->CharacterData.Info.Basic.Level = 200;
+		Request->CharacterData.Info.Level = 200;
 		Request->CharacterData.Info.Overlord.Level = 1;
 		Request->CharacterData.Info.Overlord.Point = 1;
-		Request->CharacterData.Info.Basic.Exp = RTRuntimeGetExpByLevel(Runtime, 200);
+		Request->CharacterData.Info.Exp = RTRuntimeGetExpByLevel(Runtime, 200);
 		Request->CharacterData.Info.Stat[RUNTIME_CHARACTER_STAT_PNT] = 200 * 5;
-		Request->CharacterData.Info.Style.BattleRank = 20;
+		Request->CharacterData.StyleInfo.Style.BattleRank = 20;
 		Request->CharacterData.Info.Skill.Rank = 10;
 		Request->CharacterData.Info.Skill.Level = 500;
-		Request->CharacterData.Info.Profile.Nation = 2;
+		Request->CharacterData.StyleInfo.Nation = 2;
 
 		RTDataHonorLevelFormulaRef HonorLevelFormula = RTRuntimeDataHonorLevelFormulaGet(Runtime->Context, 20);
-		Request->CharacterData.Info.Honor.Rank = HonorLevelFormula->Rank;
-		Request->CharacterData.Info.Honor.Point = HonorLevelFormula->MaxPoint;
-		Request->CharacterData.Info.Honor.Exp = 0;
+		Request->CharacterData.Info.HonorRank = HonorLevelFormula->Rank;
+		Request->CharacterData.Info.HonorPoint = HonorLevelFormula->MaxPoint;
+		Request->CharacterData.Info.Wexp = 0;
 		*/
 	}
 
@@ -249,7 +246,7 @@ IPC_PROCEDURE_BINDING(D2W, CREATE_CHARACTER) {
 	}
 	
 	S2C_DATA_CREATE_CHARACTER* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, CREATE_CHARACTER);
-	Response->CharacterIndex = Packet->Character.ID * MAX_CHARACTER_COUNT + Packet->CharacterSlotIndex;
+	Response->CharacterIndex = Packet->Character.CharacterID * MAX_CHARACTER_COUNT + Packet->CharacterSlotIndex;
 	Response->CharacterStatus = Packet->Status;
 	SocketSend(Context->ClientSocket, ClientConnection, Response);
 }

@@ -22,7 +22,6 @@ FileRef FileOpen(
         return NULL;
     }
 
-    Info("FileOpen(%s, %d)", FilePath, Handle);
     return (FileRef)Handle;
 }
 
@@ -34,14 +33,12 @@ FileRef FileCreate(
         return NULL;
     }
 
-    Info("FileCreate(%s, %d)", FilePath, Handle);
     return (FileRef)Handle;
 }
 
 Void FileClose(
     FileRef File
 ) {
-    Info("FileClose(%d)", File);
     assert((Int32)File != -1);
     close((Int32)File);
 }

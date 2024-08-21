@@ -10,17 +10,8 @@
 #define IPC_PROTOCOL(__NAMESPACE__, __NAME__, __BODY__)
 #endif
 
-IPC_PROTOCOL_STRUCT(IPC_DATA_ACCOUNT,
-	Int64 AccountID;
-	Char SessionIP[MAX_ADDRESSIP_LENGTH + 1];
-	Timestamp SessionTimeout;
-	Char CharacterPassword[MAX_SUBPASSWORD_LENGTH + 1];
-	UInt32 CharacterQuestion;
-	Char CharacterAnswer[MAX_SUBPASSWORD_ANSWER_LENGTH + 1];
-)
-
 IPC_PROTOCOL_STRUCT(IPC_DATA_CHARACTER_INFO,
-	Int32 ID;
+	Int32 CharacterID;
 	UInt64 CreationDate;
 	UInt32 Style;
 	Int32 Level;
@@ -34,8 +25,8 @@ IPC_PROTOCOL_STRUCT(IPC_DATA_CHARACTER_INFO,
 	UInt64 HonorPoint;
 	UInt32 CostumeActivePageIndex;
 	UInt32 CostumeAppliedSlots[RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT];
-	UInt64 Alz;
-	UInt8 MapID;
+	UInt64 Currency;
+	UInt8 WorldIndex;
 	UInt16 PositionX;
 	UInt16 PositionY;
 	UInt16 EquipmentCount;
@@ -44,7 +35,7 @@ IPC_PROTOCOL_STRUCT(IPC_DATA_CHARACTER_INFO,
 )
 
 IPC_PROTOCOL(L2W, VERIFY_LINKS,
-    Int64 AccountID;
+    Int32 AccountID;
 	UInt32 AuthKey;
 	UInt16 EntityID;
 	UInt8 NodeIndex;
@@ -53,7 +44,7 @@ IPC_PROTOCOL(L2W, VERIFY_LINKS,
 )
 
 IPC_PROTOCOL(W2L, VERIFY_LINKS,
-    Int64 AccountID;
+    Int32 AccountID;
 	UInt8 NodeIndex;
 	UInt8 GroupIndex;
 	UInt8 Status;
@@ -80,7 +71,8 @@ IPC_PROTOCOL(W2W, REQUEST_VERIFY_LINKS,
 	UInt8 NodeIndex;
 	UInt8 GroupIndex;
 	Char SessionIP[MAX_ADDRESSIP_LENGTH];
-	IPC_DATA_ACCOUNT Account;
+	Bool IsSubpasswordSet;
+	struct _RTCharacterAccountInfo AccountInfo;
 	IPC_DATA_CHARACTER_INFO Characters[MAX_CHARACTER_COUNT];
 )
 
@@ -144,25 +136,24 @@ IPC_PROTOCOL(W2M, NFY_WORLD_INFO,
 )
 
 IPC_PROTOCOL(W2L, VERIFY_PASSWORD,
-    Int64 AccountID;
+    Int32 AccountID;
 	Char Credentials[MAX_CREDENTIALS_LENGTH + 1];
 )
 
 IPC_PROTOCOL(W2D, GET_CHARACTER_LIST,
-    Int64 AccountID;
+    Int32 AccountID;
 )
 
 IPC_PROTOCOL(D2W, GET_CHARACTER_LIST,
-	struct _RTCharacterAccountInfo AccountInfo;
 	IPC_DATA_CHARACTER_INFO Characters[MAX_CHARACTER_COUNT];
 )
 
 IPC_PROTOCOL(W2D, GET_PREMIUM_SERVICE,
-    Int64 AccountID;
+    Int32 AccountID;
 )
 
 IPC_PROTOCOL(D2W, GET_PREMIUM_SERVICE,
-    Int64 AccountID;
+    Int32 AccountID;
     Bool HasService;
 	UInt32 ServiceType;
 	Timestamp StartedAt;
@@ -170,7 +161,7 @@ IPC_PROTOCOL(D2W, GET_PREMIUM_SERVICE,
 )
 
 IPC_PROTOCOL(W2D, CREATE_CHARACTER,
-    Int64 AccountID;
+    Int32 AccountID;
     UInt8 CharacterSlotIndex;
 	UInt8 CharacterNameLength;
 	Char CharacterName[MAX_CHARACTER_NAME_LENGTH + 1];
@@ -184,53 +175,146 @@ IPC_PROTOCOL(D2W, CREATE_CHARACTER,
 )
 
 IPC_PROTOCOL(W2D, UPDATE_ACCOUNT_SESSION,
-	Int64 AccountID;
+	Int32 AccountID;
 	Char SessionIP[MAX_ADDRESSIP_LENGTH + 1];
 	Timestamp SessionTimeout;
 )
 
 IPC_PROTOCOL(W2D, UPDATE_SUBPASSWORD,
-	Int64 AccountID;
+	Int32 AccountID;
 	Char CharacterPassword[MAX_SUBPASSWORD_LENGTH + 1];
 	UInt32 CharacterQuestion;
 	Char CharacterAnswer[MAX_SUBPASSWORD_ANSWER_LENGTH + 1];
 )
 
-IPC_PROTOCOL(W2D, GET_ACCOUNT,
-	Int64 AccountID;
+IPC_PROTOCOL(W2D, AUTHENTICATE,
+	Int32 AccountID;
 	UInt8 NodeIndex;
 	UInt8 GroupIndex;
 	Index LinkConnectionID;
 )
 
-IPC_PROTOCOL(D2W, GET_ACCOUNT,
-	Int64 AccountID;
+IPC_PROTOCOL(D2W, AUTHENTICATE,
+	Int32 AccountID;
 	UInt8 NodeIndex;
 	UInt8 GroupIndex;
 	Index LinkConnectionID;
 	Bool Success;
+	Bool IsSubpasswordSet;
 	struct _RTCharacterAccountInfo AccountInfo;
-    IPC_DATA_ACCOUNT Account;
 )
 
 IPC_PROTOCOL(W2D, GET_CHARACTER,
-	Int64 AccountID;
+	Int32 AccountID;
 	Int32 CharacterID;
 	UInt32 CharacterIndex;
+)
+
+IPC_PROTOCOL_STRUCT(IPC_D2W_DATA_INITIALIZE_WAR_TIMER,
+	UInt32 TimeRemainingTimer;
+	UInt32 TimeAttackTimer;
+	UInt8 IsTimeAttackEnabled;
+)
+
+IPC_PROTOCOL_STRUCT(IPC_D2W_DATA_INITIALIZE_WAR,
+	Int32 LobbyEntryOrder;
+	IPC_D2W_DATA_INITIALIZE_WAR_TIMER LobbyTimer;
+	IPC_D2W_DATA_INITIALIZE_WAR_TIMER BattleFieldTimer;
+	Int32 CapellaScore;
+	Int32 ProcyonScore;
+	Int32 CapellaPoints;
+	Int32 ProcyonPoints;
+	Int32 EntryLimitPerNation;
+	Int32 CapellaBattleFieldTicketCount;
+	Int32 ProcyonBattleFieldTicketCount;
+)
+
+IPC_PROTOCOL_STRUCT(IPC_D2W_DATA_INITIALIZE_SERVER_ADDRESS,
+	Char Host[MAX_HOSTNAME_LENGTH + 1];
+	UInt16 Port;
+)
+
+IPC_PROTOCOL_STRUCT(IPC_D2W_DATA_INITIALIZE_SERVER,
+	UInt8 ServerID;
+	UInt8 WorldServerID;
+	UInt16 PlayerCount;
+	UInt8 Unknown1[18];
+	UInt8 MaxPlayerLevel;
+	UInt8 MinPlayerLevel;
+	UInt8 MaxRank;
+	UInt8 MinRank;
+	UInt16 MaxPlayerCount;
+	IPC_D2W_DATA_INITIALIZE_SERVER_ADDRESS Address;
+	UInt32 WorldType;
+	UInt32 Unknown2;
+)
+
+IPC_PROTOCOL_STRUCT(IPC_D2W_DATA_INITIALIZE_CHARACTER,
+	UInt8 IsWarehousePasswordSet;
+	UInt8 IsInventoryPasswordSet;
+	UInt8 IsWarehouseLocked;
+	UInt8 IsInventoryLocked;
+	struct _RTCharacterInfo CharacterInfo;
+	struct _RTCharacterStyleInfo CharacterStyleInfo;
+	struct _RTEquipmentInfo EquipmentInfo;
+	struct _RTInventoryInfo InventoryInfo;
+	struct _RTVehicleInventoryInfo VehicleInventoryInfo;
+	struct _RTSkillSlotInfo SkillSlotInfo;
+	struct _RTQuickSlotInfo QuickSlotInfo;
+	struct _RTMercenaryInfo MercenaryInfo;
+	UInt16 ItemPeriodCount;
+	struct _RTAbilityInfo AbilityInfo;
+	struct _RTBlessingBeadInfo BlessingBeadInfo;
+	struct _RTPremiumServiceInfo PremiumServiceInfo;
+	struct _RTQuestInfo QuestInfo;
+	struct _RTDailyQuestInfo DailyQuestInfo;
+	UInt32 HelpWindow;
+	struct _RTAppearanceInfo AppearanceInfo;
+	struct _RTAchievementInfo AchievementInfo;
+	struct _RTCraftInfo CraftInfo;
+	struct _RTRequestCraftInfo RequestCraftInfo;
+	struct _RTBuffInfo BuffInfo;
+	struct _RTUpgradeInfo UpgradeInfo;
+	struct _RTGoldMeritMasteryInfo GoldMeritMasteryInfo;
+	struct _RTPlatinumMeritMasteryInfo PlatinumMeritMasteryInfo;
+	struct _RTDiamondMeritMasteryInfo DiamondMeritMasteryInfo;
+	struct _RTAchievementExtendedInfo AchievementExtendedInfo;
+	UInt32 ForceGem;
+	struct _RTWarpServiceInfo WarpServiceInfo;
+	struct _RTOverlordMasteryInfo OverlordMasteryInfo;
+	struct _RTHonorMedalInfo HonorMedalInfo;
+	struct _RTForceWingInfo ForceWingInfo;
+	struct _RTGiftBoxInfo GiftBoxInfo;
+	struct _RTCollectionInfo CollectionInfo;
+	struct _RTTransformInfo TransformInfo;
+	struct _RTCharacterSecretShopData SecretShopData;
+	struct _RTAuraMasteryInfo AuraMasteryInfo;
+	struct _RTTranscendenceInfo TranscendenceInfo;
+	struct _RTDamageBoosterInfo DamageBoosterInfo;
+	struct _RTCharacterResearchSupportInfo ResearchSupportInfo;
+	struct _RTStellarMasteryInfo StellarMasteryInfo;
+	struct _RTMythMasteryInfo MythMasteryInfo;
+	struct _RTNewbieSupportInfo NewbieSupportInfo;
+	struct _RTEventPassInfo EventPassInfo;
+	struct _RTCostumeWarehouseInfo CostumeWarehouseInfo;
+	struct _RTCostumeInfo CostumeInfo;
+	struct _RTExporationInfo ExplorationInfo;
+	struct _RTAnimaMasteryInfo AnimaMasteryInfo;
+	struct _RTCharacterPresetInfo PresetInfo;
+	UInt8 NameLength;
+	Char Name[MAX_CHARACTER_NAME_LENGTH];
 )
 
 IPC_PROTOCOL(D2W, GET_CHARACTER,
 	Bool Success;
-	Int64 AccountID;
+	Int32 AccountID;
 	Int32 CharacterID;
 	UInt32 CharacterIndex;
-	UInt64 CharacterCreationDate;
-	Char CharacterName[MAX_CHARACTER_NAME_LENGTH + 1];
-	struct _RTCharacterData CharacterData;
+	IPC_D2W_DATA_INITIALIZE_CHARACTER Character;
 )
 
 IPC_PROTOCOL(W2D, DELETE_CHARACTER,
-	Int64 AccountID;
+	Int32 AccountID;
 	Int32 CharacterID;
 )
 
@@ -239,8 +323,77 @@ IPC_PROTOCOL(D2W, DELETE_CHARACTER,
 	Int32 CharacterID;
 )
 
+IPC_PROTOCOL(W2D, VERIFY_SUBPASSWORD,
+	Int32 AccountID;
+	Int32 CharacterID;
+	Int32 Type;
+	Int32 ExpirationInHours;
+	Char SessionIP[MAX_ADDRESSIP_LENGTH + 1];
+	Char Password[MAX_SUBPASSWORD_LENGTH + 1];
+)
+
+IPC_PROTOCOL(D2W, VERIFY_SUBPASSWORD,
+	Int32 Success;
+	Int8 FailureCount;
+	Int32 Type;
+)
+
+IPC_PROTOCOL(W2D, CREATE_SUBPASSWORD,
+	Int32 AccountID;
+	Char Password[MAX_SUBPASSWORD_LENGTH + 1];
+	Int32 Type;
+	Int32 Question;
+	Char Answer[MAX_SUBPASSWORD_ANSWER_LENGTH + 1];
+	Int32 Mode;
+)
+
+IPC_PROTOCOL(D2W, CREATE_SUBPASSWORD,
+	Int32 Success;
+	Int32 Mode;
+	Int32 Type;
+)
+
+IPC_PROTOCOL(W2D, DELETE_SUBPASSWORD,
+	Int32 AccountID;
+	Int32 Type;
+)
+
+IPC_PROTOCOL(D2W, DELETE_SUBPASSWORD,
+	Int32 Success;
+	Int32 Type;
+)
+
+IPC_PROTOCOL(W2D, VERIFY_DELETE_SUBPASSWORD,
+	Int32 AccountID;
+	Int32 Type;
+	Char Password[MAX_SUBPASSWORD_LENGTH + 1];
+)
+
+IPC_PROTOCOL(D2W, VERIFY_DELETE_SUBPASSWORD,
+	Int32 Success;
+	Int8 FailureCount;
+	Int32 Type;
+)
+
+IPC_PROTOCOL(W2D, VERIFY_CREDENTIALS_SUBPASSWORD,
+	Int32 AccountID;
+	Char Password[MAX_SUBPASSWORD_LENGTH + 1];
+)
+
+IPC_PROTOCOL(D2W, VERIFY_CREDENTIALS_SUBPASSWORD,
+	UInt8 Success;
+)
+
+IPC_PROTOCOL(W2D, CHECK_SUBPASSWORD,
+	Int32 AccountID;
+)
+
+IPC_PROTOCOL(D2W, CHECK_SUBPASSWORD,
+	Int32 IsVerificationRequired;
+)
+
 IPC_PROTOCOL(W2D, DBSYNC,
-	Int64 AccountID;
+	Int32 AccountID;
 	Int32 CharacterID;
 	union _RTCharacterSyncMask SyncMask;
 	Bool IsTransaction;
@@ -248,7 +401,7 @@ IPC_PROTOCOL(W2D, DBSYNC,
 )
 
 IPC_PROTOCOL(D2W, DBSYNC,
-	Int64 AccountID;
+	Int32 AccountID;
 	Int32 CharacterID;
 	union _RTCharacterSyncMask SyncMaskFailed;
 )

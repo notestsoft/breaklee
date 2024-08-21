@@ -113,7 +113,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 			Runtime,
 			SkillSlot->Level,
 			SkillData,
-			Character->Data.Info.Basic.Level,
+			Character->Data.Info.Level,
 			&Character->Attributes,
 			Mob->SpeciesData->Level,
 			&Mob->Attributes,
@@ -160,7 +160,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 	Response->CharacterSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
 	Response->Unknown4 = -1;
 	Response->CharacterMaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
-	Response->AccumulatedExp = Character->Data.Info.Basic.Exp;
+	Response->AccumulatedExp = Character->Data.Info.Exp;
 	Response->AccumulatedOxp = Character->Data.OverlordMasteryInfo.Info.Exp;
 	Response->ReceivedSkillExp = ReceivedSkillExp;
 	Response->AXP = Character->Data.AbilityInfo.Info.Axp;
@@ -172,8 +172,8 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 	Notification->SkillIndex = Response->SkillIndex;
 	Notification->TargetCount = Response->TargetCount;
 	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
-	Notification->PositionSet.X = Character->Data.Info.Position.X;
-	Notification->PositionSet.Y = Character->Data.Info.Position.Y;
+	Notification->PositionSet.X = Character->Data.Info.PositionX;
+	Notification->PositionSet.Y = Character->Data.Info.PositionY;
 	Notification->CharacterHP = Response->CharacterHP;
 
 	for (Int32 Index = 0; Index < Response->TargetCount; Index++) {
@@ -190,8 +190,8 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 		Context,
 		World,
 		kEntityIDNull,
-		Character->Data.Info.Position.X,
-		Character->Data.Info.Position.Y,
+		Character->Data.Info.PositionX,
+		Character->Data.Info.PositionY,
 		Notification
 	);
 	return;

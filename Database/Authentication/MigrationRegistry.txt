@@ -1,0 +1,8 @@
+AddMigration 0001_CreateAccounts.sql
+AddMigration 0002_CreateSessions.sql
+AddMigration 0003_CreateBlacklists.sql
+AddMigration 0004_CreateCharacters.sql
+AddMigration 0005_CreateAuthenticate.sql
+AddMigration 0006_CreateGetPasswordHash.sql
+AddMigration 0007_CreateGetServerCharacterList.sql
+AddMigration 0008_CreateInsertAccount.sql

@@ -1,6 +1,6 @@
 #include "Context.h"
-#include "MasterDB.h"
 #include "IPCProcedures.h"
+#include "Server.h"
 
 #define IPC_COMMAND_CALLBACK(__NAMESPACE__, __NAME__)                       \
 Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                    \
@@ -73,23 +73,24 @@ Int32 main(Int32 argc, CString* argv) {
 #include "RuntimeLib/CharacterDataDefinition.h"
 
     ServerContext.Database = DatabaseConnect(
+        Allocator,
+        Config.Database.Driver,
         Config.Database.Host,
+        Config.Database.Database,
         Config.Database.Username,
         Config.Database.Password,
-        Config.Database.Database,
         Config.Database.Port,
         DatabaseResultBufferSize,
         Config.Database.AutoReconnect
     );
     if (!ServerContext.Database) Fatal("Database connection failed");
 
-    MasterDBMigrate(ServerContext.Database);
+    ServerLoadMigrationData(Config, &ServerContext);
 
 #define IPC_W2D_COMMAND(__NAME__) \
     IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_W2D_ ## __NAME__, &SERVER_IPC_W2D_PROC_ ## __NAME__);
 #include "IPCCommands.h"
 
-    MasterDBPrepareStatements(ServerContext.Database);
 
     ServerRun(Server);
     ServerDestroy(Server);

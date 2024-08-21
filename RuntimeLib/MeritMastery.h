@@ -108,7 +108,7 @@ struct _RTCharacterDiamondMeritMasteryData {
     struct _RTDiamondMeritMasteryInfo Info;
     struct _RTDiamondMeritExtendedMemorizeSlot ExtendedMemorizeSlots[RUNTIME_CHARACTER_MAX_PLATINUM_MERIT_MEMORIZE_COUNT];
     struct _RTDiamondMeritUnlockedSlot UnlockedSlots[RUNTIME_CHARACTER_MAX_PLATINUM_MERIT_MASTERY_SLOT_COUNT];
-    struct _RTDiamondMeritMasteryInfo MasterySlots[RUNTIME_CHARACTER_MAX_PLATINUM_MERIT_MASTERY_SLOT_COUNT];
+    struct _RTDiamondMeritMasterySlot MasterySlots[RUNTIME_CHARACTER_MAX_PLATINUM_MERIT_MASTERY_SLOT_COUNT];
     struct _RTDiamondMeritSpecialMasterySlot SpecialMasterySlots[RUNTIME_CHARACTER_MAX_PLATINUM_MERIT_SPECIAL_MASTERY_SLOT_COUNT];
 };
 

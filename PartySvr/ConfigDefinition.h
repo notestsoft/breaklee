@@ -28,7 +28,7 @@ CONFIG_BEGIN(MasterSvr)
 CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, Host, "MasterSvr.Host", 127.0.0.1)
 CONFIG_PARAMETER(UInt16, Port, "MasterSvr.Port", 38161)
 CONFIG_PARAMETER(UInt64, Timeout, "MasterSvr.Timeout", 1000)
-CONFIG_PARAMETER(Bool, LogPackets, "MasterSvr.LogPackets", 1)
+CONFIG_PARAMETER(Bool, LogPackets, "MasterSvr.LogPackets", 0)
 CONFIG_END(MasterSvr)
 
 CONFIG_BEGIN(NetLib)

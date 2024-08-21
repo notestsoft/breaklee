@@ -18,7 +18,7 @@ struct _RTQuickSlotInfo {
 
 struct _RTCharacterQuickSlotInfo {
     struct _RTQuickSlotInfo Info;
-    struct _RTQuickSlot QuickSlots[RUNTIME_CHARACTER_MAX_QUICK_SLOT_COUNT];
+    struct _RTQuickSlot Slots[RUNTIME_CHARACTER_MAX_QUICK_SLOT_COUNT];
 };
 
 #pragma pack(pop)

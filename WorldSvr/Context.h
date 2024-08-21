@@ -44,8 +44,8 @@ struct _ClientContext {
     UInt32 Flags;
     Timestamp PasswordVerificationTimestamp;
     UInt32 AuthKey;
-    UInt8 SubpasswordFailureCount;
-    IPC_DATA_ACCOUNT Account;
+    Bool IsSubpasswordSet;
+    Int32 AccountID;
     struct _RTCharacterAccountInfo AccountInfo;
     IPC_DATA_CHARACTER_INFO Characters[MAX_CHARACTER_COUNT];
     // TODO: Store upgrade point & expiration time in temp memory
@@ -59,7 +59,6 @@ struct _ClientContext {
     /* Runtime Data */
     Int32 CharacterDatabaseID;
     Index CharacterIndex;
-    Char CharacterName[MAX_CHARACTER_NAME_LENGTH + 1];
 };
 typedef struct _ClientContext* ClientContextRef;
 

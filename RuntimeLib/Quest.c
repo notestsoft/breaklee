@@ -172,10 +172,11 @@ Bool RTCharacterQuestBegin(
 	RTQuestDataRef Quest = RTRuntimeGetQuestByIndex(Runtime, QuestIndex);
 	if (!Quest) return false;
 
-	if (Character->Data.Info.Basic.Level < Quest->Condition.Level ||
-		Character->Data.Info.Basic.Level > Quest->Condition.MaxLevel ||
-		Character->Data.Info.Honor.Rank < Quest->Condition.MinHonorRank ||
-		Character->Data.Info.Honor.Rank > Quest->Condition.MaxHonorRank ||
+	Int32 HonorRank = RTCharacterGetHonorRank(Runtime, Character);
+	if (Character->Data.Info.Level < Quest->Condition.Level ||
+		Character->Data.Info.Level > Quest->Condition.MaxLevel ||
+		HonorRank < Quest->Condition.MinHonorRank ||
+		HonorRank > Quest->Condition.MaxHonorRank ||
 		Character->Data.OverlordMasteryInfo.Info.Level < Quest->Condition.MinOverlordLevel ||
 		Character->Data.OverlordMasteryInfo.Info.Level > Quest->Condition.MaxOverlordLevel) {
 		return false;
@@ -312,7 +313,7 @@ Bool RTCharacterQuestClear(
 		if (!RTCharacterDungeonQuestFlagIsSet(Character, MissionData->Value[0])) return false;
 	}
 
-	Int32 BattleStyleIndex = Character->Data.Info.Style.BattleStyle | (Character->Data.Info.Style.ExtendedBattleStyle << 3);
+	Int32 BattleStyleIndex = Character->Data.StyleInfo.Style.BattleStyle | (Character->Data.StyleInfo.Style.ExtendedBattleStyle << 3);
 
 	if (Quest->Type == RUNTIME_QUEST_TYPE_BATTLE_RANK_UP) {
 		if (!RTCharacterBattleRankUp(Runtime, Character)) return false;
@@ -629,10 +630,11 @@ Bool RTCharacterPartyQuestBegin(
 	RTQuestDataRef Quest = RTRuntimeGetQuestByIndex(Runtime, QuestIndex);
 	if (!Quest) return false;
 
-	if (Character->Data.Info.Basic.Level < Quest->Condition.Level ||
-		Character->Data.Info.Basic.Level > Quest->Condition.MaxLevel ||
-		Character->Data.Info.Honor.Rank < Quest->Condition.MinHonorRank ||
-		Character->Data.Info.Honor.Rank > Quest->Condition.MaxHonorRank ||
+	Int32 HonorRank = RTCharacterGetHonorRank(Runtime, Character);
+	if (Character->Data.Info.Level < Quest->Condition.Level ||
+		Character->Data.Info.Level > Quest->Condition.MaxLevel ||
+		HonorRank < Quest->Condition.MinHonorRank ||
+		HonorRank > Quest->Condition.MaxHonorRank ||
 		Character->Data.OverlordMasteryInfo.Info.Level < Quest->Condition.MinOverlordLevel ||
 		Character->Data.OverlordMasteryInfo.Info.Level > Quest->Condition.MaxOverlordLevel) {
 		return false;
@@ -746,7 +748,7 @@ Bool RTCharacterPartyQuestClear(
 
 	// TODO: Check (BattleStyleIndex) shouldn't be necessary in party dungeon quests!
 	//       May just pass 0 and verify for it also..
-	Int32 BattleStyleIndex = Character->Data.Info.Style.BattleStyle | (Character->Data.Info.Style.ExtendedBattleStyle << 3);
+	Int32 BattleStyleIndex = Character->Data.StyleInfo.Style.BattleStyle | (Character->Data.StyleInfo.Style.ExtendedBattleStyle << 3);
 	Int32 RewardItemSetID = Quest->Reward[RUNTIME_QUEST_REWARD_ITEM_SET];
 	RTQuestRewardItemDataRef RewardItem = RTRuntimeGetQuestRewardItemByIndex(
 		Runtime,

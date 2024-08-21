@@ -9,7 +9,7 @@ EXTERN_C_BEGIN
 #pragma pack(push, 1)
 
 struct _RTAppearanceInfo {
-    UInt8 EquipmentAppearanceCount;
+    Int8 EquipmentAppearanceCount;
     Int16 InventoryAppearanceCount;
 };
 

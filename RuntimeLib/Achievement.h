@@ -54,12 +54,12 @@ struct _RTAchievementExtendedRewardSlot {
 };
 
 struct _RTAchievementExtendedInfo {
-    Int32 AchievementExtendedRewardCount;
+    Int32 SlotCount;
 };
 
 struct _RTCharacterAchievementExtendedInfo {
     struct _RTAchievementExtendedInfo Info;
-    struct _RTAchievementExtendedRewardSlot AchievementExtendedRewardSlots[RUNTIME_CHARACTER_MAX_ACHIEVEMENT_SLOT_COUNT];
+    struct _RTAchievementExtendedRewardSlot Slots[RUNTIME_CHARACTER_MAX_ACHIEVEMENT_SLOT_COUNT];
 };
 
 #pragma pack(pop)

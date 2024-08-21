@@ -28,28 +28,30 @@ By accessing and using this software, you agree to abide by these terms and ackn
 
 ## Requirements
 
-| Requirement      | Tool           | Version            |
-|------------------|----------------|--------------------|
-| Build Tools      | CMake          | [CMake](https://cmake.org/) Version 3.21.0 |
-| Database         | MariaDB Server | [MariaDB Server](https://mariadb.org/) Version tested 11.3.2 |
-| Client           |                | KR UTS             |
+| Requirement      | Tool           | Version                     |
+|------------------|----------------|-----------------------------|
+| Package Manager  | Conan          | [Conan](https://conan.io/)  |
+| Build Tools      | CMake          | [CMake](https://cmake.org/) |
 
 ## Build
 
 | Supported Platforms |
 |---------------------|
-| Windows x64         |
+| Windows             |
+| Linux               |
 
-1. **Project Setup**: Use CMake along with your preferred build tools to create the project.
+- Install dependencies `conan install . --output-folder=Build --build=missing -s build_type=Debug|Release`
+- Configure preset `cmake --preset conan-default`
+- Use the Build/conan_toolchain.cmake file as toolchain in cmake.
+- Use CMake along with your preferred build tools to create the project.
 
 ## Database Setup
 
-1. **Maria DB Server Instances**:
-   - Create two separate instances of Maria DB Server on your machine, each with its own distinct port.
-
-2. **Database Initialization**:
-   - Run all `AuthDB/*.sql` files in the correct order within the AuthDB database instance.
-   - Run all `MasterDB/*.sql` files in the correct order within the MasterDB database instance.
+1. **Create databases**:
+   - Create databases by using the 0000_CreateDatabase.sql files inside the /Database folder.
+   - Any database supporting odbc will be fine
+   - Migrate the language support of the migration files for your desired database
+   - Configure the driver inside LoginSvr.ini and MasterDBAgent.ini
 
 ## Configuration
 

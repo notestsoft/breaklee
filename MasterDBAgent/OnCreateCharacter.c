@@ -1,5 +1,4 @@
 #include "Enumerations.h"
-#include "MasterDB.h"
 #include "IPCProtocol.h"
 #include "IPCProcedures.h"
 
@@ -9,94 +8,66 @@ IPC_PROCEDURE_BINDING(W2D, CREATE_CHARACTER) {
 	Response->Header.Target = Packet->Header.Source;
 	Response->Header.TargetConnectionID = Packet->Header.SourceConnectionID;
 
-	Int32 NameExists = 0;
-	if (!MasterDBSelectCharacterNameCount(Context->Database, Packet->CharacterName, &NameExists)) {
-		Response->Status = CREATE_CHARACTER_STATUS_DBERROR;
-		IPCSocketUnicast(Socket, Response);
-		return;
+	Bool Success = DatabaseCallProcedure(
+		Context->Database,
+		"InsertCharacter",
+		SQL_PARAM_INPUT, SQL_INTEGER, &Packet->AccountID,
+		SQL_PARAM_INPUT, SQL_VARCHAR, Packet->CharacterName, sizeof(Packet->CharacterName),
+		SQL_PARAM_INPUT, SQL_INTEGER, &Packet->CharacterData.StyleInfo.Style,
+		SQL_PARAM_INPUT, SQL_TINYINT, &Packet->CharacterSlotIndex,
+		SQL_PARAM_INPUT, SQL_SMALLINT, &Packet->CharacterData.Info.Stat[RUNTIME_CHARACTER_STAT_STR],
+		SQL_PARAM_INPUT, SQL_SMALLINT, &Packet->CharacterData.Info.Stat[RUNTIME_CHARACTER_STAT_DEX],
+		SQL_PARAM_INPUT, SQL_SMALLINT, &Packet->CharacterData.Info.Stat[RUNTIME_CHARACTER_STAT_INT],
+		SQL_PARAM_INPUT, SQL_TINYINT, &Packet->CharacterData.Info.WorldIndex,
+		SQL_PARAM_INPUT, SQL_SMALLINT, &Packet->CharacterData.Info.PositionX,
+		SQL_PARAM_INPUT, SQL_SMALLINT, &Packet->CharacterData.Info.PositionY,
+		SQL_PARAM_OUTPUT, SQL_TINYINT, &Response->Status,
+		SQL_PARAM_OUTPUT, SQL_INTEGER, &Response->Character.CharacterID,
+		SQL_END
+	);
+
+	if (Success && Response->Status == CREATE_CHARACTER_STATUS_SUCCESS) {
+		DatabaseHandleRef Handle = DatabaseCallProcedureFetch(
+			Context->Database,
+			"GetCharacterInfo",
+			SQL_PARAM_INPUT, SQL_INTEGER, &Response->Character.CharacterID,
+			SQL_END
+		);
+
+		IPC_DATA_CHARACTER_INFO CharacterInfo = { 0 };
+		if (DatabaseHandleReadNext(
+			Handle,
+			SQL_TINYINT, &Response->CharacterSlotIndex,
+			SQL_INTEGER, &CharacterInfo.CharacterID,
+			SQL_BIGINT, &CharacterInfo.CreationDate,
+			SQL_INTEGER, &CharacterInfo.Style,
+			SQL_INTEGER, &CharacterInfo.Level,
+			SQL_SMALLINT, &CharacterInfo.OverlordLevel,
+			SQL_INTEGER, &CharacterInfo.MythRebirth,
+			SQL_INTEGER, &CharacterInfo.MythHolyPower,
+			SQL_INTEGER, &CharacterInfo.MythLevel,
+			SQL_INTEGER, &CharacterInfo.SkillRank,
+			SQL_TINYINT, &CharacterInfo.NationMask,
+			SQL_VARCHAR, CharacterInfo.Name, sizeof(CharacterInfo.Name),
+			SQL_BIGINT, &CharacterInfo.HonorPoint,
+			SQL_INTEGER, &CharacterInfo.CostumeActivePageIndex,
+			SQL_VARBINARY, &CharacterInfo.CostumeAppliedSlots, sizeof(CharacterInfo.CostumeAppliedSlots),
+			SQL_BIGINT, &CharacterInfo.Currency,
+			SQL_TINYINT, &CharacterInfo.WorldIndex,
+			SQL_SMALLINT, &CharacterInfo.PositionX,
+			SQL_SMALLINT, &CharacterInfo.PositionY,
+			SQL_SMALLINT, &CharacterInfo.EquipmentCount,
+			SQL_VARBINARY, &CharacterInfo.Equipment, sizeof(CharacterInfo.Equipment),
+			SQL_VARBINARY, &CharacterInfo.EquipmentAppearance, sizeof(CharacterInfo.EquipmentAppearance),
+			SQL_END
+		)) {
+			Response->Character = CharacterInfo;
+		}
+
+		DatabaseHandleFlush(Handle);
 	}
 
-	if (NameExists) {
-		Response->Status = CREATE_CHARACTER_STATUS_NAME_OCCUPIED;
-		IPCSocketUnicast(Socket, Response);
-		return;
-	}
-
-	DatabaseBeginTransaction(Context->Database);
-
-	MASTERDB_DATA_ACCOUNT Account = { 0 };
-	Account.AccountID = Packet->AccountID;
-	if (!MasterDBGetOrCreateAccount(Context->Database, Packet->AccountID, &Account)) {
-		DatabaseRollbackTransaction(Context->Database);
-		Response->Status = CREATE_CHARACTER_STATUS_DBERROR;
-		IPCSocketUnicast(Socket, Response);
-		return;
-	}
-
-	MASTERDB_DATA_CHARACTER Character = { 0 };
-	Character.AccountID = Account.AccountID;
-	Character.Index = Packet->CharacterSlotIndex;
-	CStringCopySafe(Character.Name, MAX_CHARACTER_NAME_LENGTH + 1, Packet->CharacterName);
-
-	if (!MasterDBInsertCharacter(Context->Database, Packet->AccountID, Packet->CharacterName, Packet->CharacterSlotIndex)) {
-		DatabaseRollbackTransaction(Context->Database);
-		Response->Status = CREATE_CHARACTER_STATUS_DBERROR;
-		IPCSocketUnicast(Socket, Response);
-		return;
-	}
-
-	Character.CharacterID = (Int32)DatabaseGetLastInsertID(Context->Database);
-	if (!MasterDBSelectCharacterByID(Context->Database, &Character)) {
-		DatabaseRollbackTransaction(Context->Database);
-		Response->Status = CREATE_CHARACTER_STATUS_DBERROR;
-		IPCSocketUnicast(Socket, Response);
-		return;
-	}
-
-#define CHARACTER_DATA_PROTOCOL(__TYPE__, __NAME__) \
-	{ \
-        DataTableRef Table = DatabaseGetDataTable(Context->Database, TABLE_SCOPE_CHARACTER, #__NAME__); \
-        if (!Table || !DataTableInsert(Table, Character.CharacterID, (UInt8*)&Packet->CharacterData.__NAME__, sizeof(__TYPE__))) { \
-			DatabaseRollbackTransaction(Context->Database); \
-			Response->Status = CREATE_CHARACTER_STATUS_DBERROR; \
-			IPCSocketUnicast(Socket, Response); \
-			return; \
-        } \
-	}
-
-#include "RuntimeLib/CharacterDataDefinition.h"
-
-	if (!DatabaseCommitTransaction(Context->Database)) {
-		DatabaseRollbackTransaction(Context->Database);
-		Response->Status = CREATE_CHARACTER_STATUS_DBERROR;
-		IPCSocketUnicast(Socket, Response);
-		return;
-	}
-
-	Response->Status = CREATE_CHARACTER_STATUS_SUCCESS;
-	Response->CharacterSlotIndex = Packet->CharacterSlotIndex;
-	Response->Character.ID = Character.CharacterID;
-	Response->Character.CreationDate = Character.CreatedAt;
-	CStringCopySafe(Response->Character.Name, MAX_CHARACTER_NAME_LENGTH + 1, Character.Name);
-
-	Response->Character.Style = Packet->CharacterData.Info.Style.RawValue;
-	Response->Character.Level = Packet->CharacterData.Info.Basic.Level;
-	Response->Character.OverlordLevel = Packet->CharacterData.OverlordMasteryInfo.Info.Level;
-	Response->Character.MythRebirth = Packet->CharacterData.MythMasteryInfo.Info.Rebirth;
-	Response->Character.MythHolyPower = Packet->CharacterData.MythMasteryInfo.Info.HolyPower;
-	Response->Character.MythLevel = Packet->CharacterData.MythMasteryInfo.Info.Level;
-	Response->Character.SkillRank = Packet->CharacterData.Info.Skill.Rank;
-	Response->Character.NationMask = Packet->CharacterData.Info.Profile.Nation;
-	Response->Character.HonorPoint = Packet->CharacterData.Info.Honor.Point;
-	Response->Character.CostumeActivePageIndex = Packet->CharacterData.CostumeInfo.Info.ActivePageIndex;
-	memcpy(Response->Character.CostumeAppliedSlots, Packet->CharacterData.CostumeInfo.AppliedSlots, sizeof(struct _RTAppliedCostumeSlot) * RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT);
-	Response->Character.Alz = Packet->CharacterData.Info.Alz;
-	Response->Character.MapID = Packet->CharacterData.Info.Position.WorldID;
-	Response->Character.PositionX = Packet->CharacterData.Info.Position.X;
-	Response->Character.PositionY = Packet->CharacterData.Info.Position.Y;
-	Response->Character.EquipmentCount = Packet->CharacterData.EquipmentInfo.Info.EquipmentSlotCount;
-	memcpy(Response->Character.Equipment, Packet->CharacterData.EquipmentInfo.EquipmentSlots, sizeof(struct _RTItemSlot) * RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT);
-	memcpy(Response->Character.EquipmentAppearance, Packet->CharacterData.AppearanceInfo.EquipmentSlots, sizeof(struct _RTItemSlotAppearance) * RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT);
+	// TODO: Sync all the character data from packet after creation!
 
 	IPCSocketUnicast(Socket, Response);
 }

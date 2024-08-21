@@ -32,7 +32,7 @@ Bool RTCharacterAddEssenceAbility(
 	if (!ItemData) return false;
 
 	if (ItemData->ItemType != RUNTIME_ITEM_TYPE_ABILITY_RUNE_ESSENCE) return false;
-	if (Character->Data.Info.Basic.Level < ItemData->MinLevel) return false;
+	if (Character->Data.Info.Level < ItemData->MinLevel) return false;
 
 	Int32 AbilitySlotCount = RUNTIME_CHARACTER_ESSENCE_ABILITY_SLOT_COUNT + Character->Data.AbilityInfo.Info.ExtendedEssenceAbilityCount;
 	if (Character->Data.AbilityInfo.Info.EssenceAbilityCount >= AbilitySlotCount) return false;
@@ -249,7 +249,7 @@ Bool RTCharacterAddBlendedAbility(
 	if (!ItemData) return false;
 
 	if (ItemData->ItemType != RUNTIME_ITEM_TYPE_ABILITY_RUNE_BLENDED) return false;
-	if (Character->Data.Info.Basic.Level < ItemData->MinLevel) return false;
+	if (Character->Data.Info.Level < ItemData->MinLevel) return false;
 
 	Int32 AbilitySlotCount = RUNTIME_CHARACTER_BLENDED_ABILITY_SLOT_COUNT + Character->Data.AbilityInfo.Info.ExtendedBlendedAbilityCount;
 	if (Character->Data.AbilityInfo.Info.BlendedAbilityCount >= AbilitySlotCount) return false;
@@ -360,7 +360,7 @@ Bool RTCharacterAddKarmaAbility(
 	if (!ItemData) return false;
 
 	if (ItemData->ItemType != RUNTIME_ITEM_TYPE_ABILITY_RUNE_KARMA) return false;
-	if (Character->Data.Info.Basic.Level < ItemData->MinLevel) return false;
+	if (Character->Data.Info.Level < ItemData->MinLevel) return false;
 
 	Int32 AbilitySlotCount = RUNTIME_CHARACTER_KARMA_ABILITY_SLOT_COUNT + Character->Data.AbilityInfo.Info.ExtendedKarmaAbilityCount;
 	if (Character->Data.AbilityInfo.Info.KarmaAbilityCount >= AbilitySlotCount) return false;

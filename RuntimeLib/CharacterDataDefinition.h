@@ -21,6 +21,7 @@ ACCOUNT_DATA_PROTOCOL(struct _RTCharacterSettingsInfo, SettingsInfo)
 #endif
 
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterInfo, Info)
+CHARACTER_DATA_PROTOCOL(struct _RTCharacterStyleInfo, StyleInfo)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterEquipmentData, EquipmentInfo)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterInventoryInfo, InventoryInfo)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterSkillSlotInfo, SkillSlotInfo)
@@ -52,5 +53,9 @@ CHARACTER_DATA_PROTOCOL(struct _RTCharacterCostumeInfo, CostumeInfo)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterInventoryInfo, TemporaryInventoryInfo)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterRecoveryInfo, RecoveryInfo)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterPresetInfo, PresetInfo)
+CHARACTER_DATA_PROTOCOL(struct _RTCharacterAuraMasteryData, AuraMasteryInfo)
+CHARACTER_DATA_PROTOCOL(struct _RTCharacterSecretShopData, SecretShopInfo)
+CHARACTER_DATA_PROTOCOL(struct _RTCharacterDamageBoosterData, DamageBoosterInfo)
+CHARACTER_DATA_PROTOCOL(struct _RTCharacterExplorationData, ExplorationInfo)
 
 #undef CHARACTER_DATA_PROTOCOL

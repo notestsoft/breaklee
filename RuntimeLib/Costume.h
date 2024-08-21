@@ -27,7 +27,7 @@ struct _RTCostumeWarehouseInfo {
 
 struct _RTCharacterCostumeWarehouseInfo {
     struct _RTCostumeWarehouseInfo Info;
-    struct _RTAccountCostumeSlot AccountCostumeSlots[RUNTIME_CHARACTER_MAX_ACCOUNT_COSTUME_SLOT_COUNT];
+    struct _RTAccountCostumeSlot Slots[RUNTIME_CHARACTER_MAX_ACCOUNT_COSTUME_SLOT_COUNT];
 };
 
 struct _RTCostumeInfo {

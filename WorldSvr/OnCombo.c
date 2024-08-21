@@ -32,7 +32,7 @@ CLIENT_PROCEDURE_BINDING(COMBO_SKILL_EVENT) {
 
 	if (DummySkill->SkillIndex != SkillData->SkillID) goto error;
 
-	if (!Character->Data.Info.ExtendedStyle.IsComboActive) {
+	if (!Character->Data.StyleInfo.ExtendedStyle.IsComboActive) {
 		if (Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT] < SkillData->Sp) {
 			S2C_DATA_NFY_COMBO_SKILL_SET* Response = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_COMBO_SKILL_SET);
 			Response->Result = S2C_DATA_COMBO_SKILL_SET_RESULT_FAILURE;
@@ -51,16 +51,16 @@ CLIENT_PROCEDURE_BINDING(COMBO_SKILL_EVENT) {
 
 		if (Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] < RequiredMP) goto error;
 
-		Character->Data.Info.ExtendedStyle.IsComboActive = true;
+		Character->Data.StyleInfo.ExtendedStyle.IsComboActive = true;
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT] -= SkillData->Sp;
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] -= RequiredMP;
-		Character->Data.Info.Resource.SP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
-		Character->Data.Info.Resource.MP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+		Character->Data.Info.CurrentSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+		Character->Data.Info.CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 		Character->SyncMask.Info = true;
 	}
 	else {
 		Character->SkillComboLevel = 1;
-		Character->Data.Info.ExtendedStyle.IsComboActive = false;
+		Character->Data.StyleInfo.ExtendedStyle.IsComboActive = false;
 		Character->SyncMask.Info = true;
 	}
 
@@ -71,7 +71,7 @@ CLIENT_PROCEDURE_BINDING(COMBO_SKILL_EVENT) {
 
 	S2C_DATA_NFY_COMBO_SKILL_EVENT* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_COMBO_SKILL_EVENT);
 	Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
-	Notification->CharacterExtendedStyle = Character->Data.Info.ExtendedStyle.RawValue;
+	Notification->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
 	BroadcastToWorld(
 		Context,
 		RTRuntimeGetWorldByCharacter(Runtime, Character),
@@ -81,7 +81,7 @@ CLIENT_PROCEDURE_BINDING(COMBO_SKILL_EVENT) {
 		Notification
 	);
 
-	if (Character->Data.Info.ExtendedStyle.IsComboActive) {
+	if (Character->Data.StyleInfo.ExtendedStyle.IsComboActive) {
 		S2C_DATA_NFY_CHARACTER_DATA* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_CHARACTER_DATA);
 		Notification->Type = S2C_DATA_CHARACTER_UPDATE_TYPE_SP_DECREASE;
 		Notification->SP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];

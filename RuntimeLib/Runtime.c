@@ -155,10 +155,10 @@ RTWorldContextRef RTRuntimeGetWorldByCharacter(
 ) {
     if (!RTEntityIsNull(Character->PartyID)) {
         RTWorldContextRef WorldContext = RTWorldContextGetParty(Runtime->WorldManager, Character->PartyID);
-        if (WorldContext && WorldContext->WorldData->WorldIndex == Character->Data.Info.Position.WorldID) return WorldContext;
+        if (WorldContext && WorldContext->WorldData->WorldIndex == Character->Data.Info.WorldIndex) return WorldContext;
     }
 
-    return RTWorldContextGetGlobal(Runtime->WorldManager, Character->Data.Info.Position.WorldID);
+    return RTWorldContextGetGlobal(Runtime->WorldManager, Character->Data.Info.WorldIndex);
 }
 
 RTNpcRef RTRuntimeGetNpcByWorldNpcID(
@@ -460,7 +460,7 @@ Void RTRuntimeCloseDungeon(
     assert(Party);
 
     if (Party->PartyType == RUNTIME_PARTY_TYPE_SOLO_DUNGEON) {
-        assert(WorldContext->DungeonIndex != Character->Data.Info.Position.DungeonIndex);
+        assert(WorldContext->DungeonIndex != Character->Data.Info.DungeonIndex);
 
         RTWorldContextDestroyParty(Runtime->WorldManager, Character->PartyID);
         RTPartyManagerDestroyParty(Runtime->PartyManager, Party);
@@ -472,8 +472,8 @@ Void RTRuntimeCloseDungeon(
         for (Int32 Index = 0; Index < Party->MemberCount; Index += 1) {
             RTCharacterRef Member = RTWorldManagerGetCharacter(Runtime->WorldManager, Party->Members[Index].MemberID);
             if (!Member) continue;
-            if (Member->Data.Info.Position.WorldID == WorldContext->WorldData->WorldIndex &&
-                Member->Data.Info.Position.DungeonIndex == WorldContext->DungeonIndex) {
+            if (Member->Data.Info.WorldIndex == WorldContext->WorldData->WorldIndex &&
+                Member->Data.Info.DungeonIndex == WorldContext->DungeonIndex) {
                 IsDungeonActive = true;
                 break;
             }
@@ -541,11 +541,11 @@ Void RTRuntimeBroadcastCharacterData(
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_RANK) {
-        Notification->SkillRank = Character->Data.Info.Skill.Rank;
+        Notification->SkillRank = Character->Data.Info.SkillRank;
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_LEVEL) {
-        Notification->Level = Character->Data.Info.Basic.Level;
+        Notification->Level = Character->Data.Info.Level;
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_SP_DECREASE_EX) {
@@ -592,7 +592,7 @@ Void RTRuntimeBroadcastCharacterData(
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_HONOR_MEDAL) {
         Notification->HonorMedalGrade = RTCharacterGetHonorMedalGrade(Runtime, Character, 0);
-        Notification->HonorPoints = Character->Data.Info.Honor.Point;
+        Notification->HonorPoints = Character->Data.Info.HonorPoint;
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_BP) {

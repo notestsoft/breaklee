@@ -34,7 +34,6 @@ FileRef FileOpen(
         return NULL;
     }
 
-    Info("FileOpen(%s, %llu)", FilePath, (UInt64)Handle);
     return (FileRef)Handle;
 }
 
@@ -55,14 +54,12 @@ FileRef FileCreate(
         return NULL;
     }
 
-    Info("FileCreate(%s, %llu)", FilePath, (UInt64)Handle);
     return (FileRef)Handle;
 }
 
 Void FileClose(
     FileRef File
 ) {
-    Info("FileClose(%llu)", (UInt64)File);
     assert(File);
     CloseHandle(File);
 }
@@ -104,7 +101,7 @@ Bool FileReadNoAlloc(
         SleepEx(1, true);
     }
 
-    assert(*Length == FileTransferByteCount);
+    assert(*Length == (Int32)FileTransferByteCount);
     Destination[*Length] = '\0';
     return true;
 }
@@ -125,7 +122,6 @@ Bool FileRead(
         return false;
     }
 
-    OVERLAPPED Overlapped = { 0 };
     *Length = (Int32)FileSize.QuadPart;
     Int32 MaxLength = *Length + 1;
 

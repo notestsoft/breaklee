@@ -1,9 +1,9 @@
-#include "AuthDB.h"
 #include "Context.h"
 #include "ClientSocket.h"
 #include "ClientProcedures.h"
 #include "IPCProtocol.h"
 #include "IPCProcedures.h"
+#include "Server.h"
 
 #define C2S_COMMAND(__NAME__, __COMMAND__)                  \
 Void SERVER_PROC_ ## __NAME__(                              \
@@ -190,17 +190,20 @@ Int32 main(Int32 argc, CString* argv) {
 #include "IPCCommands.h"
 
     ServerContext.Database = DatabaseConnect(
-        Config.AuthDB.Host,
-        Config.AuthDB.Username,
-        Config.AuthDB.Password,
-        Config.AuthDB.Database,
-        Config.AuthDB.Port,
+        Allocator,
+        Config.Database.Driver,
+        Config.Database.Host,
+        Config.Database.Database,
+        Config.Database.Username,
+        Config.Database.Password,
+        Config.Database.Port,
         0,
-        Config.AuthDB.AutoReconnect
+        Config.Database.AutoReconnect
     );
     if (!ServerContext.Database) Fatal("Database connection failed");
 
-    AuthDBPrepareStatements(ServerContext.Database);
+    ServerLoadMigrationData(Config, &ServerContext);
+
     ServerRun(Server);
     ServerDestroy(Server);
     DatabaseDisconnect(ServerContext.Database);

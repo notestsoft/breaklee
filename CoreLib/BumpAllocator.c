@@ -55,7 +55,7 @@ Void *_AllocatorBump(
     switch (Mode) {
     case AllocatorModeAllocate: {
         if (BumpContext->FirstPage == NULL) {
-            Index MemoryCapacity = MAX(kBumpAllocatorDefaultPageCapacity, Capacity + BumpContext->PageHeaderSize);
+            Index MemoryCapacity = MAX(kBumpAllocatorDefaultPageCapacity, (Int32)Capacity + BumpContext->PageHeaderSize);
             MemoryCapacity = Align(MemoryCapacity, BumpContext->Alignment);
             struct _BumpAllocatorPage* Page = AllocatorAllocate(BumpContext->Allocator, MemoryCapacity);
             Page->Size = MemoryCapacity;

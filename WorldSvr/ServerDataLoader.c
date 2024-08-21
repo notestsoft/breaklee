@@ -262,7 +262,7 @@ Bool ServerLoadCharacterTemplateData(
 
         ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, "skill");
         while (ChildIterator) {
-            RTSkillSlotRef SkillSlot = &CharacterTemplate->SkillSlots.Skills[CharacterTemplate->SkillSlots.Info.SlotCount];
+            RTSkillSlotRef SkillSlot = &CharacterTemplate->SkillSlots.Slots[CharacterTemplate->SkillSlots.Info.SlotCount];
 
             if (!ParseAttributeUInt16(Archive, ChildIterator->Index, "id", &SkillSlot->ID)) goto error;
             if (!ParseAttributeUInt8(Archive, ChildIterator->Index, "level", &SkillSlot->Level)) goto error;
@@ -277,7 +277,7 @@ Bool ServerLoadCharacterTemplateData(
 
         ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, "quickslot");
         while (ChildIterator) {
-            RTQuickSlotRef QuickSlot = &CharacterTemplate->QuickSlots.QuickSlots[CharacterTemplate->QuickSlots.Info.SlotCount];
+            RTQuickSlotRef QuickSlot = &CharacterTemplate->QuickSlots.Slots[CharacterTemplate->QuickSlots.Info.SlotCount];
 
             if (!ParseAttributeUInt16(Archive, ChildIterator->Index, "skill", &QuickSlot->SkillIndex)) goto error;
             if (!ParseAttributeUInt16(Archive, ChildIterator->Index, "slot", &QuickSlot->SlotIndex)) goto error;
@@ -1356,7 +1356,7 @@ Bool ServerLoadWorldData(
                     RTDropItemRef DropItem = (RTDropItemRef)ArrayAppendUninitializedElement(DropPool);
                     memset(DropItem, 0, sizeof(struct _RTDropItem));
 
-                    if (!ParseAttributeUInt64(Archive, ItemIterator->Index, "ItemID", &DropItem->ItemID.ID)) goto error;
+                    if (!ParseAttributeUInt64(Archive, ItemIterator->Index, "ItemID", &DropItem->ItemID.Serial)) goto error;
                     if (!ParseAttributeUInt64(Archive, ItemIterator->Index, "ItemOption", &DropItem->ItemOptions)) goto error;
                     if (!ParseAttributeUInt32(Archive, ItemIterator->Index, "ItemDuration", &DropItem->DurationIndex)) goto error;
                     if (!ParseAttributeUInt32(Archive, ItemIterator->Index, "OptionPoolID", &DropItem->OptionPoolIndex)) goto error;

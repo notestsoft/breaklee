@@ -6,14 +6,14 @@
 #include "Server.h"
 
 CLIENT_PROCEDURE_BINDING(GET_PREMIUM_SERVICE) {
-	if (!(Client->Flags & CLIENT_FLAGS_VERIFIED) || Client->Account.AccountID < 1) goto error;
+	if (!(Client->Flags & CLIENT_FLAGS_VERIFIED) || Client->AccountID < 1) goto error;
 
 	IPC_W2D_DATA_GET_PREMIUM_SERVICE* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2D, GET_PREMIUM_SERVICE);
 	Request->Header.SourceConnectionID = Connection->ID;
 	Request->Header.Source = Server->IPCSocket->NodeID;
 	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
 	Request->Header.Target.Type = IPC_TYPE_MASTERDB;
-	Request->AccountID = Client->Account.AccountID;
+	Request->AccountID = Client->AccountID;
 	IPCSocketUnicast(Server->IPCSocket, Request);
 	return;
 

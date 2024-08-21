@@ -46,13 +46,13 @@ Bool RTCharacterTakeNewbieSupportReward(
 	assert(Category->Type < RUNTIME_NEWBIE_SUPPORT_CATEGORY_TYPE_COUNT);
 
 	Int32 ConditionValues1[RUNTIME_NEWBIE_SUPPORT_CATEGORY_TYPE_COUNT] = { 0 };
-	ConditionValues1[RUNTIME_NEWBIE_SUPPORT_CATEGORY_TYPE_LEVEL] = Character->Data.Info.Basic.Level;
-	ConditionValues1[RUNTIME_NEWBIE_SUPPORT_CATEGORY_TYPE_SKILL_RANK] = Character->Data.Info.Skill.Rank;
-	ConditionValues1[RUNTIME_NEWBIE_SUPPORT_CATEGORY_TYPE_HONOR_RANK] = Character->Data.Info.Honor.Rank;
+	ConditionValues1[RUNTIME_NEWBIE_SUPPORT_CATEGORY_TYPE_LEVEL] = Character->Data.Info.Level;
+	ConditionValues1[RUNTIME_NEWBIE_SUPPORT_CATEGORY_TYPE_SKILL_RANK] = Character->Data.Info.SkillRank;
+	ConditionValues1[RUNTIME_NEWBIE_SUPPORT_CATEGORY_TYPE_HONOR_RANK] = RTCharacterGetHonorRank(Runtime, Character);
 
 	Int32 ConditionValues2[RUNTIME_NEWBIE_SUPPORT_CATEGORY_TYPE_COUNT] = { 0 };
 	ConditionValues2[RUNTIME_NEWBIE_SUPPORT_CATEGORY_TYPE_LEVEL] = 0;
-	ConditionValues2[RUNTIME_NEWBIE_SUPPORT_CATEGORY_TYPE_SKILL_RANK] = Character->Data.Info.Skill.Level;
+	ConditionValues2[RUNTIME_NEWBIE_SUPPORT_CATEGORY_TYPE_SKILL_RANK] = Character->Data.Info.SkillLevel;
 	ConditionValues2[RUNTIME_NEWBIE_SUPPORT_CATEGORY_TYPE_HONOR_RANK] = 0;
 
 	if (ConditionValues1[Category->Type] < Reward->ConditionValue1) return false;
@@ -65,7 +65,7 @@ Bool RTCharacterTakeNewbieSupportReward(
 		if (!RTInventoryIsSlotEmpty(Runtime, &Character->Data.InventoryInfo, InventorySlotIndex[Index])) return false;
 	}
 
-	UInt32 BattleStyleIndex = Character->Data.Info.Style.BattleStyle | (Character->Data.Info.Style.ExtendedBattleStyle << 3);
+	UInt32 BattleStyleIndex = Character->Data.StyleInfo.Style.BattleStyle | (Character->Data.StyleInfo.Style.ExtendedBattleStyle << 3);
 	UInt32 BattleStyleFlag = 1 << (BattleStyleIndex - 1);
 
 	if (RewardIndex < 0 || RewardIndex > RewardPool->NewbieSupportRewardPoolItemCount) return false;

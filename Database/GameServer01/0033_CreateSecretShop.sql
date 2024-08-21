@@ -1,0 +1,13 @@
+CREATE TABLE SecretShop (
+    CharacterID INT NOT NULL,
+    RefreshCost TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    ResetTimestamp BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    RefreshCount TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    SlotData BLOB NOT NULL,
+
+    PRIMARY KEY (CharacterID),
+
+    CONSTRAINT FK_Character_SecretShop FOREIGN KEY (CharacterID)
+        REFERENCES Characters(CharacterID)
+        ON DELETE CASCADE
+) ENGINE = INNODB DEFAULT CHARSET = utf8;

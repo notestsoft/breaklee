@@ -12,7 +12,7 @@ struct _RTDailyQuestSlot {
 };
 
 struct _RTDailyQuestInfo {
-    UInt32 Count;
+    UInt32 SlotCount;
 };
 
 struct _RTCharacterDailyQuestInfo {

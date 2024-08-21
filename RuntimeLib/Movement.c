@@ -185,6 +185,14 @@ Void RTMovementUpdateDeadReckoning(
 	Movement->PositionCurrent.Y = NewPositionY;
 }
 
+Void RTMovementSetSpeed(
+	RTRuntimeRef Runtime,
+	RTMovementRef Movement,
+	Int32 Speed
+) {
+	Movement->Speed = (Float32)Speed / RUNTIME_MOVEMENT_SPEED_SCALE;
+}
+
 Void RTMovementSetPosition(
 	RTRuntimeRef Runtime,
 	RTMovementRef Movement,

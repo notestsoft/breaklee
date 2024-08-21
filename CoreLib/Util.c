@@ -95,38 +95,51 @@ EVP_MD_CTX *CreateHashAlgorithmSha512() {
     return Context;
 }
 
-Bool CreatePasswordHash(
-    CString Password,
-    UInt8** Salt,
-    Int32* SaltLength,
-    UInt8* Hash,
-    Int32* HashLength
+Void CombineSaltAndHash(
+    const UInt8* Salt, 
+    const UInt8* Hash, 
+    UInt8* Output
 ) {
-    EVP_MD_CTX *Context = NULL;
+    memcpy(Output, Salt, SALT_LENGTH);
+    memcpy(Output + SALT_LENGTH, Hash, HASH_LENGTH);
+}
+
+Void SeparateSaltAndHash(
+    const UInt8* SaltedHash, 
+    UInt8* Salt,
+    UInt8* Hash
+) {
+    memcpy(Salt, SaltedHash, SALT_LENGTH);
+    memcpy(Hash, SaltedHash + SALT_LENGTH, HASH_LENGTH);
+}
+
+Bool CreatePasswordHash(
+    CString Password, 
+    UInt8* PasswordHash
+) {
+    EVP_MD_CTX* Context = NULL;
     UInt32 PasswordLength = (UInt32)strlen(Password);
-    UInt32 SaltBufferLength = 64;
-    UInt32 BufferLength = SaltBufferLength + PasswordLength + 1;
+    UInt32 BufferLength = SALT_LENGTH + PasswordLength + 1;
     UInt8* Buffer = NULL;
+    UInt8 SaltBuffer[SALT_LENGTH] = { 0 };
+    UInt8 Hash[EVP_MAX_MD_SIZE] = { 0 };
     UInt32 HashDataLength = 0;
-    
-    Buffer = (UInt8*)malloc(sizeof(UInt8) * BufferLength);
+
+    Buffer = (UInt8*)malloc(BufferLength);
     if (!Buffer) goto error;
-
-    UInt8* SaltBuffer = &Buffer[0];
-    UInt8* PasswordBuffer = &Buffer[SaltBufferLength];
-    memcpy(PasswordBuffer, Password, PasswordLength);
-    memset(&Buffer[SaltBufferLength + PasswordLength], 0, sizeof(UInt8));
-
     if (!(Context = CreateHashAlgorithmSha512())) goto error;
-    if (RAND_bytes(SaltBuffer, SaltBufferLength) != 1) goto error;
+    if (RAND_bytes(SaltBuffer, SALT_LENGTH) != 1) goto error;
+
+    memcpy(Buffer, SaltBuffer, SALT_LENGTH);
+    memcpy(Buffer + SALT_LENGTH, Password, PasswordLength);
+    memset(Buffer + SALT_LENGTH + PasswordLength, 0, 1);
+
     if (EVP_DigestUpdate(Context, Buffer, BufferLength) != 1) goto error;
     if (EVP_DigestFinal_ex(Context, Hash, &HashDataLength) != 1) goto error;
 
-    // We are safe to just return the SaltBuffer because we know it is pointing to the start of the Buffer memory.
-    *Salt = (UInt8*)SaltBuffer;
-    *SaltLength = (Int32)SaltBufferLength;
-    *HashLength = (Int32)HashDataLength;
+    CombineSaltAndHash(SaltBuffer, Hash, PasswordHash);
     EVP_MD_CTX_free(Context);
+    free(Buffer);
     return true;
 
 error:
@@ -136,36 +149,33 @@ error:
 }
 
 Bool ValidatePasswordHash(
-    CString Password,
-    UInt8* Salt,
-    Int32 SaltLength,
-    UInt8* Hash,
-    Int32 HashLength
+    CString Password, 
+    UInt8* PasswordHash
 ) {
-    EVP_MD_CTX *Context = NULL;
+    EVP_MD_CTX* Context = NULL;
+    UInt8 SaltBuffer[SALT_LENGTH];
+    UInt8 Hash[HASH_LENGTH];
+    UInt8 ComputedHash[HASH_LENGTH];
+
     UInt32 PasswordLength = (UInt32)strlen(Password);
-    UInt32 SaltBufferLength = (UInt32)SaltLength;
-    UInt32 BufferLength = SaltBufferLength + PasswordLength + 1;
+    UInt32 BufferLength = SALT_LENGTH + PasswordLength + 1;
     UInt8* Buffer = NULL;
     UInt32 HashDataLength = 0;
-    UInt8 HashData[EVP_MAX_MD_SIZE] = { 0 };
 
-    Buffer = (UInt8*)malloc(sizeof(UInt8) * BufferLength);
+    SeparateSaltAndHash(PasswordHash, SaltBuffer, Hash);
+
+    Buffer = (UInt8*)malloc(BufferLength);
     if (!Buffer) goto error;
 
-    UInt8* SaltBuffer = &Buffer[0];
-    UInt8* PasswordBuffer = &Buffer[SaltBufferLength];
-    memcpy(SaltBuffer, Salt, SaltBufferLength);
-    memcpy(PasswordBuffer, Password, PasswordLength);
-    memset(&Buffer[SaltBufferLength + PasswordLength], 0, sizeof(UInt8));
+    memcpy(Buffer, SaltBuffer, SALT_LENGTH);
+    memcpy(Buffer + SALT_LENGTH, Password, PasswordLength);
+    memset(Buffer + SALT_LENGTH + PasswordLength, 0, 1);
 
     if (!(Context = CreateHashAlgorithmSha512())) goto error;
     if (EVP_DigestUpdate(Context, Buffer, BufferLength) != 1) goto error;
-    if (EVP_DigestFinal_ex(Context, HashData, &HashDataLength) != 1) goto error;
-    
-    if (HashLength != HashDataLength) goto error;
-    if (memcmp(Hash, HashData, HashDataLength) != 0) goto error;
-    
+    if (EVP_DigestFinal_ex(Context, ComputedHash, &HashDataLength) != 1) goto error;
+    if (HashDataLength != HASH_LENGTH || memcmp(ComputedHash, Hash, HASH_LENGTH) != 0) goto error;
+
     EVP_MD_CTX_free(Context);
     free(Buffer);
     return true;

@@ -42,6 +42,8 @@ struct _RTRuntimeConfig {
     Bool IsSkillRankUpLimitEnabled;
     UInt64 WorldItemDespawnInterval;
     Int32 NewbieSupportTimeout;
+    Int64 MaxHonorPoint;
+    Int64 MinHonorPoint;
 };
 
 struct _RTRuntime {

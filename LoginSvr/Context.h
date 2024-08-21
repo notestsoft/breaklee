@@ -56,7 +56,8 @@ struct _ClientContext {
     UInt8 RSAPayloadBuffer[CLIENT_RSA_PAYLOAD_LENGTH];
     Int32 AccountID;
     Int32 LoginStatus;
-    Int32 AccountStatus;
+    Int32 AccountStatus; 
+    Char SessionKey[MAX_SESSIONKEY_LENGTH];
     Char Username[MAX_USERNAME_LENGTH];
     CaptchaInfoRef Captcha;
 };

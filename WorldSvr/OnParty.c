@@ -9,7 +9,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_INVITE) {
     if (!Character) goto error;
 	if (Packet->NameLength > MAX_CHARACTER_NAME_LENGTH) goto error;
 	
-	UInt8 BattleStyleIndex = Character->Data.Info.Style.BattleStyle | (Character->Data.Info.Style.ExtendedBattleStyle << 3);
+	UInt8 BattleStyleIndex = Character->Data.StyleInfo.Style.BattleStyle | (Character->Data.StyleInfo.Style.ExtendedBattleStyle << 3);
 
 	IPC_W2P_DATA_PARTY_INVITE* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2P, PARTY_INVITE);
 	Request->Header.SourceConnectionID = Connection->ID;
@@ -19,7 +19,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_INVITE) {
 	Request->Source.NodeIndex = Context->Config.WorldSvr.NodeIndex;
 	Request->Source.MemberID.Serial = Character->ID.Serial;
 	Request->Source.Info.CharacterIndex = Character->CharacterIndex;
-	Request->Source.Info.Level = Character->Data.Info.Basic.Level;
+	Request->Source.Info.Level = Character->Data.Info.Level;
 	Request->Source.Info.BattleStyleIndex = BattleStyleIndex;
 	Request->Source.Info.OverlordLevel = Character->Data.OverlordMasteryInfo.Info.Level;
 	Request->Source.Info.MythRebirth = Character->Data.MythMasteryInfo.Info.Rebirth;
@@ -27,7 +27,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_INVITE) {
 	Request->Source.Info.MythLevel = Character->Data.MythMasteryInfo.Info.Level;
 	Request->Source.Info.ForceWingGrade = Character->Data.ForceWingInfo.Info.Grade;
 	Request->Source.Info.ForceWingLevel = Character->Data.ForceWingInfo.Info.Level;
-	CStringCopySafe(Request->Source.Info.Name, MAX_CHARACTER_NAME_LENGTH + 1, Client->CharacterName);
+	CStringCopySafe(Request->Source.Info.Name, MAX_CHARACTER_NAME_LENGTH + 1, Character->Name);
 
 	Request->Target.NodeIndex = Packet->WorldServerID;
 	Request->Target.Info.CharacterIndex = Packet->CharacterIndex;
@@ -75,7 +75,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE) {
 	CStringCopySafe(Notification->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->Source.Info.Name);
 	SocketSend(Context->ClientSocket, TargetClient->Connection, Notification);
 
-	UInt8 BattleStyleIndex = TargetCharacter->Data.Info.Style.BattleStyle | (TargetCharacter->Data.Info.Style.ExtendedBattleStyle << 3);
+	UInt8 BattleStyleIndex = TargetCharacter->Data.StyleInfo.Style.BattleStyle | (TargetCharacter->Data.StyleInfo.Style.ExtendedBattleStyle << 3);
 
 	IPC_W2P_DATA_PARTY_INVITE_ACK* Response = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2P, PARTY_INVITE_ACK);
 	Response->Header.SourceConnectionID = TargetClient->Connection->ID;
@@ -85,7 +85,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE) {
 	Response->Source = Packet->Source;
 	Response->Target = Packet->Target;
 	Response->Target.MemberID.Serial = TargetCharacter->ID.Serial;
-	Response->Target.Info.Level = TargetCharacter->Data.Info.Basic.Level;
+	Response->Target.Info.Level = TargetCharacter->Data.Info.Level;
 	Response->Target.Info.BattleStyleIndex = BattleStyleIndex;
 	Response->Target.Info.OverlordLevel = TargetCharacter->Data.OverlordMasteryInfo.Info.Level;
 	Response->Target.Info.MythRebirth = TargetCharacter->Data.MythMasteryInfo.Info.Rebirth;
@@ -395,10 +395,10 @@ Void SendPartyData(
 
 		RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Party->Members[MemberIndex].Info.CharacterIndex);
 		if (Character) {
-			UInt8 BattleStyleIndex = Character->Data.Info.Style.BattleStyle | (Character->Data.Info.Style.ExtendedBattleStyle << 3);
+			UInt8 BattleStyleIndex = Character->Data.StyleInfo.Style.BattleStyle | (Character->Data.StyleInfo.Style.ExtendedBattleStyle << 3);
 
 			MemberSlot->Info.CharacterIndex = Character->CharacterIndex;
-			MemberSlot->Info.Level = Character->Data.Info.Basic.Level;
+			MemberSlot->Info.Level = Character->Data.Info.Level;
 			MemberSlot->Info.BattleStyleIndex = BattleStyleIndex;
 			MemberSlot->Info.OverlordLevel = Character->Data.OverlordMasteryInfo.Info.Level;
 			MemberSlot->Info.MythRebirth = Character->Data.MythMasteryInfo.Info.Rebirth;

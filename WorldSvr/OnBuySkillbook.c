@@ -10,7 +10,7 @@ CLIENT_PROCEDURE_BINDING(BUY_SKILLBOOK) {
 
     RTTrainerDataRef Trainer = RTRuntimeGetTrainerByWorldNpcID(
         Runtime,
-        Character->Data.Info.Position.WorldID,
+        Character->Data.Info.WorldIndex,
         Packet->NpcID
     );
     if (!Trainer) goto error;

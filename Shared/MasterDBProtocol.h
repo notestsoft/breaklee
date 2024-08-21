@@ -7,14 +7,10 @@ EXTERN_C_BEGIN
 #pragma pack(push, 1)
 
 typedef struct {
-    Int64 AccountID;
-    Char SessionIP[MAX_ADDRESSIP_LENGTH + 1];
-    Timestamp SessionTimeout;
+    Int32 AccountID;
     Char CharacterPassword[MAX_SUBPASSWORD_LENGTH + 1];
-    UInt32 CharacterQuestion;
+    Int32 CharacterQuestion;
     Char CharacterAnswer[MAX_SUBPASSWORD_ANSWER_LENGTH + 1];
-    Timestamp CreatedAt;
-    Timestamp UpdatedAt;
     struct _RTCharacterAccountInfo AccountInfo;
 } MASTERDB_DATA_ACCOUNT;
 

@@ -211,7 +211,8 @@ ClientContextRef ServerGetClientByIndex(
 
         ClientContextRef Client = (ClientContextRef)Connection->Userdata;
         if (Client && Client->CharacterIndex == CharacterIndex) {
-            if (CharacterName && !CStringIsEqual(Client->CharacterName, CharacterName)) continue;
+            RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, CharacterIndex);
+            if (Character && CharacterName && !CStringIsEqual(CharacterName, Character->Name)) continue;
             
             return Client;
         }

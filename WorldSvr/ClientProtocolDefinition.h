@@ -221,52 +221,13 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     UInt8 Unknown1A;
     S2C_DATA_INITIALIZE_SERVER Server;
     RTEntityID Entity;
-    UInt32 WorldIndex;
-    UInt32 DungeonIndex;
-    CSC_POSITION Position;
-    UInt64 Exp;
-    UInt64 Alz;
-    UInt64 Wexp;
-    Int32 Level;
-    UInt32 Unknown1;
-    UInt32 STR;
-    UInt32 DEX;
-    UInt32 INT;
-    UInt32 PNT;
-    Int32 SkillRank;
-    Int32 MagicSkillRank;
-    UInt64 BaseHP;
-    UInt64 CurrentHP;
-    UInt32 MaxMP;
-    UInt32 CurrentMP;
-    UInt16 MaxSP;
-    UInt16 CurrentSP;
-    UInt32 MaxRage;
-    UInt32 CurrentRage;
-    UInt32 MaxBP;
-    UInt32 CurrentBP;
-    Timestamp DPDuration;
-    UInt32 DP;
-    UInt32 SkillLevel;
-    UInt32 SkillExp;
-    UInt32 SkillPoint;
-    UInt64 RestExp;
-    UInt64 HonorPoint;
-    UInt64 DeathPenaltyExp;
-    UInt64 DeathPenaltyHp;
-    UInt32 DeathPenaltyMp;
-    UInt16 PKLevel;
+    struct _RTCharacterInfo CharacterInfo;
     S2C_DATA_INITIALIZE_SERVER_ADDRESS ChatServerAddress;
     S2C_DATA_INITIALIZE_SERVER_ADDRESS AuctionServerAddress;
     S2C_DATA_INITIALIZE_SERVER_ADDRESS PartyServerAddress;
     UInt16 UnknownPort;
-    UInt8 Nation;
-    UInt32 Unknown2;
-    UInt32 WarpMask;
-    UInt32 MapsMask;
-    UInt32 CharacterStyle;
-    UInt32 CharacterLiveStyle;
-    UInt8 Unknown14[282];
+    struct _RTCharacterStyleInfo CharacterStyleInfo;
+    UInt8 Unknown14[281];
     struct _RTEquipmentInfo EquipmentInfo;
     struct _RTInventoryInfo InventoryInfo;
     struct _RTVehicleInventoryInfo VehicleInventoryInfo;
@@ -2321,7 +2282,7 @@ CLIENT_PROTOCOL(C2S, CHECK_SUBPASSWORD, DEFAULT, 1032,
 )
 
 CLIENT_PROTOCOL(S2C, CHECK_SUBPASSWORD, DEFAULT, 1032,
-    UInt32 IsVerificationRequired;
+    Int32 IsVerificationRequired;
 )
 
 CLIENT_PROTOCOL(C2S, VERIFY_SUBPASSWORD, DEFAULT, 1034,
@@ -2358,6 +2319,7 @@ CLIENT_PROTOCOL(S2C, DELETE_SUBPASSWORD, DEFAULT, 1042,
     UInt32 Success;
     UInt32 Type;
 )
+
 CLIENT_PROTOCOL_ENUM(
     CSC_DATA_ABILITY_TYPE_ESSENCE = 1,
     CSC_DATA_ABILITY_TYPE_BLENDED = 2,

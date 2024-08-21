@@ -11,4 +11,9 @@ ClientContextRef ServerGetClientByAuthKey(
     UInt16 EntityID
 );
 
+Void ServerLoadMigrationData(
+    ServerConfig Config,
+    ServerContextRef Context
+);
+
 EXTERN_C_END

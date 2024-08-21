@@ -1,0 +1,12 @@
+CREATE TABLE Warehouse (
+    AccountID INT NOT NULL,
+    Count SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+    Currency BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    SlotData BLOB NOT NULL,
+    
+    PRIMARY KEY (AccountID),
+    
+    CONSTRAINT FK_Accounts_Warehouse FOREIGN KEY (AccountID) 
+        REFERENCES Accounts(AccountID) 
+        ON DELETE CASCADE
+) ENGINE = INNODB DEFAULT CHARSET = utf8;

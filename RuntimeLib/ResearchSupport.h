@@ -36,8 +36,8 @@ struct _RTCharacterResearchSupportInfo {
     UInt8 Unknown1;
     UInt8 ResetCount;
     UInt8 Unknown2;
-    Timestamp HeilsResearchSeasonStartDate;
-    Timestamp HeilsResearchSeasonEndDate;
+    Timestamp SeasonStartDate;
+    Timestamp SeasonEndDate;
     struct _RTResearchSupportMaterialSlot MaterialSlots[RUNTIME_CHARACTER_MAX_RESEARCH_SUPPORT_MATERIAL_COUNT];
     struct _RTResearchSupportMissionBoard ActiveMissionBoard;
     UInt8 Unknown3[40];

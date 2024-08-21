@@ -14,7 +14,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_LINKS) {
 		Request->Header.Source = Server->IPCSocket->NodeID;
 		Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
 		Request->Header.Target.Type = IPC_TYPE_LOGIN;
-		Request->AccountID = (Int32)Client->Account.AccountID;
+		Request->AccountID = (Int32)Client->AccountID;
 		Request->AuthKey = Packet->AuthKey;
 		Request->EntityID = Packet->EntityID;
 		Request->GroupIndex = Packet->GroupIndex;
@@ -30,13 +30,14 @@ CLIENT_PROCEDURE_BINDING(VERIFY_LINKS) {
 		Request->Header.Target.Group = Packet->GroupIndex;
 		Request->Header.Target.Index = Packet->NodeIndex;
 		Request->Header.Target.Type = IPC_TYPE_WORLD;
-		Request->AccountID = (Int32)Client->Account.AccountID;
+		Request->AccountID = (Int32)Client->AccountID;
 		Request->AuthKey = Packet->AuthKey;
 		Request->EntityID = Packet->EntityID;
 		Request->GroupIndex = Packet->GroupIndex;
 		Request->NodeIndex = Packet->NodeIndex;
 		memcpy(Request->SessionIP, Connection->AddressIP, MAX_ADDRESSIP_LENGTH);
-		memcpy(&Request->Account, &Client->Account, sizeof(IPC_DATA_ACCOUNT));
+		Request->IsSubpasswordSet = Client->IsSubpasswordSet;
+		Request->AccountInfo = Client->AccountInfo;
 		memcpy(&Request->Characters, &Client->Characters, sizeof(IPC_DATA_CHARACTER_INFO) * MAX_CHARACTER_COUNT);
 		IPCSocketUnicast(Server->IPCSocket, Request);
 	}
@@ -73,9 +74,6 @@ IPC_PROCEDURE_BINDING(L2W, VERIFY_LINKS) {
 	}
 	*/
 
-	Client = ServerGetClientByAuthKey(Context, Packet->AuthKey, Packet->EntityID);
-	if (!Client || Client->Flags & CLIENT_FLAGS_VERIFIED) goto error;
-	
 	// TODO: AddressIP of connection is not set!
 	// if (memcmp(Connection->AddressIP, Packet->SessionIP, MAX_ADDRESSIP_LENGTH) != 0)  goto error;
 
@@ -83,7 +81,10 @@ IPC_PROCEDURE_BINDING(L2W, VERIFY_LINKS) {
 	// TODO: Check War status for WorldType == WORLD_TYPE_WAR_...
 	// TODO: Store premium service info in client context
 
-	IPC_W2D_DATA_GET_ACCOUNT* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2D, GET_ACCOUNT);
+	Client = ServerGetClientByAuthKey(Context, Packet->AuthKey, Packet->EntityID);
+	if (!Client || Client->Flags & CLIENT_FLAGS_VERIFIED) goto error;
+	
+	IPC_W2D_DATA_AUTHENTICATE* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2D, AUTHENTICATE);
 	Request->Header.SourceConnectionID = Client->Connection->ID;
 	Request->Header.Source = Server->IPCSocket->NodeID;
 	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
@@ -111,7 +112,7 @@ error:
 	}
 }
 
-IPC_PROCEDURE_BINDING(D2W, GET_ACCOUNT) {
+IPC_PROCEDURE_BINDING(D2W, AUTHENTICATE) {
 	IPC_W2L_DATA_VERIFY_LINKS* Response = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2L, VERIFY_LINKS);
 	Response->Header.SourceConnectionID = ClientConnection->ID;
 	Response->Header.Source = Server->IPCSocket->NodeID;
@@ -126,7 +127,8 @@ IPC_PROCEDURE_BINDING(D2W, GET_ACCOUNT) {
 	if (Client && Packet->Success) {
 		Response->Status = 1;
 		Client->Flags |= CLIENT_FLAGS_VERIFIED;
-		memcpy(&Client->Account, &Packet->Account, sizeof(IPC_DATA_ACCOUNT));
+		Client->IsSubpasswordSet = Packet->IsSubpasswordSet;
+		Client->AccountInfo = Packet->AccountInfo;
 	}
 
 	IPCSocketUnicast(Server->IPCSocket, Response);
@@ -145,7 +147,8 @@ IPC_PROCEDURE_BINDING(W2W, REQUEST_VERIFY_LINKS) {
 
 	Client->Flags |= CLIENT_FLAGS_VERIFIED;
 	Client->Flags |= CLIENT_FLAGS_CHARACTER_INDEX_LOADED;
-	memcpy(&Client->Account, &Packet->Account, sizeof(IPC_DATA_ACCOUNT));
+	Client->IsSubpasswordSet = Packet->IsSubpasswordSet;
+	Client->AccountInfo = Packet->AccountInfo;
 	memcpy(&Client->Characters, &Packet->Characters, sizeof(IPC_DATA_CHARACTER_INFO) * MAX_CHARACTER_COUNT);
 
 	IPC_W2W_DATA_RESPONSE_VERIFY_LINKS* Response = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2W, RESPONSE_VERIFY_LINKS);

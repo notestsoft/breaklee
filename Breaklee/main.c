@@ -96,11 +96,6 @@ Int32 main(
         goto error;
     }
 
-    if (!EncryptionLoadLibrary()) {
-        Error("Error loading zlib library");
-        goto error;
-    }
-
     CString Pattern = Arguments[1];
     Char DirectoryBuffer[MAX_PATH] = { 0 };
     CString Directory = PathGetCurrentDirectory(DirectoryBuffer, MAX_PATH);
@@ -116,14 +111,11 @@ Int32 main(
         goto error;
     }
 
-    EncryptionUnloadLibrary();
     DiagnosticTeardown();
     
     return EXIT_SUCCESS;
 
 error:
-
-    EncryptionUnloadLibrary();
     DiagnosticTeardown();
     PrintUsage();
 

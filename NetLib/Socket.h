@@ -8,6 +8,7 @@
 EXTERN_C_BEGIN
 
 #define SOCKET_RECV_BUFFER_SIZE 4096
+#define MAX_ADDRESSIP_LENGTH 44
 
 typedef struct _Socket* SocketRef;
 typedef struct _SocketConnection* SocketConnectionRef;
@@ -70,7 +71,7 @@ struct _SocketConnection {
     Index ConnectionPoolIndex;
     SocketHandle Handle;
     SocketAddress Address;
-    Char AddressIP[16];
+    Char AddressIP[MAX_ADDRESSIP_LENGTH + 1];
     Index ID;
     UInt32 Flags;
     Timestamp Timestamp;

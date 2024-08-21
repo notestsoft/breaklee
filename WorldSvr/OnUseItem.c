@@ -18,7 +18,7 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM) {
 		RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
 		if (!ItemData) goto error;
 
-		if (Character->Data.Info.Basic.Level < ItemData->MinLevel) goto error;
+		if (Character->Data.Info.Level < ItemData->MinLevel) goto error;
 
 		PacketLogBytes(
 			Socket->ProtocolIdentifier,
@@ -294,8 +294,8 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM_SAVER) {
 	if (FirstIsSaving) {
 		switch (FirstItemSubtype) {
 		case RUNTIME_ITEM_SUBTYPE_SAVER_DP:
-			if (Character->Data.Info.Resource.DP < TotalAmount) goto error;
-			Character->Data.Info.Resource.DP -= TotalAmount;
+			if (Character->Data.Info.DP < TotalAmount) goto error;
+			Character->Data.Info.DP -= TotalAmount;
 			// TODO: Notification for dp is missing!
 			break;
 
@@ -306,8 +306,8 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM_SAVER) {
 			break;
 
 		case RUNTIME_ITEM_SUBTYPE_SAVER_WEXP:
-			if (Character->Data.Info.Honor.Exp < TotalAmount) goto error;
-			Character->Data.Info.Honor.Exp -= TotalAmount;
+			if (Character->Data.Info.Wexp < TotalAmount) goto error;
+			Character->Data.Info.Wexp -= TotalAmount;
 			break;
 
 		default:
@@ -317,7 +317,7 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM_SAVER) {
 	else {
 		switch (FirstItemSubtype) {
 		case RUNTIME_ITEM_SUBTYPE_SAVER_DP:
-			Character->Data.Info.Resource.DP += TotalAmount;
+			Character->Data.Info.DP += TotalAmount;
 			break;
 
 		case RUNTIME_ITEM_SUBTYPE_SAVER_AP:
@@ -326,7 +326,7 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM_SAVER) {
 			break;
 
 		case RUNTIME_ITEM_SUBTYPE_SAVER_WEXP:
-			Character->Data.Info.Honor.Exp += TotalAmount;
+			Character->Data.Info.Wexp += TotalAmount;
 			break;
 
 		default:

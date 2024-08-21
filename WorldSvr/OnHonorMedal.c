@@ -11,7 +11,7 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_UNLOCK_SLOT) {
     UInt16* MaterialSlotIndex1 = &Packet->MaterialSlotIndex[0];
     UInt16* MaterialSlotIndex2 = &Packet->MaterialSlotIndex[Packet->MaterialSlotCount1];
 
-    if (Character->Data.Info.Profile.Nation != 1 && Character->Data.Info.Profile.Nation != 2) goto error;
+    if (Character->Data.StyleInfo.Nation != 1 && Character->Data.StyleInfo.Nation != 2) goto error;
 
     RTDataHonorMedalSlotOpenCategoryRef HonorMedalSlotOpenCategory = RTRuntimeDataHonorMedalSlotOpenCategoryGet(Runtime->Context, Packet->CategoryIndex);
     if (!HonorMedalSlotOpenCategory) goto error;
@@ -103,7 +103,7 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_ROLL_SLOT) {
     if (!Group) goto error;
 
     if (Character->Data.AbilityInfo.Info.AP < PriceMedal->AP) goto error;
-    if (Character->Data.Info.Honor.Exp < PriceMedal->WarExp) goto error;
+    if (Character->Data.Info.Wexp < PriceMedal->WarExp) goto error;
 
     Int32 Seed = (Int32)PlatformGetTickCount();
     Int32 DropRate = RandomRange(&Seed, 0, 1000);
@@ -118,7 +118,7 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_ROLL_SLOT) {
     }
 
     Character->Data.AbilityInfo.Info.AP -= PriceMedal->AP;
-    Character->Data.Info.Honor.Exp -= PriceMedal->WarExp;
+    Character->Data.Info.Wexp -= PriceMedal->WarExp;
     Character->SyncMask.Info = true;
     Character->SyncMask.AbilityInfo = true;
     Character->SyncMask.HonorMedalInfo = true;
@@ -128,7 +128,7 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_ROLL_SLOT) {
     Response->GroupIndex = Packet->GroupIndex;
     Response->SlotIndex = Packet->SlotIndex;
     Response->ForceEffectIndex = Slot->ForceEffectIndex;
-    Response->WExp = Character->Data.Info.Honor.Exp;
+    Response->WExp = Character->Data.Info.Wexp;
     Response->AP = Character->Data.AbilityInfo.Info.AP;
     SocketSend(Socket, Connection, Response);
     return;

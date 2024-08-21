@@ -24,7 +24,7 @@ struct _RTCraftInfo {
 
 struct _RTCharacterCraftData {
     struct _RTCraftInfo Info;
-    struct _RTCraftSlot RequestCraftSlot[RUNTIME_CHARACTER_MAX_CRAFT_SLOT_COUNT];
+    struct _RTCraftSlot Slots[RUNTIME_CHARACTER_MAX_CRAFT_SLOT_COUNT];
 };
 
 #pragma pack(pop)

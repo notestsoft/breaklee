@@ -27,7 +27,7 @@ Bool RTCharacterIsHonorMedalUnlocked(
     RTDataHonorMedalMainRef HonorMedalMain = RTRuntimeDataHonorMedalMainGet(Runtime->Context, CategoryIndex);
     if (!HonorMedalMain) return false;
     
-    return Character->Data.Info.Honor.Point >= HonorMedalMain->RequiredHonorPoint;
+    return Character->Data.Info.HonorPoint >= HonorMedalMain->RequiredHonorPoint;
 }
 
 Bool RTCharacterAddHonorMedalScore(

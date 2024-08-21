@@ -1617,14 +1617,14 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemTransformationCard) {
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemChangeGender) {
-	Character->Data.Info.Style.Gender = !Character->Data.Info.Style.Gender;
+	Character->Data.StyleInfo.Style.Gender = !Character->Data.StyleInfo.Style.Gender;
 	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
 
 	Character->SyncMask.Info = true;
 	Character->SyncMask.InventoryInfo = true;
 
 	NOTIFICATION_DATA_CHANGE_GENDER* Notification = RTNotificationInit(CHANGE_GENDER);
-	Notification->Gender = Character->Data.Info.Style.Gender;
+	Notification->Gender = Character->Data.StyleInfo.Style.Gender;
 	Notification->Success = 1;
 	RTNotificationDispatchToCharacter(Notification, Character);
 	

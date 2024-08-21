@@ -19,7 +19,7 @@ struct _RTSkillSlotInfo {
 
 struct _RTCharacterSkillSlotInfo {
     struct _RTSkillSlotInfo Info;
-    struct _RTSkillSlot Skills[RUNTIME_CHARACTER_MAX_SKILL_SLOT_COUNT];
+    struct _RTSkillSlot Slots[RUNTIME_CHARACTER_MAX_SKILL_SLOT_COUNT];
 };
 
 #pragma pack(pop)

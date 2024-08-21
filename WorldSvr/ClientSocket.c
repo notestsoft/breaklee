@@ -12,7 +12,7 @@ Void ClientSocketOnConnect(
 ) {
     ClientContextRef Client = (ClientContextRef)ConnectionContext;
     Client->Connection = Connection;
-    Client->Account.AccountID = -1;
+    Client->AccountID = -1;
     Client->CharacterIndex = 0;
     Client->DiceSeed = (UInt32)PlatformGetTickCount();
 }

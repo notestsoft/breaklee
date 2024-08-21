@@ -24,6 +24,7 @@
 #include "ForceWing.h"
 #include "GiftBox.h"
 #include "HonorMedal.h"
+#include "HonorRank.h"
 #include "Inventory.h"
 #include "Item.h"
 #include "Mercenary.h"
@@ -126,60 +127,50 @@ union _RTCharacterPKState {
     UInt16 RawValue;
 };
 
-struct _RTCharacterProfile {
-    UInt16 Nation;
+struct _RTCharacterInfo {
+    Int32 WorldIndex;
+    Int32 DungeonIndex;
+    Int16 PositionX;
+    Int16 PositionY;
+    UInt64 Exp;
+    UInt64 Alz;
+    UInt64 Wexp;
+    Int32 Level;
+    UInt32 Unknown1;
+    Int32 Stat[RUNTIME_CHARACTER_STAT_COUNT];
+    Int32 SkillRank;
+    Int32 MagicSkillRank;
+    UInt64 BaseHP;
+    UInt64 CurrentHP;
+    UInt32 MaxMP;
+    UInt32 CurrentMP;
+    UInt16 MaxSP;
+    UInt16 CurrentSP;
+    UInt32 MaxRage;
+    UInt32 CurrentRage;
+    UInt32 MaxBP;
+    UInt32 CurrentBP;
+    Timestamp DPDuration;
+    UInt32 DP;
+    UInt32 SkillLevel;
+    UInt32 SkillExp;
+    UInt32 SkillPoint;
+    UInt64 RestExp;
+    UInt64 HonorPoint;
+    UInt64 DeathPenaltyExp;
+    UInt64 DeathPenaltyHp;
+    UInt32 DeathPenaltyMp;
+    union _RTCharacterPKState PKState;
+};
+
+struct _RTCharacterStyleInfo {
+    UInt8 Nation;
+    UInt32 Unknown2;
     UInt32 WarpMask;
     UInt32 MapsMask;
-};
-
-struct _RTCharacterLevel {
-    UInt8 Level;
-    UInt64 Exp;
-    UInt32 Point;
-};
-
-struct _RTCharacterHonor {
-    Int8 Rank;
-    Int64 Point;
-    Int64 Exp;
-};
-
-struct _RTCharacterResource {
-    Int64 HP;
-    Int64 MP;
-    Int64 SP;
-    Int64 BP;
-    Int64 DP;
-    Int64 Rage;
-};
-
-struct _RTCharacterSkill {
-    UInt8 Rank;
-    UInt16 Level;
-    UInt64 Exp;
-    UInt16 Point;
-};
-
-struct _RTCharacterPosition {
-    UInt8 WorldID;
-    UInt16 X;
-    UInt16 Y;
-    Index DungeonIndex;
-};
-
-struct _RTCharacterInfo {
     union _RTCharacterStyle Style;
     union _RTCharacterLiveStyle LiveStyle;
     union _RTCharacterExtendedStyle ExtendedStyle;
-    union _RTCharacterPKState PKState;
-    struct _RTCharacterProfile Profile;
-    struct _RTCharacterLevel Basic;
-    struct _RTCharacterHonor Honor;
-    struct _RTCharacterSkill Skill;
-    struct _RTCharacterResource Resource;
-    UInt16 Stat[RUNTIME_CHARACTER_STAT_COUNT];
-    UInt64 Alz;
-    struct _RTCharacterPosition Position;
 };
 
 struct _RTCharacterData {
@@ -232,13 +223,6 @@ struct _RTCharacter {
 };
 
 #pragma pack(pop)
-
-Void RTCharacterInitialize(
-    RTRuntimeRef Runtime,
-    RTCharacterRef Character,
-    CString Name,
-    RTCharacterDataRef Data
-);
 
 Void RTCharacterInitializeAttributes(
     RTRuntimeRef Runtime,
