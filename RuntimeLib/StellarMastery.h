@@ -60,6 +60,11 @@ RTStellarMasterySlotRef RTCharacterStellarMasteryAssertSlot(
     UInt8 SlotIndex
 );
 
+Void RTStellarMasterySetLink(
+    UInt8 LinkGrade,
+	RTStellarMasterySlotRef MasterySlot
+);
+
 Void RTStellarMasteryRollLink(
     RTRuntimeRef Runtime,
     RTDataStellarLineGradeRef StellarLineGrade,

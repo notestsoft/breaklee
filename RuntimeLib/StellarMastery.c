@@ -9,10 +9,10 @@
 Rolls single option from the pool.
 
 params:
-- Pool - pool to roll from.
-- Count - number of options in the pool.
-- GetChance - (*PoolItemType) -> Int32 - callback to get the chance of the option.
-- ResultRef - pointer to the result.
+- __POOL__ - pool to roll from.
+- __COUNT__ - number of options in the pool.
+- __GET_CHANCE__ - (*PoolItemType) -> Int32 - callback to get the chance of the option.
+- __RESULT_REF__ - pointer to the result.
 */
 #define ROLL_POOL(__POOL__, __COUNT__, __GET_CHANCE__, __RESULT_REF__)    \
     {                                                                     \
@@ -97,6 +97,17 @@ RTStellarMasterySlotRef RTCharacterStellarMasteryAssertSlot(
 	return OutSlot;
 }
 
+Void RTStellarMasterySetLink(
+	UInt8 LinkGrade,
+	RTStellarMasterySlotRef MasterySlot
+) {
+	MasterySlot->StellarLinkGrade = LinkGrade;
+}
+
+
+static inline Int32 GetStellarForceValueChance(const RTDataStellarForceValueRef StellarForceValue) {
+	return StellarForceValue->Chance;
+}
 
 static inline Int32 GetStellarForceEffectChance(const RTDataStellarForceEffectRef StellarForceEffect) {
 	return StellarForceEffect->Chance;
@@ -106,16 +117,23 @@ static inline Int32 GetStellarLinkChance(const RTDataStellarLinkRef StellarLink)
 	return StellarLink->Chance;
 }
 
-
 Void RTStellarMasteryRollForce(
 	RTRuntimeRef Runtime,
 	RTDataStellarLineGradeRef StellarLineGrade,
 	RTStellarMasterySlotRef MasterySlot
 ) {
-	RTDataStellarForcePoolRef StellarForcePool = RTRuntimeDataStellarForcePoolGet(Runtime->Context, StellarLineGrade->ForceCodePer);
-	
-	RTDataStellarForceEffectRef StellarForceEffect = NULL;
+	RTDataStellarForceValuePoolRef StellarForceValuePool = RTRuntimeDataStellarForceValuePoolGet(Runtime->Context, StellarLineGrade->Grade);
+	RTDataStellarForceValueRef StellarForceValue = NULL;
+	ROLL_POOL(
+		StellarForceValuePool->StellarForceValueList,
+		StellarForceValuePool->StellarForceValueCount,
+		GetStellarForceValueChance,
+		StellarForceValue
+	);
 
+	RTDataStellarForcePoolRef StellarForcePool = RTRuntimeDataStellarForcePoolGet(Runtime->Context, StellarForceValue->StellarForcePoolID);
+
+	RTDataStellarForceEffectRef StellarForceEffect = NULL;
 	ROLL_POOL(
 		StellarForcePool->StellarForceEffectList,
 		StellarForcePool->StellarForceEffectCount,

@@ -6,7 +6,7 @@ RUNTIME_DATA_TYPE_BEGIN(StellarGroup, "stellar_ability.stellar_main.stellar_info
 		RUNTIME_DATA_PROPERTY(UInt32, LineID, "line_no")
 		RUNTIME_DATA_TYPE_BEGIN_CHILD(StellarLineGrade, "group", 5)
 			RUNTIME_DATA_PROPERTY(UInt32, Grade, "grade")
-			RUNTIME_DATA_PROPERTY(UInt32, ForceCodePer, "forcecode_per") // WTF is this?
+			RUNTIME_DATA_PROPERTY(UInt32, ForceCodePer, "forcecode_per") // Reference to StellarForcePool.PoolID
 			RUNTIME_DATA_PROPERTY(UInt32, ItemID, "Itemkind")
 			RUNTIME_DATA_PROPERTY(UInt32, ItemCount, "itemcount")
 			RUNTIME_DATA_PROPERTY(UInt32, MinGrade, "mingrade")
@@ -17,6 +17,21 @@ RUNTIME_DATA_TYPE_END(StellarGroup)
 RUNTIME_DATA_TYPE_INDEX(StellarGroup, UInt32, GroupID)
 RUNTIME_DATA_TYPE_INDEX_CHILD(StellarGroup, StellarLine, UInt32, LineID)
 RUNTIME_DATA_TYPE_INDEX_CHILD(StellarLine, StellarLineGrade, UInt32, Grade)
+
+RUNTIME_DATA_TYPE_BEGIN(StellarTransformationGroup, "stellar_ability.fixed_grade.fixed_info", 1)
+	RUNTIME_DATA_PROPERTY(UInt32, GroupID, "group_id")
+	RUNTIME_DATA_TYPE_BEGIN_CHILD(StellarLineTransformation, "detail", 5)
+		RUNTIME_DATA_PROPERTY(UInt32, LineID, "line_no")
+		RUNTIME_DATA_TYPE_BEGIN_CHILD(StellarLineTransformationGrade, "group", 5)
+			RUNTIME_DATA_PROPERTY(UInt32, Grade, "grade")
+			RUNTIME_DATA_PROPERTY(UInt32, ItemID, "Itemkind")
+			RUNTIME_DATA_PROPERTY(UInt32, ItemCount, "itemcount")
+		RUNTIME_DATA_TYPE_END_CHILD(StellarLineTransformationGrade, 5)
+	RUNTIME_DATA_TYPE_END_CHILD(StellarLineTransformation, 5)
+RUNTIME_DATA_TYPE_END(StellarTransformationGroup)
+RUNTIME_DATA_TYPE_INDEX(StellarTransformationGroup, UInt32, GroupID)
+RUNTIME_DATA_TYPE_INDEX_CHILD(StellarTransformationGroup, StellarLineTransformation, UInt32, LineID)
+RUNTIME_DATA_TYPE_INDEX_CHILD(StellarLineTransformation, StellarLineTransformationGrade, UInt32, Grade)
 
 RUNTIME_DATA_FILE_END
 
@@ -34,6 +49,16 @@ RUNTIME_DATA_TYPE_BEGIN(StellarForcePool, "Stellar.StellarForcePools.StellarForc
 RUNTIME_DATA_TYPE_END(StellarForcePool)
 RUNTIME_DATA_TYPE_INDEX(StellarForcePool, Int32, PoolID)
 RUNTIME_DATA_TYPE_INDEX_CHILD(StellarForcePool, StellarForceEffect, UInt32, ForceEffectID)
+
+RUNTIME_DATA_TYPE_BEGIN(StellarForceValuePool, "Stellar.StellarForceValuePools.StellarForceValuePool", 1024)
+	RUNTIME_DATA_PROPERTY(Int32, PoolID, "id")
+	RUNTIME_DATA_TYPE_BEGIN_CHILD(StellarForceValue, "StellarForceValue", 5)
+		RUNTIME_DATA_PROPERTY(UInt32, Chance, "chance")
+		RUNTIME_DATA_PROPERTY(UInt32, StellarForcePoolID, "stellarForcePoolId")
+	RUNTIME_DATA_TYPE_END_CHILD(StellarForceValue, 5)
+RUNTIME_DATA_TYPE_END(StellarForceValuePool)
+RUNTIME_DATA_TYPE_INDEX(StellarForceValuePool, Int32, PoolID)
+RUNTIME_DATA_TYPE_INDEX_CHILD(StellarForceValuePool, StellarForceValue, UInt32, StellarForcePoolID)
 
 RUNTIME_DATA_TYPE_BEGIN(StellarLinkPool, "Stellar.StellarLinkPools.StellarLinkPool", 5)
 	RUNTIME_DATA_PROPERTY(UInt32, PoolID, "id")

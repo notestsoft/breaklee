@@ -14,9 +14,6 @@ CLIENT_PROCEDURE_BINDING(STELLAR_LINK_IMPRINT_SLOT) {
 	memcpy(&kStellarMasteryInfoBackup, &Character->Data.StellarMasteryInfo, sizeof(struct _RTCharacterStellarMasteryInfo));
 
 	S2C_DATA_STELLAR_LINK_IMPRINT_SLOT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, STELLAR_LINK_IMPRINT_SLOT);
-
-	Info("STELLAR_LINK_IMPRINT_SLOT %d %d %d %d %d %d", Packet->GroupID, Packet->SlotLine, Packet->SlotIndex, Packet->MaterialCount, Packet->MaterialSlotCount1, Packet->MaterialSlotCount2);
-
 	// TODO: send error codes instead of disconnecting
 
 	RTDataStellarGroupRef StellarGroup = RTRuntimeDataStellarGroupGet(Runtime->Context, Packet->GroupID);
@@ -79,15 +76,11 @@ CLIENT_PROCEDURE_BINDING(STELLAR_LINK_IMPRINT_SLOT) {
 
 	RTStellarMasteryRollLink(
 		Runtime,
-		StellarGroup,
-		StellarLine,
 		StellarLineGrade,
 		MasterySlot
 	);	
 	RTStellarMasteryRollForce(
 		Runtime,
-		StellarGroup,
-		StellarLine,
 		StellarLineGrade,
 		MasterySlot
 	);
@@ -106,6 +99,97 @@ CLIENT_PROCEDURE_BINDING(STELLAR_LINK_IMPRINT_SLOT) {
 
 	SocketSend(Socket, Connection, Response);
 	
+	return;
+
+error:
+	memcpy(&Character->Data.InventoryInfo, &kInventoryInfoBackup, sizeof(struct _RTCharacterInventoryInfo));
+	memcpy(&Character->Data.StellarMasteryInfo, &kStellarMasteryInfoBackup, sizeof(struct _RTCharacterStellarMasteryInfo));
+	SocketDisconnect(Socket, Connection);
+}
+
+
+CLIENT_PROCEDURE_BINDING(STELLAR_LINK_TRANSFORM_LINK) {
+	memcpy(&kInventoryInfoBackup, &Character->Data.InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
+	memcpy(&kStellarMasteryInfoBackup, &Character->Data.StellarMasteryInfo, sizeof(struct _RTCharacterStellarMasteryInfo));
+
+	S2C_DATA_STELLAR_LINK_IMPRINT_SLOT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, STELLAR_LINK_IMPRINT_SLOT);
+
+	// TODO: send error codes instead of disconnecting
+
+	RTDataStellarTransformationGroupRef StellarTransformationGroup = RTRuntimeDataStellarTransformationGroupGet(Runtime->Context, Packet->GroupID);
+	if(StellarTransformationGroup == NULL) {
+		Error("[STELLAR_LINK_TRANSFORM_LINK]: Incorrect GroupID %d", Packet->GroupID);
+		goto error;
+	}
+
+	RTDataStellarLineTransformationRef StellarLineTransformation = RTRuntimeDataStellarLineTransformationGet(StellarTransformationGroup, Packet->SlotLine);
+	if(StellarLineTransformation == NULL) {
+		Error("[STELLAR_LINK_TRANSFORM_LINK]: Incorrect SlotLine %d", Packet->SlotLine);
+		goto error;
+	}
+
+	RTDataStellarLineTransformationGradeRef StellarLineTransformationGrade = RTRuntimeDataStellarLineTransformationGradeGet(StellarLineTransformation, Packet->StellarLinkGrade);
+	if(StellarLineTransformationGrade == NULL) {
+		Error("[STELLAR_LINK_TRANSFORM_LINK]: Incorrect StellarLinkGrade %d", Packet->StellarLinkGrade);
+		goto error;
+	}
+
+	RTStellarMasterySlotRef MasterySlot = RTCharacterStellarMasteryGetSlot(
+		Character,
+		StellarTransformationGroup->GroupID,
+		StellarLineTransformation->LineID,
+		Packet->SlotIndex
+	);
+	if (MasterySlot == NULL) {
+		Error("[STELLAR_LINK_TRANSFORM_LINK]: Incorrect SlotIndex %d", Packet->SlotIndex);
+		goto error;
+	}
+
+
+	if (
+		!RTInventoryCanConsumeStackableItems(
+			Runtime,
+			&Character->Data.InventoryInfo,
+			StellarLineTransformationGrade->ItemID,
+			StellarLineTransformationGrade->ItemCount,
+			Packet->MaterialSlotCount1,
+			Packet->MaterialSlotIndex
+		)
+	) {
+		Error("[STELLAR_LINK_TRANSFORM_LINK]: Not enough materials");
+		goto error;
+	}
+	RTInventoryConsumeStackableItems(
+		Runtime,
+		&Character->Data.InventoryInfo,
+		StellarLineTransformationGrade->ItemID,
+		StellarLineTransformationGrade->ItemCount,
+		Packet->MaterialSlotCount1,
+		Packet->MaterialSlotIndex
+	);
+
+	Character->SyncMask.InventoryInfo = true;
+
+
+	RTStellarMasterySetLink(
+		StellarLineTransformationGrade->Grade,
+		MasterySlot
+	);
+
+	Character->SyncMask.StellarMasteryInfo = true;
+
+
+	Response->GroupID = MasterySlot->GroupID;
+	Response->SlotLine = MasterySlot->SlotLine;
+	Response->SlotIndex = MasterySlot->SlotIndex;
+	Response->StellarLinkGrade = MasterySlot->StellarLinkGrade;
+	Response->StellarForceEffect = MasterySlot->StellarForceEffect;
+	Response->StellarForceValue = MasterySlot->StellarForceValue;
+	Response->StellarForceValueType = MasterySlot->StellarForceValueType;
+	Response->ErrorCode = 0;
+
+	SocketSend(Socket, Connection, Response);
+
 	return;
 
 error:

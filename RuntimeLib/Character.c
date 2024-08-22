@@ -390,38 +390,6 @@ Void RTCharacterInitializeStellarMastery(
     RTCharacterRef Character
 ) {
     // TODO: Stellar mastery values
-
-	for (Int32 Index = 0; Index < Character->Data.StellarMasteryInfo.Info.SlotCount; Index += 1) {
-		RTStellarMasterySlotRef MasterySlot = &Character->Data.StellarMasteryInfo.Slots[Index];
-		//RTDataStellarMasteryValueRef MasteryValue = RTRuntimeDataStellarMasteryValueGet(Runtime->Context, MasterySlot->MasteryIndex);
-
-		//RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillSlot->ID);
-	}
-
-
-	/*
-	for (Int32 Index = 0; Index < Character->Data.SkillSlotInfo.Info.SlotCount; Index += 1) {
-		RTSkillSlotRef SkillSlot = &Character->Data.SkillSlotInfo.Skills[Index];
-		assert(SkillSlot);
-
-		RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillSlot->ID);
-		assert(SkillData);
-
-		if (SkillData->SkillGroup != RUNTIME_SKILL_GROUP_PASSIVE) continue;
-
-		for (Int32 ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
-			RTSkillValueDataRef SkillValue = &SkillData->SkillValues[ValueIndex];
-			Int64 ForceValue = (SkillValue->ForceEffectValue[0] + SkillValue->ForceEffectValue[1] * SkillSlot->Level + SkillValue->ForceEffectValue[2]) / 10;
-
-			RTCharacterApplyForceEffect(
-				Runtime,
-				Character,
-				SkillValue->ForceEffectIndex,
-				ForceValue,
-				SkillValue->ValueType
-			);
-		}
-	}*/
 }
 
 Void RTCharacterInitializeMythMastery(
