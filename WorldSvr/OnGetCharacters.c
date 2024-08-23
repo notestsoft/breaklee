@@ -24,7 +24,7 @@ error:
 }
 
 IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER_LIST) {
-    if (!ClientConnection || !Client || (Client->Flags & CLIENT_FLAGS_VERIFIED)) return;
+    if (!ClientConnection || !Client || !(Client->Flags & CLIENT_FLAGS_VERIFIED)) return;
 
     memcpy(Client->Characters, Packet->Characters, sizeof(Packet->Characters));
     Client->Flags |= CLIENT_FLAGS_CHARACTER_INDEX_LOADED;

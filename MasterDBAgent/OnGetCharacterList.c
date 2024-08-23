@@ -10,37 +10,37 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER_LIST) {
 	DatabaseHandleRef Handle = DatabaseCallProcedureFetch(
 		Context->Database,
 		"GetCharacterList",
-		SQL_PARAM_INPUT, SQL_INTEGER, &Packet->AccountID,
-		SQL_END
+		DB_INPUT_INT32(Packet->AccountID),
+		DB_PARAM_END
 	);
 
 	UInt8 CharacterSlotIndex = 0;
 	IPC_DATA_CHARACTER_INFO CharacterInfo = { 0 };
 	while (DatabaseHandleReadNext(
 		Handle,
-		SQL_TINYINT, &CharacterSlotIndex,
-		SQL_INTEGER, &CharacterInfo.CharacterID,
-		SQL_BIGINT, &CharacterInfo.CreationDate,
-		SQL_INTEGER, &CharacterInfo.Style,
-		SQL_INTEGER, &CharacterInfo.Level,
-		SQL_SMALLINT, &CharacterInfo.OverlordLevel,
-		SQL_INTEGER, &CharacterInfo.MythRebirth,
-		SQL_INTEGER, &CharacterInfo.MythHolyPower,
-		SQL_INTEGER, &CharacterInfo.MythLevel,
-		SQL_INTEGER, &CharacterInfo.SkillRank,
-		SQL_TINYINT, &CharacterInfo.NationMask,
-		SQL_VARCHAR, CharacterInfo.Name, sizeof(CharacterInfo.Name),
-		SQL_BIGINT, &CharacterInfo.HonorPoint,
-		SQL_INTEGER, &CharacterInfo.CostumeActivePageIndex,
-		SQL_VARBINARY, &CharacterInfo.CostumeAppliedSlots, sizeof(CharacterInfo.CostumeAppliedSlots),
-		SQL_BIGINT, &CharacterInfo.Currency,
-		SQL_TINYINT, &CharacterInfo.WorldIndex,
-		SQL_SMALLINT, &CharacterInfo.PositionX,
-		SQL_SMALLINT, &CharacterInfo.PositionY,
-		SQL_SMALLINT, &CharacterInfo.EquipmentCount,
-		SQL_VARBINARY, &CharacterInfo.Equipment, sizeof(CharacterInfo.Equipment),
-		SQL_VARBINARY, &CharacterInfo.EquipmentAppearance, sizeof(CharacterInfo.EquipmentAppearance),
-		SQL_END
+		DB_TYPE_UINT8, &CharacterSlotIndex,
+		DB_TYPE_INT32, &CharacterInfo.CharacterID,
+		DB_TYPE_UINT64, &CharacterInfo.CreationDate,
+		DB_TYPE_INT32, &CharacterInfo.Style,
+		DB_TYPE_INT32, &CharacterInfo.Level,
+		DB_TYPE_INT16, &CharacterInfo.OverlordLevel,
+		DB_TYPE_INT32, &CharacterInfo.MythRebirth,
+		DB_TYPE_INT32, &CharacterInfo.MythHolyPower,
+		DB_TYPE_INT32, &CharacterInfo.MythLevel,
+		DB_TYPE_INT32, &CharacterInfo.SkillRank,
+		DB_TYPE_UINT8, &CharacterInfo.NationMask,
+		DB_TYPE_STRING, CharacterInfo.Name, sizeof(CharacterInfo.Name),
+		DB_TYPE_INT64, &CharacterInfo.HonorPoint,
+		DB_TYPE_INT32, &CharacterInfo.CostumeActivePageIndex,
+		DB_TYPE_DATA, &CharacterInfo.CostumeAppliedSlots, sizeof(CharacterInfo.CostumeAppliedSlots),
+		DB_TYPE_INT64, &CharacterInfo.Currency,
+		DB_TYPE_UINT8, &CharacterInfo.WorldIndex,
+		DB_TYPE_INT16, &CharacterInfo.PositionX,
+		DB_TYPE_INT16, &CharacterInfo.PositionY,
+		DB_TYPE_INT16, &CharacterInfo.EquipmentCount,
+		DB_TYPE_DATA, &CharacterInfo.Equipment, sizeof(CharacterInfo.Equipment),
+		DB_TYPE_DATA, &CharacterInfo.EquipmentAppearance, sizeof(CharacterInfo.EquipmentAppearance),
+		DB_PARAM_END
 	)) {
 		assert(CharacterSlotIndex < MAX_CHARACTER_COUNT);
 		Response->Characters[CharacterSlotIndex] = CharacterInfo;

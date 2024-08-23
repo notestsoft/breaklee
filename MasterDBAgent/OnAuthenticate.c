@@ -10,19 +10,22 @@ IPC_PROCEDURE_BINDING(W2D, AUTHENTICATE) {
 	Response->GroupIndex = Packet->GroupIndex;
 	Response->NodeIndex = Packet->NodeIndex;
 	Response->LinkConnectionID = Packet->LinkConnectionID;
-	Response->Success &= DatabaseCallProcedure(
+
+	if (!DatabaseCallProcedure(
 		Context->Database,
-		"Authenticate",
-		SQL_PARAM_INPUT, SQL_INTEGER, &Packet->AccountID,
-		SQL_PARAM_OUTPUT, SQL_TINYINT, &Response->Success,
-		SQL_PARAM_OUTPUT, SQL_INTEGER, &Response->AccountInfo.CharacterSlotID,
-		SQL_PARAM_OUTPUT, SQL_BIGINT, &Response->AccountInfo.CharacterSlotOrder,
-		SQL_PARAM_OUTPUT, SQL_INTEGER, &Response->AccountInfo.CharacterSlotOpenMask,
-		SQL_PARAM_OUTPUT, SQL_TINYINT, &Response->IsSubpasswordSet,
-		SQL_PARAM_OUTPUT, SQL_TINYINT, &Response->AccountInfo.IsPremium,
-		SQL_PARAM_OUTPUT, SQL_INTEGER, &Response->AccountInfo.ForceGem,
-		SQL_END
-	);
+		"Authenticate", 
+		DB_INPUT_INT32(Packet->AccountID),
+		DB_OUTPUT_INT8(Response->Success),
+		DB_OUTPUT_INT32(Response->AccountInfo.CharacterSlotID),
+		DB_OUTPUT_UINT64(Response->AccountInfo.CharacterSlotOrder),
+		DB_OUTPUT_INT32(Response->AccountInfo.CharacterSlotOpenMask),
+		DB_OUTPUT_INT8(Response->IsSubpasswordSet),
+		DB_OUTPUT_INT32(Response->AccountInfo.IsPremium),
+		DB_OUTPUT_INT32(Response->AccountInfo.ForceGem),
+		DB_PARAM_END
+	)) {
+		Response->Success = false;
+	}
 
 	IPCSocketUnicast(Socket, Response);
 }

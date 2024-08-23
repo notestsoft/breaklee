@@ -8,21 +8,23 @@ IPC_PROCEDURE_BINDING(W2L, VERIFY_PASSWORD) {
     Response->Header.TargetConnectionID = Packet->Header.SourceConnectionID;
     Response->Success = false;
     
-    UInt8 Success = 0;
+    Bool Success = false;
     UInt8 PasswordHash[SALTED_HASH_LENGTH] = { 0 };
 
-    Response->Success = (
-        DatabaseCallProcedure(
-            Context->Database,
-            "GetPasswordHash",
-            SQL_PARAM_INPUT, SQL_BIGINT, &Packet->AccountID,
-            SQL_PARAM_OUTPUT, SQL_TINYINT, &Success,
-            SQL_PARAM_OUTPUT, SQL_VARBINARY, PasswordHash, SALTED_HASH_LENGTH,
-            SQL_END
-        ) &&
-        Success &&
-        ValidatePasswordHash(Packet->Credentials, PasswordHash)
-    );
+    if (!DatabaseCallProcedure(
+        Context->Database,
+        "GetPasswordHash",
+        DB_INPUT_INT32(Packet->AccountID),
+        DB_OUTPUT_BOOL(Success),
+        DB_OUTPUT_DATA(PasswordHash, SALTED_HASH_LENGTH),
+        DB_PARAM_END
+    )) {
+        Success = false;
+    }
+
+    if (Success && !ValidatePasswordHash(Packet->Credentials, PasswordHash)) {
+        Success = false;
+    }
 
     IPCSocketUnicast(Server->IPCSocket, Response);
 }

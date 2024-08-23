@@ -1,7 +1,7 @@
 CREATE PROCEDURE InsertCharacter (
     IN InAccountID INT,
     IN InName VARCHAR(17),
-    IN InSlotIndex TINYINT,
+    IN InSlotIndex TINYINT UNSIGNED,
     IN InStyle INT UNSIGNED,
     IN InStatSTR SMALLINT UNSIGNED,
     IN InStatDEX SMALLINT UNSIGNED,
@@ -9,7 +9,7 @@ CREATE PROCEDURE InsertCharacter (
     IN InWorldIndex TINYINT UNSIGNED,
     IN InPositionX SMALLINT UNSIGNED,
     IN InPositionY SMALLINT UNSIGNED,
-    OUT OutStatus TINYINT,
+    OUT OutStatus TINYINT UNSIGNED,
     OUT OutCharacterID INT
 )
 BEGIN
@@ -30,6 +30,7 @@ BEGIN
 
     -- Label for the entire procedure
     ProcLabelBody: BEGIN
+
         -- Check if the character name already exists
         SELECT COUNT(*) INTO IsNameOccupied
         FROM Characters
@@ -81,399 +82,49 @@ BEGIN
         
         START TRANSACTION;
 
-        INSERT INTO Characters (AccountID, Name, SlotIndex, Style, StatSTR, StatDEX, StatINT, WorldIndex, X, Y) 
-        VALUES (InAccountID, InName, InSlotIndex, InStyle, InStatSTR, InStatDEX, InStatINT, InWorldIndex, InPositionX, InPositionY);
+        INSERT INTO Characters (AccountID, Name, SlotIndex, Style, StatSTR, StatDEX, StatINT, WorldIndex, X, Y) VALUES (InAccountID, InName, InSlotIndex, InStyle, InStatSTR, InStatDEX, InStatINT, InWorldIndex, InPositionX, InPositionY);
 
-        -- Check if the insert was Successful
-        IF ROW_COUNT() > 0 THEN
-            SET OutCharacterID = LAST_INSERT_ID();
-            SET Success = TRUE;
-        END IF;
-
-        -- Perform all other inserts as part of the same transaction
-        IF Success THEN
-            INSERT INTO Equipment (CharacterID, EquipmentSlotData, InventorySlotData, LinkSlotData, LockSlotData) 
-            VALUES (OutCharacterID, '', '', '', '');
-
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO Inventory (CharacterID, SlotData) 
-            VALUES (OutCharacterID, '');
-
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO SkillSlot (CharacterID, SlotData) 
-            VALUES (OutCharacterID, '');
-
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO QuickSlot (CharacterID, SlotData) 
-            VALUES (OutCharacterID, '');
-
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO Ability (CharacterID, EssenceAbilityData, BlendedAbilityData, KarmaAbilityData) 
-            VALUES (OutCharacterID, '', '', '');
-
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO BlessingBead (CharacterID, SlotData) 
-            VALUES (OutCharacterID, '');
-
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO PremiumService (CharacterID, SlotData) 
-            VALUES (OutCharacterID, '');
-
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO Quest (
-                CharacterID,
-                FinishedQuestData, 
-                DeletedQuestData, 
-                FinishedDungeonData, 
-                QuestSlotData
-            )
-            VALUES (
-                OutCharacterID,
-                CONCAT(REPEAT(CHAR(0), 512)),
-                CONCAT(REPEAT(CHAR(0), 128)),
-                CONCAT(REPEAT(CHAR(0), 640)),
-                ''
-            );
+        SET OutCharacterID = LAST_INSERT_ID();
             
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO DailyQuest (CharacterID, SlotData) 
-            VALUES (OutCharacterID, '');
+        INSERT INTO Equipment (CharacterID, EquipmentSlotData, InventorySlotData, LinkSlotData, LockSlotData) VALUES (OutCharacterID, '', '', '', '');
+        INSERT INTO Inventory (CharacterID, SlotData) VALUES (OutCharacterID, '');
+        INSERT INTO SkillSlot (CharacterID, SlotData) VALUES (OutCharacterID, '');
+        INSERT INTO QuickSlot (CharacterID, SlotData) VALUES (OutCharacterID, '');
+        INSERT INTO Ability (CharacterID, EssenceAbilityData, BlendedAbilityData, KarmaAbilityData) VALUES (OutCharacterID, '', '', '');
+        INSERT INTO BlessingBead (CharacterID, SlotData) VALUES (OutCharacterID, '');
+        INSERT INTO PremiumService (CharacterID, SlotData) VALUES (OutCharacterID, '');
+        INSERT INTO Quest (CharacterID, FinishedQuestData, DeletedQuestData, FinishedDungeonData, QuestSlotData) VALUES (OutCharacterID, CONCAT(REPEAT(CHAR(0), 512)), CONCAT(REPEAT(CHAR(0), 128)), CONCAT(REPEAT(CHAR(0), 640)), '');
+        INSERT INTO DailyQuest (CharacterID, SlotData) VALUES (OutCharacterID, '');
+        INSERT INTO Mercenary (CharacterID, SlotData) VALUES (OutCharacterID, '');
+        INSERT INTO Appearance (CharacterID, EquipmentSlotData, InventorySlotData) VALUES (OutCharacterID, '', '');
+        INSERT INTO Achievement (CharacterID, SlotData, RewardSlotData) VALUES (OutCharacterID, '', '');
+        INSERT INTO AchievementExtended (CharacterID, SlotData) VALUES (OutCharacterID, '');
+        INSERT INTO Craft (CharacterID, SlotData) VALUES (OutCharacterID, '');
+        INSERT INTO RequestCraft (CharacterID, RegisteredFlagData, FavoriteFlagData, SlotData) VALUES (OutCharacterID, CONCAT(REPEAT(CHAR(0), 1024)), CONCAT(REPEAT(CHAR(0), 1024)), '');
+        INSERT INTO Buff (CharacterID, BuffSlotData) VALUES (OutCharacterID, '');
+        INSERT INTO Upgrade (CharacterID) VALUES (OutCharacterID);
+        INSERT INTO VehicleInventory (CharacterID, SlotData) VALUES (OutCharacterID, '');
+        INSERT INTO WarpService (CharacterID, SlotData) VALUES (OutCharacterID, '');
+        INSERT INTO OverlordMastery (CharacterID, SlotData) VALUES (OutCharacterID, '');
+        INSERT INTO HonorMedal (CharacterID, SlotData) VALUES (OutCharacterID, '');
+        INSERT INTO ForceWing (CharacterID, PresetEnabled, PresetTrainingPointCount, TrainingUnlockFlagData, ArrivalSkillSlotData, ArrivalSkillRestoreSlotData, PresetSlotData, TrainingSlotData) VALUES (OutCharacterID, CONCAT(REPEAT(CHAR(0), 5)), CONCAT(REPEAT(CHAR(0), 20)), CONCAT(REPEAT(CHAR(0), 12)), CONCAT(REPEAT(CHAR(0), 66)), CONCAT(REPEAT(CHAR(0), 11)), '', '');
+        INSERT INTO Giftbox (CharacterID, SlotData, RewardSlotData) VALUES (OutCharacterID, '', '');
+        INSERT INTO Transform (CharacterID, SlotData) VALUES (OutCharacterID, '');
+        INSERT INTO SecretShop (CharacterID, SlotData) VALUES (OutCharacterID, CONCAT(REPEAT(CHAR(0), 30)));
+        INSERT INTO SkillTranscendence (CharacterID, SlotData) VALUES (OutCharacterID, '');
+        INSERT INTO StellarMastery (CharacterID, SlotData) VALUES (OutCharacterID, '');
+        INSERT INTO DamageBooster (CharacterID, ItemData, SlotData) VALUES (OutCharacterID, CONCAT(REPEAT(CHAR(0), 8)), '');
+        INSERT INTO MythMastery (CharacterID, PropertySlotData) VALUES (OutCharacterID, '');
+        INSERT INTO NewbieSupport (CharacterID, SlotData) VALUES (OutCharacterID, '');
+        INSERT INTO Costume (CharacterID, PageData, AppliedSlotData) VALUES (OutCharacterID, '', '');
+        INSERT INTO Exploration (CharacterID, SlotData) VALUES (OutCharacterID, '');
+        INSERT INTO TemporaryInventory (CharacterID, SlotData) VALUES (OutCharacterID, '');
+        INSERT INTO Recovery (CharacterID, PriceData, SlotData) VALUES (OutCharacterID, '', '');
+        INSERT INTO Preset (CharacterID, ConfigurationData) VALUES (OutCharacterID, CONCAT(REPEAT(CHAR(0), 205)));
         
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
+        SET OutStatus = CHARACTER_STATUS_SUCCESS;
 
-        IF Success THEN
-            INSERT INTO Mercenary (CharacterID, SlotData) 
-            VALUES (OutCharacterID, '');
-        
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
+        COMMIT;
 
-        IF Success THEN
-            INSERT INTO Appearance (CharacterID, EquipmentSlotData, InventorySlotData) 
-            VALUES (OutCharacterID, '', '');
-
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO Achievement (CharacterID, SlotData, RewardSlotData) 
-            VALUES (OutCharacterID, '', '');
-        
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO AchievementExtended (CharacterID, SlotData) 
-            VALUES (OutCharacterID, '');
-        
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO Craft (CharacterID, SlotData) 
-            VALUES (OutCharacterID, '');
-        
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO RequestCraft (
-                CharacterID, 
-                RegisteredFlagData, 
-                FavoriteFlagData, 
-                SlotData
-            ) 
-            VALUES (
-                OutCharacterID, 
-                CONCAT(REPEAT(CHAR(0), 1024)),
-                CONCAT(REPEAT(CHAR(0), 1024)),
-                ''
-            );
-            
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO Buff (CharacterID, BuffSlotData) 
-            VALUES (OutCharacterID, '');
-        
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO Upgrade (CharacterID) 
-            VALUES (OutCharacterID);
-        
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO VehicleInventory (CharacterID, SlotData) 
-            VALUES (OutCharacterID, '');
-        
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO WarpService (CharacterID, SlotData) 
-            VALUES (OutCharacterID, '');
-        
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO OverlordMastery (CharacterID, SlotData) 
-            VALUES (OutCharacterID, '');
-        
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO HonorMedal (CharacterID, SlotData) 
-            VALUES (OutCharacterID, '');
-        
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO ForceWing (
-                CharacterID, 
-                PresetEnabled, 
-                PresetTrainingPointCount, 
-                TrainingUnlockFlagData,
-                ArrivalSkillSlotData,
-                ArrivalSkillRestoreSlotData,
-                PresetSlotData,
-                TrainingSlotData
-            ) 
-            VALUES (
-                OutCharacterID, 
-                CONCAT(REPEAT(CHAR(0), 5)),
-                CONCAT(REPEAT(CHAR(0), 20)),
-                CONCAT(REPEAT(CHAR(0), 12)),
-                CONCAT(REPEAT(CHAR(0), 66)),
-                CONCAT(REPEAT(CHAR(0), 11)),
-                '',
-                ''
-            );
-
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO Giftbox (CharacterID, SlotData, RewardSlotData) 
-            VALUES (OutCharacterID, '', '');
-
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO Transform (CharacterID, SlotData) 
-            VALUES (OutCharacterID, '');
-            
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO SecretShop (
-                CharacterID, 
-                SlotData
-                ) 
-            VALUES (
-                OutCharacterID, 
-                CONCAT(REPEAT(CHAR(0), 30))
-            );
-            
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO SkillTranscendence (CharacterID, SlotData) 
-            VALUES (OutCharacterID, '');
-            
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO StellarMastery (CharacterID, SlotData) 
-            VALUES (OutCharacterID, '');
-            
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO DamageBooster (
-                CharacterID, 
-                ItemData,
-                SlotData
-            ) 
-            VALUES (
-                OutCharacterID, 
-                CONCAT(REPEAT(CHAR(0), 8)),
-                ''
-            );
-            
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO MythMastery (CharacterID, PropertySlotData) 
-            VALUES (OutCharacterID, '');
-
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO NewbieSupport (CharacterID, SlotData) 
-            VALUES (OutCharacterID, '');
-            
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO Costume (CharacterID, PageData, AppliedSlotData) 
-            VALUES (OutCharacterID, '', '');
-            
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO Exploration (CharacterID, SlotData) 
-            VALUES (OutCharacterID, '');
-            
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO TemporaryInventory (CharacterID, SlotData) 
-            VALUES (OutCharacterID, '');
-
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO Recovery (CharacterID, PriceData, SlotData) 
-            VALUES (OutCharacterID, '', '');
-            
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        IF Success THEN
-            INSERT INTO Preset (
-                CharacterID, 
-                ConfigurationData
-            ) 
-            VALUES (
-                OutCharacterID, 
-                CONCAT(REPEAT(CHAR(0), 205))
-            );
-            
-            IF ROW_COUNT() != 1 THEN
-                SET Success = FALSE;
-            END IF;
-        END IF;
-
-        -- Commit or rollback based on Success
-        IF Success THEN
-            COMMIT;
-            SET OutStatus = CHARACTER_STATUS_SUCCESS;
-        ELSE
-            ROLLBACK;
-            SET OutStatus = CHARACTER_STATUS_DBERROR;
-        END IF;
-    
     END ProcLabelBody;
 END;

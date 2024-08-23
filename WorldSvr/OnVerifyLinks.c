@@ -127,6 +127,7 @@ IPC_PROCEDURE_BINDING(D2W, AUTHENTICATE) {
 	if (Client && Packet->Success) {
 		Response->Status = 1;
 		Client->Flags |= CLIENT_FLAGS_VERIFIED;
+		Client->AccountID = Packet->AccountID;
 		Client->IsSubpasswordSet = Packet->IsSubpasswordSet;
 		Client->AccountInfo = Packet->AccountInfo;
 	}
@@ -147,6 +148,7 @@ IPC_PROCEDURE_BINDING(W2W, REQUEST_VERIFY_LINKS) {
 
 	Client->Flags |= CLIENT_FLAGS_VERIFIED;
 	Client->Flags |= CLIENT_FLAGS_CHARACTER_INDEX_LOADED;
+	Client->AccountID = Packet->AccountID;
 	Client->IsSubpasswordSet = Packet->IsSubpasswordSet;
 	Client->AccountInfo = Packet->AccountInfo;
 	memcpy(&Client->Characters, &Packet->Characters, sizeof(IPC_DATA_CHARACTER_INFO) * MAX_CHARACTER_COUNT);

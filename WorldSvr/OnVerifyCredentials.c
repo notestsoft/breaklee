@@ -77,7 +77,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_SUBPASSWORD) {
     if (!(Client->Flags & CLIENT_FLAGS_CHARACTER_INDEX_LOADED) || Client->AccountID < 1) goto error;
     
 	if (Packet->Type == CHARACTER_SUBPASSWORD_TYPE_CHARACTER) {
-		IPC_W2D_DATA_VERIFY_SUBPASSWORD* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2L, VERIFY_PASSWORD);
+		IPC_W2D_DATA_VERIFY_SUBPASSWORD* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2D, VERIFY_SUBPASSWORD);
 		Request->Header.SourceConnectionID = Connection->ID;
 		Request->Header.Source = Server->IPCSocket->NodeID;
 		Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
@@ -102,7 +102,7 @@ error:
 IPC_PROCEDURE_BINDING(D2W, VERIFY_SUBPASSWORD) {
 	if (!ClientConnection) return;
 
-	S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_SUBPASSWORD);
+	S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, VERIFY_SUBPASSWORD);
 	Response->Success = Packet->Success;
 	Response->FailureCount = Packet->FailureCount;
 	Response->Type = Packet->Type;

@@ -11,7 +11,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 	Response->SyncMaskFailed.RawValue = 0;
 
 	Int32 DataOffset = 0;
-
+    /*
     if (Packet->IsTransaction) DatabaseBeginTransaction(Context->Database); 
     {
 #define ACCOUNT_DATA_PROTOCOL(__TYPE__, __NAME__) \
@@ -55,6 +55,6 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
             DatabaseRollbackTransaction(Context->Database);
         }
     }
-
+    */
     IPCSocketUnicast(Socket, Response);
 }

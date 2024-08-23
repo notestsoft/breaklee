@@ -32,9 +32,9 @@ Void ServerLoadMigrationData(
             if (!DatabaseCallProcedure(
                 Context->Database,
                 "ApplyMigration",
-                SQL_PARAM_INPUT, SQL_VARCHAR, MigrationFileName, strlen(MigrationFileName),
-                SQL_PARAM_INPUT, SQL_VARCHAR, MigrationQuery, strlen(MigrationQuery),
-                SQL_END
+                DB_INPUT_STRING(MigrationFileName, strlen(MigrationFileName)),
+                DB_INPUT_STRING(MigrationQuery, strlen(MigrationQuery)),
+                DB_PARAM_END
             )) {
                 Fatal("Database migration failed");
             }

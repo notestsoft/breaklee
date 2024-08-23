@@ -129,15 +129,15 @@ authenticate:
     Bool Success = DatabaseCallProcedure(
         Context->Database,
         "Authenticate",
-        SQL_PARAM_INPUT, SQL_VARCHAR, Username, strlen(Username),
-        SQL_PARAM_INPUT, SQL_VARCHAR, Connection->AddressIP, strlen(Connection->AddressIP),
-        SQL_PARAM_INPUT, SQL_VARCHAR, Client->SessionKey, strlen(Client->SessionKey),
-        SQL_PARAM_INPUT, SQL_TINYINT, &Context->Config.Login.EmailVerificationEnabled,
-        SQL_PARAM_OUTPUT, SQL_INTEGER, &Client->LoginStatus,
-        SQL_PARAM_OUTPUT, SQL_INTEGER, &Client->AccountStatus,
-        SQL_PARAM_OUTPUT, SQL_INTEGER, &Client->AccountID,
-        SQL_PARAM_OUTPUT, SQL_VARBINARY, PasswordHash, SALTED_HASH_LENGTH,
-        SQL_END
+        DB_INPUT_STRING(Username, strlen(Username)),
+        DB_INPUT_STRING(Connection->AddressIP, strlen(Connection->AddressIP)),
+        DB_INPUT_STRING(Client->SessionKey, strlen(Client->SessionKey)),
+        DB_INPUT_BOOL(Context->Config.Login.EmailVerificationEnabled),
+        DB_OUTPUT_INT32(Client->LoginStatus),
+        DB_OUTPUT_INT32(Client->AccountStatus),
+        DB_OUTPUT_INT32(Client->AccountID),
+        DB_OUTPUT_DATA(PasswordHash, SALTED_HASH_LENGTH),
+        DB_PARAM_END
     );
     if (!Success) {
         Client->LoginStatus = LOGIN_STATUS_ERROR;
@@ -157,10 +157,10 @@ authenticate:
             DatabaseCallProcedure(
                 Context->Database,
                 "InsertAccount",
-                SQL_PARAM_INPUT, SQL_VARCHAR, Username, strlen(Username),
-                SQL_PARAM_INPUT, SQL_VARCHAR, Username, strlen(Username),
-                SQL_PARAM_INPUT, SQL_VARBINARY, PasswordHash, SALTED_HASH_LENGTH,
-                SQL_END
+                DB_INPUT_STRING(Username, strlen(Username)),
+                DB_INPUT_STRING(Username, strlen(Username)),
+                DB_INPUT_DATA(PasswordHash, SALTED_HASH_LENGTH),
+                DB_PARAM_END
             );
         }
 
@@ -194,17 +194,17 @@ authenticate:
     DatabaseHandleRef Handle = DatabaseCallProcedureFetch(
         Context->Database,
         "GetServerCharacterList",
-        SQL_PARAM_INPUT, SQL_INTEGER, &Client->AccountID,
-        SQL_PARAM_OUTPUT, SQL_INTEGER, &ServerCount,
-        SQL_END
+        DB_INPUT_INT32(Client->AccountID),
+        DB_OUTPUT_INT32(ServerCount),
+        DB_PARAM_END
     );
 
     Int32 ServerIndex = 0;
     while (DatabaseHandleReadNext(
         Handle,
-        SQL_TINYINT, &Extension->Servers[ServerIndex].ServerID, sizeof(UInt8),
-        SQL_TINYINT, &Extension->Servers[ServerIndex].CharacterCount, sizeof(UInt8),
-        SQL_END
+        DB_TYPE_UINT8, &Extension->Servers[ServerIndex].ServerID, sizeof(UInt8),
+        DB_TYPE_UINT8, &Extension->Servers[ServerIndex].CharacterCount, sizeof(UInt8),
+        DB_PARAM_END
     )) {
         assert(ServerIndex < MAX_SERVER_COUNT);
         ServerIndex += 1;

@@ -6,9 +6,9 @@ BEGIN
     SELECT 
         Characters.SlotIndex,
         Characters.CharacterID, 
-        Characters.CreatedAt AS CreationDate, 
+        Characters.CreatedAt, 
         Characters.Style, 
-        Characters.Level, 
+        Characters.Level,
         OverlordMastery.Level AS OverlordLevel, 
         MythMastery.Rebirth AS MythRebirth, 
         MythMastery.HolyPower AS MythHolyPower, 

@@ -183,7 +183,7 @@ IPC_PROTOCOL(W2D, UPDATE_ACCOUNT_SESSION,
 IPC_PROTOCOL(W2D, UPDATE_SUBPASSWORD,
 	Int32 AccountID;
 	Char CharacterPassword[MAX_SUBPASSWORD_LENGTH + 1];
-	UInt32 CharacterQuestion;
+	Int32 CharacterQuestion;
 	Char CharacterAnswer[MAX_SUBPASSWORD_ANSWER_LENGTH + 1];
 )
 

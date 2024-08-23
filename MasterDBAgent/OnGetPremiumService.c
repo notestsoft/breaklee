@@ -7,16 +7,19 @@ IPC_PROCEDURE_BINDING(W2D, GET_PREMIUM_SERVICE) {
 	Response->Header.Target = Packet->Header.Source;
 	Response->Header.TargetConnectionID = Packet->Header.SourceConnectionID;
 	Response->AccountID = Packet->AccountID;
-	Response->HasService = DatabaseCallProcedure(
+		
+	if (!DatabaseCallProcedure(
 		Context->Database,
 		"GetPremiumService",
-		SQL_PARAM_INPUT, SQL_INTEGER, &Packet->AccountID,
-		SQL_PARAM_OUTPUT, SQL_INTEGER, &Response->ServiceType,
-		SQL_PARAM_OUTPUT, SQL_BIGINT, &Response->StartedAt,
-		SQL_PARAM_OUTPUT, SQL_BIGINT, &Response->ExpiredAt,
-		SQL_PARAM_OUTPUT, SQL_TINYINT, &Response->HasService,
-		SQL_END
-	);
+		DB_INPUT_INT32(Packet->AccountID),
+		DB_INPUT_INT32(Response->ServiceType),
+		DB_INPUT_UINT64(Response->StartedAt),
+		DB_INPUT_UINT64(Response->ExpiredAt),
+		DB_INPUT_BOOL(Response->HasService),
+		DB_PARAM_END
+	)) {
+		Response->HasService = false;
+	}
 
     IPCSocketUnicast(Socket, Response);
 }

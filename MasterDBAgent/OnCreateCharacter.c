@@ -11,60 +11,63 @@ IPC_PROCEDURE_BINDING(W2D, CREATE_CHARACTER) {
 	Bool Success = DatabaseCallProcedure(
 		Context->Database,
 		"InsertCharacter",
-		SQL_PARAM_INPUT, SQL_INTEGER, &Packet->AccountID,
-		SQL_PARAM_INPUT, SQL_VARCHAR, Packet->CharacterName, sizeof(Packet->CharacterName),
-		SQL_PARAM_INPUT, SQL_INTEGER, &Packet->CharacterData.StyleInfo.Style,
-		SQL_PARAM_INPUT, SQL_TINYINT, &Packet->CharacterSlotIndex,
-		SQL_PARAM_INPUT, SQL_SMALLINT, &Packet->CharacterData.Info.Stat[RUNTIME_CHARACTER_STAT_STR],
-		SQL_PARAM_INPUT, SQL_SMALLINT, &Packet->CharacterData.Info.Stat[RUNTIME_CHARACTER_STAT_DEX],
-		SQL_PARAM_INPUT, SQL_SMALLINT, &Packet->CharacterData.Info.Stat[RUNTIME_CHARACTER_STAT_INT],
-		SQL_PARAM_INPUT, SQL_TINYINT, &Packet->CharacterData.Info.WorldIndex,
-		SQL_PARAM_INPUT, SQL_SMALLINT, &Packet->CharacterData.Info.PositionX,
-		SQL_PARAM_INPUT, SQL_SMALLINT, &Packet->CharacterData.Info.PositionY,
-		SQL_PARAM_OUTPUT, SQL_TINYINT, &Response->Status,
-		SQL_PARAM_OUTPUT, SQL_INTEGER, &Response->Character.CharacterID,
-		SQL_END
+		DB_INPUT_INT32(Packet->AccountID),
+		DB_INPUT_STRING(Packet->CharacterName, sizeof(Packet->CharacterName)),
+		DB_INPUT_UINT8(Packet->CharacterSlotIndex),
+		DB_INPUT_INT32(Packet->CharacterData.StyleInfo.Style),
+        DB_INPUT_INT16(Packet->CharacterData.Info.Stat[RUNTIME_CHARACTER_STAT_STR]),
+        DB_INPUT_INT16(Packet->CharacterData.Info.Stat[RUNTIME_CHARACTER_STAT_DEX]),
+        DB_INPUT_INT16(Packet->CharacterData.Info.Stat[RUNTIME_CHARACTER_STAT_INT]),
+        DB_INPUT_INT8(Packet->CharacterData.Info.WorldIndex),
+        DB_INPUT_INT16(Packet->CharacterData.Info.PositionX),
+        DB_INPUT_INT16(Packet->CharacterData.Info.PositionY),
+        DB_OUTPUT_INT8(Response->Status),
+        DB_OUTPUT_INT32(Response->Character.CharacterID),
+		DB_PARAM_END
 	);
 
 	if (Success && Response->Status == CREATE_CHARACTER_STATUS_SUCCESS) {
 		DatabaseHandleRef Handle = DatabaseCallProcedureFetch(
 			Context->Database,
 			"GetCharacterInfo",
-			SQL_PARAM_INPUT, SQL_INTEGER, &Response->Character.CharacterID,
-			SQL_END
+            DB_INPUT_INT32(Response->Character.CharacterID),
+			DB_PARAM_END
 		);
 
 		IPC_DATA_CHARACTER_INFO CharacterInfo = { 0 };
 		if (DatabaseHandleReadNext(
 			Handle,
-			SQL_TINYINT, &Response->CharacterSlotIndex,
-			SQL_INTEGER, &CharacterInfo.CharacterID,
-			SQL_BIGINT, &CharacterInfo.CreationDate,
-			SQL_INTEGER, &CharacterInfo.Style,
-			SQL_INTEGER, &CharacterInfo.Level,
-			SQL_SMALLINT, &CharacterInfo.OverlordLevel,
-			SQL_INTEGER, &CharacterInfo.MythRebirth,
-			SQL_INTEGER, &CharacterInfo.MythHolyPower,
-			SQL_INTEGER, &CharacterInfo.MythLevel,
-			SQL_INTEGER, &CharacterInfo.SkillRank,
-			SQL_TINYINT, &CharacterInfo.NationMask,
-			SQL_VARCHAR, CharacterInfo.Name, sizeof(CharacterInfo.Name),
-			SQL_BIGINT, &CharacterInfo.HonorPoint,
-			SQL_INTEGER, &CharacterInfo.CostumeActivePageIndex,
-			SQL_VARBINARY, &CharacterInfo.CostumeAppliedSlots, sizeof(CharacterInfo.CostumeAppliedSlots),
-			SQL_BIGINT, &CharacterInfo.Currency,
-			SQL_TINYINT, &CharacterInfo.WorldIndex,
-			SQL_SMALLINT, &CharacterInfo.PositionX,
-			SQL_SMALLINT, &CharacterInfo.PositionY,
-			SQL_SMALLINT, &CharacterInfo.EquipmentCount,
-			SQL_VARBINARY, &CharacterInfo.Equipment, sizeof(CharacterInfo.Equipment),
-			SQL_VARBINARY, &CharacterInfo.EquipmentAppearance, sizeof(CharacterInfo.EquipmentAppearance),
-			SQL_END
+			DB_TYPE_UINT8, &Response->CharacterSlotIndex,
+			DB_TYPE_INT32, &CharacterInfo.CharacterID,
+			DB_TYPE_UINT64, &CharacterInfo.CreationDate,
+			DB_TYPE_INT32, &CharacterInfo.Style,
+			DB_TYPE_INT32, &CharacterInfo.Level,
+			DB_TYPE_UINT16, &CharacterInfo.OverlordLevel,
+			DB_TYPE_INT32, &CharacterInfo.MythRebirth,
+			DB_TYPE_INT32, &CharacterInfo.MythHolyPower,
+			DB_TYPE_INT32, &CharacterInfo.MythLevel,
+			DB_TYPE_INT32, &CharacterInfo.SkillRank,
+			DB_TYPE_UINT8, &CharacterInfo.NationMask,
+			DB_TYPE_STRING, CharacterInfo.Name, sizeof(CharacterInfo.Name),
+			DB_TYPE_UINT64, &CharacterInfo.HonorPoint,
+			DB_TYPE_INT32, &CharacterInfo.CostumeActivePageIndex,
+			DB_TYPE_DATA, &CharacterInfo.CostumeAppliedSlots, sizeof(CharacterInfo.CostumeAppliedSlots),
+			DB_TYPE_UINT64, &CharacterInfo.Currency,
+			DB_TYPE_UINT8, &CharacterInfo.WorldIndex,
+			DB_TYPE_UINT16, &CharacterInfo.PositionX,
+			DB_TYPE_UINT16, &CharacterInfo.PositionY,
+			DB_TYPE_UINT16, &CharacterInfo.EquipmentCount,
+			DB_TYPE_DATA, &CharacterInfo.Equipment, sizeof(CharacterInfo.Equipment),
+			DB_TYPE_DATA, &CharacterInfo.EquipmentAppearance, sizeof(CharacterInfo.EquipmentAppearance),
+			DB_PARAM_END
 		)) {
 			Response->Character = CharacterInfo;
 		}
 
 		DatabaseHandleFlush(Handle);
+	}
+	else if (!Response->Status) {
+		Response->Status == CREATE_CHARACTER_STATUS_DBERROR;
 	}
 
 	// TODO: Sync all the character data from packet after creation!

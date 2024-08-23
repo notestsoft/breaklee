@@ -4,7 +4,7 @@ CREATE PROCEDURE InsertSubpassword(
     IN InPassword VARCHAR(10),
     IN InQuestion INT,
     IN InAnswer VARCHAR(16),
-    OUT OutSuccess TINYINT,
+    OUT OutSuccess INT,
     OUT OutType INT
 )
 BEGIN

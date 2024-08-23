@@ -3,13 +3,13 @@
 
 IPC_PROCEDURE_BINDING(W2D, UPDATE_ACCOUNT_SESSION) {
     Bool Success = false;
-    Success &= DatabaseCallProcedure(
+    DatabaseCallProcedure(
         Context->Database,
         "UpdateAccountSession",
-        SQL_PARAM_INPUT, SQL_INTEGER, &Packet->AccountID,
-        SQL_PARAM_INPUT, SQL_VARCHAR, Packet->SessionIP, sizeof(Packet->SessionIP),
-        SQL_PARAM_INPUT, SQL_BIGINT, &Packet->SessionTimeout,
-        SQL_PARAM_OUTPUT, SQL_TINYINT, &Success,
-        SQL_END
+        DB_INPUT_INT32(Packet->AccountID),
+        DB_INPUT_STRING(Packet->SessionIP, sizeof(Packet->SessionIP)),
+        DB_INPUT_UINT64(Packet->SessionTimeout),
+        DB_OUTPUT_BOOL(Success),
+        DB_PARAM_END
     );
 }

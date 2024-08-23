@@ -3,6 +3,10 @@
 #include "Database.h"
 #include "String.h"
 
+#include <sql.h>
+#include <sqlext.h>
+#include <sqltypes.h>
+
 #define DATABASE_RESULT_BUFFER_SIZE		8192
 
 struct _Database {
@@ -55,66 +59,60 @@ struct _DataTable {
 };
 
 struct _DatabaseTypeMapping {
+	Int32 Type;
 	SQLSMALLINT SQLType;
 	SQLSMALLINT NativeType;
 	SQLULEN NativeSize;
 	CString NativeName;
 };
 
+#define DB_TYPE_CHAR    (0)
+#define DB_TYPE_STRING  (1)
+#define DB_TYPE_INT8    (2)
+#define DB_TYPE_INT16   (3)
+#define DB_TYPE_INT32   (4)
+#define DB_TYPE_INT64   (5)
+#define DB_TYPE_UINT8   (6)
+#define DB_TYPE_UINT16  (7)
+#define DB_TYPE_UINT32  (8)
+#define DB_TYPE_UINT64  (9)
+#define DB_TYPE_DATA    (10)
+
 const struct _DatabaseTypeMapping kDatabaseTypeMapping[] = {
-	{ SQL_INTEGER, SQL_C_LONG, sizeof(Int32), "Int32" },
-	{ SQL_SMALLINT, SQL_C_SHORT, sizeof(Int16), "Int16" },
-	{ SQL_TINYINT, SQL_C_SHORT, sizeof(Int8), "Int8" },
-	{ SQL_BIGINT, SQL_C_SBIGINT, sizeof(Int64), "Int64" },
-	{ SQL_DECIMAL, SQL_C_CHAR, 0, "Char[]" },
-	{ SQL_NUMERIC, SQL_C_CHAR, 0, "Char[]" },
-	{ SQL_FLOAT, SQL_C_FLOAT, sizeof(Float32), "Float32" },
-	{ SQL_DOUBLE, SQL_C_DOUBLE, sizeof(Float64), "Float64" },
-	{ SQL_CHAR, SQL_C_CHAR, 0, "Char[]" },
-	{ SQL_VARCHAR, SQL_C_CHAR, 0, "Char[]" },
-	{ SQL_LONGVARCHAR, SQL_C_CHAR, 0, "Char[]" },
-	{ SQL_BINARY, SQL_C_BINARY, 0, "UInt8[]" },
-	{ SQL_VARBINARY, SQL_C_BINARY, 0, "UInt8[]" },
-	{ SQL_LONGVARBINARY, SQL_C_BINARY, 0, "UInt8[]" },
-	{ SQL_DATE, SQL_C_DATE, sizeof(SQL_DATE_STRUCT), "SQL_DATE_STRUCT" },
-	{ SQL_TIME, SQL_C_TIME, sizeof(SQL_TIME_STRUCT), "SQL_TIME_STRUCT" },
-	{ SQL_TIMESTAMP, SQL_C_TIMESTAMP, sizeof(SQL_TIMESTAMP_STRUCT), "SQL_TIMESTAMP_STRUCT" },
+	{	DB_TYPE_CHAR,		SQL_CHAR,		SQL_C_CHAR,		sizeof(Char),	"Char"		},
+	{	DB_TYPE_STRING,		SQL_VARCHAR,	SQL_C_CHAR,		0,				"CString"	},
+	{	DB_TYPE_INT8,		SQL_TINYINT,	SQL_C_STINYINT, sizeof(Int8),	"Int8"		},
+	{	DB_TYPE_INT16,		SQL_SMALLINT,	SQL_C_SSHORT,	sizeof(Int16),	"Int16"		},
+	{	DB_TYPE_INT32,		SQL_INTEGER,	SQL_C_SLONG,	sizeof(Int32),	"Int32"		},
+	{	DB_TYPE_INT64,		SQL_BIGINT,		SQL_C_SBIGINT,	sizeof(Int64),	"Int64"		},
+	{	DB_TYPE_UINT8,		SQL_TINYINT,	SQL_C_UTINYINT, sizeof(UInt8),	"UInt8"		},
+	{	DB_TYPE_UINT16,		SQL_SMALLINT,	SQL_C_USHORT,	sizeof(UInt16),	"UInt16"	},
+	{	DB_TYPE_UINT32,		SQL_INTEGER,	SQL_C_ULONG,	sizeof(UInt32),	"UInt32"	},
+	{	DB_TYPE_UINT64,		SQL_BIGINT,		SQL_C_UBIGINT,	sizeof(UInt64),	"UInt64"	},
+	{	DB_TYPE_DATA,		SQL_BINARY,		SQL_C_BINARY,	0,				"UInt8[]"	},
 };
 
-static inline SQLSMALLINT DatabaseTypeGetNativeType(
-	SQLSMALLINT SQLType
+static inline struct _DatabaseTypeMapping DatabaseTypeGetMapping(
+	Int32 Type
 ) {
 	for (Int32 Index = 0; Index < sizeof(kDatabaseTypeMapping) / sizeof(kDatabaseTypeMapping[0]); ++Index) {
-		if (kDatabaseTypeMapping[Index].SQLType == SQLType) {
-			return kDatabaseTypeMapping[Index].NativeType;
+		if (kDatabaseTypeMapping[Index].Type == Type) {
+			return kDatabaseTypeMapping[Index];
 		}
 	}
 
-	return 0;
+	struct _DatabaseTypeMapping kDatabaseTypeMappingNull = { 0 };
+	return kDatabaseTypeMappingNull;
 }
 
-static inline SQLSMALLINT DatabaseTypeGetNativeSize(
-	SQLSMALLINT SQLType
+static inline SQLSMALLINT DatabaseTypeGetNativeDirection(
+	Int32 Direction
 ) {
-	for (Int32 Index = 0; Index < sizeof(kDatabaseTypeMapping) / sizeof(kDatabaseTypeMapping[0]); ++Index) {
-		if (kDatabaseTypeMapping[Index].SQLType == SQLType) {
-			return kDatabaseTypeMapping[Index].NativeSize;
-		}
+	switch (Direction) {
+	case DB_PARAM_INPUT:	return SQL_PARAM_INPUT;
+	case DB_PARAM_OUTPUT:	return SQL_PARAM_OUTPUT;
+	default:				return SQL_PARAM_ERROR;
 	}
-
-	return 0;
-}
-
-static inline CString DatabaseTypeGetNativeName(
-	SQLSMALLINT SQLType
-) {
-	for (Int32 Index = 0; Index < sizeof(kDatabaseTypeMapping) / sizeof(kDatabaseTypeMapping[0]); ++Index) {
-		if (kDatabaseTypeMapping[Index].SQLType == SQLType) {
-			return kDatabaseTypeMapping[Index].NativeName;
-		}
-	}
-
-	return 0;
 }
 
 Void HandleDatabaseError(
@@ -317,18 +315,20 @@ DatabaseHandleRef DatabaseCallProcedureFetchInternal(
 	snprintf((Char*)Query, sizeof(Query), "{ CALL %s(", Procedure);
 	while (true) {
 		Int32 ParameterDirection = va_arg(Arguments, Int32);
-		if (ParameterDirection == SQL_END) break;
+		if (ParameterDirection == DB_PARAM_END) break;
 
 		Int32 ParameterType = va_arg(Arguments, Int32);
-		if (ParameterType == SQL_END) break;
+		if (ParameterType == DB_PARAM_END) break;
 
 		assert(ParameterCount < DATABASE_MAX_PROCEDURE_PARAMETER_COUNT);
 
-		ParameterDirections[ParameterCount] = ParameterDirection;
-		ParameterTypes[ParameterCount] = ParameterType;
+		struct _DatabaseTypeMapping ParameterMapping = DatabaseTypeGetMapping(ParameterType);
+
+		ParameterDirections[ParameterCount] = DatabaseTypeGetNativeDirection(ParameterDirection);
+		ParameterTypes[ParameterCount] = ParameterMapping.SQLType;
+		ParameterNativeTypes[ParameterCount] = ParameterMapping.NativeType;
+		ParameterLengths[ParameterCount] = ParameterMapping.NativeSize;
 		ParameterValues[ParameterCount] = va_arg(Arguments, SQLPOINTER);
-		ParameterLengths[ParameterCount] = DatabaseTypeGetNativeSize(ParameterType);
-		ParameterNativeTypes[ParameterCount] = DatabaseTypeGetNativeType(ParameterType);
 
 		if (ParameterLengths[ParameterCount] < 1) {
 			ParameterLengths[ParameterCount] = va_arg(Arguments, SQLULEN);
@@ -420,12 +420,18 @@ Bool DatabaseHandleReadNext(
 	Int32 ColumnIndex = 1;
 	while (true) {
 		Int32 DataType = va_arg(Arguments, Int32);
-		if (DataType == SQL_END) break;
+		if (DataType == DB_PARAM_END) break;
+
+		struct _DatabaseTypeMapping DataMapping = DatabaseTypeGetMapping(DataType);
 
 		SQLPOINTER Buffer = va_arg(Arguments, SQLPOINTER);
-		SQLLEN BufferLength = va_arg(Arguments, SQLLEN);
+		SQLLEN BufferLength = DataMapping.NativeSize;
 
-		ReturnCode = SQLGetData(Statement, ColumnIndex++, DataType, Buffer, BufferLength, NULL);
+		if (BufferLength < 1) {
+			BufferLength = va_arg(Arguments, SQLLEN);
+		}
+
+		ReturnCode = SQLGetData(Statement, ColumnIndex++, DataMapping.NativeType, Buffer, BufferLength, NULL);
 		if (!SQL_SUCCEEDED(ReturnCode)) {
 			HandleDatabaseError(SQL_HANDLE_STMT, Statement);
 			va_end(Arguments);
