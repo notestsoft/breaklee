@@ -38,19 +38,19 @@ RUNTIME_DATA_FILE_END
 
 RUNTIME_DATA_FILE_BEGIN(Stellar.xml)
 
-RUNTIME_DATA_TYPE_BEGIN(StellarForcePool, "Stellar.StellarForcePools.StellarForcePool", 1024)
+RUNTIME_DATA_TYPE_BEGIN(StellarForcePool, "Stellar.StellarForcePools.StellarForcePool", 25)
 	RUNTIME_DATA_PROPERTY(Int32, PoolID, "id")
-	RUNTIME_DATA_TYPE_BEGIN_CHILD(StellarForceEffect, "StellarForceEffect", 1024)
+	RUNTIME_DATA_TYPE_BEGIN_CHILD(StellarForceEffect, "StellarForceEffect", 12)
 		RUNTIME_DATA_PROPERTY(UInt32, Chance, "chance")
 		RUNTIME_DATA_PROPERTY(UInt32, ForceEffectID, "forceEffectId")
 		RUNTIME_DATA_PROPERTY(UInt32, Value, "value")
 		RUNTIME_DATA_PROPERTY(UInt32, ValueType, "valueType")
-	RUNTIME_DATA_TYPE_END_CHILD(StellarForceEffect, 1024)
+	RUNTIME_DATA_TYPE_END_CHILD(StellarForceEffect, 12)
 RUNTIME_DATA_TYPE_END(StellarForcePool)
 RUNTIME_DATA_TYPE_INDEX(StellarForcePool, Int32, PoolID)
 RUNTIME_DATA_TYPE_INDEX_CHILD(StellarForcePool, StellarForceEffect, UInt32, ForceEffectID)
 
-RUNTIME_DATA_TYPE_BEGIN(StellarForceValuePool, "Stellar.StellarForceValuePools.StellarForceValuePool", 1024)
+RUNTIME_DATA_TYPE_BEGIN(StellarForceValuePool, "Stellar.StellarForceValuePools.StellarForceValuePool", 5)
 	RUNTIME_DATA_PROPERTY(Int32, PoolID, "id")
 	RUNTIME_DATA_TYPE_BEGIN_CHILD(StellarForceValue, "StellarForceValue", 5)
 		RUNTIME_DATA_PROPERTY(UInt32, Chance, "chance")

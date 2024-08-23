@@ -74,12 +74,12 @@ CLIENT_PROCEDURE_BINDING(STELLAR_LINK_IMPRINT_SLOT) {
 		Packet->SlotIndex
 	);
 
-	RTStellarMasteryRollLink(
+	RTStellarMasteryRollLinkGrade(
 		Runtime,
 		StellarLineGrade,
 		MasterySlot
 	);	
-	RTStellarMasteryRollForce(
+	RTStellarMasteryRollForceEffect(
 		Runtime,
 		StellarLineGrade,
 		MasterySlot
@@ -91,10 +91,10 @@ CLIENT_PROCEDURE_BINDING(STELLAR_LINK_IMPRINT_SLOT) {
 	Response->GroupID = StellarGroup->GroupID;
 	Response->SlotLine = StellarLine->LineID;
 	Response->SlotIndex = Packet->SlotIndex;
-	Response->StellarLinkGrade = MasterySlot->StellarLinkGrade;
-	Response->StellarForceEffect = MasterySlot->StellarForceEffect;
-	Response->StellarForceValue = MasterySlot->StellarForceValue;
-	Response->StellarForceValueType = MasterySlot->StellarForceValueType;
+	Response->StellarLinkGrade = MasterySlot->LinkGrade;
+	Response->StellarForceEffect = MasterySlot->ForceEffect;
+	Response->StellarForceValue = MasterySlot->ForceValue;
+	Response->StellarForceValueType = MasterySlot->ForceValueType;
 	Response->ErrorCode = 0;
 
 	SocketSend(Socket, Connection, Response);
@@ -182,10 +182,10 @@ CLIENT_PROCEDURE_BINDING(STELLAR_LINK_TRANSFORM_LINK) {
 	Response->GroupID = MasterySlot->GroupID;
 	Response->SlotLine = MasterySlot->SlotLine;
 	Response->SlotIndex = MasterySlot->SlotIndex;
-	Response->StellarLinkGrade = MasterySlot->StellarLinkGrade;
-	Response->StellarForceEffect = MasterySlot->StellarForceEffect;
-	Response->StellarForceValue = MasterySlot->StellarForceValue;
-	Response->StellarForceValueType = MasterySlot->StellarForceValueType;
+	Response->StellarLinkGrade = MasterySlot->LinkGrade;
+	Response->StellarForceEffect = MasterySlot->ForceEffect;
+	Response->StellarForceValue = MasterySlot->ForceValue;
+	Response->StellarForceValueType = MasterySlot->ForceValueType;
 	Response->ErrorCode = 0;
 
 	SocketSend(Socket, Connection, Response);

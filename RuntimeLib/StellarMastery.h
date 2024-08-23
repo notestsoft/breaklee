@@ -25,10 +25,10 @@ struct _RTStellarMasterySlot {
     UInt8 GroupID;
     UInt8 SlotLine;
     UInt8 SlotIndex;
-    UInt8 StellarLinkGrade;
-    UInt32 StellarForceEffect; // See RuntimeLib/Force.h
-    UInt32 StellarForceValue;
-    UInt32 StellarForceValueType;
+    UInt8 LinkGrade;
+    UInt32 ForceEffect; // See RuntimeLib/Force.h
+    UInt32 ForceValue;
+    UInt32 ForceValueType;
 };
 
 struct _RTStellarMasteryInfo {
@@ -65,13 +65,13 @@ Void RTStellarMasterySetLink(
 	RTStellarMasterySlotRef MasterySlot
 );
 
-Void RTStellarMasteryRollLink(
+Void RTStellarMasteryRollLinkGrade(
     RTRuntimeRef Runtime,
     RTDataStellarLineGradeRef StellarLineGrade,
     RTStellarMasterySlotRef MasterySlot
 );
 
-Void RTStellarMasteryRollForce(
+Void RTStellarMasteryRollForceEffect(
     RTRuntimeRef Runtime,
     RTDataStellarLineGradeRef StellarLineGrade,
     RTStellarMasterySlotRef MasterySlot

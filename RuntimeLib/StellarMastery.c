@@ -79,21 +79,24 @@ RTStellarMasterySlotRef RTCharacterStellarMasteryAssertSlot(
 	UInt8 SlotIndex
 ) {
 	RTStellarMasterySlotRef OutSlot = RTCharacterStellarMasteryGetSlot(Character, GroupID, SlotLine, SlotIndex);
-	if (OutSlot == NULL) {
-		if (Character->Data.StellarMasteryInfo.Info.SlotCount < RUNTIME_CHARACTER_MAX_STELLAR_SLOT_COUNT) {
-			OutSlot = &Character->Data.StellarMasteryInfo.Slots[Character->Data.StellarMasteryInfo.Info.SlotCount];
-			
-			OutSlot->GroupID = GroupID;
-			OutSlot->SlotLine = SlotLine;
-			OutSlot->SlotIndex = SlotIndex;
-
-			OutSlot->StellarLinkGrade = 0;
-			OutSlot->StellarForceEffect = 0;
-			OutSlot->StellarForceValue = 0;
-
-			Character->Data.StellarMasteryInfo.Info.SlotCount++;
-		}
+	if (OutSlot != NULL) {
+		return OutSlot;
 	}
+
+	assert(Character->Data.StellarMasteryInfo.Info.SlotCount <= RUNTIME_CHARACTER_MAX_STELLAR_SLOT_COUNT);
+
+	OutSlot = &Character->Data.StellarMasteryInfo.Slots[Character->Data.StellarMasteryInfo.Info.SlotCount];
+			
+	OutSlot->GroupID = GroupID;
+	OutSlot->SlotLine = SlotLine;
+	OutSlot->SlotIndex = SlotIndex;
+
+	OutSlot->LinkGrade = 0;
+	OutSlot->ForceEffect = 0;
+	OutSlot->ForceValue = 0;
+
+	Character->Data.StellarMasteryInfo.Info.SlotCount++;
+
 	return OutSlot;
 }
 
@@ -101,7 +104,7 @@ Void RTStellarMasterySetLink(
 	UInt8 LinkGrade,
 	RTStellarMasterySlotRef MasterySlot
 ) {
-	MasterySlot->StellarLinkGrade = LinkGrade;
+	MasterySlot->LinkGrade = LinkGrade;
 }
 
 
@@ -117,7 +120,7 @@ static inline Int32 GetStellarLinkChance(const RTDataStellarLinkRef StellarLink)
 	return StellarLink->Chance;
 }
 
-Void RTStellarMasteryRollForce(
+Void RTStellarMasteryRollForceEffect(
 	RTRuntimeRef Runtime,
 	RTDataStellarLineGradeRef StellarLineGrade,
 	RTStellarMasterySlotRef MasterySlot
@@ -141,12 +144,12 @@ Void RTStellarMasteryRollForce(
 		StellarForceEffect
 	);
 	
-	MasterySlot->StellarForceEffect = StellarForceEffect->ForceEffectID;
-	MasterySlot->StellarForceValue = StellarForceEffect->Value;
-	MasterySlot->StellarForceValueType = StellarForceEffect->ValueType;
+	MasterySlot->ForceEffect = StellarForceEffect->ForceEffectID;
+	MasterySlot->ForceValue = StellarForceEffect->Value;
+	MasterySlot->ForceValueType = StellarForceEffect->ValueType;
 }
 
-Void RTStellarMasteryRollLink(
+Void RTStellarMasteryRollLinkGrade(
 	RTRuntimeRef Runtime,
 	RTDataStellarLineGradeRef StellarLineGrade,
 	RTStellarMasterySlotRef MasterySlot
@@ -162,5 +165,5 @@ Void RTStellarMasteryRollLink(
 		StellarLink
 	);
 
-	MasterySlot->StellarLinkGrade = StellarLink->Grade;
+	MasterySlot->LinkGrade = StellarLink->Grade;
 }
