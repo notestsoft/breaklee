@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Random sum = 1000000 -->
+<Stellar>
+	<StellarForcePools>
+		<StellarForcePool id="201">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="1" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="1" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="1" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="4" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="4" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="5" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="10" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="155" value="4" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="98" value="1" valueType="2"/>
+			<StellarForceEffect chance="2000" forceEffectId="73" value="1" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="163" value="2" valueType="1"/>
+			<StellarForceEffect chance="35000" forceEffectId="124" value="1" valueType="1"/>
+		</StellarForcePool>
+		<StellarForcePool id="202">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="2" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="2" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="2" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="6" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="6" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="7" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="15" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="155" value="6" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="98" value="2" valueType="2"/>
+			<StellarForceEffect chance="2000" forceEffectId="73" value="2" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="163" value="3" valueType="1"/>
+			<StellarForceEffect chance="35000" forceEffectId="124" value="2" valueType="1"/>
+		</StellarForcePool>
+		<StellarForcePool id="203">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="3" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="3" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="3" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="8" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="8" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="9" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="20" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="155" value="9" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="98" value="3" valueType="2"/>
+			<StellarForceEffect chance="2000" forceEffectId="73" value="3" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="163" value="5" valueType="1"/>
+			<StellarForceEffect chance="35000" forceEffectId="124" value="3" valueType="1"/>
+		</StellarForcePool>
+		<StellarForcePool id="204">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="4" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="4" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="4" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="10" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="10" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="11" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="30" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="155" value="9" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="98" value="4" valueType="2"/>
+			<StellarForceEffect chance="2000" forceEffectId="73" value="4" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="163" value="8" valueType="1"/>
+			<StellarForceEffect chance="35000" forceEffectId="124" value="5" valueType="1"/>
+		</StellarForcePool>
+		<StellarForcePool id="205">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="5" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="5" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="5" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="12" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="12" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="14" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="50" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="155" value="16" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="98" value="5" valueType="2"/>
+			<StellarForceEffect chance="2000" forceEffectId="73" value="5" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="163" value="15" valueType="1"/>
+			<StellarForceEffect chance="35000" forceEffectId="124" value="10" valueType="1"/>
+		</StellarForcePool>
+		<StellarForcePool id="206">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="1" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="1" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="1" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="4" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="4" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="5" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="20" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="155" value="4" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="150" value="1" valueType="2"/>
+			<StellarForceEffect chance="2000" forceEffectId="132" value="1" valueType="2"/>
+			<StellarForceEffect chance="35000" forceEffectId="157" value="2" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="158" value="1" valueType="2"/>
+		</StellarForcePool>
+		<StellarForcePool id="207">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="2" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="2" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="2" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="6" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="6" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="7" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="25" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="155" value="6" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="150" value="2" valueType="2"/>
+			<StellarForceEffect chance="2000" forceEffectId="132" value="2" valueType="2"/>
+			<StellarForceEffect chance="35000" forceEffectId="157" value="3" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="158" value="1" valueType="2"/>
+		</StellarForcePool>
+		<StellarForcePool id="208">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="3" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="3" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="3" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="8" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="8" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="9" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="35" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="155" value="8" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="150" value="3" valueType="2"/>
+			<StellarForceEffect chance="2000" forceEffectId="132" value="3" valueType="2"/>
+			<StellarForceEffect chance="35000" forceEffectId="157" value="6" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="158" value="2" valueType="2"/>
+		</StellarForcePool>
+		<StellarForcePool id="209">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="4" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="4" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="4" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="10" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="10" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="11" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="50" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="155" value="11" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="150" value="4" valueType="2"/>
+			<StellarForceEffect chance="2000" forceEffectId="132" value="4" valueType="2"/>
+			<StellarForceEffect chance="35000" forceEffectId="157" value="6" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="158" value="4" valueType="2"/>
+		</StellarForcePool>
+		<StellarForcePool id="210">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="5" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="5" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="5" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="12" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="12" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="14" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="85" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="155" value="20" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="150" value="5" valueType="2"/>
+			<StellarForceEffect chance="2000" forceEffectId="132" value="5" valueType="2"/>
+			<StellarForceEffect chance="35000" forceEffectId="157" value="10" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="158" value="7" valueType="2"/>
+		</StellarForcePool>
+		<StellarForcePool id="211">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="1" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="1" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="1" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="6" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="6" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="4" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="20" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="59" value="4" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="98" value="1" valueType="2"/>
+			<StellarForceEffect chance="2000" forceEffectId="132" value="1" valueType="2"/>
+			<StellarForceEffect chance="35000" forceEffectId="163" value="2" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="58" value="4" valueType="1"/>
+		</StellarForcePool>
+		<StellarForcePool id="212">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="2" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="2" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="2" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="8" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="8" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="5" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="30" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="59" value="5" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="98" value="2" valueType="2"/>
+			<StellarForceEffect chance="2000" forceEffectId="132" value="2" valueType="2"/>
+			<StellarForceEffect chance="35000" forceEffectId="163" value="3" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="58" value="8" valueType="1"/>
+		</StellarForcePool>
+		<StellarForcePool id="213">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="3" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="3" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="3" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="10" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="10" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="6" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="40" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="59" value="8" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="98" value="3" valueType="2"/>
+			<StellarForceEffect chance="2000" forceEffectId="132" value="3" valueType="2"/>
+			<StellarForceEffect chance="35000" forceEffectId="163" value="5" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="58" value="12" valueType="1"/>
+		</StellarForcePool>
+		<StellarForcePool id="214">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="4" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="4" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="4" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="12" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="12" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="8" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="55" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="59" value="15" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="98" value="4" valueType="2"/>
+			<StellarForceEffect chance="2000" forceEffectId="132" value="4" valueType="2"/>
+			<StellarForceEffect chance="35000" forceEffectId="163" value="7" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="58" value="20" valueType="1"/>
+		</StellarForcePool>
+		<StellarForcePool id="215">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="5" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="5" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="5" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="14" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="14" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="9" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="100" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="59" value="25" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="98" value="6" valueType="2"/>
+			<StellarForceEffect chance="2000" forceEffectId="132" value="5" valueType="2"/>
+			<StellarForceEffect chance="35000" forceEffectId="163" value="13" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="58" value="40" valueType="1"/>
+		</StellarForcePool> 
+		<StellarForcePool id="216">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="1" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="1" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="1" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="8" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="8" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="4" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="30" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="59" value="4" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="150" value="1" valueType="2"/>
+			<StellarForceEffect chance="35000" forceEffectId="157" value="2" valueType="1"/>
+			<StellarForceEffect chance="2000" forceEffectId="139" value="1" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="80" value="2" valueType="1"/>
+		</StellarForcePool>
+		<StellarForcePool id="217">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="2" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="2" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="2" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="10" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="10" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="6" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="35" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="59" value="6" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="150" value="2" valueType="2"/>
+			<StellarForceEffect chance="35000" forceEffectId="157" value="3" valueType="1"/>
+			<StellarForceEffect chance="2000" forceEffectId="139" value="2" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="80" value="3" valueType="1"/>
+		</StellarForcePool>
+		<StellarForcePool id="218">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="3" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="3" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="3" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="12" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="12" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="8" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="45" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="59" value="9" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="150" value="3" valueType="2"/>
+			<StellarForceEffect chance="35000" forceEffectId="157" value="4" valueType="1"/>
+			<StellarForceEffect chance="2000" forceEffectId="139" value="3" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="80" value="4" valueType="1"/>
+		</StellarForcePool>
+		<StellarForcePool id="219">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="4" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="4" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="4" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="14" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="14" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="8" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="60" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="59" value="16" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="150" value="4" valueType="2"/>
+			<StellarForceEffect chance="35000" forceEffectId="157" value="5" valueType="1"/>
+			<StellarForceEffect chance="2000" forceEffectId="139" value="4" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="80" value="5" valueType="1"/>
+		</StellarForcePool>
+		<StellarForcePool id="220">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="5" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="5" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="5" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="16" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="16" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="10" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="115" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="59" value="30" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="150" value="5" valueType="2"/>
+			<StellarForceEffect chance="35000" forceEffectId="157" value="8" valueType="1"/>
+			<StellarForceEffect chance="2000" forceEffectId="139" value="6" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="80" value="16" valueType="1"/>
+		</StellarForcePool>
+		<StellarForcePool id="221">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="1" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="1" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="1" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="12" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="12" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="5" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="35" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="59" value="6" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="98" value="1" valueType="2"/>
+			<StellarForceEffect chance="35000" forceEffectId="157" value="2" valueType="1"/>
+			<StellarForceEffect chance="2000" forceEffectId="139" value="1" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="173" value="1" valueType="2"/>
+		</StellarForcePool>
+		<StellarForcePool id="222">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="2" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="2" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="2" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="14" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="14" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="8" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="40" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="59" value="9" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="98" value="2" valueType="2"/>
+			<StellarForceEffect chance="35000" forceEffectId="157" value="3" valueType="1"/>
+			<StellarForceEffect chance="2000" forceEffectId="139" value="2" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="173" value="2" valueType="2"/>
+		</StellarForcePool>
+		<StellarForcePool id="223">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="3" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="3" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="3" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="16" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="16" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="10" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="50" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="59" value="10" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="98" value="3" valueType="2"/>
+			<StellarForceEffect chance="35000" forceEffectId="157" value="5" valueType="1"/>
+			<StellarForceEffect chance="2000" forceEffectId="139" value="3" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="173" value="3" valueType="2"/>
+		</StellarForcePool>
+		<StellarForcePool id="224">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="4" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="4" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="4" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="18" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="18" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="8" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="65" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="59" value="18" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="98" value="4" valueType="2"/>
+			<StellarForceEffect chance="35000" forceEffectId="157" value="7" valueType="1"/>
+			<StellarForceEffect chance="2000" forceEffectId="139" value="5" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="173" value="5" valueType="2"/>
+		</StellarForcePool>
+		<StellarForcePool id="225">
+			<StellarForceEffect chance="5000" forceEffectId="45" value="5" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="46" value="5" valueType="1"/>
+			<StellarForceEffect chance="5000" forceEffectId="47" value="5" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="72" value="20" valueType="1"/>
+			<StellarForceEffect chance="260000" forceEffectId="71" value="20" valueType="1"/>
+			<StellarForceEffect chance="247500" forceEffectId="156" value="9" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="1" value="125" valueType="1"/>
+			<StellarForceEffect chance="40000" forceEffectId="59" value="35" valueType="1"/>
+			<StellarForceEffect chance="100000" forceEffectId="98" value="7" valueType="2"/>
+			<StellarForceEffect chance="35000" forceEffectId="157" value="20" valueType="1"/>
+			<StellarForceEffect chance="2000" forceEffectId="139" value="8" valueType="1"/>
+			<StellarForceEffect chance="500" forceEffectId="173" value="7" valueType="2"/>
+		</StellarForcePool>
+	</StellarForcePools>
+	<StellarForceValuePools>
+		<StellarForceValuePool id="1">
+			<StellarForceValue chance="444000" stellarForcePoolId="201" />
+			<StellarForceValue chance="450000" stellarForcePoolId="202" />
+			<StellarForceValue chance="100000" stellarForcePoolId="203" />
+			<StellarForceValue chance="5000" stellarForcePoolId="204" />
+			<StellarForceValue chance="1000" stellarForcePoolId="205" />
+		</StellarForceValuePool>
+		<StellarForceValuePool id="2">
+			<StellarForceValue chance="338000" stellarForcePoolId="206" />
+			<StellarForceValue chance="500000" stellarForcePoolId="207" />
+			<StellarForceValue chance="150000" stellarForcePoolId="208" />
+			<StellarForceValue chance="10000" stellarForcePoolId="209" />
+			<StellarForceValue chance="2000" stellarForcePoolId="210" />
+		</StellarForceValuePool>
+		<StellarForceValuePool id="3">
+			<StellarForceValue chance="260000" stellarForcePoolId="211" />
+			<StellarForceValue chance="520000" stellarForcePoolId="212" />
+			<StellarForceValue chance="200000" stellarForcePoolId="213" />
+			<StellarForceValue chance="15000" stellarForcePoolId="214" />
+			<StellarForceValue chance="5000" stellarForcePoolId="215" />
+		</StellarForceValuePool>
+		<StellarForceValuePool id="4">
+			<StellarForceValue chance="150000" stellarForcePoolId="216" />
+			<StellarForceValue chance="300000" stellarForcePoolId="217" />
+			<StellarForceValue chance="430000" stellarForcePoolId="218" />
+			<StellarForceValue chance="80000" stellarForcePoolId="219" />
+			<StellarForceValue chance="40000" stellarForcePoolId="220" />
+		</StellarForceValuePool>
+		<StellarForceValuePool id="5">
+			<StellarForceValue chance="50000" stellarForcePoolId="221" />
+			<StellarForceValue chance="200000" stellarForcePoolId="222" />
+			<StellarForceValue chance="500000" stellarForcePoolId="223" />
+			<StellarForceValue chance="180000" stellarForcePoolId="224" />
+			<StellarForceValue chance="70000" stellarForcePoolId="225" />
+		</StellarForceValuePool>
+	</StellarForceValuePools>
+	<StellarLinkPools>
+		<StellarLinkPool id="1">
+			<StellarLink chance="380000" grade="1" />
+			<StellarLink chance="370000" grade="2" />
+			<StellarLink chance="200000" grade="3" />
+			<StellarLink chance="40000" grade="4" />
+			<StellarLink chance="10000" grade="5" />
+		</StellarLinkPool>		
+		<StellarLinkPool id="2">
+			<StellarLink chance="330000" grade="1" />
+			<StellarLink chance="320000" grade="2" />
+			<StellarLink chance="250000" grade="3" />
+			<StellarLink chance="85000" grade="4" />
+			<StellarLink chance="15000" grade="5" />
+		</StellarLinkPool>		
+		<StellarLinkPool id="3">
+			<StellarLink chance="270000" grade="1" />
+			<StellarLink chance="300000" grade="2" />
+			<StellarLink chance="300000" grade="3" />
+			<StellarLink chance="110000" grade="4" />
+			<StellarLink chance="20000" grade="5" />
+		</StellarLinkPool>		
+		<StellarLinkPool id="4">
+			<StellarLink chance="100000" grade="1" />
+			<StellarLink chance="280000" grade="2" />
+			<StellarLink chance="360000" grade="3" />
+			<StellarLink chance="230000" grade="4" />
+			<StellarLink chance="30000" grade="5" />
+		</StellarLinkPool>		
+		<StellarLinkPool id="5">
+			<StellarLink chance="250000" grade="2" />
+			<StellarLink chance="380000" grade="3" />
+			<StellarLink chance="310000" grade="4" />
+			<StellarLink chance="60000" grade="5" />
+		</StellarLinkPool>
+	</StellarLinkPools>
+</Stellar>
