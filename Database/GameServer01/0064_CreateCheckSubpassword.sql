@@ -5,23 +5,23 @@ CREATE PROCEDURE CheckSubpassword(
 BEGIN
     DECLARE TempIsSubpasswordSet BOOLEAN DEFAULT FALSE;
     DECLARE TempIsVerifiedSession BOOLEAN DEFAULT FALSE;
-    DECLARE TempSubpassword VARCHAR(11);
-    DECLARE TempSessionTimeout BIGINT;
+    DECLARE TempStoredPassword VARCHAR(11);
+    DECLARE TempRequestTimeout BIGINT UNSIGNED;
 
     -- Initialize the output parameter
     SET OutIsVerificationRequired = 0;
 
-    -- Fetch the subpassword and session timeout for the account
-    SELECT CharacterPassword, SessionTimeout
-    INTO TempSubpassword, TempSessionTimeout
-    FROM Accounts
-    WHERE AccountID = InAccountID;
+    -- Fetch the subpassword and request timeout for the account
+    SELECT Password, RequestTimeout
+    INTO TempStoredPassword, TempRequestTimeout
+    FROM Subpasswords
+    WHERE AccountID = InAccountID AND Type = 1; -- Assuming Type 1 for character subpasswords
 
     -- Check if a subpassword is set
-    SET TempIsSubpasswordSet = CHAR_LENGTH(TempSubpassword) > 0;
+    SET TempIsSubpasswordSet = CHAR_LENGTH(TempStoredPassword) > 0;
 
-    -- Check if the session is still valid
-    SET TempIsVerifiedSession = UNIX_TIMESTAMP() < TempSessionTimeout;
+    -- Check if the request timeout is still valid
+    SET TempIsVerifiedSession = UNIX_TIMESTAMP() < TempRequestTimeout;
 
     -- Determine if verification is required
     IF TempIsSubpasswordSet AND NOT TempIsVerifiedSession THEN

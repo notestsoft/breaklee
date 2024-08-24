@@ -76,22 +76,17 @@ IPC_PROCEDURE_BINDING(D2W, VERIFY_CREDENTIALS_SUBPASSWORD) {
 CLIENT_PROCEDURE_BINDING(VERIFY_SUBPASSWORD) {
     if (!(Client->Flags & CLIENT_FLAGS_CHARACTER_INDEX_LOADED) || Client->AccountID < 1) goto error;
     
-	if (Packet->Type == CHARACTER_SUBPASSWORD_TYPE_CHARACTER) {
-		IPC_W2D_DATA_VERIFY_SUBPASSWORD* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2D, VERIFY_SUBPASSWORD);
-		Request->Header.SourceConnectionID = Connection->ID;
-		Request->Header.Source = Server->IPCSocket->NodeID;
-		Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
-		Request->Header.Target.Type = IPC_TYPE_MASTERDB;
-		Request->AccountID = Client->AccountID;
-		Request->CharacterID = Client->CharacterDatabaseID;
-		Request->Type = Packet->Type;
-		Request->ExpirationInHours = Packet->ExpirationInHours;
-		memcpy(Request->Password, Packet->Password, sizeof(Packet->Password));
-		IPCSocketUnicast(Server->IPCSocket, Request);
-	}
-	else {
-		goto error;
-	}
+	IPC_W2D_DATA_VERIFY_SUBPASSWORD* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2D, VERIFY_SUBPASSWORD);
+	Request->Header.SourceConnectionID = Connection->ID;
+	Request->Header.Source = Server->IPCSocket->NodeID;
+	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+	Request->Header.Target.Type = IPC_TYPE_MASTERDB;
+	Request->AccountID = Client->AccountID;
+	Request->Type = Packet->Type;
+	Request->ExpirationInHours = Packet->ExpirationInHours;
+	Request->IsLocked = Packet->IsLocked;
+	memcpy(Request->Password, Packet->Password, sizeof(Packet->Password));
+	IPCSocketUnicast(Server->IPCSocket, Request);
 
 	return;
 
@@ -105,6 +100,7 @@ IPC_PROCEDURE_BINDING(D2W, VERIFY_SUBPASSWORD) {
 	S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, VERIFY_SUBPASSWORD);
 	Response->Success = Packet->Success;
 	Response->FailureCount = Packet->FailureCount;
+	Response->IsLocked = Packet->IsLocked;
 	Response->Type = Packet->Type;
 	SocketSend(Context->ClientSocket, ClientConnection, Response);
 }

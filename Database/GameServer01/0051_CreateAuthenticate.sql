@@ -47,7 +47,6 @@ BEGIN
         INSERT INTO Warehouse (AccountID, SlotData) VALUES (InAccountID, '');
         INSERT INTO AnimaMastery (AccountID, PresetData, CategoryData) VALUES (InAccountID, '', '');
         INSERT INTO Settings (AccountID, HotKeysData, OptionsData, MacrosData) VALUES (InAccountID, '', '', '');
-        INSERT INTO Subpasswords (AccountID) VALUES (InAccountID);
 
         -- Re-select the newly inserted account details
         SELECT 
@@ -91,14 +90,19 @@ BEGIN
         SET OutIsPremium = (IF(@PremiumCount > 0, 1, 0));
     END IF;
 
+    SET OutIsSubpasswordSet = 0;
+    
     -- Check if a subpassword is set
     IF OutSuccess THEN
-        SELECT CharacterPassword
+        SELECT Password
         INTO TempSubpassword
-        FROM Accounts
-        WHERE AccountID = InAccountID;
+        FROM Subpasswords
+        WHERE AccountID = InAccountID AND Type = 1
+        LIMIT 1;
 
-        SET OutIsSubpasswordSet = (CHAR_LENGTH(TempSubpassword) > 0);
+        IF TempSubpassword IS NOT NULL THEN
+            SET OutIsSubpasswordSet = (CHAR_LENGTH(TempSubpassword) > 0);
+        END IF;
     END IF;
 
     -- Commit or rollback based on success

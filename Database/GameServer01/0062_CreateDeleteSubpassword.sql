@@ -1,39 +1,31 @@
 CREATE PROCEDURE DeleteSubpassword(
     IN InAccountID INT,
     IN InType INT,
-    OUT OutSuccess TINYINT
+    OUT OutSuccess INT,
+    OUT OutType INT
 )
 BEGIN
     DECLARE TempIsSubpasswordSet BOOLEAN DEFAULT FALSE;
 
-    -- Initialize the output parameter
+    -- Initialize output parameters
     SET OutSuccess = 0;
+    SET OutType = InType;
 
-    -- Only proceed if the type is CHARACTER_SUBPASSWORD_TYPE_CHARACTER (assumed to be 1)
-    IF InType = 1 THEN
-        -- Fetch the stored subpassword information for the account
-        SELECT CHAR_LENGTH(CharacterPassword) > 0 INTO TempIsSubpasswordSet
-        FROM Accounts
-        WHERE AccountID = InAccountID;
+    -- Fetch the stored subpassword information for the account and type
+    SELECT CHAR_LENGTH(Password) > 0 INTO TempIsSubpasswordSet
+    FROM Subpasswords
+    WHERE AccountID = InAccountID AND Type = InType;
 
-        -- Check if subpassword is set, deletion is verified, and session is not expired
-        IF TempIsSubpasswordSet THEN
-            -- Clear the subpassword, question, and answer
-            UPDATE Accounts
-            SET CharacterPassword = NULL,
-                CharacterQuestion = 0,
-                CharacterAnswer = NULL,
-                UpdatedAt = UNIX_TIMESTAMP()
-            WHERE AccountID = InAccountID;
+    -- Check if the subpassword is set
+    IF TempIsSubpasswordSet THEN
+        -- Delete the subpassword, question, and answer
+        DELETE FROM Subpasswords
+        WHERE AccountID = InAccountID AND Type = InType;
 
-            -- Set the success to 1 to indicate success
-            SET OutSuccess = 1;
-        ELSE
-            -- Conditions not met, success remains 0
-            SET OutSuccess = 0;
-        END IF;
+        -- Set success to 1 indicating success
+        SET OutSuccess = 1;
     ELSE
-        -- Unsupported type, success remains 0
+        -- Subpassword not set, success remains 0
         SET OutSuccess = 0;
     END IF;
 END;

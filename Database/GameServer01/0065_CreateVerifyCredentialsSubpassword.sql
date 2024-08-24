@@ -4,20 +4,24 @@ CREATE PROCEDURE VerifyCredentialsSubpassword(
     OUT OutSuccess TINYINT
 )
 BEGIN
-    DECLARE TempIsSubpasswordSet BOOLEAN DEFAULT FALSE;
     DECLARE TempStoredPassword VARCHAR(11);
+    DECLARE TempIsSubpasswordSet BOOLEAN DEFAULT FALSE;
 
+    -- Initialize output parameter
     SET OutSuccess = 0;
 
-    SELECT CharacterPassword INTO TempStoredPassword
-    FROM Accounts
-    WHERE AccountID = InAccountID;
+    -- Fetch the stored password for the account and type (assumed to be type 1 for character subpasswords)
+    SELECT Password INTO TempStoredPassword
+    FROM Subpasswords
+    WHERE AccountID = InAccountID AND Type = 1; -- Assuming Type 1 is for character subpasswords
 
-    SET TempIsSubpasswordSet = (TempStoredPassword IS NOT NULL AND TempStoredPassword != '');
+    -- Check if the password is set and not empty
+    SET TempIsSubpasswordSet = CHAR_LENGTH(TempStoredPassword) > 0;
 
-    IF TempIsSubpasswordSet = FALSE OR InPassword != TempStoredPassword THEN
-        SET OutSuccess = 0;
+    -- Verify the provided password against the stored password
+    IF TempIsSubpasswordSet AND InPassword = TempStoredPassword THEN
+        SET OutSuccess = 1; -- Password is correct
     ELSE
-        SET OutSuccess = 1;
+        SET OutSuccess = 0; -- Password is incorrect or not set
     END IF;
 END;

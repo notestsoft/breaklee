@@ -2264,18 +2264,17 @@ CLIENT_PROTOCOL(S2C, NFY_EVENT_LIST, DEFAULT, 1008,
 
 CLIENT_PROTOCOL(C2S, CREATE_SUBPASSWORD, DEFAULT, 1030,
     Char Password[MAX_SUBPASSWORD_LENGTH + 1];
-    UInt32 Type;
-    UInt32 Question;
-    Char Answer[MAX_SUBPASSWORD_ANSWER_LENGTH + 1];
-    UInt8 Unknown2[111];
-    UInt32 Mode;
+    Int32 Type;
+    Int32 Question;
+    Char Answer[MAX_SUBPASSWORD_ANSWER_LENGTH];
+    Int32 IsChange;
 )
 
 CLIENT_PROTOCOL(S2C, CREATE_SUBPASSWORD, DEFAULT, 1030,
-    UInt32 Success;
-    UInt32 Mode;
-    UInt32 Type;
-    UInt32 Unknown1;
+    Int32 Success;
+    Int32 IsChange;
+    Int32 Type;
+    Int32 IsLocked;
 )
 
 CLIENT_PROTOCOL(C2S, CHECK_SUBPASSWORD, DEFAULT, 1032,
@@ -2287,37 +2286,37 @@ CLIENT_PROTOCOL(S2C, CHECK_SUBPASSWORD, DEFAULT, 1032,
 
 CLIENT_PROTOCOL(C2S, VERIFY_SUBPASSWORD, DEFAULT, 1034,
     Char Password[MAX_SUBPASSWORD_LENGTH + 1];
-    UInt32 Type;
-    UInt32 ExpirationInHours;
-    UInt8 Unknown1;
+    Int32 Type;
+    Int8 ExpirationInHours;
+    Int32 IsLocked;
 )
 
 CLIENT_PROTOCOL(S2C, VERIFY_SUBPASSWORD, DEFAULT, 1034,
-    UInt32 Success;
-    UInt8 FailureCount;
-    UInt32 Unknown1;
-    UInt32 Type;
+    Int32 Success;
+    Int8 FailureCount;
+    Int32 IsLocked;
+    Int32 Type;
 )
 
 CLIENT_PROTOCOL(C2S, VERIFY_DELETE_SUBPASSWORD, DEFAULT, 1040,
-    UInt32 Type;
+    Int32 Type;
     UInt8 Unknown1[65];
     Char Password[MAX_SUBPASSWORD_LENGTH + 1];
 )
 
 CLIENT_PROTOCOL(S2C, VERIFY_DELETE_SUBPASSWORD, DEFAULT, 1040,
-    UInt32 Success;
-    UInt8 FailureCount;
-    UInt32 Type;
+    Int32 Success;
+    Int8 FailureCount;
+    Int32 Type;
 )
 
 CLIENT_PROTOCOL(C2S, DELETE_SUBPASSWORD, DEFAULT, 1042,
-    UInt32 Type;
+    Int32 Type;
 )
 
 CLIENT_PROTOCOL(S2C, DELETE_SUBPASSWORD, DEFAULT, 1042,
-    UInt32 Success;
-    UInt32 Type;
+    Int32 Success;
+    Int32 Type;
 )
 
 CLIENT_PROTOCOL_ENUM(
@@ -2688,7 +2687,7 @@ CLIENT_PROTOCOL(C2S, VERIFY_CREDENTIALS_SUBPASSWORD, DEFAULT, 2160,
 )
 
 CLIENT_PROTOCOL(S2C, VERIFY_CREDENTIALS_SUBPASSWORD, DEFAULT, 2160,
-    UInt8 Success;
+    Int8 Success;
     UInt32 Unknown1;
 )
 

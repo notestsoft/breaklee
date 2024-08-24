@@ -4,10 +4,10 @@ CREATE PROCEDURE GetCharacter (
 BEGIN
     -- Select and return the required character information directly
     SELECT 
-        IF(Subpasswords.WarehousePassword IS NOT NULL, 1, 0) AS IsWarehousePasswordSet,
-        IF(Subpasswords.EquipmentPassword IS NOT NULL, 1, 0) AS IsInventoryPasswordSet,
-        Subpasswords.WarehouseLocked AS IsWarehouseLocked,
-        Subpasswords.EquipmentLocked AS IsInventoryLocked,
+        IF(MAX(CASE WHEN SubpasswordsWarehouse.Password IS NOT NULL THEN 1 ELSE 0 END), 1, 0) AS IsWarehousePasswordSet,
+        IF(MAX(CASE WHEN SubpasswordsInventory.Password IS NOT NULL THEN 1 ELSE 0 END), 1, 0) AS IsInventoryPasswordSet,
+        IF(MAX(CASE WHEN SubpasswordsWarehouse.Locked IS NOT NULL THEN SubpasswordsWarehouse.Locked ELSE 0 END), 1, 0) AS IsWarehouseLocked,
+        IF(MAX(CASE WHEN SubpasswordsInventory.Locked IS NOT NULL THEN SubpasswordsInventory.Locked ELSE 0 END), 1, 0) AS IsInventoryLocked,
         Characters.WorldIndex,
         Characters.DungeonIndex,
         Characters.X AS PositionX,
@@ -259,8 +259,9 @@ BEGIN
         AnimaMastery.PresetData,
         AnimaMastery.CategoryData
     FROM Characters
-    LEFT JOIN Accounts ON Accounts.AccountID = Characters.AccountID
-    LEFT JOIN Subpasswords ON Characters.AccountID = Subpasswords.AccountID
+    LEFT JOIN Accounts ON Characters.AccountID = Accounts.AccountID
+    LEFT JOIN Subpasswords SubpasswordsWarehouse ON Characters.AccountID = SubpasswordsWarehouse.AccountID AND SubpasswordsWarehouse.Type = 2
+    LEFT JOIN Subpasswords SubpasswordsInventory ON Characters.AccountID = SubpasswordsInventory.AccountID AND SubpasswordsInventory.Type = 3
     LEFT JOIN Equipment ON Characters.CharacterID = Equipment.CharacterID
     LEFT JOIN Inventory ON Characters.CharacterID = Inventory.CharacterID
     LEFT JOIN VehicleInventory ON Characters.CharacterID = VehicleInventory.CharacterID
@@ -287,21 +288,21 @@ BEGIN
     LEFT JOIN HonorMedal ON Characters.CharacterID = HonorMedal.CharacterID
     LEFT JOIN ForceWing ON Characters.CharacterID = ForceWing.CharacterID
     LEFT JOIN Giftbox ON Characters.CharacterID = Giftbox.CharacterID
-    LEFT JOIN Collection ON Characters.CharacterID = Collection.CharacterID
+    LEFT JOIN Collection ON Characters.AccountID = Collection.AccountID
     LEFT JOIN Transform ON Characters.CharacterID = Transform.CharacterID
     LEFT JOIN SecretShop ON Characters.CharacterID = SecretShop.CharacterID
     LEFT JOIN AuraMastery ON Characters.CharacterID = AuraMastery.CharacterID
     LEFT JOIN SkillTranscendence ON Characters.CharacterID = SkillTranscendence.CharacterID
     LEFT JOIN DamageBooster ON Characters.CharacterID = DamageBooster.CharacterID
     LEFT JOIN ResearchSupport ON Characters.AccountID = ResearchSupport.AccountID
-    LEFT JOIN StellarMastery ON Characters.AccountID = StellarMastery.AccountID
+    LEFT JOIN StellarMastery ON Characters.CharacterID = StellarMastery.CharacterID
     LEFT JOIN MythMastery ON Characters.CharacterID = MythMastery.CharacterID
     LEFT JOIN NewbieSupport ON Characters.CharacterID = NewbieSupport.CharacterID
     LEFT JOIN EventPass ON Characters.AccountID = EventPass.AccountID
     LEFT JOIN CostumeWarehouse ON Characters.AccountID = CostumeWarehouse.AccountID
     LEFT JOIN Costume ON Characters.CharacterID = Costume.CharacterID
     LEFT JOIN Exploration ON Characters.CharacterID = Exploration.CharacterID
-    LEFT JOIN AnimaMastery ON Characters.CharacterID = AnimaMastery.CharacterID
+    LEFT JOIN AnimaMastery ON Characters.AccountID = AnimaMastery.AccountID
     LEFT JOIN Preset ON Characters.CharacterID = Preset.CharacterID
     WHERE Characters.CharacterID = InCharacterID;
 END;

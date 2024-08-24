@@ -49,8 +49,6 @@ AddMigration 0048_CreateTemporaryInventory.sql
 AddMigration 0049_CreateRecovery.sql
 AddMigration 0050_CreateWarehouse.sql
 AddMigration 0051_CreateAuthenticate.sql
-AddMigration 0052_CreateUpdateAccountSession.sql
-AddMigration 0053_CreateUpdateAccountCharacterPassword.sql
 AddMigration 0054_CreateDeleteCharacter.sql
 AddMigration 0055_CreateGetCharacterInfo.sql
 AddMigration 0056_CreateGetPremiumService.sql

@@ -6,6 +6,9 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
     Response->Header.Source = Server->IPCSocket->NodeID;
     Response->Header.Target = Packet->Header.Source;
     Response->Header.TargetConnectionID = Packet->Header.SourceConnectionID;
+    Response->AccountID = Packet->AccountID;
+    Response->CharacterID = Packet->CharacterID;
+    Response->CharacterIndex = Packet->CharacterIndex;
 
     struct _RTItemSlot EquipmentSlots[RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT] = { 0 };
     struct _RTItemSlot EquipmentInventorySlots[RUNTIME_CHARACTER_MAX_EQUIPMENT_PRESET_SLOT_COUNT] = { 0 };
@@ -71,7 +74,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_PARAM_END
     );
 
-    if (DatabaseHandleReadNext(
+    if (!DatabaseHandleReadNext(
         Handle,
         DB_TYPE_UINT8, &Response->Character.IsWarehousePasswordSet,
         DB_TYPE_UINT8, &Response->Character.IsInventoryPasswordSet,
@@ -329,8 +332,9 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_DATA, AnimaMasteryCategoryData, sizeof(AnimaMasteryCategoryData),
         DB_PARAM_END
     )) {
-        DatabaseHandleFlush(Handle);
+        goto error;
     }
+    DatabaseHandleFlush(Handle);
 
     if (Response->Character.EquipmentInfo.EquipmentSlotCount > 0) {
         IPCPacketBufferAppendCopy(
@@ -778,6 +782,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         );
     }
 
+    Response->Success = true;
     IPCSocketUnicast(Socket, Response);
     return;
 

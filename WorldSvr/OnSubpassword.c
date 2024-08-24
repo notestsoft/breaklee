@@ -16,9 +16,10 @@ CLIENT_PROCEDURE_BINDING(CREATE_SUBPASSWORD) {
 	Request->Header.Target.Type = IPC_TYPE_MASTERDB;
 	Request->AccountID = Client->AccountID;
 	memcpy(Request->Password, Packet->Password, MAX_SUBPASSWORD_LENGTH);
+	Request->Type = Packet->Type;
 	Request->Question = Packet->Question;
 	memcpy(Request->Answer, Packet->Answer, MAX_SUBPASSWORD_ANSWER_LENGTH);
-	Request->Mode = Packet->Mode;
+	Request->IsChange = Packet->IsChange;
 	IPCSocketUnicast(Server->IPCSocket, Request);
 	return;
 
@@ -31,8 +32,9 @@ IPC_PROCEDURE_BINDING(D2W, CREATE_SUBPASSWORD) {
 
 	S2C_DATA_CREATE_SUBPASSWORD* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, CREATE_SUBPASSWORD);
 	Response->Success = Packet->Success;
-	Response->Mode = Packet->Mode;
+	Response->IsChange = Packet->IsChange;
 	Response->Type = Packet->Type;
+	Response->IsLocked = Packet->IsLocked;
 	SocketSend(Context->ClientSocket, ClientConnection, Response);
 }
 

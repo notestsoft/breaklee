@@ -111,6 +111,7 @@ BEGIN
         INSERT INTO Giftbox (CharacterID, SlotData, RewardSlotData) VALUES (OutCharacterID, '', '');
         INSERT INTO Transform (CharacterID, SlotData) VALUES (OutCharacterID, '');
         INSERT INTO SecretShop (CharacterID, SlotData) VALUES (OutCharacterID, CONCAT(REPEAT(CHAR(0), 30)));
+        INSERT INTO AuraMastery (CharacterID, SlotData) VALUE (OutCharacterID, '');
         INSERT INTO SkillTranscendence (CharacterID, SlotData) VALUES (OutCharacterID, '');
         INSERT INTO StellarMastery (CharacterID, SlotData) VALUES (OutCharacterID, '');
         INSERT INTO DamageBooster (CharacterID, ItemData, SlotData) VALUES (OutCharacterID, CONCAT(REPEAT(CHAR(0), 8)), '');
