@@ -452,8 +452,8 @@ Void RTCharacterUpdate(
 
 		NOTIFICATION_DATA_SKILL_TO_CHARACTER_BATTLE_MODE* NotificationData = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_SKILL_TO_CHARACTER_BATTLE_MODE);
 		NotificationData->CharacterIndex = (UInt32)Character->CharacterIndex;
-		NotificationData->CharacterStyle = SwapUInt32(Character->Data.StyleInfo.Style.RawValue);
-		NotificationData->CharacterLiveStyle = SwapUInt32(Character->Data.StyleInfo.LiveStyle.RawValue);
+		NotificationData->CharacterStyle = Character->Data.StyleInfo.Style.RawValue;
+		NotificationData->CharacterLiveStyle = Character->Data.StyleInfo.LiveStyle.RawValue;
 		NotificationData->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
 		NotificationData->IsActivation = false;
 		RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);

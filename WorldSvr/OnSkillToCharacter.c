@@ -139,8 +139,8 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 		S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON* NotificationData = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON);
 		NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
-		NotificationData->CharacterStyle = SwapUInt32(Character->Data.StyleInfo.Style.RawValue);
-		NotificationData->CharacterLiveStyle = SwapUInt32(Character->Data.StyleInfo.LiveStyle.RawValue);
+		NotificationData->CharacterStyle = Character->Data.StyleInfo.Style.RawValue;
+		NotificationData->CharacterLiveStyle = Character->Data.StyleInfo.LiveStyle.RawValue;
 		NotificationData->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
 		NotificationData->IsActivation = PacketData->IsActivation;
 		NotificationData->Unknown2 = PacketData->Unknown2;
@@ -182,8 +182,8 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 		S2C_DATA_NFY_SKILL_GROUP_BATTLE_MODE* NotificationData = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_SKILL_GROUP_BATTLE_MODE);
 		NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
-		NotificationData->CharacterStyle = SwapUInt32(Character->Data.StyleInfo.Style.RawValue);
-		NotificationData->CharacterLiveStyle = SwapUInt32(Character->Data.StyleInfo.LiveStyle.RawValue);
+		NotificationData->CharacterStyle = Character->Data.StyleInfo.Style.RawValue;
+		NotificationData->CharacterLiveStyle = Character->Data.StyleInfo.LiveStyle.RawValue;
 		NotificationData->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
 		NotificationData->IsActivation = PacketData->IsActivation;
 

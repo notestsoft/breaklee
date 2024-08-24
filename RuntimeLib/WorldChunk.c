@@ -132,7 +132,7 @@ Void RTWorldChunkUpdate(
     NotificationCharacter->PositionEndX = Character->Movement.PositionEnd.X;
     NotificationCharacter->PositionEndY = Character->Movement.PositionEnd.Y;
     NotificationCharacter->Nation = Character->Data.StyleInfo.Nation;
-    NotificationCharacter->CharacterStyle = SwapUInt32(Character->Data.StyleInfo.Style.RawValue);
+    NotificationCharacter->CharacterStyle = Character->Data.StyleInfo.Style.RawValue;
     NotificationCharacter->CharacterLiveStyle = Character->Data.StyleInfo.LiveStyle.RawValue;
     NotificationCharacter->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
     NotificationCharacter->IsDead = RTCharacterIsAlive(Runtime, Character) ? 0 : 1;
@@ -248,7 +248,7 @@ Void RTWorldChunkBroadcastCharactersToCharacter(
         NotificationCharacter->PositionEndX = Character->Movement.PositionEnd.X;
         NotificationCharacter->PositionEndY = Character->Movement.PositionEnd.Y;
         NotificationCharacter->Nation = Character->Data.StyleInfo.Nation;
-        NotificationCharacter->CharacterStyle = SwapUInt32(Character->Data.StyleInfo.Style.RawValue);
+        NotificationCharacter->CharacterStyle = Character->Data.StyleInfo.Style.RawValue;
         NotificationCharacter->CharacterLiveStyle = Character->Data.StyleInfo.LiveStyle.RawValue;
         NotificationCharacter->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
         NotificationCharacter->IsDead = RTCharacterIsAlive(Runtime, Character) ? 0 : 1;
@@ -599,7 +599,7 @@ Void RTWorldChunkNotify(
         NotificationCharacter->PositionEndX = Character->Movement.PositionEnd.X;
         NotificationCharacter->PositionEndY = Character->Movement.PositionEnd.Y;
         NotificationCharacter->Nation = Character->Data.StyleInfo.Nation;
-        NotificationCharacter->CharacterStyle = SwapUInt32(Character->Data.StyleInfo.Style.RawValue);
+        NotificationCharacter->CharacterStyle = Character->Data.StyleInfo.Style.RawValue;
         NotificationCharacter->CharacterLiveStyle = Character->Data.StyleInfo.LiveStyle.RawValue;
         NotificationCharacter->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
         NotificationCharacter->IsDead = RTCharacterIsAlive(Runtime, Character) ? 0 : 1;

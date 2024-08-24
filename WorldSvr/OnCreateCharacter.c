@@ -31,8 +31,7 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 		return;
 	}
 
-	UInt32 RawStyle = SwapUInt32(Packet->Style);
-	union _RTCharacterStyle Style = *((union _RTCharacterStyle*)&RawStyle);
+	union _RTCharacterStyle Style = { .RawValue = Packet->Style };
 	UInt32 BattleStyleIndex = Style.BattleStyle | (Style.ExtendedBattleStyle << 3);
 
 	if (Style.Padding1 > 0 ||

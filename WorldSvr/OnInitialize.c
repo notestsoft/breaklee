@@ -602,11 +602,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->PartyServerAddress.Port = Context->Config.PartySvr.Port;
     Response->UnknownPort = 0;
     Response->CharacterStyleInfo = Character->Data.StyleInfo;
-//    Response->CharacterStyle = SwapUInt32(Character->Data.StyleInfo.Style.RawValue);
-//    Response->CharacterLiveStyle = SwapUInt32(Character->Data.StyleInfo.LiveStyle.RawValue);
-
     memcpy(&Response->ResearchSupportInfo, &Character->Data.ResearchSupportInfo, sizeof(struct _RTCharacterResearchSupportInfo));
-
     Response->NameLength = strlen(Character->Name) + 1;
     CString Name = (CString)PacketBufferAppend(ClientConnection->PacketBuffer, strlen(Character->Name));
     memcpy(Name, Character->Name, strlen(Character->Name));

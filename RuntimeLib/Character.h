@@ -75,31 +75,33 @@ enum {
 
 union _RTCharacterStyle {
     struct {
+        UInt32 BattleStyle : 3;
+        UInt32 BattleRank : 5;
+        UInt32 Face : 2;
+        UInt32 Padding5 : 3;
+        UInt32 HairColor : 3;
+        UInt32 Padding3 : 1;
+        UInt32 HairStyle : 3;
+        UInt32 Padding4 : 2;
+        UInt32 ShowHelmed : 1;
+        UInt32 ExtendedBattleStyle : 1;
         UInt32 AuraCode : 2;
         UInt32 Gender : 1;
         UInt32 Padding1 : 1;
         UInt32 Unknown1 : 1;
-        UInt32 Padding2 : 4;
-        UInt32 HairStyle : 3;
-        UInt32 Padding3 : 2;
-        UInt32 ShowHelmed : 1;
-        UInt32 ExtendedBattleStyle : 1;
-        UInt32 Face : 2;
-        UInt32 Padding4 : 3;
-        UInt32 HairColor : 3;
-        UInt32 BattleStyle : 3;
-        UInt32 BattleRank : 5;
+        UInt32 Padding2 : 3;
     };
     UInt32 RawValue;
 };
 
 union _RTCharacterLiveStyle {
     struct {
+        UInt32 Padding1 : 24;
         UInt32 IsDancing : 1;
         UInt32 IsSitting : 1;
         UInt32 IsDancing2 : 1;
         UInt32 IsDancing3 : 1;
-        UInt32 Padding1 : 28;
+        UInt32 Padding2 : 4;
     };
 
     UInt32 RawValue;

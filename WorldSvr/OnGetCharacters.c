@@ -39,7 +39,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER_LIST) {
         if (Character->CharacterID < 1) continue;
 
         Character->CharacterID = Character->CharacterID * MAX_CHARACTER_COUNT + Index;
-        Character->Style = SwapUInt32(Character->Style);
+        Character->Style = Character->Style;
     }
 
     memcpy(Response->Characters, Packet->Characters, sizeof(Packet->Characters));
