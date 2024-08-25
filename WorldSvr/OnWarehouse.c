@@ -11,10 +11,10 @@ CLIENT_PROCEDURE_BINDING(GET_WAREHOUSE) {
 	if (!Character) goto error;
 
 	S2C_DATA_GET_WAREHOUSE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_WAREHOUSE);
-	Response->Count = Character->Data.WarehouseInfo.Count;
-	Response->Currency = Character->Data.WarehouseInfo.Currency;
+	Response->Count = Character->Data.WarehouseInfo.Info.SlotCount;
+	Response->Currency = Character->Data.WarehouseInfo.Info.Currency;
 
-	for (Int32 Index = 0; Index < Character->Data.WarehouseInfo.Count; Index += 1) {
+	for (Int32 Index = 0; Index < Character->Data.WarehouseInfo.Info.SlotCount; Index += 1) {
 		RTItemSlotRef ItemSlot = &Character->Data.WarehouseInfo.Slots[Index];
 		
 		S2C_DATA_GET_WAREHOUSE_SLOT_INDEX* ResponseSlot = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_GET_WAREHOUSE_SLOT_INDEX);
@@ -66,19 +66,19 @@ CLIENT_PROCEDURE_BINDING(WAREHOUSE_CURRENCY_DEPOSIT) {
 		}
 
 		Character->Data.Info.Alz -= Packet->Amount;
-		Character->Data.WarehouseInfo.Currency += RealDepositAmount;
+		Character->Data.WarehouseInfo.Info.Currency += RealDepositAmount;
 	}
 	// Withdraw
 	else {
 		Int64 AbsAmount = ABS(Packet->Amount);
 
 		// Error: Withdraw more than available
-		if (Character->Data.WarehouseInfo.Currency < AbsAmount) {
+		if (Character->Data.WarehouseInfo.Info.Currency < AbsAmount) {
 			goto error;
 		}
 
 		Character->Data.Info.Alz += AbsAmount;
-		Character->Data.WarehouseInfo.Currency -= AbsAmount;
+		Character->Data.WarehouseInfo.Info.Currency -= AbsAmount;
 	}
 
 	Character->SyncMask.Info = true;
@@ -107,7 +107,7 @@ CLIENT_PROCEDURE_BINDING(SORT_WAREHOUSE) {
 
 	Bool WarehouseOccupancyMask[RUNTIME_WAREHOUSE_TOTAL_SIZE] = { 0 };
 	memset(WarehouseOccupancyMask, 0, sizeof(Bool) * RUNTIME_WAREHOUSE_TOTAL_SIZE);
-	for (Int32 Index = 0; Index < Character->Data.WarehouseInfo.Count; Index += 1) {
+	for (Int32 Index = 0; Index < Character->Data.WarehouseInfo.Info.SlotCount; Index += 1) {
 		WarehouseOccupancyMask[Character->Data.WarehouseInfo.Slots[Index].SlotIndex] = true;
 	}
 

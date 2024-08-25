@@ -14,7 +14,7 @@ struct _RTExplorationSlot {
     Int8 IsRewardTaken;
 };
 
-struct _RTExporationInfo {
+struct _RTExplorationInfo {
     Timestamp EndDate;
     Int32 Points;
     Int32 Level;
@@ -22,7 +22,7 @@ struct _RTExporationInfo {
 };
 
 struct _RTCharacterExplorationData {
-    struct _RTExporationInfo Info;
+    struct _RTExplorationInfo Info;
     struct _RTExplorationSlot Slots[RUNTIME_CHARACTER_MAX_EXPLORATION_SLOT_COUNT];
 };
 

@@ -67,7 +67,7 @@ IPC_PROCEDURE_BINDING(W2D, CREATE_CHARACTER) {
 		DatabaseHandleFlush(Handle);
 	}
 	else if (!Response->Status) {
-		Response->Status == CREATE_CHARACTER_STATUS_DBERROR;
+		Response->Status = CREATE_CHARACTER_STATUS_DBERROR;
 	}
 
 	// TODO: Sync all the character data from packet after creation!

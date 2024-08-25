@@ -285,7 +285,7 @@ IPC_PROTOCOL_STRUCT(IPC_D2W_DATA_INITIALIZE_CHARACTER,
 	struct _RTEventPassInfo EventPassInfo;
 	struct _RTCostumeWarehouseInfo CostumeWarehouseInfo;
 	struct _RTCostumeInfo CostumeInfo;
-	struct _RTExporationInfo ExplorationInfo;
+	struct _RTExplorationInfo ExplorationInfo;
 	struct _RTAnimaMasteryInfo AnimaMasteryInfo;
 	struct _RTCharacterPresetInfo PresetInfo;
 	UInt8 NameLength;

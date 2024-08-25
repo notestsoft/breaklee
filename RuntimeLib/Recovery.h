@@ -8,8 +8,12 @@ EXTERN_C_BEGIN
 
 #pragma pack(push, 1)
 
+struct _RTRecoveryInfo {
+    Int32 SlotCount;
+};
+
 struct _RTCharacterRecoveryInfo {
-    UInt32 Count;
+    struct _RTRecoveryInfo Info;
     UInt64 Prices[RUNTIME_CHARACTER_MAX_RECOVERY_SLOT_COUNT];
     struct _RTItemSlot Slots[RUNTIME_CHARACTER_MAX_RECOVERY_SLOT_COUNT];
 };

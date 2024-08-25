@@ -42,7 +42,7 @@ BEGIN
         INSERT INTO DiamondMeritMastery (AccountID, ExtendedMemorizeSlotData, UnlockedSlotData, MasterySlotData, SpecialMasterySlotData) VALUES (InAccountID, '', '', '', '');
         INSERT INTO Collection (AccountID, SlotData) VALUES (InAccountID, '');
         INSERT INTO ResearchSupport (AccountID, MaterialSlotData, ActiveMissionBoard, MissionBoardData) VALUES (InAccountID, '', '', '');
-        INSERT INTO EventPass (AccountID, MissionSlotData, RewardSlotData) VALUES (InAccountID, '', '');
+        INSERT INTO EventPass (AccountID, MissionPageData, MissionSlotData, RewardSlotData) VALUES (InAccountID, '', '', '');
         INSERT INTO CostumeWarehouse (AccountID, SlotData) VALUES (InAccountID, '');
         INSERT INTO Warehouse (AccountID, SlotData) VALUES (InAccountID, '');
         INSERT INTO AnimaMastery (AccountID, PresetData, CategoryData) VALUES (InAccountID, '', '');

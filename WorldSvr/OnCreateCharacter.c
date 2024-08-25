@@ -214,7 +214,6 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 		Request->CharacterData.AchievementInfo.AchievementRewardSlots[AchievementIndex].Unknown1 = 0;
 		Request->CharacterData.AchievementInfo.AchievementRewardCount += 1;
 
-
 		Request->CharacterData.Info.Alz= 999999999;
 		Request->CharacterData.Info.Currency[RUNTIME_CHARACTER_CURRENCY_GEM] = 999999;
 		Request->CharacterData.Info.Level = 200;

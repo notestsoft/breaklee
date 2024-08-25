@@ -44,7 +44,7 @@ Bool RTWarehouseSetSlot(
 	}
 
 	Int32 InsertionIndex = RTWarehouseGetInsertionIndex(Runtime, Warehouse, Slot->SlotIndex);
-	Int32 InsertionTailLength = Warehouse->Count - InsertionIndex;
+	Int32 InsertionTailLength = Warehouse->Info.SlotCount - InsertionIndex;
 	if (InsertionTailLength > 0) {
 		memmove(
 			&Warehouse->Slots[InsertionIndex + 1],
@@ -55,7 +55,7 @@ Bool RTWarehouseSetSlot(
 
 	RTItemSlotRef InventorySlot = &Warehouse->Slots[InsertionIndex];
 	memcpy(InventorySlot, Slot, sizeof(struct _RTItemSlot));
-	Warehouse->Count += 1;
+	Warehouse->Info.SlotCount += 1;
 	return true;
 }
 
@@ -64,7 +64,7 @@ Int32 RTWarehouseGetSlotIndex(
 	RTCharacterWarehouseInfoRef Warehouse,
 	Int32 SlotIndex
 ) {
-	for (Int32 Index = 0; Index < Warehouse->Count; Index++) {
+	for (Int32 Index = 0; Index < Warehouse->Info.SlotCount; Index++) {
 		RTItemSlotRef Slot = &Warehouse->Slots[Index];
 		if (Slot->SlotIndex == SlotIndex) {
 			return Index;
@@ -89,14 +89,14 @@ Int32 RTWarehouseGetInsertionIndex(
 	RTCharacterWarehouseInfoRef Warehouse,
 	Int32 SlotIndex
 ) {
-	for (Int32 Index = 0; Index < Warehouse->Count; Index += 1) {
+	for (Int32 Index = 0; Index < Warehouse->Info.SlotCount; Index += 1) {
 		RTItemSlotRef InventorySlot = &Warehouse->Slots[Index];
 		if (InventorySlot->SlotIndex > SlotIndex) {
 			return Index;
 		}
 	}
 
-	return Warehouse->Count;
+	return Warehouse->Info.SlotCount;
 }
 
 
@@ -128,7 +128,7 @@ Bool RTWarehouseClearSlot(
 	);
 	if (WarehouseIndex < 0) return false;
 
-	Int32 TailLength = Warehouse->Count - WarehouseIndex - 1;
+	Int32 TailLength = Warehouse->Info.SlotCount - WarehouseIndex - 1;
 	if (TailLength > 0) {
 		memmove(
 			&Warehouse->Slots[WarehouseIndex],
@@ -137,6 +137,6 @@ Bool RTWarehouseClearSlot(
 		);
 	}
 
-	Warehouse->Count -= 1;
+	Warehouse->Info.SlotCount -= 1;
 	return true;
 }

@@ -70,7 +70,7 @@ Bool MoveInventoryItem(
         if (!RTEquipmentSetSlot(Runtime, Character, &Character->Data.EquipmentInfo, &TempSlot)) goto error;
     }
     else if (DestinationStorageType == STORAGE_TYPE_WAREHOUSE) {
-        if (Character->Data.Info.Alz < 1000 && Character->Data.WarehouseInfo.Currency < 1000) {
+        if (Character->Data.Info.Alz < 1000 && Character->Data.WarehouseInfo.Info.Currency < 1000) {
             goto error;
         }
 
@@ -83,7 +83,7 @@ Bool MoveInventoryItem(
             Character->SyncMask.Info = true;
         }
         else {
-            Character->Data.WarehouseInfo.Currency -= 1000;
+            Character->Data.WarehouseInfo.Info.Currency -= 1000;
             Character->SyncMask.WarehouseInfo = true;
         }
     }

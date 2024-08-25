@@ -8,9 +8,13 @@ EXTERN_C_BEGIN
 
 #pragma pack(push, 1)
 
+struct _RTWarehouseInfo {
+    UInt16 SlotCount;
+    UInt64 Currency;
+};
+
 struct _RTCharacterWarehouseInfo {
-	UInt16 Count;
-	UInt64 Currency;
+    struct _RTWarehouseInfo Info;
 	struct _RTItemSlot Slots[RUNTIME_WAREHOUSE_TOTAL_SIZE];
 };
 

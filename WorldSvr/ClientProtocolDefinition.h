@@ -275,7 +275,7 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     struct _RTEventPassInfo EventPassInfo;
     struct _RTCostumeWarehouseInfo CostumeWarehouseInfo;
     struct _RTCostumeInfo CostumeInfo;
-    struct _RTExporationInfo ExplorationInfo;
+    struct _RTExplorationInfo ExplorationInfo;
     struct _RTAnimaMasteryInfo AnimaMasteryInfo;
     struct _RTCharacterPresetInfo PresetInfo;
     UInt8 NameLength;

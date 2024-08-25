@@ -28,7 +28,7 @@ CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, ScriptDataPath, "WorldSvr.ScriptDataPath"
 CONFIG_PARAMETER(UInt32, MinRollDiceValue, "WorldSvr.MinRollDiceValue", 0)
 CONFIG_PARAMETER(UInt32, MaxRollDiceValue, "WorldSvr.MaxRollDiceValue", 999)
 CONFIG_PARAMETER(UInt32, DebugCharacter, "WorldSvr.DebugCharacter", 1)
-CONFIG_PARAMETER(Bool, DBSyncTimer, "WorldSvr.DBSyncTimer", 1000)
+CONFIG_PARAMETER(UInt64, DBSyncTimer, "WorldSvr.DBSyncTimer", 1000)
 CONFIG_PARAMETER(UInt64, UserListBroadcastInterval, "WorldSvr.UserListBroadcastInterval", 1000)
 CONFIG_PARAMETER(UInt64, WorldItemDespawnInterval, "WorldSvr.WorldItemDespawnInterval", 30000)
 CONFIG_PARAMETER(Int32, NewbieSupportTimeout, "Environment.NewbieSupportTimeout", 10080)

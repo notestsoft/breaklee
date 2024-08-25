@@ -242,15 +242,15 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     }
 
     Character->Data.AchievementInfo.Info = Packet->Character.AchievementInfo;
-    if (Packet->Character.AchievementInfo.AchievementCount > 0) {
-        Int32 Length = sizeof(struct _RTAchievementSlot) * Packet->Character.AchievementInfo.AchievementCount;
-        memcpy(Character->Data.AchievementInfo.AchievementSlots, Memory, Length);
+    if (Packet->Character.AchievementInfo.SlotCount > 0) {
+        Int32 Length = sizeof(struct _RTAchievementSlot) * Packet->Character.AchievementInfo.SlotCount;
+        memcpy(Character->Data.AchievementInfo.Slots, Memory, Length);
         Memory += Length;
     }
 
-    if (Packet->Character.AchievementInfo.AchievementRewardCount > 0) {
-        Int32 Length = sizeof(struct _RTAchievementRewardSlot) * Packet->Character.AchievementInfo.AchievementRewardCount;
-        memcpy(Character->Data.AchievementInfo.AchievementRewardSlots, Memory, Length);
+    if (Packet->Character.AchievementInfo.RewardSlotCount > 0) {
+        Int32 Length = sizeof(struct _RTAchievementRewardSlot) * Packet->Character.AchievementInfo.RewardSlotCount;
+        memcpy(Character->Data.AchievementInfo.RewardSlots, Memory, Length);
         Memory += Length;
     }
 
@@ -382,10 +382,11 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         Int32 Length = sizeof(struct _RTGiftBoxSlot) * Packet->Character.GiftBoxInfo.SlotCount;
         memcpy(Character->Data.GiftboxInfo.Slots, Memory, Length);
         Memory += Length;
-
+        /* This is server side only data
         Length = sizeof(struct _RTGiftBoxRewardSlot) * Packet->Character.GiftBoxInfo.SlotCount;
         memcpy(Character->Data.GiftboxInfo.RewardSlots, Memory, Length);
         Memory += Length;
+        */
     }
 
     Character->Data.CollectionInfo.Info = Packet->Character.CollectionInfo;
@@ -772,19 +773,19 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     }
     
     Response->AchievementInfo = Character->Data.AchievementInfo.Info;
-    if (Character->Data.AchievementInfo.Info.AchievementCount > 0) {
+    if (Character->Data.AchievementInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
-            Character->Data.AchievementInfo.AchievementSlots,
-            sizeof(struct _RTAchievementSlot) * Character->Data.AchievementInfo.Info.AchievementCount
+            Character->Data.AchievementInfo.Slots,
+            sizeof(struct _RTAchievementSlot) * Character->Data.AchievementInfo.Info.SlotCount
         );
     }
 
-    if (Character->Data.AchievementInfo.Info.AchievementRewardCount > 0) {
+    if (Character->Data.AchievementInfo.Info.RewardSlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,
-            Character->Data.AchievementInfo.AchievementRewardSlots,
-            sizeof(struct _RTAchievementRewardSlot) * Character->Data.AchievementInfo.Info.AchievementRewardCount
+            Character->Data.AchievementInfo.RewardSlots,
+            sizeof(struct _RTAchievementRewardSlot) * Character->Data.AchievementInfo.Info.RewardSlotCount
         );
     }
 
@@ -1001,6 +1002,14 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     }
 
     Response->EventPassInfo = Character->Data.EventPassInfo.Info;
+    if (Character->Data.EventPassInfo.Info.MissionPageCount > 0) {
+        PacketBufferAppendCopy(
+            ClientConnection->PacketBuffer,
+            Character->Data.EventPassInfo.MissionPages,
+            sizeof(struct _RTEventPassMissionPage) * Character->Data.EventPassInfo.Info.MissionPageCount
+        );
+    }
+
     if (Character->Data.EventPassInfo.Info.MissionSlotCount > 0) {
         PacketBufferAppendCopy(
             ClientConnection->PacketBuffer,

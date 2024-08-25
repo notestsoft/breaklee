@@ -183,10 +183,10 @@ CLIENT_PROCEDURE_BINDING(SELL_ITEM) {
         RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
         if (!ItemData) goto error;
 
-        Int32 RecoverySlotIndex = Character->Data.RecoveryInfo.Count % RUNTIME_CHARACTER_MAX_RECOVERY_SLOT_COUNT;
+        Int32 RecoverySlotIndex = Character->Data.RecoveryInfo.Info.SlotCount % RUNTIME_CHARACTER_MAX_RECOVERY_SLOT_COUNT;
         Character->Data.RecoveryInfo.Prices[RecoverySlotIndex] = ItemData->SellPrice;
         Character->Data.RecoveryInfo.Slots[RecoverySlotIndex] = *ItemSlot;
-        Character->Data.RecoveryInfo.Count = MIN(Character->Data.RecoveryInfo.Count + 1, RUNTIME_CHARACTER_MAX_RECOVERY_SLOT_COUNT);
+        Character->Data.RecoveryInfo.Info.SlotCount = MIN(Character->Data.RecoveryInfo.Info.SlotCount + 1, RUNTIME_CHARACTER_MAX_RECOVERY_SLOT_COUNT);
 
         // TODO: This is probably causing issues with other items still being involved inside the inventory...
         if (ItemData->ItemType == RUNTIME_ITEM_TYPE_QUEST_S) {
@@ -306,7 +306,7 @@ CLIENT_PROCEDURE_BINDING(GET_ITEM_RECOVERY_LIST) {
     if (!Character) goto error;
 
     S2C_DATA_GET_ITEM_RECOVERY_LIST* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_ITEM_RECOVERY_LIST);
-    Response->Count = Character->Data.RecoveryInfo.Count;
+    Response->Count = Character->Data.RecoveryInfo.Info.SlotCount;
 
     for (Int32 Index = 0; Index < RUNTIME_CHARACTER_MAX_RECOVERY_SLOT_COUNT; Index += 1) {
         RTItemSlotRef ItemSlot = &Character->Data.RecoveryInfo.Slots[Index];
@@ -346,7 +346,7 @@ CLIENT_PROCEDURE_BINDING(RECOVER_ITEM) {
     if (!RTInventorySetSlot(Runtime, &Character->Data.InventoryInfo, RecoverySlot)) goto error;
 
     memset(RecoverySlot, 0, sizeof(struct _RTItemSlot));
-    Character->Data.RecoveryInfo.Count -= 1;
+    Character->Data.RecoveryInfo.Info.SlotCount -= 1;
 
     RTCharacterUpdateQuestItemCounter(Runtime, Character, RecoverySlot->Item, RecoverySlot->ItemOptions);
 

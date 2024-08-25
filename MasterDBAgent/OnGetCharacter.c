@@ -58,6 +58,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
     struct _RTStellarMasterySlot StellarMasterySlots[RUNTIME_CHARACTER_MAX_STELLAR_SLOT_COUNT] = { 0 };
     struct _RTMythMasterySlot MythMasterySlots[RUNTIME_CHARACTER_MAX_MYTH_SLOT_COUNT] = { 0 };
     struct _RTNewbieSupportSlot NewbieSupportSlots[RUNTIME_CHARACTER_MAX_NEWBIE_SUPPORT_SLOT_COUNT] = { 0 };
+    struct _RTEventPassMissionPage EventPassMissionPages[RUNTIME_CHARACTER_MAX_EVENT_PASS_MISSION_PAGE_COUNT] = { 0 };
     struct _RTEventPassMissionSlot EventPassMissionSlots[RUNTIME_CHARACTER_MAX_EVENT_PASS_MISSION_SLOT_COUNT] = { 0 };
     struct _RTEventPassRewardSlot EventPassRewardSlots[RUNTIME_CHARACTER_MAX_EVENT_PASS_REWARD_SLOT_COUNT] = { 0 };
     struct _RTAccountCostumeSlot AccountCostumeSlots[RUNTIME_CHARACTER_MAX_ACCOUNT_COSTUME_SLOT_COUNT] = { 0 };
@@ -161,8 +162,8 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_INT16, &Response->Character.AchievementInfo.EventTitle,
         DB_TYPE_INT16, &Response->Character.AchievementInfo.GuildTitle,
         DB_TYPE_INT16, &Response->Character.AchievementInfo.WarTitle,
-        DB_TYPE_INT32, &Response->Character.AchievementInfo.AchievementCount,
-        DB_TYPE_INT32, &Response->Character.AchievementInfo.AchievementRewardCount,
+        DB_TYPE_INT32, &Response->Character.AchievementInfo.SlotCount,
+        DB_TYPE_INT32, &Response->Character.AchievementInfo.RewardSlotCount,
         DB_TYPE_INT32, &Response->Character.CraftInfo.SlotCount,
         DB_TYPE_INT32, &Response->Character.CraftInfo.Energy,
         DB_TYPE_UINT8, &Response->Character.RequestCraftInfo.SlotCount,
@@ -257,6 +258,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_INT32, &Response->Character.NewbieSupportInfo.SlotCount,
         DB_TYPE_INT64, &Response->Character.EventPassInfo.StartDate,
         DB_TYPE_INT64, &Response->Character.EventPassInfo.EndDate,
+        DB_TYPE_INT32, &Response->Character.EventPassInfo.MissionPageCount,
         DB_TYPE_INT32, &Response->Character.EventPassInfo.MissionSlotCount,
         DB_TYPE_INT32, &Response->Character.EventPassInfo.RewardSlotCount,
         DB_TYPE_INT32, &Response->Character.CostumeWarehouseInfo.SlotCount,
@@ -322,6 +324,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_DATA, StellarMasterySlots, sizeof(StellarMasterySlots),
         DB_TYPE_DATA, MythMasterySlots, sizeof(MythMasterySlots),
         DB_TYPE_DATA, NewbieSupportSlots, sizeof(NewbieSupportSlots),
+        DB_TYPE_DATA, EventPassMissionPages, sizeof(EventPassMissionPages),
         DB_TYPE_DATA, EventPassMissionSlots, sizeof(EventPassMissionSlots),
         DB_TYPE_DATA, EventPassRewardSlots, sizeof(EventPassRewardSlots),
         DB_TYPE_DATA, AccountCostumeSlots, sizeof(AccountCostumeSlots),
@@ -336,451 +339,63 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
     }
     DatabaseHandleFlush(Handle);
 
-    if (Response->Character.EquipmentInfo.EquipmentSlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            EquipmentSlots,
-            sizeof(struct _RTItemSlot) * Response->Character.EquipmentInfo.EquipmentSlotCount
-        );
-    }
-
-    if (Response->Character.EquipmentInfo.InventorySlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            EquipmentInventorySlots,
-            sizeof(struct _RTItemSlot) * Response->Character.EquipmentInfo.InventorySlotCount
-        );
-    }
-
-    if (Response->Character.EquipmentInfo.LinkSlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            EquipmentLinkSlots,
-            sizeof(struct _RTEquipmentLinkSlot) * Response->Character.EquipmentInfo.LinkSlotCount
-        );
-    }
-
-    if (Response->Character.EquipmentInfo.LockSlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            EquipmentLockSlots,
-            sizeof(struct _RTEquipmentLockSlot) * Response->Character.EquipmentInfo.LockSlotCount
-        );
-    }
-
-    if (Response->Character.InventoryInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            InventorySlots,
-            sizeof(struct _RTItemSlot) * Response->Character.InventoryInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.VehicleInventoryInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            VehicleInventorySlots,
-            sizeof(struct _RTItemSlot) * Response->Character.VehicleInventoryInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.SkillSlotInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            SkillSlots,
-            sizeof(struct _RTSkillSlot) * Response->Character.SkillSlotInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.QuickSlotInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            QuickSlots,
-            sizeof(struct _RTQuickSlot) * Response->Character.QuickSlotInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.MercenaryInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            MercenarySlots,
-            sizeof(struct _RTMercenarySlot) * Response->Character.MercenaryInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.AbilityInfo.EssenceAbilityCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            EssenceAbilitySlots,
-            sizeof(struct _RTEssenceAbilitySlot) * Response->Character.AbilityInfo.EssenceAbilityCount
-        );
-    }
-
-    if (Response->Character.AbilityInfo.BlendedAbilityCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            BlendedAbilitySlots,
-            sizeof(struct _RTBlendedAbilitySlot) * Response->Character.AbilityInfo.BlendedAbilityCount
-        );
-    }
-
-    if (Response->Character.AbilityInfo.KarmaAbilityCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            KarmaAbilitySlots,
-            sizeof(struct _RTKarmaAbilitySlot) * Response->Character.AbilityInfo.KarmaAbilityCount
-        );
-    }
-
-    if (Response->Character.BlessingBeadInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            BlessingBeadSlots,
-            sizeof(struct _RTBlessingBeadSlot) * Response->Character.BlessingBeadInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.PremiumServiceInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            PremiumServiceSlots,
-            sizeof(struct _RTPremiumServiceSlot) * Response->Character.PremiumServiceInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.QuestInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            QuestSlots,
-            sizeof(struct _RTQuestSlot) * Response->Character.QuestInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.DailyQuestInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            DailyQuestSlots,
-            sizeof(struct _RTDailyQuestSlot) * Response->Character.DailyQuestInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.AppearanceInfo.EquipmentAppearanceCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            EquipmentAppearanceSlots,
-            sizeof(struct _RTItemSlotAppearance) * Response->Character.AppearanceInfo.EquipmentAppearanceCount
-        );
-    }
-
-    if (Response->Character.AppearanceInfo.InventoryAppearanceCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            InventoryAppearanceSlots,
-            sizeof(struct _RTItemSlotAppearance) * Response->Character.AppearanceInfo.InventoryAppearanceCount
-        );
-    }
-
-    if (Response->Character.AchievementInfo.AchievementCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            AchievementSlots,
-            sizeof(struct _RTAchievementSlot) * Response->Character.AchievementInfo.AchievementCount
-        );
-    }
-
-    if (Response->Character.AchievementInfo.AchievementRewardCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            AchievementRewardSlots,
-            sizeof(struct _RTAchievementRewardSlot) * Response->Character.AchievementInfo.AchievementRewardCount
-        );
-    }
-
-    if (Response->Character.CraftInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            CraftSlots,
-            sizeof(struct _RTCraftSlot) * Response->Character.CraftInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.RequestCraftInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            RequestCraftSlots,
-            sizeof(struct _RTRequestCraftSlot) * Response->Character.RequestCraftInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.BuffInfo.BuffCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            BuffSlots,
-            sizeof(struct _RTBuffSlot) * Response->Character.BuffInfo.BuffCount
-        );
-    }
-
-    if (Response->Character.GoldMeritMasteryInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            GoldMeritMasterySlots,
-            sizeof(struct _RTGoldMeritMasterySlot) * Response->Character.GoldMeritMasteryInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.PlatinumMeritMasteryInfo.ExtendedMemorizeCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            PlatinumMeritExtendedMemorizeSlots,
-            sizeof(struct _RTPlatinumMeritExtendedMemorizeSlot) * Response->Character.PlatinumMeritMasteryInfo.ExtendedMemorizeCount
-        );
-    }
-
-    if (Response->Character.PlatinumMeritMasteryInfo.UnlockedSlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            PlatinumMeritUnlockedSlots,
-            sizeof(struct _RTPlatinumMeritUnlockedSlot) * Response->Character.PlatinumMeritMasteryInfo.UnlockedSlotCount
-        );
-    }
-
-    if (Response->Character.PlatinumMeritMasteryInfo.MasterySlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            PlatinumMeritMasterySlots,
-            sizeof(struct _RTPlatinumMeritMasterySlot) * Response->Character.PlatinumMeritMasteryInfo.MasterySlotCount
-        );
-    }
-
-    if (Response->Character.PlatinumMeritMasteryInfo.SpecialMasterySlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            PlatinumMeritSpecialMasterySlots,
-            sizeof(struct _RTPlatinumMeritSpecialMasterySlot) * Response->Character.PlatinumMeritMasteryInfo.SpecialMasterySlotCount
-        );
-    }
-
-    if (Response->Character.DiamondMeritMasteryInfo.ExtendedMemorizeCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            DiamondMeritExtendedMemorizeSlots,
-            sizeof(struct _RTDiamondMeritExtendedMemorizeSlot) * Response->Character.PlatinumMeritMasteryInfo.ExtendedMemorizeCount
-        );
-    }
-
-    if (Response->Character.DiamondMeritMasteryInfo.UnlockedSlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            DiamondMeritUnlockedSlots,
-            sizeof(struct _RTDiamondMeritUnlockedSlot) * Response->Character.PlatinumMeritMasteryInfo.UnlockedSlotCount
-        );
-    }
-
-    if (Response->Character.DiamondMeritMasteryInfo.MasterySlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            DiamondMeritMasterySlots,
-            sizeof(struct _RTDiamondMeritMasterySlot) * Response->Character.PlatinumMeritMasteryInfo.MasterySlotCount
-        );
-    }
-
-    if (Response->Character.DiamondMeritMasteryInfo.SpecialMasterySlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            DiamondMeritSpecialMasterySlots,
-            sizeof(struct _RTDiamondMeritSpecialMasterySlot) * Response->Character.PlatinumMeritMasteryInfo.SpecialMasterySlotCount
-        );
-    }
-
-    if (Response->Character.AchievementExtendedInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            AchievementExtendedRewardSlots,
-            sizeof(struct _RTAchievementExtendedRewardSlot) * Response->Character.AchievementExtendedInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.WarpServiceInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            WarpServiceSlots,
-            sizeof(struct _RTWarpServiceSlot) * Response->Character.WarpServiceInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.OverlordMasteryInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            OverlordMasterySlots,
-            sizeof(struct _RTOverlordMasterySlot) * Response->Character.OverlordMasteryInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.HonorMedalInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            HonorMedalSlots,
-            sizeof(struct _RTHonorMedalSlot) * Response->Character.HonorMedalInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.ForceWingInfo.PresetSlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            ForceWingPresetSlots,
-            sizeof(struct _RTForceWingPresetSlot) * Response->Character.ForceWingInfo.PresetSlotCount
-        );
-    }
-
-    if (Response->Character.ForceWingInfo.TrainingSlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            ForceWingTrainingSlots,
-            sizeof(struct _RTForceWingTrainingSlot) * Response->Character.ForceWingInfo.TrainingSlotCount
-        );
-    }
-
-    if (Response->Character.GiftBoxInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            GiftBoxSlots,
-            sizeof(struct _RTGiftBoxSlot) * Response->Character.GiftBoxInfo.SlotCount
-        );
-
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            GiftBoxRewardSlots,
-            sizeof(struct _RTGiftBoxRewardSlot) * Response->Character.GiftBoxInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.CollectionInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            CollectionSlots,
-            sizeof(struct _RTCollectionSlot) * Response->Character.CollectionInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.TransformInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            TransformSlots,
-            sizeof(struct _RTTransformSlot) * Response->Character.TransformInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.AuraMasteryInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            AuraMasterySlots,
-            sizeof(struct _RTAuraMasterySlot) * Response->Character.AuraMasteryInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.TranscendenceInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            TranscendenceSlots,
-            sizeof(struct _RTTranscendenceSlot) * Response->Character.TranscendenceInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.DamageBoosterInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            DamageBoosterSlots,
-            sizeof(struct _RTDamageBoosterSlot) * Response->Character.DamageBoosterInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.StellarMasteryInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            StellarMasterySlots,
-            sizeof(struct _RTStellarMasterySlot) * Response->Character.StellarMasteryInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.MythMasteryInfo.PropertySlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            MythMasterySlots,
-            sizeof(struct _RTMythMasterySlot) * Response->Character.MythMasteryInfo.PropertySlotCount
-        );
-    }
-
-    if (Response->Character.NewbieSupportInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            NewbieSupportSlots,
-            sizeof(struct _RTNewbieSupportSlot) * Response->Character.NewbieSupportInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.EventPassInfo.MissionSlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            EventPassMissionSlots,
-            sizeof(struct _RTEventPassMissionSlot) * Response->Character.EventPassInfo.MissionSlotCount
-        );
-    }
-
-    if (Response->Character.EventPassInfo.RewardSlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            EventPassRewardSlots,
-            sizeof(struct _RTEventPassRewardSlot) * Response->Character.EventPassInfo.RewardSlotCount
-        );
-    }
-
-    if (Response->Character.CostumeWarehouseInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            AccountCostumeSlots,
-            sizeof(struct _RTAccountCostumeSlot) * Response->Character.CostumeWarehouseInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.CostumeInfo.PageCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            CostumePages,
-            sizeof(struct _RTCostumePage) * Response->Character.CostumeInfo.PageCount
-        );
-    }
-
-    if (Response->Character.CostumeInfo.AppliedSlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            AppliedCostumeSlots,
-            sizeof(struct _RTAppliedCostumeSlot) * Response->Character.CostumeInfo.AppliedSlotCount
-        );
-    }
-
-    if (Response->Character.ExplorationInfo.SlotCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            ExplorationSlots,
-            sizeof(struct _RTExplorationSlot) * Response->Character.ExplorationInfo.SlotCount
-        );
-    }
-
-    if (Response->Character.AnimaMasteryInfo.PresetCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            AnimaMasteryPresetData,
-            sizeof(struct _RTAnimaMasteryPresetData) * Response->Character.AnimaMasteryInfo.PresetCount
-        );
-    }
-
-    if (Response->Character.AnimaMasteryInfo.StorageCount > 0) {
-        IPCPacketBufferAppendCopy(
-            Connection->PacketBuffer,
-            AnimaMasteryCategoryData,
-            sizeof(struct _RTAnimaMasteryCategoryData) * Response->Character.AnimaMasteryInfo.StorageCount
-        );
-    }
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, EquipmentSlots, sizeof(struct _RTItemSlot) * Response->Character.EquipmentInfo.EquipmentSlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, EquipmentInventorySlots, sizeof(struct _RTItemSlot) * Response->Character.EquipmentInfo.InventorySlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, EquipmentLinkSlots, sizeof(struct _RTEquipmentLinkSlot) * Response->Character.EquipmentInfo.LinkSlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, EquipmentLockSlots, sizeof(struct _RTEquipmentLockSlot) * Response->Character.EquipmentInfo.LockSlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, InventorySlots, sizeof(struct _RTItemSlot) * Response->Character.InventoryInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, VehicleInventorySlots, sizeof(struct _RTItemSlot) * Response->Character.VehicleInventoryInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, SkillSlots, sizeof(struct _RTSkillSlot) * Response->Character.SkillSlotInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, QuickSlots, sizeof(struct _RTQuickSlot) * Response->Character.QuickSlotInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, MercenarySlots, sizeof(struct _RTMercenarySlot) * Response->Character.MercenaryInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, EssenceAbilitySlots, sizeof(struct _RTEssenceAbilitySlot) * Response->Character.AbilityInfo.EssenceAbilityCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, BlendedAbilitySlots, sizeof(struct _RTBlendedAbilitySlot) * Response->Character.AbilityInfo.BlendedAbilityCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, KarmaAbilitySlots, sizeof(struct _RTKarmaAbilitySlot) * Response->Character.AbilityInfo.KarmaAbilityCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, BlessingBeadSlots, sizeof(struct _RTBlessingBeadSlot) * Response->Character.BlessingBeadInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, PremiumServiceSlots, sizeof(struct _RTPremiumServiceSlot) * Response->Character.PremiumServiceInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, QuestSlots, sizeof(struct _RTQuestSlot) * Response->Character.QuestInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, DailyQuestSlots, sizeof(struct _RTDailyQuestSlot) * Response->Character.DailyQuestInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, EquipmentAppearanceSlots, sizeof(struct _RTItemSlotAppearance) * Response->Character.AppearanceInfo.EquipmentAppearanceCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, InventoryAppearanceSlots, sizeof(struct _RTItemSlotAppearance) * Response->Character.AppearanceInfo.InventoryAppearanceCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, AchievementSlots, sizeof(struct _RTAchievementSlot) * Response->Character.AchievementInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, AchievementRewardSlots, sizeof(struct _RTAchievementRewardSlot) * Response->Character.AchievementInfo.RewardSlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, CraftSlots, sizeof(struct _RTCraftSlot) * Response->Character.CraftInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, RequestCraftSlots, sizeof(struct _RTRequestCraftSlot) * Response->Character.RequestCraftInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, BuffSlots, sizeof(struct _RTBuffSlot) * Response->Character.BuffInfo.BuffCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, GoldMeritMasterySlots, sizeof(struct _RTGoldMeritMasterySlot) * Response->Character.GoldMeritMasteryInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, PlatinumMeritExtendedMemorizeSlots, sizeof(struct _RTPlatinumMeritExtendedMemorizeSlot) * Response->Character.PlatinumMeritMasteryInfo.ExtendedMemorizeCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, PlatinumMeritUnlockedSlots, sizeof(struct _RTPlatinumMeritUnlockedSlot) * Response->Character.PlatinumMeritMasteryInfo.UnlockedSlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, PlatinumMeritMasterySlots, sizeof(struct _RTPlatinumMeritMasterySlot) * Response->Character.PlatinumMeritMasteryInfo.MasterySlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, PlatinumMeritSpecialMasterySlots, sizeof(struct _RTPlatinumMeritSpecialMasterySlot) * Response->Character.PlatinumMeritMasteryInfo.SpecialMasterySlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, DiamondMeritExtendedMemorizeSlots, sizeof(struct _RTDiamondMeritExtendedMemorizeSlot) * Response->Character.PlatinumMeritMasteryInfo.ExtendedMemorizeCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, DiamondMeritUnlockedSlots, sizeof(struct _RTDiamondMeritUnlockedSlot) * Response->Character.PlatinumMeritMasteryInfo.UnlockedSlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, DiamondMeritMasterySlots, sizeof(struct _RTDiamondMeritMasterySlot) * Response->Character.PlatinumMeritMasteryInfo.MasterySlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, DiamondMeritSpecialMasterySlots, sizeof(struct _RTDiamondMeritSpecialMasterySlot) * Response->Character.PlatinumMeritMasteryInfo.SpecialMasterySlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, AchievementExtendedRewardSlots, sizeof(struct _RTAchievementExtendedRewardSlot) * Response->Character.AchievementExtendedInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, WarpServiceSlots, sizeof(struct _RTWarpServiceSlot) * Response->Character.WarpServiceInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, OverlordMasterySlots, sizeof(struct _RTOverlordMasterySlot) * Response->Character.OverlordMasteryInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, HonorMedalSlots, sizeof(struct _RTHonorMedalSlot) * Response->Character.HonorMedalInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, ForceWingPresetSlots, sizeof(struct _RTForceWingPresetSlot) * Response->Character.ForceWingInfo.PresetSlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, ForceWingTrainingSlots, sizeof(struct _RTForceWingTrainingSlot) * Response->Character.ForceWingInfo.TrainingSlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, GiftBoxSlots, sizeof(struct _RTGiftBoxSlot) * Response->Character.GiftBoxInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, GiftBoxRewardSlots, sizeof(struct _RTGiftBoxRewardSlot) * Response->Character.GiftBoxInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, CollectionSlots, sizeof(struct _RTCollectionSlot) * Response->Character.CollectionInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, TransformSlots, sizeof(struct _RTTransformSlot) * Response->Character.TransformInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, AuraMasterySlots, sizeof(struct _RTAuraMasterySlot) * Response->Character.AuraMasteryInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, TranscendenceSlots, sizeof(struct _RTTranscendenceSlot) * Response->Character.TranscendenceInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, DamageBoosterSlots, sizeof(struct _RTDamageBoosterSlot) * Response->Character.DamageBoosterInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, StellarMasterySlots, sizeof(struct _RTStellarMasterySlot) * Response->Character.StellarMasteryInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, MythMasterySlots, sizeof(struct _RTMythMasterySlot) * Response->Character.MythMasteryInfo.PropertySlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, NewbieSupportSlots, sizeof(struct _RTNewbieSupportSlot) * Response->Character.NewbieSupportInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, EventPassMissionSlots, sizeof(struct _RTEventPassMissionSlot) * Response->Character.EventPassInfo.MissionSlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, EventPassMissionSlots, sizeof(struct _RTEventPassMissionSlot) * Response->Character.EventPassInfo.MissionSlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, EventPassRewardSlots, sizeof(struct _RTEventPassRewardSlot) * Response->Character.EventPassInfo.RewardSlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, AccountCostumeSlots, sizeof(struct _RTAccountCostumeSlot) * Response->Character.CostumeWarehouseInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, CostumePages, sizeof(struct _RTCostumePage) * Response->Character.CostumeInfo.PageCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, AppliedCostumeSlots, sizeof(struct _RTAppliedCostumeSlot) * Response->Character.CostumeInfo.AppliedSlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, ExplorationSlots, sizeof(struct _RTExplorationSlot) * Response->Character.ExplorationInfo.SlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, AnimaMasteryPresetData, sizeof(struct _RTAnimaMasteryPresetData) * Response->Character.AnimaMasteryInfo.PresetCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, AnimaMasteryCategoryData, sizeof(struct _RTAnimaMasteryCategoryData) * Response->Character.AnimaMasteryInfo.StorageCount);
 
     Response->Success = true;
     IPCSocketUnicast(Socket, Response);
