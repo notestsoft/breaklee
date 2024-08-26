@@ -26,7 +26,7 @@ BEGIN
         Characters.SP AS SP,
         Characters.Rage AS Rage,
         Characters.BP AS BP,
-        0 AS DPDuration,
+        Characters.DPDuration AS DPDuration,
         Characters.DP AS DP,
         Characters.SkillLevel AS SkillLevel,
         Characters.SkillExp AS SkillExp,
@@ -202,6 +202,9 @@ BEGIN
         Preset.ConfigurationData,
         Preset.ActiveEquipmentPresetIndex,
         Preset.ActiveAnimaMasteryPresetIndex,
+        Settings.HotKeysDataLength,
+        Settings.OptionsDataLength,
+        Settings.MacrosDataLength,
         LENGTH(Characters.Name) AS NameLength,
         Characters.Name,
         Equipment.EquipmentSlotData,
@@ -259,7 +262,10 @@ BEGIN
         Costume.AppliedSlotData,
         Exploration.SlotData,
         AnimaMastery.PresetData,
-        AnimaMastery.CategoryData
+        AnimaMastery.CategoryData,
+        Settings.HotKeysData,
+        Settings.OptionsData,
+        Settings.MacrosData
     FROM Characters
     LEFT JOIN Accounts ON Characters.AccountID = Accounts.AccountID
     LEFT JOIN Subpasswords SubpasswordsWarehouse ON Characters.AccountID = SubpasswordsWarehouse.AccountID AND SubpasswordsWarehouse.Type = 2
@@ -306,5 +312,6 @@ BEGIN
     LEFT JOIN Exploration ON Characters.CharacterID = Exploration.CharacterID
     LEFT JOIN AnimaMastery ON Characters.AccountID = AnimaMastery.AccountID
     LEFT JOIN Preset ON Characters.CharacterID = Preset.CharacterID
+    LEFT JOIN Settings ON Characters.CharacterID = Settings.AccountID
     WHERE Characters.CharacterID = InCharacterID;
 END;

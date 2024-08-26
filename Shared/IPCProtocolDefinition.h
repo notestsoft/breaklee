@@ -298,6 +298,7 @@ IPC_PROTOCOL(D2W, GET_CHARACTER,
 	Int32 CharacterID;
 	UInt32 CharacterIndex;
 	IPC_D2W_DATA_INITIALIZE_CHARACTER Character;
+	struct _RTCharacterSettingsInfo SettingsInfo;
 )
 
 IPC_PROTOCOL(W2D, DELETE_CHARACTER,

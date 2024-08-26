@@ -275,6 +275,9 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_DATA, Response->Character.PresetInfo.Configurations, sizeof(Response->Character.PresetInfo.Configurations),
         DB_TYPE_INT32, &Response->Character.PresetInfo.ActiveEquipmentPresetIndex,
         DB_TYPE_INT32, &Response->Character.PresetInfo.ActiveAnimaMasteryPresetIndex,
+        DB_TYPE_INT32, &Response->SettingsInfo.HotKeysDataLength,
+        DB_TYPE_INT32, &Response->SettingsInfo.OptionsDataLength,
+        DB_TYPE_INT32, &Response->SettingsInfo.MacrosDataLength,
         DB_TYPE_UINT8, &Response->Character.NameLength,
         DB_TYPE_STRING, Response->Character.Name, sizeof(Response->Character.Name),
         DB_TYPE_DATA, EquipmentSlots, sizeof(EquipmentSlots),
@@ -333,6 +336,9 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_DATA, ExplorationSlots, sizeof(ExplorationSlots),
         DB_TYPE_DATA, AnimaMasteryPresetData, sizeof(AnimaMasteryPresetData),
         DB_TYPE_DATA, AnimaMasteryCategoryData, sizeof(AnimaMasteryCategoryData),
+        DB_TYPE_DATA, Response->SettingsInfo.HotKeysData, sizeof(Response->SettingsInfo.HotKeysData),
+        DB_TYPE_DATA, Response->SettingsInfo.OptionsData, sizeof(Response->SettingsInfo.OptionsData),
+        DB_TYPE_DATA, Response->SettingsInfo.MacrosData, sizeof(Response->SettingsInfo.MacrosData),
         DB_PARAM_END
     )) {
         goto error;
