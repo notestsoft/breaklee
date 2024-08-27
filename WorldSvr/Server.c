@@ -9,8 +9,6 @@ Void ServerLoadRuntimeData(
     ServerConfig Config,
     ServerContextRef Context
 ) {
-    memset(Context->RuntimeData, 0, sizeof(struct _RuntimeData));
-
     AllocatorRef Allocator = AllocatorGetSystemDefault();
     ArchiveRef MainArchive = ArchiveCreateEmpty(Allocator);
     ArchiveRef Cont1Archive = ArchiveCreateEmpty(Allocator);
@@ -20,7 +18,6 @@ Void ServerLoadRuntimeData(
     ArchiveRef RankArchive = ArchiveCreateEmpty(Allocator);
     ArchiveRef SkillArchive = ArchiveCreateEmpty(Allocator);
     ArchiveRef TerrainArchive = ArchiveCreateEmpty(Allocator);
-    ArchiveRef CharacterInitArchive = ArchiveCreateEmpty(Allocator);
 
     Bool Loaded = true;
     Loaded &= ArchiveLoadFromFileEncryptedNoAlloc(
@@ -63,11 +60,6 @@ Void ServerLoadRuntimeData(
         PathCombineNoAlloc(Config.WorldSvr.RuntimeDataPath, "Terrain.enc"),
         true
     );
-    Loaded &= ArchiveLoadFromFile(
-        CharacterInitArchive,
-        PathCombineNoAlloc(Config.WorldSvr.ServerDataPath, "server_character_init.xml"),
-        true
-    );
     Loaded &= ServerLoadQuestData(Context->Runtime, QuestArchive);
     if (!Loaded) Fatal("Failed to load runtime quest data!");
     Loaded &= ServerLoadBattleStyleFormulaData(Context->Runtime, RankArchive);
@@ -78,7 +70,7 @@ Void ServerLoadRuntimeData(
     if (!Loaded) Fatal("Failed to load runtime mob data!");
     Loaded &= ServerLoadWorldData(Context->Runtime, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, Config.WorldSvr.ScriptDataPath, TerrainArchive, MainArchive, true);
     if (!Loaded) Fatal("Failed to load runtime world data!");
-    Loaded &= ServerLoadCharacterTemplateData(Context, RankArchive, CharacterInitArchive);
+    Loaded &= ServerLoadCharacterTemplateData(Context, RankArchive);
     if (!Loaded) Fatal("Failed to load character init data!");
     Loaded &= ServerLoadSkillData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, SkillArchive);
     if (!Loaded) Fatal("Failed to load skill data!");
@@ -110,7 +102,6 @@ Void ServerLoadRuntimeData(
     ArchiveDestroy(QuestArchive);
     ArchiveDestroy(RankArchive);
     ArchiveDestroy(SkillArchive);
-    ArchiveDestroy(CharacterInitArchive);
 
     for (Index WorldIndex = 0; WorldIndex < Context->Runtime->WorldManager->MaxWorldDataCount; WorldIndex += 1) {
         if (!RTWorldDataExists(Context->Runtime->WorldManager, WorldIndex)) continue;

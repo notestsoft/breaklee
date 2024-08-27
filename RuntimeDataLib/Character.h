@@ -1,0 +1,22 @@
+RUNTIME_DATA_FILE_BEGIN(CharacterTemplates.xml)
+
+RUNTIME_DATA_TYPE_BEGIN(CharacterTemplate, "CharacterTemplates.CharacterTemplate", 9)
+	RUNTIME_DATA_PROPERTY(Int32, BattleStyle, "BattleStyle")
+	RUNTIME_DATA_TYPE_BEGIN_CHILD(CharacterTemplateSkillSlot, "SkillSlot", 32)
+		RUNTIME_DATA_PROPERTY(Int32, SkillIndex, "SkillIndex")
+		RUNTIME_DATA_PROPERTY(Int32, SlotIndex, "SlotIndex")
+		RUNTIME_DATA_PROPERTY(Int32, Level, "Level")
+	RUNTIME_DATA_TYPE_END_CHILD(CharacterTemplateSkillSlot, 32)
+	RUNTIME_DATA_TYPE_BEGIN_CHILD(CharacterTemplateQuickSlot, "QuickSlot", 32)
+		RUNTIME_DATA_PROPERTY(Int32, SkillIndex, "SkillIndex")
+		RUNTIME_DATA_PROPERTY(Int32, SlotIndex, "SlotIndex")
+	RUNTIME_DATA_TYPE_END_CHILD(CharacterTemplateQuickSlot, 32)
+	RUNTIME_DATA_TYPE_BEGIN_CHILD(CharacterTemplateInventorySlot, "InventorySlot", 32)
+		RUNTIME_DATA_PROPERTY(Int32, SlotIndex, "SlotIndex")
+		RUNTIME_DATA_PROPERTY(UInt64, ItemID, "ItemID")
+		RUNTIME_DATA_PROPERTY(UInt64, ItemOption, "ItemOption")
+	RUNTIME_DATA_TYPE_END_CHILD(CharacterTemplateInventorySlot, 32)
+RUNTIME_DATA_TYPE_END(CharacterTemplate)
+RUNTIME_DATA_TYPE_INDEX(CharacterTemplate, Int32, BattleStyle)
+
+RUNTIME_DATA_FILE_END

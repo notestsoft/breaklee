@@ -16,24 +16,11 @@ enum {
     CLIENT_FLAGS_VERIFIED_SUBPASSWORD_DELETION  = 1 << 5,
 };
 
-struct _RuntimeDataCharacterTemplate {
-    Int32 BattleStyleIndex;
-    struct _RTCharacterInventoryInfo Inventory;
-    struct _RTCharacterSkillSlotInfo SkillSlots;
-    struct _RTCharacterQuickSlotInfo QuickSlots;
-};
-
-struct _RuntimeData {
-    struct _RuntimeDataCharacterTemplate CharacterTemplate[RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX];
-};
-typedef struct _RuntimeData* RuntimeDataRef;
-
 struct _ServerContext {
     ServerRef Server;
     SocketRef ClientSocket;
     IPCSocketRef IPCSocket;
     ServerConfig Config;
-    RuntimeDataRef RuntimeData;
     RTRuntimeRef Runtime;
     Timestamp UserListBroadcastTimestamp;
 };

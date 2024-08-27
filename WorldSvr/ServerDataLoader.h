@@ -17,8 +17,7 @@ Void ServerLoadScriptData(
 
 Bool ServerLoadCharacterTemplateData(
     ServerContextRef Context,
-    ArchiveRef RankArchive,
-    ArchiveRef CharacterInitArchive
+    ArchiveRef RankArchive
 );
 
 Bool ServerLoadBattleStyleFormulaData(

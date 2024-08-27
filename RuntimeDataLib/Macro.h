@@ -71,6 +71,7 @@
 #include "ChangeItem.h"
 #include "ChangeShape.h"
 #include "ChaosUpgrade.h"
+#include "Character.h"
 #include "ChatBaloon.h"
 #include "CheckItemAbility.h"
 #include "Collection.h"

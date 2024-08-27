@@ -1,0 +1,278 @@
+<CharacterTemplates>
+    <CharacterTemplate BattleStyle="1">
+        <SkillSlot SkillIndex="2" Level="1" SlotIndex="0" />
+        <SkillSlot SkillIndex="340" Level="1" SlotIndex="72" />
+        <SkillSlot SkillIndex="341" Level="1" SlotIndex="73" />
+        <SkillSlot SkillIndex="400" Level="1" SlotIndex="75" />
+        <SkillSlot SkillIndex="380" Level="1" SlotIndex="78" />
+        <SkillSlot SkillIndex="381" Level="1" SlotIndex="79" />
+        <SkillSlot SkillIndex="382" Level="1" SlotIndex="80" />
+        <SkillSlot SkillIndex="383" Level="1" SlotIndex="81" />
+        <SkillSlot SkillIndex="1" Level="1" SlotIndex="1" />
+        <SkillSlot SkillIndex="421" Level="1" SlotIndex="102" />
+        <SkillSlot SkillIndex="422" Level="1" SlotIndex="103" />
+        <SkillSlot SkillIndex="481" Level="1" SlotIndex="105" />
+        <SkillSlot SkillIndex="482" Level="1" SlotIndex="106" />
+        <SkillSlot SkillIndex="483" Level="1" SlotIndex="107" />
+        <SkillSlot SkillIndex="475" Level="1" SlotIndex="74" />
+        <SkillSlot SkillIndex="333" Level="1" SlotIndex="70" />
+        <SkillSlot SkillIndex="597" Level="1" SlotIndex="104" />
+        
+        <QuickSlot SkillIndex="0" SlotIndex="0" />
+        <QuickSlot SkillIndex="1" SlotIndex="1" />
+        <QuickSlot SkillIndex="237" SlotIndex="9" />
+        <QuickSlot SkillIndex="239" SlotIndex="10" />
+        <QuickSlot SkillIndex="130" SlotIndex="11" />
+
+        <InventorySlot SlotIndex="0" ItemID="3" ItemOption="5" />
+        <InventorySlot SlotIndex="1" ItemID="6" ItemOption="20" />
+        <InventorySlot SlotIndex="2" ItemID="240" ItemOption="0" />
+        <InventorySlot SlotIndex="9" ItemID="12" ItemOption="5" />
+    </CharacterInit>
+    
+    <CharacterTemplate BattleStyle="2">
+        <SkillSlot SkillIndex="2" Level="1" SlotIndex="0" />
+        <SkillSlot SkillIndex="342" Level="1" SlotIndex="72" />
+        <SkillSlot SkillIndex="343" Level="1" SlotIndex="73" />
+        <SkillSlot SkillIndex="402" Level="1" SlotIndex="75" />
+        <SkillSlot SkillIndex="384" Level="1" SlotIndex="78" />
+        <SkillSlot SkillIndex="385" Level="1" SlotIndex="79" />
+        <SkillSlot SkillIndex="386" Level="1" SlotIndex="80" />
+        <SkillSlot SkillIndex="387" Level="1" SlotIndex="81" />
+        <SkillSlot SkillIndex="1" Level="1" SlotIndex="1" />
+        <SkillSlot SkillIndex="421" Level="1" SlotIndex="102" />
+        <SkillSlot SkillIndex="422" Level="1" SlotIndex="103" />
+        <SkillSlot SkillIndex="486" Level="1" SlotIndex="105" />
+        <SkillSlot SkillIndex="487" Level="1" SlotIndex="106" />
+        <SkillSlot SkillIndex="488" Level="1" SlotIndex="107" />
+        <SkillSlot SkillIndex="476" Level="1" SlotIndex="74" />
+        <SkillSlot SkillIndex="333" Level="1" SlotIndex="70" />
+        <SkillSlot SkillIndex="598" Level="1" SlotIndex="104" />
+        
+        <QuickSlot SkillIndex="0" SlotIndex="0" />
+        <QuickSlot SkillIndex="1" SlotIndex="1" />
+        <QuickSlot SkillIndex="237" SlotIndex="9" />
+        <QuickSlot SkillIndex="239" SlotIndex="10" />
+        <QuickSlot SkillIndex="130" SlotIndex="11" />
+        
+        <InventorySlot SlotIndex="0" ItemID="3" ItemOption="5" />
+        <InventorySlot SlotIndex="1" ItemID="6" ItemOption="20" />
+        <InventorySlot SlotIndex="2" ItemID="270" ItemOption="0" />
+        <InventorySlot SlotIndex="9" ItemID="12" ItemOption="5" />
+    </CharacterInit>
+    
+    <CharacterTemplate BattleStyle="3">
+        <SkillSlot SkillIndex="100" Level="1" SlotIndex="32" />
+        <SkillSlot SkillIndex="344" Level="1" SlotIndex="72" />
+        <SkillSlot SkillIndex="345" Level="1" SlotIndex="73" />
+        <SkillSlot SkillIndex="404" Level="1" SlotIndex="75" />
+        <SkillSlot SkillIndex="129" Level="1" SlotIndex="33" />
+        <SkillSlot SkillIndex="421" Level="1" SlotIndex="102" />
+        <SkillSlot SkillIndex="422" Level="1" SlotIndex="103" />
+        <SkillSlot SkillIndex="491" Level="1" SlotIndex="105" />
+        <SkillSlot SkillIndex="492" Level="1" SlotIndex="106" />
+        <SkillSlot SkillIndex="493" Level="1" SlotIndex="107" />
+        <SkillSlot SkillIndex="477" Level="1" SlotIndex="74" />
+        <SkillSlot SkillIndex="333" Level="1" SlotIndex="70" />
+        <SkillSlot SkillIndex="599" Level="1" SlotIndex="104" />
+        
+        <QuickSlot SkillIndex="32" SlotIndex="0" />
+        <QuickSlot SkillIndex="33" SlotIndex="1" />
+        <QuickSlot SkillIndex="237" SlotIndex="9" />
+        <QuickSlot SkillIndex="239" SlotIndex="10" />
+        <QuickSlot SkillIndex="130" SlotIndex="11" />
+        
+        <InventorySlot SlotIndex="0" ItemID="3" ItemOption="5" />
+        <InventorySlot SlotIndex="1" ItemID="6" ItemOption="20" />
+        <InventorySlot SlotIndex="2" ItemID="270" ItemOption="0" />
+        <InventorySlot SlotIndex="9" ItemID="12" ItemOption="5" />
+    </CharacterInit>
+    
+    <CharacterTemplate BattleStyle="4">
+        <SkillSlot SkillIndex="424" Level="1" SlotIndex="32" />
+        <SkillSlot SkillIndex="331" Level="1" SlotIndex="67" />
+        <SkillSlot SkillIndex="346" Level="1" SlotIndex="72" />
+        <SkillSlot SkillIndex="347" Level="1" SlotIndex="73" />
+        <SkillSlot SkillIndex="406" Level="1" SlotIndex="75" />
+        <SkillSlot SkillIndex="391" Level="1" SlotIndex="78" />
+        <SkillSlot SkillIndex="392" Level="1" SlotIndex="79" />
+        <SkillSlot SkillIndex="393" Level="1" SlotIndex="80" />
+        <SkillSlot SkillIndex="394" Level="1" SlotIndex="81" />
+        <SkillSlot SkillIndex="148" Level="1" SlotIndex="33" />
+        <SkillSlot SkillIndex="421" Level="1" SlotIndex="102" />
+        <SkillSlot SkillIndex="422" Level="1" SlotIndex="103" />
+        <SkillSlot SkillIndex="496" Level="1" SlotIndex="105" />
+        <SkillSlot SkillIndex="497" Level="1" SlotIndex="106" />
+        <SkillSlot SkillIndex="498" Level="1" SlotIndex="107" />
+        <SkillSlot SkillIndex="478" Level="1" SlotIndex="74" />
+        <SkillSlot SkillIndex="333" Level="1" SlotIndex="70" />
+        <SkillSlot SkillIndex="600" Level="1" SlotIndex="104" />
+        
+        <QuickSlot SkillIndex="32" SlotIndex="0" />
+        <QuickSlot SkillIndex="33" SlotIndex="1" />
+        <QuickSlot SkillIndex="237" SlotIndex="9" />
+        <QuickSlot SkillIndex="239" SlotIndex="10" />
+        <QuickSlot SkillIndex="130" SlotIndex="11" />
+        
+        <InventorySlot SlotIndex="0" ItemID="3" ItemOption="5" />
+        <InventorySlot SlotIndex="1" ItemID="6" ItemOption="20" />
+        <InventorySlot SlotIndex="2" ItemID="255" ItemOption="0" />
+        <InventorySlot SlotIndex="9" ItemID="12" ItemOption="5" />
+    </CharacterInit>
+
+    <CharacterTemplate BattleStyle="5">
+        <SkillSlot SkillIndex="2" Level="1" SlotIndex="0" />
+        <SkillSlot SkillIndex="332" Level="1" SlotIndex="67" />
+        <SkillSlot SkillIndex="348" Level="1" SlotIndex="72" />
+        <SkillSlot SkillIndex="349" Level="1" SlotIndex="73" />
+        <SkillSlot SkillIndex="408" Level="1" SlotIndex="75" />
+        <SkillSlot SkillIndex="388" Level="1" SlotIndex="78" />
+        <SkillSlot SkillIndex="389" Level="1" SlotIndex="79" />
+        <SkillSlot SkillIndex="390" Level="1" SlotIndex="80" />
+        <SkillSlot SkillIndex="157" Level="1" SlotIndex="32" />
+        <SkillSlot SkillIndex="421" Level="1" SlotIndex="102" />
+        <SkillSlot SkillIndex="422" Level="1" SlotIndex="103" />
+        <SkillSlot SkillIndex="501" Level="1" SlotIndex="105" />
+        <SkillSlot SkillIndex="502" Level="1" SlotIndex="106" />
+        <SkillSlot SkillIndex="503" Level="1" SlotIndex="107" />
+        <SkillSlot SkillIndex="479" Level="1" SlotIndex="74" />
+        <SkillSlot SkillIndex="333" Level="1" SlotIndex="70" />
+        <SkillSlot SkillIndex="601" Level="1" SlotIndex="104" />
+        
+        <QuickSlot SkillIndex="0" SlotIndex="0" />
+        <QuickSlot SkillIndex="32" SlotIndex="1" />
+        <QuickSlot SkillIndex="237" SlotIndex="9" />
+        <QuickSlot SkillIndex="239" SlotIndex="10" />
+        <QuickSlot SkillIndex="130" SlotIndex="11" />
+        
+        <InventorySlot SlotIndex="0" ItemID="3" ItemOption="5" />
+        <InventorySlot SlotIndex="1" ItemID="6" ItemOption="20" />
+        <InventorySlot SlotIndex="2" ItemID="240" ItemOption="0" />
+        <InventorySlot SlotIndex="9" ItemID="12" ItemOption="5" />
+    </CharacterInit>
+    
+    <CharacterTemplate BattleStyle="6">
+        <SkillSlot SkillIndex="2" Level="1" SlotIndex="0" />
+        <SkillSlot SkillIndex="100" Level="1" SlotIndex="32" />
+        <SkillSlot SkillIndex="350" Level="1" SlotIndex="72" />
+        <SkillSlot SkillIndex="351" Level="1" SlotIndex="73" />
+        <SkillSlot SkillIndex="410" Level="1" SlotIndex="75" />
+        <SkillSlot SkillIndex="464" Level="1" SlotIndex="78" />
+        <SkillSlot SkillIndex="465" Level="1" SlotIndex="79" />
+        <SkillSlot SkillIndex="466" Level="1" SlotIndex="80" />
+        <SkillSlot SkillIndex="467" Level="1" SlotIndex="81" />
+        <SkillSlot SkillIndex="421" Level="1" SlotIndex="102" />
+        <SkillSlot SkillIndex="422" Level="1" SlotIndex="103" />
+        <SkillSlot SkillIndex="506" Level="1" SlotIndex="105" />
+        <SkillSlot SkillIndex="507" Level="1" SlotIndex="106" />
+        <SkillSlot SkillIndex="508" Level="1" SlotIndex="107" />
+        <SkillSlot SkillIndex="329" Level="1" SlotIndex="67" />
+        <SkillSlot SkillIndex="480" Level="1" SlotIndex="74" />
+        <SkillSlot SkillIndex="333" Level="1" SlotIndex="70" />
+        <SkillSlot SkillIndex="602" Level="1" SlotIndex="104" />
+        
+        <QuickSlot SkillIndex="0" SlotIndex="0" />
+        <QuickSlot SkillIndex="32" SlotIndex="1" />
+        <QuickSlot SkillIndex="237" SlotIndex="9" />
+        <QuickSlot SkillIndex="239" SlotIndex="10" />
+        <QuickSlot SkillIndex="130" SlotIndex="11" />
+        
+        <InventorySlot SlotIndex="0" ItemID="3" ItemOption="5" />
+        <InventorySlot SlotIndex="1" ItemID="6" ItemOption="20" />
+        <InventorySlot SlotIndex="2" ItemID="255" ItemOption="0" />
+        <InventorySlot SlotIndex="9" ItemID="12" ItemOption="5" />
+    </CharacterInit>
+    
+    <CharacterTemplate BattleStyle="7">
+        <SkillSlot SkillIndex="352" Level="1" SlotIndex="72" />
+        <SkillSlot SkillIndex="353" Level="1" SlotIndex="73" />
+        <SkillSlot SkillIndex="399" Level="1" SlotIndex="75" />
+        <SkillSlot SkillIndex="395" Level="1" SlotIndex="78" />
+        <SkillSlot SkillIndex="396" Level="1" SlotIndex="79" />
+        <SkillSlot SkillIndex="397" Level="1" SlotIndex="80" />
+        <SkillSlot SkillIndex="398" Level="1" SlotIndex="81" />
+        <SkillSlot SkillIndex="402" Level="1" SlotIndex="102" />
+        <SkillSlot SkillIndex="422" Level="1" SlotIndex="103" />
+        <SkillSlot SkillIndex="172" Level="1" SlotIndex="105" />
+        <SkillSlot SkillIndex="173" Level="1" SlotIndex="106" />
+        <SkillSlot SkillIndex="174" Level="1" SlotIndex="107" />
+        <SkillSlot SkillIndex="76" Level="1" SlotIndex="0" />
+        <SkillSlot SkillIndex="77" Level="1" SlotIndex="1" />
+        <SkillSlot SkillIndex="177" Level="1" SlotIndex="67" />
+        <SkillSlot SkillIndex="171" Level="1" SlotIndex="74" />
+        <SkillSlot SkillIndex="333" Level="1" SlotIndex="70" />
+        <SkillSlot SkillIndex="603" Level="1" SlotIndex="104" />
+        
+        <QuickSlot SkillIndex="0" SlotIndex="0" />
+        <QuickSlot SkillIndex="1" SlotIndex="1" />
+        <QuickSlot SkillIndex="237" SlotIndex="9" />
+        <QuickSlot SkillIndex="239" SlotIndex="10" />
+        <QuickSlot SkillIndex="130" SlotIndex="11" />
+        
+        <InventorySlot SlotIndex="0" ItemID="3" ItemOption="5" />
+        <InventorySlot SlotIndex="1" ItemID="6" ItemOption="20" />
+        <InventorySlot SlotIndex="2" ItemID="240" ItemOption="0" />
+        <InventorySlot SlotIndex="9" ItemID="12" ItemOption="5" />
+    </CharacterInit>
+    
+    <CharacterTemplate BattleStyle="8">
+        <SkillSlot SkillIndex="512" Level="1" SlotIndex="72" />
+        <SkillSlot SkillIndex="513" Level="1" SlotIndex="73" />
+        <SkillSlot SkillIndex="518" Level="1" SlotIndex="75" />
+        <SkillSlot SkillIndex="514" Level="1" SlotIndex="78" />
+        <SkillSlot SkillIndex="515" Level="1" SlotIndex="79" />
+        <SkillSlot SkillIndex="516" Level="1" SlotIndex="80" />
+        <SkillSlot SkillIndex="517" Level="1" SlotIndex="81" />
+        <SkillSlot SkillIndex="520" Level="1" SlotIndex="105" />
+        <SkillSlot SkillIndex="521" Level="1" SlotIndex="106" />
+        <SkillSlot SkillIndex="525" Level="1" SlotIndex="32" />
+        <SkillSlot SkillIndex="553" Level="1" SlotIndex="33" />
+        <SkillSlot SkillIndex="330" Level="1" SlotIndex="67" />
+        <SkillSlot SkillIndex="421" Level="1" SlotIndex="102" />
+        <SkillSlot SkillIndex="422" Level="1" SlotIndex="103" />
+        <SkillSlot SkillIndex="522" Level="1" SlotIndex="107" />
+        <SkillSlot SkillIndex="519" Level="1" SlotIndex="74" />
+        <SkillSlot SkillIndex="333" Level="1" SlotIndex="70" />
+        <SkillSlot SkillIndex="604" Level="1" SlotIndex="104" />
+        
+        <QuickSlot SkillIndex="32" SlotIndex="0" />
+        <QuickSlot SkillIndex="33" SlotIndex="1" />
+        <QuickSlot SkillIndex="237" SlotIndex="9" />
+        <QuickSlot SkillIndex="239" SlotIndex="10" />
+        <QuickSlot SkillIndex="130" SlotIndex="11" />
+        
+        <InventorySlot SlotIndex="0" ItemID="3" ItemOption="5" />
+        <InventorySlot SlotIndex="1" ItemID="6" ItemOption="20" />
+        <InventorySlot SlotIndex="2" ItemID="255" ItemOption="0" />
+        <InventorySlot SlotIndex="9" ItemID="12" ItemOption="5" />
+    </CharacterInit>
+
+    <CharacterTemplate BattleStyle="9">
+        <SkillSlot SkillIndex="633" Level="1" SlotIndex="0" />
+        <SkillSlot SkillIndex="636" Level="1" SlotIndex="1" />
+        <SkillSlot SkillIndex="333" Level="1" SlotIndex="70" />
+        <SkillSlot SkillIndex="663" Level="1" SlotIndex="72" />
+        <SkillSlot SkillIndex="664" Level="1" SlotIndex="73" />
+        <SkillSlot SkillIndex="668" Level="1" SlotIndex="74" />
+        <SkillSlot SkillIndex="667" Level="1" SlotIndex="75" />
+        <SkillSlot SkillIndex="665" Level="1" SlotIndex="78" />
+        <SkillSlot SkillIndex="666" Level="1" SlotIndex="79" />
+        <SkillSlot SkillIndex="421" Level="1" SlotIndex="102" />
+        <SkillSlot SkillIndex="422" Level="1" SlotIndex="103" />
+        <SkillSlot SkillIndex="674" Level="1" SlotIndex="104" />
+        <SkillSlot SkillIndex="669" Level="1" SlotIndex="105" />
+        <SkillSlot SkillIndex="670" Level="1" SlotIndex="106" />
+        <SkillSlot SkillIndex="671" Level="1" SlotIndex="107" />
+        
+        <QuickSlot SkillIndex="0" SlotIndex="0" />
+        <QuickSlot SkillIndex="1" SlotIndex="1" />
+        <QuickSlot SkillIndex="237" SlotIndex="9" />
+        <QuickSlot SkillIndex="239" SlotIndex="10" />
+        <QuickSlot SkillIndex="130" SlotIndex="11" />
+        
+        <InventorySlot SlotIndex="0" ItemID="3" ItemOption="5" />
+        <InventorySlot SlotIndex="1" ItemID="6" ItemOption="20" />
+        <InventorySlot SlotIndex="2" ItemID="270" ItemOption="0" />
+        <InventorySlot SlotIndex="9" ItemID="12" ItemOption="5" />
+    </CharacterInit>
+</CharacterTemplates>

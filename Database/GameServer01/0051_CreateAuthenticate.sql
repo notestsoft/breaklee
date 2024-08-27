@@ -45,7 +45,7 @@ BEGIN
         INSERT INTO EventPass (AccountID, MissionPageData, MissionSlotData, RewardSlotData) VALUES (InAccountID, '', '', '');
         INSERT INTO CostumeWarehouse (AccountID, SlotData) VALUES (InAccountID, '');
         INSERT INTO Warehouse (AccountID, SlotData) VALUES (InAccountID, '');
-        INSERT INTO AnimaMastery (AccountID, PresetData, CategoryData) VALUES (InAccountID, '', '');
+        INSERT INTO AnimaMastery (AccountID, PresetCount, PresetData, CategoryData) VALUES (InAccountID, 3, x'0001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809', '');
         INSERT INTO Settings (AccountID, HotKeysData, OptionsData, MacrosData) VALUES (InAccountID, '', '', '');
 
         -- Re-select the newly inserted account details

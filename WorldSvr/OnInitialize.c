@@ -114,7 +114,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Character->Data.Info = Packet->Character.CharacterInfo;
     Character->Data.StyleInfo = Packet->Character.CharacterStyleInfo;
 
-    UInt8* Memory = ((UInt8*)&Packet) + sizeof(IPC_D2W_DATA_GET_CHARACTER);
+    UInt8* Memory = ((UInt8*)Packet) + sizeof(IPC_D2W_DATA_GET_CHARACTER);
 
     Character->Data.EquipmentInfo.Info = Packet->Character.EquipmentInfo;
     if (Packet->Character.EquipmentInfo.EquipmentSlotCount > 0) {
@@ -382,11 +382,9 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         Int32 Length = sizeof(struct _RTGiftBoxSlot) * Packet->Character.GiftBoxInfo.SlotCount;
         memcpy(Character->Data.GiftboxInfo.Slots, Memory, Length);
         Memory += Length;
-        /* This is server side only data
         Length = sizeof(struct _RTGiftBoxRewardSlot) * Packet->Character.GiftBoxInfo.SlotCount;
         memcpy(Character->Data.GiftboxInfo.RewardSlots, Memory, Length);
         Memory += Length;
-        */
     }
 
     Character->Data.CollectionInfo.Info = Packet->Character.CollectionInfo;

@@ -202,8 +202,7 @@ Bool ParseBattleStyleString(
 
 Bool ServerLoadCharacterTemplateData(
     ServerContextRef Context,
-    ArchiveRef RankArchive,
-    ArchiveRef CharacterInitArchive
+    ArchiveRef RankArchive
 ) {
     ArchiveRef Archive = RankArchive;
     Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.char_init");
@@ -241,64 +240,6 @@ Bool ServerLoadCharacterTemplateData(
         FormulaData->BattleStyleIndex = BattleStyleIndex;
 
         if (!ParseAttributeInt32(Archive, Iterator->Index, "bdelta", &FormulaData->DeltaHP2)) goto error;
-
-        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
-    }
-
-    Archive = CharacterInitArchive;
-    ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "server_character_init");
-    if (ParentIndex < 0) goto error;
-
-    Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "character_init");
-    while (Iterator) {
-        Int32 BattleStyleIndex = 0;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "style", &BattleStyleIndex)) goto error;
-
-        assert(RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MIN <= BattleStyleIndex && BattleStyleIndex <= RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX);
-
-        struct _RuntimeDataCharacterTemplate* CharacterTemplate = &Context->RuntimeData->CharacterTemplate[BattleStyleIndex - 1];
-        CharacterTemplate->BattleStyleIndex = BattleStyleIndex;
-        CharacterTemplate->SkillSlots.Info.SlotCount = 0;
-
-        ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, "skill");
-        while (ChildIterator) {
-            RTSkillSlotRef SkillSlot = &CharacterTemplate->SkillSlots.Slots[CharacterTemplate->SkillSlots.Info.SlotCount];
-
-            if (!ParseAttributeUInt16(Archive, ChildIterator->Index, "id", &SkillSlot->ID)) goto error;
-            if (!ParseAttributeUInt8(Archive, ChildIterator->Index, "level", &SkillSlot->Level)) goto error;
-            if (!ParseAttributeUInt16(Archive, ChildIterator->Index, "slot", &SkillSlot->Index)) goto error;
-
-            CharacterTemplate->SkillSlots.Info.SlotCount += 1;
-
-            ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
-        }
-
-        CharacterTemplate->QuickSlots.Info.SlotCount = 0;
-
-        ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, "quickslot");
-        while (ChildIterator) {
-            RTQuickSlotRef QuickSlot = &CharacterTemplate->QuickSlots.Slots[CharacterTemplate->QuickSlots.Info.SlotCount];
-
-            if (!ParseAttributeUInt16(Archive, ChildIterator->Index, "skill", &QuickSlot->SkillIndex)) goto error;
-            if (!ParseAttributeUInt16(Archive, ChildIterator->Index, "slot", &QuickSlot->SlotIndex)) goto error;
-
-            CharacterTemplate->QuickSlots.Info.SlotCount += 1;
-
-            ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
-        }
-
-        ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, "inventory");
-        while (ChildIterator) {
-            struct _RTItemSlot Slot = { 0 };
-
-            if (!ParseAttributeUInt16(Archive, ChildIterator->Index, "slot", &Slot.SlotIndex)) goto error;
-            if (!ParseAttributeUInt32(Archive, ChildIterator->Index, "item_id", &Slot.Item.ID)) goto error;
-            if (!ParseAttributeUInt64(Archive, ChildIterator->Index, "item_option", &Slot.ItemOptions)) goto error;
-            
-            if (!RTInventorySetSlot(Context->Runtime, &CharacterTemplate->Inventory, &Slot)) goto error;
-
-            ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
-        }
 
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
     }

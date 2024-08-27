@@ -52,6 +52,15 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 		return;
 	}
 
+	RTDataCharacterTemplateRef CharacterTemplate = RTRuntimeDataCharacterTemplateGet(Runtime->Context, BattleStyleIndex);
+	RTDataCharacterInitRef CharacterInit = RTRuntimeDataCharacterInitGet(Context->Runtime->Context, BattleStyleIndex);
+	RTDataCharacterInitStatRef CharacterInitStat = RTRuntimeDataCharacterInitStatGet(Context->Runtime->Context, BattleStyleIndex);
+	if (!CharacterTemplate || !CharacterInit || !CharacterInitStat) {
+		Response->CharacterStatus = CREATE_CHARACTER_STATUS_DBERROR;
+		SocketSend(Socket, Connection, Response);
+		return;
+	}
+
 	IPC_W2D_DATA_CREATE_CHARACTER* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2D, CREATE_CHARACTER);
 	memset(&Request->CharacterData, 0, sizeof(struct _RTCharacterData));
 	Request->Header.SourceConnectionID = Connection->ID;
@@ -62,14 +71,6 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 	Request->CharacterSlotIndex = Packet->SlotIndex;
 	Request->CharacterNameLength = Packet->NameLength;
 	memcpy(Request->CharacterName, Packet->Name, Packet->NameLength);
-
-	struct _RuntimeDataCharacterTemplate* CharacterTemplate = &Context->RuntimeData->CharacterTemplate[BattleStyleIndex - 1];
-	if (CharacterTemplate->BattleStyleIndex != BattleStyleIndex) {
-		Response->CharacterStatus = CREATE_CHARACTER_STATUS_DBERROR;
-		SocketSend(Socket, Connection, Response);
-		return;
-	}
-
 	Request->CharacterData.Info.CurrentHP = INT32_MAX;
 	Request->CharacterData.Info.CurrentMP = INT32_MAX;
 	Request->CharacterData.Info.CurrentSP = INT32_MAX;
@@ -79,8 +80,6 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 	Request->CharacterData.Info.SkillRank = 1;
 	Request->CharacterData.Info.SkillLevel = 0;
 	Request->CharacterData.StyleInfo.Style = Style;
-
-	RTDataCharacterInitRef CharacterInit = RTRuntimeDataCharacterInitGet(Context->Runtime->Context, BattleStyleIndex);
 	Request->CharacterData.Info.WorldIndex = CharacterInit->WorldID;
 	Request->CharacterData.Info.PositionX = CharacterInit->X;
 	Request->CharacterData.Info.PositionY = CharacterInit->Y;
@@ -120,14 +119,37 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 		Request->CharacterData.EquipmentInfo.Info.EquipmentSlotCount += 1;
 	}
 
-	RTDataCharacterInitStatRef CharacterInitStat = RTRuntimeDataCharacterInitStatGet(Context->Runtime->Context, BattleStyleIndex);
 	Request->CharacterData.Info.Stat[RUNTIME_CHARACTER_STAT_STR] = CharacterInitStat->Str;
 	Request->CharacterData.Info.Stat[RUNTIME_CHARACTER_STAT_DEX] = CharacterInitStat->Dex;
 	Request->CharacterData.Info.Stat[RUNTIME_CHARACTER_STAT_INT] = CharacterInitStat->Int;
 
-	memcpy(&Request->CharacterData.InventoryInfo, &CharacterTemplate->Inventory, sizeof(struct _RTCharacterInventoryInfo));
-	memcpy(&Request->CharacterData.SkillSlotInfo, &CharacterTemplate->SkillSlots, sizeof(struct _RTCharacterSkillSlotInfo));
-	memcpy(&Request->CharacterData.QuickSlotInfo, &CharacterTemplate->QuickSlots, sizeof(struct _RTCharacterQuickSlotInfo));
+	for (Int32 Index = 0; Index < CharacterTemplate->CharacterTemplateSkillSlotCount; Index += 1) {
+		RTDataCharacterTemplateSkillSlotRef TemplateSkillSlot = &CharacterTemplate->CharacterTemplateSkillSlotList[Index];
+		RTSkillSlotRef CharacterSkillSlot = &Request->CharacterData.SkillSlotInfo.Slots[Request->CharacterData.SkillSlotInfo.Info.SlotCount];
+		CharacterSkillSlot->ID = TemplateSkillSlot->SkillIndex;
+		CharacterSkillSlot->Index = TemplateSkillSlot->SlotIndex;
+		CharacterSkillSlot->Level = TemplateSkillSlot->Level;
+		Request->CharacterData.SkillSlotInfo.Info.SlotCount += 1;
+	}
+
+	for (Int32 Index = 0; Index < CharacterTemplate->CharacterTemplateQuickSlotCount; Index += 1) {
+		RTDataCharacterTemplateQuickSlotRef TemplateQuickSlot = &CharacterTemplate->CharacterTemplateQuickSlotList[Index];
+		RTQuickSlotRef CharacterQuickSlot = &Request->CharacterData.QuickSlotInfo.Slots[Request->CharacterData.QuickSlotInfo.Info.SlotCount];
+		CharacterQuickSlot->SkillIndex = TemplateQuickSlot->SkillIndex;
+		CharacterQuickSlot->SlotIndex = TemplateQuickSlot->SlotIndex;
+		Request->CharacterData.QuickSlotInfo.Info.SlotCount += 1;
+	}
+
+	for (Int32 Index = 0; Index < CharacterTemplate->CharacterTemplateInventorySlotCount; Index += 1) {
+		RTDataCharacterTemplateInventorySlotRef TemplateInventorySlot = &CharacterTemplate->CharacterTemplateInventorySlotList[Index];
+		
+		struct _RTItemSlot ItemSlot = {
+			.Item.Serial = TemplateInventorySlot->ItemID,
+			.ItemOptions = TemplateInventorySlot->ItemOption,
+			.SlotIndex = TemplateInventorySlot->SlotIndex,
+		};
+		RTInventorySetSlot(Runtime, &Request->CharacterData.InventoryInfo, &ItemSlot);		
+	}
 
 	Request->CharacterData.StyleInfo.MapsMask = 0xFFFFFFFF;
 	Request->CharacterData.StyleInfo.WarpMask = 0xFFFFFFFF;
