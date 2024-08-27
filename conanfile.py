@@ -21,6 +21,7 @@ class BreakleeConan(ConanFile):
 
         if self.settings.os != "Windows":
             self.requires("odbc/2.3.11")
+            self.options["odbc/2.3.11"].shared = False
 
     def layout(self):
         self.folders.build = "Build"
