@@ -393,7 +393,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, StellarMasterySlots, sizeof(struct _RTStellarMasterySlot) * Response->Character.StellarMasteryInfo.SlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, MythMasterySlots, sizeof(struct _RTMythMasterySlot) * Response->Character.MythMasteryInfo.PropertySlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, NewbieSupportSlots, sizeof(struct _RTNewbieSupportSlot) * Response->Character.NewbieSupportInfo.SlotCount);
-    IPCPacketBufferAppendCopy(Connection->PacketBuffer, EventPassMissionSlots, sizeof(struct _RTEventPassMissionSlot) * Response->Character.EventPassInfo.MissionSlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, EventPassMissionPages, sizeof(struct _RTEventPassMissionPage) * Response->Character.EventPassInfo.MissionPageCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, EventPassMissionSlots, sizeof(struct _RTEventPassMissionSlot) * Response->Character.EventPassInfo.MissionSlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, EventPassRewardSlots, sizeof(struct _RTEventPassRewardSlot) * Response->Character.EventPassInfo.RewardSlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, AccountCostumeSlots, sizeof(struct _RTAccountCostumeSlot) * Response->Character.CostumeWarehouseInfo.SlotCount);
