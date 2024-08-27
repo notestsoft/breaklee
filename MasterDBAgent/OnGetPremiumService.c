@@ -12,10 +12,10 @@ IPC_PROCEDURE_BINDING(W2D, GET_PREMIUM_SERVICE) {
 		Context->Database,
 		"GetPremiumService",
 		DB_INPUT_INT32(Packet->AccountID),
-		DB_INPUT_INT32(Response->ServiceType),
-		DB_INPUT_UINT64(Response->StartedAt),
-		DB_INPUT_UINT64(Response->ExpiredAt),
-		DB_INPUT_BOOL(Response->HasService),
+		DB_OUTPUT_INT32(Response->ServiceType),
+		DB_OUTPUT_UINT64(Response->StartedAt),
+		DB_OUTPUT_UINT64(Response->ExpiredAt),
+		DB_OUTPUT_BOOL(Response->HasService),
 		DB_PARAM_END
 	)) {
 		Response->HasService = false;
