@@ -18,7 +18,7 @@ Void MemoryBufferDestroy(
     MemoryBufferRef MemoryBuffer
 );
 
-Index MemoryBufferGetOffset(
+Index MemoryBufferGetWriteOffset(
     MemoryBufferRef MemoryBuffer
 );
 
@@ -65,5 +65,22 @@ UInt8* MemoryBufferAppendCopy(
 
 #define MemoryBufferAppendStruct(MemoryBuffer, __TYPE__) \
 (__TYPE__*)MemoryBufferAppend(MemoryBuffer, sizeof(__TYPE__))
+
+Index MemoryBufferGetReadOffset(
+    MemoryBufferRef MemoryBuffer
+);
+
+Void MemoryBufferSetReadOffset(
+    MemoryBufferRef MemoryBuffer,
+    Index Offset
+);
+
+UInt8* MemoryBufferReadBytes(
+    MemoryBufferRef MemoryBuffer,
+    Index Length
+);
+
+#define MemoryBufferReadValue(MemoryBuffer, __TYPE__, __VALUE__) \
+*((__TYPE__*)MemoryBufferReadBytes(MemoryBuffer, sizeof(__TYPE__)))
 
 EXTERN_C_END

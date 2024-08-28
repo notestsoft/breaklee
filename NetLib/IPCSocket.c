@@ -554,11 +554,11 @@ Bool IPCSocketFetchReadBuffer(
     IPCSocketRef Socket,
     IPCSocketConnectionRef Connection
 ) {
-    while (MemoryBufferGetOffset(Connection->ReadBuffer) >= sizeof(struct _IPCPacket)) {
+    while (MemoryBufferGetWriteOffset(Connection->ReadBuffer) >= sizeof(struct _IPCPacket)) {
         IPCPacketRef Packet = (IPCPacketRef)MemoryBufferGetMemory(Connection->ReadBuffer, 0);
 
         // TODO: Add error handling when packet is dropped or not fully received to meet the desired PacketLength
-        if (MemoryBufferGetOffset(Connection->ReadBuffer) >= Packet->Length) {
+        if (MemoryBufferGetWriteOffset(Connection->ReadBuffer) >= Packet->Length) {
             IPCSocketOnReceived(Socket, Connection, Packet);
             MemoryBufferPopFront(Connection->ReadBuffer, Packet->Length);
         }

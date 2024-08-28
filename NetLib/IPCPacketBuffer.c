@@ -83,3 +83,9 @@ Void IPCPacketLogBytes(
 
     fprintf(stdout, "\n");
 }
+
+MemoryBufferRef IPCPacketBufferGetMemoryBuffer(
+    IPCPacketBufferRef PacketBuffer
+) {
+    return PacketBuffer->MemoryBuffer;
+}

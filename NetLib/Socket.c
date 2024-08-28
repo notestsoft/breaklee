@@ -229,14 +229,14 @@ Bool SocketFetchReadBuffer(
     SocketRef Socket,
     SocketConnectionRef Connection
 ) {
-    while (MemoryBufferGetOffset(Connection->ReadBuffer) >= 6) {
+    while (MemoryBufferGetWriteOffset(Connection->ReadBuffer) >= 6) {
         UInt32 PacketLength = 0;
         
         if (Socket->Flags & SOCKET_FLAGS_ENCRYPTED) {
             PacketLength = KeychainGetPacketLength(
                 &Connection->Keychain,
                 MemoryBufferGetMemory(Connection->ReadBuffer, 0),
-                MemoryBufferGetOffset(Connection->ReadBuffer)
+                MemoryBufferGetWriteOffset(Connection->ReadBuffer)
             );
         }
         else {
@@ -256,7 +256,7 @@ Bool SocketFetchReadBuffer(
         }
         
         // TODO: Add error handling when packet is dropped or not fully received to meet the desired PacketLength
-        if (MemoryBufferGetOffset(Connection->ReadBuffer) >= PacketLength) {
+        if (MemoryBufferGetWriteOffset(Connection->ReadBuffer) >= PacketLength) {
             if (Socket->Flags & SOCKET_FLAGS_ENCRYPTED) {
                 KeychainDecryptPacket(
                     &Connection->Keychain,
@@ -291,7 +291,7 @@ Bool SocketFlushWriteBuffer(
     SocketRef Socket,
     SocketConnectionRef Connection
 ) {
-    while (MemoryBufferGetOffset(Connection->WriteBuffer) > 0) {
+    while (MemoryBufferGetWriteOffset(Connection->WriteBuffer) > 0) {
         Void* Packet = MemoryBufferGetMemory(Connection->WriteBuffer, 0);
         UInt16 PacketMagic = *((UInt16*)Packet);
         PacketMagic -= Socket->ProtocolIdentifier;

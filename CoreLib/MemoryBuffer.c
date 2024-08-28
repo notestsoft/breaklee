@@ -7,7 +7,8 @@ struct _MemoryBuffer {
     Index Alignment;
     Index Size;
     Index SizeAligned;
-    Index Offset;
+    Index WriteOffset;
+    Index ReadOffset;
     UInt8 *Memory;
 };
 
@@ -28,7 +29,8 @@ MemoryBufferRef MemoryBufferCreate(
     MemoryBuffer->Alignment = Alignment;
     MemoryBuffer->Size = MemorySize;
     MemoryBuffer->SizeAligned = MemorySizeAligned;
-    MemoryBuffer->Offset = 0;
+    MemoryBuffer->WriteOffset = 0;
+    MemoryBuffer->ReadOffset = 0;
     MemoryBuffer->Memory = (UInt8 *)((UInt8 *)MemoryBuffer + HeaderSizeAligned);
     memset(MemoryBuffer->Memory, 0, MemorySizeAligned);
     return MemoryBuffer;
@@ -40,23 +42,23 @@ Void MemoryBufferDestroy(
     AllocatorDeallocate(MemoryBuffer->Allocator, MemoryBuffer);
 }
 
-Index MemoryBufferGetOffset(
+Index MemoryBufferGetWriteOffset(
     MemoryBufferRef MemoryBuffer
 ) {
-    return MemoryBuffer->Offset;
+    return MemoryBuffer->WriteOffset;
 }
 
 Index MemoryBufferGetFreeSize(
     MemoryBufferRef MemoryBuffer
 ) {
-    return MemoryBuffer->Size - MemoryBuffer->Offset;
+    return MemoryBuffer->Size - MemoryBuffer->WriteOffset;
 }
 
 UInt8* MemoryBufferGetMemory(
     MemoryBufferRef MemoryBuffer,
     Index Offset
 ) {
-    assert(Offset <= MemoryBuffer->Offset);
+    assert(Offset <= MemoryBuffer->WriteOffset);
     return MemoryBuffer->Memory + sizeof(UInt8) * Offset;
 }
 
@@ -72,35 +74,35 @@ Void MemoryBufferRemove(
     Index Offset,
     Index Length
 ) {
-    assert(Offset + Length <= MemoryBuffer->Offset);
+    assert(Offset + Length <= MemoryBuffer->WriteOffset);
 
-    if (Offset + Length < MemoryBuffer->Offset) {
+    if (Offset + Length < MemoryBuffer->WriteOffset) {
         UInt8* Destination = MemoryBufferGetMemory(MemoryBuffer, Offset);
         UInt8* Source = MemoryBufferGetMemory(MemoryBuffer, Offset + Length);
-        Index TailLength = MemoryBuffer->Offset - (Offset + Length);
+        Index TailLength = MemoryBuffer->WriteOffset - (Offset + Length);
         memmove(Destination, Source, TailLength);
     }
 
-    MemoryBuffer->Offset -= Length;
+    MemoryBuffer->WriteOffset -= Length;
 }
 
 Void MemoryBufferClear(
     MemoryBufferRef MemoryBuffer
 ) {
-    MemoryBuffer->Offset = 0;
+    MemoryBuffer->WriteOffset = 0;
 }
 
 UInt8* MemoryBufferAppend(
     MemoryBufferRef MemoryBuffer,
     Index Length
 ) {
-    Index AppendedOffset = MemoryBuffer->Offset + Length;
+    Index AppendedOffset = MemoryBuffer->WriteOffset + Length;
     assert(AppendedOffset <= MemoryBuffer->Size);
     
-    UInt8* Memory = MemoryBufferGetMemory(MemoryBuffer, MemoryBuffer->Offset);
+    UInt8* Memory = MemoryBufferGetMemory(MemoryBuffer, MemoryBuffer->WriteOffset);
     memset(Memory, 0, Length);
     
-    MemoryBuffer->Offset = AppendedOffset;
+    MemoryBuffer->WriteOffset = AppendedOffset;
     return Memory;
 }
 
@@ -109,12 +111,39 @@ UInt8* MemoryBufferAppendCopy(
     Void* Source,
     Index Length
 ) {
-    Index AppendedOffset = MemoryBuffer->Offset + Length;
+    Index AppendedOffset = MemoryBuffer->WriteOffset + Length;
     assert(AppendedOffset <= MemoryBuffer->Size);
 
-    UInt8* Memory = MemoryBufferGetMemory(MemoryBuffer, MemoryBuffer->Offset);
+    UInt8* Memory = MemoryBufferGetMemory(MemoryBuffer, MemoryBuffer->WriteOffset);
     memcpy(Memory, Source, Length);
 
-    MemoryBuffer->Offset = AppendedOffset;
+    MemoryBuffer->WriteOffset = AppendedOffset;
+    return Memory;
+}
+
+Index MemoryBufferGetReadOffset(
+    MemoryBufferRef MemoryBuffer
+) {
+    return MemoryBuffer->ReadOffset;
+}
+
+Void MemoryBufferSetReadOffset(
+    MemoryBufferRef MemoryBuffer,
+    Index Offset
+) {
+    assert(Offset <= MemoryBuffer->ReadOffset);
+    MemoryBuffer->ReadOffset = Offset;
+}
+
+UInt8* MemoryBufferReadBytes(
+    MemoryBufferRef MemoryBuffer,
+    Index Length
+) {
+    if (Length < 1) return NULL;
+
+    assert(MemoryBuffer->ReadOffset + Length <= MemoryBuffer->ReadOffset);
+
+    UInt8* Memory = MemoryBufferGetMemory(MemoryBuffer, MemoryBuffer->ReadOffset);
+    MemoryBuffer->ReadOffset += Length;
     return Memory;
 }

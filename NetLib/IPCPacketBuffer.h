@@ -51,4 +51,8 @@ Void IPCPacketLogBytes(
     Void* Packet
 );
 
+MemoryBufferRef IPCPacketBufferGetMemoryBuffer(
+    IPCPacketBufferRef PacketBuffer
+);
+
 EXTERN_C_END
