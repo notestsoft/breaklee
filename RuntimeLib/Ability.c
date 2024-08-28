@@ -3,6 +3,26 @@
 #include "Inventory.h"
 #include "Runtime.h"
 
+Void RTCharacterDataEncodeAbility(
+    RTCharacterDataRef CharacterData,
+    MemoryBufferRef MemoryBuffer
+) {
+	MemoryBufferAppendCopy(MemoryBuffer, &CharacterData->AbilityInfo.Info, sizeof(struct _RTAbilityInfo));
+	MemoryBufferAppendCopy(MemoryBuffer, CharacterData->AbilityInfo.EssenceAbilitySlots, sizeof(struct _RTEssenceAbilitySlot) * CharacterData->AbilityInfo.Info.EssenceAbilityCount);
+	MemoryBufferAppendCopy(MemoryBuffer, CharacterData->AbilityInfo.BlendedAbilitySlots, sizeof(struct _RTBlendedAbilitySlot) * CharacterData->AbilityInfo.Info.BlendedAbilityCount);
+	MemoryBufferAppendCopy(MemoryBuffer, CharacterData->AbilityInfo.KarmaAbilitySlots, sizeof(struct _RTKarmaAbilitySlot) * CharacterData->AbilityInfo.Info.KarmaAbilityCount);
+}
+
+Void RTCharacterDataDecodeAbility(
+    RTCharacterDataRef CharacterData,
+    MemoryBufferRef MemoryBuffer
+) {
+	MemoryBufferReadBytesCopy(MemoryBuffer, &CharacterData->AbilityInfo.Info, sizeof(struct _RTAbilityInfo));
+	MemoryBufferReadBytesCopy(MemoryBuffer, CharacterData->AbilityInfo.EssenceAbilitySlots, sizeof(struct _RTEssenceAbilitySlot) * CharacterData->AbilityInfo.Info.EssenceAbilityCount);
+	MemoryBufferReadBytesCopy(MemoryBuffer, CharacterData->AbilityInfo.BlendedAbilitySlots, sizeof(struct _RTBlendedAbilitySlot) * CharacterData->AbilityInfo.Info.BlendedAbilityCount);
+	MemoryBufferReadBytesCopy(MemoryBuffer, CharacterData->AbilityInfo.KarmaAbilitySlots, sizeof(struct _RTKarmaAbilitySlot) * CharacterData->AbilityInfo.Info.KarmaAbilityCount);
+}
+
 RTEssenceAbilitySlotRef RTCharacterGetEssenceAbilitySlot(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,

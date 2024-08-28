@@ -147,3 +147,13 @@ UInt8* MemoryBufferReadBytes(
     MemoryBuffer->ReadOffset += Length;
     return Memory;
 }
+
+Void MemoryBufferReadBytesCopy(
+    MemoryBufferRef MemoryBuffer,
+    UInt8* Destination,
+    Index Length
+) {
+    if (Length < 1) return;
+    UInt8* Memory = MemoryBufferReadBytes(MemoryBuffer, Length);
+    memcpy(Destination, Memory, Length);
+}

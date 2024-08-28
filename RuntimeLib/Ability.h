@@ -55,6 +55,16 @@ struct _RTCharacterAbilityInfo {
 
 #pragma pack(pop)
 
+Void RTCharacterDataEncodeAbility(
+    RTCharacterDataRef CharacterData,
+    MemoryBufferRef MemoryBuffer
+);
+
+Void RTCharacterDataDecodeAbility(
+    RTCharacterDataRef CharacterData,
+    MemoryBufferRef MemoryBuffer
+);
+
 RTEssenceAbilitySlotRef RTCharacterGetEssenceAbilitySlot(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,

@@ -80,6 +80,12 @@ UInt8* MemoryBufferReadBytes(
     Index Length
 );
 
+Void MemoryBufferReadBytesCopy(
+    MemoryBufferRef MemoryBuffer,
+    UInt8* Destination,
+    Index Length
+);
+
 #define MemoryBufferReadValue(MemoryBuffer, __TYPE__, __VALUE__) \
 *((__TYPE__*)MemoryBufferReadBytes(MemoryBuffer, sizeof(__TYPE__)))
 
