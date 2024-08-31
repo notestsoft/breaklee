@@ -18,7 +18,7 @@ RTSkillSlotRef RTCharacterAddSkillSlot(
 	SkillSlot->Index = SlotIndex;
 	Character->Data.SkillSlotInfo.Info.SlotCount += 1;
 	Character->SyncMask.SkillSlotInfo = true;
-
+	RTCharacterInitializeAttributes(Runtime, Character);
 	return SkillSlot;
 }
 
@@ -55,6 +55,7 @@ Void RTCharacterRemoveSkillSlot(
 
 			Character->Data.SkillSlotInfo.Info.SlotCount -= 1;
 			Character->SyncMask.SkillSlotInfo = true;
+			RTCharacterInitializeAttributes(Runtime, Character);
 		}
 	}
 }
@@ -100,10 +101,10 @@ Bool RTCharacterChangeSkillLevel(
 	}
 
 	if (Character->Data.Info.SkillPoint < RequiredSkillPointCount) return false;
-	if (Character->Data.Info.Alz< RequiredCurrencyAlz) return false;
+	if (Character->Data.Info.Alz < RequiredCurrencyAlz) return false;
 
 	Character->Data.Info.SkillPoint -= RequiredSkillPointCount;
-	Character->Data.Info.Alz-= RequiredCurrencyAlz;
+	Character->Data.Info.Alz -= RequiredCurrencyAlz;
 	SkillSlot->Level = TargetSkillLevel;
 
 	if (TargetSkillLevel <= 0) {
@@ -112,6 +113,7 @@ Bool RTCharacterChangeSkillLevel(
 
 	Character->SyncMask.Info = true;
 	Character->SyncMask.SkillSlotInfo = true;
+	RTCharacterInitializeAttributes(Runtime, Character);
 
 	return true;
 }
