@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <PatternPart Index="4239">
+	<Mob MobIndex="0" SpeciesIndex="1783" X="97" Y="28" Width="5" Height="5" SpawnInterval="6000000" SpawnCount="1" SpawnDefault="0" EventProperty="" EventMobList="" EventInterval="" Level="1" PerfectDrop="0" SpawnTriggerIndex="0" KillTriggerIndex="0" ServerMobIndex="0" LootDelay="0" Script=""/>
 	<Mob MobIndex="1" SpeciesIndex="1783" X="93" Y="26" Width="4" Height="4" SpawnInterval="6000000" SpawnCount="1" SpawnDefault="0" EventProperty="" EventMobList="" EventInterval="" Level="1" PerfectDrop="0" SpawnTriggerIndex="0" KillTriggerIndex="0" ServerMobIndex="0" LootDelay="0" Script=""/>
 	<Mob MobIndex="2" SpeciesIndex="1783" X="94" Y="24" Width="5" Height="4" SpawnInterval="6000000" SpawnCount="1" SpawnDefault="0" EventProperty="" EventMobList="" EventInterval="" Level="1" PerfectDrop="0" SpawnTriggerIndex="0" KillTriggerIndex="0" ServerMobIndex="0" LootDelay="0" Script=""/>
 	<Mob MobIndex="3" SpeciesIndex="1783" X="85" Y="31" Width="4" Height="4" SpawnInterval="6000000" SpawnCount="1" SpawnDefault="0" EventProperty="" EventMobList="" EventInterval="" Level="1" PerfectDrop="0" SpawnTriggerIndex="0" KillTriggerIndex="0" ServerMobIndex="0" LootDelay="0" Script=""/>

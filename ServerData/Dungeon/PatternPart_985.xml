@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <PatternPart Index="985">
+	<Mob MobIndex="0" SpeciesIndex="419" X="5" Y="6" Width="2" Height="2" SpawnInterval="5000" SpawnCount="1" SpawnDefault="1" EventProperty="" EventMobList="" EventInterval="" Level="0" PerfectDrop="0" SpawnTriggerIndex="" KillTriggerIndex="" ServerMobIndex="" LootDelay="" Script=""/>
 	<Mob MobIndex="1" SpeciesIndex="419" X="5" Y="26" Width="2" Height="2" SpawnInterval="5000" SpawnCount="1" SpawnDefault="1" EventProperty="" EventMobList="" EventInterval="" Level="0" PerfectDrop="0" SpawnTriggerIndex="" KillTriggerIndex="" ServerMobIndex="" LootDelay="" Script=""/>
 	<Mob MobIndex="2" SpeciesIndex="419" X="15" Y="16" Width="2" Height="2" SpawnInterval="5000" SpawnCount="1" SpawnDefault="1" EventProperty="" EventMobList="" EventInterval="" Level="0" PerfectDrop="0" SpawnTriggerIndex="" KillTriggerIndex="" ServerMobIndex="" LootDelay="" Script=""/>
 	<Mob MobIndex="3" SpeciesIndex="419" X="25" Y="6" Width="2" Height="2" SpawnInterval="5000" SpawnCount="1" SpawnDefault="1" EventProperty="" EventMobList="" EventInterval="" Level="0" PerfectDrop="0" SpawnTriggerIndex="" KillTriggerIndex="" ServerMobIndex="" LootDelay="" Script=""/>
@@ -20,5 +21,5 @@
 	<Mob MobIndex="18" SpeciesIndex="91" X="25" Y="24" Width="2" Height="2" SpawnInterval="600000" SpawnCount="10" SpawnDefault="1" EventProperty="" EventMobList="" EventInterval="" Level="0" PerfectDrop="0" SpawnTriggerIndex="" KillTriggerIndex="" ServerMobIndex="" LootDelay="" Script=""/>
 	<Mob MobIndex="19" SpeciesIndex="91" X="23" Y="24" Width="2" Height="2" SpawnInterval="600000" SpawnCount="10" SpawnDefault="1" EventProperty="" EventMobList="" EventInterval="" Level="0" PerfectDrop="0" SpawnTriggerIndex="" KillTriggerIndex="" ServerMobIndex="" LootDelay="" Script=""/>
 	<Mob MobIndex="20" SpeciesIndex="98" X="23" Y="26" Width="2" Height="2" SpawnInterval="600000" SpawnCount="10" SpawnDefault="1" EventProperty="" EventMobList="" EventInterval="" Level="0" PerfectDrop="0" SpawnTriggerIndex="" KillTriggerIndex="" ServerMobIndex="" LootDelay="" Script=""/>
-	<Mob MobIndex="21" SpeciesIndex="495" X="30" Y="15" Width="1" Height="1" SpawnInterval="5000" SpawnCount="1" SpawnDefault="1" EventProperty="" EventMobList="" EventInterval="" Level="0" PerfectDrop="0" SpawnTriggerIndex="" KillTriggerIndex="" ServerMobIndex="" LootDelay="" Script=""/>
+	<Mob MobIndex="21" SpeciesIndex="508" X="30" Y="15" Width="1" Height="1" SpawnInterval="5000" SpawnCount="1" SpawnDefault="1" EventProperty="" EventMobList="" EventInterval="" Level="0" PerfectDrop="0" SpawnTriggerIndex="" KillTriggerIndex="" ServerMobIndex="" LootDelay="" Script=""/>
 </PatternPart>
