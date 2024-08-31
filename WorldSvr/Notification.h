@@ -5,11 +5,6 @@
 
 EXTERN_C_BEGIN
 
-Void BroadcastMessage(
-    ServerContextRef Context,
-    CString Message
-);
-
 Void BroadcastUserList(
     ServerRef Server,
     ServerContextRef Context

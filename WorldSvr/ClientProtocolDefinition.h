@@ -841,6 +841,7 @@ CLIENT_PROTOCOL_ENUM(
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_SPAWN_ITEM_INDEX,
     RTEntityID Entity;
     UInt64 ItemOptions;
+    UInt32 Unknown1;
     UInt32 SourceIndex;
     UInt64 ItemID;
     UInt16 X;

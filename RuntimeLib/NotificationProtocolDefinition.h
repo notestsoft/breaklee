@@ -199,6 +199,7 @@ NOTIFICATION_PROTOCOL_ENUM(
 NOTIFICATION_PROTOCOL_STRUCT(ITEMS_SPAWN_INDEX,
     RTEntityID Entity;
     UInt64 ItemOptions;
+    UInt32 Unknown1;
     UInt32 SourceIndex;
     UInt64 ItemID;
     UInt16 X;

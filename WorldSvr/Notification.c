@@ -80,55 +80,20 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTER_ITEM_UNEQUIP) {
     Trace("CharacterItemUnequip");
 }
 
-
 NOTIFICATION_PROCEDURE_BINDING(MOB_MOVE_BEGIN) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("MobMoveBegin(%d, %d, %d, %d, %d, %d, %d, %d)",
-        Notification->Entity.EntityIndex,
-        Notification->Entity.WorldIndex,
-        Notification->Entity.EntityType,
-        Notification->TickCount,
-        Notification->PositionBeginX,
-        Notification->PositionBeginY,
-        Notification->PositionEndX,
-        Notification->PositionEndY
-    );
 }
 
 NOTIFICATION_PROCEDURE_BINDING(MOB_MOVE_END) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("MobMoveEnd(%d, %d, %d, %d, %d)",
-        Notification->Entity.EntityIndex,
-        Notification->Entity.WorldIndex,
-        Notification->Entity.EntityType,
-        Notification->PositionCurrentX,
-        Notification->PositionCurrentY
-    );
 }
 
 NOTIFICATION_PROCEDURE_BINDING(MOB_CHASE_BEGIN) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("MobChaseBegin(%d, %d, %d, %d, %d, %d, %d, %d)",
-        Notification->Entity.EntityIndex,
-        Notification->Entity.WorldIndex,
-        Notification->Entity.EntityType,
-        Notification->TickCount,
-        Notification->PositionBeginX,
-        Notification->PositionBeginY,
-        Notification->PositionEndX,
-        Notification->PositionEndY
-    );
 }
 
 NOTIFICATION_PROCEDURE_BINDING(MOB_CHASE_END) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("MobChaseEnd(%d, %d, %d, %d, %d)",
-        Notification->Entity.EntityIndex,
-        Notification->Entity.WorldIndex,
-        Notification->Entity.EntityType,
-        Notification->PositionCurrentX,
-        Notification->PositionCurrentY
-    );
 }
 
 NOTIFICATION_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
@@ -253,33 +218,6 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTER_FORCE_WING_EXP) {
 
 NOTIFICATION_PROCEDURE_BINDING(NFY_DUNGEON_TIMER) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-}
-
-Void BroadcastMessage(
-    ServerContextRef Context,
-    CString Message
-) {
-    /*
-    Int32 MessageLength = MIN((Int32)strlen(Message), sizeof(S2C_DATA_NFY_MESSAGE_BROADCAST_BODY) - 1);
-
-    S2C_DATA_NFY_MESSAGE_BROADCAST* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_MESSAGE_BROADCAST);
-    // Notification->Payload.MessagePayloadHeader = ...;
-    Notification->Payload.MessagePayloadLength = MAX(0, MessageLength - (
-        sizeof(S2C_DATA_NFY_MESSAGE_BROADCAST_PAYLOAD) -
-        sizeof(Notification->Payload.MessagePayloadLength)
-    ));
-    memcpy(&Notification->Payload.Body.Message[0], Message, MessageLength);
-
-    for (Int32 Index = 0; Index < Context->Runtime->CharacterCount; Index += 1) {
-        RTCharacterRef Character = &Context->Runtime->Characters[Index];
-        ClientContextRef Client = ServerGetClientByEntity(Context, Character->ID);
-        if (Client) {
-            SocketSend(Context->ClientSocket, Client->Connection, Notification);
-        }
-    }
-
-    SocketSendAll(Context->MasterSocket, Notification);
-    */
 }
 
 Void BroadcastUserList(
