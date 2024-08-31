@@ -8,19 +8,47 @@ IPC_PROCEDURE_BINDING(W2D, CREATE_CHARACTER) {
 	Response->Header.Target = Packet->Header.Source;
 	Response->Header.TargetConnectionID = Packet->Header.SourceConnectionID;
 
+	UInt8* Memory = (UInt8*)&Packet->Data[0];
+
+	ReadMemory(struct _RTEquipmentInfo, EquipmentInfo, 1);
+	ReadMemory(struct _RTItemSlot, EquipmentSlots, EquipmentInfo->EquipmentSlotCount);
+	ReadMemory(struct _RTItemSlot, EquipmentInventorySlots, EquipmentInfo->InventorySlotCount);
+	ReadMemory(struct _RTEquipmentLinkSlot, EquipmentLinkSlots, EquipmentInfo->LinkSlotCount);
+	ReadMemory(struct _RTEquipmentLockSlot, EquipmentLockSlots, EquipmentInfo->LockSlotCount);
+	ReadMemory(struct _RTInventoryInfo, InventoryInfo, 1);
+	ReadMemory(struct _RTItemSlot, InventorySlots, InventoryInfo->SlotCount);
+	ReadMemory(struct _RTSkillSlotInfo, SkillSlotInfo, 1);
+	ReadMemory(struct _RTSkillSlot, SkillSlots, SkillSlotInfo->SlotCount);
+	ReadMemory(struct _RTQuickSlotInfo, QuickSlotInfo, 1);
+	ReadMemory(struct _RTQuickSlot, QuickSlots, QuickSlotInfo->SlotCount);
+
 	Bool Success = DatabaseCallProcedure(
 		Context->Database,
 		"InsertCharacter",
 		DB_INPUT_INT32(Packet->AccountID),
 		DB_INPUT_STRING(Packet->CharacterName, sizeof(Packet->CharacterName)),
 		DB_INPUT_UINT8(Packet->CharacterSlotIndex),
-		DB_INPUT_INT32(Packet->CharacterData.StyleInfo.Style),
-        DB_INPUT_INT16(Packet->CharacterData.Info.Stat[RUNTIME_CHARACTER_STAT_STR]),
-        DB_INPUT_INT16(Packet->CharacterData.Info.Stat[RUNTIME_CHARACTER_STAT_DEX]),
-        DB_INPUT_INT16(Packet->CharacterData.Info.Stat[RUNTIME_CHARACTER_STAT_INT]),
-        DB_INPUT_INT8(Packet->CharacterData.Info.WorldIndex),
-        DB_INPUT_INT16(Packet->CharacterData.Info.PositionX),
-        DB_INPUT_INT16(Packet->CharacterData.Info.PositionY),
+		DB_INPUT_UINT32(Packet->CharacterStyle.RawValue),
+        DB_INPUT_UINT16(Packet->StatSTR),
+        DB_INPUT_UINT16(Packet->StatDEX),
+        DB_INPUT_UINT16(Packet->StatINT),
+        DB_INPUT_UINT8(Packet->WorldIndex),
+        DB_INPUT_UINT16(Packet->PositionX),
+        DB_INPUT_UINT16(Packet->PositionY),
+		DB_INPUT_UINT8(EquipmentInfo->EquipmentSlotCount),
+		DB_INPUT_UINT8(EquipmentInfo->InventorySlotCount),
+		DB_INPUT_UINT8(EquipmentInfo->LinkSlotCount),
+		DB_INPUT_UINT8(EquipmentInfo->LockSlotCount),
+		DB_INPUT_DATA(EquipmentSlots, EquipmentSlotsLength),
+		DB_INPUT_DATA(EquipmentInventorySlots, EquipmentInventorySlotsLength),
+		DB_INPUT_DATA(EquipmentLinkSlots, EquipmentLinkSlotsLength),
+		DB_INPUT_DATA(EquipmentLockSlots, EquipmentLockSlotsLength),
+		DB_INPUT_UINT16(InventoryInfo->SlotCount),
+		DB_INPUT_DATA(InventorySlots, InventorySlotsLength),
+		DB_INPUT_UINT16(SkillSlotInfo->SlotCount),
+		DB_INPUT_DATA(SkillSlots, SkillSlotsLength),
+		DB_INPUT_UINT16(QuickSlotInfo->SlotCount),
+		DB_INPUT_DATA(QuickSlots, QuickSlotsLength),
         DB_OUTPUT_INT8(Response->Status),
         DB_OUTPUT_INT32(Response->Character.CharacterID),
 		DB_PARAM_END

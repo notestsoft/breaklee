@@ -114,7 +114,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Character->Data.Info = Packet->Character.CharacterInfo;
     Character->Data.StyleInfo = Packet->Character.CharacterStyleInfo;
 
-    UInt8* Memory = ((UInt8*)Packet) + sizeof(IPC_D2W_DATA_GET_CHARACTER);
+    UInt8* Memory = &Packet->Data[0];
 
     Character->Data.EquipmentInfo.Info = Packet->Character.EquipmentInfo;
     if (Packet->Character.EquipmentInfo.EquipmentSlotCount > 0) {

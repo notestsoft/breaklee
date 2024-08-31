@@ -79,17 +79,17 @@ struct _DatabaseTypeMapping {
 #define DB_TYPE_DATA    (10)
 
 const struct _DatabaseTypeMapping kDatabaseTypeMapping[] = {
-	{	DB_TYPE_CHAR,		SQL_CHAR,		SQL_C_CHAR,		sizeof(Char),	"Char"		},
-	{	DB_TYPE_STRING,		SQL_VARCHAR,	SQL_C_CHAR,		0,				"CString"	},
-	{	DB_TYPE_INT8,		SQL_TINYINT,	SQL_C_STINYINT, sizeof(Int8),	"Int8"		},
-	{	DB_TYPE_INT16,		SQL_SMALLINT,	SQL_C_SSHORT,	sizeof(Int16),	"Int16"		},
-	{	DB_TYPE_INT32,		SQL_INTEGER,	SQL_C_SLONG,	sizeof(Int32),	"Int32"		},
-	{	DB_TYPE_INT64,		SQL_BIGINT,		SQL_C_SBIGINT,	sizeof(Int64),	"Int64"		},
-	{	DB_TYPE_UINT8,		SQL_TINYINT,	SQL_C_UTINYINT, sizeof(UInt8),	"UInt8"		},
-	{	DB_TYPE_UINT16,		SQL_SMALLINT,	SQL_C_USHORT,	sizeof(UInt16),	"UInt16"	},
-	{	DB_TYPE_UINT32,		SQL_INTEGER,	SQL_C_ULONG,	sizeof(UInt32),	"UInt32"	},
-	{	DB_TYPE_UINT64,		SQL_BIGINT,		SQL_C_UBIGINT,	sizeof(UInt64),	"UInt64"	},
-	{	DB_TYPE_DATA,		SQL_BINARY,		SQL_C_BINARY,	0,				"UInt8[]"	},
+	{	DB_TYPE_CHAR,		SQL_CHAR,			SQL_C_CHAR,		sizeof(Char),	"Char"		},
+	{	DB_TYPE_STRING,		SQL_VARCHAR,		SQL_C_CHAR,		0,				"CString"	},
+	{	DB_TYPE_INT8,		SQL_TINYINT,		SQL_C_STINYINT, sizeof(Int8),	"Int8"		},
+	{	DB_TYPE_INT16,		SQL_SMALLINT,		SQL_C_SSHORT,	sizeof(Int16),	"Int16"		},
+	{	DB_TYPE_INT32,		SQL_INTEGER,		SQL_C_SLONG,	sizeof(Int32),	"Int32"		},
+	{	DB_TYPE_INT64,		SQL_BIGINT,			SQL_C_SBIGINT,	sizeof(Int64),	"Int64"		},
+	{	DB_TYPE_UINT8,		SQL_TINYINT,		SQL_C_UTINYINT, sizeof(UInt8),	"UInt8"		},
+	{	DB_TYPE_UINT16,		SQL_SMALLINT,		SQL_C_USHORT,	sizeof(UInt16),	"UInt16"	},
+	{	DB_TYPE_UINT32,		SQL_INTEGER,		SQL_C_ULONG,	sizeof(UInt32),	"UInt32"	},
+	{	DB_TYPE_UINT64,		SQL_BIGINT,			SQL_C_UBIGINT,	sizeof(UInt64),	"UInt64"	},
+	{	DB_TYPE_DATA,		SQL_LONGVARBINARY,	SQL_C_BINARY,	0,				"UInt8[]"	},
 };
 
 static inline struct _DatabaseTypeMapping DatabaseTypeGetMapping(
@@ -311,6 +311,7 @@ DatabaseHandleRef DatabaseCallProcedureFetchInternal(
 	SQLSMALLINT ParameterNativeTypes[DATABASE_MAX_PROCEDURE_PARAMETER_COUNT] = { 0 };
 	SQLSMALLINT ParameterLengths[DATABASE_MAX_PROCEDURE_PARAMETER_COUNT] = { 0 };
 	SQLCHAR* ParameterValues[DATABASE_MAX_PROCEDURE_PARAMETER_COUNT] = { 0 };
+	SQLLEN ParameterOutLengths[DATABASE_MAX_PROCEDURE_PARAMETER_COUNT] = { 0 };
 
 	snprintf((Char*)Query, sizeof(Query), "{ CALL %s(", Procedure);
 	while (true) {
@@ -354,6 +355,7 @@ DatabaseHandleRef DatabaseCallProcedureFetchInternal(
 	}
 
 	for (Int32 ParameterIndex = 0; ParameterIndex < ParameterCount; ++ParameterIndex) {
+		ParameterOutLengths[ParameterIndex] = ParameterLengths[ParameterIndex];
 		ReturnCode = SQLBindParameter(
 			Statement,
 			ParameterIndex + 1,
@@ -364,7 +366,7 @@ DatabaseHandleRef DatabaseCallProcedureFetchInternal(
 			0,
 			ParameterValues[ParameterIndex],
 			ParameterLengths[ParameterIndex],
-			NULL
+			(ParameterTypes[ParameterIndex] == SQL_LONGVARBINARY) ? &ParameterOutLengths[ParameterIndex] : NULL
 		);
 
 		if (!SQL_SUCCEEDED(ReturnCode)) {

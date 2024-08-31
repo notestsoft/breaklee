@@ -165,7 +165,14 @@ IPC_PROTOCOL(W2D, CREATE_CHARACTER,
     UInt8 CharacterSlotIndex;
 	UInt8 CharacterNameLength;
 	Char CharacterName[MAX_CHARACTER_NAME_LENGTH + 1];
-	struct _RTCharacterData CharacterData;
+	union _RTCharacterStyle CharacterStyle;
+	UInt16 StatSTR;
+	UInt16 StatDEX;
+	UInt16 StatINT;
+	UInt8 WorldIndex;
+	UInt16 PositionX;
+	UInt16 PositionY;
+	UInt8 Data[0];
 )
 
 IPC_PROTOCOL(D2W, CREATE_CHARACTER,
@@ -299,6 +306,7 @@ IPC_PROTOCOL(D2W, GET_CHARACTER,
 	UInt32 CharacterIndex;
 	IPC_D2W_DATA_INITIALIZE_CHARACTER Character;
 	struct _RTCharacterSettingsInfo SettingsInfo;
+	UInt8 Data[0];
 )
 
 IPC_PROTOCOL(W2D, DELETE_CHARACTER,

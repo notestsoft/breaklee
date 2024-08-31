@@ -9,6 +9,20 @@ CREATE PROCEDURE InsertCharacter (
     IN InWorldIndex TINYINT UNSIGNED,
     IN InPositionX SMALLINT UNSIGNED,
     IN InPositionY SMALLINT UNSIGNED,
+    IN InEquipmentSlotCount TINYINT UNSIGNED,
+    IN InEquipmentInventorySlotCount TINYINT UNSIGNED,
+    IN InEquipmentLinkSlotCount TINYINT UNSIGNED,
+    IN InEquipmentLockSlotCount TINYINT UNSIGNED,
+    IN InEquipmentSlotData BLOB,
+    IN InEquipmentInventorySlotData BLOB,
+    IN InEquipmentLinkSlotData BLOB,
+    IN InEquipmentLockSlotData BLOB,
+    IN InInventorySlotCount SMALLINT UNSIGNED,
+    IN InInventorySlotData BLOB,
+    IN InSkillSlotCount SMALLINT UNSIGNED,
+    IN InSkillSlotData BLOB,
+    IN InQuickSlotCount SMALLINT UNSIGNED,
+    IN InQuickSlotData BLOB,
     OUT OutStatus TINYINT UNSIGNED,
     OUT OutCharacterID INT
 )
@@ -85,11 +99,11 @@ BEGIN
         INSERT INTO Characters (AccountID, Name, SlotIndex, Style, StatSTR, StatDEX, StatINT, WorldIndex, X, Y) VALUES (InAccountID, InName, InSlotIndex, InStyle, InStatSTR, InStatDEX, InStatINT, InWorldIndex, InPositionX, InPositionY);
 
         SET OutCharacterID = LAST_INSERT_ID();
-            
-        INSERT INTO Equipment (CharacterID, EquipmentSlotData, InventorySlotData, LinkSlotData, LockSlotData) VALUES (OutCharacterID, '', '', '', '');
-        INSERT INTO Inventory (CharacterID, SlotData) VALUES (OutCharacterID, '');
-        INSERT INTO SkillSlot (CharacterID, SlotData) VALUES (OutCharacterID, '');
-        INSERT INTO QuickSlot (CharacterID, SlotData) VALUES (OutCharacterID, '');
+
+        INSERT INTO Equipment (CharacterID, EquipmentSlotCount, InventorySlotCount, LinkSlotCount, LockSlotCount, EquipmentSlotData, InventorySlotData, LinkSlotData, LockSlotData) VALUES (OutCharacterID, InEquipmentSlotCount, InEquipmentInventorySlotCount, InEquipmentLinkSlotCount, InEquipmentLockSlotCount, InEquipmentSlotData, InEquipmentInventorySlotData, InEquipmentLinkSlotData, InEquipmentLockSlotData);
+        INSERT INTO Inventory (CharacterID, SlotCount, SlotData) VALUES (OutCharacterID, InInventorySlotCount, InInventorySlotData);
+        INSERT INTO SkillSlot (CharacterID, SlotCount, SlotData) VALUES (OutCharacterID, InSkillSlotCount, InSkillSlotData);
+        INSERT INTO QuickSlot (CharacterID, SlotCount, SlotData) VALUES (OutCharacterID, InQuickSlotCount, InQuickSlotData);
         INSERT INTO Ability (CharacterID, EssenceAbilityData, BlendedAbilityData, KarmaAbilityData) VALUES (OutCharacterID, '', '', '');
         INSERT INTO BlessingBead (CharacterID, SlotData) VALUES (OutCharacterID, '');
         INSERT INTO PremiumService (CharacterID, SlotData) VALUES (OutCharacterID, '');

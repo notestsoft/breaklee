@@ -1,11 +1,6 @@
 #include "IPCProtocol.h"
 #include "IPCProcedures.h"
 
-#define ReadMemory(__TYPE__, __NAME__, __COUNT__)		\
-__TYPE__* __NAME__ = (__TYPE__*)Memory;					\
-Int32 __NAME__##Length = sizeof(__TYPE__) * __COUNT__;	\
-Memory += __NAME__##Length
-
 IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 	IPC_D2W_DATA_DBSYNC* Response = IPCPacketBufferInit(Connection->PacketBuffer, D2W, DBSYNC);
 	Response->Header.Source = Server->IPCSocket->NodeID;
