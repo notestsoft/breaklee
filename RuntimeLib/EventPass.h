@@ -10,6 +10,9 @@ EXTERN_C_BEGIN
 struct _RTEventPassMissionPage {
     Int32 Group;
     Int32 Index;
+    Int64 Unknown1;
+    Timestamp UnknownTimestamps[5];
+    UInt64 Unknown2;
     Int32 Counter;
 };
 

@@ -4,6 +4,7 @@
 #include "ClientSocket.h"
 #include "Enumerations.h"
 #include "IPCProcedures.h"
+#include "Server.h"
 
 Void StartAuthTimer(
     ServerRef Server,
@@ -58,6 +59,66 @@ Void SendURLList(
     Url->Length = (UInt32)strlen(Context->Config.Links.Unknown4);
     PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Unknown4);
 
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
+    Url->Length = (UInt32)strlen(Context->Config.Links.Unknown5);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Unknown5);
+
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
+    Url->Length = (UInt32)strlen(Context->Config.Links.Unknown6);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Unknown6);
+
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
+    Url->Length = (UInt32)strlen(Context->Config.Links.Unknown7);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Unknown7);
+
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
+    Url->Length = (UInt32)strlen(Context->Config.Links.Unknown8);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Unknown8);
+
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
+    Url->Length = (UInt32)strlen(Context->Config.Links.Unknown9);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Unknown9);
+
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
+    Url->Length = (UInt32)strlen(Context->Config.Links.Unknown10);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Unknown10);
+
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
+    Url->Length = (UInt32)strlen(Context->Config.Links.Unknown11);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Unknown11);
+
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
+    Url->Length = (UInt32)strlen(Context->Config.Links.Unknown12);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Unknown12);
+
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
+    Url->Length = (UInt32)strlen(Context->Config.Links.Unknown13);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Unknown13);
+
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
+    Url->Length = (UInt32)strlen(Context->Config.Links.Unknown14);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Unknown14);
+
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
+    Url->Length = (UInt32)strlen(Context->Config.Links.Unknown15);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Unknown15);
+
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
+    Url->Length = (UInt32)strlen(Context->Config.Links.Unknown16);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Unknown16);
+
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
+    Url->Length = (UInt32)strlen(Context->Config.Links.Unknown17);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Unknown17);
+
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
+    Url->Length = (UInt32)strlen(Context->Config.Links.Unknown18);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Unknown18);
+
+    Url = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_URL);
+    Url->Length = (UInt32)strlen(Context->Config.Links.Unknown19);
+    PacketBufferAppendCString(Connection->PacketBuffer, Context->Config.Links.Unknown19);
+
     Response->PayloadLength[0] = (
         Response->Length -
         sizeof(S2C_DATA_URL_LIST) +
@@ -89,14 +150,28 @@ CLIENT_PROCEDURE_BINDING(AUTHENTICATE) {
         return;
     }
 
+    if (Packet->SubMessageType == 21) {
+        S2C_DATA_AUTHENTICATE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, AUTHENTICATE);
+        Response->KeepAlive = 1;
+        Response->Unknown2 = -1;
+        Response->SubMessageType = 21;
+        Response->LoginStatus = Client->LoginStatus;
+        Response->AccountStatus = Client->AccountStatus;
+
+        S2C_DATA_AUTHENTICATE_EXTENSION_UNKNOWN_21* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_AUTHENTICATE_EXTENSION_UNKNOWN_21);
+        SocketSend(Socket, Connection, Response);
+        return;
+    }
+
     if (Packet->SubMessageType == 25) {
         S2C_DATA_AUTHENTICATE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, AUTHENTICATE);
         Response->KeepAlive = 1;
+        Response->Unknown2 = -1;
         Response->SubMessageType = 25;
         Response->LoginStatus = Client->LoginStatus;
         Response->AccountStatus = Client->AccountStatus;
 
-        S2C_DATA_AUTHENTICATE_EXTENSION_UNKNOWN* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_AUTHENTICATE_EXTENSION_UNKNOWN);
+        S2C_DATA_AUTHENTICATE_EXTENSION_UNKNOWN_25* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_AUTHENTICATE_EXTENSION_UNKNOWN_25);
         SocketSend(Socket, Connection, Response);
         return;
     }
@@ -170,9 +245,11 @@ authenticate:
 
     S2C_DATA_AUTHENTICATE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, AUTHENTICATE);
     Response->KeepAlive = (Client->AccountStatus == ACCOUNT_STATUS_NORMAL) ? 1 : 0;
-    Response->LoginStatus = Client->LoginStatus;
+    Response->Unknown2 = -1;
+    Response->LoginStatus = 0;
     Response->AccountStatus = Client->AccountStatus;
     SocketSend(Socket, Connection, Response);
+    
 
     if (Client->LoginStatus != LOGIN_STATUS_SUCCESS) goto error;
 
@@ -185,9 +262,9 @@ authenticate:
     Response->KeepAlive = (Client->AccountStatus == ACCOUNT_STATUS_NORMAL) ? 1 : 0;
     Response->LoginStatus = Client->LoginStatus;
     Response->AccountStatus = Client->AccountStatus;
-    Response->SubMessageType = 17;
+    Response->SubMessageType = 13;
 
-    S2C_DATA_AUTHENTICATE_EXTENSION* Extension = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_AUTHENTICATE_EXTENSION);
+    S2C_DATA_AUTHENTICATE_EXTENSION_13* Extension = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_AUTHENTICATE_EXTENSION_13);
     memcpy(Extension->AuthKey, Client->SessionKey, MAX_SESSIONKEY_LENGTH);
 
     Int32 ServerCount = 0;
@@ -213,6 +290,7 @@ authenticate:
     SocketSend(Socket, Connection, Response);
 
     StartAuthTimer(Server, Context, Socket, Connection, Client, Context->Config.Login.AutoDisconnectDelay);
+//    StartDisconnectTimer(Server, Socket, Client, Connection, Context->Config.Login.AutoDisconnectDelay, 21);
     SendMessageLoginSuccess(Server, Context, Socket, Connection, Client);
 
     // Just clearing the payload buffer to avoid keeping sensitive data in memory!

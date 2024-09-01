@@ -258,7 +258,7 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     struct _RTOverlordMasteryInfo OverlordMasteryInfo;
     struct _RTHonorMedalInfo HonorMedalInfo;
     struct _RTForceWingInfo ForceWingInfo;
-    UInt8 Unknown2111[21];
+    UInt8 Unknown2111[1];
     struct _RTGiftBoxInfo GiftBoxInfo;
     UInt32 Unknown2733[9];
     struct _RTCollectionInfo CollectionInfo;

@@ -2,20 +2,7 @@
 #include "ClientProcedures.h"
 #include "ClientSocket.h"
 #include "Enumerations.h"
-
-Void StartDisconnectTimer(
-    ServerRef Server,
-    SocketRef Socket,
-    ClientContextRef Client,
-    SocketConnectionRef Connection,
-    UInt64 Timeout
-) {
-    S2C_DATA_DISCONNECT_TIMER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DISCONNECT_TIMER);
-    Response->Timeout = Timeout;
-    Client->Flags |= CLIENT_FLAGS_CHECK_DISCONNECT_TIMER;
-    Client->DisconnectTimestamp = GetTimestampMs() + Timeout;
-    SocketSend(Socket, Connection, Response);
-}
+#include "Server.h"
 
 CLIENT_PROCEDURE_BINDING(AUTH_ACCOUNT) {
     if (!(Client->Flags & CLIENT_FLAGS_PUBLICKEY_INITIALIZED)) {
@@ -34,6 +21,7 @@ CLIENT_PROCEDURE_BINDING(AUTH_ACCOUNT) {
 
     S2C_DATA_AUTH_ACCOUNT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, AUTH_ACCOUNT);
     Response->ServerStatus = ServerStatus;
+    Response->Unknown1 = 3;
     SocketSend(Socket, Connection, Response);
 
     if (ServerStatus == SERVER_STATUS_ONLINE) {
@@ -43,7 +31,8 @@ CLIENT_PROCEDURE_BINDING(AUTH_ACCOUNT) {
                 Socket,
                 Client,
                 Connection,
-                Context->Config.Login.AutoDisconnectDelay
+                Context->Config.Login.AutoDisconnectDelay,
+                0
             );
         }
     } else {
