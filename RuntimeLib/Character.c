@@ -1066,15 +1066,10 @@ Void RTCharacterAddHonorPoint(
 	RTCharacterRef Character,
 	Int64 HonorPoint
 ) {
-	Character->Data.Info.HonorPoint = MIN(
-		Runtime->Config.MaxHonorPoint,
-		MAX(
-			Runtime->Config.MinHonorPoint,
-			Character->Data.Info.HonorPoint + HonorPoint
-		)
-	);
-
-	Character->Data.Info.HonorPoint += HonorPoint;
+	Int64 NewHonorPoint = Character->Data.Info.HonorPoint + HonorPoint;
+	NewHonorPoint = MIN(Runtime->Config.MaxHonorPoint, NewHonorPoint);
+	NewHonorPoint = MAX(Runtime->Config.MinHonorPoint, NewHonorPoint);
+	Character->Data.Info.HonorPoint = NewHonorPoint;
 	Character->SyncMask.Info = true;
 }
 
