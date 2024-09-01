@@ -1,5 +1,8 @@
 <?xml version="1.0" ?>
 <Dungeon DungeonIndex="4104">
+	<TriggerGroup Index="1">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="17"/>
+	</TriggerGroup>
 	<TriggerGroup Index="2">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="11"/>
 	</TriggerGroup>
@@ -51,9 +54,9 @@
 	<TriggerGroup Index="18">
 		<Trigger Type="1" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="15"/>
 	</TriggerGroup>
-	<TriggerGroup Index="1">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="17"/>
-	</TriggerGroup>
+	<ActionGroup Index="1">
+		<Action Delay="100" TargetMobIndex="21" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
 	<ActionGroup Index="2">
 		<Action Delay="100" TargetMobIndex="21" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
@@ -142,9 +145,6 @@
 	</ActionGroup>
 	<ActionGroup Index="18">
 		<Action Delay="100" TargetMobIndex="65" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-	</ActionGroup>
-	<ActionGroup Index="1">
-		<Action Delay="100" TargetMobIndex="21" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
 	<WorldDropPool>
 		<Item ItemID="516" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".0015"/>

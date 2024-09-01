@@ -639,6 +639,8 @@ Void RTWorldSetMobTable(
         Mob->ID.WorldIndex = WorldContext->WorldData->WorldIndex;
         Mob->ID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
         Mob->IsSpawned = false;
+        Mob->RemainingFindCount = Mob->SpeciesData->FindCount;
+        Mob->RemainingSpawnCount = Mob->Spawn.SpawnCount;
 
         DictionaryInsert(WorldContext->EntityToMob, &Mob->ID, &MemoryPoolIndex, sizeof(Index));
     }

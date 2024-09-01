@@ -173,10 +173,8 @@ Bool RTDungeonTriggerEvent(
 
     for (Int32 TriggerIndex = 0; TriggerIndex < ArrayGetElementCount(TriggerGroup); TriggerIndex += 1) {
         RTDungeonTriggerDataRef TriggerData = (RTDungeonTriggerDataRef)ArrayGetElementAtIndex(TriggerGroup, TriggerIndex);
-        if (!RTWorldContextCheckMobListState(World, TriggerData->LiveMobCount, TriggerData->LiveMobIndexList, true)) continue;
-        if (!RTWorldContextCheckMobListState(World, TriggerData->DeadMobCount, TriggerData->DeadMobIndexList, false)) continue;
-
-        // TODO: Check how TriggerData->Type is supposed to work
+        if (TriggerData->Type > 0 && !RTWorldContextCheckMobListState(World, TriggerData->LiveMobCount, TriggerData->LiveMobIndexList, true)) continue;
+        if (TriggerData->Type > 1 && !RTWorldContextCheckMobListState(World, TriggerData->DeadMobCount, TriggerData->DeadMobIndexList, false)) continue;
         // TODO: Evaluate TriggerData->NpcIndex
 
         Index ActionGroupIndex = TriggerData->ActionGroupIndex;

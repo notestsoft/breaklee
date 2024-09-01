@@ -1,5 +1,8 @@
 <?xml version="1.0" ?>
 <Dungeon DungeonIndex="4252">
+	<TriggerGroup Index="1">
+		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="2" ActionGroupIndex="1"/>
+	</TriggerGroup>
 	<TriggerGroup Index="2">
 		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="4" ActionGroupIndex="2"/>
 	</TriggerGroup>
@@ -234,9 +237,9 @@
 	<TriggerGroup Index="79">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="79"/>
 	</TriggerGroup>
-	<TriggerGroup Index="1">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="7" ActionGroupIndex="4"/>
-	</TriggerGroup>
+	<ActionGroup Index="1">
+		<Action Delay="900" TargetMobIndex="355" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
 	<ActionGroup Index="2">
 		<Action Delay="500" TargetMobIndex="40" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
@@ -731,15 +734,12 @@
 		<Action Delay="15000" TargetMobIndex="305" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="15000" TargetMobIndex="306" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
-	<ActionGroup Index="1">
-		<Action Delay="100" TargetMobIndex="16" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-	</ActionGroup>
+	<TimeControl MobIndex="22" Event="2" Value="600000"/>
 	<TimeControl MobIndex="102" Event="2" Value="510000"/>
 	<TimeControl MobIndex="115" Event="2" Value="59999"/>
 	<TimeControl MobIndex="193" Event="2" Value="420000"/>
 	<TimeControl MobIndex="301" Event="2" Value="340000"/>
 	<TimeControl MobIndex="332" Event="2" Value="340000"/>
-	<TimeControl MobIndex="270" Event="2" Value="300000"/>
 	<WorldDropPool>
 		<Item ItemID="1704" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
 		<Item ItemID="1705" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>

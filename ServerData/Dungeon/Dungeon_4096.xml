@@ -2,7 +2,6 @@
 <Dungeon DungeonIndex="4096">
 	<TriggerGroup Index="1">
 		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="7" ActionGroupIndex="4"/>
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="1" ActionGroupIndex="1"/>
 	</TriggerGroup>
 	<TriggerGroup Index="2">
 		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="17" ActionGroupIndex="34"/>
@@ -349,7 +348,6 @@
 	</TriggerGroup>
 	<ActionGroup Index="1">
 		<Action Delay="100" TargetMobIndex="16" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="1000" TargetMobIndex="0" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
 	<ActionGroup Index="2">
 		<Action Delay="100" TargetMobIndex="53" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>

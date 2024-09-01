@@ -1,5 +1,8 @@
 <?xml version="1.0" ?>
 <Dungeon DungeonIndex="4251">
+	<TriggerGroup Index="1">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="1"/>
+	</TriggerGroup>
 	<TriggerGroup Index="2">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="2"/>
 	</TriggerGroup>
@@ -249,9 +252,9 @@
 	<TriggerGroup Index="84">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="84"/>
 	</TriggerGroup>
-	<TriggerGroup Index="1">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="2" ActionGroupIndex="1"/>
-	</TriggerGroup>
+	<ActionGroup Index="1">
+		<Action Delay="100" TargetMobIndex="2" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
 	<ActionGroup Index="2">
 		<Action Delay="1000" TargetMobIndex="3" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="1000" TargetMobIndex="4" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
@@ -1642,9 +1645,7 @@
 	<ActionGroup Index="84">
 		<Action Delay="100" TargetMobIndex="643" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
-	<ActionGroup Index="1">
-		<Action Delay="900" TargetMobIndex="355" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-	</ActionGroup>
+	<TimeControl MobIndex="12" Event="2" Value="180000"/>
 	<TimeControl MobIndex="23" Event="2" Value="162000"/>
 	<TimeControl MobIndex="35" Event="2" Value="146000"/>
 	<TimeControl MobIndex="37" Event="2" Value="131000"/>
@@ -1691,7 +1692,6 @@
 	<TimeControl MobIndex="595" Event="2" Value="2000"/>
 	<TimeControl MobIndex="617" Event="2" Value="2000"/>
 	<TimeControl MobIndex="640" Event="2" Value="1000"/>
-	<TimeControl MobIndex="64" Event="2" Value="600000"/>
 	<WorldDropPool>
 		<Item ItemID="3617" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".10000000000000"/>
 		<Item ItemID="3618" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".10000000000000"/>
