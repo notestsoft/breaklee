@@ -9,7 +9,7 @@ IPC_PROCEDURE_BINDING(L2M, GET_WORLD_LIST) {
     Response->GroupCount = 1;
 
     IPC_M2L_DATA_SERVER_GROUP* ServerGroup = IPCPacketBufferAppendStruct(Connection->PacketBuffer, IPC_M2L_DATA_SERVER_GROUP);
-    ServerGroup->GroupIndex = Context->Config.MasterSvr.GroupIndex;
+    ServerGroup->GroupIndex = Server->IPCSocket->NodeID.Group;
 
     DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(Socket->NodeTable);
     while (Iterator.Key) {
@@ -18,7 +18,7 @@ IPC_PROCEDURE_BINDING(L2M, GET_WORLD_LIST) {
         Iterator = DictionaryKeyIteratorNext(Iterator);
 
         if (Node.Type != IPC_TYPE_WORLD) continue;
-        if (Node.Group != Context->Config.MasterSvr.GroupIndex) continue;
+        if (Node.Group != Server->IPCSocket->NodeID.Group) continue;
 
         Index WorldIndex = Node.Serial;
         WorldInfoRef WorldInfo = (WorldInfoRef)DictionaryLookup(Context->WorldInfoTable, &WorldIndex);

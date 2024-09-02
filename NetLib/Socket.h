@@ -2,13 +2,13 @@
 
 #include "Base.h"
 #include "Keychain.h"
-#include "Platform.h"
 #include "PacketBuffer.h"
 
 EXTERN_C_BEGIN
 
-#define SOCKET_RECV_BUFFER_SIZE 4096
-#define MAX_ADDRESSIP_LENGTH 44
+#define SOCKET_RECV_BUFFER_SIZE     4096
+#define MAX_ADDRESSIP_LENGTH        INET6_ADDRSTRLEN
+#define SOCKET_KEEP_ALIVE_TIMEOUT   10
 
 typedef struct _Socket* SocketRef;
 typedef struct _SocketConnection* SocketConnectionRef;
@@ -22,6 +22,13 @@ enum {
     SOCKET_FLAGS_LISTENING  = 1 << 4,
     SOCKET_FLAGS_CONNECTING = 1 << 5,
     SOCKET_FLAGS_CONNECTED  = 1 << 6,
+};
+
+enum {
+    SOCKET_STATE_DISCONNECTED,
+    SOCKET_STATE_CONNECTING,
+    SOCKET_STATE_CONNECTED,
+    SOCKET_STATE_DISCONNECTING,
 };
 
 enum {
@@ -45,18 +52,21 @@ typedef Void* SocketConnectionIteratorRef;
 
 struct _Socket {
     AllocatorRef Allocator;
-    SocketHandle Handle;
+    uv_loop_t* Loop;
+    uv_tcp_t Handle;
+    uv_connect_t Connect;
     SocketAddress Address;
     UInt32 Flags;
     UInt16 ProtocolIdentifier;
     UInt16 ProtocolVersion;
     UInt16 ProtocolExtension;
     Bool LogPackets;
-    Index ReadBufferSize;
-    Index WriteBufferSize;
+    Int32 ReadBufferSize;
+    Int32 WriteBufferSize;
     Index MaxConnectionCount;
     Index NextConnectionID;
-    Timestamp Timeout;
+    Timestamp Timeout; 
+    Int32 State;
     PacketBufferRef PacketBuffer;
     SocketConnectionCallback OnConnect;
     SocketConnectionCallback OnDisconnect;
@@ -68,17 +78,20 @@ struct _Socket {
 };
 
 struct _SocketConnection {
+    SocketRef Socket;
     Index ConnectionPoolIndex;
-    SocketHandle Handle;
+    uv_tcp_t HandleMemory;
+    uv_tcp_t* Handle;
+    uv_connect_t* ConnectRequest;
     SocketAddress Address;
-    Char AddressIP[MAX_ADDRESSIP_LENGTH + 1];
+    Char AddressIP[MAX_ADDRESSIP_LENGTH];
     Index ID;
     UInt32 Flags;
-    Timestamp Timestamp;
     struct _Keychain Keychain;
-    PacketBufferRef PacketBuffer;
+    PacketBufferRef PacketBuffer; 
+    MemoryRef RecvBuffer;
+    Int32 RecvBufferLength;
     MemoryBufferRef ReadBuffer;
-    MemoryBufferRef WriteBuffer;
     Void* Userdata;
 };
 
@@ -88,8 +101,8 @@ SocketRef SocketCreate(
     UInt16 ProtocolIdentifier,
     UInt16 ProtocolVersion,
     UInt16 ProtocolExtension,
-    Index ReadBufferSize,
-    Index WriteBufferSize,
+    Int32 ReadBufferSize,
+    Int32 WriteBufferSize,
     Index MaxConnectionCount,
     Bool LogPackets,
     SocketConnectionCallback OnConnect,
@@ -146,16 +159,6 @@ Void SocketUpdate(
 Void SocketDisconnect(
     SocketRef Socket,
     SocketConnectionRef Connection
-);
-
-Void SocketDisconnectDelay(
-    SocketRef Socket,
-    SocketConnectionRef Connection,
-    Timestamp Delay
-);
-
-Void SocketClose(
-    SocketRef Socket
 );
 
 Index SocketGetConnectionCount(

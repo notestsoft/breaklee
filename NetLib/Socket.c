@@ -1,60 +1,11 @@
 #include "Socket.h"
 
-SocketRef SocketCreate(
-    AllocatorRef Allocator,
-    UInt32 Flags,
-    UInt16 ProtocolIdentifier,
-    UInt16 ProtocolVersion,
-    UInt16 ProtocolExtension,
-    Index ReadBufferSize,
-    Index WriteBufferSize,
-    Index MaxConnectionCount,
-    Bool LogPackets,
-    SocketConnectionCallback OnConnect,
-    SocketConnectionCallback OnDisconnect,
-    SocketPacketCallback OnSend,
-    SocketPacketCallback OnReceived,
-    Void* Userdata
-) {
-    if (MaxConnectionCount < 1) {
-        Fatal("[SOCKET] MaxConnection count has to be greater than 0");
-    }
+// TODO: Remove usage of malloc for write requests!
 
-    SocketRef Socket = (SocketRef)AllocatorAllocate(Allocator, sizeof(struct _Socket));
-    if (!Socket) Fatal("Memory allocation failed!");
-    memset(Socket, 0, sizeof(struct _Socket));
-    Socket->Allocator = Allocator;
-    Socket->Handle = -1;
-    Socket->Flags = Flags;
-    Socket->ProtocolIdentifier = ProtocolIdentifier;
-    Socket->ProtocolVersion = ProtocolVersion;
-    Socket->ProtocolExtension = ProtocolExtension;
-    Socket->LogPackets = LogPackets;
-    Socket->ReadBufferSize = ReadBufferSize;
-    Socket->WriteBufferSize = WriteBufferSize;
-    Socket->MaxConnectionCount = MaxConnectionCount;
-    Socket->NextConnectionID = 1;
-    Socket->Timeout = 0;
-    Socket->PacketBuffer = PacketBufferCreate(Allocator, ProtocolIdentifier, ProtocolVersion, ProtocolExtension, 4, WriteBufferSize, Flags & SOCKET_FLAGS_CLIENT);
-    Socket->OnConnect = OnConnect;
-    Socket->OnDisconnect = OnDisconnect;
-    Socket->OnSend = OnSend;
-    Socket->OnReceived = OnReceived;
-    Socket->ConnectionIndices = IndexSetCreate(Allocator, MaxConnectionCount);
-    Socket->ConnectionPool = MemoryPoolCreate(Allocator, sizeof(struct _SocketConnection), MaxConnectionCount);
-    Socket->Userdata = Userdata;
-    return Socket;
-}
-
-Void SocketDestroy(
-    SocketRef Socket
-) {
-    assert(Socket);
-    PacketBufferDestroy(Socket->PacketBuffer);
-    IndexSetDestroy(Socket->ConnectionIndices);
-    MemoryPoolDestroy(Socket->ConnectionPool);
-    AllocatorDeallocate(Socket->Allocator, Socket);
-}
+struct _SocketConnectionWriteRequest {
+    uv_write_t Request;
+    uv_buf_t Buffer;
+};
 
 SocketConnectionRef SocketReserveConnection(
     SocketRef Socket
@@ -74,7 +25,6 @@ SocketConnectionRef SocketReserveConnection(
         Socket->Flags & SOCKET_FLAGS_CLIENT
     );
     Connection->ReadBuffer = MemoryBufferCreate(Socket->Allocator, 4, Socket->ReadBufferSize);
-    Connection->WriteBuffer = MemoryBufferCreate(Socket->Allocator, 4, Socket->WriteBufferSize);
     return Connection;
 }
 
@@ -84,9 +34,288 @@ Void SocketReleaseConnection(
 ) {
     PacketBufferDestroy(Connection->PacketBuffer);
     MemoryBufferDestroy(Connection->ReadBuffer);
-    MemoryBufferDestroy(Connection->WriteBuffer);
     IndexSetRemove(Socket->ConnectionIndices, Connection->ConnectionPoolIndex);
     MemoryPoolRelease(Socket->ConnectionPool, Connection->ConnectionPoolIndex);
+}
+
+Bool SocketFetchReadBuffer(
+    SocketRef Socket,
+    SocketConnectionRef Connection
+) {
+    while (MemoryBufferGetWriteOffset(Connection->ReadBuffer) >= 6) {
+        UInt32 PacketLength = 0;
+
+        if (Socket->Flags & SOCKET_FLAGS_ENCRYPTED) {
+            PacketLength = KeychainGetPacketLength(
+                &Connection->Keychain,
+                MemoryBufferGetMemory(Connection->ReadBuffer, 0),
+                MemoryBufferGetWriteOffset(Connection->ReadBuffer)
+            );
+        }
+        else {
+            Void* Packet = MemoryBufferGetMemory(Connection->ReadBuffer, 0);
+            UInt16 PacketMagic = *((UInt16*)Packet);
+            PacketMagic -= Socket->ProtocolIdentifier;
+            PacketMagic -= Socket->ProtocolVersion;
+
+            if (PacketMagic == Socket->ProtocolExtension) {
+                PacketLength = *((UInt32*)((UInt8*)Packet + sizeof(UInt16)));
+            }
+            else if (PacketMagic == 0) {
+                PacketLength = *((UInt16*)((UInt8*)Packet + sizeof(UInt16)));
+            }
+            else {
+                SocketDisconnect(Socket, Connection);
+                break;
+            }
+        }
+
+        // TODO: Add error handling when packet is dropped or not fully received to meet the desired PacketLength
+        if (MemoryBufferGetWriteOffset(Connection->ReadBuffer) >= PacketLength) {
+            if (Socket->Flags & SOCKET_FLAGS_ENCRYPTED) {
+                KeychainDecryptPacket(
+                    &Connection->Keychain,
+                    MemoryBufferGetMemory(Connection->ReadBuffer, 0),
+                    PacketLength
+                );
+            }
+
+            Void* Packet = MemoryBufferGetMemory(Connection->ReadBuffer, 0);
+            UInt16 PacketMagic = *((UInt16*)Packet);
+            PacketMagic -= Socket->ProtocolIdentifier;
+            PacketMagic -= Socket->ProtocolVersion;
+            if (PacketMagic != 0 && PacketMagic != Socket->ProtocolExtension) {
+                SocketDisconnect(Socket, Connection);
+                break;
+            }
+
+            if (Socket->OnReceived) Socket->OnReceived(Socket, Connection, Packet);
+            if (Socket->LogPackets) PacketLogBytes(Socket->ProtocolIdentifier, Socket->ProtocolVersion, Socket->ProtocolExtension, Packet);
+
+            MemoryBufferPopFront(Connection->ReadBuffer, PacketLength);
+        }
+        else {
+            break;
+        }
+    }
+
+    return true;
+}
+
+Void _AllocateRecvBuffer(
+    uv_handle_t* Handle,
+    size_t SuggestedSize,
+    uv_buf_t* Buffer
+) {
+    SocketConnectionRef Connection = (SocketConnectionRef)Handle->data;
+    MemoryRef RecvBuffer = Connection->RecvBuffer;
+    Int32 RecvBufferLength = Connection->RecvBufferLength;
+    if (RecvBuffer) SuggestedSize = MAX(SuggestedSize, RecvBufferLength);
+
+    if (!RecvBuffer) {
+        RecvBuffer = AllocatorAllocate(Connection->Socket->Allocator, SuggestedSize);
+    }
+    else if (RecvBufferLength < SuggestedSize) {
+        RecvBuffer = AllocatorReallocate(Connection->Socket->Allocator, RecvBuffer, SuggestedSize);
+    }
+
+    if (RecvBuffer) {
+        RecvBufferLength = SuggestedSize;
+        Connection->RecvBuffer = RecvBuffer;
+        Connection->RecvBufferLength = RecvBufferLength;
+    }
+
+    Buffer->base = RecvBuffer;
+    Buffer->len = RecvBufferLength;
+}
+
+Void _OnClose(
+    uv_handle_t* Handle
+) {
+    SocketConnectionRef Connection = (SocketConnectionRef)Handle->data;
+    SocketRef Socket = Connection->Socket;
+
+    Connection->Flags |= SOCKET_CONNECTION_FLAGS_DISCONNECTED_END;
+    if (Socket->OnDisconnect) Socket->OnDisconnect(Socket, Connection);
+    SocketReleaseConnection(Connection->Socket, Connection);
+}
+
+Void _OnRead(
+    uv_stream_t* Stream,
+    ssize_t RecvLength,
+    const uv_buf_t* Buffer
+) {
+    SocketConnectionRef Connection = (SocketConnectionRef)Stream->data;
+    assert((uv_stream_t*)Connection->Handle == Stream);
+
+    if (RecvLength < 0) {
+        if (RecvLength != UV_EOF) {
+            Error("Read error: %s\n", uv_strerror(RecvLength));
+        }
+
+        SocketDisconnect(Connection->Socket, Connection);
+        return;
+    }
+
+    if (RecvLength > 0) {
+        MemoryBufferAppendCopy(Connection->ReadBuffer, Buffer->base, RecvLength);
+    }
+
+    SocketFetchReadBuffer(Connection->Socket, Connection);
+}
+
+Void _OnNewConnection(
+    uv_stream_t* Stream,
+    Int32 Status
+) {
+    if (Status < 0) {
+        Error("Socket new connection error: %s\n", uv_strerror(Status));
+        return;
+    }
+
+    SocketRef Socket = (SocketRef)Stream->data;
+    if (MemoryPoolIsFull(Socket->ConnectionPool)) {
+        return;
+    }
+
+    SocketConnectionRef Connection = SocketReserveConnection(Socket);
+    Connection->Socket = Socket;
+    Connection->Handle = &Connection->HandleMemory;
+    uv_tcp_init(Socket->Loop, Connection->Handle);
+    Connection->Handle->data = Connection;
+
+    Int32 Result = uv_accept((uv_stream_t*)&Socket->Handle, (uv_stream_t*)Connection->Handle);
+    if (Result == 0) {
+        struct sockaddr_storage ClientAddress = { 0 };
+        Int32 ClientAddressSize = sizeof(ClientAddress);
+        if (uv_tcp_getpeername(Connection->Handle, (struct sockaddr*)&ClientAddress, &ClientAddressSize) == 0) {
+            if (ClientAddress.ss_family == AF_INET) {
+                uv_ip4_name((struct sockaddr_in*)&ClientAddress, Connection->AddressIP, sizeof(Connection->AddressIP));
+            }
+            else if (ClientAddress.ss_family == AF_INET6) {
+                uv_ip6_name((struct sockaddr_in6*)&ClientAddress, Connection->AddressIP, sizeof(Connection->AddressIP));
+            }
+        }
+
+        if (Socket->Flags & SOCKET_FLAGS_ENCRYPTED) {
+            KeychainInit(&Connection->Keychain, (Socket->Flags & SOCKET_FLAGS_CLIENT) > 0);
+        }
+
+        Connection->ID = Socket->NextConnectionID;
+        Socket->NextConnectionID += 1;
+        if (Socket->OnConnect) Socket->OnConnect(Socket, Connection);
+        uv_read_start((uv_stream_t*)Connection->Handle, _AllocateRecvBuffer, _OnRead);
+    }
+    else {
+        SocketDisconnect(Connection->Socket, Connection);
+    }
+}
+
+Void _OnConnect(
+    uv_connect_t* Connect,
+    Int32 Status
+) {
+    SocketRef Socket = (SocketRef)Connect->data;
+
+    if (Status < 0) {
+        Socket->State = SOCKET_STATE_DISCONNECTED;
+        Error("Socket connection error: %s\n", uv_strerror(Status));
+        return;
+    }
+
+    SocketConnectionRef Connection = SocketReserveConnection(Socket);
+    Connection->Handle = (uv_tcp_t*)Connect->handle;
+    Connection->Handle->data = Connection;
+    Connection->ID = Socket->NextConnectionID;
+    Connection->ConnectRequest = Connect;
+    Socket->NextConnectionID += 1;
+    Socket->State = SOCKET_STATE_CONNECTED;
+
+    if (Socket->Flags & SOCKET_FLAGS_ENCRYPTED) {
+        KeychainInit(&Connection->Keychain, (Socket->Flags & SOCKET_FLAGS_CLIENT) > 0);
+    }
+
+    struct sockaddr_storage ClientAddress = { 0 };
+    Int32 ClientAddressSize = sizeof(ClientAddress);
+    if (uv_tcp_getpeername(Connection->Handle, (struct sockaddr*)&ClientAddress, &ClientAddressSize) == 0) {
+        if (ClientAddress.ss_family == AF_INET) {
+            uv_ip4_name((struct sockaddr_in*)&ClientAddress, Connection->AddressIP, sizeof(Connection->AddressIP));
+        }
+        else if (ClientAddress.ss_family == AF_INET6) {
+            uv_ip6_name((struct sockaddr_in6*)&ClientAddress, Connection->AddressIP, sizeof(Connection->AddressIP));
+        }
+    }
+
+    Info("Socket connection established");
+    if (Socket->OnConnect) Socket->OnConnect(Socket, Connection);
+    uv_read_start(Connect->handle, _AllocateRecvBuffer, _OnRead);
+}
+
+SocketRef SocketCreate(
+    AllocatorRef Allocator,
+    UInt32 Flags,
+    UInt16 ProtocolIdentifier,
+    UInt16 ProtocolVersion,
+    UInt16 ProtocolExtension,
+    Int32 ReadBufferSize,
+    Int32 WriteBufferSize,
+    Index MaxConnectionCount,
+    Bool LogPackets,
+    SocketConnectionCallback OnConnect,
+    SocketConnectionCallback OnDisconnect,
+    SocketPacketCallback OnSend,
+    SocketPacketCallback OnReceived,
+    Void* Userdata
+) {
+    if (MaxConnectionCount < 1) {
+        Fatal("[SOCKET] MaxConnection count has to be greater than 0");
+    }
+
+    SocketRef Socket = (SocketRef)AllocatorAllocate(Allocator, sizeof(struct _Socket));
+    if (!Socket) Fatal("Memory allocation failed!");
+    memset(Socket, 0, sizeof(struct _Socket));
+    Socket->Allocator = Allocator;
+    Socket->Loop = uv_default_loop();
+    uv_tcp_init(Socket->Loop, &Socket->Handle);
+    uv_tcp_nodelay(&Socket->Handle, 1);
+    uv_tcp_keepalive(&Socket->Handle, 1, SOCKET_KEEP_ALIVE_TIMEOUT);
+    uv_tcp_simultaneous_accepts(&Socket->Handle, 1);
+    uv_recv_buffer_size((uv_handle_t*)&Socket->Handle, &ReadBufferSize);
+    uv_send_buffer_size((uv_handle_t*)&Socket->Handle, &WriteBufferSize);
+    Socket->Handle.data = Socket;
+    Socket->Flags = Flags;
+    Socket->ProtocolIdentifier = ProtocolIdentifier;
+    Socket->ProtocolVersion = ProtocolVersion;
+    Socket->ProtocolExtension = ProtocolExtension;
+    Socket->LogPackets = LogPackets;
+    Socket->ReadBufferSize = ReadBufferSize;
+    Socket->WriteBufferSize = WriteBufferSize;
+    Socket->MaxConnectionCount = MaxConnectionCount;
+    Socket->NextConnectionID = 1;
+    Socket->Timeout = 0;
+    Socket->State = SOCKET_STATE_DISCONNECTED;
+    Socket->PacketBuffer = PacketBufferCreate(Allocator, ProtocolIdentifier, ProtocolVersion, ProtocolExtension, 4, WriteBufferSize, Flags & SOCKET_FLAGS_CLIENT);
+    Socket->OnConnect = OnConnect;
+    Socket->OnDisconnect = OnDisconnect;
+    Socket->OnSend = OnSend;
+    Socket->OnReceived = OnReceived;
+    Socket->ConnectionIndices = IndexSetCreate(Allocator, MaxConnectionCount);
+    Socket->ConnectionPool = MemoryPoolCreate(Allocator, sizeof(struct _SocketConnection), MaxConnectionCount);
+    Socket->Userdata = Userdata;
+    return Socket;
+}
+
+Void SocketDestroy(
+    SocketRef Socket
+) {
+    assert(Socket);
+    uv_tcp_close_reset(&Socket->Handle, NULL);
+    uv_loop_close(Socket->Loop);
+    free(Socket->Loop);
+    PacketBufferDestroy(Socket->PacketBuffer);
+    IndexSetDestroy(Socket->ConnectionIndices);
+    MemoryPoolDestroy(Socket->ConnectionPool);
+    AllocatorDeallocate(Socket->Allocator, Socket);
 }
 
 Void SocketConnect(
@@ -95,40 +324,19 @@ Void SocketConnect(
     UInt16 Port,
     Timestamp Timeout
 ) {
-    assert(!(Socket->Flags & (SOCKET_FLAGS_LISTENING | SOCKET_FLAGS_CONNECTING | SOCKET_FLAGS_CONNECTED)));
+    if (Socket->State != SOCKET_STATE_DISCONNECTED) return;
 
+    Socket->State = SOCKET_STATE_CONNECTING;
     Socket->Timeout = Timeout;
-    Socket->Handle = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (Socket->Handle < 0) Fatal("Socket creation failed");
-
-    PlatformSetSocketIOBlocking(Socket->Handle, false);
-
-    struct hostent* Server = (struct hostent*)gethostbyname(Host);
-    if (!Server) Fatal("Socket creation failed");
-
-    memset(&Socket->Address, 0, sizeof(Socket->Address));
-    Socket->Address.sin_family = AF_INET;
-
-    memmove(&Socket->Address.sin_addr.s_addr, Server->h_addr, Server->h_length);
-    Socket->Address.sin_port = htons(Port);
-
-    Socket->Flags |= SOCKET_FLAGS_CONNECTING;
+    uv_ip4_addr(Host, Port, &Socket->Address);
 
     Info("Socket connecting to port: %d", Port);
 
-    Int32 Result = PlatformSocketConnect(Socket->Handle, (struct sockaddr*)&Socket->Address, sizeof(Socket->Address));
-    if (Result == 0) {
-        // TODO: Add remote address to `Connection`!
-        SocketConnectionRef Connection = SocketReserveConnection(Socket);
-        Connection->ID = Socket->NextConnectionID;
-        Connection->Handle = Socket->Handle;
-        Socket->NextConnectionID += 1;
-        Socket->Flags &= ~SOCKET_FLAGS_CONNECTING;
-        Socket->Flags |= SOCKET_FLAGS_CONNECTED;
-        if (Socket->OnConnect)  Socket->OnConnect(Socket, Connection);
-        Info("Socket connection established");
-    } else if (Result == -1) {
-        Fatal("Socket connection failed");
+    Socket->Connect.data = Socket;
+    Int32 Result = uv_tcp_connect(&Socket->Connect, &Socket->Handle, (const struct sockaddr*)&Socket->Address, _OnConnect);
+    if (Result) {
+        Fatal("Socket connection failed: %s\n", uv_strerror(Result));
+        return;
     }
 }
 
@@ -136,30 +344,40 @@ Void SocketListen(
     SocketRef Socket,
     UInt16 Port
 ) {
-    assert(!(Socket->Flags & (SOCKET_FLAGS_LISTENING | SOCKET_FLAGS_CONNECTING | SOCKET_FLAGS_CONNECTED)));
+    if (Socket->State != SOCKET_STATE_DISCONNECTED) return;
 
-    Socket->Handle = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (Socket->Handle < 0) Fatal("Socket creation failed");
+    uv_ip4_addr("0.0.0.0", Port, &Socket->Address);
 
-    PlatformSetSocketIOBlocking(Socket->Handle, false);
+    Int32 Result = uv_tcp_bind(&Socket->Handle, (const struct sockaddr*)&Socket->Address, 0);
+    if (Result) {
+        Fatal("Socket binding failed: %s\n", uv_strerror(Result));
+    }
 
-    Socket->Address.sin_family = AF_INET;
-    Socket->Address.sin_addr.s_addr = htonl(INADDR_ANY);
-    Socket->Address.sin_port = htons(Port);
-
-    Int32 Enabled = 1;
-    if (setsockopt(Socket->Handle, SOL_SOCKET, SO_REUSEADDR, (Char*)&Enabled, sizeof(Enabled)) != 0)
-        Fatal("Socket re-use address set failed");
-
-    if ((bind(Socket->Handle, (struct sockaddr*)&Socket->Address, sizeof(Socket->Address))) != 0)
-        Fatal("Socket binding failed");
-
-    if ((listen(Socket->Handle, (Int32)Socket->MaxConnectionCount)) != 0)
-        Fatal("Socket listening failed");
-
-    Socket->Flags |= SOCKET_FLAGS_LISTENING;
+    Result = uv_listen((uv_stream_t*)&Socket->Handle, Socket->MaxConnectionCount, _OnNewConnection);
+    if (Result) {
+        Fatal("Socket listening failed: %s\n", uv_strerror(Result));
+    }
 
     Info("Socket started listening on port: %d", Port);
+    Socket->State = SOCKET_STATE_CONNECTED;
+}
+
+Void _OnWrite(
+    uv_write_t* WriteRequest,
+    Int32 Status
+) {
+    SocketConnectionRef Connection = (SocketConnectionRef)WriteRequest->data;
+
+    if (Status < 0) {
+        Error("Write error: %s\n", uv_strerror(Status));
+
+        if (Status == UV_ECONNRESET || Status == UV_ECONNREFUSED) {
+            assert((uv_stream_t*)Connection->Handle == WriteRequest->handle);
+            SocketDisconnect(Connection->Socket, Connection);
+        }
+    }
+
+    AllocatorDeallocate(Connection->Socket->Allocator, WriteRequest);
 }
 
 Void SocketSendRaw(
@@ -168,9 +386,42 @@ Void SocketSendRaw(
     UInt8 *Data,
     Int32 Length
 ) {
-    if (!(Socket->Flags & (SOCKET_FLAGS_LISTENING | SOCKET_FLAGS_CONNECTED))) return;
+    if (Socket->State != SOCKET_STATE_CONNECTED) return;
+    if (Connection->Flags & SOCKET_CONNECTION_FLAGS_DISCONNECTED) return;
 
-    MemoryBufferAppendCopy(Connection->WriteBuffer, Data, Length);
+    UInt16 PacketMagic = *((UInt16*)Data);
+    PacketMagic -= Socket->ProtocolIdentifier;
+    PacketMagic -= Socket->ProtocolVersion;
+
+    UInt32 PacketLength = 0;
+    if (PacketMagic == Socket->ProtocolExtension) {
+        PacketLength = *((UInt32*)((UInt8*)Data + sizeof(UInt16)));
+    }
+    else {
+        PacketLength = *((UInt16*)((UInt8*)Data + sizeof(UInt16)));
+    }
+
+    assert(Length == PacketLength);
+
+    if (Socket->LogPackets) PacketLogBytes(Socket->ProtocolIdentifier, Socket->ProtocolVersion, Socket->ProtocolExtension, Data);
+    if (Socket->OnSend) Socket->OnSend(Socket, Connection, Data);
+
+    if (Socket->Flags & SOCKET_FLAGS_ENCRYPTED) {
+        KeychainEncryptPacket(&Connection->Keychain, Data, PacketLength);
+    }
+
+    Int32 MemoryLength = sizeof(struct _SocketConnectionWriteRequest) + PacketLength;
+    UInt8* Memory = AllocatorAllocate(Socket->Allocator, MemoryLength);
+    if (!Memory) {
+        Fatal("Memory allocation failed!");
+    }
+
+    struct _SocketConnectionWriteRequest* WriteRequest = (struct _SocketConnectionWriteRequest*)Memory;
+    WriteRequest->Request.data = Connection;
+    WriteRequest->Buffer.base = Memory + sizeof(struct _SocketConnectionWriteRequest);
+    WriteRequest->Buffer.len = Length;
+    memcpy(WriteRequest->Buffer.base, Data, Length);
+    uv_write(&WriteRequest->Request, (uv_stream_t*)Connection->Handle, &WriteRequest->Buffer, 1, _OnWrite);
 }
 
 Void SocketSendAllRaw(
@@ -225,237 +476,19 @@ Void SocketSendAll(
     }
 }
 
-Bool SocketFetchReadBuffer(
-    SocketRef Socket,
-    SocketConnectionRef Connection
-) {
-    while (MemoryBufferGetWriteOffset(Connection->ReadBuffer) >= 6) {
-        UInt32 PacketLength = 0;
-        
-        if (Socket->Flags & SOCKET_FLAGS_ENCRYPTED) {
-            PacketLength = KeychainGetPacketLength(
-                &Connection->Keychain,
-                MemoryBufferGetMemory(Connection->ReadBuffer, 0),
-                MemoryBufferGetWriteOffset(Connection->ReadBuffer)
-            );
-        }
-        else {
-            Void* Packet = MemoryBufferGetMemory(Connection->ReadBuffer, 0);
-            UInt16 PacketMagic = *((UInt16*)Packet);
-            PacketMagic -= Socket->ProtocolIdentifier;
-            PacketMagic -= Socket->ProtocolVersion;
-            
-            if (PacketMagic == Socket->ProtocolExtension) {
-                PacketLength = *((UInt32*)((UInt8*)Packet + sizeof(UInt16)));
-            } else if (PacketMagic == 0) {
-                PacketLength = *((UInt16*)((UInt8*)Packet + sizeof(UInt16)));
-            } else {
-                SocketDisconnect(Socket, Connection);
-                break;
-            }
-        }
-        
-        // TODO: Add error handling when packet is dropped or not fully received to meet the desired PacketLength
-        if (MemoryBufferGetWriteOffset(Connection->ReadBuffer) >= PacketLength) {
-            if (Socket->Flags & SOCKET_FLAGS_ENCRYPTED) {
-                KeychainDecryptPacket(
-                    &Connection->Keychain,
-                    MemoryBufferGetMemory(Connection->ReadBuffer, 0),
-                    PacketLength
-                );
-            }
-
-            Void* Packet = MemoryBufferGetMemory(Connection->ReadBuffer, 0);
-            UInt16 PacketMagic = *((UInt16*)Packet);
-            PacketMagic -= Socket->ProtocolIdentifier;
-            PacketMagic -= Socket->ProtocolVersion;
-            if (PacketMagic != 0 && PacketMagic != Socket->ProtocolExtension) {
-                SocketDisconnect(Socket, Connection);
-                break;
-            }
-
-            if (Socket->OnReceived) Socket->OnReceived(Socket, Connection, Packet);
-            if (Socket->LogPackets) PacketLogBytes(Socket->ProtocolIdentifier, Socket->ProtocolVersion, Socket->ProtocolExtension, Packet);
-
-            MemoryBufferPopFront(Connection->ReadBuffer, PacketLength);
-        }
-        else {
-            break;
-        }
-    }
-
-    return true;
-}
-
-Bool SocketFlushWriteBuffer(
-    SocketRef Socket,
-    SocketConnectionRef Connection
-) {
-    while (MemoryBufferGetWriteOffset(Connection->WriteBuffer) > 0) {
-        Void* Packet = MemoryBufferGetMemory(Connection->WriteBuffer, 0);
-        UInt16 PacketMagic = *((UInt16*)Packet);
-        PacketMagic -= Socket->ProtocolIdentifier;
-        PacketMagic -= Socket->ProtocolVersion;
-        
-        UInt32 PacketLength = 0;
-        if (PacketMagic == Socket->ProtocolExtension) {
-            PacketLength = *((UInt32*)((UInt8*)Packet + sizeof(UInt16)));
-        } else {
-            PacketLength = *((UInt16*)((UInt8*)Packet + sizeof(UInt16)));
-        }
-
-        if (Socket->LogPackets) PacketLogBytes(Socket->ProtocolIdentifier, Socket->ProtocolVersion, Socket->ProtocolExtension, Packet);
-        if (Socket->OnSend) Socket->OnSend(Socket, Connection, Packet);
-
-        if (Socket->Flags & SOCKET_FLAGS_ENCRYPTED) {
-            KeychainEncryptPacket(&Connection->Keychain, Packet, PacketLength);
-        }
-
-        if (send(Connection->Handle, Packet, PacketLength, 0) == -1) {
-            SocketDisconnect(Socket, Connection);
-            break;
-        }
-        
-        MemoryBufferPopFront(Connection->WriteBuffer, PacketLength);
-    }
-
-    return true;
-}
-
-Void SocketReleaseConnections(
-    SocketRef Socket
-) {
-    Timestamp Timestamp = GetTimestampMs();
-
-    IndexSetIteratorRef Iterator = IndexSetGetInverseIterator(Socket->ConnectionIndices);
-    while (Iterator) {
-        Index ConnectionPoolIndex = Iterator->Value;
-        Iterator = IndexSetInverseIteratorNext(Socket->ConnectionIndices, Iterator);
-
-        // TODO: Sometimes Connection can become null!!!
-        SocketConnectionRef Connection = (SocketConnectionRef)MemoryPoolFetch(Socket->ConnectionPool, ConnectionPoolIndex);
-        if (!Connection) continue;
-
-        if (Connection->Flags & SOCKET_CONNECTION_FLAGS_DISCONNECT_DELAY && Connection->Timestamp < Timestamp) {
-            Connection->Flags &= ~SOCKET_CONNECTION_FLAGS_DISCONNECT_DELAY;
-            Connection->Flags |= SOCKET_CONNECTION_FLAGS_DISCONNECTED;
-        }
-
-        if (Connection->Flags & SOCKET_CONNECTION_FLAGS_DISCONNECTED && !(Connection->Flags & SOCKET_CONNECTION_FLAGS_DISCONNECTED_END)) {
-            Connection->Flags &= ~SOCKET_CONNECTION_FLAGS_DISCONNECTED_END;
-            SocketFlushWriteBuffer(Socket, Connection);
-            if (Socket->OnDisconnect) Socket->OnDisconnect(Socket, Connection);
-            Socket->Flags &= ~SOCKET_FLAGS_CONNECTED;
-            SocketReleaseConnection(Socket, Connection);
-            PlatformSocketClose(Connection->Handle);
-        }
-    }
-}
-
 Void SocketUpdate(
     SocketRef Socket
 ) {
-    if (!(Socket->Flags & (SOCKET_FLAGS_LISTENING | SOCKET_FLAGS_CONNECTING | SOCKET_FLAGS_CONNECTED))) return;
-
-    if (Socket->Flags & SOCKET_FLAGS_LISTENING) {
-        if (!MemoryPoolIsFull(Socket->ConnectionPool)) {
-            SocketAddress ClientAddress;
-            SocketHandle Client;
-            if (PlatformSocketAccept(Socket->Handle, (struct sockaddr*)&ClientAddress, sizeof(ClientAddress), &Client)) {
-                SocketConnectionRef Connection = SocketReserveConnection(Socket);
-                Connection->ID = Socket->NextConnectionID;
-                Connection->Handle = Client;
-                Connection->Address = ClientAddress;
-                PlatformSocketAddressToString(ClientAddress, sizeof(Connection->AddressIP), Connection->AddressIP);
-
-                if (Socket->Flags & SOCKET_FLAGS_ENCRYPTED) {
-                    KeychainInit(&Connection->Keychain, (Socket->Flags & SOCKET_FLAGS_CLIENT) > 0);
-                }
-
-                Socket->NextConnectionID += 1;
-                if (Socket->OnConnect) Socket->OnConnect(Socket, Connection);
-            }
-        }
-    }
-
-    if ((Socket->Flags & SOCKET_FLAGS_CONNECTING) && !(Socket->Flags & SOCKET_FLAGS_CONNECTED)) {
-        if (PlatformSocketSelect(Socket->Handle, Socket->Timeout)) {
-            SocketConnectionRef Connection = SocketReserveConnection(Socket);
-            Connection->ID = Socket->NextConnectionID;
-            Connection->Handle = Socket->Handle;
-
-            if (Socket->Flags & SOCKET_FLAGS_ENCRYPTED) {
-                KeychainInit(&Connection->Keychain, (Socket->Flags & SOCKET_FLAGS_CLIENT) > 0);
-            }
-
-            Socket->NextConnectionID += 1;
-            Socket->Flags &= ~SOCKET_FLAGS_CONNECTING;
-            Socket->Flags |= SOCKET_FLAGS_CONNECTED;
-            if (Socket->OnConnect) Socket->OnConnect(Socket, Connection);
-            Info("Socket connection established");
-        } else {
-            PlatformSocketConnect(Socket->Handle, (struct sockaddr*)&Socket->Address, sizeof(Socket->Address));
-        }
-
-        return;
-    }
-
-    Int64 RecvLength = 0;
-    UInt8 RecvBuffer[SOCKET_RECV_BUFFER_SIZE] = { 0 };
-    
-    IndexSetIteratorRef Iterator = IndexSetGetIterator(Socket->ConnectionIndices);
-    while (Iterator) {
-        Index ConnectionPoolIndex = Iterator->Value;
-        Iterator = IndexSetIteratorNext(Socket->ConnectionIndices, Iterator);
-
-        SocketConnectionRef Connection = (SocketConnectionRef)MemoryPoolFetch(Socket->ConnectionPool, ConnectionPoolIndex);        
-        SocketFlushWriteBuffer(Socket, Connection);
-
-        Bool Success = PlatformSocketRecv(
-            Connection->Handle,
-            RecvBuffer,
-            SOCKET_RECV_BUFFER_SIZE,
-            &RecvLength
-        );
-        if (!Success) {
-            SocketDisconnect(Socket, Connection);
-            continue;
-        }
-        
-        MemoryBufferAppendCopy(Connection->ReadBuffer, RecvBuffer, RecvLength);
-        SocketFetchReadBuffer(Socket, Connection);
-    }
-
-    SocketReleaseConnections(Socket);
+    uv_run(Socket->Loop, UV_RUN_NOWAIT);
 }
 
 Void SocketDisconnect(
     SocketRef Socket,
     SocketConnectionRef Connection
 ) {
+    if (Connection->Flags & SOCKET_CONNECTION_FLAGS_DISCONNECTED) return;
     Connection->Flags |= SOCKET_CONNECTION_FLAGS_DISCONNECTED;
-}
-
-Void SocketDisconnectDelay(
-    SocketRef Socket,
-    SocketConnectionRef Connection,
-    Timestamp Delay
-) {
-    Connection->Flags |= SOCKET_CONNECTION_FLAGS_DISCONNECT_DELAY;
-    Connection->Timestamp = GetTimestampMs() + Delay;
-}
-
-Void SocketClose(
-    SocketRef Socket
-) {
-    SocketReleaseConnections(Socket);
-
-    if (Socket->Handle >= 0) {
-        PlatformSocketClose(Socket->Handle);
-        Socket->Handle = -1;
-    }
-
-    Socket->Flags = 0;
+    uv_close((uv_handle_t*)Connection->Handle, _OnClose);
 }
 
 Index SocketGetConnectionCount(

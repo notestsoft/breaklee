@@ -161,6 +161,8 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     ServerContext.Runtime->Config.IsSkillRankUpLimitEnabled = Config.Environment.IsSkillRankUpLimitEnabled;
     ServerContext.Runtime->Config.WorldItemDespawnInterval = Config.WorldSvr.WorldItemDespawnInterval;
     ServerContext.Runtime->Config.NewbieSupportTimeout = Config.WorldSvr.NewbieSupportTimeout;
+    ServerContext.Runtime->Config.MinHonorPoint = Config.Environment.MinHonorPoint;
+    ServerContext.Runtime->Config.MaxHonorPoint = Config.Environment.MaxHonorPoint;
 
     IPCNodeID NodeID = kIPCNodeIDNull;
     NodeID.Group = Config.WorldSvr.GroupIndex;

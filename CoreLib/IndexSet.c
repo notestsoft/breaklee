@@ -182,6 +182,8 @@ IndexSetIteratorRef IndexSetIteratorNext(
     IndexSetIteratorRef Iterator
 ) {
     IndexSetIteratorRef Start = IndexSetGetIterator(Set);
+    if (!Start) return NULL;
+
     Index ElementSize = ArrayGetElementSize(Set->Indices);
     Index Offset = ((UInt8*)Iterator - (UInt8*)Start) / ElementSize + 1;
 
@@ -205,6 +207,8 @@ IndexSetIteratorRef IndexSetInverseIteratorNext(
     IndexSetIteratorRef Iterator
 ) {
     IndexSetIteratorRef Start = IndexSetGetIterator(Set);
+    if (!Start) return NULL;
+
     Index ElementSize = ArrayGetElementSize(Set->Indices);
     Index Offset = ((UInt8*)Iterator - (UInt8*)Start) / ElementSize;
     if (Offset < 1) return NULL;

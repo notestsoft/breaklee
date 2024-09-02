@@ -1,5 +1,14 @@
 #include <openssl/evp.h>
 #include <openssl/rand.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <time.h>
+
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#else
+#include <sys/time.h>
+#endif
 
 #include "Diagnostic.h"
 #include "FileIO.h"
@@ -41,7 +50,13 @@ Timestamp GetTimestamp() {
 }
 
 Timestamp GetTimestampMs() {
-    return (Timestamp)time(NULL) * 1000;
+#if defined(_WIN32) || defined(_WIN64)
+    return GetTickCount64();
+#else
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return (uint64_t)tv.tv_sec * 1000 + tv.tv_usec / 1000;
+#endif
 }
 
 Bool GetPlatformErrorMessage(

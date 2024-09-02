@@ -524,6 +524,7 @@ Bool RTCharacterUpdateQuestItemCounter(
 			if (Mission->Value[0] == Item.ID && Mission->Value[1] == RTQuestItemGetOptions(ItemOptions)) {
 				QuestSlot->Counter[QuestCounterIndex + MissionIndex] = RTQuestItemGetCount(ItemOptions);
 				Result = true;
+				Character->SyncMask.QuestInfo = true;
 			}
 
 			QuestCounterIndex += 1;

@@ -122,7 +122,6 @@ struct _RTMobSkillData {
 	Int32 Stance;
 	Int32 SkillGroup;
 	Timestamp Interval;
-
 	Int32 Distance;
 	Int32 Offset;
 };
@@ -238,7 +237,6 @@ struct _RTMob {
 	Timestamp EscapeTimestamp;
 	Timestamp PhaseTimeout;
 	Timestamp NextTimestamp;
-	// TODO: Refactor this soon we do it currently for debugging but there is a bit more to the event handling than that
 	Timestamp EventSpawnTimestamp;
 	Timestamp EventDespawnTimestamp;
 

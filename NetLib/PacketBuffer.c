@@ -129,7 +129,7 @@ Void* PacketBufferAppendCopy(
     Void* Source,
     Index Length
 ) {
-    if (Length < 1) return;
+    if (Length < 1) return NULL;
     Void* Memory = PacketBufferAppend(PacketBuffer, Length);
     memcpy(Memory, Source, Length);
     return Memory;

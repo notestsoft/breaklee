@@ -29,8 +29,6 @@ ServerRef ServerCreate(
     ServerUpdateCallback OnUpdate,
     Void *ServerContext
 ) {
-    PlatformLoadSocketLibrary();
-
     ServerRef Server = (ServerRef)AllocatorAllocate(Allocator, sizeof(struct _Server));
     if (!Server) Fatal("Memory allocation failed!");
 
@@ -70,8 +68,6 @@ Void ServerDestroy(
     
     ArrayDestroy(Server->Sockets);
     AllocatorDeallocate(Server->Allocator, (Void*)Server);
-
-    PlatformUnloadSocketLibrary();
 }
 
 Timestamp ServerGetTimestamp(

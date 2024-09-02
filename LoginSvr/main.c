@@ -79,7 +79,6 @@ Void ServerOnUpdate(
             if (Client->DisconnectTimestamp < CurrentTimestamp) {
                 Client->Flags &= ~CLIENT_FLAGS_CHECK_DISCONNECT_TIMER;
                 SocketDisconnect(Context->ClientSocket, Connection);
-                continue;
             }
         }
     }

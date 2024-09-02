@@ -20,4 +20,11 @@ struct _RTCharacterRecoveryInfo {
 
 #pragma pack(pop)
 
+Void RTCharacterAddRecoverySlot(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    RTItemSlotRef ItemSlot,
+    UInt64 ItemPrice
+);
+
 EXTERN_C_END
