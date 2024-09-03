@@ -407,17 +407,17 @@ Void RTCharacterInitializeAttributes(
 	), false);
 
 	RTCharacterSetMP(Runtime, Character, MIN(
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX],
+		(Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX],
 		Character->Data.Info.CurrentMP
 	), false);
 
 	RTCharacterSetSP(Runtime, Character, MIN(
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX],
+		(Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX],
 		Character->Data.Info.CurrentSP
 	));
 
 	RTCharacterSetBP(Runtime, Character, MIN(
-		Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_MAX],
+		(Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_MAX],
 		Character->Data.Info.CurrentBP
 	));
 
@@ -433,7 +433,7 @@ Void RTCharacterInitializeAttributes(
 		Character->AxpFieldRate = AxpFieldRate->Rate;
 	}
 
-	RTMovementSetSpeed(Runtime, &Character->Movement, Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED]);
+	RTMovementSetSpeed(Runtime, &Character->Movement, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED]);
 }
 
 Void RTCharacterUpdate(
@@ -1191,7 +1191,7 @@ Void RTCharacterSetMP(
 	Bool IsPotion
 ) {
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] = NewValue;
-	Character->Data.Info.CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+	Character->Data.Info.CurrentMP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 	Character->SyncMask.Info = true;
 
 	RTRuntimeBroadcastCharacterData(
@@ -1248,7 +1248,7 @@ Void RTCharacterSetBP(
 	Int32 NewValue
 ) {
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT] = NewValue;
-	Character->Data.Info.CurrentBP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT];
+	Character->Data.Info.CurrentBP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT];
 	Character->SyncMask.Info = true;
 
 	RTRuntimeBroadcastCharacterData(
@@ -1282,7 +1282,7 @@ Void RTCharacterAddRage(
 
 	if (NewValue != Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]) {
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] = NewValue;
-		Character->Data.Info.CurrentRage = Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT];
+		Character->Data.Info.CurrentRage = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT];
 		Character->SyncMask.Info = true;
 
 		RTRuntimeBroadcastCharacterData(
@@ -1309,7 +1309,7 @@ Bool RTCharacterConsumeRage(
 
 	if (NewValue != Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]) {
         Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT] = NewValue;
-		Character->Data.Info.CurrentRage = Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT];
+		Character->Data.Info.CurrentRage = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT];
 		Character->SyncMask.Info = true;
 
 		RTRuntimeBroadcastCharacterData(

@@ -47,7 +47,7 @@ Void RTCharacterUpdateGiftBox(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 ) {
-    Int32 Seed = PlatformGetTickCount();
+    Int32 Seed = (Int32)PlatformGetTickCount();
     Timestamp CurrentTimestamp = GetTimestamp();
 
     for (Int32 Index = 0; Index < RUNTIME_CHARACTER_MAX_GIFT_BOX_SLOT_COUNT; Index += 1) {
@@ -61,7 +61,7 @@ Void RTCharacterUpdateGiftBox(
         }
 
         Bool IsActive = RTGiftBoxIsActive(Runtime, Character, Index);
-        Int32 CooldownTime = GiftBoxSlot->CooldownTime;
+        Timestamp CooldownTime = GiftBoxSlot->CooldownTime;
         if (CooldownTime < 1) {
             RTDataGiftBoxTimePoolRef TimePool = RTRuntimeDataGiftBoxTimePoolGet(Runtime->Context, GiftBoxSlot->Index);
             if (TimePool) {
@@ -113,7 +113,7 @@ Bool RTCharacterRollGiftBox(
     RTGiftBoxSlotRef GiftBoxSlot = RTCharacterGetGiftBox(Runtime, Character, Index);
     if (!GiftBoxSlot) return false;
 
-    Int32 Seed = PlatformGetTickCount();
+    Int32 Seed = (Int32)PlatformGetTickCount();
     if (GiftBoxSlot->ElapsedTime >= GiftBoxSlot->CooldownTime && GiftBoxSlot->CooldownTime > 0) {
         RTDataGiftBoxRewardPoolRef RewardPool = RTRuntimeDataGiftBoxRewardPoolGet(Runtime->Context, Index);
         if (!RewardPool) return false;

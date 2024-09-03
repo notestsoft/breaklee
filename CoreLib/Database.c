@@ -170,7 +170,7 @@ DatabaseRef DatabaseConnect(
 		Password
 	);
 
-	ReturnCode = SQLDriverConnect(Handle, NULL, ConnectionString, SQL_NTS, NULL, 0, NULL, SQL_DRIVER_COMPLETE);
+	ReturnCode = SQLDriverConnect(Handle, NULL, (SQLCHAR*)ConnectionString, SQL_NTS, NULL, 0, NULL, SQL_DRIVER_COMPLETE);
 	if (ReturnCode != SQL_SUCCESS && ReturnCode != SQL_SUCCESS_WITH_INFO) {
 		HandleDatabaseError(SQL_HANDLE_DBC, Handle);
 		SQLFreeHandle(SQL_HANDLE_DBC, Handle);
@@ -281,7 +281,7 @@ Bool DatabaseExecuteQuery(
 		return false;
 	}
 
-	ReturnCode = SQLExecDirect(Statement, Query, SQL_NTS);
+	ReturnCode = SQLExecDirect(Statement, (SQLCHAR*)Query, SQL_NTS);
 	if (!SQL_SUCCEEDED(ReturnCode)) {
 		HandleDatabaseError(SQL_HANDLE_STMT, Statement);
 		SQLFreeHandle(SQL_HANDLE_STMT, Statement);

@@ -152,7 +152,7 @@ Void AllocateRecvBuffer(
 ) {
     IPCSocketConnectionRef Connection = (IPCSocketConnectionRef)Handle->data;
     MemoryRef RecvBuffer = Connection->RecvBuffer;
-    Int32 RecvBufferLength = Connection->RecvBufferLength;
+    Index RecvBufferLength = Connection->RecvBufferLength;
     if (RecvBuffer) SuggestedSize = MAX(SuggestedSize, RecvBufferLength);
 
     if (!RecvBuffer) {
@@ -164,7 +164,7 @@ Void AllocateRecvBuffer(
     if (RecvBuffer) {
         RecvBufferLength = SuggestedSize;
         Connection->RecvBuffer = RecvBuffer;
-        Connection->RecvBufferLength = RecvBufferLength;
+        Connection->RecvBufferLength = (Int32)RecvBufferLength;
     }
 
     Buffer->base = RecvBuffer;
@@ -209,7 +209,7 @@ Void OnRead(
 
     if (RecvLength < 0) {
         if (RecvLength != UV_EOF) {
-            Error("Read error: %s\n", uv_strerror(RecvLength));
+            Error("Read error: %s\n", uv_strerror((Int32)RecvLength));
         }
 
         IPCSocketDisconnect(Connection->Socket, Connection);
@@ -318,7 +318,7 @@ IPCSocketRef IPCSocketCreate(
     CString Host,
     UInt16 Port,
     Timestamp Timeout,
-    Index MaxConnectionCount,
+    Int32 MaxConnectionCount,
     Bool LogPackets,
     Void* Userdata
 ) {
@@ -495,7 +495,7 @@ Void IPCSocketSend(
 
     struct _IPCSocketConnectionWriteRequest* WriteRequest = (struct _IPCSocketConnectionWriteRequest*)Memory;
     WriteRequest->Request.data = Connection;
-    WriteRequest->Buffer.base = Memory + sizeof(struct _IPCSocketConnectionWriteRequest);
+    WriteRequest->Buffer.base = (CString)(Memory + sizeof(struct _IPCSocketConnectionWriteRequest));
     WriteRequest->Buffer.len = Packet->Length;
     memcpy(WriteRequest->Buffer.base, Packet, Packet->Length);
     uv_write(&WriteRequest->Request, (uv_stream_t*)Connection->Handle, &WriteRequest->Buffer, 1, OnWrite);

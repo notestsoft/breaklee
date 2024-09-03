@@ -150,7 +150,7 @@ UInt8* MemoryBufferReadBytes(
 
 Void MemoryBufferReadBytesCopy(
     MemoryBufferRef MemoryBuffer,
-    UInt8* Destination,
+    Void* Destination,
     Index Length
 ) {
     if (Length < 1) return;

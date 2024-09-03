@@ -23,7 +23,7 @@ CLIENT_PROCEDURE_BINDING(MERIT_MEDAL_EVALUATION) {
 	RTDataMeritItemPoolGroupRef ItemPoolGroup = (ItemPool) ? RTRuntimeDataMeritItemPoolGroupGet(ItemPool, ItemOptions.MeritMedal.EvaluationCount) : NULL;
 	if (!ItemPoolGroup) goto error;
 
-	Int32 Seed = PlatformGetTickCount();
+	Int32 Seed = (Int32)PlatformGetTickCount();
 	Int32 RandomRate = RandomRange(&Seed, 0, 1000000);
 	Int32 RandomRateOffset = 0;
 

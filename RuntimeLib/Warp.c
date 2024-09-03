@@ -74,7 +74,7 @@ Bool RTRuntimeWarpCharacter(
             Character->Data.Info.PositionX = WarpPoint.X;
             Character->Data.Info.PositionY = WarpPoint.Y;
             Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
-            Character->Data.Info.DungeonIndex = TargetWorld->DungeonIndex;
+            Character->Data.Info.DungeonIndex = (Int32)TargetWorld->DungeonIndex;
             Character->SyncMask.Info = true;
             RTCharacterInitializeAttributes(Runtime, Character);
 
@@ -129,7 +129,7 @@ Bool RTRuntimeWarpCharacter(
             Character->Data.Info.PositionX = WarpPoint.X;
             Character->Data.Info.PositionY = WarpPoint.Y;
             Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
-            Character->Data.Info.DungeonIndex = NewWorld->DungeonIndex;
+            Character->Data.Info.DungeonIndex = (Int32)NewWorld->DungeonIndex;
             Character->SyncMask.Info = true;
         
             RTMovementInitialize(
@@ -167,7 +167,7 @@ Bool RTRuntimeWarpCharacter(
             Character->Data.Info.PositionX = WarpPoint.X;
             Character->Data.Info.PositionY = WarpPoint.Y;
             Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
-            Character->Data.Info.DungeonIndex = TargetWorld->DungeonIndex;
+            Character->Data.Info.DungeonIndex = (Int32)TargetWorld->DungeonIndex;
             Character->SyncMask.Info = true;
 
             RTMovementInitialize(
@@ -200,7 +200,7 @@ Bool RTRuntimeWarpCharacter(
             Character->Data.Info.PositionX = WarpPoint.X;
             Character->Data.Info.PositionY = WarpPoint.Y;
             Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
-            Character->Data.Info.DungeonIndex = TargetWorld->DungeonIndex;
+            Character->Data.Info.DungeonIndex = (Int32)TargetWorld->DungeonIndex;
             Character->SyncMask.Info = true;
 
             RTMovementInitialize(
@@ -255,7 +255,7 @@ Bool RTRuntimeWarpCharacter(
             Character->Data.Info.PositionX = WarpPoint.X;
             Character->Data.Info.PositionY = WarpPoint.Y;
             Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
-            Character->Data.Info.DungeonIndex = TargetWorld->DungeonIndex;
+            Character->Data.Info.DungeonIndex = (Int32)TargetWorld->DungeonIndex;
             Character->SyncMask.Info = true;
         
             RTMovementInitialize(
@@ -385,7 +385,7 @@ Bool RTRuntimeWarpCharacter(
         Character->Data.Info.PositionX = WarpPoint.X;
         Character->Data.Info.PositionY = WarpPoint.Y;
         Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
-        Character->Data.Info.DungeonIndex = TargetWorld->DungeonIndex;
+        Character->Data.Info.DungeonIndex = (Int32)TargetWorld->DungeonIndex;
         Character->SyncMask.Info = true;
         
         RTMovementInitialize(
@@ -427,7 +427,7 @@ Bool RTRuntimeWarpCharacter(
         Character->Data.Info.PositionX = WarpPoint.X;
         Character->Data.Info.PositionY = WarpPoint.Y;
         Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
-        Character->Data.Info.DungeonIndex = DungeonWorld->DungeonIndex;
+        Character->Data.Info.DungeonIndex = (Int32)DungeonWorld->DungeonIndex;
         Character->SyncMask.Info = true;
         
         RTMovementInitialize(
@@ -474,7 +474,7 @@ Bool RTRuntimeWarpCharacter(
         Character->Data.Info.PositionX = WarpPoint.X;
         Character->Data.Info.PositionY = WarpPoint.Y;
         Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
-        Character->Data.Info.DungeonIndex = DungeonWorld->DungeonIndex;
+        Character->Data.Info.DungeonIndex = (Int32)DungeonWorld->DungeonIndex;
         Character->DungeonEntryItemSlotIndex = SlotIndex;
         Character->SyncMask.Info = true;
         

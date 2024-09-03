@@ -63,7 +63,7 @@ struct _Socket {
     Bool LogPackets;
     Int32 ReadBufferSize;
     Int32 WriteBufferSize;
-    Index MaxConnectionCount;
+    Int32 MaxConnectionCount;
     Index NextConnectionID;
     Timestamp Timeout; 
     Int32 State;
@@ -103,7 +103,7 @@ SocketRef SocketCreate(
     UInt16 ProtocolExtension,
     Int32 ReadBufferSize,
     Int32 WriteBufferSize,
-    Index MaxConnectionCount,
+    Int32 MaxConnectionCount,
     Bool LogPackets,
     SocketConnectionCallback OnConnect,
     SocketConnectionCallback OnDisconnect,

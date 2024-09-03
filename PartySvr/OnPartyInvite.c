@@ -96,7 +96,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_ACK) {
 	Response->Header.Source = Packet->Header.Source;
 	Response->Header.SourceConnectionID = Packet->Header.SourceConnectionID;
 	Response->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
-	Response->Header.Target.Index = Packet->Source.NodeIndex;
+	Response->Header.Target.Index = (UInt32)Packet->Source.NodeIndex;
 	Response->Header.Target.Type = IPC_TYPE_WORLD;
 	Response->Success = Packet->Success;
 	Response->Source = Packet->Source;
@@ -123,7 +123,7 @@ error:
 		Response->Header.Source = Packet->Header.Source;
 		Response->Header.SourceConnectionID = Packet->Header.SourceConnectionID;
 		Response->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
-		Response->Header.Target.Index = Packet->Source.NodeIndex;
+		Response->Header.Target.Index = (UInt32)Packet->Source.NodeIndex;
 		Response->Header.Target.Type = IPC_TYPE_WORLD;
 		Response->Success = Packet->Success;
 		Response->Source = Packet->Source;

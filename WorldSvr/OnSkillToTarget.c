@@ -32,12 +32,12 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_TARGET) {
 	Response->Unknown4 = 456;
 	Response->Unknown5 = 255;
 	Response->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-	Response->CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+	Response->CurrentMP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 
 	Response->TargetCount = 1;
 	S2C_DATA_SKILL_TO_TARGET_BUFF_TARGET* ResponseTarget = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_TO_TARGET_BUFF_TARGET);
 	ResponseTarget->SourceIndex = 1;
-	ResponseTarget->TargetIndex = Character->CharacterIndex;
+	ResponseTarget->TargetIndex = (UInt32)Character->CharacterIndex;
 	ResponseTarget->TargetType = RUNTIME_ENTITY_TYPE_CHARACTER;
 	ResponseTarget->Result = 1;
 	ResponseTarget->Unknown1 = 1;
@@ -52,7 +52,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_TARGET) {
 	static Int32 Offset = 0;
 
 	S2C_DATA_NFY_SKILL_TO_TARGET_BUFF* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_SKILL_TO_TARGET_BUFF);
-	Notification->CharacterIndex = Character->CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
 	Notification->SkillIndex = Packet->SkillIndex;
 	Notification->SkillLevel = 1;
 	Notification->Unknown2 = 0; // Only takes 0 or 1, moves the slot to second row (penet potion slot)
@@ -67,7 +67,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_TARGET) {
 	//Notification->EffectorItemOptions = 460544;
 
 	S2C_DATA_NFY_SKILL_TO_TARGET_BUFF_TARGET* NotificationTarget = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_NFY_SKILL_TO_TARGET_BUFF_TARGET);
-	NotificationTarget->TargetIndex = Character->CharacterIndex;
+	NotificationTarget->TargetIndex = (UInt32)Character->CharacterIndex;
 	NotificationTarget->TargetType = RUNTIME_ENTITY_TYPE_CHARACTER;
 	NotificationTarget->Result = 1;
 	NotificationTarget->UnknownA[0] = 0;

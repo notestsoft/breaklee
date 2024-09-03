@@ -116,7 +116,7 @@ struct _IPCSocket {
     UInt16 ProtocolExtension;
     Int32 ReadBufferSize;
     Int32 WriteBufferSize;
-    Index MaxConnectionCount;
+    Int32 MaxConnectionCount;
     Index NextConnectionID;
     CString Host;
     UInt16 Port;
@@ -160,7 +160,7 @@ IPCSocketRef IPCSocketCreate(
     CString Host,
     UInt16 Port,
     Timestamp Timeout,
-    Index MaxConnectionCount,
+    Int32 MaxConnectionCount,
     Bool LogPackets,
     Void* Userdata
 );

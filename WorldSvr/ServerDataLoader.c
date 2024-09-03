@@ -1299,8 +1299,8 @@ Bool ServerLoadWorldData(
 
                     if (!ParseAttributeUInt64(Archive, ItemIterator->Index, "ItemID", &DropItem->ItemID.Serial)) goto error;
                     if (!ParseAttributeUInt64(Archive, ItemIterator->Index, "ItemOption", &DropItem->ItemOptions)) goto error;
-                    if (!ParseAttributeUInt32(Archive, ItemIterator->Index, "ItemDuration", &DropItem->DurationIndex)) goto error;
-                    if (!ParseAttributeUInt32(Archive, ItemIterator->Index, "OptionPoolID", &DropItem->OptionPoolIndex)) goto error;
+                    if (!ParseAttributeInt32(Archive, ItemIterator->Index, "ItemDuration", &DropItem->DurationIndex)) goto error;
+                    if (!ParseAttributeInt32(Archive, ItemIterator->Index, "OptionPoolID", &DropItem->OptionPoolIndex)) goto error;
 
                     DropItem->ItemID.IsCharacterBinding = true;
                     DropItem->ItemOptions = RTQuestItemOptions(DropItem->ItemOptions, 1);
@@ -1903,8 +1903,8 @@ Bool ServerLoadQuestDungeonData(
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "dungeon");
     while (Iterator) {
-        Index DungeonIndex = 0;
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
+        Int32 DungeonIndex = 0;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
         assert(!DictionaryLookup(Runtime->DungeonData, &DungeonIndex));
         memset(&DungeonData, 0, sizeof(struct _RTDungeonData));
         DungeonData.DungeonIndex = DungeonIndex;
@@ -2004,7 +2004,7 @@ Bool ServerLoadQuestDungeonData(
         DictionaryInsert(Runtime->PatternPartData, &PatternPartIndex, &PatternPartData, sizeof(struct _RTMissionDungeonPatternPartData));
 
         Char FilePath[MAX_PATH] = { 0 };
-        sprintf(FilePath, "%s\\Dungeon\\PatternPart_%llu.xml", ServerDirectory, PatternPartIndex);
+        sprintf(FilePath, "%s\\Dungeon\\PatternPart_%zu.xml", ServerDirectory, PatternPartIndex);
         if (!ServerLoadPatternPartData(Context, FilePath)) goto error;
 
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
@@ -2025,15 +2025,15 @@ Bool ServerLoadMissionDungeonData(
     ArchiveRef Archive
 ) {
     RTRuntimeRef Runtime = Context->Runtime;
-    Int32 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.cabal_mission_dungeon");
+    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.cabal_mission_dungeon");
     if (ParentIndex < 0) goto error;
 
     struct _RTDungeonData DungeonData = { 0 };
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "dungeon");
     while (Iterator) {
-        Index DungeonIndex = 0;
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
+        Int32 DungeonIndex = 0;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
         assert(!DictionaryLookup(Runtime->DungeonData, &DungeonIndex));
         memset(&DungeonData, 0, sizeof(struct _RTDungeonData));
         DungeonData.DungeonIndex = DungeonIndex;
@@ -2127,7 +2127,7 @@ Bool ServerLoadMissionDungeonData(
         DictionaryInsert(Runtime->PatternPartData, &PatternPartIndex, &PatternPartData, sizeof(struct _RTMissionDungeonPatternPartData));
 
         Char FilePath[MAX_PATH] = { 0 };
-        sprintf(FilePath, "%s\\Dungeon\\PatternPart_%llu.xml", ServerDirectory, PatternPartIndex);
+        sprintf(FilePath, "%s\\Dungeon\\PatternPart_%zu.xml", ServerDirectory, PatternPartIndex);
         if (!ServerLoadPatternPartData(Context, FilePath)) goto error;
 
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);

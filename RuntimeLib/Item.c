@@ -1568,9 +1568,9 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
 	for (Index Index = 0; Index < Data->InventoryItemCount; Index += 1) {
 		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Data->InventorySlotIndex[Index]);
 
-		Int32 ItemStackSize = ItemSlot->ItemOptions & 0xFFFF;
-		Int32 ItemAmount = ItemSlot->ItemOptions >> 16;
-		Int32 ConsumableStackSize = MIN(ItemStackSize, RemainingStackSize);
+		Int64 ItemStackSize = ItemSlot->ItemOptions & 0xFFFF;
+		Int64 ItemAmount = ItemSlot->ItemOptions >> 16;
+		Int64 ConsumableStackSize = MIN(ItemStackSize, RemainingStackSize);
 
 		ItemStackSize -= ConsumableStackSize;
 		RemainingStackSize -= ConsumableStackSize;
@@ -1708,7 +1708,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemCoreEnhancer) {
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemForceGemPackage) {
-    RTCharacterAddForceGem(Runtime, Character, ItemSlot->ItemOptions);
+    RTCharacterAddForceGem(Runtime, Character, (UInt32)ItemSlot->ItemOptions);
 	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
 	Character->SyncMask.InventoryInfo = true;
 

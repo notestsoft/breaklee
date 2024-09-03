@@ -36,7 +36,7 @@ CLIENT_PROCEDURE_BINDING(BUY_ITEM) {
     Int64 PriceAP = ShopItem->PriceAP * Packet->ItemCount;
     Int64 PriceDP = ShopItem->PriceDP * Packet->ItemCount;
     Int64 PriceCash = ShopItem->PriceCash * Packet->ItemCount;
-    Int64 PriceGem = ShopItem->PriceGem * Packet->ItemCount;
+    Int32 PriceGem = ShopItem->PriceGem * Packet->ItemCount;
 
     if (PriceAlz > Character->Data.Info.Alz) goto error;
     if (PriceWexp > Character->Data.Info.Wexp) goto error;

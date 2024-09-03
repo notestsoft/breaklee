@@ -220,7 +220,7 @@ authenticate:
     }
 
     if (Client->LoginStatus == LOGIN_STATUS_SUCCESS && Client->AccountStatus == ACCOUNT_STATUS_NORMAL) {
-        if (!ValidatePasswordHash(Password, PasswordHash)) {
+        if (!ValidatePasswordHash(Password, (UInt8*)PasswordHash)) {
             Client->LoginStatus = LOGIN_STATUS_ERROR;
             Client->AccountStatus = ACCOUNT_STATUS_INVALID_CREDENTIALS;
         }        
@@ -228,7 +228,7 @@ authenticate:
 
     if (!InsertedAccount && Context->Config.Login.AutoCreateAccountOnLogin &&
         Client->AccountStatus == ACCOUNT_STATUS_INVALID_CREDENTIALS) {
-        if (CreatePasswordHash(Password, PasswordHash)) {
+        if (CreatePasswordHash(Password, (UInt8*)PasswordHash)) {
             DatabaseCallProcedure(
                 Context->Database,
                 "InsertAccount",

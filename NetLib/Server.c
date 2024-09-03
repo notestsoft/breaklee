@@ -23,8 +23,8 @@ ServerRef ServerCreate(
     CString Host,
     UInt16 Port,
     Timestamp Timeout,
-    Index ReadBufferSize,
-    Index WriteBufferSize,
+    Int32 ReadBufferSize,
+    Int32 WriteBufferSize,
     Bool LogPackets,
     ServerUpdateCallback OnUpdate,
     Void *ServerContext
@@ -85,9 +85,9 @@ SocketRef ServerCreateSocket(
     UInt16 ProtocolIdentifier,
     UInt16 ProtocolVersion,
     UInt16 ProtocolExtension,
-    Index ReadBufferSize,
-    Index WriteBufferSize,
-    Index MaxConnectionCount,
+    Int32 ReadBufferSize,
+    Int32 WriteBufferSize,
+    Int32 MaxConnectionCount,
     Bool LogPackets,
     ServerConnectionCallback OnConnect,
     ServerConnectionCallback OnDisconnect

@@ -13,7 +13,7 @@ Void SendCharacterStatus(
 ) {
     S2C_DATA_NFY_CHARACTER_STATUS* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_CHARACTER_STATUS);
     Notification->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-    Notification->CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+    Notification->CurrentMP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
     SocketSend(Socket, Connection, Notification);
 }
 
@@ -509,7 +509,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         &Character->Movement,
         Character->Data.Info.PositionX,
         Character->Data.Info.PositionY,
-        Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+        (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
         RUNTIME_WORLD_TILE_WALL
     );
 
@@ -535,7 +535,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         Character->Data.Info.PositionX = WarpPoint.X;
         Character->Data.Info.PositionY = WarpPoint.Y;
         Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
-        Character->Data.Info.DungeonIndex = TargetWorld->DungeonIndex;
+        Character->Data.Info.DungeonIndex = (Int32)TargetWorld->DungeonIndex;
     }
 
     if (!RTCharacterIsAlive(Runtime, Character)) {
@@ -547,11 +547,11 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         }
 
         Character->Data.Info.CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
-        Character->Data.Info.CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX];
+        Character->Data.Info.CurrentMP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX];
         Character->Data.Info.PositionX = WarpPoint.X;
         Character->Data.Info.PositionY = WarpPoint.Y;
         Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
-        Character->Data.Info.DungeonIndex = TargetWorld->DungeonIndex;
+        Character->Data.Info.DungeonIndex = (Int32)TargetWorld->DungeonIndex;
 
         RTCharacterInitializeAttributes(Runtime, Character);
         RTMovementInitialize(
@@ -559,7 +559,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
             &Character->Movement,
             Character->Data.Info.PositionX,
             Character->Data.Info.PositionY,
-            Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+            (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
             RUNTIME_WORLD_TILE_WALL
         );
     }

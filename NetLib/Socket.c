@@ -109,7 +109,7 @@ Void _AllocateRecvBuffer(
 ) {
     SocketConnectionRef Connection = (SocketConnectionRef)Handle->data;
     MemoryRef RecvBuffer = Connection->RecvBuffer;
-    Int32 RecvBufferLength = Connection->RecvBufferLength;
+    Index RecvBufferLength = Connection->RecvBufferLength;
     if (RecvBuffer) SuggestedSize = MAX(SuggestedSize, RecvBufferLength);
 
     if (!RecvBuffer) {
@@ -122,7 +122,7 @@ Void _AllocateRecvBuffer(
     if (RecvBuffer) {
         RecvBufferLength = SuggestedSize;
         Connection->RecvBuffer = RecvBuffer;
-        Connection->RecvBufferLength = RecvBufferLength;
+        Connection->RecvBufferLength = (Int32)RecvBufferLength;
     }
 
     Buffer->base = RecvBuffer;
@@ -150,7 +150,7 @@ Void _OnRead(
 
     if (RecvLength < 0) {
         if (RecvLength != UV_EOF) {
-            Error("Read error: %s\n", uv_strerror(RecvLength));
+            Error("Read error: %s\n", uv_strerror((Int32)RecvLength));
         }
 
         SocketDisconnect(Connection->Socket, Connection);
@@ -259,7 +259,7 @@ SocketRef SocketCreate(
     UInt16 ProtocolExtension,
     Int32 ReadBufferSize,
     Int32 WriteBufferSize,
-    Index MaxConnectionCount,
+    Int32 MaxConnectionCount,
     Bool LogPackets,
     SocketConnectionCallback OnConnect,
     SocketConnectionCallback OnDisconnect,
@@ -418,7 +418,7 @@ Void SocketSendRaw(
 
     struct _SocketConnectionWriteRequest* WriteRequest = (struct _SocketConnectionWriteRequest*)Memory;
     WriteRequest->Request.data = Connection;
-    WriteRequest->Buffer.base = Memory + sizeof(struct _SocketConnectionWriteRequest);
+    WriteRequest->Buffer.base = (CString)(Memory + sizeof(struct _SocketConnectionWriteRequest));
     WriteRequest->Buffer.len = Length;
     memcpy(WriteRequest->Buffer.base, Data, Length);
     uv_write(&WriteRequest->Request, (uv_stream_t*)Connection->Handle, &WriteRequest->Buffer, 1, _OnWrite);

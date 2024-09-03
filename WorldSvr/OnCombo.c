@@ -55,7 +55,7 @@ CLIENT_PROCEDURE_BINDING(COMBO_SKILL_EVENT) {
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT] -= SkillData->Sp;
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] -= RequiredMP;
 		Character->Data.Info.CurrentSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
-		Character->Data.Info.CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+		Character->Data.Info.CurrentMP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 		Character->SyncMask.Info = true;
 	}
 	else {
