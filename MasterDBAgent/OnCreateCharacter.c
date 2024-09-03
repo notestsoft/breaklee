@@ -91,7 +91,6 @@ IPC_PROCEDURE_BINDING(W2D, CREATE_CHARACTER) {
 		)) {
 			Response->Character = CharacterInfo;
 		}
-
 		DatabaseHandleFlush(Handle);
 	}
 	else if (!Response->Status) {

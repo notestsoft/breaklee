@@ -443,7 +443,6 @@ Bool DatabaseHandleReadNext(
 	}
 
 	va_end(Arguments);
-	SQLFreeHandle(SQL_HANDLE_STMT, Statement);
 	return true;
 }
 

@@ -4,35 +4,35 @@ Void ParseBool(
     CString Value,
     Bool* Result
 ) {
-    *Result = (Bool)atoll(Value);
+    *Result = (Bool)strtoll(Value, NULL, 0);
 }
 
 Void ParseInt8(
     CString Value,
     Int8* Result
 ) {
-    *Result = (Int8)atoll(Value);
+    *Result = (Int8)strtoll(Value, NULL, 0);
 }
 
 Void ParseInt16(
     CString Value,
     Int16* Result
 ) {
-    *Result = (Int16)atoll(Value);
+    *Result = (Int16)strtoll(Value, NULL, 0);
 }
 
 Void ParseInt32(
     CString Value,
     Int32* Result
 ) {
-    *Result = (Int32)atoll(Value);
+    *Result = (Int32)strtoll(Value, NULL, 0);
 }
 
 Void ParseInt64(
     CString Value,
     Int64* Result
 ) {
-    *Result = (Int64)atoll(Value);
+    *Result = (Int64)strtoll(Value, NULL, 0);
 }
 
 Void ParseUInt8(

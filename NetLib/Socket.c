@@ -65,6 +65,7 @@ Bool SocketFetchReadBuffer(
                 PacketLength = *((UInt16*)((UInt8*)Packet + sizeof(UInt16)));
             }
             else {
+                Error("Invalid packet header magic: %d", PacketMagic);
                 SocketDisconnect(Socket, Connection);
                 break;
             }
@@ -85,6 +86,7 @@ Bool SocketFetchReadBuffer(
             PacketMagic -= Socket->ProtocolIdentifier;
             PacketMagic -= Socket->ProtocolVersion;
             if (PacketMagic != 0 && PacketMagic != Socket->ProtocolExtension) {
+                Error("Invalid packet header magic: %d", PacketMagic);
                 SocketDisconnect(Socket, Connection);
                 break;
             }

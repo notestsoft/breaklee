@@ -312,6 +312,6 @@ BEGIN
     LEFT JOIN Exploration ON Characters.CharacterID = Exploration.CharacterID
     LEFT JOIN AnimaMastery ON Characters.AccountID = AnimaMastery.AccountID
     LEFT JOIN Preset ON Characters.CharacterID = Preset.CharacterID
-    LEFT JOIN Settings ON Characters.CharacterID = Settings.AccountID
+    LEFT JOIN Settings ON Characters.AccountID = Settings.AccountID
     WHERE Characters.CharacterID = InCharacterID;
 END;

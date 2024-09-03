@@ -67,8 +67,10 @@ IPC_PROCEDURE_BINDING(W2L, WORLD_VERIFY_LINKS) {
 
     ClientConnection = Client->Connection;
     assert(Client->Connection);
-
-    if (Client->AccountStatus != ACCOUNT_STATUS_NORMAL || Client->LoginStatus != LOGIN_STATUS_SUCCESS) goto error;
+    
+    Client->AccountID = Packet->AccountID;
+    Client->AccountStatus = ACCOUNT_STATUS_NORMAL;
+    Client->LoginStatus = LOGIN_STATUS_SUCCESS;
 
     S2C_DATA_AUTH_TIMER* AuthTimerResponse = PacketBufferInit(ClientConnection->PacketBuffer, S2C, AUTH_TIMER);
     AuthTimerResponse->Timeout = Context->Config.Login.AutoDisconnectDelay;
