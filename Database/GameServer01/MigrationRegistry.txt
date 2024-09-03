@@ -108,3 +108,4 @@ AddMigration 0109_CreateSyncAuraMastery.sql
 AddMigration 0110_CreateSyncSecretShop.sql
 AddMigration 0111_CreateSyncDamageBooster.sql
 AddMigration 0112_CreateSyncExploration.sql
+AddMigration 0113_CreateSetCharacterSlotOrder.sql
