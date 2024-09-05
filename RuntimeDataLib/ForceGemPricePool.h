@@ -1,0 +1,9 @@
+RUNTIME_DATA_FILE_BEGIN(ForceGemPricePool.xml)
+
+RUNTIME_DATA_TYPE_BEGIN(ForceGemPrice, "ForceGemPricePool.ForceGemPrice", 256)
+	RUNTIME_DATA_PROPERTY(Int32, PoolIndex, "PoolIndex")
+	RUNTIME_DATA_PROPERTY(Int32, PriceIndex, "PriceIndex")
+	RUNTIME_DATA_PROPERTY(Int32, Price, "Price")
+RUNTIME_DATA_TYPE_END(ForceGemPrice)
+
+RUNTIME_DATA_FILE_END

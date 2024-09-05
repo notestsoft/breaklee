@@ -92,6 +92,7 @@
 #include "FieldBossRaid.h"
 #include "FieldWar.h"
 #include "ForceCoreOption.h"
+#include "ForceGemPricePool.h"
 #include "ForceWing.h"
 #include "Giftbox.h"
 #include "GuildDungeon.h"
