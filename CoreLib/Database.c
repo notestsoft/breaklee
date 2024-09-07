@@ -413,13 +413,17 @@ Bool DatabaseHandleReadNext(
 ) {
 	if (!Handle) return false;
 
+	Trace("DatabaseHandleReadNext: Fetching next row...");
+
 	SQLHSTMT Statement = (SQLHSTMT)Handle;
 	SQLRETURN ReturnCode = SQLFetch(Statement);
 	if (ReturnCode == SQL_NO_DATA) {
+		Trace("DatabaseHandleReadNext: No more data available.");
 		SQLFreeHandle(SQL_HANDLE_STMT, Statement);
 		return false;
 	}
 	else if (!SQL_SUCCEEDED(ReturnCode)) {
+		Trace("DatabaseHandleReadNext: SQLFetch failed with code %d", ReturnCode);
 		HandleDatabaseError(SQL_HANDLE_STMT, Statement);
 		SQLFreeHandle(SQL_HANDLE_STMT, Statement);
 		return false;
@@ -442,16 +446,21 @@ Bool DatabaseHandleReadNext(
 			BufferLength = va_arg(Arguments, SQLLEN);
 		}
 
+		Trace("DatabaseHandleReadNext: Fetching column %d with data type %d, buffer size %lld", ColumnIndex, DataType, BufferLength);
 		ReturnCode = SQLGetData(Statement, ColumnIndex++, DataMapping.NativeType, Buffer, BufferLength, NULL);
 		if (!SQL_SUCCEEDED(ReturnCode)) {
+			Trace("DatabaseHandleReadNext: SQLGetData failed for column %d with code %d", ColumnIndex - 1, ReturnCode);
 			HandleDatabaseError(SQL_HANDLE_STMT, Statement);
 			va_end(Arguments);
 			SQLFreeHandle(SQL_HANDLE_STMT, Statement);
 			return false;
 		}
+
+		Trace("DatabaseHandleReadNext: Successfully fetched data for column %d", ColumnIndex - 1);
 	}
 
 	va_end(Arguments);
+	Trace("DatabaseHandleReadNext: Row successfully read.");
 	return true;
 }
 
