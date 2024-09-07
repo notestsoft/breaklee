@@ -2,12 +2,57 @@ CREATE PROCEDURE GetCharacter (
     IN InCharacterID INT
 )
 BEGIN
-    -- Select and return the required character information directly
+    DECLARE WarehousePassword VARCHAR(255);
+    DECLARE WarehouseLocked INT;
+    DECLARE InventoryPassword VARCHAR(255);
+    DECLARE InventoryLocked INT;
+
+    DECLARE IsWarehousePasswordSet INT DEFAULT 0;
+    DECLARE IsInventoryPasswordSet INT DEFAULT 0;
+    DECLARE IsWarehouseLocked INT DEFAULT 0;
+    DECLARE IsInventoryLocked INT DEFAULT 0;
+
+    -- Prefetch warehouse password and lock status
+    SELECT Password, Locked
+    INTO WarehousePassword, WarehouseLocked
+    FROM Subpasswords
+    WHERE AccountID = (SELECT AccountID FROM Characters WHERE CharacterID = InCharacterID)
+      AND Type = 2;
+
+    -- Set warehouse password flags
+    IF WarehousePassword IS NOT NULL THEN
+        SET IsWarehousePasswordSet = 1;
+    END IF;
+    
+    IF WarehouseLocked IS NOT NULL THEN
+        SET IsWarehouseLocked = WarehouseLocked;
+    ELSE
+        SET IsWarehouseLocked = 0;
+    END IF;
+
+    -- Prefetch inventory password and lock status
+    SELECT Password, Locked
+    INTO InventoryPassword, InventoryLocked
+    FROM Subpasswords
+    WHERE AccountID = (SELECT AccountID FROM Characters WHERE CharacterID = InCharacterID)
+      AND Type = 3;
+
+    -- Set inventory password flags
+    IF InventoryPassword IS NOT NULL THEN
+        SET IsInventoryPasswordSet = 1;
+    END IF;
+
+    IF InventoryLocked IS NOT NULL THEN
+        SET IsInventoryLocked = InventoryLocked;
+    ELSE
+        SET IsInventoryLocked = 0;
+    END IF;
+
     SELECT 
-		COALESCE(MAX(CASE WHEN SubpasswordsWarehouse.Password IS NOT NULL THEN 1 ELSE 0 END), 0) AS IsWarehousePasswordSet,
-        COALESCE(MAX(CASE WHEN SubpasswordsInventory.Password IS NOT NULL THEN 1 ELSE 0 END), 0) AS IsInventoryPasswordSet,
-        COALESCE(MAX(CASE WHEN SubpasswordsWarehouse.Locked IS NOT NULL THEN SubpasswordsWarehouse.Locked ELSE 0 END), 0) AS IsWarehouseLocked,
-        COALESCE(MAX(CASE WHEN SubpasswordsInventory.Locked IS NOT NULL THEN SubpasswordsInventory.Locked ELSE 0 END), 0) AS IsInventoryLocked,
+        IsWarehousePasswordSet,
+        IsInventoryPasswordSet,
+        IsWarehouseLocked,
+        IsInventoryLocked,
         Characters.WorldIndex,
         Characters.DungeonIndex,
         Characters.X AS PositionX,
@@ -268,8 +313,6 @@ BEGIN
         Settings.MacrosData
     FROM Characters
     LEFT JOIN Accounts ON Characters.AccountID = Accounts.AccountID
-    LEFT JOIN Subpasswords SubpasswordsWarehouse ON Characters.AccountID = SubpasswordsWarehouse.AccountID AND SubpasswordsWarehouse.Type = 2
-    LEFT JOIN Subpasswords SubpasswordsInventory ON Characters.AccountID = SubpasswordsInventory.AccountID AND SubpasswordsInventory.Type = 3
     LEFT JOIN Equipment ON Characters.CharacterID = Equipment.CharacterID
     LEFT JOIN Inventory ON Characters.CharacterID = Inventory.CharacterID
     LEFT JOIN VehicleInventory ON Characters.CharacterID = VehicleInventory.CharacterID
