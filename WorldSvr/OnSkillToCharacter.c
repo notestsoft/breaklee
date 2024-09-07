@@ -18,14 +18,66 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		goto error;
 	}
 
+	RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, Packet->SkillIndex);
+	if (!SkillData) goto error;
+
+	S2C_DATA_SKILL_TO_CHARACTER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SKILL_TO_CHARACTER);
+	Response->SkillIndex = Packet->SkillIndex;
+
 	// TODO: Packet could eventually contains SkillIndex but no slotindex
 	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotByIndex(Runtime, Character, Packet->SlotIndex);
-	if (!SkillSlot) goto error;
+	if (!SkillSlot) {
+		if (SkillData->SkillGroup != RUNTIME_SKILL_GROUP_ASTRAL) goto error;
+
+		Int32 PacketLength = sizeof(C2S_DATA_SKILL_TO_CHARACTER) + sizeof(C2S_DATA_SKILL_GROUP_ASTRAL);
+		if (Packet->Length != PacketLength) goto error;
+
+		C2S_DATA_SKILL_GROUP_ASTRAL* PacketData = (C2S_DATA_SKILL_GROUP_ASTRAL*)&Packet->Data[0];
+		if (PacketData->IsActivation) goto error;
+
+		if (Packet->SlotIndex == RUNTIME_SPECIAL_SKILL_SLOT_ASTRAL_SKILL) {
+			Character->Data.StyleInfo.ExtendedStyle.IsAstralWeaponActive = PacketData->IsActivation;
+		} else if (Packet->SlotIndex == RUNTIME_SPECIAL_SKILL_SLOT_ASTRAL_BIKE ||
+			Packet->SlotIndex == RUNTIME_SPECIAL_SKILL_SLOT_ASTRAL_BOARD) {
+			Character->Data.StyleInfo.ExtendedStyle.IsVehicleActive = PacketData->IsActivation;
+		}
+		else {
+			// TODO: Add other cases
+			goto error;
+		}
+		
+		S2C_DATA_SKILL_GROUP_ASTRAL* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_ASTRAL);
+		ResponseData->CurrentMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+		ResponseData->IsActivation = PacketData->IsActivation;
+		ResponseData->Unknown2 = PacketData->Unknown2;
+		SocketSend(Socket, Connection, Response);
+
+		S2C_DATA_NFY_SKILL_TO_CHARACTER* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_SKILL_TO_CHARACTER);
+		Notification->SkillIndex = Packet->SkillIndex;
+
+		S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON* NotificationData = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON);
+		NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
+		NotificationData->CharacterStyle = Character->Data.StyleInfo.Style.RawValue;
+		NotificationData->CharacterLiveStyle = Character->Data.StyleInfo.LiveStyle.RawValue;
+		NotificationData->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
+		NotificationData->IsActivation = PacketData->IsActivation;
+		NotificationData->Unknown2 = PacketData->Unknown2;
+
+		BroadcastToWorld(
+			Context,
+			RTRuntimeGetWorldByCharacter(Runtime, Character),
+			kEntityIDNull,
+			Character->Movement.PositionCurrent.X,
+			Character->Movement.PositionCurrent.Y,
+			Notification
+		);
+
+		return;
+	} 
 
 	// 3, 32
 
-	RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillSlot->ID);
-	assert(SkillData);
+	if (SkillSlot->ID != Packet->SkillIndex) goto error;
 
 	// TODO: Add SkillData validations
 	// TODO: Add skill cast time and cooldown checks
@@ -44,9 +96,6 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 	}
 
     RTCharacterAddMP(Runtime, Character, -RequiredMP, false);
-
-	S2C_DATA_SKILL_TO_CHARACTER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SKILL_TO_CHARACTER);
-	Response->SkillIndex = Packet->SkillIndex;
 
 	if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_MOVEMENT) {
 		Int32 PacketLength = sizeof(C2S_DATA_SKILL_TO_CHARACTER) + sizeof(C2S_DATA_SKILL_GROUP_MOVEMENT);
@@ -126,6 +175,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		C2S_DATA_SKILL_GROUP_ASTRAL* PacketData = (C2S_DATA_SKILL_GROUP_ASTRAL*)&Packet->Data[0];
 
 		// TODO: Activate, deactivate battle mode, do runtime validations
+		// TODO: It can also activate board
 		Character->Data.StyleInfo.ExtendedStyle.IsAstralWeaponActive = PacketData->IsActivation;
 
 		S2C_DATA_SKILL_GROUP_ASTRAL* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_ASTRAL);

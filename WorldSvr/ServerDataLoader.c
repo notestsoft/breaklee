@@ -1903,8 +1903,8 @@ Bool ServerLoadQuestDungeonData(
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "dungeon");
     while (Iterator) {
-        Int32 DungeonIndex = 0;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
+        Index DungeonIndex = 0;
+        if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
         assert(!DictionaryLookup(Runtime->DungeonData, &DungeonIndex));
         memset(&DungeonData, 0, sizeof(struct _RTDungeonData));
         DungeonData.DungeonIndex = DungeonIndex;
@@ -2032,8 +2032,8 @@ Bool ServerLoadMissionDungeonData(
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "dungeon");
     while (Iterator) {
-        Int32 DungeonIndex = 0;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
+        Index DungeonIndex = 0;
+        if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
         assert(!DictionaryLookup(Runtime->DungeonData, &DungeonIndex));
         memset(&DungeonData, 0, sizeof(struct _RTDungeonData));
         DungeonData.DungeonIndex = DungeonIndex;

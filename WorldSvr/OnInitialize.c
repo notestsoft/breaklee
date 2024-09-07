@@ -111,6 +111,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Character->DungeonEntryItemSlotIndex = -1;
     Character->SyncMask.RawValue = 0;
     Character->SyncTimestamp = PlatformGetTickCount();
+    Character->Data.AccountInfo = Client->AccountInfo;
     Character->Data.Info = Packet->Character.CharacterInfo;
     Character->Data.StyleInfo = Packet->Character.CharacterStyleInfo;
 
