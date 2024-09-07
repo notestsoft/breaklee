@@ -347,14 +347,18 @@ DatabaseHandleRef DatabaseCallProcedureFetchInternal(
 	}
 	strcat((char*)Query, ") }");
 
+	Trace("SQL Query: %s", Query);
 	ReturnCode = SQLPrepare(Statement, Query, SQL_NTS);
 	if (!SQL_SUCCEEDED(ReturnCode)) {
+		Trace("SQLPrepare failed with code %d", ReturnCode);
 		HandleDatabaseError(SQL_HANDLE_STMT, Statement);
 		SQLFreeHandle(SQL_HANDLE_STMT, Statement);
 		return NULL;
 	}
 
 	for (Int32 ParameterIndex = 0; ParameterIndex < ParameterCount; ++ParameterIndex) {
+		Trace("Binding Parameter %d: Value=%p, Length=%d", ParameterIndex + 1, ParameterValues[ParameterIndex], ParameterLengths[ParameterIndex]);
+
 		ParameterOutLengths[ParameterIndex] = ParameterLengths[ParameterIndex];
 		ReturnCode = SQLBindParameter(
 			Statement,
@@ -370,14 +374,17 @@ DatabaseHandleRef DatabaseCallProcedureFetchInternal(
 		);
 
 		if (!SQL_SUCCEEDED(ReturnCode)) {
+			Trace("SQLBindParameter failed for Parameter %d with code %d", ParameterIndex + 1, ReturnCode);
 			HandleDatabaseError(SQL_HANDLE_STMT, Statement);
 			SQLFreeHandle(SQL_HANDLE_STMT, Statement);
 			return NULL;
 		}
 	}
 
+	Trace("Executing statement...");
 	ReturnCode = SQLExecute(Statement);
 	if (!SQL_SUCCEEDED(ReturnCode)) {
+		Trace("SQLExecute failed with code %d", ReturnCode);
 		HandleDatabaseError(SQL_HANDLE_STMT, Statement);
 		SQLFreeHandle(SQL_HANDLE_STMT, Statement);
 		return NULL;
