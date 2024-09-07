@@ -323,7 +323,7 @@ IPC_PROTOCOL(W2D, VERIFY_SUBPASSWORD,
 	Int32 AccountID;
 	Char Password[MAX_SUBPASSWORD_LENGTH + 1];
 	Int32 Type;
-	Int8 ExpirationInHours;
+	Int32 ExpirationInHours;
 	Int32 IsLocked;
 )
 
