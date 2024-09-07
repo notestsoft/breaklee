@@ -220,7 +220,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_UINT8, &Response->Character.ForceWingInfo.TrainingSlotCount,
         DB_TYPE_DATA, Response->Character.ForceWingInfo.TrainingUnlockFlags, sizeof(Response->Character.ForceWingInfo.TrainingUnlockFlags),
         DB_TYPE_DATA, Response->Character.ForceWingInfo.ArrivalSkillSlots, sizeof(Response->Character.ForceWingInfo.ArrivalSkillSlots),
-        DB_TYPE_DATA, Response->Character.ForceWingInfo.ArrivalSkillRestoreSlot, sizeof(Response->Character.ForceWingInfo.ArrivalSkillRestoreSlot),
+        DB_TYPE_DATA, &Response->Character.ForceWingInfo.ArrivalSkillRestoreSlot, sizeof(Response->Character.ForceWingInfo.ArrivalSkillRestoreSlot),
         DB_TYPE_INT16, &Response->Character.GiftBoxInfo.SpecialPoints,
         DB_TYPE_UINT8, &Response->Character.GiftBoxInfo.SlotCount,
         DB_TYPE_INT16, &Response->Character.CollectionInfo.SlotCount,
