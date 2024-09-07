@@ -391,6 +391,8 @@ DatabaseHandleRef DatabaseCallProcedureFetch(
 	const Char* Procedure,
 	...
 ) {
+	Trace("Call Procedure: %s", Procedure);
+
 	va_list Arguments;
 	va_start(Arguments, Procedure);
 	DatabaseHandleRef Handle = DatabaseCallProcedureFetchInternal(Database, Procedure, Arguments);
