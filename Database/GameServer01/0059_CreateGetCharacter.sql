@@ -4,10 +4,10 @@ CREATE PROCEDURE GetCharacter (
 BEGIN
     -- Select and return the required character information directly
     SELECT 
-        IF(MAX(CASE WHEN SubpasswordsWarehouse.Password IS NOT NULL THEN 1 ELSE 0 END), 1, 0) AS IsWarehousePasswordSet,
-        IF(MAX(CASE WHEN SubpasswordsInventory.Password IS NOT NULL THEN 1 ELSE 0 END), 1, 0) AS IsInventoryPasswordSet,
-        IF(MAX(CASE WHEN SubpasswordsWarehouse.Locked IS NOT NULL THEN SubpasswordsWarehouse.Locked ELSE 0 END), 1, 0) AS IsWarehouseLocked,
-        IF(MAX(CASE WHEN SubpasswordsInventory.Locked IS NOT NULL THEN SubpasswordsInventory.Locked ELSE 0 END), 1, 0) AS IsInventoryLocked,
+		COALESCE(MAX(CASE WHEN SubpasswordsWarehouse.Password IS NOT NULL THEN 1 ELSE 0 END), 0) AS IsWarehousePasswordSet,
+        COALESCE(MAX(CASE WHEN SubpasswordsInventory.Password IS NOT NULL THEN 1 ELSE 0 END), 0) AS IsInventoryPasswordSet,
+        COALESCE(MAX(CASE WHEN SubpasswordsWarehouse.Locked IS NOT NULL THEN SubpasswordsWarehouse.Locked ELSE 0 END), 0) AS IsWarehouseLocked,
+        COALESCE(MAX(CASE WHEN SubpasswordsInventory.Locked IS NOT NULL THEN SubpasswordsInventory.Locked ELSE 0 END), 0) AS IsInventoryLocked,
         Characters.WorldIndex,
         Characters.DungeonIndex,
         Characters.X AS PositionX,
