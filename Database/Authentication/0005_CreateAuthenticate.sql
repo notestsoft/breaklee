@@ -66,7 +66,7 @@ BEGIN
                 -- Generate new session
                 INSERT INTO Sessions (AccountID, AuthKey, AddressIP, Online, CreatedAt)
                 VALUES (OutAccountID, InAuthKey, InAddressIP, FALSE, UNIX_TIMESTAMP())
-                ON DUPLICATE KEY UPDATE AuthKey = InAuthKey, UpdatedAt = UNIX_TIMESTAMP();
+                ON DUPLICATE KEY UPDATE AuthKey = InAuthKey, AddressIP = InAddressIP, UpdatedAt = UNIX_TIMESTAMP();
             END IF;
         END IF;
     END IF;
