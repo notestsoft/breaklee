@@ -209,3 +209,12 @@ IPC_PROCEDURE_BINDING(W2W, RESPONSE_VERIFY_LINKS) {
 	SocketSend(Context->ClientSocket, ClientConnection, Response);
 	SocketDisconnect(Context->ClientSocket, ClientConnection);
 }
+
+CLIENT_PROCEDURE_BINDING(OPEN_AUCTION_HOUSE) {
+	if (!Character) goto error;
+
+	return;
+
+error:
+	SocketDisconnect(Socket, Connection);
+}
