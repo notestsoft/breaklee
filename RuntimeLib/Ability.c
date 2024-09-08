@@ -48,7 +48,7 @@ Bool RTCharacterAddEssenceAbility(
 	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, InventorySlotIndex);
 	if (!ItemSlot) return false;
 
-	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX);
+	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
 	if (!ItemData) return false;
 
 	if (ItemData->ItemType != RUNTIME_ITEM_TYPE_ABILITY_RUNE_ESSENCE) return false;
