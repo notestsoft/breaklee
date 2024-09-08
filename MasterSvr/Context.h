@@ -16,9 +16,16 @@ struct _WorldInfo {
 };
 typedef struct _WorldInfo* WorldInfoRef;
 
+struct _ClientInfo {
+    Int32 AccountID;
+    Int32 NodeConnectionCount[IPC_TYPE_COUNT];
+};
+typedef struct _ClientInfo* ClientInfoRef;
+
 struct _ServerContext {
     ServerConfig Config;
     DictionaryRef WorldInfoTable;
+    DictionaryRef ClientInfoTable;
 };
 typedef struct _ServerContext* ServerContextRef;
 

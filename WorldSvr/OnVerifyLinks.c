@@ -133,6 +133,15 @@ IPC_PROCEDURE_BINDING(D2W, AUTHENTICATE) {
 	}
 
 	IPCSocketUnicast(Server->IPCSocket, Response);
+
+	if (Client && Client->AccountID > 0) {
+		IPC_N2M_DATA_CLIENT_CONNECT* Notification = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, N2M, CLIENT_CONNECT);
+		Notification->Header.Source = Server->IPCSocket->NodeID;
+		Notification->Header.Target.Group = Server->IPCSocket->NodeID.Group;
+		Notification->Header.Target.Type = IPC_TYPE_MASTER;
+		Notification->AccountID = Client->AccountID;
+		IPCSocketUnicast(Server->IPCSocket, Notification);
+	}
 }
 
 IPC_PROCEDURE_BINDING(W2W, REQUEST_VERIFY_LINKS) {
@@ -163,6 +172,16 @@ IPC_PROCEDURE_BINDING(W2W, REQUEST_VERIFY_LINKS) {
 	Response->NodeIndex = Packet->NodeIndex;
 	Response->Status = 1;
 	IPCSocketUnicast(Server->IPCSocket, Response);
+
+	if (Client && Client->AccountID > 0) {
+		IPC_N2M_DATA_CLIENT_CONNECT* Notification = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, N2M, CLIENT_CONNECT);
+		Notification->Header.Source = Server->IPCSocket->NodeID;
+		Notification->Header.Target.Group = Server->IPCSocket->NodeID.Group;
+		Notification->Header.Target.Type = IPC_TYPE_MASTER;
+		Notification->AccountID = Client->AccountID;
+		IPCSocketUnicast(Server->IPCSocket, Notification);
+	}
+
 	return;
 
 error:

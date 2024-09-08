@@ -302,6 +302,16 @@ authenticate:
     Request->Header.Target.Group = Server->IPCSocket->NodeID.Group;
     Request->Header.Target.Type = IPC_TYPE_MASTER;
     IPCSocketUnicast(Server->IPCSocket, Request);
+
+    if (Client->AccountID > 0) {
+        IPC_N2M_DATA_CLIENT_CONNECT* Notification = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, N2M, CLIENT_CONNECT);
+        Notification->Header.Source = Server->IPCSocket->NodeID;
+        Notification->Header.Target.Group = Server->IPCSocket->NodeID.Group;
+        Notification->Header.Target.Type = IPC_TYPE_MASTER;
+        Notification->AccountID = Client->AccountID;
+        IPCSocketUnicast(Server->IPCSocket, Notification);
+    }
+
     return;
 
 error:

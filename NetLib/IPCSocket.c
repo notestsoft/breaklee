@@ -539,6 +539,8 @@ Void IPCSocketBroadcast(
     IPCPacketRef IPCPacket = (IPCPacketRef)Packet;
     IPCPacket->RouteType = IPC_ROUTE_TYPE_BROADCAST;
 
+    Bool IsAnyTarget = IPCPacket->Target.Type == IPC_TYPE_ALL;
+
     IndexSetIteratorRef Iterator = IndexSetGetIterator(Socket->ConnectionIndices);
     while (Iterator) {
         Index ConnectionPoolIndex = Iterator->Value;
@@ -546,6 +548,12 @@ Void IPCSocketBroadcast(
 
         IPCSocketConnectionRef Connection = (IPCSocketConnectionRef)MemoryPoolFetch(Socket->ConnectionPool, ConnectionPoolIndex);
         assert(!(Connection->Flags & IPC_SOCKET_CONNECTION_FLAGS_DISCONNECTED));
+
+        if (IsAnyTarget) {
+            IPCNodeContextRef NodeContext = (IPCNodeContextRef)Connection->Userdata;
+            IPCPacket->Target = NodeContext->NodeID;
+        }
+
         IPCSocketSend(Socket, Connection, IPCPacket);
     }
 }

@@ -85,6 +85,9 @@ Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(            \
 #define IPC_P2W_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(P2W, __NAME__)
 #include "IPCCommands.h"
 
+#define IPC_M2N_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(M2N, __NAME__)
+#include "IPCCommands.h"
+
 #define NOTIFICATION_PROTOCOL(__NAME__, __COMMAND__, __BODY__)      \
 Void SERVER_NOTIFICATION_PROC_ ## __NAME__(                         \
     RTRuntimeRef Runtime,                                           \
@@ -239,6 +242,11 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
 #define IPC_P2W_COMMAND(__NAME__) \
     Trace("RegisterCommand(%d, IPC_P2W_%s)", IPC_P2W_ ## __NAME__, #__NAME__); \
     IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_P2W_ ## __NAME__, &SERVER_IPC_P2W_PROC_ ## __NAME__);
+#include "IPCCommands.h"
+
+#define IPC_M2N_COMMAND(__NAME__) \
+    Trace("RegisterCommand(%d, IPC_P2W_%s)", IPC_M2N_ ## __NAME__, #__NAME__); \
+    IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_M2N_ ## __NAME__, &SERVER_IPC_M2N_PROC_ ## __NAME__);
 #include "IPCCommands.h"
 
 #define NOTIFICATION_PROTOCOL(__NAME__, __COMMAND__, __BODY__) \

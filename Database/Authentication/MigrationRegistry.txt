@@ -6,3 +6,4 @@ AddMigration 0005_CreateAuthenticate.sql
 AddMigration 0006_CreateGetPasswordHash.sql
 AddMigration 0007_CreateGetServerCharacterList.sql
 AddMigration 0008_CreateInsertAccount.sql
+AddMigration 0009_CreateSetSessionOnline.sql

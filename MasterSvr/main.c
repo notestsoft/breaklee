@@ -27,6 +27,9 @@ Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                    \
 #define IPC_W2M_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(W2M, __NAME__)
 #include "IPCCommands.h"
 
+#define IPC_N2M_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(N2M, __NAME__)
+#include "IPCCommands.h"
+
 Void ServerOnUpdate(
     ServerRef Server,
     Void* ServerContext
@@ -46,6 +49,7 @@ Int32 main(Int32 argc, CString* argv) {
     struct _ServerContext ServerContext = { 0 };
     ServerContext.Config = Config;
     ServerContext.WorldInfoTable = IndexDictionaryCreate(Allocator, Config.MasterSvr.MaxWorldCount);
+    ServerContext.ClientInfoTable = IndexDictionaryCreate(Allocator, 4096);
 
     IPCNodeID NodeID = kIPCNodeIDNull;
     NodeID.Group = Config.MasterSvr.GroupIndex;
@@ -72,9 +76,14 @@ Int32 main(Int32 argc, CString* argv) {
     IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_W2M_ ## __NAME__, &SERVER_IPC_W2M_PROC_ ## __NAME__);
 #include "IPCCommands.h"
 
+#define IPC_N2M_COMMAND(__NAME__) \
+    IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_N2M_ ## __NAME__, &SERVER_IPC_N2M_PROC_ ## __NAME__);
+#include "IPCCommands.h"
+
     ServerRun(Server);
     ServerDestroy(Server);
     DictionaryDestroy(ServerContext.WorldInfoTable);
+    DictionaryDestroy(ServerContext.ClientInfoTable);
     DiagnosticTeardown();
 
     return EXIT_SUCCESS;

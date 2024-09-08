@@ -47,6 +47,9 @@ Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                    \
 #define IPC_W2P_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(W2P, __NAME__)
 #include "IPCCommands.h"
 
+#define IPC_M2N_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(M2N, __NAME__)
+#include "IPCCommands.h"
+
 Void ServerOnUpdate(
     ServerRef Server,
     Void *ServerContext
@@ -153,6 +156,10 @@ Int32 main(Int32 argc, CString* argv) {
 
 #define IPC_W2P_COMMAND(__NAME__) \
     IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_W2P_ ## __NAME__, &SERVER_IPC_W2P_PROC_ ## __NAME__);
+#include "IPCCommands.h"
+
+#define IPC_M2N_COMMAND(__NAME__) \
+    IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_M2N_ ## __NAME__, &SERVER_IPC_M2N_PROC_ ## __NAME__);
 #include "IPCCommands.h"
 
     ServerRun(Server);

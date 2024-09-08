@@ -36,5 +36,14 @@ Void ClientSocketOnDisconnect(
         Client->CharacterIndex = 0;
     }
     
+    if (Client->AccountID > 0) {
+        IPC_N2M_DATA_CLIENT_DISCONNECT* Notification = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, N2M, CLIENT_DISCONNECT);
+        Notification->Header.Source = Server->IPCSocket->NodeID;
+        Notification->Header.Target.Group = Server->IPCSocket->NodeID.Group;
+        Notification->Header.Target.Type = IPC_TYPE_MASTER;
+        Notification->AccountID = Client->AccountID;
+        IPCSocketUnicast(Server->IPCSocket, Notification);
+    }
+
     Info("Client disconnected...");
 }

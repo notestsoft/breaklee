@@ -31,4 +31,8 @@ Void IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(       \
 IPC_PROCEDURE_BINDING(W2P, __NAME__);
 #include "IPCCommands.h"
 
+#define IPC_M2N_COMMAND(__NAME__) \
+IPC_PROCEDURE_BINDING(M2N, __NAME__);
+#include "IPCCommands.h"
+
 EXTERN_C_END

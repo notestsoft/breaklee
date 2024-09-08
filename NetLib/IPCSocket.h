@@ -21,6 +21,8 @@ enum {
     IPC_TYPE_PARTY      = 5,
     IPC_TYPE_WORLD      = 6,
     IPC_TYPE_MASTERDB   = 7,
+
+    IPC_TYPE_COUNT,
 };
 
 enum {

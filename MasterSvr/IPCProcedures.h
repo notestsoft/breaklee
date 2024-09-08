@@ -35,4 +35,8 @@ IPC_PROCEDURE_BINDING(L2M, __NAME__);
 IPC_PROCEDURE_BINDING(W2M, __NAME__);
 #include "IPCCommands.h"
 
+#define IPC_N2M_COMMAND(__NAME__) \
+IPC_PROCEDURE_BINDING(N2M, __NAME__);
+#include "IPCCommands.h"
+
 EXTERN_C_END
