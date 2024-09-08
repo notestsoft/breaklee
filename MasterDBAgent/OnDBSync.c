@@ -236,9 +236,9 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 				DB_INPUT_INT32(Info->HotKeysDataLength),
 				DB_INPUT_INT32(Info->OptionsDataLength),
 				DB_INPUT_UINT32(Info->MacrosDataLength),
-				DB_INPUT_DATA(Info->HotKeysData, Info->HotKeysDataLength),
-				DB_INPUT_DATA(Info->OptionsData, Info->OptionsDataLength),
-				DB_INPUT_DATA(Info->MacrosData, Info->MacrosDataLength),
+				DB_INPUT_DATA(&Info->HotKeysData[0], Info->HotKeysDataLength),
+				DB_INPUT_DATA(&Info->OptionsData[0], Info->OptionsDataLength),
+				DB_INPUT_DATA(&Info->MacrosData[0], Info->MacrosDataLength),
 				DB_PARAM_END
 			)) {
 				Response->SyncMaskFailed.SettingsInfo = true;
@@ -444,9 +444,9 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 				"SyncQuest",
 				DB_INPUT_INT32(Packet->CharacterID),
 				DB_INPUT_UINT16(Info->SlotCount),
-				DB_INPUT_DATA(Info->FinishedQuests, sizeof(Info->FinishedQuests)),
-				DB_INPUT_DATA(Info->DeletedQuests, sizeof(Info->DeletedQuests)),
-				DB_INPUT_DATA(Info->FinishedDungeons, sizeof(Info->FinishedDungeons)),
+				DB_INPUT_DATA(&Info->FinishedQuests[0], sizeof(Info->FinishedQuests)),
+				DB_INPUT_DATA(&Info->DeletedQuests[0], sizeof(Info->DeletedQuests)),
+				DB_INPUT_DATA(&Info->FinishedDungeons[0], sizeof(Info->FinishedDungeons)),
 				DB_INPUT_DATA(Slots, SlotsLength),
 				DB_PARAM_END
 			)) {
@@ -569,8 +569,8 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 				DB_INPUT_INT32(Packet->CharacterID),
 				DB_INPUT_UINT8(Info->SlotCount),
 				DB_INPUT_UINT16(Info->Exp),
-				DB_INPUT_DATA(Info->RegisteredFlags, sizeof(Info->RegisteredFlags)),
-				DB_INPUT_DATA(Info->FavoriteFlags, sizeof(Info->FavoriteFlags)),
+				DB_INPUT_DATA(&Info->RegisteredFlags[0], sizeof(Info->RegisteredFlags)),
+				DB_INPUT_DATA(&Info->FavoriteFlags[0], sizeof(Info->FavoriteFlags)),
 				DB_INPUT_UINT16(Info->SortingOrder),
 				DB_INPUT_DATA(Slots, SlotsLength),
 				DB_PARAM_END
@@ -679,12 +679,12 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 				DB_INPUT_UINT8(Info->Level),
 				DB_INPUT_INT64(Info->Exp),
 				DB_INPUT_UINT8(Info->ActivePresetIndex),
-				DB_INPUT_DATA(Info->PresetEnabled, sizeof(Info->PresetEnabled)),
-				DB_INPUT_DATA(Info->PresetTrainingPointCount, sizeof(Info->PresetTrainingPointCount)),
+				DB_INPUT_DATA(&Info->PresetEnabled[0], sizeof(Info->PresetEnabled)),
+				DB_INPUT_DATA(&Info->PresetTrainingPointCount[0], sizeof(Info->PresetTrainingPointCount)),
 				DB_INPUT_UINT8(Info->PresetSlotCount),
 				DB_INPUT_UINT8(Info->TrainingSlotCount),
-				DB_INPUT_DATA(Info->TrainingUnlockFlags, sizeof(Info->TrainingUnlockFlags)),
-				DB_INPUT_DATA(Info->ArrivalSkillSlots, sizeof(Info->ArrivalSkillSlots)),
+				DB_INPUT_DATA(&Info->TrainingUnlockFlags[0], sizeof(Info->TrainingUnlockFlags)),
+				DB_INPUT_DATA(&Info->ArrivalSkillSlots[0], sizeof(Info->ArrivalSkillSlots)),
 				DB_INPUT_DATA(&Info->ArrivalSkillRestoreSlot, sizeof(Info->ArrivalSkillRestoreSlot)),
 				DB_INPUT_DATA(PresetSlots, PresetSlotsLength),
 				DB_INPUT_DATA(TrainingSlots, TrainingSlotsLength),
@@ -864,7 +864,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 				Context->Database,
 				"SyncRecovery",
 				DB_INPUT_INT32(Packet->CharacterID),
-				DB_INPUT_DATA(Info->Configurations, sizeof(Info->Configurations)),
+				DB_INPUT_DATA(&Info->Configurations[0], sizeof(Info->Configurations)),
 				DB_INPUT_INT32(Info->ActiveEquipmentPresetIndex),
 				DB_INPUT_INT32(Info->ActiveAnimaMasteryPresetIndex),
 				DB_PARAM_END
@@ -899,7 +899,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 				"SyncAuraMastery",
 				DB_INPUT_INT32(Packet->CharacterID),
 				DB_INPUT_UINT8(Info->RefreshCost),
-				DB_INPUT_DATA(Info->Slots, sizeof(Info->Slots)),
+				DB_INPUT_DATA(&Info->Slots[0], sizeof(Info->Slots)),
 				DB_PARAM_END
 			)) {
 				Response->SyncMaskFailed.SecretShopInfo = true;

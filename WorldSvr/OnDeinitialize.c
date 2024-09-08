@@ -27,8 +27,6 @@ CLIENT_PROCEDURE_BINDING(DEINITIALIZE) {
         if (!RTEntityIsNull(Character->PartyID)) {
             RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
             if (Party && Party->PartyType == RUNTIME_PARTY_TYPE_SOLO_DUNGEON) {
-                RTPartyManagerDestroyParty(Runtime->PartyManager, Party);
-
                 if (!RTEntityIsNull(WorldContext->Party)) {
                     RTWorldContextDestroyParty(Runtime->WorldManager, Character->PartyID);
                 }

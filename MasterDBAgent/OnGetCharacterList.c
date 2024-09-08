@@ -29,17 +29,17 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER_LIST) {
 		DB_TYPE_INT32, &CharacterInfo.MythLevel,
 		DB_TYPE_INT32, &CharacterInfo.SkillRank,
 		DB_TYPE_UINT8, &CharacterInfo.NationMask,
-		DB_TYPE_STRING, CharacterInfo.Name, sizeof(CharacterInfo.Name),
+		DB_TYPE_STRING, &CharacterInfo.Name[0], sizeof(CharacterInfo.Name),
 		DB_TYPE_INT64, &CharacterInfo.HonorPoint,
 		DB_TYPE_INT32, &CharacterInfo.CostumeActivePageIndex,
-		DB_TYPE_DATA, &CharacterInfo.CostumeAppliedSlots, sizeof(CharacterInfo.CostumeAppliedSlots),
+		DB_TYPE_DATA, &CharacterInfo.CostumeAppliedSlots[0], sizeof(CharacterInfo.CostumeAppliedSlots),
 		DB_TYPE_INT64, &CharacterInfo.Currency,
 		DB_TYPE_UINT8, &CharacterInfo.WorldIndex,
 		DB_TYPE_INT16, &CharacterInfo.PositionX,
 		DB_TYPE_INT16, &CharacterInfo.PositionY,
 		DB_TYPE_INT16, &CharacterInfo.EquipmentCount,
-		DB_TYPE_DATA, &CharacterInfo.Equipment, sizeof(CharacterInfo.Equipment),
-		DB_TYPE_DATA, &CharacterInfo.EquipmentAppearance, sizeof(CharacterInfo.EquipmentAppearance),
+		DB_TYPE_DATA, &CharacterInfo.Equipment[0], sizeof(CharacterInfo.Equipment),
+		DB_TYPE_DATA, &CharacterInfo.EquipmentAppearance[0], sizeof(CharacterInfo.EquipmentAppearance),
 		DB_PARAM_END
 	)) {
 		assert(CharacterSlotIndex < MAX_CHARACTER_COUNT);

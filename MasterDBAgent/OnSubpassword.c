@@ -13,7 +13,7 @@ IPC_PROCEDURE_BINDING(W2D, VERIFY_SUBPASSWORD) {
 		DB_INPUT_INT32(Packet->AccountID),
 		DB_INPUT_INT32(Packet->Type),
 		DB_INPUT_INT32(Packet->ExpirationInHours),
-		DB_INPUT_STRING(Packet->Password, sizeof(Packet->Password)),
+		DB_INPUT_STRING(&Packet->Password[0], sizeof(Packet->Password)),
 		DB_OUTPUT_INT32(Response->Success),
 		DB_OUTPUT_INT8(Response->FailureCount),
 		DB_OUTPUT_INT32(Response->IsLocked),
@@ -37,9 +37,9 @@ IPC_PROCEDURE_BINDING(W2D, CREATE_SUBPASSWORD) {
 		"InsertSubpassword",
 		DB_INPUT_INT32(Packet->AccountID),
 		DB_INPUT_INT32(Packet->Type),
-		DB_INPUT_STRING(Packet->Password, sizeof(Packet->Password)),
+		DB_INPUT_STRING(&Packet->Password[0], sizeof(Packet->Password)),
 		DB_INPUT_INT32(Packet->Question),
-		DB_INPUT_STRING(Packet->Answer, sizeof(Packet->Answer)),
+		DB_INPUT_STRING(&Packet->Answer[0], sizeof(Packet->Answer)),
 		DB_INPUT_INT32(Packet->IsChange),
 		DB_OUTPUT_INT32(Response->Success),
 		DB_OUTPUT_INT32(Response->IsChange),
@@ -85,7 +85,7 @@ IPC_PROCEDURE_BINDING(W2D, VERIFY_DELETE_SUBPASSWORD) {
 		"VerifyDeleteSubpassword",
 		DB_INPUT_INT32(Packet->AccountID),
 		DB_INPUT_INT32(Packet->Type),
-		DB_INPUT_STRING(Packet->Password, sizeof(Packet->Password)),
+		DB_INPUT_STRING(&Packet->Password[0], sizeof(Packet->Password)),
 		DB_OUTPUT_INT32(Response->Success),
 		DB_OUTPUT_INT8(Response->FailureCount),
 		DB_PARAM_END
@@ -106,7 +106,7 @@ IPC_PROCEDURE_BINDING(W2D, VERIFY_CREDENTIALS_SUBPASSWORD) {
 		Context->Database,
 		"VerifyCredentialsSubpassword",
 		DB_INPUT_INT32(Packet->AccountID),
-		DB_INPUT_STRING(Packet->Password, sizeof(Packet->Password)),
+		DB_INPUT_STRING(&Packet->Password[0], sizeof(Packet->Password)),
 		DB_OUTPUT_INT8(Response->Success),
 		DB_PARAM_END
 	)) {
