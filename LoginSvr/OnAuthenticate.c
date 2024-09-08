@@ -250,7 +250,6 @@ authenticate:
     Response->AccountStatus = Client->AccountStatus;
     SocketSend(Socket, Connection, Response);
     
-
     if (Client->LoginStatus != LOGIN_STATUS_SUCCESS) goto error;
 
     Client->Flags |= CLIENT_FLAGS_AUTHENTICATED;
@@ -265,6 +264,7 @@ authenticate:
     Response->SubMessageType = 13;
 
     S2C_DATA_AUTHENTICATE_EXTENSION_13* Extension = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_AUTHENTICATE_EXTENSION_13);
+    Extension->AccountID = Client->AccountID;
     memcpy(Extension->AuthKey, Client->SessionKey, MAX_SESSIONKEY_LENGTH);
 
     Int32 ServerCount = 0;
