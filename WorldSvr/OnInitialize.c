@@ -105,8 +105,6 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     if (!ClientConnection || !Client) goto error;
     if (!Packet->Success) goto error;
 
-    assert(ClientConnection->ID < RUNTIME_MEMORY_MAX_CHARACTER_COUNT);
-
     Character = RTWorldManagerCreateCharacter(Context->Runtime->WorldManager, Packet->CharacterIndex);
     Character->DungeonEntryItemSlotIndex = -1;
     Character->SyncMask.RawValue = 0;
@@ -1083,7 +1081,6 @@ struct _RTCharacterCostumeInfo {
     Response->Unknown1[55] = 1;
     Response->Unknown1[58] = 20;
     */
-    //memset(Response->DungeonFlagInfo.Flags, 0xFF, 640);
 
     /* this contains counters
     Int32 Seed = Character->Data.Info.PositionX;

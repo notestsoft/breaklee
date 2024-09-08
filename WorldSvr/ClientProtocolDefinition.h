@@ -260,7 +260,7 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     struct _RTForceWingInfo ForceWingInfo;
     UInt8 Unknown2111[1];
     struct _RTGiftBoxInfo GiftBoxInfo;
-    UInt32 Unknown2733[9];
+    struct { UInt32 RewardIndex; UInt64 Unknown1; } GuildRewardSlots[3];
     struct _RTCollectionInfo CollectionInfo;
     struct _RTTransformInfo TransformInfo;
     UInt8 Unknown32[6];
