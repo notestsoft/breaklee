@@ -10,7 +10,8 @@ EXTERN_C_BEGIN
 
 struct _RTGiftBoxSlot {
     UInt8 Index;
-    UInt32 ReceivedCount;
+    Int16 ReceivedCount;
+    Int16 ResetCount;
     Timestamp ElapsedTime;
     Timestamp CooldownTime;
     UInt8 Active;

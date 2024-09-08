@@ -60,7 +60,21 @@
     </TimePool>
     <RewardPool>
         <Pool Index="0">
-            <Item ItemID="1" ItemOption="0" Rate="1000000" />
+            <Item ItemID="33556525" ItemOption="1" Rate="300000" />
+            <Item ItemID="33556525" ItemOption="3" Rate="400000" />
+            <Item ItemID="33556525" ItemOption="5" Rate="190000" />
+            <Item ItemID="33556525" ItemOption="10" Rate="30000" />
+            <Item ItemID="33556525" ItemOption="20" Rate="10000" />
+            <Item ItemID="9" ItemOption="0" Rate="3000" />
+            <Item ItemID="10" ItemOption="0" Rate="3000" />
+            <Item ItemID="1" ItemOption="0" Rate="2000" />
+            <Item ItemID="1214" ItemOption="0" Rate="2000" />
+            <Item ItemID="582" ItemOption="0" Rate="3000" />
+            <Item ItemID="583" ItemOption="0" Rate="3000" />
+            <Item ItemID="2" ItemOption="0" Rate="2000" />
+            <Item ItemID="1215" ItemOption="0" Rate="2000" />
+            <Item ItemID="3103" ItemOption="50" Rate="25000" />
+            <Item ItemID="3104" ItemOption="50" Rate="25000" />
         </Pool>
         <Pool Index="1">
             <Item ItemID="1" ItemOption="0" Rate="1000000" />

@@ -20,11 +20,11 @@ RUNTIME_DATA_TYPE_INDEX(GiftBoxTimePool, Int32, Index)
 
 RUNTIME_DATA_TYPE_BEGIN(GiftBoxRewardPool, "GiftBox.RewardPool.Pool", 8)
 	RUNTIME_DATA_PROPERTY(Int32, Index, "Index")
-	RUNTIME_DATA_TYPE_BEGIN_CHILD(GiftBoxRewardPoolItem, "Item", 8)
+	RUNTIME_DATA_TYPE_BEGIN_CHILD(GiftBoxRewardPoolItem, "Item", 16)
 		RUNTIME_DATA_PROPERTY(UInt64, ItemID, "ItemID")
 		RUNTIME_DATA_PROPERTY(UInt64, ItemOption, "ItemOption")
 		RUNTIME_DATA_PROPERTY(Int32, Rate, "Rate")
-	RUNTIME_DATA_TYPE_END_CHILD(GiftBoxRewardPoolItem, 8)
+	RUNTIME_DATA_TYPE_END_CHILD(GiftBoxRewardPoolItem, 16)
 RUNTIME_DATA_TYPE_END(GiftBoxRewardPool)
 RUNTIME_DATA_TYPE_INDEX(GiftBoxRewardPool, Int32, Index)
 
