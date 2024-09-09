@@ -77,7 +77,6 @@ struct _Server {
     IPCSocketRef IPCSocket;
     ServerUpdateCallback OnUpdate;
     Bool IsRunning;
-    Timestamp Timestamp;
     Void* Userdata;
 };
 
@@ -95,10 +94,6 @@ ServerRef ServerCreate(
 );
 
 Void ServerDestroy(
-    ServerRef Server
-);
-
-Timestamp ServerGetTimestamp(
     ServerRef Server
 );
 

@@ -69,8 +69,6 @@ Void RTWorldContextAddReferenceCount(
 Void RTWorldContextUpdate(
     RTWorldContextRef WorldContext
 ) {
-    Timestamp Timestamp = GetTimestamp();
-
     if (WorldContext->WorldData->Type == RUNTIME_WORLD_TYPE_DUNGEON ||
         WorldContext->WorldData->Type == RUNTIME_WORLD_TYPE_QUEST_DUNGEON) {
         RTDungeonUpdate(WorldContext);

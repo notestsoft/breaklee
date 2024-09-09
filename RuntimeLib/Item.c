@@ -546,34 +546,6 @@ Bool RTItemOptionHasEpic(
 	return false;
 }
 
-RTItemOptionSlot* RTItemOptionGetLastEmptyForceSlot(
-	RTItemOptions Options
-) {
-	for (Int32 Index = RUNTIME_ITEM_MAX_OPTION_COUNT - 1; Index >= 0; Index -= 1) {
-		RTItemOptionSlot* Slot = &Options.Equipment.Slots[Index];
-		if (*(UInt8*)Slot != 0) continue;
-
-		return Slot;
-	}
-
-	return NULL;
-}
-
-Int32 RTItemOptionGetLastFilledForceSlotIndex(
-	RTItemOptions Options
-) {
-	RTItemForceOptionData Data = RTItemForceOptionDecode(Options.Serial);
-	
-	for (Int32 Index = Data.FilledForceSlotCount - 1; Index >= 0; Index -= 1) {
-		UInt8 ForceIndex = Data.ForceSlots[Index];
-		if (ForceIndex < 1) continue;
-
-		return Index;
-	}
-
-	return -1;
-}
-
 RTItemOptionSlot RTItemOptionGetLastFilledForceSlot(
 	RTItemOptions Options
 ) {
@@ -861,6 +833,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSkillBook) {
 
     Int32 SkillLevel = MAX(1, (Int32)ItemSlot->ItemOptions);
     SkillSlot = RTCharacterAddSkillSlot(Runtime, Character, SkillData->SkillID, SkillLevel, Data->SkillSlotIndex);
+    if (!SkillSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
     RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
 	Character->SyncMask.InventoryInfo = true;
@@ -1579,7 +1552,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
 			RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
 		}
 		else {
-			ItemSlot->ItemOptions = Amount << 16 | (ItemStackSize & 0xFFFF);
+			ItemSlot->ItemOptions = ItemAmount << 16 | (ItemStackSize & 0xFFFF);
 		}
 	}
 

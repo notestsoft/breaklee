@@ -50,7 +50,6 @@ ServerRef ServerCreate(
 
     Server->OnUpdate = OnUpdate;
     Server->IsRunning = false;
-    Server->Timestamp = GetTimestamp();
     Server->Userdata = ServerContext;
     return Server;
 }
@@ -68,12 +67,6 @@ Void ServerDestroy(
     
     ArrayDestroy(Server->Sockets);
     AllocatorDeallocate(Server->Allocator, (Void*)Server);
-}
-
-Timestamp ServerGetTimestamp(
-    ServerRef Server
-) {
-    return Server->Timestamp;
 }
 
 SocketRef ServerCreateSocket(
@@ -168,8 +161,6 @@ Void ServerRun(
 
     Server->IsRunning = true;
     while (Server->IsRunning) {
-        Server->Timestamp = GetTimestamp();
-
         if (Server->OnUpdate) Server->OnUpdate(Server, Server->Userdata);
         
         for (Int32 Index = 0; Index < ArrayGetElementCount(Server->Sockets); Index += 1) {

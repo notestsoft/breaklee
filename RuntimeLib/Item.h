@@ -548,14 +548,6 @@ Bool RTItemOptionHasEpic(
 	RTItemOptions Options
 );
 
-RTItemOptionSlot* RTItemOptionGetLastEmptyForceSlot(
-	RTItemOptions Options
-);
-
-Int32 RTItemOptionGetLastFilledForceSlotIndex(
-	RTItemOptions Options
-);
-
 RTItemOptionSlot RTItemOptionGetLastFilledForceSlot(
 	RTItemOptions Options
 );
