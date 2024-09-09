@@ -41,7 +41,7 @@ CLIENT_PROCEDURE_BINDING(BUY_ITEM) {
     if (PriceAlz > Character->Data.Info.Alz) goto error;
     if (PriceWexp > Character->Data.Info.Wexp) goto error;
     if (PriceAP > Character->Data.AbilityInfo.Info.AP) goto error;
-    // if (PriceDP > /* TODO: Check Character DP Amount */) goto error;
+    if (PriceDP > Character->Data.Info.DP) goto error;
     // if (PriceCash > /* TODO: Check Character Cash Amount */) goto error;
     if (PriceGem > Character->Data.AccountInfo.ForceGem) goto error;
 
@@ -131,10 +131,10 @@ CLIENT_PROCEDURE_BINDING(BUY_ITEM) {
 
     if (!Success) goto error;
 
-    Character->Data.Info.Alz-= PriceAlz;
+    Character->Data.Info.Alz -= PriceAlz;
     Character->Data.Info.Wexp -= PriceWexp;
     Character->Data.AbilityInfo.Info.AP -= PriceAP;
-    // TODO: Consume DP
+    Character->Data.Info.DP -= PriceDP;
     // TODO: Consume Cash
     RTCharacterConsumeForceGem(Runtime, Character, PriceGem);
     Character->SyncMask.Info = true;
