@@ -1907,7 +1907,7 @@ Bool ServerLoadQuestDungeonData(
         if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
         assert(!DictionaryLookup(Runtime->DungeonData, &DungeonIndex));
         memset(&DungeonData, 0, sizeof(struct _RTDungeonData));
-        DungeonData.DungeonIndex = DungeonIndex;
+        DungeonData.DungeonIndex = (Int32)DungeonIndex;
 
         Int32 EntryItem[2];
         if (ParseAttributeInt32Array(Archive, Iterator->Index, "enter_cd_item", EntryItem, 2, ':')) {
@@ -2036,7 +2036,7 @@ Bool ServerLoadMissionDungeonData(
         if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
         assert(!DictionaryLookup(Runtime->DungeonData, &DungeonIndex));
         memset(&DungeonData, 0, sizeof(struct _RTDungeonData));
-        DungeonData.DungeonIndex = DungeonIndex;
+        DungeonData.DungeonIndex = (Int32)DungeonIndex;
 
         Int32 EntryItem[2];
         if (ParseAttributeInt32Array(Archive, Iterator->Index, "enter_cd_item", EntryItem, 2, ':')) {
