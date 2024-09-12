@@ -78,7 +78,7 @@ Void ServerSyncCharacter(
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.AnimaMasteryInfo.CategoryData, sizeof(struct _RTAnimaMasteryCategoryData) * Character->Data.AnimaMasteryInfo.Info.StorageCount);
 	}
 
-	if (Character->SyncMask.WarehouseInfo) {
+	if (Character->SyncMask.SettingsInfo) {
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.SettingsInfo, sizeof(struct _RTCharacterSettingsInfo));
 	}
 
@@ -135,7 +135,7 @@ Void ServerSyncCharacter(
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.QuestInfo.Slots, sizeof(struct _RTQuestSlot) * Character->Data.QuestInfo.Info.SlotCount);
 	}
 
-	if (Character->SyncMask.QuestInfo) {
+	if (Character->SyncMask.DailyQuestInfo) {
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.DailyQuestInfo.Info, sizeof(struct _RTDailyQuestInfo));
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.DailyQuestInfo.Slots, sizeof(struct _RTDailyQuestSlot) * Character->Data.DailyQuestInfo.Info.SlotCount);
 	}
@@ -145,7 +145,7 @@ Void ServerSyncCharacter(
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.MercenaryInfo.Slots, sizeof(struct _RTMercenarySlot) * Character->Data.MercenaryInfo.Info.SlotCount);
 	}
 
-	if (Character->SyncMask.MercenaryInfo) {
+	if (Character->SyncMask.AppearanceInfo) {
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.AppearanceInfo.Info, sizeof(struct _RTAppearanceInfo));
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.AppearanceInfo.EquipmentSlots, sizeof(struct _RTItemSlotAppearance) * Character->Data.AppearanceInfo.Info.EquipmentAppearanceCount);
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.AppearanceInfo.InventorySlots, sizeof(struct _RTItemSlotAppearance) * Character->Data.AppearanceInfo.Info.InventoryAppearanceCount);
