@@ -83,7 +83,7 @@ Void RTWorldContextUpdate(
         Iterator = DictionaryKeyIteratorNext(Iterator);
     }
 
-    Timestamp = PlatformGetTickCount();
+    Timestamp Timestamp = PlatformGetTickCount();
     if (WorldContext->NextItemUpdateTimestamp <= Timestamp) {
         WorldContext->NextItemUpdateTimestamp = INT64_MAX;
 
