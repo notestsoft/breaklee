@@ -2210,11 +2210,11 @@ Bool ServerLoadWorldDropData(
         RTDropItemRef DropItem = NULL;
         if (MobSpeciesIndex > 0) {
             Index DropPoolIndex = MobSpeciesIndex;
-            ArrayRef DropPool = DictionaryLookup(World->DropTable.MobDropPool, &DropPoolIndex);
+            ArrayRef DropPool = DictionaryLookup(DropTable->MobDropPool, &DropPoolIndex);
             if (!DropPool) {
                 struct _Array TempArray = { 0 };
-                DictionaryInsert(World->DropTable.MobDropPool, &DropPoolIndex, &TempArray, sizeof(struct _Array));
-                DropPool = DictionaryLookup(World->DropTable.MobDropPool, &DropPoolIndex);
+                DictionaryInsert(DropTable->MobDropPool, &DropPoolIndex, &TempArray, sizeof(struct _Array));
+                DropPool = DictionaryLookup(DropTable->MobDropPool, &DropPoolIndex);
                 ArrayInitializeEmpty(DropPool, Runtime->Allocator, sizeof(struct _RTDropItem), 8);
             }
 
@@ -2222,7 +2222,7 @@ Bool ServerLoadWorldDropData(
             memset(DropItem, 0, sizeof(struct _RTDropItem));
         }
         else {
-            DropItem = (RTDropItemRef)ArrayAppendUninitializedElement(World->DropTable.WorldDropPool);
+            DropItem = (RTDropItemRef)ArrayAppendUninitializedElement(DropTable->WorldDropPool);
             memset(DropItem, 0, sizeof(struct _RTDropItem));
 
             if (!ParseAttributeInt32(Archive, Iterator->Index, "MinLv", &DropItem->MinMobLevel)) goto error;
