@@ -5,7 +5,7 @@
 CString PathGetFileName(
     CString Path
 ) {
-    CString FileName = strrchr(Path, '\\');
+    CString FileName = strrchr(Path, PLATFORM_PATH_SEPARATOR);
     if (FileName) return FileName + 1;
     return Path;
 }

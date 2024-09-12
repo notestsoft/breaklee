@@ -1532,9 +1532,13 @@ Bool ServerLoadDungeonExtraData(
 ) {
     ArchiveRef Archive = ArchiveCreateEmpty(Context->Runtime->Allocator);
 
-    Char FilePath[MAX_PATH] = { 0 };
-    sprintf(FilePath, "%s\\Dungeon\\Dungeon_%d.xml", ServerDirectory, DungeonData->DungeonIndex);
+    Char Directory[MAX_PATH] = { 0 };
+    PathCombine(ServerDirectory, "Dungeon", Directory);
 
+    Char FileName[MAX_PATH] = { 0 };
+    sprintf(FileName, "Dungeon_%d.xml", DungeonData->DungeonIndex);
+
+    CString FilePath = PathCombineNoAlloc(Directory, FileName);
     if (ArchiveLoadFromFile(Archive, FilePath, false)) {
         Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "Dungeon");
         if (ParentIndex < 0) goto error;
@@ -2003,8 +2007,13 @@ Bool ServerLoadQuestDungeonData(
         ParseAttributeInt32(Archive, Iterator->Index, "mission_npc", &PatternPartData.MissionNpcIndex);
         DictionaryInsert(Runtime->PatternPartData, &PatternPartIndex, &PatternPartData, sizeof(struct _RTMissionDungeonPatternPartData));
 
-        Char FilePath[MAX_PATH] = { 0 };
-        sprintf(FilePath, "%s\\Dungeon\\PatternPart_%zu.xml", ServerDirectory, PatternPartIndex);
+        Char Directory[MAX_PATH] = { 0 };
+        PathCombine(ServerDirectory, "Dungeon", Directory);
+
+        Char FileName[MAX_PATH] = { 0 };
+        sprintf(FileName, "PatternPart_%zu.xml", PatternPartIndex);
+
+        CString FilePath = PathCombineNoAlloc(Directory, FileName);
         if (!ServerLoadPatternPartData(Context, FilePath)) goto error;
 
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
@@ -2126,8 +2135,13 @@ Bool ServerLoadMissionDungeonData(
 
         DictionaryInsert(Runtime->PatternPartData, &PatternPartIndex, &PatternPartData, sizeof(struct _RTMissionDungeonPatternPartData));
 
-        Char FilePath[MAX_PATH] = { 0 };
-        sprintf(FilePath, "%s\\Dungeon\\PatternPart_%zu.xml", ServerDirectory, PatternPartIndex);
+        Char Directory[MAX_PATH] = { 0 };
+        PathCombine(ServerDirectory, "Dungeon", Directory);
+
+        Char FileName[MAX_PATH] = { 0 };
+        sprintf(FileName, "PatternPart_%zu.xml", PatternPartIndex);
+
+        CString FilePath = PathCombineNoAlloc(Directory, FileName);
         if (!ServerLoadPatternPartData(Context, FilePath)) goto error;
 
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
