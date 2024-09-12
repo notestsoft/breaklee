@@ -11,6 +11,7 @@ CLIENT_PROCEDURE_BINDING(CHANGE_STYLE) {
 	// TODO: IMPORTANT VALIDATE THE CHANGE!
 	Character->Data.StyleInfo.Style.RawValue = Packet->CharacterStyle;
 	Character->Data.StyleInfo.LiveStyle.RawValue = Packet->CharacterLiveStyle;
+	Character->SyncMask.StyleInfo = true;
 
 	// TODO: Implementation missing!
 	S2C_DATA_CHANGE_STYLE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHANGE_STYLE);

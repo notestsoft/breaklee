@@ -1593,7 +1593,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemChangeGender) {
 	Character->Data.StyleInfo.Style.Gender = !Character->Data.StyleInfo.Style.Gender;
 	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
 
-	Character->SyncMask.Info = true;
+	Character->SyncMask.StyleInfo = true;
 	Character->SyncMask.InventoryInfo = true;
 
 	NOTIFICATION_DATA_CHANGE_GENDER* Notification = RTNotificationInit(CHANGE_GENDER);

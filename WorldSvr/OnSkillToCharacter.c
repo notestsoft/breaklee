@@ -37,9 +37,10 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 		if (Packet->SlotIndex == RUNTIME_SPECIAL_SKILL_SLOT_ASTRAL_SKILL) {
 			Character->Data.StyleInfo.ExtendedStyle.IsAstralWeaponActive = PacketData->IsActivation;
-		} else if (Packet->SlotIndex == RUNTIME_SPECIAL_SKILL_SLOT_ASTRAL_BIKE ||
-			Packet->SlotIndex == RUNTIME_SPECIAL_SKILL_SLOT_ASTRAL_BOARD) {
+			Character->SyncMask.StyleInfo = true;
+		} else if (Packet->SlotIndex == RUNTIME_SPECIAL_SKILL_SLOT_ASTRAL_BIKE || Packet->SlotIndex == RUNTIME_SPECIAL_SKILL_SLOT_ASTRAL_BOARD) {
 			Character->Data.StyleInfo.ExtendedStyle.IsVehicleActive = PacketData->IsActivation;
+			Character->SyncMask.StyleInfo = true;
 		}
 		else {
 			// TODO: Add other cases
@@ -177,6 +178,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		// TODO: Activate, deactivate battle mode, do runtime validations
 		// TODO: It can also activate board
 		Character->Data.StyleInfo.ExtendedStyle.IsAstralWeaponActive = PacketData->IsActivation;
+		Character->SyncMask.StyleInfo = true;
 
 		S2C_DATA_SKILL_GROUP_ASTRAL* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_ASTRAL);
 		ResponseData->CurrentMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
@@ -215,11 +217,13 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 		if (PacketData->IsActivation) {
 			Character->Data.StyleInfo.ExtendedStyle.BattleModeFlags |= (1 << (SkillData->Intensity - 1));
+			Character->SyncMask.StyleInfo = true;
 			Character->BattleModeSkillIndex = SkillData->SkillID;
 			Character->BattleModeTimeout = PlatformGetTickCount() + 90000; // TODO: Check where the duration is stored in
 		}
 		else {
 			Character->Data.StyleInfo.ExtendedStyle.BattleModeFlags &= ~(1 << (SkillData->Intensity - 1));
+			Character->SyncMask.StyleInfo = true;
 		}
 
 		S2C_DATA_SKILL_GROUP_BATTLE_MODE* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_BATTLE_MODE);

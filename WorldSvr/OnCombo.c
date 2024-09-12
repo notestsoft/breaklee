@@ -52,6 +52,8 @@ CLIENT_PROCEDURE_BINDING(COMBO_SKILL_EVENT) {
 		if (Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] < RequiredMP) goto error;
 
 		Character->Data.StyleInfo.ExtendedStyle.IsComboActive = true;
+		Character->SyncMask.StyleInfo = true;
+
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT] -= SkillData->Sp;
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] -= RequiredMP;
 		Character->Data.Info.CurrentSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
@@ -61,7 +63,7 @@ CLIENT_PROCEDURE_BINDING(COMBO_SKILL_EVENT) {
 	else {
 		Character->SkillComboLevel = 1;
 		Character->Data.StyleInfo.ExtendedStyle.IsComboActive = false;
-		Character->SyncMask.Info = true;
+		Character->SyncMask.StyleInfo = true;
 	}
 
 	S2C_DATA_NFY_COMBO_SKILL_SET* Response = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_COMBO_SKILL_SET);

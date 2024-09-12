@@ -443,6 +443,7 @@ Void RTCharacterUpdate(
 	Timestamp Timestamp = PlatformGetTickCount();
 	if (Character->Data.StyleInfo.ExtendedStyle.BattleModeFlags && Character->BattleModeTimeout <= Timestamp) {
 		Character->Data.StyleInfo.ExtendedStyle.BattleModeFlags = 0;
+		Character->SyncMask.StyleInfo = true;
 		Character->BattleModeSkillIndex = 0;
 		Character->BattleModeTimeout = INT64_MAX;
 		
@@ -882,7 +883,7 @@ Bool RTCharacterBattleRankUp(
 	}
 
 	Character->Data.StyleInfo.Style.BattleRank += 1;
-	Character->SyncMask.Info = true;
+	Character->SyncMask.StyleInfo = true;
 
     {
         NOTIFICATION_DATA_CHARACTER_BATTLE_RANK_UP* Notification = RTNotificationInit(CHARACTER_BATTLE_RANK_UP);
@@ -1149,6 +1150,7 @@ Bool RTCharacterResetStats(
 	Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_DEX] = PreviousRankData->ConditionDEX;
 	Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_INT] = PreviousRankData->ConditionINT;
 	Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_PNT] += AccumulatedPoints;
+	Character->SyncMask.Info = true;
 
 	return true;
 }
