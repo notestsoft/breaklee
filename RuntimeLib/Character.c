@@ -1040,7 +1040,6 @@ Int32 RTCharacterAddSkillExp(
 
 			Character->Data.Info.SkillRank = NextSkillRankData->SkillRank;
 			Character->Data.Info.SkillLevel = 0;
-			Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_PNT] += 
 			Character->SyncMask.Info = true;
             
             RTRuntimeBroadcastCharacterData(

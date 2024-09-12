@@ -107,10 +107,12 @@ Bool RTRuntimeWarpCharacter(
 
                     if (Slot->ItemOptions < 1) {
                         RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SlotIndex);
+                        Character->SyncMask.InventoryInfo = true;
                     }
                 }
                 else {
                     RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SlotIndex);
+                    Character->SyncMask.InventoryInfo = true;
                 }
             }
             else if (ItemData->ItemType == RUNTIME_ITEM_TYPE_RETURN_CORE) {
@@ -226,9 +228,16 @@ Bool RTRuntimeWarpCharacter(
             RTDungeonDataRef QuestDungeonData = RTRuntimeGetDungeonDataByID(Runtime, World->DungeonIndex);
             if (!QuestDungeonData) return false;
 
+            RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
+
             Int32 WarpNpcID = QuestDungeonData->FailWarpNpcID;
             if (World->Cleared) {
                 WarpNpcID = QuestDungeonData->SuccessWarpNpcID;
+            }
+            else if (!World->Cleared && World->ReferenceCount < 1) {
+                WarpNpcID = QuestDungeonData->FailWarpNpcID;
+
+                RTDungeonFail(World);
             }
             else if (!RTCharacterIsAlive(Runtime, Character)) {
                 WarpNpcID = QuestDungeonData->DeadWarpID;
@@ -243,13 +252,6 @@ Bool RTRuntimeWarpCharacter(
             if (World->WorldData->WorldIndex != WarpPoint.WorldIndex) {
                 TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpPoint.WorldIndex);
                 assert(TargetWorld);
-            }
-
-            // TODO: Delete Dungeon Instance!
-            RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
-
-            if (!World->Cleared && World->ReferenceCount < 1) {
-                RTDungeonFail(World);
             }
 
             Character->Data.Info.PositionX = WarpPoint.X;
@@ -269,7 +271,6 @@ Bool RTRuntimeWarpCharacter(
 
             if (World->Closed) {
                 assert(Character->Data.Info.DungeonIndex != World->DungeonIndex);
-                // TODO: This doesn't seam to be sufficient or maybe there is a warp center bug?
                 RTRuntimeCloseDungeon(Runtime, Character);
             }
 
