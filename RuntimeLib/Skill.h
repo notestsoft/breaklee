@@ -38,6 +38,12 @@ enum {
 };
 
 enum {
+	RUNTIME_SKILL_DAMAGE_TYPE_NONE,
+	RUNTIME_SKILL_DAMAGE_TYPE_SWORD,
+	RUNTIME_SKILL_DAMAGE_TYPE_MAGIC,
+};
+
+enum {
 	RUNTIME_SKILL_GROUP_PASSIVE = 0,
 	RUNTIME_SKILL_GROUP_ATTACK = 1,
 	/* RESERVED NOT IN USE */
@@ -151,6 +157,7 @@ struct _RTCharacterSkillData {
 	Int32 SHit[2];
 	Int32 SPenet[2];
 	Int32 CritDmg[2];
+	Int32 DamageType;
 	Int32 CooltimeID;
 	Int32 RageValue;
 	Int32 Mp[2];

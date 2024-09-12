@@ -73,17 +73,15 @@ static inline Int64 _CalculateFinalBlockRate(
 
 // TODO: Add missing attributes...
 Void CalculateFinalBattleAttributes(
-	Int32 BattleSkillType,
+	Int32 DamageType,
 	Int32 AttackerLevel,
 	RTBattleAttributesRef Attacker,
 	Int32 DefenderLevel,
 	RTBattleAttributesRef Defender,
 	RTFinalBattleAttributesRef Result
 ) {
-	assert(BattleSkillType == RUNTIME_BATTLE_SKILL_TYPE_SWORD || BattleSkillType == RUNTIME_BATTLE_SKILL_TYPE_MAGIC);
-
-	Int32 AttackIndex = (BattleSkillType == RUNTIME_BATTLE_SKILL_TYPE_SWORD) ? RUNTIME_ATTRIBUTE_ATTACK : RUNTIME_ATTRIBUTE_MAGIC_ATTACK;
-	Int32 SkillAmpIndex = (BattleSkillType == RUNTIME_BATTLE_SKILL_TYPE_SWORD) ? RUNTIME_ATTRIBUTE_SWORD_SKILL_AMP : RUNTIME_ATTRIBUTE_MAGIC_SKILL_AMP;
+	Int32 AttackIndex = (DamageType == RUNTIME_SKILL_DAMAGE_TYPE_SWORD) ? RUNTIME_ATTRIBUTE_ATTACK : RUNTIME_ATTRIBUTE_MAGIC_ATTACK;
+	Int32 SkillAmpIndex = (DamageType == RUNTIME_SKILL_DAMAGE_TYPE_SWORD) ? RUNTIME_ATTRIBUTE_SWORD_SKILL_AMP : RUNTIME_ATTRIBUTE_MAGIC_SKILL_AMP;
 
 	Result->Attack = Attacker->Values[AttackIndex];
 	Result->CriticalRate = _CalculateFinalAttribute(
@@ -148,7 +146,7 @@ Void CalculateFinalBattleAttributes(
 		Defender->Values[RUNTIME_ATTRIBUTE_DEFENSE_RATE]
 	);
 
-	if (BattleSkillType == RUNTIME_BATTLE_SKILL_TYPE_MAGIC) {
+	if (DamageType == RUNTIME_SKILL_DAMAGE_TYPE_MAGIC) {
 		Result->MinDamage = 100;
 	}
 
@@ -174,18 +172,16 @@ Int64 RTCalculateBaseHP(
 
 Void RTCalculateNormalAttackResult(
     RTRuntimeRef Runtime,
-	Int32 BattleSkillType,
+	Int32 DamageType,
 	Int32 AttackerLevel,
     RTBattleAttributesRef Attacker,
 	Int32 DefenderLevel,
 	RTBattleAttributesRef Defender,
     RTBattleResultRef Result
 ) {
-	assert(BattleSkillType == RUNTIME_BATTLE_SKILL_TYPE_SWORD || BattleSkillType == RUNTIME_BATTLE_SKILL_TYPE_MAGIC);
-
 	struct _RTFinalBattleAttributes Attributes = { 0 };
 	CalculateFinalBattleAttributes(
-		BattleSkillType,
+		DamageType,
 		AttackerLevel,
 		Attacker,
 		DefenderLevel,
@@ -266,8 +262,8 @@ Void RTCalculateSkillAttackResult(
 
 	// TODO: Add additional effect of skills like knock back, stun, ...
 
-	Int32 SkillAmpIndex = (Skill->SkillType == RUNTIME_BATTLE_SKILL_TYPE_SWORD) ? RUNTIME_ATTRIBUTE_SWORD_SKILL_AMP : RUNTIME_ATTRIBUTE_MAGIC_SKILL_AMP;
-	Int32 AttackIndex = (Skill->SkillType == RUNTIME_BATTLE_SKILL_TYPE_SWORD) ? RUNTIME_ATTRIBUTE_ATTACK : RUNTIME_ATTRIBUTE_MAGIC_ATTACK;
+	Int32 SkillAmpIndex = (Skill->DamageType == RUNTIME_SKILL_DAMAGE_TYPE_SWORD) ? RUNTIME_ATTRIBUTE_SWORD_SKILL_AMP : RUNTIME_ATTRIBUTE_MAGIC_SKILL_AMP;
+	Int32 AttackIndex = (Skill->DamageType == RUNTIME_SKILL_DAMAGE_TYPE_SWORD) ? RUNTIME_ATTRIBUTE_ATTACK : RUNTIME_ATTRIBUTE_MAGIC_ATTACK;
 
 	Attacker->Values[SkillAmpIndex] += SkillAmp;
 	Attacker->Values[AttackIndex] += Attack;
@@ -275,10 +271,9 @@ Void RTCalculateSkillAttackResult(
 	Attacker->Values[RUNTIME_ATTRIBUTE_PENETRATION] += Penetration;
 	Attacker->Values[RUNTIME_ATTRIBUTE_CRITICAL_DAMAGE] += CriticalDamage;
 
-	Int32 BattleSkillType = (Skill->SkillType == RUNTIME_SKILL_TYPE_MAGIC) ? RUNTIME_BATTLE_SKILL_TYPE_MAGIC : RUNTIME_BATTLE_SKILL_TYPE_SWORD;
 	RTCalculateNormalAttackResult(
 		Runtime,
-		BattleSkillType,
+		Skill->DamageType,
 		AttackerLevel,
 		Attacker,
 		DefenderLevel,

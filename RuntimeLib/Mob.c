@@ -322,7 +322,7 @@ Void RTMobAttackTarget(
 	struct _RTBattleResult Result = { 0 };
 	RTCalculateNormalAttackResult(
 		Runtime,
-		RUNTIME_BATTLE_SKILL_TYPE_SWORD,
+		RUNTIME_SKILL_DAMAGE_TYPE_SWORD,
 		Mob->SpeciesData->Level,
 		&Mob->Attributes,
 		Character->Data.Info.Level,

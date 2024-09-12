@@ -21,7 +21,7 @@ CLIENT_PROCEDURE_BINDING(ATTACK_TO_MOB) {
 	struct _RTBattleResult Result = { 0 };
 	RTCalculateNormalAttackResult(
 		Runtime,
-		RUNTIME_BATTLE_SKILL_TYPE_SWORD,
+		RUNTIME_SKILL_DAMAGE_TYPE_SWORD,
 		Character->Data.Info.Level,
 		&Character->Attributes,
 		Mob->SpeciesData->Level,

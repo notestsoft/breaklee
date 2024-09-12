@@ -1435,6 +1435,7 @@ Bool ServerLoadSkillData(
                 if (!ParseAttributeInt32Array(Archive, PowerIterator->Index, "shit", SkillData->SHit, 2, ',')) goto error;
                 if (!ParseAttributeInt32Array(Archive, PowerIterator->Index, "spenet", SkillData->SPenet, 2, ',')) goto error;
                 if (!ParseAttributeInt32Array(Archive, PowerIterator->Index, "critdmg", SkillData->CritDmg, 2, ',')) goto error;
+                if (!ParseAttributeInt32(Archive, PowerIterator->Index, "damagetype", &SkillData->DamageType)) goto error;
             }
 
             ArchiveIteratorRef CostIterator = ArchiveQueryNodeIteratorFirst(Archive, ParamIterator->Index, "cost");

@@ -16,11 +16,6 @@ enum {
 };
 
 enum {
-	RUNTIME_BATTLE_SKILL_TYPE_SWORD,
-	RUNTIME_BATTLE_SKILL_TYPE_MAGIC,
-};
-
-enum {
 	RUNTIME_ATTRIBUTE_NONE,
     RUNTIME_ATTRIBUTE_HP_MAX,
 	RUNTIME_ATTRIBUTE_HP_CURRENT,
@@ -270,7 +265,7 @@ Int64 RTCalculateBaseHP(
 
 Void RTCalculateNormalAttackResult(
 	RTRuntimeRef Runtime,
-	Int32 BattleSkillType,
+	Int32 DamageType,
 	Int32 AttackerLevel,
 	RTBattleAttributesRef Attacker,
 	Int32 DefenderLevel,
