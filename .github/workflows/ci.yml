@@ -41,11 +41,11 @@ jobs:
     - name: Prepare to upload binaries
       run: |
         mkdir bin
-        cp ./build/LoginSvr bin
-        cp ./build/MasterSvr bin
-        cp ./build/MasterDBAgent bin
-        cp ./build/PartySvr bin
-        cp ./build/WorldSvr bin
+        cp ./Build/LoginSvr bin
+        cp ./Build/MasterSvr bin
+        cp ./Build/MasterDBAgent bin
+        cp ./Build/PartySvr bin
+        cp ./Build/WorldSvr bin
         chmod +x bin/*
 
     - name: Upload binaries
@@ -73,9 +73,8 @@ jobs:
     - name: Configure project
       run: |
         conan profile detect
-        cmake -S . -B build -G Ninja
         conan install . --output-folder=Build --build=missing -s build_type=Release
-        cmake -S . -B Build \
+        cmake -S . -B Build -G Ninja \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_TOOLCHAIN_FILE=Build/conan_toolchain.cmake \
           -DCONFIG_BUILD_TARGET_AUCTION_SVR=OFF \
@@ -93,11 +92,11 @@ jobs:
     - name: Prepare to upload binaries (macOS)
       run: |
         mkdir bin
-        cp ./build/LoginSvr bin
-        cp ./build/MasterSvr bin
-        cp ./build/MasterDBAgent bin
-        cp ./build/PartySvr bin
-        cp ./build/WorldSvr bin
+        cp ./Build/LoginSvr bin
+        cp ./Build/MasterSvr bin
+        cp ./Build/MasterDBAgent bin
+        cp ./Build/PartySvr bin
+        cp ./Build/WorldSvr bin
         chmod +x bin/*
 
     - name: Upload binaries
@@ -117,32 +116,32 @@ jobs:
         submodules: 'true'
     
     - name: Configure project (Windows)
-      run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64
+      run: cmake -S . -B Build -G "Visual Studio 17 2022" -A x64
 
     - name: Build project
-      run: cmake --build build --config Debug
+      run: cmake --build Build --config Debug
 
     - name: Prepare to upload binaries
       run: |
         New-Item -ItemType Directory -Force -Path bin
-        Copy-Item ./build/Debug/CoreLib.lib bin
-        Copy-Item ./build/Debug/CoreLib.pdb bin
-        Copy-Item ./build/Debug/LoginSvr.exe bin
-        Copy-Item ./build/Debug/LoginSvr.pdb bin
-        Copy-Item ./build/Debug/MasterDBAgent.exe bin
-        Copy-Item ./build/Debug/MasterDBAgent.pdb bin
-        Copy-Item ./build/Debug/MasterSvr.exe bin
-        Copy-Item ./build/Debug/MasterSvr.pdb bin
-        Copy-Item ./build/Debug/NetLib.lib bin
-        Copy-Item ./build/Debug/NetLib.pdb bin
-        Copy-Item ./build/Debug/PartySvr.exe bin
-        Copy-Item ./build/Debug/PartySvr.pdb bin
-        Copy-Item ./build/Debug/RuntimeDataLib.lib bin
-        Copy-Item ./build/Debug/RuntimeDataLib.pdb bin
-        Copy-Item ./build/Debug/RuntimeLib.lib bin
-        Copy-Item ./build/Debug/RuntimeLib.pdb bin
-        Copy-Item ./build/Debug/WorldSvr.exe bin
-        Copy-Item ./build/Debug/WorldSvr.pdb bin
+        Copy-Item ./Build/Debug/CoreLib.lib bin
+        Copy-Item ./Build/Debug/CoreLib.pdb bin
+        Copy-Item ./Build/Debug/LoginSvr.exe bin
+        Copy-Item ./Build/Debug/LoginSvr.pdb bin
+        Copy-Item ./Build/Debug/MasterDBAgent.exe bin
+        Copy-Item ./Build/Debug/MasterDBAgent.pdb bin
+        Copy-Item ./Build/Debug/MasterSvr.exe bin
+        Copy-Item ./Build/Debug/MasterSvr.pdb bin
+        Copy-Item ./Build/Debug/NetLib.lib bin
+        Copy-Item ./Build/Debug/NetLib.pdb bin
+        Copy-Item ./Build/Debug/PartySvr.exe bin
+        Copy-Item ./Build/Debug/PartySvr.pdb bin
+        Copy-Item ./Build/Debug/RuntimeDataLib.lib bin
+        Copy-Item ./Build/Debug/RuntimeDataLib.pdb bin
+        Copy-Item ./Build/Debug/RuntimeLib.lib bin
+        Copy-Item ./Build/Debug/RuntimeLib.pdb bin
+        Copy-Item ./Build/Debug/WorldSvr.exe bin
+        Copy-Item ./Build/Debug/WorldSvr.pdb bin
       shell: powershell
 
     - name: Upload binaries
