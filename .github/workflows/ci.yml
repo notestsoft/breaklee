@@ -14,13 +14,27 @@ jobs:
         submodules: 'true'
 
     - name: Install build prerequisites
-      run: sudo apt-get install gcc libssl-dev libmariadb-dev zlib1g-dev ninja-build cmake lua5.4 liblua5.4-dev
+      run: sudo apt-get install gcc perl conan libssl-dev libmariadb-dev zlib1g-dev openssl-devel unixODBC-devel libaio-devel ninja-build cmake python3
 
     - name: Configure project
-      run: cmake -S . -B build -G Ninja
-
+      run: |
+        conan profile detect
+        cmake -S . -B build -G Ninja
+        conan install . --output-folder=Build --build=missing -s build_type=Release
+        cmake -S . -B Build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_TOOLCHAIN_FILE=Build/conan_toolchain.cmake \
+          -DCONFIG_BUILD_TARGET_AUCTION_SVR=OFF \
+          -DCONFIG_BUILD_TARGET_BREAKLEE=OFF \
+          -DCONFIG_BUILD_TARGET_CHAT_SVR=OFF \
+          -DCONFIG_BUILD_TARGET_LOGIN_SVR=ON \
+          -DCONFIG_BUILD_TARGET_MASTER_DBAGENT=ON \
+          -DCONFIG_BUILD_TARGET_MASTER_SVR=ON \
+          -DCONFIG_BUILD_TARGET_PARTY_SVR=ON \
+          -DCONFIG_BUILD_TARGET_WORLD_SVR=ON 
+      
     - name: Build project
-      run: cmake --build build --config Release
+      run: cmake --build Build --config Release
 
     - name: Prepare to upload binaries
       run: |
@@ -49,13 +63,27 @@ jobs:
         submodules: 'true'
   
     - name: Install build prerequisites
-      run: brew install openssl mariadb zlib ninja cmake lua@5.4
+      run: brew install conan openssl mariadb zlib ninja cmake
 
     - name: Configure project
-      run: cmake -S . -B build -G Ninja
-
+      run: |
+        conan profile detect
+        cmake -S . -B build -G Ninja
+        conan install . --output-folder=Build --build=missing -s build_type=Release
+        cmake -S . -B Build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_TOOLCHAIN_FILE=Build/conan_toolchain.cmake \
+          -DCONFIG_BUILD_TARGET_AUCTION_SVR=OFF \
+          -DCONFIG_BUILD_TARGET_BREAKLEE=OFF \
+          -DCONFIG_BUILD_TARGET_CHAT_SVR=OFF \
+          -DCONFIG_BUILD_TARGET_LOGIN_SVR=ON \
+          -DCONFIG_BUILD_TARGET_MASTER_DBAGENT=ON \
+          -DCONFIG_BUILD_TARGET_MASTER_SVR=ON \
+          -DCONFIG_BUILD_TARGET_PARTY_SVR=ON \
+          -DCONFIG_BUILD_TARGET_WORLD_SVR=ON 
+      
     - name: Build project
-      run: cmake --build build --config Release
+      run: cmake --build Build --config Release
 
     - name: Prepare to upload binaries (macOS)
       run: |
