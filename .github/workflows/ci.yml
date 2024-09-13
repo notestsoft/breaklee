@@ -69,9 +69,10 @@ jobs:
 
     - name: Install conan
       run: |
+        python3 -m pip install --upgrade pip  # Ensure pip is up to date
         python3 -m pip install conan --user --break-system-packages
-        echo "$HOME/.local/bin" >> $GITHUB_PATH  # Make conan available in PATH
-
+        export PATH="$HOME/.local/bin:$PATH"
+        
     - name: Configure project
       run: |
         conan profile detect
