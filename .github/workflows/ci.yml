@@ -22,9 +22,8 @@ jobs:
     - name: Configure project
       run: |
         conan profile detect
-        cmake -S . -B build -G Ninja
         conan install . --output-folder=Build --build=missing -s build_type=Release
-        cmake -S . -B Build \
+        cmake -S . -B Build -G Ninja \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_TOOLCHAIN_FILE=Build/conan_toolchain.cmake \
           -DCONFIG_BUILD_TARGET_AUCTION_SVR=OFF \
