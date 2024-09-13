@@ -147,11 +147,11 @@ jobs:
     - name: Prepare to upload binaries
       run: |
         New-Item -ItemType Directory -Force -Path bin
-        Copy-Item ./Build/Debug/LoginSvr.exe bin
-        Copy-Item ./Build/Debug/MasterDBAgent.exe bin
-        Copy-Item ./Build/Debug/MasterSvr.exe bin
-        Copy-Item ./Build/Debug/PartySvr.exe bin
-        Copy-Item ./Build/Debug/WorldSvr.exe bin
+        Copy-Item ./Build/Release/LoginSvr.exe bin
+        Copy-Item ./Build/Release/MasterDBAgent.exe bin
+        Copy-Item ./Build/Release/MasterSvr.exe bin
+        Copy-Item ./Build/Release/PartySvr.exe bin
+        Copy-Item ./Build/Release/WorldSvr.exe bin
       shell: powershell
 
     - name: Upload binaries
