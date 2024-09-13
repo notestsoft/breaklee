@@ -68,7 +68,9 @@ jobs:
       run: brew install python3 openssl mariadb zlib ninja cmake
 
     - name: Install conan
-      run: python3 -m pip install conan --user --break-system-packages
+      run: |
+        python3 -m pip install conan --user --break-system-packages
+        echo "$HOME/.local/bin" >> $GITHUB_PATH  # Make conan available in PATH
 
     - name: Configure project
       run: |
