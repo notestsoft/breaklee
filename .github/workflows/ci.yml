@@ -16,7 +16,7 @@ jobs:
     - name: Install Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.11.0'
+        python-version: '3.13.0'
 
     - name: Install build prerequisites
       run: sudo apt-get install gcc perl ninja-build cmake
@@ -72,7 +72,7 @@ jobs:
     - name: Install Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.11.0'
+        python-version: '3.13.0'
 
     - name: Install build prerequisites
       run: brew install python3 openssl mariadb zlib ninja cmake
@@ -130,7 +130,7 @@ jobs:
     - name: Install Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.11.0'
+        python-version: '3.13.0'
 
     - name: Install conan
       run: pip3 install conan
