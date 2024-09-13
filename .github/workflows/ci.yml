@@ -14,7 +14,10 @@ jobs:
         submodules: 'true'
 
     - name: Install build prerequisites
-      run: sudo apt-get install gcc perl conan libssl-dev libmariadb-dev zlib1g-dev openssl-devel unixODBC-devel libaio-devel ninja-build cmake python3
+      run: sudo apt-get install gcc perl python3-pip libssl-dev libmariadb-dev zlib1g-dev openssl-devel unixODBC-devel libaio-devel ninja-build cmake python3
+    
+    - name: Install conan
+      run: pip3 install conan
 
     - name: Configure project
       run: |
@@ -63,7 +66,10 @@ jobs:
         submodules: 'true'
   
     - name: Install build prerequisites
-      run: brew install conan openssl mariadb zlib ninja cmake
+      run: brew install python3 openssl mariadb zlib ninja cmake
+
+    - name: Install conan
+      run: pip3 install conan
 
     - name: Configure project
       run: |
