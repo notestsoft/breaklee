@@ -33,7 +33,6 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		if (Packet->Length != PacketLength) goto error;
 
 		C2S_DATA_SKILL_GROUP_ASTRAL* PacketData = (C2S_DATA_SKILL_GROUP_ASTRAL*)&Packet->Data[0];
-		if (PacketData->IsActivation) goto error;
 
 		if (Packet->SlotIndex == RUNTIME_SPECIAL_SKILL_SLOT_ASTRAL_SKILL) {
 			Character->Data.StyleInfo.ExtendedStyle.IsAstralWeaponActive = PacketData->IsActivation;
