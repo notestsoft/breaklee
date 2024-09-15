@@ -17,6 +17,8 @@
         <SkillSlot SkillIndex="475" Level="1" SlotIndex="74" />
         <SkillSlot SkillIndex="333" Level="1" SlotIndex="70" />
         <SkillSlot SkillIndex="597" Level="1" SlotIndex="104" />
+        <SkillSlot SkillIndex="696" Level="1" SlotIndex="118" />
+        <SkillSlot SkillIndex="700" Level="1" SlotIndex="119" />
         
         <QuickSlot SkillIndex="0" SlotIndex="0" />
         <QuickSlot SkillIndex="1" SlotIndex="1" />
@@ -48,6 +50,8 @@
         <SkillSlot SkillIndex="476" Level="1" SlotIndex="74" />
         <SkillSlot SkillIndex="333" Level="1" SlotIndex="70" />
         <SkillSlot SkillIndex="598" Level="1" SlotIndex="104" />
+        <SkillSlot SkillIndex="696" Level="1" SlotIndex="118" />
+        <SkillSlot SkillIndex="700" Level="1" SlotIndex="119" />
         
         <QuickSlot SkillIndex="0" SlotIndex="0" />
         <QuickSlot SkillIndex="1" SlotIndex="1" />
@@ -75,6 +79,8 @@
         <SkillSlot SkillIndex="477" Level="1" SlotIndex="74" />
         <SkillSlot SkillIndex="333" Level="1" SlotIndex="70" />
         <SkillSlot SkillIndex="599" Level="1" SlotIndex="104" />
+        <SkillSlot SkillIndex="696" Level="1" SlotIndex="118" />
+        <SkillSlot SkillIndex="700" Level="1" SlotIndex="119" />
         
         <QuickSlot SkillIndex="32" SlotIndex="0" />
         <QuickSlot SkillIndex="33" SlotIndex="1" />
@@ -107,6 +113,8 @@
         <SkillSlot SkillIndex="478" Level="1" SlotIndex="74" />
         <SkillSlot SkillIndex="333" Level="1" SlotIndex="70" />
         <SkillSlot SkillIndex="600" Level="1" SlotIndex="104" />
+        <SkillSlot SkillIndex="696" Level="1" SlotIndex="118" />
+        <SkillSlot SkillIndex="700" Level="1" SlotIndex="119" />
         
         <QuickSlot SkillIndex="32" SlotIndex="0" />
         <QuickSlot SkillIndex="33" SlotIndex="1" />
@@ -138,6 +146,8 @@
         <SkillSlot SkillIndex="479" Level="1" SlotIndex="74" />
         <SkillSlot SkillIndex="333" Level="1" SlotIndex="70" />
         <SkillSlot SkillIndex="601" Level="1" SlotIndex="104" />
+        <SkillSlot SkillIndex="696" Level="1" SlotIndex="118" />
+        <SkillSlot SkillIndex="700" Level="1" SlotIndex="119" />
         
         <QuickSlot SkillIndex="0" SlotIndex="0" />
         <QuickSlot SkillIndex="32" SlotIndex="1" />
@@ -170,6 +180,8 @@
         <SkillSlot SkillIndex="480" Level="1" SlotIndex="74" />
         <SkillSlot SkillIndex="333" Level="1" SlotIndex="70" />
         <SkillSlot SkillIndex="602" Level="1" SlotIndex="104" />
+        <SkillSlot SkillIndex="696" Level="1" SlotIndex="118" />
+        <SkillSlot SkillIndex="700" Level="1" SlotIndex="119" />
         
         <QuickSlot SkillIndex="0" SlotIndex="0" />
         <QuickSlot SkillIndex="32" SlotIndex="1" />
@@ -202,6 +214,8 @@
         <SkillSlot SkillIndex="171" Level="1" SlotIndex="74" />
         <SkillSlot SkillIndex="333" Level="1" SlotIndex="70" />
         <SkillSlot SkillIndex="603" Level="1" SlotIndex="104" />
+        <SkillSlot SkillIndex="696" Level="1" SlotIndex="118" />
+        <SkillSlot SkillIndex="700" Level="1" SlotIndex="119" />
         
         <QuickSlot SkillIndex="0" SlotIndex="0" />
         <QuickSlot SkillIndex="1" SlotIndex="1" />
@@ -234,6 +248,8 @@
         <SkillSlot SkillIndex="519" Level="1" SlotIndex="74" />
         <SkillSlot SkillIndex="333" Level="1" SlotIndex="70" />
         <SkillSlot SkillIndex="604" Level="1" SlotIndex="104" />
+        <SkillSlot SkillIndex="696" Level="1" SlotIndex="118" />
+        <SkillSlot SkillIndex="700" Level="1" SlotIndex="119" />
         
         <QuickSlot SkillIndex="32" SlotIndex="0" />
         <QuickSlot SkillIndex="33" SlotIndex="1" />
@@ -263,6 +279,8 @@
         <SkillSlot SkillIndex="669" Level="1" SlotIndex="105" />
         <SkillSlot SkillIndex="670" Level="1" SlotIndex="106" />
         <SkillSlot SkillIndex="671" Level="1" SlotIndex="107" />
+        <SkillSlot SkillIndex="696" Level="1" SlotIndex="118" />
+        <SkillSlot SkillIndex="700" Level="1" SlotIndex="119" />
         
         <QuickSlot SkillIndex="0" SlotIndex="0" />
         <QuickSlot SkillIndex="1" SlotIndex="1" />
