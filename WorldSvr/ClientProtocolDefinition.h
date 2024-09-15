@@ -1631,19 +1631,13 @@ CLIENT_PROTOCOL(S2C, GET_SERVER_ENVIRONMENT, DEFAULT, 464,
     Int32 Unknown5;
     UInt8 MinTradeTalkLevel2;
     UInt8 MinTradeTalkLevel3;
-    UInt8 MaxSkillRank;
-    UInt8 MaxMagicRank;
+    UInt8 Unknown6;
+    UInt8 Unknown7;
     Int64 MaxHonorPoint;
     Int64 MinHonorPoint;
     Int32 Unknown8;
     Int32 UnknownCount;
     // S2C_DATA_ENVIRONMENT_WORLD_RESTRICTION Restrictions[UnknownCount];
-    UInt8 Unknown19[255];
-    UInt32 Unknown20;
-    UInt32 Unknown21;
-    UInt32 Unknown22;
-    UInt32 Unknown23;
-    UInt8 Unknown24;
 )
 
 CLIENT_PROTOCOL(S2C, NFY_PC_BANG_ALERT, DEFAULT, 480,
@@ -1687,7 +1681,6 @@ CLIENT_PROTOCOL(S2C, GM_COMMAND, DEFAULT, 490,
     UInt8 Result;
     UInt8 State;
 )
-
 
 CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_TO_TARGET_BUFF_TARGET,
     RTEntityID TargetID;

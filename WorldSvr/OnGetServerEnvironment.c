@@ -39,16 +39,33 @@ CLIENT_PROCEDURE_BINDING(GET_SERVER_ENVIRONMENT) {
     Response->MaxDP = 100;
     Response->Unknown4 = 0;
     Response->Unknown5 = 7;
-    Response->MaxSkillRank = 1;
+    Response->Unknown6 = 1;
 	Response->MaxHonorPoint = Context->Config.Environment.MaxHonorPoint;
 	Response->MinHonorPoint = Context->Config.Environment.MinHonorPoint;
     Response->Unknown8 = 0;
-    Response->UnknownCount = 0;
-    Response->Unknown20 = 5;
-    Response->Unknown21 = 0;
-    Response->Unknown22 = 0;
-    Response->Unknown23 = 0;
-    Response->Unknown24 = 1;
+    Response->UnknownCount = 3;
+
+    S2C_DATA_ENVIRONMENT_WORLD_RESTRICTION* ResponseWorldRestriction = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_ENVIRONMENT_WORLD_RESTRICTION);
+    ResponseWorldRestriction->Index = 1;
+    ResponseWorldRestriction->StartIndex = 16;
+    ResponseWorldRestriction->Count = 15;
+
+    ResponseWorldRestriction = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_ENVIRONMENT_WORLD_RESTRICTION);
+    ResponseWorldRestriction->Index = 2;
+    ResponseWorldRestriction->StartIndex = 109;
+    ResponseWorldRestriction->Count = 110;
+
+    ResponseWorldRestriction = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_ENVIRONMENT_WORLD_RESTRICTION);
+    ResponseWorldRestriction->Index = 3;
+    ResponseWorldRestriction->StartIndex = 158;
+    ResponseWorldRestriction->Count = 159;
+
+    S2C_DATA_ENVIRONMENT_TAIL* ResponseTail = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_ENVIRONMENT_TAIL);
+    ResponseTail->Unknown20 = 5;
+    ResponseTail->Unknown21 = 0;
+    ResponseTail->Unknown22 = 0;
+    ResponseTail->Unknown23 = 0;
+    ResponseTail->Unknown24 = 1;
 	SocketSend(Socket, Connection, Response);
     return;
 
