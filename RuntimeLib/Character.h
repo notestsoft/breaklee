@@ -77,19 +77,15 @@ union _RTCharacterStyle {
     struct {
         UInt32 BattleStyle : 3;
         UInt32 BattleRank : 5;
-        UInt32 Face : 2;
-        UInt32 Padding5 : 3;
-        UInt32 HairColor : 3;
-        UInt32 Padding3 : 1;
-        UInt32 HairStyle : 3;
-        UInt32 Padding4 : 2;
-        UInt32 ShowHelmed : 1;
+        UInt32 Face : 5;
+        UInt32 HairColor : 4;
+        UInt32 HairStyle : 5;
+        UInt32 Unknown1 : 1;
         UInt32 ExtendedBattleStyle : 1;
         UInt32 AuraCode : 2;
         UInt32 Gender : 1;
-        UInt32 Padding1 : 1;
-        UInt32 Unknown1 : 1;
-        UInt32 Padding2 : 3;
+        UInt32 ShowHelmed : 1;
+        UInt32 Padding1 : 4;
     };
     UInt32 RawValue;
 };

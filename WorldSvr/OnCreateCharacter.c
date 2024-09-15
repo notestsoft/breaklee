@@ -33,14 +33,8 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 
 	union _RTCharacterStyle Style = { .RawValue = Packet->Style };
 	UInt32 BattleStyleIndex = Style.BattleStyle | (Style.ExtendedBattleStyle << 3);
-
-	if (Style.Padding1 > 0 ||
-		Style.Padding2 > 0 ||
-		Style.Padding3 > 0 ||
-		Style.Padding4 > 0 ||
-		Style.Unknown1 < 1 ||
-		Style.AuraCode > 0 ||
-		Style.ShowHelmed < 1 ||
+	
+	if (Style.AuraCode > 0 ||
 		Style.HairStyle >= MAX_CHARACTER_NORMAL_HAIR_COUNT ||
 		BattleStyleIndex < RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MIN ||
 		BattleStyleIndex > RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX ||

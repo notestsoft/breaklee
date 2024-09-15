@@ -101,8 +101,7 @@ NOTIFICATION_PROTOCOL_STRUCT(CHARACTERS_SPAWN_INDEX,
     UInt32 Unknown3;
     UInt32 CharacterStyle;
     UInt32 CharacterLiveStyle;
-    UInt16 Unknown4;
-    UInt16 Unknown5;
+    Int32 ActiveAuraSkillIndex;
     UInt8 CharacterExtendedStyle;
     UInt8 IsDead;
     UInt8 EquipmentSlotCount;
