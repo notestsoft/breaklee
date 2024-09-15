@@ -219,10 +219,16 @@ Void RTCalculateNormalAttackResult(
 		Result->TotalDamage = (Result->TotalDamage * (100 + Attributes.NormalDamageAmp)) / 100;
 	}
 
-	// Result->AdditionalDamage = Attributes.AddDamage;
 	Result->TotalDamage += Attributes.AddDamage;
 	Result->TotalDamage = (Result->TotalDamage * (100 + Attributes.FinalDamageAmp)) / 100;
 	Result->TotalDamage = MAX(1, Result->TotalDamage);
+
+	if (Attacker->Values[RUNTIME_ATTRIBUTE_ACTIVATE_WING_DAMAGE] > 0) {
+		Attacker->Values[RUNTIME_ATTRIBUTE_ACTIVATE_WING_DAMAGE] -= 1;
+		Result->AdditionalDamage = Result->TotalDamage * Attacker->Values[RUNTIME_ATTRIBUTE_ADD_FORCE_WING_DAMAGE] / 100;
+	}
+
+	Result->TotalDamage += Result->AdditionalDamage;
 	
 	Result->AppliedDamage = 0;
 	if (Result->AttackType == RUNTIME_ATTACK_TYPE_CRITICAL || Result->AttackType == RUNTIME_ATTACK_TYPE_NORMAL) {

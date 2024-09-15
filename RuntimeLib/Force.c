@@ -517,7 +517,13 @@ Void RTRuntimeInitForceEffectFormulas(
     
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_NORMAL_DAMAGE_UP, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_NORMAL_ATTACK_DAMAGE_UP);
-    
+
+    Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_ADD_FORCE_WING_DAMAGE, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
+    RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_ADD_FORCE_WING_DAMAGE);
+
+    Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_ACTIVATE_WING_DAMAGE, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
+    RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_ACTIVATE_WING_DAMAGE);
+
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_AURA_MODE_DURATION_INCREASE, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_INCREASE_AURA_MODE_DURATION);
     
