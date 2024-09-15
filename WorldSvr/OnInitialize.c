@@ -14,6 +14,7 @@ Void SendCharacterStatus(
     S2C_DATA_NFY_CHARACTER_STATUS* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_CHARACTER_STATUS);
     Notification->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
     Notification->CurrentMP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+    Notification->VehicleState = -1;
     SocketSend(Socket, Connection, Notification);
 }
 

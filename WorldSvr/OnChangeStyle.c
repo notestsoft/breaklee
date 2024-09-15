@@ -25,7 +25,9 @@ CLIENT_PROCEDURE_BINDING(CHANGE_STYLE) {
 	Notification->GuildID = Packet->GuildID;
 	Notification->UnknownFlags = Packet->UnknownFlags;
 	Notification->GuildNameLength = Packet->GuildNameLength;
-	memcpy(Notification->GuildName, Packet->GuildName, Packet->GuildNameLength);
+	if (Packet->GuildNameLength > 0) {
+		memcpy(Notification->GuildName, Packet->GuildName, Packet->GuildNameLength);
+	}
 
 	BroadcastToWorld(
 		Context,
