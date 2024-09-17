@@ -169,7 +169,6 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         Memory += Length;
     }
 
-    struct _RTMercenaryInfo MercenaryInfo;
     Character->Data.MercenaryInfo.Info = Packet->Character.MercenaryInfo;
     if (Packet->Character.MercenaryInfo.SlotCount > 0) {
         Int32 Length = sizeof(struct _RTMercenarySlot) * Packet->Character.MercenaryInfo.SlotCount;

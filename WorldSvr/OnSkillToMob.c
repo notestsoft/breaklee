@@ -144,7 +144,6 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 				S2C_DATA_NFY_QUEST_MOB_KILL* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_QUEST_MOB_KILL);
 				Notification->MobSpeciesIndex = Mob->Spawn.MobSpeciesIndex;
 				Notification->SkillIndex = 0;
-				Notification->Unknown1 = 0;
 				SocketSend(Socket, Connection, Notification);
 			}
 

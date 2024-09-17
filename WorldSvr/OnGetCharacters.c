@@ -31,7 +31,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER_LIST) {
 
     S2C_DATA_GET_CHARACTERS* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, GET_CHARACTERS);
     Response->IsSubpasswordSet = Client->IsSubpasswordSet;
-    Response->Unknown2 = 1;
+    Response->CanJoinBeginnerGuild = 0;
     Response->AccountInfo = Client->AccountInfo;
 
     for (Int32 Index = 0; Index < MAX_CHARACTER_COUNT; Index++) {

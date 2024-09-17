@@ -218,3 +218,17 @@ CLIENT_PROCEDURE_BINDING(OPEN_AUCTION_HOUSE) {
 error:
 	SocketDisconnect(Socket, Connection);
 }
+
+CLIENT_PROCEDURE_BINDING(CLOSE_AUCTION_HOUSE) {
+	if (!Character) goto error;
+
+	// TODO: Send a request to auction server and only close if everything is settled and items do not get deleted by accident
+
+	S2C_DATA_CLOSE_AUCTION_HOUSE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CLOSE_AUCTION_HOUSE);
+	Response->Result = 1;
+	SocketSend(Socket, Connection, Response);
+	return;
+
+error:
+	SocketDisconnect(Socket, Connection);
+}

@@ -39,7 +39,7 @@ CLIENT_PROTOCOL(S2C, GET_CHARACTERS, DEFAULT, 133,
     Int32 IsSubpasswordSet;
     UInt64 BattleFieldEntryFee;
     UInt8 Unknown1;
-    UInt8 Unknown2;
+    UInt8 CanJoinBeginnerGuild;
     struct _RTCharacterAccountInfo AccountInfo;
     // TODO: Replace with CLIENT_PROTOCOL_STRUCT
     IPC_DATA_CHARACTER_INFO Characters[MAX_CHARACTER_COUNT];
@@ -2388,15 +2388,14 @@ CLIENT_PROTOCOL(C2S, BUY_SKILLBOOK, DEFAULT, 2003,
 )
 
 CLIENT_PROTOCOL(S2C, BUY_SKILLBOOK, DEFAULT, 2003,
-    UInt32 Unknown1;
+    UInt32 Result;
     UInt32 ItemID;
     UInt32 Unknown3[6];
 )
 
 CLIENT_PROTOCOL(S2C, NFY_QUEST_MOB_KILL, DEFAULT, 2006,
-    UInt16 MobSpeciesIndex;
-    UInt16 SkillIndex;
-    UInt16 Unknown1;
+    Int16 MobSpeciesIndex;
+    Int32 SkillIndex;
 )
 
 CLIENT_PROTOCOL(C2S, PARTY_INVITE, DEFAULT, 2011,
@@ -2834,6 +2833,13 @@ CLIENT_PROTOCOL(C2S, UPDATE_QUEST_LIST, DEFAULT, 2175,
     UInt16 SlotIndex;
     UInt8 DisplayNotice;
     UInt8 DisplayOpenNotice;
+)
+
+CLIENT_PROTOCOL(C2S, CLOSE_AUCTION_HOUSE, DEFAULT, 2177,
+)
+
+CLIENT_PROTOCOL(S2C, CLOSE_AUCTION_HOUSE, DEFAULT, 2177,
+    UInt8 Result;
 )
 
 CLIENT_PROTOCOL(C2S, GET_SHOP_LIST, DEFAULT, 2179,
