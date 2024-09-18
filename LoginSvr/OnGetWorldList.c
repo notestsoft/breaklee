@@ -33,6 +33,7 @@ IPC_PROCEDURE_BINDING(M2L, GET_WORLD_LIST) {
             S2C_DATA_LOGIN_SERVER_LIST_INDEX* NotificationGroup = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_LOGIN_SERVER_LIST_INDEX);
             NotificationGroup->ServerID = Group->GroupIndex;
             NotificationGroup->WorldCount = Group->NodeCount;
+            NotificationGroup->Language = Context->Config.Login.Language;
 
             for (Index NodeIndex = 0; NodeIndex < Group->NodeCount; NodeIndex += 1) {
                 IPC_M2L_DATA_SERVER_GROUP_NODE* Node = (IPC_M2L_DATA_SERVER_GROUP_NODE*)((UInt8*)Packet + PacketOffset);
