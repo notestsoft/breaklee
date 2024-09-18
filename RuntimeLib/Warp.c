@@ -241,18 +241,19 @@ Bool RTRuntimeWarpCharacter(
 
             RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 
+            Bool IsCharacterAlive = RTCharacterIsAlive(Runtime, Character);
             Int32 WarpNpcID = QuestDungeonData->FailWarpNpcID;
             if (World->Cleared) {
                 WarpNpcID = QuestDungeonData->SuccessWarpNpcID;
             }
-            else if (!World->Cleared && World->ReferenceCount < 1) {
+            else if (World->Closed) {
                 WarpNpcID = QuestDungeonData->FailWarpNpcID;
-
-                RTDungeonFail(World);
             }
-            else if (!RTCharacterIsAlive(Runtime, Character)) {
+            else if (!IsCharacterAlive) {
                 WarpNpcID = QuestDungeonData->DeadWarpID;
+            }
 
+            if (!IsCharacterAlive) {
                 RTCharacterSetHP(Runtime, Character, Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX], false);
                 RTCharacterSetMP(Runtime, Character, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX], false);
                 RTCharacterInitializeAttributes(Runtime, Character);

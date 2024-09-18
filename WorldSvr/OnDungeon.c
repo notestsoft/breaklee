@@ -166,6 +166,10 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_END) {
         S2C_DATA_NFY_DUNGEON_COMPLETE_INFO* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_DUNGEON_COMPLETE_INFO);
         BroadcastToParty(Context, World->Party, Notification);
     }
+    else {
+        // TODO: Check how this packet is behaving in a party dungeon!
+        Success = RTDungeonFail(World);
+    }
 
     S2C_DATA_QUEST_DUNGEON_END* Response = PacketBufferInit(Connection->PacketBuffer, S2C, QUEST_DUNGEON_END);
     Response->Result = Success ? 1 : 0;
