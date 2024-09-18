@@ -8,10 +8,7 @@ Bool RTCharacterAddQuickSlot(
 	Int32 SlotIndex
 ) {
 	if (Character->Data.QuickSlotInfo.Info.SlotCount >= RUNTIME_CHARACTER_MAX_SKILL_SLOT_COUNT) return false;
-
-	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotByIndex(Runtime, Character, SkillIndex);
-	if (!SkillSlot) return false;
-
+	
 	RTQuickSlotRef QuickSlot = RTCharacterGetQuickSlotByIndex(Runtime, Character, SlotIndex);
 	if (QuickSlot) {
 		QuickSlot->SkillIndex = SkillIndex;
