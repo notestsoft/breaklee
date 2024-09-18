@@ -160,7 +160,11 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
                 MissionItem.ID = CollectionMissionUpgradeDetail->ItemIndex;
                 MissionItem.UpgradeLevel = CollectionMissionUpgradeDetail->ItemGrade;
 
-                if (MissionItem.ID != ItemSlot->Item.ID) continue;
+                RTItem CurrentItem = { 0 };
+                CurrentItem.ID = ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX;
+                CurrentItem.UpgradeLevel = ItemSlot->Item.UpgradeLevel;
+
+                if (MissionItem.Serial != CurrentItem.Serial) continue;
 
                 Found = true;
                 break;
