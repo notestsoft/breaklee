@@ -828,7 +828,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSkillBook) {
 
     // TODO: Check if character is allowed to learn the skill by battle style and skill ranks...
 
-    RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotByIndex(Runtime, Character, Data->SkillSlotIndex);
+    RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotBySlotIndex(Runtime, Character, Data->SkillSlotIndex);
     if (SkillSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
     // TODO: Check if ItemOptions begins at 0 for Level 1

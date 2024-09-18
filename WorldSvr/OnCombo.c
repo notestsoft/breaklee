@@ -17,7 +17,7 @@ CLIENT_PROCEDURE_BINDING(COMBO_SKILL_EVENT) {
 		return;
 	}
 
-	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotByIndex(Runtime, Character, Packet->SkillSlotIndex);
+	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotBySlotIndex(Runtime, Character, Packet->SkillSlotIndex);
 	if (!SkillSlot) goto error;
 
 	RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillSlot->ID);

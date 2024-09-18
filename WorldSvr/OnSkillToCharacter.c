@@ -24,8 +24,8 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 	S2C_DATA_SKILL_TO_CHARACTER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SKILL_TO_CHARACTER);
 	Response->SkillIndex = Packet->SkillIndex;
 
-	// TODO: Packet could eventually contains SkillIndex but no slotindex
-	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotByIndex(Runtime, Character, Packet->SlotIndex);
+	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotBySlotIndex(Runtime, Character, Packet->SlotIndex);
+	if (!SkillSlot) SkillSlot = RTCharacterGetSkillSlotBySkillIndex(Runtime, Character, Packet->SkillIndex);
 	if (!SkillSlot) {
 		if (SkillData->SkillGroup != RUNTIME_SKILL_GROUP_ASTRAL) goto error;
 

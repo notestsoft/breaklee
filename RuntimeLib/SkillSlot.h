@@ -32,7 +32,13 @@ RTSkillSlotRef RTCharacterAddSkillSlot(
     Int32 SlotIndex
 );
 
-RTSkillSlotRef RTCharacterGetSkillSlotByIndex(
+RTSkillSlotRef RTCharacterGetSkillSlotBySkillIndex(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 SkillIndex
+);
+
+RTSkillSlotRef RTCharacterGetSkillSlotBySlotIndex(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     Int32 SlotIndex

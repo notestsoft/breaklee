@@ -22,7 +22,21 @@ RTSkillSlotRef RTCharacterAddSkillSlot(
 	return SkillSlot;
 }
 
-RTSkillSlotRef RTCharacterGetSkillSlotByIndex(
+RTSkillSlotRef RTCharacterGetSkillSlotBySkillIndex(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 SkillIndex
+) {
+	for (Int32 Index = 0; Index < Character->Data.SkillSlotInfo.Info.SlotCount; Index += 1) {
+		if (Character->Data.SkillSlotInfo.Slots[Index].ID == SkillIndex) {
+			return &Character->Data.SkillSlotInfo.Slots[Index];
+		}
+	}
+
+	return NULL;
+}
+
+RTSkillSlotRef RTCharacterGetSkillSlotBySlotIndex(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
 	Int32 SlotIndex
@@ -71,7 +85,7 @@ Bool RTCharacterChangeSkillLevel(
 ) {
 	if (SlotIndex < 0 || SlotIndex > RUNTIME_CHARACTER_MAX_SKILL_SLOT_COUNT) return false;
 
-	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotByIndex(Runtime, Character, SlotIndex);
+	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotBySlotIndex(Runtime, Character, SlotIndex);
 	if (!SkillSlot || SkillSlot->ID != SkillID || SkillSlot->Level != CurrentSkillLevel) return false;
 
 	RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillID);

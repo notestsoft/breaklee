@@ -18,8 +18,8 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 		goto error;
 	}
 
-	// TODO: Packet could eventually contains SkillIndex but no slotindex
-	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotByIndex(Runtime, Character, Packet->SlotIndex);
+	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotBySlotIndex(Runtime, Character, Packet->SlotIndex);
+	if (!SkillSlot) SkillSlot = RTCharacterGetSkillSlotBySkillIndex(Runtime, Character, Packet->SkillIndex);
 	if (!SkillSlot) goto error;
 
 	RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillSlot->ID);

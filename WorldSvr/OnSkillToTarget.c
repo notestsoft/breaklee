@@ -18,11 +18,14 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_TARGET) {
 		goto error;
 	}
 
-	// TODO: Packet could eventually contains SkillIndex but no slotindex
-	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotByIndex(Runtime, Character, Packet->SlotIndex);
+	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotBySlotIndex(Runtime, Character, Packet->SlotIndex);
+	if (!SkillSlot) SkillSlot = RTCharacterGetSkillSlotBySkillIndex(Runtime, Character, Packet->SkillIndex);
 	if (!SkillSlot) goto error;
 	*/
-
+	/*
+	C2S_DATA_SKILL_TO_TARGET_WING_TARGET
+		S2C_DATA_SKILL_TO_CHARACTER_WING
+	*/
 	S2C_DATA_SKILL_TO_TARGET_BUFF* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SKILL_TO_TARGET_BUFF);
 	Response->SkillIndex = Packet->SkillIndex;
 	Response->SkillLevel = 1;
