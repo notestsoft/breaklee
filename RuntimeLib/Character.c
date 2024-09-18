@@ -166,7 +166,7 @@ Void RTCharacterInitializeSkillStats(
 		
 		for (Int32 ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
 			RTSkillValueDataRef SkillValue = &SkillData->SkillValues[ValueIndex];
-			Int64 ForceValue = (SkillValue->ForceEffectValue[0] + SkillValue->ForceEffectValue[1] * SkillSlot->Level + SkillValue->ForceEffectValue[2]) / 10;
+			Int64 ForceValue = ((Int64)SkillValue->ForceEffectValue[0] * SkillSlot->Level + SkillValue->ForceEffectValue[1] + SkillValue->ForceEffectValue[2]) / 10;
 			
 			RTCharacterApplyForceEffect(
 				Runtime,
