@@ -27,15 +27,21 @@ struct _RTWarp {
 	Int32 QuestID;
 };
 
+typedef struct {
+	UInt16 X;
+	UInt16 Y;
+	Int32 Fee;
+	Int32 WorldIndex;
+	Int32 Level;
+} RTWarpPointResult;
+
 #pragma pack(pop)
 
-typedef struct {
-    UInt16 X;
-    UInt16 Y;
-    Int32 Fee;
-    Int32 WorldIndex;
-    Int32 Level;
-} RTWarpPointResult;
+Bool RTCharacterConsumeReturnStone(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 SlotIndex
+);
 
 RTWarpPointResult RTRuntimeGetWarpPoint(
 	RTRuntimeRef Runtime,

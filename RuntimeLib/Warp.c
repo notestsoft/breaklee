@@ -3,6 +3,42 @@
 #include "Warp.h"
 #include "WorldManager.h"
 
+Bool RTCharacterConsumeReturnStone(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 SlotIndex
+) {
+    RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, SlotIndex);
+    if (!ItemSlot) return false;
+
+    RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
+    if (!ItemData) return false;
+
+    // TODO: Check return stone cooldown time!!!
+    if (ItemData->ItemType == RUNTIME_ITEM_TYPE_RETURN_STONE) {
+        if (ItemSlot->ItemOptions > 0) {
+            ItemSlot->ItemOptions -= 1;
+
+            if (ItemSlot->ItemOptions < 1) {
+                RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SlotIndex);
+                Character->SyncMask.InventoryInfo = true;
+            }
+        }
+        else {
+            RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SlotIndex);
+            Character->SyncMask.InventoryInfo = true;
+        }
+    }
+    else if (ItemData->ItemType == RUNTIME_ITEM_TYPE_RETURN_CORE) {
+        // TODO: Check if item is expired
+    }
+    else {
+        return false;
+    }
+
+    return true;
+}
+
 RTWarpPointResult RTRuntimeGetWarpPoint(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
@@ -93,34 +129,7 @@ Bool RTRuntimeWarpCharacter(
         }
         case RUNTIME_NPC_ID_RETURN: {
             // TODO: Check if character is in dungeon or war and return err
-
-            RTItemSlotRef Slot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, SlotIndex);
-            if (!Slot) return false;
-
-            RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, Slot->Item.ID);
-            if (!ItemData) return false;
-            // TODO: Check return stone cooldown time!!!
-
-            if (ItemData->ItemType == RUNTIME_ITEM_TYPE_RETURN_STONE) {
-                if (Slot->ItemOptions > 0) {
-                    Slot->ItemOptions -= 1;
-
-                    if (Slot->ItemOptions < 1) {
-                        RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SlotIndex);
-                        Character->SyncMask.InventoryInfo = true;
-                    }
-                }
-                else {
-                    RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SlotIndex);
-                    Character->SyncMask.InventoryInfo = true;
-                }
-            }
-            else if (ItemData->ItemType == RUNTIME_ITEM_TYPE_RETURN_CORE) {
-                // TODO: Check if item is expired
-            }
-            else {
-                return false;
-            }
+            if (!RTCharacterConsumeReturnStone(Runtime, Character, SlotIndex)) return false;
 
             RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, World->WorldData->ReturnWarpIndex);
             RTWorldContextRef NewWorld = RTRuntimeGetWorldByID(Runtime, WarpPoint.WorldIndex);
@@ -196,6 +205,8 @@ Bool RTRuntimeWarpCharacter(
             }
 
             if (RTWorldIsTileColliding(Runtime, TargetWorld, WarpPoint.X, WarpPoint.Y, Character->Movement.CollisionMask)) return false;
+
+            if (!RTCharacterConsumeReturnStone(Runtime, Character, SlotIndex)) return false;
 
             RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 
