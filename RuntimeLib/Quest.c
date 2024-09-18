@@ -325,8 +325,14 @@ Bool RTCharacterQuestClear(
 	*ResultSkillExp = Quest->Reward[RUNTIME_QUEST_REWARD_SKILL_EXP];
 
 	Int32 RewardItemSetID = Quest->Reward[RUNTIME_QUEST_REWARD_ITEM_SET];
+	Int32 RewardSkillIndex = Quest->Reward[RUNTIME_QUEST_REWARD_SKILL];
+	Int32 RequiredSlotCount = 0;
+	RequiredSlotCount += (RewardItemSetID > 0) ? 2 : 0;
+	RequiredSlotCount += (RewardSkillIndex > 0) ? 1 : 0;
+	if (SlotCount < RequiredSlotCount) return false;
+
 	if (RewardItemSetID > 0) {
-		if (SlotOffset >= SlotCount) return false;
+		assert(SlotOffset < SlotCount);
 
 		UInt16 RewardItemIndex = SlotIndex[SlotOffset++];
 		RTQuestRewardItemDataRef RewardItem = RTRuntimeGetQuestRewardItemByIndex(
@@ -336,8 +342,7 @@ Bool RTCharacterQuestClear(
 			BattleStyleIndex
 		);
 		assert(RewardItem);
-
-		if (SlotOffset >= SlotCount) return false;
+		assert(SlotOffset < SlotCount);
 
 		struct _RTItemSlot ItemSlot = { 0 };
 		ItemSlot.SlotIndex = SlotIndex[SlotOffset++];
@@ -345,6 +350,7 @@ Bool RTCharacterQuestClear(
 		ItemSlot.ItemOptions = RewardItem->ItemID[1];
 		ItemSlot.ItemDuration.DurationIndex = RewardItem->ItemDuration;
 
+		// TODO: Split validation from write operations
 		if (!RTInventorySetSlot(Runtime, &Character->Data.InventoryInfo, &ItemSlot)) {
 			return false;
 		}
@@ -352,9 +358,12 @@ Bool RTCharacterQuestClear(
 		Character->SyncMask.InventoryInfo = true;
 	}
 
-	// TODO: Add missing reward types
-	// TODO: Add skill reward type once resolving target skill slot index by skill index
+	if (RewardSkillIndex > 0) {
+		assert(SlotOffset < SlotCount);
+		RTCharacterAddSkillSlot(Runtime, Character, Quest->Reward[RUNTIME_QUEST_REWARD_SKILL], 1, SlotIndex[SlotOffset++]);
+	}
 
+	// TODO: Add missing reward types
 	RTCharacterAddExp(Runtime, Character, Quest->Reward[RUNTIME_QUEST_REWARD_EXP]);
 	RTCharacterAddSkillExp(Runtime, Character, Quest->Reward[RUNTIME_QUEST_REWARD_SKILL_EXP]);
 	RTCharacterAddHonorPoint(Runtime, Character, Quest->Reward[RUNTIME_QUEST_REWARD_HONOR_POINT]);
