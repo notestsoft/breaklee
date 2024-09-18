@@ -255,9 +255,11 @@ Bool RTCharacterQuestClear(
 	RTNpcRef Npc = RTRuntimeGetNpcByWorldNpcID(Runtime, QuestNpc->WorldID, QuestNpc->NpcID);
 	if (!Npc) return false;
 
+	/* NOTE: We skip validation as on some quests the npc position is (0, 0). Example: Quest(ID=3060)
 	if (!RTMovementIsInRange(Runtime, &Character->Movement, Npc->X, Npc->Y)) {
 		return false;
 	}
+	*/
 
 	if (QuestNpc->ActionType != 6) {
 		return false;
