@@ -125,8 +125,8 @@ RTQuestSlotRef RTCharacterGetQuestSlot(
 	RTCharacterRef Character,
 	Int32 QuestSlotIndex
 ) {
-	for (Int32 Index = 0; Index < Character->Data.QuestInfo.Info.SlotCount; Index += 1) {
-		RTQuestSlotRef QuestSlot = &Character->Data.QuestInfo.Slots[QuestSlotIndex];
+	for (Int32 SlotIndex = 0; SlotIndex < Character->Data.QuestInfo.Info.SlotCount; SlotIndex += 1) {
+		RTQuestSlotRef QuestSlot = &Character->Data.QuestInfo.Slots[SlotIndex];
 		if (QuestSlot->SlotIndex == QuestSlotIndex) return QuestSlot;
 	}
 
@@ -138,15 +138,15 @@ Void RTCharacterRemoveQuestSlot(
 	RTCharacterRef Character,
 	Int32 QuestSlotIndex
 ) {
-	for (Int32 Index = 0; Index < Character->Data.QuestInfo.Info.SlotCount; Index += 1) {
-		RTQuestSlotRef QuestSlot = &Character->Data.QuestInfo.Slots[QuestSlotIndex];
+	for (Int32 SlotIndex = 0; SlotIndex < Character->Data.QuestInfo.Info.SlotCount; SlotIndex += 1) {
+		RTQuestSlotRef QuestSlot = &Character->Data.QuestInfo.Slots[SlotIndex];
 		if (QuestSlot->SlotIndex != QuestSlotIndex) continue;
 
-		Int32 TailLength = Character->Data.QuestInfo.Info.SlotCount - Index - 1;
+		Int32 TailLength = Character->Data.QuestInfo.Info.SlotCount - SlotIndex - 1;
 		if (TailLength > 0) {
 			memmove(
-				&Character->Data.QuestInfo.Slots[Index],
-				&Character->Data.QuestInfo.Slots[Index + 1],
+				&Character->Data.QuestInfo.Slots[SlotIndex],
+				&Character->Data.QuestInfo.Slots[SlotIndex + 1],
 				TailLength * sizeof(struct _RTQuestSlot)
 			);
 		}
