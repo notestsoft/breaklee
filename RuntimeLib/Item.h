@@ -338,6 +338,7 @@ struct _RTItemData {
 	Int32 UniqueGrade;
 	Int32 MasterGrade;
 	Int32 EnchantCodeLink;
+	Int32 UniqueBattleStyleIndex;
 };
 
 struct _RTItem {

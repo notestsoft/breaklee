@@ -749,6 +749,7 @@ Bool ServerLoadItemData(
             ItemData->UniqueGrade = ArchiveItemData->UniqueGrade;
             ItemData->MasterGrade = ArchiveItemData->MeisterGrade;
             ItemData->EnchantCodeLink = ArchiveItemData->EnchantCodeLink;
+            ItemData->UniqueBattleStyleIndex = ArchiveItemData->LimitClass;
             memcpy(ItemData->ExtendedOptions, ArchiveItemData->ExtendedOptions, sizeof(ArchiveItemData->ExtendedOptions));
             Runtime->ItemDataCount += 1;
         }
