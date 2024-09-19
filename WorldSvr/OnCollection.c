@@ -98,13 +98,10 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
             Bool IsStackable = ItemData->MaxStackSize > 0;
             Bool Found = false;
             for (Int32 DetailIndex = 0; DetailIndex < CollectionMissionItem->CollectionMissionItemDetailCount; DetailIndex += 1) {
-                RTDataCollectionMissionItemDetailRef CollectionMissionItemDetail = &CollectionMissionItem->CollectionMissionItemDetailList[0];
+                RTDataCollectionMissionItemDetailRef CollectionMissionItemDetail = &CollectionMissionItem->CollectionMissionItemDetailList[DetailIndex];
 
-                if (CollectionMissionItemDetail->ItemIndex != ItemSlot->Item.ID) continue;
+                if (CollectionMissionItemDetail->ItemIndex != (ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX)) continue;
                 if (!IsStackable && CollectionMissionItemDetail->ItemOption != ItemSlot->ItemOptions) continue;
-
-                // TODO: ItemKind is currently not mapped in the data!
-                // if (CollectionMissionItemDetail->ItemKind != ItemData->ItemType) continue;
 
                 Found = true;
                 break;
