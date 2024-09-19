@@ -25,6 +25,8 @@ Bool RTGiftBoxIsActive(
 
             return true;
         }
+
+        return false;
     }
 
     return true;
