@@ -408,10 +408,6 @@ Void SocketSendRaw(
     if (Socket->LogPackets) PacketLogBytes(Socket->ProtocolIdentifier, Socket->ProtocolVersion, Socket->ProtocolExtension, Data);
     if (Socket->OnSend) Socket->OnSend(Socket, Connection, Data);
 
-    if (Socket->Flags & SOCKET_FLAGS_ENCRYPTED) {
-        KeychainEncryptPacket(&Connection->Keychain, Data, PacketLength);
-    }
-
     Int32 MemoryLength = sizeof(struct _SocketConnectionWriteRequest) + PacketLength;
     UInt8* Memory = AllocatorAllocate(Socket->Allocator, MemoryLength);
     if (!Memory) {
@@ -423,6 +419,11 @@ Void SocketSendRaw(
     WriteRequest->Buffer.base = (CString)(Memory + sizeof(struct _SocketConnectionWriteRequest));
     WriteRequest->Buffer.len = Length;
     memcpy(WriteRequest->Buffer.base, Data, Length);
+
+    if (Socket->Flags & SOCKET_FLAGS_ENCRYPTED) {
+        KeychainEncryptPacket(&Connection->Keychain, (UInt8*)WriteRequest->Buffer.base, PacketLength);
+    }
+
     uv_write(&WriteRequest->Request, (uv_stream_t*)Connection->Handle, &WriteRequest->Buffer, 1, _OnWrite);
 }
 

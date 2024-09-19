@@ -71,7 +71,6 @@ Void RTNotificationManagerDispatchToParty(
     RTPartyRef Party
 ) {
     RTRuntimeRef Runtime = NotificationManager->Runtime;
-
     for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
         RTEntityID Entity = Party->Members[Index].MemberID;
         RTCharacterRef Character = RTWorldManagerGetCharacter(Runtime->WorldManager, Entity);
