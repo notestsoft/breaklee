@@ -278,6 +278,7 @@ authenticate:
 
     Int32 ServerIndex = 0;
     while (DatabaseHandleReadNext(
+        Context->Database,
         Handle,
         DB_TYPE_UINT8, &Extension->Servers[ServerIndex].ServerID, sizeof(UInt8),
         DB_TYPE_UINT8, &Extension->Servers[ServerIndex].CharacterCount, sizeof(UInt8),
@@ -286,7 +287,7 @@ authenticate:
         assert(ServerIndex < MAX_SERVER_COUNT);
         ServerIndex += 1;
     }
-    DatabaseHandleFlush(Handle);
+    DatabaseHandleFlush(Context->Database, Handle);
 
     SocketSend(Socket, Connection, Response);
 

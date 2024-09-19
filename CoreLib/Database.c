@@ -23,7 +23,6 @@ struct _Database {
 	Int64 ResultBufferSize;
 	Bool AutoReconnect;
 	Int64 LastInsertID;
-	DictionaryRef DataTables;
 };
 
 struct _Buffer {
@@ -115,7 +114,7 @@ static inline SQLSMALLINT DatabaseTypeGetNativeDirection(
 	}
 }
 
-Void HandleDatabaseError(
+Bool HandleDatabaseError(
 	SQLSMALLINT HandleType,
 	SQLHANDLE Handle
 ) {
@@ -125,6 +124,14 @@ Void HandleDatabaseError(
 	SQLSMALLINT MessageLength = 0;
 	SQLGetDiagRec(HandleType, Handle, 1, SqlState, &NativeError, Message, sizeof(Message), &MessageLength);
 	Error("Database error: %s", Message);
+
+	// Check for connection loss
+	if (strncmp((const char*)SqlState, "08S01", 5) == 0 ||
+		strncmp((const char*)SqlState, "08003", 5) == 0) {
+		return true;
+	}
+
+	return false;
 }
 
 DatabaseRef DatabaseConnect(
@@ -197,19 +204,73 @@ DatabaseRef DatabaseConnect(
 	Result->ResultBufferSize = (ResultBufferSize > 0) ? ResultBufferSize : DATABASE_RESULT_BUFFER_SIZE;
 	Result->AutoReconnect = AutoReconnect;
 	Result->LastInsertID = 0;
-	Result->DataTables = CStringDictionaryCreate(AllocatorGetDefault(), 8);
 	return Result;
 }
 
 Void DatabaseDisconnect(
 	DatabaseRef Database
 ) {
-	if (!Database) return;
+	assert(Database);
+	if (Database->Connection) SQLFreeHandle(SQL_HANDLE_DBC, Database->Connection);
+	if (Database->Environment) SQLFreeHandle(SQL_HANDLE_ENV, Database->Environment);
+	AllocatorDeallocate(Database->Allocator, Database);
+}
+
+Bool DatabaseReconnect(
+	DatabaseRef Database
+) {
+	assert(Database);
+	if (!Database->AutoReconnect) return false;
 
 	SQLFreeHandle(SQL_HANDLE_DBC, Database->Connection);
+	Database->Connection = NULL;
+
 	SQLFreeHandle(SQL_HANDLE_ENV, Database->Environment);
-	DictionaryDestroy(Database->DataTables);
-	AllocatorDeallocate(Database->Allocator, Database);
+	Database->Environment = NULL;
+
+	SQLHENV Environment;
+	SQLRETURN ReturnCode = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &Environment);
+	if (ReturnCode != SQL_SUCCESS && ReturnCode != SQL_SUCCESS_WITH_INFO) {
+		HandleDatabaseError(SQL_HANDLE_ENV, Environment);
+		return false;
+	}
+
+	ReturnCode = SQLSetEnvAttr(Environment, SQL_ATTR_ODBC_VERSION, (SQLPOINTER)SQL_OV_ODBC3, 0);
+	if (ReturnCode != SQL_SUCCESS && ReturnCode != SQL_SUCCESS_WITH_INFO) {
+		HandleDatabaseError(SQL_HANDLE_ENV, Environment);
+		SQLFreeHandle(SQL_HANDLE_ENV, Environment);
+		return false;
+	}
+
+	SQLHDBC Handle;
+	ReturnCode = SQLAllocHandle(SQL_HANDLE_DBC, Environment, &Handle);
+	if (ReturnCode != SQL_SUCCESS && ReturnCode != SQL_SUCCESS_WITH_INFO) {
+		HandleDatabaseError(SQL_HANDLE_DBC, Handle);
+		SQLFreeHandle(SQL_HANDLE_ENV, Environment);
+		return false;
+	}
+
+	CString ConnectionString = CStringFormat(
+		"DRIVER={%s};SERVER=%s;PORT=%d;DATABASE=%s;UID=%s;PWD=%s;",
+		Database->Driver,
+		Database->Host,
+		Database->Port,
+		Database->Database,
+		Database->Username,
+		Database->Password
+	);
+
+	ReturnCode = SQLDriverConnect(Handle, NULL, (SQLCHAR*)ConnectionString, SQL_NTS, NULL, 0, NULL, SQL_DRIVER_COMPLETE);
+	if (ReturnCode != SQL_SUCCESS && ReturnCode != SQL_SUCCESS_WITH_INFO) {
+		HandleDatabaseError(SQL_HANDLE_DBC, Handle);
+		SQLFreeHandle(SQL_HANDLE_DBC, Handle);
+		SQLFreeHandle(SQL_HANDLE_ENV, Environment);
+		return false;
+	}
+
+	Database->Connection = Handle;
+	Database->Environment = Environment;
+	return true;
 }
 
 CString DatabaseGetName(
@@ -221,7 +282,10 @@ CString DatabaseGetName(
 Bool DatabaseBeginTransaction(
 	DatabaseRef Database
 ) {
-	SQLRETURN ReturnCode = SQLSetConnectAttr(
+	SQLRETURN ReturnCode;
+
+entry:
+	ReturnCode = SQLSetConnectAttr(
 		Database->Connection,
 		SQL_ATTR_AUTOCOMMIT,
 		(SQLPOINTER)SQL_AUTOCOMMIT_OFF,
@@ -229,7 +293,10 @@ Bool DatabaseBeginTransaction(
 	);
 
 	if (ReturnCode != SQL_SUCCESS && ReturnCode != SQL_SUCCESS_WITH_INFO) {
-		HandleDatabaseError(SQL_HANDLE_DBC, Database->Connection);
+		if (HandleDatabaseError(SQL_HANDLE_DBC, Database->Connection)) {
+			if (DatabaseReconnect(Database)) goto entry;
+		}
+
 		return false;
 	}
 
@@ -239,14 +306,20 @@ Bool DatabaseBeginTransaction(
 Bool DatabaseCommitTransaction(
 	DatabaseRef Database
 ) {
-	SQLRETURN ReturnCode = SQLEndTran(
+	SQLRETURN ReturnCode;
+
+entry:
+	ReturnCode = SQLEndTran(
 		SQL_HANDLE_DBC,
 		Database->Connection,
 		SQL_COMMIT
 	);
 
 	if (ReturnCode != SQL_SUCCESS && ReturnCode != SQL_SUCCESS_WITH_INFO) {
-		HandleDatabaseError(SQL_HANDLE_DBC, Database->Connection);
+		if (HandleDatabaseError(SQL_HANDLE_DBC, Database->Connection)) {
+			if (DatabaseReconnect(Database)) goto entry;
+		}
+
 		return false;
 	}
 
@@ -256,14 +329,20 @@ Bool DatabaseCommitTransaction(
 Bool DatabaseRollbackTransaction(
 	DatabaseRef Database
 ) {
-	SQLRETURN ReturnCode = SQLEndTran(
+	SQLRETURN ReturnCode;
+
+entry:
+	ReturnCode = SQLEndTran(
 		SQL_HANDLE_DBC,
 		Database->Connection,
 		SQL_ROLLBACK
 	);
 
 	if (ReturnCode != SQL_SUCCESS && ReturnCode != SQL_SUCCESS_WITH_INFO) {
-		HandleDatabaseError(SQL_HANDLE_DBC, Database->Connection);
+		if (HandleDatabaseError(SQL_HANDLE_DBC, Database->Connection)) {
+			if (DatabaseReconnect(Database)) goto entry;
+		}
+
 		return false;
 	}
 
@@ -274,16 +353,28 @@ Bool DatabaseExecuteQuery(
 	DatabaseRef Database,
 	CString Query
 ) {
-	SQLHSTMT Statement = 0;
-	SQLRETURN ReturnCode = SQLAllocHandle(SQL_HANDLE_STMT, Database->Connection, &Statement);
+	SQLHSTMT Statement;
+	SQLRETURN ReturnCode;
+
+entry:
+	ReturnCode = SQLAllocHandle(SQL_HANDLE_STMT, Database->Connection, &Statement);
 	if (!SQL_SUCCEEDED(ReturnCode)) {
-		Error("Failed to allocate SQL statement handle.");
+		if (HandleDatabaseError(SQL_HANDLE_STMT, Statement)) {
+			if (DatabaseReconnect(Database)) goto entry;
+		}
+
 		return false;
 	}
 
 	ReturnCode = SQLExecDirect(Statement, (SQLCHAR*)Query, SQL_NTS);
 	if (!SQL_SUCCEEDED(ReturnCode)) {
-		HandleDatabaseError(SQL_HANDLE_STMT, Statement);
+		if (HandleDatabaseError(SQL_HANDLE_STMT, Statement)) {
+			if (DatabaseReconnect(Database)) {
+				SQLFreeHandle(SQL_HANDLE_STMT, Statement);
+				goto entry;
+			}
+		}
+
 		SQLFreeHandle(SQL_HANDLE_STMT, Statement);
 		return false;
 	}
@@ -298,9 +389,15 @@ DatabaseHandleRef DatabaseCallProcedureFetchInternal(
 	va_list Arguments
 ) {
 	SQLHSTMT Statement;
-	SQLRETURN ReturnCode = SQLAllocHandle(SQL_HANDLE_STMT, Database->Connection, &Statement);
+	SQLRETURN ReturnCode;
+
+entry:
+	ReturnCode = SQLAllocHandle(SQL_HANDLE_STMT, Database->Connection, &Statement);
 	if (!SQL_SUCCEEDED(ReturnCode)) {
-		Error("Failed to allocate statement handle.\n");
+		if (HandleDatabaseError(SQL_HANDLE_STMT, Statement)) {
+			if (DatabaseReconnect(Database)) goto entry;
+		}
+
 		return NULL;
 	}
 
@@ -337,6 +434,14 @@ DatabaseHandleRef DatabaseCallProcedureFetchInternal(
 
 		if (!ParameterNativeTypes[ParameterCount]) {
 			Error("Not supported parameter type %d.\n", ParameterType);
+
+			if (HandleDatabaseError(SQL_HANDLE_STMT, Statement)) {
+				if (DatabaseReconnect(Database)) {
+					SQLFreeHandle(SQL_HANDLE_STMT, Statement);
+					goto entry;
+				}
+			}
+
 			SQLFreeHandle(SQL_HANDLE_STMT, Statement);
 			return NULL;
 		}
@@ -350,8 +455,13 @@ DatabaseHandleRef DatabaseCallProcedureFetchInternal(
 	Trace("SQL Query: %s", Query);
 	ReturnCode = SQLPrepare(Statement, Query, SQL_NTS);
 	if (!SQL_SUCCEEDED(ReturnCode)) {
-		Trace("SQLPrepare failed with code %d", ReturnCode);
-		HandleDatabaseError(SQL_HANDLE_STMT, Statement);
+		if (HandleDatabaseError(SQL_HANDLE_STMT, Statement)) {
+			if (DatabaseReconnect(Database)) {
+				SQLFreeHandle(SQL_HANDLE_STMT, Statement);
+				goto entry;
+			}
+		}
+
 		SQLFreeHandle(SQL_HANDLE_STMT, Statement);
 		return NULL;
 	}
@@ -375,7 +485,14 @@ DatabaseHandleRef DatabaseCallProcedureFetchInternal(
 
 		if (!SQL_SUCCEEDED(ReturnCode)) {
 			Trace("SQLBindParameter failed for Parameter %d with code %d", ParameterIndex + 1, ReturnCode);
-			HandleDatabaseError(SQL_HANDLE_STMT, Statement);
+
+			if (HandleDatabaseError(SQL_HANDLE_STMT, Statement)) {
+				if (DatabaseReconnect(Database)) {
+					SQLFreeHandle(SQL_HANDLE_STMT, Statement);
+					goto entry;
+				}
+			}
+
 			SQLFreeHandle(SQL_HANDLE_STMT, Statement);
 			return NULL;
 		}
@@ -384,8 +501,13 @@ DatabaseHandleRef DatabaseCallProcedureFetchInternal(
 	Trace("Executing statement...");
 	ReturnCode = SQLExecute(Statement);
 	if (!SQL_SUCCEEDED(ReturnCode)) {
-		Trace("SQLExecute failed with code %d", ReturnCode);
-		HandleDatabaseError(SQL_HANDLE_STMT, Statement);
+		if (HandleDatabaseError(SQL_HANDLE_STMT, Statement)) {
+			if (DatabaseReconnect(Database)) {
+				SQLFreeHandle(SQL_HANDLE_STMT, Statement);
+				goto entry;
+			}
+		}
+
 		SQLFreeHandle(SQL_HANDLE_STMT, Statement);
 		return NULL;
 	}
@@ -408,23 +530,33 @@ DatabaseHandleRef DatabaseCallProcedureFetch(
 }
 
 Bool DatabaseHandleReadNext(
+	DatabaseRef Database,
 	DatabaseHandleRef Handle,
 	...
 ) {
 	if (!Handle) return false;
 
+	SQLHSTMT Statement;
+	SQLRETURN ReturnCode;
+
+entry:
 	Trace("DatabaseHandleReadNext: Fetching next row...");
 
-	SQLHSTMT Statement = (SQLHSTMT)Handle;
-	SQLRETURN ReturnCode = SQLFetch(Statement);
+	Statement = (SQLHSTMT)Handle;
+	ReturnCode = SQLFetch(Statement);
 	if (ReturnCode == SQL_NO_DATA) {
 		Trace("DatabaseHandleReadNext: No more data available.");
 		SQLFreeHandle(SQL_HANDLE_STMT, Statement);
 		return false;
 	}
 	else if (!SQL_SUCCEEDED(ReturnCode)) {
-		Trace("DatabaseHandleReadNext: SQLFetch failed with code %d", ReturnCode);
-		HandleDatabaseError(SQL_HANDLE_STMT, Statement);
+		if (HandleDatabaseError(SQL_HANDLE_STMT, Statement)) {
+			if (DatabaseReconnect(Database)) {
+				SQLFreeHandle(SQL_HANDLE_STMT, Statement);
+				goto entry;
+			}
+		}
+
 		SQLFreeHandle(SQL_HANDLE_STMT, Statement);
 		return false;
 	}
@@ -449,9 +581,17 @@ Bool DatabaseHandleReadNext(
 		Trace("DatabaseHandleReadNext: Fetching column %d with data type %d, buffer size %lld", ColumnIndex, DataType, BufferLength);
 		ReturnCode = SQLGetData(Statement, ColumnIndex++, DataMapping.NativeType, Buffer, BufferLength, NULL);
 		if (!SQL_SUCCEEDED(ReturnCode)) {
-			Trace("DatabaseHandleReadNext: SQLGetData failed for column %d with code %d", ColumnIndex - 1, ReturnCode);
-			HandleDatabaseError(SQL_HANDLE_STMT, Statement);
 			va_end(Arguments);
+
+			Trace("DatabaseHandleReadNext: SQLGetData failed for column %d with code %d", ColumnIndex - 1, ReturnCode);
+			
+			if (HandleDatabaseError(SQL_HANDLE_STMT, Statement)) {
+				if (DatabaseReconnect(Database)) {
+					SQLFreeHandle(SQL_HANDLE_STMT, Statement);
+					goto entry;
+				}
+			}
+
 			SQLFreeHandle(SQL_HANDLE_STMT, Statement);
 			return false;
 		}
@@ -465,6 +605,7 @@ Bool DatabaseHandleReadNext(
 }
 
 Void DatabaseHandleFlush(
+	DatabaseRef Database,
 	DatabaseHandleRef Handle
 ) {
 	if (!Handle) return;

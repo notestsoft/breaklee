@@ -99,11 +99,13 @@ DatabaseHandleRef DatabaseCallProcedureFetch(
 );
 
 Bool DatabaseHandleReadNext(
+    DatabaseRef Database,
     DatabaseHandleRef Handle,
     ...
 );
 
 Void DatabaseHandleFlush(
+    DatabaseRef Database,
     DatabaseHandleRef Handle
 );
 

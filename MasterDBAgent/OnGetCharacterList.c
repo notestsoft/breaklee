@@ -17,6 +17,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER_LIST) {
 	UInt8 CharacterSlotIndex = 0;
 	IPC_DATA_CHARACTER_INFO CharacterInfo = { 0 };
 	while (DatabaseHandleReadNext(
+		Context->Database,
 		Handle,
 		DB_TYPE_UINT8, &CharacterSlotIndex,
 		DB_TYPE_INT32, &CharacterInfo.CharacterID,
@@ -45,7 +46,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER_LIST) {
 		assert(CharacterSlotIndex < MAX_CHARACTER_COUNT);
 		Response->Characters[CharacterSlotIndex] = CharacterInfo;
 	}
-	DatabaseHandleFlush(Handle);
+	DatabaseHandleFlush(Context->Database, Handle);
 
     IPCSocketUnicast(Socket, Response);
     return;

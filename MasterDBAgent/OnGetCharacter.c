@@ -76,6 +76,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
     );
 
     if (!DatabaseHandleReadNext(
+        Context->Database,
         Handle,
         DB_TYPE_UINT8, &Response->Character.IsWarehousePasswordSet,
         DB_TYPE_UINT8, &Response->Character.IsInventoryPasswordSet,
@@ -343,7 +344,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
     )) {
         goto error;
     }
-    DatabaseHandleFlush(Handle);
+    DatabaseHandleFlush(Context->Database, Handle);
 
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, EquipmentSlots, sizeof(struct _RTItemSlot) * Response->Character.EquipmentInfo.EquipmentSlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, EquipmentInventorySlots, sizeof(struct _RTItemSlot) * Response->Character.EquipmentInfo.InventorySlotCount);

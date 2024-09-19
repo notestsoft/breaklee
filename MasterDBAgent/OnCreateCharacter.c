@@ -64,6 +64,7 @@ IPC_PROCEDURE_BINDING(W2D, CREATE_CHARACTER) {
 
 		IPC_DATA_CHARACTER_INFO CharacterInfo = { 0 };
 		if (DatabaseHandleReadNext(
+			Context->Database,
 			Handle,
 			DB_TYPE_UINT8, &Response->CharacterSlotIndex,
 			DB_TYPE_INT32, &CharacterInfo.CharacterID,
@@ -91,7 +92,7 @@ IPC_PROCEDURE_BINDING(W2D, CREATE_CHARACTER) {
 		)) {
 			Response->Character = CharacterInfo;
 		}
-		DatabaseHandleFlush(Handle);
+		DatabaseHandleFlush(Context->Database, Handle);
 	}
 	else if (!Response->Status) {
 		Response->Status = CREATE_CHARACTER_STATUS_DBERROR;
