@@ -1,0 +1,12 @@
+<LevelRewardPool>
+    <Reward Level="50" MapCode="8" WarpCode="8" />
+    <Reward Level="65" MapCode="16" WarpCode="16" />
+    <Reward Level="80" MapCode="64" WarpCode="64" />
+    <Reward Level="95" MapCode="128" WarpCode="128" />
+    <Reward Level="110" MapCode="32" WarpCode="32" />
+    <Reward Level="125" MapCode="256" WarpCode="256" />
+    <Reward Level="140" MapCode="512" WarpCode="512" />
+    <Reward Level="160" MapCode="1024" WarpCode="1024" />
+    <Reward Level="180" MapCode="2048" WarpCode="2048" />
+    <Reward Level="190" MapCode="2097152" WarpCode="2097152" />
+</LevelRewardPool>

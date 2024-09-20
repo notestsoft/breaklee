@@ -926,19 +926,30 @@ Void RTCharacterAddExp(
 		RTCharacterSetHP(Runtime, Character, Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX], false);
 		RTCharacterSetMP(Runtime, Character, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX], false);
 		Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_PNT] += LevelDiff * 5;
+		Character->SyncMask.Info = true;
 
 		for (Index Index = 0; Index < LevelDiff; Index += 1) {
-			RTRuntimeBroadcastCharacterData(
-				Runtime,
-				Character,
-				NOTIFICATION_CHARACTER_DATA_TYPE_LEVEL
-			);
+			NOTIFICATION_DATA_CHARACTER_DATA* Notification = RTNotificationInit(CHARACTER_DATA);
+			Notification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_LEVEL;
+			Notification->Level = CurrentLevel + Index + 1;
+
+			RTDataLevelRewardRef LevelReward = RTRuntimeDataLevelRewardGet(Runtime->Context, CurrentLevel + Index + 1);
+			if (LevelReward) {
+				Character->Data.StyleInfo.MapsMask |= LevelReward->MapCode;
+				Character->Data.StyleInfo.WarpMask |= LevelReward->WarpCode;
+				Character->SyncMask.StyleInfo = true;
+
+				Notification->MapCode = LevelReward->MapCode;
+				Notification->WarpCode = LevelReward->WarpCode;
+			}
+
+			RTNotificationDispatchToCharacter(Notification, Character);
 
 			{
-				NOTIFICATION_DATA_CHARACTER_EVENT* Notification = RTNotificationInit(CHARACTER_EVENT);
-				Notification->Type = NOTIFICATION_CHARACTER_EVENT_TYPE_LEVEL_UP;
-				Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
-				RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
+				NOTIFICATION_DATA_CHARACTER_EVENT* EventNotification = RTNotificationInit(CHARACTER_EVENT);
+				EventNotification->Type = NOTIFICATION_CHARACTER_EVENT_TYPE_LEVEL_UP;
+				EventNotification->CharacterIndex = (UInt32)Character->CharacterIndex;
+				RTNotificationDispatchToNearby(EventNotification, Character->Movement.WorldChunk);
 			}
 		}
 

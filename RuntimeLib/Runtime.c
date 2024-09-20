@@ -544,9 +544,7 @@ Void RTRuntimeBroadcastCharacterData(
         Notification->SkillRank = Character->Data.Info.SkillRank;
     }
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_LEVEL) {
-        Notification->Level = Character->Data.Info.Level;
-    }
+    assert(Notification->Type != NOTIFICATION_CHARACTER_DATA_TYPE_LEVEL);
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_SP_DECREASE_EX) {
         assert(false && "Implementation missing!");

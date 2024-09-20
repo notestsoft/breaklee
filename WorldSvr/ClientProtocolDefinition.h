@@ -1163,7 +1163,7 @@ CLIENT_PROTOCOL(S2C, NFY_CHARACTER_DATA, DEFAULT, 287,
         struct { UInt8 _2[38]; UInt64 HP; };
         struct { UInt8 _3[34]; UInt32 MP; UInt8 _4[8]; };
         struct { UInt8 _5[34]; UInt32 SP; UInt8 _6[8]; };
-        struct { UInt8 _7[34]; UInt32 Level; UInt8 _8[8]; };
+        struct { UInt8 _7[26]; UInt32 MapCode; UInt32 WarpCode; UInt32 Level; UInt8 _8[8]; };
         struct { UInt8 _9[34]; UInt32 Rage; UInt8 _10[8]; };
         struct { UInt8 _11[34]; UInt32 BP; UInt8 _12[8]; };
         struct { UInt8 _13[34]; UInt32 BuffResult; UInt8 _14[8]; };
