@@ -500,6 +500,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     }
 
     Character->Data.PresetInfo = Packet->Character.PresetInfo;
+    Character->Data.SettingsInfo = Packet->SettingsInfo;
     CStringCopySafe(Character->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->Character.Name);
 
     RTCharacterInitializeAttributes(Runtime, Character);
@@ -1087,7 +1088,6 @@ struct _RTCharacterCostumeInfo {
     for (Int32 Index = 0; Index < 282; Index++)
         Response->Unknown14[Index] = Random(&Seed);
         */
-
     SocketSend(Context->ClientSocket, ClientConnection, Response);
 
     RTWorldSpawnCharacter(Runtime, World, Character->ID);

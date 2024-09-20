@@ -15,7 +15,6 @@ CLIENT_PROCEDURE_BINDING(GET_SETTINGS) {
 	PacketBufferAppendCopy(Connection->PacketBuffer, Character->Data.SettingsInfo.HotKeysData, Character->Data.SettingsInfo.HotKeysDataLength);
 	PacketBufferAppendCopy(Connection->PacketBuffer, Character->Data.SettingsInfo.OptionsData, Character->Data.SettingsInfo.OptionsDataLength);
 	PacketBufferAppendCopy(Connection->PacketBuffer, Character->Data.SettingsInfo.MacrosData, Character->Data.SettingsInfo.MacrosDataLength);
-	
 	SocketSend(Socket, Connection, Response);
 	return;
 
@@ -31,7 +30,6 @@ CLIENT_PROCEDURE_BINDING(SET_SETTINGS_HOTKEYS) {
 	memcpy(Character->Data.SettingsInfo.HotKeysData, Packet->Data, Packet->DataLength);
 	Character->Data.SettingsInfo.HotKeysDataLength = Packet->DataLength;
 	Character->SyncMask.SettingsInfo = true;
-
 	return;
 
 error:
@@ -46,7 +44,6 @@ CLIENT_PROCEDURE_BINDING(SET_SETTINGS_OPTIONS) {
 	memcpy(Character->Data.SettingsInfo.OptionsData, Packet->Data, Packet->DataLength);
 	Character->Data.SettingsInfo.OptionsDataLength = Packet->DataLength;
 	Character->SyncMask.SettingsInfo = true;
-
 	return;
 
 error:
@@ -61,7 +58,6 @@ CLIENT_PROCEDURE_BINDING(SET_SETTINGS_MACROS) {
 	memcpy(Character->Data.SettingsInfo.MacrosData, Packet->Data, Packet->DataLength);
 	Character->Data.SettingsInfo.MacrosDataLength = Packet->DataLength;
 	Character->SyncMask.SettingsInfo = true;
-
 	return;
 
 error:
