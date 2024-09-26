@@ -6,12 +6,15 @@
 
 EXTERN_C_BEGIN
 
-typedef Void (*IPCProcedureCallback)(
+typedef Void(*IPCProcedureCallback)(
     ServerRef Server,
     ServerContextRef Context,
     IPCSocketRef Socket,
     IPCSocketConnectionRef Connection,
-    IPCNodeContextRef ConnectionContext,
+    SocketConnectionRef ClientConnection,
+    ClientContextRef Client,
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
     Void* Packet
 );
 
@@ -22,17 +25,18 @@ Void IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(       \
     ServerContextRef Context,                           \
     IPCSocketRef Socket,                                \
     IPCSocketConnectionRef Connection,                  \
-    IPCNodeContextRef ConnectionContext,                \
+    SocketConnectionRef ClientConnection,               \
+    ClientContextRef Client,                            \
     IPC_ ## __NAMESPACE__ ## _DATA_ ## __NAME__* Packet \
 )
 #endif
 
-#define IPC_A2D_COMMAND(__NAME__) \
-IPC_PROCEDURE_BINDING(A2D, __NAME__);
+#define IPC_W2A_COMMAND(__NAME__) \
+IPC_PROCEDURE_BINDING(W2A, __NAME__);
 #include "IPCCommands.h"
 
-#define IPC_W2D_COMMAND(__NAME__) \
-IPC_PROCEDURE_BINDING(W2D, __NAME__);
+#define IPC_D2A_COMMAND(__NAME__) \
+IPC_PROCEDURE_BINDING(D2A, __NAME__);
 #include "IPCCommands.h"
 
 EXTERN_C_END

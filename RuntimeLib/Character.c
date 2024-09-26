@@ -375,6 +375,7 @@ Void RTCharacterInitializeAttributes(
 	memset(Character->Attributes.Values, 0, sizeof(Character->Attributes.Values));
 
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED] = RUNTIME_MOVEMENT_SPEED_BASE;
+	Character->Attributes.Seed = GetTickCount();
 
 	RTCharacterInitializeConstantAttributes(Runtime, Character);
     RTCharacterInitializeBattleStyleLevel(Runtime, Character);
@@ -933,14 +934,14 @@ Void RTCharacterAddExp(
 			Notification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_LEVEL;
 			Notification->Level = CurrentLevel + Index + 1;
 
-			RTDataLevelRewardRef LevelReward = RTRuntimeDataLevelRewardGet(Runtime->Context, CurrentLevel + Index + 1);
-			if (LevelReward) {
-				Character->Data.StyleInfo.MapsMask |= LevelReward->MapCode;
-				Character->Data.StyleInfo.WarpMask |= LevelReward->WarpCode;
+			RTDataMapCodeRef MapCode = RTRuntimeDataMapCodeGet(Runtime->Context, CurrentLevel + Index + 1);
+			if (MapCode) {
+				Character->Data.StyleInfo.MapsMask |= 1 << (MapCode->WorldID - 1);
+				Character->Data.StyleInfo.WarpMask |= 1 << (MapCode->WorldID - 1);
 				Character->SyncMask.StyleInfo = true;
 
-				Notification->MapCode = LevelReward->MapCode;
-				Notification->WarpCode = LevelReward->WarpCode;
+				Notification->MapCode = 1 << (MapCode->WorldID - 1);
+				Notification->WarpCode = 1 << (MapCode->WorldID - 1);
 			}
 
 			RTNotificationDispatchToCharacter(Notification, Character);

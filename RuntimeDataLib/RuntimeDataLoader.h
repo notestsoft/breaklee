@@ -165,4 +165,15 @@ RTDataShopItemRef RTRuntimeDataShopItemGet(
 	Int32 SlotIndex
 );
 
+RTDataMarketCategoryMainGroupRef RTRuntimeDataMarketCategoryMainGroupGetByCategory2(
+	RTRuntimeDataContextRef Context,
+	Int32 Category2
+);
+
+RTDataMarketListItemRef RTRuntimeDataMarketListItemGet(
+	RTRuntimeDataContextRef Context,
+	UInt64 ItemID,
+	UInt64 ItemOptions
+);
+
 EXTERN_C_END

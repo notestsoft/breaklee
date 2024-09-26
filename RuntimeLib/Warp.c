@@ -252,6 +252,9 @@ Bool RTRuntimeWarpCharacter(
             else if (!IsCharacterAlive) {
                 WarpNpcID = QuestDungeonData->DeadWarpID;
             }
+            else {
+                RTDungeonFail(World);
+            }
 
             if (!IsCharacterAlive) {
                 RTCharacterSetHP(Runtime, Character, Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX], false);

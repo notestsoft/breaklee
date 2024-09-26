@@ -59,6 +59,7 @@ CONFIG_PARAMETER(Bool, IsNationEnabled, "Environment.IsNationEnabled", 0)
 CONFIG_PARAMETER(Int32, FieldBossRaidScheduleWeekCount, "Environment.FieldBossRaidScheduleWeekCount", 12)
 CONFIG_PARAMETER(Bool, IsSkillRankUpLimitEnabled, "Environment.IsSkillRankUpLimitEnabled", 0)
 CONFIG_PARAMETER(Bool, IsCostumeWarehouseEnabled, "Environment.IsCostumeWarehouseEnabled", 1)
+CONFIG_PARAMETER(UInt64, AuctionExpirationTime, "Environment.AuctionExpirationTime", 604800)
 CONFIG_END(Environment)
 
 CONFIG_BEGIN(ChatSvr)

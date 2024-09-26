@@ -22,6 +22,9 @@ Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                    \
     );                                                                  \
 }
 
+#define IPC_A2D_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(A2D, __NAME__)
+#include "IPCCommands.h"
+
 #define IPC_W2D_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(W2D, __NAME__)
 #include "IPCCommands.h"
 
@@ -87,10 +90,13 @@ Int32 main(Int32 argc, CString* argv) {
 
     ServerLoadMigrationData(Config, &ServerContext);
 
+#define IPC_A2D_COMMAND(__NAME__) \
+    IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_A2D_ ## __NAME__, &SERVER_IPC_A2D_PROC_ ## __NAME__);
+#include "IPCCommands.h"
+
 #define IPC_W2D_COMMAND(__NAME__) \
     IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_W2D_ ## __NAME__, &SERVER_IPC_W2D_PROC_ ## __NAME__);
 #include "IPCCommands.h"
-
 
     ServerRun(Server);
     ServerDestroy(Server);

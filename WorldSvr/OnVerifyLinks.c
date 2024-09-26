@@ -213,6 +213,15 @@ IPC_PROCEDURE_BINDING(W2W, RESPONSE_VERIFY_LINKS) {
 CLIENT_PROCEDURE_BINDING(OPEN_AUCTION_HOUSE) {
 	if (!Character) goto error;
 
+	IPC_W2A_DATA_VERIFY_LINKS* Notification = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2A, VERIFY_LINKS);
+	Notification->Header.SourceConnectionID = Connection->ID;
+	Notification->Header.Source = Server->IPCSocket->NodeID;
+	Notification->Header.Target.Group = Server->IPCSocket->NodeID.Group;
+	Notification->Header.Target.Type = IPC_TYPE_AUCTION;
+	Notification->AccountID = Client->AccountID;
+	Notification->CharacterID = Client->CharacterDatabaseID;
+	Notification->CharacterIndex = Client->CharacterIndex;
+	IPCSocketUnicast(Server->IPCSocket, Notification);
 	return;
 
 error:
@@ -222,13 +231,25 @@ error:
 CLIENT_PROCEDURE_BINDING(CLOSE_AUCTION_HOUSE) {
 	if (!Character) goto error;
 
-	// TODO: Send a request to auction server and only close if everything is settled and items do not get deleted by accident
-
-	S2C_DATA_CLOSE_AUCTION_HOUSE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CLOSE_AUCTION_HOUSE);
-	Response->Result = 1;
-	SocketSend(Socket, Connection, Response);
+	IPC_W2A_DATA_DISCONNECT_CLIENT* Notification = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2A, DISCONNECT_CLIENT);
+	Notification->Header.SourceConnectionID = Connection->ID;
+	Notification->Header.Source = Server->IPCSocket->NodeID;
+	Notification->Header.Target.Group = Server->IPCSocket->NodeID.Group;
+	Notification->Header.Target.Type = IPC_TYPE_AUCTION;
+	Notification->AccountID = Client->AccountID;
+	Notification->CharacterID = Client->CharacterDatabaseID;
+	Notification->CharacterIndex = Client->CharacterIndex;
+	IPCSocketUnicast(Server->IPCSocket, Notification);
 	return;
 
 error:
 	SocketDisconnect(Socket, Connection);
+}
+
+IPC_PROCEDURE_BINDING(A2W, DISCONNECT_CLIENT) {
+	if (!ClientConnection) return;
+
+	S2C_DATA_CLOSE_AUCTION_HOUSE* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, CLOSE_AUCTION_HOUSE);
+	Response->Result = Packet->Result;
+	SocketSend(Context->ClientSocket, ClientConnection, Response);
 }

@@ -24,6 +24,7 @@ CHARACTER_DATA_PROTOCOL(struct _RTCharacterInfo, Info)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterStyleInfo, StyleInfo)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterEquipmentData, EquipmentInfo)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterInventoryInfo, InventoryInfo)
+
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterSkillSlotInfo, SkillSlotInfo)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterQuickSlotInfo, QuickSlotInfo)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterAbilityInfo, AbilityInfo)

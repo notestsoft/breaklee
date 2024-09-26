@@ -2,8 +2,16 @@
 #define IPC_A2W_COMMAND(__NAME__)
 #endif
 
+#ifndef IPC_A2D_COMMAND
+#define IPC_A2D_COMMAND(__NAME__)
+#endif
+
 #ifndef IPC_C2W_COMMAND
 #define IPC_C2W_COMMAND(__NAME__)
+#endif
+
+#ifndef IPC_D2A_COMMAND
+#define IPC_D2A_COMMAND(__NAME__)
 #endif
 
 #ifndef IPC_D2W_COMMAND
@@ -71,7 +79,9 @@ IPC_ ## __NAMESPACE__ ## _COMMAND(__NAME__)
 #include "IPCProtocolDefinition.h"
 
 #undef IPC_A2W_COMMAND
+#undef IPC_A2D_COMMAND
 #undef IPC_C2W_COMMAND
+#undef IPC_D2A_COMMAND
 #undef IPC_D2W_COMMAND
 #undef IPC_L2W_COMMAND
 #undef IPC_L2M_COMMAND

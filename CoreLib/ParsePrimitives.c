@@ -398,7 +398,7 @@ Int32 ParseAttributeInt32ArrayCounted(
 
     Int32 Index = 0;
     Char* Cursor = Data->Data;
-    while (Cursor < Data->Data + Data->Length && Index < Count) {
+    while (Cursor < Data->Data + Data->Length) {
         if (*Cursor == '\0') break;
 
         if (*Cursor == Separator) {
@@ -406,6 +406,7 @@ Int32 ParseAttributeInt32ArrayCounted(
             continue;
         }
 
+        assert(Index < Count);
         Char* Next;
         Result[Index] = (Int32)strtoll(Cursor, &Next, 10);
         Index += 1;
@@ -439,7 +440,7 @@ Bool ParseAttributeUInt32Array(
 
     Int32 Index = 0;
     Char* Cursor = Data->Data;
-    while (Cursor < Data->Data + Data->Length && Index < Count) {
+    while (Cursor < Data->Data + Data->Length) {
         if (*Cursor == '\0') break;
 
         if (*Cursor == ':') {
@@ -447,6 +448,7 @@ Bool ParseAttributeUInt32Array(
             continue;
         }
 
+        assert(Index < Count);
         Char* Next = NULL;
         Result[Index] = (UInt32)strtoull(Cursor, &Next, 10);
         Index += 1;
@@ -481,7 +483,7 @@ Int32 ParseAttributeUInt64ArrayCounted(
 
     Int32 Index = 0;
     Char* Cursor = Data->Data;
-    while (Cursor < Data->Data + Data->Length && Index < Count) {
+    while (Cursor < Data->Data + Data->Length) {
         if (*Cursor == '\0') break;
 
         if (*Cursor == Separator) {
@@ -489,6 +491,7 @@ Int32 ParseAttributeUInt64ArrayCounted(
             continue;
         }
 
+        assert(Index < Count);
         Char* Next;
         Result[Index] = (UInt64)strtoull(Cursor, &Next, 10);
         Index += 1;
@@ -526,7 +529,7 @@ Int32 ParseAttributeInt32Array2D(
     Int64 Index = 0;
     Int32 GroupIndex = 0;
     Char* Cursor = Data->Data;
-    while (Cursor < Data->Data + Data->Length && Index < Count && GroupIndex < GroupCount) {
+    while (Cursor < Data->Data + Data->Length) {
         if (*Cursor == '\0') break;
 
         if (*Cursor == Separator) {
@@ -542,6 +545,7 @@ Int32 ParseAttributeInt32Array2D(
             continue;
         }
 
+        assert(GroupIndex * Count + Index < Count * GroupCount);
         Char* Next;
         Result[GroupIndex * Count + Index] = (Int32)strtoll(Cursor, &Next, 10);
         Cursor = Next;

@@ -1971,6 +1971,19 @@ CLIENT_PROTOCOL(S2C, UPGRADE_ITEM_LEVEL, DEFAULT, 951,
     UInt32 RemainingCoreCount;
 )
 
+CLIENT_PROTOCOL(C2S, AUCTION_HOUSE_REGISTER_ITEM, DEFAULT, 970,
+    UInt8 SlotIndex;
+    UInt16 ItemCount;
+    UInt8 Unknown1;
+    UInt64 ItemPrice;
+    UInt16 InventorySlotIndex[0];
+)
+
+CLIENT_PROTOCOL(S2C, AUCTION_HOUSE_REGISTER_ITEM, DEFAULT, 970,
+    UInt8 Result;
+    Timestamp ExpirationDate;
+)
+
 CLIENT_PROTOCOL(C2S, SELECT_CHARACTER_IN_GAME, DEFAULT, 985,
 )
 

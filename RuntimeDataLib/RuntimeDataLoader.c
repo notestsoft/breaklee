@@ -1043,3 +1043,31 @@ RTDataShopItemRef RTRuntimeDataShopItemGet(
 
     return NULL;
 }
+
+RTDataMarketCategoryMainGroupRef RTRuntimeDataMarketCategoryMainGroupGetByCategory2(
+    RTRuntimeDataContextRef Context,
+    Int32 Category2
+) {
+    for (Int32 GroupIndex = 0; GroupIndex < Context->MarketCategoryMainGroupCount; GroupIndex += 1) {
+        RTDataMarketCategoryMainGroupRef Group = &Context->MarketCategoryMainGroupList[GroupIndex];
+        for (Int32 SubGroupIndex = 0; SubGroupIndex < Group->MarketCategorySubGroupCount; SubGroupIndex += 1) {
+            RTDataMarketCategorySubGroupRef SubGroup = &Group->MarketCategorySubGroupList[SubGroupIndex];
+            if (SubGroup->Category2 == Category2) return Group;
+        }
+    }
+
+    return NULL;
+}
+
+RTDataMarketListItemRef RTRuntimeDataMarketListItemGet(
+    RTRuntimeDataContextRef Context,
+    UInt64 ItemID,
+    UInt64 ItemOptions
+) {
+    for (Int32 Index = 0; Index < Context->MarketListItemCount; Index += 1) {
+        RTDataMarketListItemRef Item = &Context->MarketListItemList[Index];
+        if (Item->ItemID == ItemID && Item->ItemOptions == ItemOptions) return Item;
+    }
+
+    return NULL;
+}

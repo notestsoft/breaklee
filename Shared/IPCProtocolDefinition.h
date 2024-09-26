@@ -560,6 +560,116 @@ IPC_PROTOCOL(M2N, CLIENT_DISCONNECT,
 	Bool IsOnline;
 )
 
+IPC_PROTOCOL(W2A, VERIFY_LINKS,
+	Int32 AccountID;
+	Int32 CharacterID;
+	UInt32 CharacterIndex;
+)
+
+IPC_PROTOCOL(A2D, GET_BOOKMARK,
+	Int32 AccountID;
+)
+
+IPC_PROTOCOL_STRUCT(IPC_DATA_GET_BOOKMARK_SLOT,
+	UInt8 SlotIndex;
+	UInt16 CategoryIndex[5];
+	UInt8 SubCategoryIndex[2];
+	Char Description[MAX_AUCTION_BOOKMARK_DESCRIPTION_LENGTH];
+)
+
+IPC_PROTOCOL(D2A, GET_BOOKMARK,
+	UInt8 Result;
+	UInt8 Count;
+	IPC_DATA_GET_BOOKMARK_SLOT Slots[0];
+)
+
+IPC_PROTOCOL(A2D, SET_BOOKMARK,
+	Int32 AccountID;
+	IPC_DATA_GET_BOOKMARK_SLOT Bookmark;
+)
+
+IPC_PROTOCOL(D2A, SET_BOOKMARK,
+	UInt8 Result;
+)
+
+IPC_PROTOCOL(A2D, DELETE_BOOKMARK,
+	Int32 AccountID;
+	UInt8 SlotIndex;
+)
+
+IPC_PROTOCOL(D2A, DELETE_BOOKMARK,
+	UInt8 Result;
+)
+
+IPC_PROTOCOL(A2D, GET_ITEM_LIST,
+	Int32 AccountID;
+)
+
+IPC_PROTOCOL_STRUCT(IPC_DATA_GET_ITEM_LIST_INDEX,
+	UInt8 SlotIndex;
+	UInt64 ItemID;
+	UInt64 ItemOptions;
+	UInt64 ItemPrice;
+	Int32 ItemCount;
+	Int32 SoldItemCount;
+	Timestamp ExpirationDate;
+	Timestamp RegistrationDate;
+)
+
+IPC_PROTOCOL(D2A, GET_ITEM_LIST,
+	UInt8 Result;
+	UInt8 ItemCount;
+	IPC_DATA_GET_ITEM_LIST_INDEX Items[0];
+)
+
+IPC_PROTOCOL(W2A, DISCONNECT_CLIENT,
+	Int32 AccountID;
+	Int32 CharacterID;
+	UInt32 CharacterIndex;
+)
+
+IPC_PROTOCOL(A2W, DISCONNECT_CLIENT,
+	UInt8 Result;
+)
+
+IPC_PROTOCOL(A2D, GET_ITEM_AVERAGE_PRICE,
+	UInt64 ItemID;
+	UInt64 ItemOptions;
+)
+
+IPC_PROTOCOL(D2A, GET_ITEM_AVERAGE_PRICE,
+	UInt64 Price;
+)
+
+IPC_PROTOCOL(A2D, GET_ITEM_MINIMUM_PRICE,
+	UInt64 ItemID;
+	UInt64 ItemOptions;
+)
+
+IPC_PROTOCOL(D2A, GET_ITEM_MINIMUM_PRICE,
+	UInt64 Price;
+)
+
+IPC_PROTOCOL(W2D, AUCTION_REGISTER_ITEM,
+	Int32 AccountID;
+	Int32 CharacterID;
+	UInt8 SlotIndex;
+	UInt16 ItemCount;
+	UInt64 ItemPrice;
+	UInt16 CategoryIndex[5];
+	UInt8 SubCategoryIndex[2];
+	Timestamp ExpirationTime;
+	struct _RTInventoryInfo InventoryInfo;
+	UInt8 Data[0];
+	// RTItemSlotRef MarketInventorySlots[];
+	// RTItemSlotRef InventorySlots[];
+)
+
+IPC_PROTOCOL(D2W, AUCTION_REGISTER_ITEM,
+	UInt8 Result;
+	Timestamp ExpirationDate;
+)
+
 #undef IPC_PROTOCOL_ENUM
 #undef IPC_PROTOCOL_STRUCT
 #undef IPC_PROTOCOL

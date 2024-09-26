@@ -151,7 +151,7 @@
 #define RUNTIME_WORLD_MAX_NPC_COUNT				                16
 
 #define RUNTIME_DUNGEON_MAX_PATTERN_PART_COUNT	                16
-#define RUNTIME_DUNGEON_TRIGGER_MAX_MOB_COUNT                   4
+#define RUNTIME_DUNGEON_TRIGGER_MAX_MOB_COUNT                   64
 
 #define RUNTIME_MAX_SETTINGS_DATA_LENGTH						1024
 
