@@ -375,7 +375,7 @@ Void RTCharacterInitializeAttributes(
 	memset(Character->Attributes.Values, 0, sizeof(Character->Attributes.Values));
 
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED] = RUNTIME_MOVEMENT_SPEED_BASE;
-	Character->Attributes.Seed = GetTickCount();
+	Character->Attributes.Seed = PlatformGetTickCount();
 
 	RTCharacterInitializeConstantAttributes(Runtime, Character);
     RTCharacterInitializeBattleStyleLevel(Runtime, Character);
