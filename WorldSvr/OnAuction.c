@@ -39,6 +39,7 @@ CLIENT_PROCEDURE_BINDING(AUCTION_HOUSE_REGISTER_ITEM) {
     Request->Header.Target.Type = IPC_TYPE_MASTERDB;
     Request->AccountID = Client->AccountID;
     Request->CharacterID = Client->CharacterDatabaseID;
+    Request->CharacterIndex = Client->CharacterIndex;
     Request->SlotIndex = Packet->SlotIndex;
     Request->ItemCount = Packet->ItemCount;
     Request->ItemPrice = Packet->ItemPrice;
@@ -79,4 +80,11 @@ IPC_PROCEDURE_BINDING(D2W, AUCTION_REGISTER_ITEM) {
     Response->Result = Packet->Result;
     Response->ExpirationDate = Packet->ExpirationDate;
     SocketSend(Context->ClientSocket, ClientConnection, Response);
+}
+
+CLIENT_PROCEDURE_BINDING(AUCTION_HOUSE_UPDATE_ITEM) {
+}
+
+CLIENT_PROCEDURE_BINDING(AUCTION_HOUSE_UNREGISTER_ITEM) {
+
 }

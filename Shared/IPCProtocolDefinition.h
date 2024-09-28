@@ -650,9 +650,34 @@ IPC_PROTOCOL(D2A, GET_ITEM_MINIMUM_PRICE,
 	UInt64 Price;
 )
 
+IPC_PROTOCOL(A2D, SEARCH,
+	UInt8 CategoryIndex2;
+	UInt16 CategoryIndex3;
+	UInt8 CategoryIndex4;
+	UInt16 CategoryIndex5;
+	UInt16 SortOrder;
+)
+
+IPC_PROTOCOL_STRUCT(IPC_DATA_SEARCH_RESULT_SLOT,
+	UInt64 ItemID;
+	UInt64 ItemOptions;
+	UInt32 ItemOptionExtended;
+	Int16 StackSize;
+	UInt8 PriceType;
+	Int64 Price;
+	UInt32 CharacterIndex;
+	Char CharacterName[MAX_CHARACTER_NAME_LENGTH];
+)
+
+IPC_PROTOCOL(D2A, SEARCH,
+	Int16 ResultCount;
+	IPC_DATA_SEARCH_RESULT_SLOT Results[0];
+)
+
 IPC_PROTOCOL(W2D, AUCTION_REGISTER_ITEM,
 	Int32 AccountID;
 	Int32 CharacterID;
+	UInt32 CharacterIndex;
 	UInt8 SlotIndex;
 	UInt16 ItemCount;
 	UInt64 ItemPrice;

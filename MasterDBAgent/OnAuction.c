@@ -98,7 +98,7 @@ IPC_PROCEDURE_BINDING(A2D, GET_ITEM_LIST) {
 		DB_INPUT_INT32(Packet->AccountID),
 		DB_PARAM_END
 	);
-	Response->Result = (Handle) ? 1 : 0;
+	Response->Result = (Handle) ? 0 : 1;
 
 	IPC_DATA_GET_ITEM_LIST_INDEX ItemSlot = { 0 };
 	while (DatabaseHandleReadNext(
@@ -166,6 +166,7 @@ IPC_PROCEDURE_BINDING(W2D, AUCTION_REGISTER_ITEM) {
 	Response->Header.Source = Server->IPCSocket->NodeID;
 	Response->Header.Target = Packet->Header.Source;
 	Response->Header.TargetConnectionID = Packet->Header.SourceConnectionID;
+	Response->Result = 0;
 
 	UInt8* Memory = &Packet->Data[0];
 	ReadMemory(struct _RTItemSlot, MarketInventorySlots, Packet->ItemCount);
@@ -176,6 +177,7 @@ IPC_PROCEDURE_BINDING(W2D, AUCTION_REGISTER_ITEM) {
 		"InsertAuctionItem",
 		DB_INPUT_INT32(Packet->AccountID),
 		DB_INPUT_INT32(Packet->CharacterID),
+		DB_INPUT_UINT32(Packet->CharacterIndex),
 		DB_INPUT_UINT8(Packet->SlotIndex),
 		DB_INPUT_UINT64(MarketInventorySlots[0].Item.Serial),
 		DB_INPUT_UINT64(MarketInventorySlots[0].ItemOptions),
@@ -194,7 +196,44 @@ IPC_PROCEDURE_BINDING(W2D, AUCTION_REGISTER_ITEM) {
 		DB_OUTPUT_UINT64(Response->ExpirationDate),
 		DB_PARAM_END
 	)) {
-		Response->Result = 0;
+		Response->Result = 1;
+	}
+
+	IPCSocketUnicast(Socket, Response);
+}
+
+IPC_PROCEDURE_BINDING(A2D, SEARCH) {
+	IPC_D2A_DATA_SEARCH* Response = IPCPacketBufferInit(Connection->PacketBuffer, D2A, SEARCH);
+	Response->Header.Source = Server->IPCSocket->NodeID;
+	Response->Header.Target = Packet->Header.Source;
+	Response->Header.TargetConnectionID = Packet->Header.SourceConnectionID;
+
+	DatabaseHandleRef Handle = DatabaseCallProcedureFetch(
+		Context->Database,
+		"SearchAuctionItems",
+		DB_INPUT_UINT8(Packet->CategoryIndex2),
+		DB_INPUT_UINT16(Packet->CategoryIndex3),
+		DB_INPUT_UINT8(Packet->CategoryIndex4),
+		DB_INPUT_UINT16(Packet->CategoryIndex5),
+		DB_INPUT_UINT16(Packet->SortOrder),
+		DB_PARAM_END
+	);
+
+	IPC_DATA_SEARCH_RESULT_SLOT ItemSlot = { 0 };
+	while (DatabaseHandleReadNext(
+		Context->Database,
+		Handle,
+		DB_TYPE_UINT64, &ItemSlot.ItemID,
+		DB_TYPE_UINT64, &ItemSlot.ItemOptions,
+		DB_TYPE_UINT32, &ItemSlot.ItemOptionExtended,
+		DB_TYPE_INT16, &ItemSlot.StackSize,
+		DB_TYPE_UINT64, &ItemSlot.Price,
+		DB_TYPE_UINT32, &ItemSlot.CharacterIndex,
+		DB_TYPE_STRING, &ItemSlot.CharacterName[0], sizeof(ItemSlot.CharacterName),
+		DB_PARAM_END
+	)) {
+		IPCPacketBufferAppendCopy(Connection->PacketBuffer, &ItemSlot, sizeof(IPC_DATA_SEARCH_RESULT_SLOT));
+		Response->ResultCount += 1;
 	}
 
 	IPCSocketUnicast(Socket, Response);

@@ -85,6 +85,11 @@ CLIENT_PROTOCOL(C2S, DISCONNECT, DEFAULT, 104,
 )
 
 CLIENT_PROTOCOL(C2S, SEARCH, DEFAULT, 111,
+    UInt8 CategoryIndex2;
+    UInt16 CategoryIndex3;
+    UInt8 CategoryIndex4;
+    UInt16 CategoryIndex5;
+    UInt16 SortOrder;
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_SEARCH_RESULT_SLOT,
@@ -119,7 +124,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_GET_ITEM_LIST_INDEX,
     UInt64 ItemOptions;
     UInt32 Unknown1;
     UInt16 ItemCount;
-    UInt32 Unknown2;
+    UInt8 Unknown2;
     UInt64 ItemPrice;
     UInt16 SoldItemCount;
     UInt64 ExpirationDate;

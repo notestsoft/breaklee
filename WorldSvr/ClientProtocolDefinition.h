@@ -1984,6 +1984,31 @@ CLIENT_PROTOCOL(S2C, AUCTION_HOUSE_REGISTER_ITEM, DEFAULT, 970,
     Timestamp ExpirationDate;
 )
 
+CLIENT_PROTOCOL(C2S, AUCTION_HOUSE_UNREGISTER_ITEM, DEFAULT, 971,
+    UInt8 SlotIndex;
+    UInt16 InventorySlotCount;
+    UInt16 InventorySlotIndex[0];
+)
+
+CLIENT_PROTOCOL(S2C, AUCTION_HOUSE_UNREGISTER_ITEM, DEFAULT, 971,
+    UInt8 Result;
+)
+
+CLIENT_PROTOCOL(C2S, AUCTION_HOUSE_UPDATE_ITEM, DEFAULT, 973,
+    UInt8 SlotIndex;
+    UInt16 ItemCount;
+    UInt8 Unknown1;
+    UInt64 ItemPrice;
+    UInt8 ItemCountDecreased;
+    UInt16 InventorySlotCount;
+    UInt16 InventorySlotIndex[0];
+)
+
+CLIENT_PROTOCOL(S2C, AUCTION_HOUSE_UPDATE_ITEM, DEFAULT, 973,
+    UInt8 Result;
+    Timestamp ExpirationDate;
+)
+
 CLIENT_PROTOCOL(C2S, SELECT_CHARACTER_IN_GAME, DEFAULT, 985,
 )
 

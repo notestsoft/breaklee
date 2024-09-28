@@ -1,6 +1,7 @@
 CREATE PROCEDURE InsertAuctionItem(
     IN InAccountID INT,
     IN InCharacterID INT,
+    IN InCharacterIndex INT UNSIGNED,
     IN InSlotIndex TINYINT,
     IN InItemID BIGINT UNSIGNED,
     IN InItemOptions BIGINT UNSIGNED,
@@ -24,7 +25,7 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
-        SET OutResult = 0;
+        SET OutResult = 1;
     END;
 
     START TRANSACTION;
@@ -53,6 +54,7 @@ BEGIN
         Category3, 
         Category4, 
         Category5, 
+        CharacterIndex,
         CharacterName,
         ExpiresAt
     )
@@ -69,11 +71,12 @@ BEGIN
         InCategory3, 
         InCategory4, 
         InCategory5, 
+        InCharacterIndex,
         TempCharacterName,
         UNIX_TIMESTAMP() + InExpirationTime
     );
 
-    SET OutResult = 1;
+    SET OutResult = 0;
     SET OutExpiresAt = UNIX_TIMESTAMP() + InExpirationTime;
 
     COMMIT;
