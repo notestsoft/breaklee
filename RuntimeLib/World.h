@@ -80,7 +80,11 @@ struct _RTWorldContext {
     Timestamp DungeonTimeout;
     Timestamp NextItemUpdateTimestamp;
     Int32 PatternPartIndex;
+    Int32 TimerIndex;
+    Int32 TimerItemCount;
+    Timestamp TimerTimeout;
     MemoryPoolRef MobPool;
+    ArrayRef MobPatterns;
     MemoryPoolRef ItemPool;
     DictionaryRef EntityToMob;
     DictionaryRef EntityToItem;

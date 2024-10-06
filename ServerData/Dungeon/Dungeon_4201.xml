@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<Dungeon DungeonIndex="4201">
+<Dungeon DungeonIndex="4201" StartKillMobList="">
 	<TriggerGroup Index="1">
 		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="10" ActionGroupIndex="1"/>
 	</TriggerGroup>

@@ -17,6 +17,7 @@
 #include <RuntimeLib/Item.h>
 #include <RuntimeLib/Level.h>
 #include <RuntimeLib/Mob.h>
+#include <RuntimeLib/MobPattern.h>
 #include <RuntimeLib/NewbieSupport.h>
 #include <RuntimeLib/NotificationManager.h>
 #include <RuntimeLib/NotificationProtocol.h>

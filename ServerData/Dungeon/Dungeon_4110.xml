@@ -1,430 +1,427 @@
 <?xml version="1.0" ?>
-<Dungeon DungeonIndex="4110">
+<Dungeon DungeonIndex="4110" StartKillMobList="">
 	<TriggerGroup Index="1">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="2" ActionGroupIndex="16"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="0,1,2,3,4,5,6" NpcIndex="-1" ActionGroupIndex="1"/>
 	</TriggerGroup>
 	<TriggerGroup Index="2">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="1" ActionGroupIndex="18"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="0,1,2,3,4,5,6" NpcIndex="-1" ActionGroupIndex="2"/>
 	</TriggerGroup>
 	<TriggerGroup Index="3">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="4" ActionGroupIndex="21"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="0,1,2,3,4,5,6" NpcIndex="-1" ActionGroupIndex="3"/>
 	</TriggerGroup>
 	<TriggerGroup Index="4">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="5" ActionGroupIndex="22"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="0,1,2,3,4,5,6" NpcIndex="-1" ActionGroupIndex="4"/>
 	</TriggerGroup>
 	<TriggerGroup Index="5">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="7" ActionGroupIndex="24"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="0,1,2,3,4,5,6" NpcIndex="-1" ActionGroupIndex="5"/>
 	</TriggerGroup>
 	<TriggerGroup Index="6">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="12" ActionGroupIndex="29"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="0,1,2,3,4,5,6" NpcIndex="-1" ActionGroupIndex="6"/>
 	</TriggerGroup>
 	<TriggerGroup Index="7">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="8" ActionGroupIndex="32"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="0,1,2,3,4,5,6" NpcIndex="-1" ActionGroupIndex="7"/>
 	</TriggerGroup>
 	<TriggerGroup Index="8">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="13" ActionGroupIndex="35"/>
-	</TriggerGroup>
-	<TriggerGroup Index="9">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="18" ActionGroupIndex="50"/>
-	</TriggerGroup>
-	<TriggerGroup Index="10">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="22" ActionGroupIndex="53"/>
-	</TriggerGroup>
-	<TriggerGroup Index="11">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="19" ActionGroupIndex="54"/>
-	</TriggerGroup>
-	<TriggerGroup Index="12">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="25" ActionGroupIndex="56"/>
-	</TriggerGroup>
-	<TriggerGroup Index="13">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="17" ActionGroupIndex="57"/>
-	</TriggerGroup>
-	<TriggerGroup Index="14">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="27" ActionGroupIndex="64"/>
-	</TriggerGroup>
-	<TriggerGroup Index="15">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="28" ActionGroupIndex="68"/>
-	</TriggerGroup>
-	<TriggerGroup Index="16">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="30" ActionGroupIndex="72"/>
-	</TriggerGroup>
-	<TriggerGroup Index="17">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="26" ActionGroupIndex="76"/>
-	</TriggerGroup>
-	<TriggerGroup Index="18">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="31" ActionGroupIndex="80"/>
-	</TriggerGroup>
-	<TriggerGroup Index="19">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="29" ActionGroupIndex="84"/>
-	</TriggerGroup>
-	<TriggerGroup Index="20">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="32" ActionGroupIndex="88"/>
-	</TriggerGroup>
-	<TriggerGroup Index="21">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="39" ActionGroupIndex="94"/>
-	</TriggerGroup>
-	<TriggerGroup Index="22">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="34" ActionGroupIndex="101"/>
-	</TriggerGroup>
-	<TriggerGroup Index="23">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="44" ActionGroupIndex="105"/>
-	</TriggerGroup>
-	<TriggerGroup Index="24">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="45" ActionGroupIndex="106"/>
-	</TriggerGroup>
-	<TriggerGroup Index="25">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="47" ActionGroupIndex="108"/>
-	</TriggerGroup>
-	<TriggerGroup Index="26">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="73" ActionGroupIndex="128"/>
-	</TriggerGroup>
-	<TriggerGroup Index="27">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="49" ActionGroupIndex="130"/>
-	</TriggerGroup>
-	<TriggerGroup Index="28">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="77" ActionGroupIndex="132"/>
-	</TriggerGroup>
-	<TriggerGroup Index="29">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="75" ActionGroupIndex="138"/>
-	</TriggerGroup>
-	<TriggerGroup Index="30">
-		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="81" ActionGroupIndex="139"/>
-	</TriggerGroup>
-	<TriggerGroup Index="31">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="1"/>
-	</TriggerGroup>
-	<TriggerGroup Index="32">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="2"/>
-	</TriggerGroup>
-	<TriggerGroup Index="33">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="3"/>
-	</TriggerGroup>
-	<TriggerGroup Index="34">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="4"/>
-	</TriggerGroup>
-	<TriggerGroup Index="35">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="5"/>
-	</TriggerGroup>
-	<TriggerGroup Index="36">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="6"/>
-	</TriggerGroup>
-	<TriggerGroup Index="37">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="7"/>
-	</TriggerGroup>
-	<TriggerGroup Index="38">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="8"/>
 	</TriggerGroup>
-	<TriggerGroup Index="39">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="9"/>
+	<TriggerGroup Index="9">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="10,11,12,13,14,9" NpcIndex="-1" ActionGroupIndex="15"/>
 	</TriggerGroup>
-	<TriggerGroup Index="40">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="10"/>
+	<TriggerGroup Index="10">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="10,11,12,13,14,9" NpcIndex="-1" ActionGroupIndex="16"/>
 	</TriggerGroup>
-	<TriggerGroup Index="41">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="11"/>
+	<TriggerGroup Index="11">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="10,11,12,13,14,9" NpcIndex="-1" ActionGroupIndex="17"/>
 	</TriggerGroup>
-	<TriggerGroup Index="42">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="12"/>
+	<TriggerGroup Index="12">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="10,11,12,13,14,9" NpcIndex="-1" ActionGroupIndex="18"/>
 	</TriggerGroup>
-	<TriggerGroup Index="43">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="13"/>
+	<TriggerGroup Index="13">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="10,11,12,13,14,9" NpcIndex="-1" ActionGroupIndex="19"/>
 	</TriggerGroup>
-	<TriggerGroup Index="44">
+	<TriggerGroup Index="14">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="10,11,12,13,14,9" NpcIndex="-1" ActionGroupIndex="20"/>
+	</TriggerGroup>
+	<TriggerGroup Index="15">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="14"/>
 	</TriggerGroup>
-	<TriggerGroup Index="45">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="15"/>
+	<TriggerGroup Index="16">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="21"/>
 	</TriggerGroup>
-	<TriggerGroup Index="46">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="20"/>
+	<TriggerGroup Index="17">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="23,24,25,26,27" NpcIndex="-1" ActionGroupIndex="9"/>
 	</TriggerGroup>
-	<TriggerGroup Index="47">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="28"/>
+	<TriggerGroup Index="18">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="23,24,25,26,27" NpcIndex="-1" ActionGroupIndex="10"/>
 	</TriggerGroup>
-	<TriggerGroup Index="48">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="17"/>
+	<TriggerGroup Index="19">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="23,24,25,26,27" NpcIndex="-1" ActionGroupIndex="11"/>
 	</TriggerGroup>
-	<TriggerGroup Index="49">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="19"/>
+	<TriggerGroup Index="20">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="23,24,25,26,27" NpcIndex="-1" ActionGroupIndex="12"/>
 	</TriggerGroup>
-	<TriggerGroup Index="50">
+	<TriggerGroup Index="21">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="23,24,25,26,27" NpcIndex="-1" ActionGroupIndex="13"/>
+	</TriggerGroup>
+	<TriggerGroup Index="22">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="22"/>
+	</TriggerGroup>
+	<TriggerGroup Index="23">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="23"/>
 	</TriggerGroup>
-	<TriggerGroup Index="51">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="25"/>
+	<TriggerGroup Index="24">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="24"/>
 	</TriggerGroup>
-	<TriggerGroup Index="52">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="26"/>
+	<TriggerGroup Index="25">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="25"/>
 	</TriggerGroup>
-	<TriggerGroup Index="53">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="27"/>
+	<TriggerGroup Index="26">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="26"/>
 	</TriggerGroup>
-	<TriggerGroup Index="54">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="33"/>
+	<TriggerGroup Index="27">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="27"/>
 	</TriggerGroup>
-	<TriggerGroup Index="55">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="30"/>
+	<TriggerGroup Index="28">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="28"/>
 	</TriggerGroup>
-	<TriggerGroup Index="56">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="34"/>
+	<TriggerGroup Index="29">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="29"/>
 	</TriggerGroup>
-	<TriggerGroup Index="57">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="36"/>
+	<TriggerGroup Index="30">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="30"/>
 	</TriggerGroup>
-	<TriggerGroup Index="58">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="37"/>
+	<TriggerGroup Index="31">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="31"/>
 	</TriggerGroup>
-	<TriggerGroup Index="59">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="46"/>
+	<TriggerGroup Index="32">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="32"/>
 	</TriggerGroup>
-	<TriggerGroup Index="60">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="38"/>
+	<TriggerGroup Index="33">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="33"/>
 	</TriggerGroup>
-	<TriggerGroup Index="61">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="39"/>
+	<TriggerGroup Index="34">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="34"/>
 	</TriggerGroup>
-	<TriggerGroup Index="62">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="40"/>
+	<TriggerGroup Index="35">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="35"/>
 	</TriggerGroup>
-	<TriggerGroup Index="63">
+	<TriggerGroup Index="36">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="36"/>
+	</TriggerGroup>
+	<TriggerGroup Index="37">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="37"/>
+	</TriggerGroup>
+	<TriggerGroup Index="38">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="38"/>
+	</TriggerGroup>
+	<TriggerGroup Index="39">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="39"/>
+	</TriggerGroup>
+	<TriggerGroup Index="40">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="40"/>
+	</TriggerGroup>
+	<TriggerGroup Index="41">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="41"/>
 	</TriggerGroup>
-	<TriggerGroup Index="64">
-		<Trigger Type="1" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="42"/>
+	<TriggerGroup Index="42">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="43"/>
 	</TriggerGroup>
-	<TriggerGroup Index="65">
-		<Trigger Type="1" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="43"/>
+	<TriggerGroup Index="43">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="42"/>
 	</TriggerGroup>
-	<TriggerGroup Index="66">
-		<Trigger Type="1" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="44"/>
+	<TriggerGroup Index="44">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="67,68,69,70,71" NpcIndex="-1" ActionGroupIndex="44"/>
 	</TriggerGroup>
-	<TriggerGroup Index="67">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="45"/>
+	<TriggerGroup Index="45">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="67,68,69,70,71" NpcIndex="-1" ActionGroupIndex="45"/>
 	</TriggerGroup>
-	<TriggerGroup Index="68">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="47"/>
+	<TriggerGroup Index="46">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="67,68,69,70,71" NpcIndex="-1" ActionGroupIndex="46"/>
 	</TriggerGroup>
-	<TriggerGroup Index="69">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="48"/>
+	<TriggerGroup Index="47">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="67,68,69,70,71" NpcIndex="-1" ActionGroupIndex="47"/>
 	</TriggerGroup>
-	<TriggerGroup Index="70">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="49"/>
+	<TriggerGroup Index="48">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="67,68,69,70,71" NpcIndex="-1" ActionGroupIndex="48"/>
 	</TriggerGroup>
-	<TriggerGroup Index="71">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="142"/>
-	</TriggerGroup>
-	<TriggerGroup Index="72">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="52"/>
-	</TriggerGroup>
-	<TriggerGroup Index="73">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="58"/>
-	</TriggerGroup>
-	<TriggerGroup Index="74">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="59"/>
-	</TriggerGroup>
-	<TriggerGroup Index="75">
+	<TriggerGroup Index="49">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="51"/>
 	</TriggerGroup>
-	<TriggerGroup Index="76">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="60"/>
+	<TriggerGroup Index="50">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="52"/>
 	</TriggerGroup>
-	<TriggerGroup Index="77">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="55"/>
+	<TriggerGroup Index="51">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="53"/>
 	</TriggerGroup>
-	<TriggerGroup Index="78">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="61"/>
+	<TriggerGroup Index="52">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="54"/>
 	</TriggerGroup>
-	<TriggerGroup Index="79">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="62"/>
+	<TriggerGroup Index="53">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="55"/>
 	</TriggerGroup>
-	<TriggerGroup Index="80">
+	<TriggerGroup Index="54">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="56"/>
+	</TriggerGroup>
+	<TriggerGroup Index="55">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="57"/>
+	</TriggerGroup>
+	<TriggerGroup Index="56">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="58"/>
+	</TriggerGroup>
+	<TriggerGroup Index="57">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="59"/>
+	</TriggerGroup>
+	<TriggerGroup Index="58">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="60"/>
+	</TriggerGroup>
+	<TriggerGroup Index="59">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="61"/>
+	</TriggerGroup>
+	<TriggerGroup Index="60">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="62"/>
+	</TriggerGroup>
+	<TriggerGroup Index="61">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="50"/>
+	</TriggerGroup>
+	<TriggerGroup Index="62">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="82"/>
+	</TriggerGroup>
+	<TriggerGroup Index="63">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="49"/>
+	</TriggerGroup>
+	<TriggerGroup Index="64">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="63"/>
 	</TriggerGroup>
-	<TriggerGroup Index="81">
+	<TriggerGroup Index="65">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="64"/>
+	</TriggerGroup>
+	<TriggerGroup Index="66">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="65"/>
 	</TriggerGroup>
-	<TriggerGroup Index="82">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="69"/>
+	<TriggerGroup Index="67">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="66"/>
 	</TriggerGroup>
-	<TriggerGroup Index="83">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="73"/>
+	<TriggerGroup Index="68">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="67"/>
 	</TriggerGroup>
-	<TriggerGroup Index="84">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="77"/>
+	<TriggerGroup Index="69">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="68"/>
 	</TriggerGroup>
-	<TriggerGroup Index="85">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="81"/>
+	<TriggerGroup Index="70">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="69"/>
 	</TriggerGroup>
-	<TriggerGroup Index="86">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="85"/>
+	<TriggerGroup Index="71">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="70"/>
 	</TriggerGroup>
-	<TriggerGroup Index="87">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="89"/>
+	<TriggerGroup Index="72">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="71"/>
 	</TriggerGroup>
-	<TriggerGroup Index="88">
-		<Trigger Type="2" LiveMobIndexList="170" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="66"/>
+	<TriggerGroup Index="73">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="72"/>
 	</TriggerGroup>
-	<TriggerGroup Index="89">
-		<Trigger Type="2" LiveMobIndexList="171" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="70"/>
+	<TriggerGroup Index="74">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="73"/>
 	</TriggerGroup>
-	<TriggerGroup Index="90">
-		<Trigger Type="2" LiveMobIndexList="172" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="74"/>
+	<TriggerGroup Index="75">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="74"/>
 	</TriggerGroup>
-	<TriggerGroup Index="91">
-		<Trigger Type="2" LiveMobIndexList="173" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="78"/>
+	<TriggerGroup Index="76">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="75"/>
 	</TriggerGroup>
-	<TriggerGroup Index="92">
-		<Trigger Type="2" LiveMobIndexList="174" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="82"/>
+	<TriggerGroup Index="77">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="76"/>
 	</TriggerGroup>
-	<TriggerGroup Index="93">
-		<Trigger Type="2" LiveMobIndexList="175" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="86"/>
+	<TriggerGroup Index="78">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="77"/>
 	</TriggerGroup>
-	<TriggerGroup Index="94">
-		<Trigger Type="2" LiveMobIndexList="176" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="90"/>
+	<TriggerGroup Index="79">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="78"/>
 	</TriggerGroup>
-	<TriggerGroup Index="95">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="67"/>
-	</TriggerGroup>
-	<TriggerGroup Index="96">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="71"/>
-	</TriggerGroup>
-	<TriggerGroup Index="97">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="75"/>
-	</TriggerGroup>
-	<TriggerGroup Index="98">
+	<TriggerGroup Index="80">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="79"/>
 	</TriggerGroup>
-	<TriggerGroup Index="99">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="83"/>
+	<TriggerGroup Index="81">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="80"/>
 	</TriggerGroup>
-	<TriggerGroup Index="100">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="87"/>
+	<TriggerGroup Index="82">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="81"/>
 	</TriggerGroup>
-	<TriggerGroup Index="101">
+	<TriggerGroup Index="83">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="132,133,134,135,136,137,138,139" NpcIndex="-1" ActionGroupIndex="83"/>
+	</TriggerGroup>
+	<TriggerGroup Index="84">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="132,133,134,135,136,137,138,139" NpcIndex="-1" ActionGroupIndex="84"/>
+	</TriggerGroup>
+	<TriggerGroup Index="85">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="132,133,134,135,136,137,138,139" NpcIndex="-1" ActionGroupIndex="85"/>
+	</TriggerGroup>
+	<TriggerGroup Index="86">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="132,133,134,135,136,137,138,139" NpcIndex="-1" ActionGroupIndex="86"/>
+	</TriggerGroup>
+	<TriggerGroup Index="87">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="132,133,134,135,136,137,138,139" NpcIndex="-1" ActionGroupIndex="87"/>
+	</TriggerGroup>
+	<TriggerGroup Index="88">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="132,133,134,135,136,137,138,139" NpcIndex="-1" ActionGroupIndex="88"/>
+	</TriggerGroup>
+	<TriggerGroup Index="89">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="132,133,134,135,136,137,138,139" NpcIndex="-1" ActionGroupIndex="89"/>
+	</TriggerGroup>
+	<TriggerGroup Index="90">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="132,133,134,135,136,137,138,139" NpcIndex="-1" ActionGroupIndex="90"/>
+	</TriggerGroup>
+	<TriggerGroup Index="91">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="91"/>
 	</TriggerGroup>
-	<TriggerGroup Index="102">
+	<TriggerGroup Index="92">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="92"/>
 	</TriggerGroup>
-	<TriggerGroup Index="103">
+	<TriggerGroup Index="93">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="94"/>
+	</TriggerGroup>
+	<TriggerGroup Index="94">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="93"/>
 	</TriggerGroup>
-	<TriggerGroup Index="104">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="96"/>
-	</TriggerGroup>
-	<TriggerGroup Index="105">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="97"/>
-	</TriggerGroup>
-	<TriggerGroup Index="106">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="98"/>
-	</TriggerGroup>
-	<TriggerGroup Index="107">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="99"/>
-	</TriggerGroup>
-	<TriggerGroup Index="108">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="100"/>
-	</TriggerGroup>
-	<TriggerGroup Index="109">
+	<TriggerGroup Index="95">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="95"/>
 	</TriggerGroup>
+	<TriggerGroup Index="96">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="96"/>
+	</TriggerGroup>
+	<TriggerGroup Index="97">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="97"/>
+	</TriggerGroup>
+	<TriggerGroup Index="98">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="98"/>
+	</TriggerGroup>
+	<TriggerGroup Index="99">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="100"/>
+	</TriggerGroup>
+	<TriggerGroup Index="100">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="99"/>
+	</TriggerGroup>
+	<TriggerGroup Index="101">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="115"/>
+	</TriggerGroup>
+	<TriggerGroup Index="102">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="101"/>
+	</TriggerGroup>
+	<TriggerGroup Index="103">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="102"/>
+	</TriggerGroup>
+	<TriggerGroup Index="104">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="103"/>
+	</TriggerGroup>
+	<TriggerGroup Index="105">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="104"/>
+	</TriggerGroup>
+	<TriggerGroup Index="106">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="105"/>
+	</TriggerGroup>
+	<TriggerGroup Index="107">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="106"/>
+	</TriggerGroup>
+	<TriggerGroup Index="108">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="107"/>
+	</TriggerGroup>
+	<TriggerGroup Index="109">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="108"/>
+	</TriggerGroup>
 	<TriggerGroup Index="110">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="103"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="109"/>
 	</TriggerGroup>
 	<TriggerGroup Index="111">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="104"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="110"/>
 	</TriggerGroup>
 	<TriggerGroup Index="112">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="102"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="111"/>
 	</TriggerGroup>
 	<TriggerGroup Index="113">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="109"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="112"/>
 	</TriggerGroup>
 	<TriggerGroup Index="114">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="110"/>
-	</TriggerGroup>
-	<TriggerGroup Index="115">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="111"/>
-	</TriggerGroup>
-	<TriggerGroup Index="116">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="112"/>
-	</TriggerGroup>
-	<TriggerGroup Index="117">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="113"/>
 	</TriggerGroup>
-	<TriggerGroup Index="118">
+	<TriggerGroup Index="115">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="114"/>
 	</TriggerGroup>
+	<TriggerGroup Index="116">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="116"/>
+	</TriggerGroup>
+	<TriggerGroup Index="117">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="117"/>
+	</TriggerGroup>
+	<TriggerGroup Index="118">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="118"/>
+	</TriggerGroup>
 	<TriggerGroup Index="119">
-		<Trigger Type="1" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="115"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="119"/>
 	</TriggerGroup>
 	<TriggerGroup Index="120">
-		<Trigger Type="1" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="116"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="120"/>
 	</TriggerGroup>
 	<TriggerGroup Index="121">
-		<Trigger Type="1" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="117"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="121"/>
 	</TriggerGroup>
 	<TriggerGroup Index="122">
-		<Trigger Type="1" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="118"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="217,218,219,220,221,222" NpcIndex="-1" ActionGroupIndex="122"/>
 	</TriggerGroup>
 	<TriggerGroup Index="123">
-		<Trigger Type="1" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="119"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="217,218,219,220,221,222" NpcIndex="-1" ActionGroupIndex="123"/>
 	</TriggerGroup>
 	<TriggerGroup Index="124">
-		<Trigger Type="1" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="120"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="217,218,219,220,221,222" NpcIndex="-1" ActionGroupIndex="124"/>
 	</TriggerGroup>
 	<TriggerGroup Index="125">
-		<Trigger Type="1" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="121"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="217,218,219,220,221,222" NpcIndex="-1" ActionGroupIndex="125"/>
 	</TriggerGroup>
 	<TriggerGroup Index="126">
-		<Trigger Type="1" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="122"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="217,218,219,220,221,222" NpcIndex="-1" ActionGroupIndex="126"/>
 	</TriggerGroup>
 	<TriggerGroup Index="127">
-		<Trigger Type="1" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="123"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="217,218,219,220,221,222" NpcIndex="-1" ActionGroupIndex="127"/>
 	</TriggerGroup>
 	<TriggerGroup Index="128">
-		<Trigger Type="1" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="124"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="128"/>
 	</TriggerGroup>
 	<TriggerGroup Index="129">
-		<Trigger Type="1" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="125"/>
-	</TriggerGroup>
-	<TriggerGroup Index="130">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="126"/>
-	</TriggerGroup>
-	<TriggerGroup Index="131">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="127"/>
-	</TriggerGroup>
-	<TriggerGroup Index="132">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="133"/>
-	</TriggerGroup>
-	<TriggerGroup Index="133">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="134"/>
-	</TriggerGroup>
-	<TriggerGroup Index="134">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="135"/>
-	</TriggerGroup>
-	<TriggerGroup Index="135">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="136"/>
-	</TriggerGroup>
-	<TriggerGroup Index="136">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="137"/>
-	</TriggerGroup>
-	<TriggerGroup Index="137">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="140"/>
-	</TriggerGroup>
-	<TriggerGroup Index="138">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="141"/>
-	</TriggerGroup>
-	<TriggerGroup Index="139">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="107"/>
-	</TriggerGroup>
-	<TriggerGroup Index="140">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="129"/>
 	</TriggerGroup>
-	<TriggerGroup Index="141">
+	<TriggerGroup Index="130">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="130"/>
+	</TriggerGroup>
+	<TriggerGroup Index="131">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="131"/>
 	</TriggerGroup>
-	<TriggerGroup Index="142">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="31"/>
+	<TriggerGroup Index="132">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="132"/>
+	</TriggerGroup>
+	<TriggerGroup Index="133">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="247,248,249,250,251,252" NpcIndex="-1" ActionGroupIndex="133"/>
+	</TriggerGroup>
+	<TriggerGroup Index="134">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="247,248,249,250,251,252" NpcIndex="-1" ActionGroupIndex="134"/>
+	</TriggerGroup>
+	<TriggerGroup Index="135">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="247,248,249,250,251,252" NpcIndex="-1" ActionGroupIndex="135"/>
+	</TriggerGroup>
+	<TriggerGroup Index="136">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="247,248,249,250,251,252" NpcIndex="-1" ActionGroupIndex="136"/>
+	</TriggerGroup>
+	<TriggerGroup Index="137">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="247,248,249,250,251,252" NpcIndex="-1" ActionGroupIndex="137"/>
+	</TriggerGroup>
+	<TriggerGroup Index="138">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="247,248,249,250,251,252" NpcIndex="-1" ActionGroupIndex="138"/>
+	</TriggerGroup>
+	<TriggerGroup Index="139">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="139"/>
+	</TriggerGroup>
+	<TriggerGroup Index="140">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="140"/>
+	</TriggerGroup>
+	<TriggerGroup Index="141">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="141"/>
 	</TriggerGroup>
 	<ActionGroup Index="1">
 		<Action Delay="500" TargetMobIndex="6" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
@@ -489,13 +486,13 @@
 		<Action Delay="500" TargetMobIndex="38" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="500" TargetMobIndex="39" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="500" TargetMobIndex="40" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="500" TargetMobIndex="41" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
 	<ActionGroup Index="17">
-		<Action Delay="100" TargetMobIndex="43" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="100" TargetMobIndex="42" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="500" TargetMobIndex="41" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
 	<ActionGroup Index="18">
-		<Action Delay="100" TargetMobIndex="42" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="100" TargetMobIndex="43" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
 	<ActionGroup Index="19">
 		<Action Delay="500" TargetMobIndex="34" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
@@ -593,7 +590,7 @@
 		<Action Delay="500" TargetMobIndex="108" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="500" TargetMobIndex="109" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="500" TargetMobIndex="110" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="90000" TargetMobIndex="112" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="30000" TargetMobIndex="112" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
 	<ActionGroup Index="38">
 		<Action Delay="500" TargetMobIndex="113" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
@@ -1052,394 +1049,4 @@
 	<ActionGroup Index="142">
 		<Action Delay="500" TargetMobIndex="129" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
-	<WorldDropPool>
-		<Item ItemID="516" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".0015"/>
-		<Item ItemID="436" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".0015"/>
-		<Item ItemID="753" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".0015"/>
-		<Item ItemID="4023" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03"/>
-		<Item ItemID="4020" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03"/>
-		<Item ItemID="1" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05000000000000"/>
-		<Item ItemID="2" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05000000000000"/>
-		<Item ItemID="292" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00781250000000"/>
-		<Item ItemID="300" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00781250000000"/>
-		<Item ItemID="308" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00781250000000"/>
-		<Item ItemID="317" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".01562500000000"/>
-		<Item ItemID="321" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".01562500000000"/>
-		<Item ItemID="325" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".01562500000000"/>
-		<Item ItemID="365" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00781250000000"/>
-		<Item ItemID="368" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00781250000000"/>
-		<Item ItemID="384" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00781250000000"/>
-		<Item ItemID="416" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00000190000000"/>
-		<Item ItemID="426" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00000190000000"/>
-		<Item ItemID="427" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00000190000000"/>
-		<Item ItemID="455" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="611" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="612" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="622" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="623" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="683" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
-		<Item ItemID="684" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
-		<Item ItemID="685" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
-		<Item ItemID="686" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
-		<Item ItemID="687" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
-		<Item ItemID="688" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
-		<Item ItemID="689" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
-		<Item ItemID="690" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
-		<Item ItemID="691" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
-		<Item ItemID="692" ItemOption="9729" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
-		<Item ItemID="692" ItemOption="9857" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
-		<Item ItemID="692" ItemOption="9985" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
-		<Item ItemID="692" ItemOption="10113" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
-		<Item ItemID="692" ItemOption="10241" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
-		<Item ItemID="789" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
-		<Item ItemID="794" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
-		<Item ItemID="799" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
-		<Item ItemID="809" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
-		<Item ItemID="814" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
-		<Item ItemID="819" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
-		<Item ItemID="1214" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00050000000000"/>
-		<Item ItemID="1215" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00050000000000"/>
-		<Item ItemID="1446" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
-		<Item ItemID="1449" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
-		<Item ItemID="1452" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
-		<Item ItemID="1455" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
-		<Item ItemID="1458" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
-		<Item ItemID="1461" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
-		<Item ItemID="2810" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="2811" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="311" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00000190000000"/>
-		<Item ItemID="314" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00000190000000"/>
-		<Item ItemID="1613" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01377155172413"/>
-		<Item ItemID="1614" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01377155172413"/>
-		<Item ItemID="1615" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01377155172413"/>
-		<Item ItemID="1616" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01377155172413"/>
-		<Item ItemID="1617" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".00688577586206"/>
-		<Item ItemID="1618" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".00688577586206"/>
-		<Item ItemID="1633" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01189655172413"/>
-		<Item ItemID="1634" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01189655172413"/>
-		<Item ItemID="1635" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01189655172413"/>
-		<Item ItemID="1636" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01189655172413"/>
-		<Item ItemID="1637" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01189655172413"/>
-		<Item ItemID="1638" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01189655172413"/>
-		<Item ItemID="1639" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01377155172413"/>
-		<Item ItemID="1640" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01377155172413"/>
-		<Item ItemID="1641" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01377155172413"/>
-		<Item ItemID="1642" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01377155172413"/>
-		<Item ItemID="1643" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01377155172413"/>
-		<Item ItemID="1644" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01377155172413"/>
-		<Item ItemID="1645" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01317155172413"/>
-		<Item ItemID="1646" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01317155172413"/>
-		<Item ItemID="1647" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01317155172413"/>
-		<Item ItemID="1648" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01317155172413"/>
-		<Item ItemID="1649" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01317155172413"/>
-		<Item ItemID="1650" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01317155172413"/>
-		<Item ItemID="1653" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01264655172413"/>
-		<Item ItemID="1654" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01264655172413"/>
-		<Item ItemID="1655" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01264655172413"/>
-		<Item ItemID="1656" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01264655172413"/>
-		<Item ItemID="311" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00000190000000"/>
-		<Item ItemID="314" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00000190000000"/>
-		<Item ItemID="1613" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01377155172413"/>
-		<Item ItemID="1614" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01377155172413"/>
-		<Item ItemID="1615" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01377155172413"/>
-		<Item ItemID="1616" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01377155172413"/>
-		<Item ItemID="1617" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".00688577586206"/>
-		<Item ItemID="1618" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".00688577586206"/>
-		<Item ItemID="1633" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01189655172413"/>
-		<Item ItemID="1634" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01189655172413"/>
-		<Item ItemID="1635" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01189655172413"/>
-		<Item ItemID="1636" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01189655172413"/>
-		<Item ItemID="1637" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01189655172413"/>
-		<Item ItemID="1638" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01189655172413"/>
-		<Item ItemID="1639" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01377155172413"/>
-		<Item ItemID="1640" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01377155172413"/>
-		<Item ItemID="1641" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01377155172413"/>
-		<Item ItemID="1642" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01377155172413"/>
-		<Item ItemID="1643" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01377155172413"/>
-		<Item ItemID="1644" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01377155172413"/>
-		<Item ItemID="1645" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01317155172413"/>
-		<Item ItemID="1646" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01317155172413"/>
-		<Item ItemID="1647" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01317155172413"/>
-		<Item ItemID="1648" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01317155172413"/>
-		<Item ItemID="1649" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01317155172413"/>
-		<Item ItemID="1650" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01317155172413"/>
-		<Item ItemID="1653" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01264655172413"/>
-		<Item ItemID="1654" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01264655172413"/>
-		<Item ItemID="1655" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01264655172413"/>
-		<Item ItemID="1656" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".01264655172413"/>
-		<Item ItemID="3815" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
-		<Item ItemID="2944" ItemOption="0" ItemDuration="0" OptionPoolID="44" MinMobLevel="1" MaxMobLevel="250" Rate=".00020000000000"/>
-		<Item ItemID="4089" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".10000000000000"/>
-		<Item ItemID="4090" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".10000000000000"/>
-		<Item ItemID="4091" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".10000000000000"/>
-		<Item ItemID="1155" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05000000000000"/>
-		<Item ItemID="1156" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05000000000000"/>
-		<Item ItemID="1514" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
-		<Item ItemID="1515" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
-		<Item ItemID="1516" ItemOption="1" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".005"/>
-	</WorldDropPool>
-	<MobDropPool MobSpeciesIndex="1417">
-		<Item ItemID="33214" ItemOption="1384" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000"/>
-	</MobDropPool>
-	<MobDropPool MobSpeciesIndex="1425">
-		<Item ItemID="34323" ItemOption="1394" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000"/>
-	</MobDropPool>
-	<MobDropPool MobSpeciesIndex="1441">
-		<Item ItemID="33214" ItemOption="1399" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000"/>
-	</MobDropPool>
-	<MobDropPool MobSpeciesIndex="1444">
-		<Item ItemID="37304" ItemOption="1396" ItemDuration="0" OptionPoolID="0" Rate="25.00000000000000"/>
-	</MobDropPool>
-	<MobDropPool MobSpeciesIndex="1447">
-		<Item ItemID="34323" ItemOption="1395" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000"/>
-	</MobDropPool>
-	<MobDropPool MobSpeciesIndex="647">
-		<Item ItemID="1" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="25"/>
-		<Item ItemID="2" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="25"/>
-		<Item ItemID="1214" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="25"/>
-		<Item ItemID="1215" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="25"/>
-	</MobDropPool>
-	<MobDropPool MobSpeciesIndex="648">
-		<Item ItemID="1633" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1634" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1635" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1636" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1637" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1638" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1639" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1640" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1641" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1642" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1643" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1644" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1645" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1646" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1647" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1648" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1649" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1650" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1651" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1652" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1653" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1654" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1655" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1656" ItemOption="0" ItemDuration="0" OptionPoolID="44" Rate="1.25"/>
-		<Item ItemID="1633" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1634" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1635" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1636" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1637" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1638" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1639" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1640" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1641" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1642" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1643" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1644" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1645" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1646" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1647" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1648" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1649" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1650" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1651" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1652" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1653" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1654" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1655" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1656" ItemOption="0" ItemDuration="0" OptionPoolID="45" Rate="1"/>
-		<Item ItemID="1208" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1209" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1210" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="2571" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
-		<Item ItemID="2" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
-	</MobDropPool>
-	<MobDropPool MobSpeciesIndex="649">
-		<Item ItemID="1447" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1450" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1453" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1456" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1459" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1462" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="639" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1574497" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574498" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574499" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574500" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574501" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574502" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574503" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574504" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574505" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574506" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574507" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574508" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574509" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574510" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574511" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574512" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574513" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574514" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574515" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574516" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574517" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574518" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574519" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="1574520" ItemOption="0" ItemDuration="0" OptionPoolID="46" Rate="1"/>
-		<Item ItemID="115" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="116" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="130" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="131" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="145" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="146" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="160" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="161" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="175" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="176" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="190" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="191" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="205" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="206" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="220" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="221" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="235" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="236" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="250" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="251" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="265" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="266" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="280" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="281" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate=".5"/>
-		<Item ItemID="115" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="116" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="130" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="131" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="145" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="146" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="160" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="161" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="175" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="176" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="190" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="191" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="205" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="206" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="220" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="221" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="235" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="236" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="250" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="251" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="265" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="266" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="280" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="281" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="100" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate="1"/>
-		<Item ItemID="85" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate="1"/>
-		<Item ItemID="55" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate="1"/>
-		<Item ItemID="70" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate="1"/>
-		<Item ItemID="25" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate="1"/>
-		<Item ItemID="40" ItemOption="0" ItemDuration="0" OptionPoolID="49" Rate="1"/>
-		<Item ItemID="100" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="85" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="55" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="70" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="25" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="40" ItemOption="0" ItemDuration="0" OptionPoolID="50" Rate=".5"/>
-		<Item ItemID="1208" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1209" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1210" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="2571" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1657" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1658" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1659" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1215" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
-		<Item ItemID="1214" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
-	</MobDropPool>
-	<MobDropPool MobSpeciesIndex="1177">
-		<Item ItemID="115" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="116" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="130" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="131" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="145" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="146" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="160" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="161" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="175" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="176" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="190" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="191" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="205" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="206" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="220" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="221" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="235" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="236" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="250" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="251" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="265" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="266" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="280" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="281" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="115" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="116" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="130" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="131" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="145" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="146" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="160" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="161" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="175" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="176" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="190" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="191" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="205" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="206" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="220" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="221" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="235" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="236" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="250" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="251" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="265" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="266" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="280" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="281" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="100" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="85" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="55" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="70" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="25" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="40" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate="1"/>
-		<Item ItemID="1572964" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="1572949" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="1572919" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="1572934" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="1572889" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="1572904" ItemOption="0" ItemDuration="0" OptionPoolID="51" Rate=".5"/>
-		<Item ItemID="1208" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1209" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1210" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="2571" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="2374" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="1"/>
-		<Item ItemID="2223" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="1"/>
-		<Item ItemID="2228" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="1"/>
-		<Item ItemID="1447" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1450" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1453" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1456" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1459" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1462" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="439" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
-		<Item ItemID="437" ItemOption="0" ItemDuration="0" OptionPoolID="58" Rate=".1"/>
-		<Item ItemID="639" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1216" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1214" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
-		<Item ItemID="1215" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
-	</MobDropPool>
-	<MobDropPool MobSpeciesIndex="1414">
-		<Item ItemID="1214" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="50"/>
-		<Item ItemID="1215" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="50"/>
-	</MobDropPool>
 </Dungeon>

@@ -27,10 +27,16 @@ enum {
 
 enum {
     RUNTIME_QUEST_REWARD_EXP = 0,
+    RUNTIME_QUEST_REWARD_ALZ = 1,
     RUNTIME_QUEST_REWARD_SKILL = 2,
     RUNTIME_QUEST_REWARD_ITEM_SET = 3,
     RUNTIME_QUEST_REWARD_HONOR_POINT = 4,
     RUNTIME_QUEST_REWARD_SKILL_EXP = 5,
+    RUNTIME_QUEST_REWARD_AXP = 6,
+    RUNTIME_QUEST_REWARD_PET_EXP = 7,
+    RUNTIME_QUEST_REWARD_GUILD_EXP = 8,
+
+    RUNTIME_QUEST_REWARD_COUNT,
 };
 
 enum {
@@ -95,7 +101,7 @@ struct _RTQuestData {
     Int32 DailyCount;
     Int32 DungeonIndexCount;
     struct _RTQuestConditionData Condition;
-    Int32 Reward[9];
+    Int32 Reward[RUNTIME_QUEST_REWARD_COUNT];
     Int32 QuestBeginNpcIndex;
     struct _RTQuestNpcSetData NpcSet;
     struct _RTQuestMissionData MissionMobs[RUNTIME_MAX_QUEST_COUNTER_COUNT];

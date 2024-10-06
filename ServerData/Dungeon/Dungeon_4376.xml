@@ -1,0 +1,1002 @@
+<?xml version="1.0" ?>
+<Dungeon DungeonIndex="4376" StartKillMobList="">
+	<TriggerGroup Index="1">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="0,1,2,3,4,5,6" NpcIndex="-1" ActionGroupIndex="1"/>
+	</TriggerGroup>
+	<TriggerGroup Index="2">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="0,1,2,3,4,5,6" NpcIndex="-1" ActionGroupIndex="2"/>
+	</TriggerGroup>
+	<TriggerGroup Index="3">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="0,1,2,3,4,5,6" NpcIndex="-1" ActionGroupIndex="3"/>
+	</TriggerGroup>
+	<TriggerGroup Index="4">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="0,1,2,3,4,5,6" NpcIndex="-1" ActionGroupIndex="4"/>
+	</TriggerGroup>
+	<TriggerGroup Index="5">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="0,1,2,3,4,5,6" NpcIndex="-1" ActionGroupIndex="5"/>
+	</TriggerGroup>
+	<TriggerGroup Index="6">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="0,1,2,3,4,5,6" NpcIndex="-1" ActionGroupIndex="6"/>
+	</TriggerGroup>
+	<TriggerGroup Index="7">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="0,1,2,3,4,5,6" NpcIndex="-1" ActionGroupIndex="7"/>
+	</TriggerGroup>
+	<TriggerGroup Index="8">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="8"/>
+	</TriggerGroup>
+	<TriggerGroup Index="9">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="10,11,12,13,14,9" NpcIndex="-1" ActionGroupIndex="15"/>
+	</TriggerGroup>
+	<TriggerGroup Index="10">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="10,11,12,13,14,9" NpcIndex="-1" ActionGroupIndex="16"/>
+	</TriggerGroup>
+	<TriggerGroup Index="11">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="10,11,12,13,14,9" NpcIndex="-1" ActionGroupIndex="17"/>
+	</TriggerGroup>
+	<TriggerGroup Index="12">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="10,11,12,13,14,9" NpcIndex="-1" ActionGroupIndex="18"/>
+	</TriggerGroup>
+	<TriggerGroup Index="13">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="10,11,12,13,14,9" NpcIndex="-1" ActionGroupIndex="19"/>
+	</TriggerGroup>
+	<TriggerGroup Index="14">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="10,11,12,13,14,9" NpcIndex="-1" ActionGroupIndex="20"/>
+	</TriggerGroup>
+	<TriggerGroup Index="15">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="14"/>
+	</TriggerGroup>
+	<TriggerGroup Index="16">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="21"/>
+	</TriggerGroup>
+	<TriggerGroup Index="17">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="23,24,25,26,27" NpcIndex="-1" ActionGroupIndex="9"/>
+	</TriggerGroup>
+	<TriggerGroup Index="18">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="23,24,25,26,27" NpcIndex="-1" ActionGroupIndex="10"/>
+	</TriggerGroup>
+	<TriggerGroup Index="19">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="23,24,25,26,27" NpcIndex="-1" ActionGroupIndex="11"/>
+	</TriggerGroup>
+	<TriggerGroup Index="20">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="23,24,25,26,27" NpcIndex="-1" ActionGroupIndex="12"/>
+	</TriggerGroup>
+	<TriggerGroup Index="21">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="23,24,25,26,27" NpcIndex="-1" ActionGroupIndex="13"/>
+	</TriggerGroup>
+	<TriggerGroup Index="22">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="22"/>
+	</TriggerGroup>
+	<TriggerGroup Index="23">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="23"/>
+	</TriggerGroup>
+	<TriggerGroup Index="24">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="24"/>
+	</TriggerGroup>
+	<TriggerGroup Index="25">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="25"/>
+	</TriggerGroup>
+	<TriggerGroup Index="26">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="26"/>
+	</TriggerGroup>
+	<TriggerGroup Index="27">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="27"/>
+	</TriggerGroup>
+	<TriggerGroup Index="28">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="28"/>
+	</TriggerGroup>
+	<TriggerGroup Index="29">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="29"/>
+	</TriggerGroup>
+	<TriggerGroup Index="30">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="30"/>
+	</TriggerGroup>
+	<TriggerGroup Index="31">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="31"/>
+	</TriggerGroup>
+	<TriggerGroup Index="32">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="32"/>
+	</TriggerGroup>
+	<TriggerGroup Index="33">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="33"/>
+	</TriggerGroup>
+	<TriggerGroup Index="34">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="34"/>
+	</TriggerGroup>
+	<TriggerGroup Index="35">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="35"/>
+	</TriggerGroup>
+	<TriggerGroup Index="36">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="36"/>
+	</TriggerGroup>
+	<TriggerGroup Index="37">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="37"/>
+	</TriggerGroup>
+	<TriggerGroup Index="38">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="38"/>
+	</TriggerGroup>
+	<TriggerGroup Index="39">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="39"/>
+	</TriggerGroup>
+	<TriggerGroup Index="40">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63" NpcIndex="-1" ActionGroupIndex="40"/>
+	</TriggerGroup>
+	<TriggerGroup Index="41">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="41"/>
+	</TriggerGroup>
+	<TriggerGroup Index="42">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="43"/>
+	</TriggerGroup>
+	<TriggerGroup Index="43">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="42"/>
+	</TriggerGroup>
+	<TriggerGroup Index="44">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="67,68,69,70,71" NpcIndex="-1" ActionGroupIndex="44"/>
+	</TriggerGroup>
+	<TriggerGroup Index="45">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="67,68,69,70,71" NpcIndex="-1" ActionGroupIndex="45"/>
+	</TriggerGroup>
+	<TriggerGroup Index="46">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="67,68,69,70,71" NpcIndex="-1" ActionGroupIndex="46"/>
+	</TriggerGroup>
+	<TriggerGroup Index="47">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="67,68,69,70,71" NpcIndex="-1" ActionGroupIndex="47"/>
+	</TriggerGroup>
+	<TriggerGroup Index="48">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="67,68,69,70,71" NpcIndex="-1" ActionGroupIndex="48"/>
+	</TriggerGroup>
+	<TriggerGroup Index="49">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="51"/>
+	</TriggerGroup>
+	<TriggerGroup Index="50">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="52"/>
+	</TriggerGroup>
+	<TriggerGroup Index="51">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="53"/>
+	</TriggerGroup>
+	<TriggerGroup Index="52">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="54"/>
+	</TriggerGroup>
+	<TriggerGroup Index="53">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="55"/>
+	</TriggerGroup>
+	<TriggerGroup Index="54">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="56"/>
+	</TriggerGroup>
+	<TriggerGroup Index="55">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="57"/>
+	</TriggerGroup>
+	<TriggerGroup Index="56">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="58"/>
+	</TriggerGroup>
+	<TriggerGroup Index="57">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="59"/>
+	</TriggerGroup>
+	<TriggerGroup Index="58">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="60"/>
+	</TriggerGroup>
+	<TriggerGroup Index="59">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="61"/>
+	</TriggerGroup>
+	<TriggerGroup Index="60">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="73,74,75,76,77,78,79,80,81,82,83" NpcIndex="-1" ActionGroupIndex="62"/>
+	</TriggerGroup>
+	<TriggerGroup Index="61">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="50"/>
+	</TriggerGroup>
+	<TriggerGroup Index="62">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="82"/>
+	</TriggerGroup>
+	<TriggerGroup Index="63">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="49"/>
+	</TriggerGroup>
+	<TriggerGroup Index="64">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="63"/>
+	</TriggerGroup>
+	<TriggerGroup Index="65">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="64"/>
+	</TriggerGroup>
+	<TriggerGroup Index="66">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="65"/>
+	</TriggerGroup>
+	<TriggerGroup Index="67">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="66"/>
+	</TriggerGroup>
+	<TriggerGroup Index="68">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="67"/>
+	</TriggerGroup>
+	<TriggerGroup Index="69">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="68"/>
+	</TriggerGroup>
+	<TriggerGroup Index="70">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="69"/>
+	</TriggerGroup>
+	<TriggerGroup Index="71">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="70"/>
+	</TriggerGroup>
+	<TriggerGroup Index="72">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="71"/>
+	</TriggerGroup>
+	<TriggerGroup Index="73">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="72"/>
+	</TriggerGroup>
+	<TriggerGroup Index="74">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="73"/>
+	</TriggerGroup>
+	<TriggerGroup Index="75">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="74"/>
+	</TriggerGroup>
+	<TriggerGroup Index="76">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="75"/>
+	</TriggerGroup>
+	<TriggerGroup Index="77">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="76"/>
+	</TriggerGroup>
+	<TriggerGroup Index="78">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="101,102,103,104,105,106,107,108,109,110,111,112" NpcIndex="-1" ActionGroupIndex="77"/>
+	</TriggerGroup>
+	<TriggerGroup Index="79">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="78"/>
+	</TriggerGroup>
+	<TriggerGroup Index="80">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="79"/>
+	</TriggerGroup>
+	<TriggerGroup Index="81">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="80"/>
+	</TriggerGroup>
+	<TriggerGroup Index="82">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="81"/>
+	</TriggerGroup>
+	<TriggerGroup Index="83">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="132,133,134,135,136,137,138,139" NpcIndex="-1" ActionGroupIndex="83"/>
+	</TriggerGroup>
+	<TriggerGroup Index="84">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="132,133,134,135,136,137,138,139" NpcIndex="-1" ActionGroupIndex="84"/>
+	</TriggerGroup>
+	<TriggerGroup Index="85">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="132,133,134,135,136,137,138,139" NpcIndex="-1" ActionGroupIndex="85"/>
+	</TriggerGroup>
+	<TriggerGroup Index="86">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="132,133,134,135,136,137,138,139" NpcIndex="-1" ActionGroupIndex="86"/>
+	</TriggerGroup>
+	<TriggerGroup Index="87">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="132,133,134,135,136,137,138,139" NpcIndex="-1" ActionGroupIndex="87"/>
+	</TriggerGroup>
+	<TriggerGroup Index="88">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="132,133,134,135,136,137,138,139" NpcIndex="-1" ActionGroupIndex="88"/>
+	</TriggerGroup>
+	<TriggerGroup Index="89">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="132,133,134,135,136,137,138,139" NpcIndex="-1" ActionGroupIndex="89"/>
+	</TriggerGroup>
+	<TriggerGroup Index="90">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="132,133,134,135,136,137,138,139" NpcIndex="-1" ActionGroupIndex="90"/>
+	</TriggerGroup>
+	<TriggerGroup Index="91">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="91"/>
+	</TriggerGroup>
+	<TriggerGroup Index="92">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="92"/>
+	</TriggerGroup>
+	<TriggerGroup Index="93">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="94"/>
+	</TriggerGroup>
+	<TriggerGroup Index="94">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="93"/>
+	</TriggerGroup>
+	<TriggerGroup Index="95">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="95"/>
+	</TriggerGroup>
+	<TriggerGroup Index="96">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="96"/>
+	</TriggerGroup>
+	<TriggerGroup Index="97">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="97"/>
+	</TriggerGroup>
+	<TriggerGroup Index="98">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="98"/>
+	</TriggerGroup>
+	<TriggerGroup Index="99">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="100"/>
+	</TriggerGroup>
+	<TriggerGroup Index="100">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="99"/>
+	</TriggerGroup>
+	<TriggerGroup Index="101">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="115"/>
+	</TriggerGroup>
+	<TriggerGroup Index="102">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="101"/>
+	</TriggerGroup>
+	<TriggerGroup Index="103">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="102"/>
+	</TriggerGroup>
+	<TriggerGroup Index="104">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="103"/>
+	</TriggerGroup>
+	<TriggerGroup Index="105">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="104"/>
+	</TriggerGroup>
+	<TriggerGroup Index="106">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="105"/>
+	</TriggerGroup>
+	<TriggerGroup Index="107">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="106"/>
+	</TriggerGroup>
+	<TriggerGroup Index="108">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="107"/>
+	</TriggerGroup>
+	<TriggerGroup Index="109">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="108"/>
+	</TriggerGroup>
+	<TriggerGroup Index="110">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="109"/>
+	</TriggerGroup>
+	<TriggerGroup Index="111">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="110"/>
+	</TriggerGroup>
+	<TriggerGroup Index="112">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="111"/>
+	</TriggerGroup>
+	<TriggerGroup Index="113">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="190,191,192,193,194,195,196,197,198,199,200,201" NpcIndex="-1" ActionGroupIndex="112"/>
+	</TriggerGroup>
+	<TriggerGroup Index="114">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="113"/>
+	</TriggerGroup>
+	<TriggerGroup Index="115">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="114"/>
+	</TriggerGroup>
+	<TriggerGroup Index="116">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="116"/>
+	</TriggerGroup>
+	<TriggerGroup Index="117">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="117"/>
+	</TriggerGroup>
+	<TriggerGroup Index="118">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="118"/>
+	</TriggerGroup>
+	<TriggerGroup Index="119">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="119"/>
+	</TriggerGroup>
+	<TriggerGroup Index="120">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="120"/>
+	</TriggerGroup>
+	<TriggerGroup Index="121">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="121"/>
+	</TriggerGroup>
+	<TriggerGroup Index="122">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="217,218,219,220,221,222" NpcIndex="-1" ActionGroupIndex="122"/>
+	</TriggerGroup>
+	<TriggerGroup Index="123">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="217,218,219,220,221,222" NpcIndex="-1" ActionGroupIndex="123"/>
+	</TriggerGroup>
+	<TriggerGroup Index="124">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="217,218,219,220,221,222" NpcIndex="-1" ActionGroupIndex="124"/>
+	</TriggerGroup>
+	<TriggerGroup Index="125">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="217,218,219,220,221,222" NpcIndex="-1" ActionGroupIndex="125"/>
+	</TriggerGroup>
+	<TriggerGroup Index="126">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="217,218,219,220,221,222" NpcIndex="-1" ActionGroupIndex="126"/>
+	</TriggerGroup>
+	<TriggerGroup Index="127">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="217,218,219,220,221,222" NpcIndex="-1" ActionGroupIndex="127"/>
+	</TriggerGroup>
+	<TriggerGroup Index="128">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="128"/>
+	</TriggerGroup>
+	<TriggerGroup Index="129">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="129"/>
+	</TriggerGroup>
+	<TriggerGroup Index="130">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="130"/>
+	</TriggerGroup>
+	<TriggerGroup Index="131">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="131"/>
+	</TriggerGroup>
+	<TriggerGroup Index="132">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="132"/>
+	</TriggerGroup>
+	<TriggerGroup Index="133">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="247,248,249,250,251,252" NpcIndex="-1" ActionGroupIndex="133"/>
+	</TriggerGroup>
+	<TriggerGroup Index="134">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="247,248,249,250,251,252" NpcIndex="-1" ActionGroupIndex="134"/>
+	</TriggerGroup>
+	<TriggerGroup Index="135">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="247,248,249,250,251,252" NpcIndex="-1" ActionGroupIndex="135"/>
+	</TriggerGroup>
+	<TriggerGroup Index="136">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="247,248,249,250,251,252" NpcIndex="-1" ActionGroupIndex="136"/>
+	</TriggerGroup>
+	<TriggerGroup Index="137">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="247,248,249,250,251,252" NpcIndex="-1" ActionGroupIndex="137"/>
+	</TriggerGroup>
+	<TriggerGroup Index="138">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="247,248,249,250,251,252" NpcIndex="-1" ActionGroupIndex="138"/>
+	</TriggerGroup>
+	<TriggerGroup Index="139">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="139"/>
+	</TriggerGroup>
+	<TriggerGroup Index="140">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="140"/>
+	</TriggerGroup>
+	<TriggerGroup Index="141">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="141"/>
+	</TriggerGroup>
+	<ActionGroup Index="1">
+		<Action Delay="1000" TargetMobIndex="7" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="2">
+		<Action Delay="1000" TargetMobIndex="7" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="3">
+		<Action Delay="1000" TargetMobIndex="7" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="4">
+		<Action Delay="1000" TargetMobIndex="7" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="5">
+		<Action Delay="1000" TargetMobIndex="7" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="6">
+		<Action Delay="1000" TargetMobIndex="7" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="7">
+		<Action Delay="1000" TargetMobIndex="7" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="8">
+		<Action Delay="1000" TargetMobIndex="23" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="24" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="25" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="26" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="27" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="28" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="29" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="30" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="31" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="32" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="33" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="34" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="35" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="36" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="37" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="38" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="39" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="9">
+		<Action Delay="1000" TargetMobIndex="19" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="10">
+		<Action Delay="1000" TargetMobIndex="19" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="11">
+		<Action Delay="1000" TargetMobIndex="19" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="12">
+		<Action Delay="1000" TargetMobIndex="19" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="13">
+		<Action Delay="1000" TargetMobIndex="19" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="14">
+		<Action Delay="1000" TargetMobIndex="9" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="10" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="11" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="12" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="13" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="14" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="15">
+		<Action Delay="1000" TargetMobIndex="20" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="16">
+		<Action Delay="1000" TargetMobIndex="20" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="17">
+		<Action Delay="1000" TargetMobIndex="20" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="18">
+		<Action Delay="1000" TargetMobIndex="20" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="19">
+		<Action Delay="1000" TargetMobIndex="20" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="20">
+		<Action Delay="1000" TargetMobIndex="20" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="21">
+		<Action Delay="2000" TargetMobIndex="15" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="2000" TargetMobIndex="16" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="2000" TargetMobIndex="17" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="2000" TargetMobIndex="18" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="2000" TargetMobIndex="45" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="28" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="29" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="30" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="31" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="32" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="33" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="34" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="35" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="36" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="37" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="38" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="39" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="22">
+		<Action Delay="1500" TargetMobIndex="46" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="23">
+		<Action Delay="1000" TargetMobIndex="47" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="24">
+		<Action Delay="1000" TargetMobIndex="48" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="49" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="50" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="51" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="52" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="53" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="54" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="55" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="56" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="57" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="58" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="59" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="60" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="61" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="62" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="63" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="25">
+		<Action Delay="1500" TargetMobIndex="64" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="26">
+		<Action Delay="1500" TargetMobIndex="64" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="27">
+		<Action Delay="1500" TargetMobIndex="64" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="28">
+		<Action Delay="1500" TargetMobIndex="64" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="29">
+		<Action Delay="1500" TargetMobIndex="64" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="30">
+		<Action Delay="1500" TargetMobIndex="64" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="31">
+		<Action Delay="1500" TargetMobIndex="64" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="32">
+		<Action Delay="1500" TargetMobIndex="64" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="33">
+		<Action Delay="1500" TargetMobIndex="64" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="34">
+		<Action Delay="1500" TargetMobIndex="64" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="35">
+		<Action Delay="1500" TargetMobIndex="64" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="36">
+		<Action Delay="1500" TargetMobIndex="64" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="37">
+		<Action Delay="1500" TargetMobIndex="64" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="38">
+		<Action Delay="1500" TargetMobIndex="64" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="39">
+		<Action Delay="1500" TargetMobIndex="64" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="40">
+		<Action Delay="1500" TargetMobIndex="64" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="41">
+		<Action Delay="1500" TargetMobIndex="66" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="42">
+		<Action Delay="1000" TargetMobIndex="65" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="43">
+		<Action Delay="1000" TargetMobIndex="67" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="68" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="69" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="70" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="71" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="44">
+		<Action Delay="1500" TargetMobIndex="97" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="45">
+		<Action Delay="1500" TargetMobIndex="97" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="46">
+		<Action Delay="1500" TargetMobIndex="97" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="47">
+		<Action Delay="1500" TargetMobIndex="97" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="48">
+		<Action Delay="1500" TargetMobIndex="97" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="49">
+		<Action Delay="1500" TargetMobIndex="84" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="50">
+		<Action Delay="1000" TargetMobIndex="72" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="51">
+		<Action Delay="1000" TargetMobIndex="73" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="74" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="75" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="76" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="77" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="78" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="79" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="80" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="81" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="82" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="83" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="52">
+		<Action Delay="2500" TargetMobIndex="98" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="53">
+		<Action Delay="2500" TargetMobIndex="98" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="54">
+		<Action Delay="2500" TargetMobIndex="98" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="55">
+		<Action Delay="2500" TargetMobIndex="98" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="56">
+		<Action Delay="2500" TargetMobIndex="98" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="57">
+		<Action Delay="2500" TargetMobIndex="98" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="58">
+		<Action Delay="2500" TargetMobIndex="98" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="59">
+		<Action Delay="2500" TargetMobIndex="98" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="60">
+		<Action Delay="2500" TargetMobIndex="98" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="61">
+		<Action Delay="2500" TargetMobIndex="98" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="62">
+		<Action Delay="2500" TargetMobIndex="98" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="63">
+		<Action Delay="1500" TargetMobIndex="99" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="64">
+		<Action Delay="1000" TargetMobIndex="100" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="65">
+		<Action Delay="1000" TargetMobIndex="101" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="102" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="103" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="104" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="105" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="106" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="107" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="108" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="109" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="110" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="111" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="112" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="66">
+		<Action Delay="1500" TargetMobIndex="113" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="67">
+		<Action Delay="1500" TargetMobIndex="113" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="68">
+		<Action Delay="1500" TargetMobIndex="113" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="69">
+		<Action Delay="1500" TargetMobIndex="113" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="70">
+		<Action Delay="1500" TargetMobIndex="113" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="71">
+		<Action Delay="1500" TargetMobIndex="113" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="72">
+		<Action Delay="1500" TargetMobIndex="113" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="73">
+		<Action Delay="1500" TargetMobIndex="113" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="74">
+		<Action Delay="1500" TargetMobIndex="113" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="75">
+		<Action Delay="1500" TargetMobIndex="113" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="76">
+		<Action Delay="1500" TargetMobIndex="113" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="77">
+		<Action Delay="1500" TargetMobIndex="113" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="78">
+		<Action Delay="3000" TargetMobIndex="114" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="79">
+		<Action Delay="3000" TargetMobIndex="115" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="80">
+		<Action Delay="1500" TargetMobIndex="116" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="81">
+		<Action Delay="1500" TargetMobIndex="85" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="86" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="87" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="88" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="89" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="90" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="91" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="92" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="93" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="94" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="95" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="96" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="82">
+		<Action Delay="1000" TargetMobIndex="132" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="133" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="134" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="135" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="136" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="137" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="138" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="139" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="83">
+		<Action Delay="1500" TargetMobIndex="144" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="84">
+		<Action Delay="1500" TargetMobIndex="144" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="85">
+		<Action Delay="1500" TargetMobIndex="144" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="86">
+		<Action Delay="1500" TargetMobIndex="144" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="87">
+		<Action Delay="1500" TargetMobIndex="144" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="88">
+		<Action Delay="1500" TargetMobIndex="144" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="89">
+		<Action Delay="1500" TargetMobIndex="144" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="90">
+		<Action Delay="1500" TargetMobIndex="144" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="91">
+		<Action Delay="1500" TargetMobIndex="145" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="92">
+		<Action Delay="1500" TargetMobIndex="148" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="149" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="150" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="151" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="152" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="153" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="154" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="155" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="156" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="157" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="93">
+		<Action Delay="1000" TargetMobIndex="147" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="94">
+		<Action Delay="1500" TargetMobIndex="162" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="163" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="164" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="165" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="166" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="167" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="168" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="169" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="170" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="171" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="172" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="173" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="95">
+		<Action Delay="1500" TargetMobIndex="178" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="96">
+		<Action Delay="1500" TargetMobIndex="179" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="97">
+		<Action Delay="1000" TargetMobIndex="180" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="146" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="98">
+		<Action Delay="1000" TargetMobIndex="182" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="183" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="184" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="185" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="186" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="187" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="99">
+		<Action Delay="1000" TargetMobIndex="181" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="100">
+		<Action Delay="1500" TargetMobIndex="190" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="191" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="192" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="193" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="194" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="195" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="196" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="197" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="198" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="199" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="200" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="201" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="101">
+		<Action Delay="1500" TargetMobIndex="202" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="102">
+		<Action Delay="1500" TargetMobIndex="202" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="103">
+		<Action Delay="1500" TargetMobIndex="202" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="104">
+		<Action Delay="1500" TargetMobIndex="202" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="105">
+		<Action Delay="1500" TargetMobIndex="202" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="106">
+		<Action Delay="1500" TargetMobIndex="202" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="107">
+		<Action Delay="1500" TargetMobIndex="202" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="108">
+		<Action Delay="1500" TargetMobIndex="202" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="109">
+		<Action Delay="1500" TargetMobIndex="202" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="110">
+		<Action Delay="1500" TargetMobIndex="202" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="111">
+		<Action Delay="1500" TargetMobIndex="202" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="112">
+		<Action Delay="1500" TargetMobIndex="202" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="113">
+		<Action Delay="1000" TargetMobIndex="203" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="114">
+		<Action Delay="1000" TargetMobIndex="189" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="115">
+		<Action Delay="1000" TargetMobIndex="224" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="116">
+		<Action Delay="1000" TargetMobIndex="206" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="117">
+		<Action Delay="1500" TargetMobIndex="208" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="211" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="118">
+		<Action Delay="1500" TargetMobIndex="210" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="213" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="119">
+		<Action Delay="1500" TargetMobIndex="215" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="120">
+		<Action Delay="1000" TargetMobIndex="205" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="3000" TargetMobIndex="216" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="121">
+		<Action Delay="1000" TargetMobIndex="217" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="218" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="219" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="220" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="221" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="222" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="122">
+		<Action Delay="1000" TargetMobIndex="223" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="123">
+		<Action Delay="1000" TargetMobIndex="223" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="124">
+		<Action Delay="1000" TargetMobIndex="223" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="125">
+		<Action Delay="1000" TargetMobIndex="223" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="126">
+		<Action Delay="1000" TargetMobIndex="223" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="127">
+		<Action Delay="1000" TargetMobIndex="223" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="128">
+		<Action Delay="1500" TargetMobIndex="231" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="232" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="233" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="234" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="235" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="236" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="237" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="238" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="129">
+		<Action Delay="1500" TargetMobIndex="239" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1500" TargetMobIndex="244" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="130">
+		<Action Delay="1000" TargetMobIndex="245" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="131">
+		<Action Delay="1000" TargetMobIndex="246" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="132">
+		<Action Delay="1000" TargetMobIndex="247" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="248" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="249" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="250" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="251" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="1000" TargetMobIndex="252" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="133">
+		<Action Delay="1000" TargetMobIndex="253" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="134">
+		<Action Delay="1000" TargetMobIndex="253" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="135">
+		<Action Delay="1000" TargetMobIndex="253" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="136">
+		<Action Delay="1000" TargetMobIndex="253" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="137">
+		<Action Delay="1000" TargetMobIndex="253" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="138">
+		<Action Delay="1000" TargetMobIndex="253" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="139">
+		<Action Delay="1000" TargetMobIndex="257" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="140">
+		<Action Delay="3000" TargetMobIndex="258" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="141">
+		<Action Delay="1000" TargetMobIndex="259" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+</Dungeon>

@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<MobPattern Index="638">
+	<MobTriggerGroup Index="1" Type="1" Parameters="2500">
+		<MobActionGroup Index="1" Delay="">
+			<MobAction Index="1" Type="10" Parameters="1389" Duration="2333" TargetType="1" TargetParameters="" Loop="1" LoopDelay="2500" Priority="0"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="2" Type="1" Parameters="5000">
+		<MobActionGroup Index="2" Delay="">
+			<MobAction Index="1" Type="10" Parameters="1390" Duration="3000" TargetType="1" TargetParameters="" Loop="1" LoopDelay="5000" Priority="0"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="3" Type="1" Parameters="7500">
+		<MobActionGroup Index="3" Delay="2000">
+			<MobAction Index="1" Type="10" Parameters="1391" Duration="6000" TargetType="1" TargetParameters="" Loop="1" LoopDelay="7500" Priority="0"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="4" Type="1" Parameters="10000">
+		<MobActionGroup Index="4" Delay="2000">
+			<MobAction Index="1" Type="10" Parameters="1392" Duration="6000" TargetType="1" TargetParameters="" Loop="1" LoopDelay="10000" Priority="0"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="5" Type="11" Parameters="180001">
+		<MobActionGroup Index="5" Delay="">
+			<MobAction Index="1" Type="13" Parameters="0" Duration="1000" TargetType="" TargetParameters="" Loop="0" LoopDelay="100000" Priority="5"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+</MobPattern>

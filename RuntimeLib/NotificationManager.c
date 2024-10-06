@@ -97,6 +97,13 @@ Void RTNotificationManagerDispatchToNearby(
     Void* Notification,
     RTWorldChunkRef WorldChunk
 ) {
+    RTRuntimeRef Runtime = WorldChunk->WorldContext->WorldManager->Runtime;
+    if (!RTEntityIsNull(WorldChunk->WorldContext->Party)) {
+        RTPartyRef Party = RTRuntimeGetParty(Runtime, WorldChunk->WorldContext->Party);
+        RTNotificationManagerDispatchToParty(NotificationManager, Notification, Party);
+        return;
+    }
+
     Int32 StartChunkX = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, WorldChunk->ChunkX - RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
     Int32 StartChunkY = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, WorldChunk->ChunkY - RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
     Int32 EndChunkX = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, WorldChunk->ChunkX + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));

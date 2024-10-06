@@ -78,6 +78,8 @@ Void ServerLoadRuntimeData(
     if (!Loaded) Fatal("Failed to load dungeon data!");
     Loaded &= ServerLoadWorldDropData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
     if (!Loaded) Fatal("Failed to load world drop data!");
+    Loaded &= ServerLoadMobPatternData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
+    if (!Loaded) Fatal("Failed to load mob pattern data!");
     /*
     IndexSetRef IndexSet = IndexSetCreate(AllocatorGetDefault(), 256);
 

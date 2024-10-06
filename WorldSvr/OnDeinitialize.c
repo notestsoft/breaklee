@@ -22,7 +22,6 @@ CLIENT_PROCEDURE_BINDING(DEINITIALIZE) {
             Character->ID,
             RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT
         );
-        RTWorldManagerDestroyCharacter(WorldContext->WorldManager, Client->CharacterIndex);
 
         if (!RTEntityIsNull(Character->PartyID)) {
             RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
@@ -37,6 +36,8 @@ CLIENT_PROCEDURE_BINDING(DEINITIALIZE) {
                 // TODO: Disband party if needed
             }
         }
+
+        RTWorldManagerDestroyCharacter(WorldContext->WorldManager, Client->CharacterIndex);
 
         Client->CharacterIndex = 0;
     }

@@ -4,6 +4,7 @@
 #include "BattleSystem.h"
 #include "Entity.h"
 #include "Movement.h"
+#include "MobPattern.h"
 
 EXTERN_C_BEGIN
 
@@ -31,47 +32,6 @@ enum {
 	RUNTIME_MOB_ATTACK_PATTERN_TYPE_SITUATIONAL = 2,
 	RUNTIME_MOB_ATTACK_PATTERN_TYPE_BY_REACH = 3,
 	RUNTIME_MOB_ATTACK_PATTERN_TYPE_SELECTIVE = 4,
-};
-
-enum {
-	RUNTIME_MOB_TRIGGER_TYPE_NONE = 0,
-	RUNTIME_MOB_TRIGGER_TYPE_PATTERN_TIME = 1,
-	RUNTIME_MOB_TRIGGER_TYPE_HP_THRESHOLD = 2,
-	RUNTIME_MOB_TRIGGER_TYPE_LINK_MOB_KILLED = 3,
-	RUNTIME_MOB_TRIGGER_TYPE_LINK_MOB_SPAWNED = 4,
-	RUNTIME_MOB_TRIGGER_TYPE_ACTION_EXECUTED = 5,
-	RUNTIME_MOB_TRIGGER_TYPE_DISTANCE_MAX = 6,
-	RUNTIME_MOB_TRIGGER_TYPE_DISTANCE_MIN = 7,
-	RUNTIME_MOB_TRIGGER_TYPE_MOB_KILLED = 8,
-	RUNTIME_MOB_TRIGGER_TYPE_UNKNOWN_9 = 9,
-	RUNTIME_MOB_TRIGGER_TYPE_SKILL_RECEIVED = 10,
-	RUNTIME_MOB_TRIGGER_TYPE_IDLE_TIME = 11,
-	RUNTIME_MOB_TRIGGER_TYPE_UNKNOWN_12 = 12,
-	RUNTIME_MOB_TRIGGER_TYPE_UNKNOWN_13 = 13,
-};
-
-enum {
-	RUNTIME_MOB_ACTION_TYPE_NONE = 0,
-	RUNTIME_MOB_ACTION_TYPE_WARP_TARGET = 1,
-	RUNTIME_MOB_ACTION_TYPE_WARP_SELF = 2,
-	RUNTIME_MOB_ACTION_TYPE_SPAWN_MOB = 3,
-	RUNTIME_MOB_ACTION_TYPE_HEAL = 4,
-	RUNTIME_MOB_ACTION_TYPE_UNKNOWN_5 = 5,
-	RUNTIME_MOB_ACTION_TYPE_EVASION_SELF = 6,
-	RUNTIME_MOB_ACTION_TYPE_UNKNOWN_7 = 7,
-	RUNTIME_MOB_ACTION_TYPE_UNKNOWN_8 = 8,
-	RUNTIME_MOB_ACTION_TYPE_ANIMATION_STATE = 9,
-	RUNTIME_MOB_ACTION_TYPE_ATTACK = 10,
-	RUNTIME_MOB_ACTION_TYPE_CANCEL_ACTION = 11,
-	RUNTIME_MOB_ACTION_TYPE_KILL_MOB = 12,
-	RUNTIME_MOB_ACTION_TYPE_RESPAWN = 13,
-	RUNTIME_MOB_ACTION_TYPE_ANIMATION = 14,
-	RUNTIME_MOB_ACTION_TYPE_ATTACK_2 = 15,
-	RUNTIME_MOB_ACTION_TYPE_UNKNOWN_16 = 16,
-	RUNTIME_MOB_ACTION_TYPE_UNKNOWN_17 = 17,
-	RUNTIME_MOB_ACTION_TYPE_UNKNOWN_18 = 18,
-	RUNTIME_MOB_ACTION_TYPE_UNKNOWN_19 = 19,
-	RUNTIME_MOB_ACTION_TYPE_UNKNOWN_20 = 20,
 };
 
 enum {
@@ -186,6 +146,7 @@ struct _RTMobPhaseData {
 struct _RTMobSpawnData {
 	Index PatternPartIndex;
 	Index MobSpeciesIndex;
+	Int32 MobPatternIndex;
 	Int32 AreaX;
 	Int32 AreaY;
 	Int32 AreaWidth;
@@ -198,7 +159,6 @@ struct _RTMobSpawnData {
 	Int32 PerfectDrop;
 	Int32 SpawnTriggerID;
 	Int32 KillTriggerID;
-	Int32 ServerMobIndex;
 	Int32 LootDelay;
 	Int32 TileCount;
 	UInt32 TileAttributes;
@@ -225,13 +185,19 @@ struct _RTMob {
 	Bool IsSpawned;
 	Bool IsKilled;
 	Bool IsDead;
+	Bool IsIdle;
 	Bool IsInfiniteSpawn;
 	Bool IsPermanentDeath;
 	Bool IsChasing;
 	Bool IsWall;
 	Bool IsAttacked;
+	Bool IsAttackingCharacter;
+	Bool IsTimerMob;
 	Int32 RemainingFindCount;
 	Int32 RemainingSpawnCount;
+	Int32 AlertRange;
+	Int32 ChaseRange;
+	Int32 LimitRangeB;
 	Timestamp SpawnTimestamp;
 	Timestamp DespawnTimestamp;
 	Timestamp EscapeTimestamp;
@@ -246,13 +212,19 @@ struct _RTMob {
 
 	Timestamp NextPhaseTimestamp;
 	Int64 HPTriggerThreshold;
+	Int32 AggroTargetDistance;
+	Int32 LinkMobIndex;
+	RTEntityID LinkEntityID;
 
 	struct _RTMobSpawnData Spawn;
 	struct _RTMobAggroData Aggro;
     struct _RTMovement Movement;
 	struct _RTBattleAttributes Attributes;
-
+	
+	Int32 EnemyCount;
+	Int32 Enemies[RUNTIME_MEMORY_MAX_MOB_ENEMY_COUNT];
 	RTScriptRef Script;
+	RTMobPatternRef Pattern;
 };
 
 Void RTMobInit(

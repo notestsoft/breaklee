@@ -216,7 +216,15 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTER_FORCE_WING_EXP) {
     }
 }
 
-NOTIFICATION_PROCEDURE_BINDING(NFY_DUNGEON_TIMER) {
+NOTIFICATION_PROCEDURE_BINDING(DUNGEON_TIME_CONTROL) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
+NOTIFICATION_PROCEDURE_BINDING(DUNGEON_TIMER) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
+NOTIFICATION_PROCEDURE_BINDING(DUNGEON_TIMER_INFO) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 

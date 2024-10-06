@@ -9,25 +9,30 @@
 EXTERN_C_BEGIN
 
 enum {
-	RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_SPAWN = 1,
-	RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_KILL = 2,
-	RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_REVIVE = 3,
-	RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_DELETE = 4,
-	RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_CHANGE = 5,
-	RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_EVENT_CALL = 6,
+	RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_SPAWN		= 1,
+	RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_KILL		= 2,
+	RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_REVIVE		= 3,
+	RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_DELETE		= 4,
+	RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_CHANGE		= 5,
+	RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_EVENT_CALL	= 6,
 };
 
 enum {
-	RUNTIME_DUNGEON_TIME_CONTROL_TYPE_SPAWN		= 1,
-	RUNTIME_DUNGEON_TIME_CONTROL_TYPE_DESPAWN	= 2,
+	RUNTIME_DUNGEON_TIME_CONTROL_TYPE_SPAWN			= 1,
+	RUNTIME_DUNGEON_TIME_CONTROL_TYPE_DESPAWN		= 2,
+};
+
+enum {
+	RUNTIME_DUNGEON_TIMER_TARGET_EVENT_TYPE_SPAWN	= 1,
+	RUNTIME_DUNGEON_TIMER_TARGET_EVENT_TYPE_DESPAWN = 2,
 };
 
 struct _RTDungeonTriggerData {
 	Int32 Type;
 	Int32 LiveMobCount;
-	Int32 LiveMobIndexList[RUNTIME_DUNGEON_TRIGGER_MAX_MOB_COUNT];
+	Int32 LiveMobIndexList[RUNTIME_DUNGEON_MAX_TRIGGER_MOB_COUNT];
 	Int32 DeadMobCount;
-	Int32 DeadMobIndexList[RUNTIME_DUNGEON_TRIGGER_MAX_MOB_COUNT];
+	Int32 DeadMobIndexList[RUNTIME_DUNGEON_MAX_TRIGGER_MOB_COUNT];
 	Int32 NpcIndex;
 	Int32 ActionGroupIndex;
 };
@@ -43,6 +48,34 @@ struct _RTDungeonTriggerActionData {
 struct _RTDungeonTimeControlData {
 	Int32 Event;
 	Int32 Value;
+};
+
+struct _RTTimerData {
+	Int32 Type;
+	Int32 TargetMobIndex;
+	Int32 TargetEvent;
+	Int32 Interval;
+};
+
+struct _RTDungeonTimerData {
+	Bool Active;
+	UInt32 ItemID;
+	Int32 MobIndexCount;
+	Int32 MobIndexList[RUNTIME_DUNGEON_MAX_TIMER_MOB_COUNT];
+	Int32 TimerCount;
+	struct _RTTimerData Timers[RUNTIME_DUNGEON_MAX_TIMER_COUNT];
+};
+
+struct _RTImmuneData {
+	Int32 TargetIndex;
+	Int32 ActivationType;
+	Int32 CanAttack;
+	Int32 CanSelect;
+};
+
+struct _RTDungeonImmuneControlData {
+	Int32 ImmuneCount;
+	struct _RTImmuneData ImmuneList[RUNTIME_DUNGEON_MAX_IMMUNE_CONTROL_COUNT];
 };
 
 struct _RTDungeonData {
@@ -74,9 +107,13 @@ struct _RTDungeonData {
 	Int32 IsElite;
 	Int32 EliteDungeonBoost;
 	Int32 MissionTimeout;
+	Int32 StartKillMobCount;
+	Int32 StartKillMobList[RUNTIME_DUNGEON_MAX_START_KILL_MOB_COUNT];
 	DictionaryRef TriggerGroups;
 	DictionaryRef ActionGroups;
 	DictionaryRef TimeControls;
+	DictionaryRef ImmuneControls;
+	struct _RTDungeonTimerData TimerData;
 	struct _RTDropTable DropTable;
 };
 
@@ -140,6 +177,23 @@ Bool RTDungeonTriggerEvent(
 Void RTDungeonAddTime(
 	RTWorldContextRef WorldContext,
 	Int32 Value
+);
+
+Void RTDungeonUpdateTimer(
+	RTWorldContextRef WorldContext,
+	Int32 TargetEvent,
+	Int32 TargetMobIndex
+);
+
+Void RTDungeonUpdateTimerMobHP(
+	RTWorldContextRef WorldContext,
+	RTMobRef Mob
+);
+
+Void RTDungeonUpdateTimerItemCount(
+	RTWorldContextRef WorldContext,
+	RTItem ItemID,
+	UInt64 ItemOptions
 );
 
 EXTERN_C_END

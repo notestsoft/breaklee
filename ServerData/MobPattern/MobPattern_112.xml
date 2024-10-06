@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<MobPattern Index="112">
+	<MobTriggerGroup Index="1" Type="1" Parameters="55000">
+		<MobActionGroup Index="1" Delay="">
+			<MobAction Index="1" Type="9" Parameters="92:0" Duration="1000" TargetType="5" TargetParameters="" Loop="1" LoopDelay="70000" Priority="3"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="2" Type="5" Parameters="1:0">
+		<MobActionGroup Index="2" Delay="1000">
+			<MobAction Index="1" Type="10" Parameters="469" Duration="1333" TargetType="1" TargetParameters="" Loop="0" LoopDelay="100000" Priority="3"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="3" Type="5" Parameters="2:1">
+		<MobActionGroup Index="3" Delay="">
+			<MobAction Index="1" Type="10" Parameters="470" Duration="2833" TargetType="1" TargetParameters="" Loop="0" LoopDelay="100000" Priority="3"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="4" Type="1" Parameters="1000">
+		<MobActionGroup Index="4" Delay="">
+			<MobAction Index="1" Type="10" Parameters="466" Duration="2000" TargetType="1" TargetParameters="" Loop="1" LoopDelay="3200" Priority="1"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="5" Type="1" Parameters="6000">
+		<MobActionGroup Index="5" Delay="">
+			<MobAction Index="1" Type="10" Parameters="467" Duration="4000" TargetType="1" TargetParameters="" Loop="1" LoopDelay="8400" Priority="1"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="6" Type="1" Parameters="80000">
+		<MobActionGroup Index="6" Delay="">
+			<MobAction Index="1" Type="10" Parameters="468" Duration="1333" TargetType="5" TargetParameters="" Loop="1" LoopDelay="80000" Priority="2"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="7" Type="11" Parameters="180000">
+		<MobActionGroup Index="7" Delay="">
+			<MobAction Index="1" Type="13" Parameters="0" Duration="600" TargetType="" TargetParameters="" Loop="0" LoopDelay="100000" Priority="0"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+</MobPattern>

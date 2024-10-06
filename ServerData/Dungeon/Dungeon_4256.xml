@@ -1,138 +1,56 @@
 <?xml version="1.0" ?>
-<Dungeon DungeonIndex="4256">
+<Dungeon DungeonIndex="4256" StartKillMobList="">
 	<TriggerGroup Index="1">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="1"/>
-	</TriggerGroup>
-	<TriggerGroup Index="2">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="2"/>
-	</TriggerGroup>
-	<TriggerGroup Index="3">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="3"/>
-	</TriggerGroup>
-	<TriggerGroup Index="4">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="4"/>
-	</TriggerGroup>
-	<TriggerGroup Index="5">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="5"/>
 	</TriggerGroup>
-	<TriggerGroup Index="6">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="6"/>
-	</TriggerGroup>
-	<TriggerGroup Index="7">
+	<TriggerGroup Index="2">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="7"/>
 	</TriggerGroup>
-	<TriggerGroup Index="8">
+	<TriggerGroup Index="3">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="8"/>
 	</TriggerGroup>
-	<TriggerGroup Index="9">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="9"/>
+	<TriggerGroup Index="4">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="1"/>
 	</TriggerGroup>
-	<TriggerGroup Index="10">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="10"/>
+	<TriggerGroup Index="5">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="2"/>
 	</TriggerGroup>
-	<TriggerGroup Index="11">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="11"/>
+	<TriggerGroup Index="6">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="3"/>
+	</TriggerGroup>
+	<TriggerGroup Index="7">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="4"/>
+	</TriggerGroup>
+	<TriggerGroup Index="8">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="6"/>
 	</TriggerGroup>
 	<ActionGroup Index="1">
-		<Action Delay="1000" TargetMobIndex="8" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="1000" TargetMobIndex="82" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="2000" TargetMobIndex="73" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="2000" TargetMobIndex="22" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="100" TargetMobIndex="12" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="100" TargetMobIndex="3" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
 	<ActionGroup Index="2">
-		<Action Delay="1000" TargetMobIndex="23" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="1000" TargetMobIndex="83" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="2000" TargetMobIndex="53" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="100" TargetMobIndex="11" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="100" TargetMobIndex="3" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
 	<ActionGroup Index="3">
-		<Action Delay="1000" TargetMobIndex="54" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="1000" TargetMobIndex="84" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="100" TargetMobIndex="4" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="100" TargetMobIndex="9" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
 	<ActionGroup Index="4">
-		<Action Delay="1000" TargetMobIndex="55" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="1000" TargetMobIndex="85" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="100" TargetMobIndex="5" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="100" TargetMobIndex="10" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
 	<ActionGroup Index="5">
-		<Action Delay="1000" TargetMobIndex="74" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="1000" TargetMobIndex="56" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="1000" TargetMobIndex="86" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="2000" TargetMobIndex="62" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="500" TargetMobIndex="15" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
 	<ActionGroup Index="6">
-		<Action Delay="1000" TargetMobIndex="63" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="1000" TargetMobIndex="87" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="1000" TargetMobIndex="71" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="2000" TargetMobIndex="72" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="1000" TargetMobIndex="56" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="100" TargetMobIndex="1" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="100" TargetMobIndex="2" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
 	<ActionGroup Index="7">
-		<Action Delay="1000" TargetMobIndex="81" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="100" TargetMobIndex="16" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
 	<ActionGroup Index="8">
-		<Action Delay="100" TargetMobIndex="75" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="100" TargetMobIndex="17" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
-	<ActionGroup Index="9">
-		<Action Delay="100" TargetMobIndex="76" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-	</ActionGroup>
-	<ActionGroup Index="10">
-		<Action Delay="1000" TargetMobIndex="77" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="1000" TargetMobIndex="79" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-	</ActionGroup>
-	<ActionGroup Index="11">
-		<Action Delay="1000" TargetMobIndex="78" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="1000" TargetMobIndex="80" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-	</ActionGroup>
-	<WorldDropPool>
-		<Item ItemID="455" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
-		<Item ItemID="683" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="684" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="685" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="686" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="687" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="688" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="689" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="690" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="691" ItemOption="513" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="692" ItemOption="9729" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="692" ItemOption="9857" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="692" ItemOption="9985" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="692" ItemOption="10113" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="692" ItemOption="10241" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".02000000000000"/>
-		<Item ItemID="311" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00000190000000"/>
-		<Item ItemID="314" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".00000190000000"/>
-		<Item ItemID="1155" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".15000000000000"/>
-		<Item ItemID="1156" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".15000000000000"/>
-	</WorldDropPool>
-	<MobDropPool MobSpeciesIndex="1177">
-		<Item ItemID="1214" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
-		<Item ItemID="1215" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
-		<Item ItemID="1426" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="632" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="639" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".5"/>
-		<Item ItemID="1216" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1704" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1705" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1514" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1515" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1516" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="439" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="437" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="2373" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="1"/>
-		<Item ItemID="1702" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="1"/>
-		<Item ItemID="1657" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".5"/>
-		<Item ItemID="1658" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".5"/>
-		<Item ItemID="1659" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".5"/>
-		<Item ItemID="314" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".3"/>
-		<Item ItemID="311" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".3"/>
-		<Item ItemID="1447" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".3"/>
-		<Item ItemID="1450" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".3"/>
-		<Item ItemID="1453" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".3"/>
-		<Item ItemID="1456" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".3"/>
-		<Item ItemID="1459" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".3"/>
-		<Item ItemID="1462" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".3"/>
-		<Item ItemID="1426" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="715" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="405" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="406" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-	</MobDropPool>
 </Dungeon>

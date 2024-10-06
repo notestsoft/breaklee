@@ -74,4 +74,10 @@ Bool ServerLoadWorldDropData(
     CString ServerDirectory
 );
 
+Bool ServerLoadMobPatternData(
+    ServerContextRef Context,
+    CString RuntimeDirectory,
+    CString ServerDirectory
+);
+
 EXTERN_C_END

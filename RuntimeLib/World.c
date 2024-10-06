@@ -1,4 +1,5 @@
 #include "Mob.h"
+#include "MobPattern.h"
 #include "PartyManager.h"
 #include "Runtime.h"
 #include "World.h"
@@ -72,8 +73,20 @@ Void RTWorldContextUpdate(
     if (WorldContext->WorldData->Type == RUNTIME_WORLD_TYPE_DUNGEON ||
         WorldContext->WorldData->Type == RUNTIME_WORLD_TYPE_QUEST_DUNGEON) {
         RTDungeonUpdate(WorldContext);
-    }
 
+        /* NOTE: See @MobUpdateImprovement
+        DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(WorldContext->EntityToMob);
+        while (Iterator.Key) {
+            RTEntityID MobID = *(RTEntityID*)Iterator.Key;
+            RTMobRef Mob = RTWorldContextGetMob(WorldContext, MobID);
+            assert(Mob);
+            RTMobUpdate(WorldContext->WorldManager->Runtime, WorldContext, Mob);
+            Iterator = DictionaryKeyIteratorNext(Iterator);
+        }
+        */
+    } 
+
+    // NOTE: See @MobUpdateImprovement
     DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(WorldContext->EntityToMob);
     while (Iterator.Key) {
         RTEntityID MobID = *(RTEntityID*)Iterator.Key;
@@ -89,6 +102,16 @@ Void RTWorldContextUpdate(
 
         for (Int32 ChunkIndex = 0; ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT; ChunkIndex += 1) {
             RTWorldChunkRef WorldChunk = &WorldContext->Chunks[ChunkIndex];
+            /* TODO: @MobUpdateImprovement Fix world chunk mob update idling
+            if (WorldContext->WorldData->Type < 1 && WorldChunk->ReferenceCount > 0) {
+                for (Index Index = 0; Index < ArrayGetElementCount(WorldChunk->Mobs); Index += 1) {
+                    RTEntityID MobID = *(RTEntityID*)ArrayGetElementAtIndex(WorldChunk->Mobs, Index);
+                    RTMobRef Mob = RTWorldContextGetMob(WorldContext, MobID);
+                    assert(Mob);
+                    RTMobUpdate(WorldContext->WorldManager->Runtime, WorldContext, Mob);
+                }
+            }
+            */
             if (WorldChunk->NextItemUpdateTimestamp > Timestamp) continue;
             WorldChunk->NextItemUpdateTimestamp = INT64_MAX;
 
@@ -189,7 +212,7 @@ Void RTWorldSpawnMobEvent(
     Timestamp Delay
 ) {
     Mob->NextTimestamp = 0;
-    Mob->EventSpawnTimestamp = PlatformGetTickCount() + Delay;
+    Mob->EventSpawnTimestamp = GetTimestampMs() + Delay;
 }
 
 Void RTWorldSpawnMob(
@@ -237,7 +260,9 @@ Void RTWorldSpawnMob(
     RTMobInit(Runtime, Mob);
     Mob->ActiveSkill = &Mob->SpeciesData->DefaultSkill;
     Mob->IsDead = false;
+    Mob->IsIdle = true;
     Mob->IsSpawned = true;
+    Mob->IsTimerMob = false;
     Mob->EventSpawnTimestamp = 0;
     Mob->EventDespawnTimestamp = 0;
 
@@ -247,6 +272,8 @@ Void RTWorldSpawnMob(
     Mob->Movement.WorldContext = WorldContext;
     Mob->Movement.WorldChunk = WorldChunk;
     Mob->Movement.Entity = Mob->ID;
+
+    if (Mob->Pattern) RTMobPatternStart(Runtime, WorldContext, Mob, Mob->Pattern);
 
     if (Mob->Spawn.SpawnTriggerID) {
         RTDungeonTriggerEvent(WorldContext, Mob->Spawn.SpawnTriggerID);
@@ -261,9 +288,31 @@ Void RTWorldSpawnMob(
         if (TimeControl && TimeControl->Event == RUNTIME_DUNGEON_TIME_CONTROL_TYPE_SPAWN) {
             RTDungeonAddTime(WorldContext, TimeControl->Value);
         }
+
+        if (DungeonData->TimerData.Active) {
+            for (Int32 Index = 0; Index < DungeonData->TimerData.MobIndexCount; Index += 1) {
+                if (Mob->ID.EntityIndex == DungeonData->TimerData.MobIndexList[Index]) {
+                    Mob->IsTimerMob = true;
+                    break;
+                }
+            }
+
+            RTDungeonUpdateTimer(WorldContext, RUNTIME_DUNGEON_TIMER_TARGET_EVENT_TYPE_SPAWN, Mob->ID.EntityIndex);
+        }
     }
 
     RTMobOnEvent(Runtime, WorldContext, Mob, MOB_EVENT_SPAWN);
+
+    DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(WorldContext->EntityToMob);
+    while (Iterator.Key) {
+        RTEntityID WorldMobID = *(RTEntityID*)Iterator.Key;
+        RTMobRef WorldMob = RTWorldContextGetMob(WorldContext, WorldMobID);
+        if (WorldMob->Pattern && !RTEntityIsEqual(WorldMob->ID, Mob->ID)) {
+            RTMobPatternMobSpawned(Runtime, WorldContext, WorldMob, WorldMob->Pattern, Mob);
+        }
+
+        Iterator = DictionaryKeyIteratorNext(Iterator);
+    }
 }
 
 RTMobRef RTWorldContextGetMob(
@@ -283,7 +332,7 @@ Void RTWorldDespawnMobEvent(
     Timestamp Delay
 ) {
     Mob->NextTimestamp = 0;
-    Mob->EventDespawnTimestamp = PlatformGetTickCount() + Delay;
+    Mob->EventDespawnTimestamp = GetTimestampMs() + Delay;
 }
 
 Void RTWorldDespawnMob(
@@ -303,8 +352,12 @@ Void RTWorldDespawnMob(
     if (!Mob->IsSpawned) 
         return;
 
+    if (Mob->Pattern) RTMobPatternStop(Runtime, WorldContext, Mob, Mob->Pattern);
+
+    Mob->Pattern = NULL;
     Mob->IsSpawned = false;
     Mob->IsDead = true;
+    Mob->IsIdle = true;
 
     Mob->Movement.WorldContext = NULL;
     Mob->Movement.Entity = kEntityIDNull;
@@ -313,11 +366,11 @@ Void RTWorldDespawnMob(
     RTMobOnEvent(Runtime, WorldContext, Mob, MOB_EVENT_DESPAWN);
 
     // TODO: This should be evaluated inside the mob it self!
-    if (!RTEntityIsNull(Mob->DropOwner)) {
+    if (!RTEntityIsNull(Mob->DropOwner)) { // TODO: Why do we check here if the mob has a drop owner?
         RTCharacterRef Character = RTWorldManagerGetCharacter(WorldContext->WorldManager, Mob->DropOwner);
         if (Character) {
             RTDropResult Drop = { 0 };
-
+            
             if (RTCalculateDrop(Runtime, WorldContext, Mob, Character, &Drop)) {
                 RTWorldSpawnItem(
                     Runtime,
@@ -358,6 +411,14 @@ Void RTWorldDespawnMob(
                         Drop
                     );
                 }
+            }
+
+            if (WorldContext->DungeonIndex > 0) {
+                RTDungeonUpdateTimerItemCount(
+                    WorldContext,
+                    Drop.ItemID,
+                    Drop.ItemOptions
+                );
             }
         }
     }
@@ -410,6 +471,21 @@ Void RTWorldDespawnMob(
         if (TimeControl && TimeControl->Event == RUNTIME_DUNGEON_TIME_CONTROL_TYPE_DESPAWN) {
             RTDungeonAddTime(WorldContext, TimeControl->Value);
         }
+
+        if (DungeonData->TimerData.Active) {
+            RTDungeonUpdateTimer(WorldContext, RUNTIME_DUNGEON_TIMER_TARGET_EVENT_TYPE_DESPAWN, Mob->ID.EntityIndex);
+        }
+    }
+
+    DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(WorldContext->EntityToMob);
+    while (Iterator.Key) {
+        RTEntityID WorldMobID = *(RTEntityID*)Iterator.Key;
+        RTMobRef WorldMob = RTWorldContextGetMob(WorldContext, WorldMobID);
+        if (WorldMob->Pattern && !RTEntityIsEqual(WorldMob->ID, Mob->ID)) {
+            RTMobPatternMobDespawned(Runtime, WorldContext, WorldMob, WorldMob->Pattern, Mob);
+        }
+
+        Iterator = DictionaryKeyIteratorNext(Iterator);
     }
 }
 
@@ -623,6 +699,12 @@ Void RTWorldSetMobTable(
         }
     }
 
+    for (Int32 Index = 0; Index < ArrayGetElementCount(WorldContext->MobPatterns); Index += 1) {
+        RTMobPatternRef MobPattern = (RTMobPatternRef)ArrayGetElementAtIndex(WorldContext->MobPatterns, Index);
+        ArrayDestroy(MobPattern->ActionStates);
+    }
+    ArrayRemoveAllElements(WorldContext->MobPatterns, true);
+
     MemoryPoolClear(WorldContext->MobPool);
     DictionaryRemoveAll(WorldContext->EntityToMob);
 
@@ -632,6 +714,17 @@ Void RTWorldSetMobTable(
         Index MemoryPoolIndex = 0;
         RTMobRef Mob = (RTMobRef)MemoryPoolReserveNext(WorldContext->MobPool, &MemoryPoolIndex);
         memcpy(Mob, TableMob, sizeof(struct _RTMob));
+
+        if (Mob->Spawn.MobPatternIndex) {
+            Index MobPatternIndex = Mob->Spawn.MobPatternIndex;
+            RTMobPatternDataRef MobPatternData = (RTMobPatternDataRef)MemoryPoolFetch(Runtime->MobPatternDataPool, MobPatternIndex);
+            if (MobPatternData) {
+                Mob->Pattern = (RTMobPatternRef)ArrayAppendUninitializedElement(WorldContext->MobPatterns);
+                memset(Mob->Pattern, 0, sizeof(struct _RTMobPattern));
+                Mob->Pattern->Data = MobPatternData;
+                Mob->Pattern->ActionStates = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTMobActionState), RUNTIME_MOB_PATTERN_MAX_TRIGGER_GROUP_COUNT);
+            }
+        }
 
         Mob->ID.EntityIndex = TableMob->ID.EntityIndex;
         Mob->ID.WorldIndex = WorldContext->WorldData->WorldIndex;

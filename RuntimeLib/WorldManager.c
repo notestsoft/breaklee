@@ -192,7 +192,11 @@ RTWorldContextRef RTWorldContextCreateGlobal(
     WorldContext->Active = false;
     WorldContext->Closed = false;
     WorldContext->DungeonTimeout = 0;
+    WorldContext->TimerIndex = -1;
+    WorldContext->TimerItemCount = 0;
+    WorldContext->TimerTimeout = UINT64_MAX;
     WorldContext->MobPool = MemoryPoolCreate(WorldManager->Allocator, sizeof(struct _RTMob), RUNTIME_MEMORY_MAX_MOB_COUNT);
+    WorldContext->MobPatterns = ArrayCreateEmpty(WorldManager->Allocator, sizeof(struct _RTMobPattern), 8);
     WorldContext->ItemPool = MemoryPoolCreate(WorldManager->Allocator, sizeof(struct _RTWorldItem), RUNTIME_MEMORY_MAX_ITEM_COUNT);
     WorldContext->EntityToMob = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_MOB_COUNT);
     WorldContext->EntityToItem = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_ITEM_COUNT);
@@ -202,7 +206,6 @@ RTWorldContextRef RTWorldContextCreateGlobal(
     for (Int32 ChunkX = 0; ChunkX < RUNTIME_WORLD_CHUNK_COUNT; ChunkX += 1) {
         for (Int32 ChunkY = 0; ChunkY < RUNTIME_WORLD_CHUNK_COUNT; ChunkY += 1) {
             Index ChunkIndex = ChunkX + ChunkY * RUNTIME_WORLD_CHUNK_COUNT; // TODO: Check which axis is the first one
-            
             RTWorldChunkInitialize(
                 WorldManager->Runtime,
                 WorldContext,
@@ -244,6 +247,12 @@ Void RTWorldContextDestroyGlobal(
         RTWorldChunkDeinitialize(&WorldContext->Chunks[ChunkIndex]);
     }
 
+    for (Int32 Index = 0; Index < ArrayGetElementCount(WorldContext->MobPatterns); Index += 1) {
+        RTMobPatternRef MobPattern = (RTMobPatternRef)ArrayGetElementAtIndex(WorldContext->MobPatterns, Index);
+        ArrayDestroy(MobPattern->ActionStates);
+    }
+    ArrayDestroy(WorldContext->MobPatterns);
+
     MemoryPoolDestroy(WorldContext->MobPool);
     MemoryPoolDestroy(WorldContext->ItemPool);
     DictionaryDestroy(WorldContext->EntityToMob);
@@ -268,6 +277,7 @@ RTWorldContextRef RTWorldContextCreateParty(
 
     Index WorldPoolIndex = 0;
     RTWorldContextRef WorldContext = (RTWorldContextRef)MemoryPoolReserveNext(WorldManager->PartyWorldContextPool, &WorldPoolIndex);
+    assert(WorldContext);
     WorldContext->WorldManager = WorldManager;
     WorldContext->WorldPoolIndex = WorldPoolIndex;
     WorldContext->WorldData = RTWorldDataGet(WorldManager, WorldIndex);
@@ -277,7 +287,11 @@ RTWorldContextRef RTWorldContextCreateParty(
     WorldContext->Active = false;
     WorldContext->Closed = false;
     WorldContext->DungeonTimeout = 0;
+    WorldContext->TimerIndex = -1;
+    WorldContext->TimerItemCount = 0;
+    WorldContext->TimerTimeout = UINT64_MAX;
     WorldContext->MobPool = MemoryPoolCreate(WorldManager->Allocator, sizeof(struct _RTMob), RUNTIME_MEMORY_MAX_MOB_COUNT);
+    WorldContext->MobPatterns = ArrayCreateEmpty(WorldManager->Allocator, sizeof(struct _RTMobPattern), 8);
     WorldContext->ItemPool = MemoryPoolCreate(WorldManager->Allocator, sizeof(struct _RTWorldItem), RUNTIME_MEMORY_MAX_ITEM_COUNT);
     WorldContext->EntityToMob = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_MOB_COUNT);
     WorldContext->EntityToItem = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_ITEM_COUNT);
@@ -340,6 +354,12 @@ Void RTWorldContextDestroyParty(
     for (Index ChunkIndex = 0; ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT; ChunkIndex += 1) {
         RTWorldChunkDeinitialize(&WorldContext->Chunks[ChunkIndex]);
     }
+
+    for (Int32 Index = 0; Index < ArrayGetElementCount(WorldContext->MobPatterns); Index += 1) {
+        RTMobPatternRef MobPattern = (RTMobPatternRef)ArrayGetElementAtIndex(WorldContext->MobPatterns, Index);
+        ArrayDestroy(MobPattern->ActionStates);
+    }
+    ArrayDestroy(WorldContext->MobPatterns);
 
     MemoryPoolDestroy(WorldContext->MobPool);
     MemoryPoolDestroy(WorldContext->ItemPool);

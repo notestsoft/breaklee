@@ -2,5 +2,11 @@
 <World WorldIndex="37">
 	<QuestDropPool MobSpeciesIndex="1204">
 		<Item ItemID="2876" ItemOption="1322" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="2876" ItemOption="1322" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="2876" ItemOption="1322" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="2876" ItemOption="1322" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="2876" ItemOption="1322" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="2876" ItemOption="1322" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="2876" ItemOption="1322" ItemDuration="0" OptionPoolID="0" Rate="100"/>
 	</QuestDropPool>
 </World>

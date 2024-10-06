@@ -24,7 +24,7 @@ CLIENT_PROCEDURE_BINDING(ATTACK_TO_MOB) {
 		RUNTIME_SKILL_DAMAGE_TYPE_SWORD,
 		Character->Data.Info.Level,
 		&Character->Attributes,
-		Mob->SpeciesData->Level,
+		Mob->Spawn.Level,
 		&Mob->Attributes,
 		&Result
 	);
@@ -46,6 +46,10 @@ CLIENT_PROCEDURE_BINDING(ATTACK_TO_MOB) {
 	Response->CharacterMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 	Response->CharacterSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
 	Response->MobHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+	Response->Unknown1 = 1;
+	Response->Unknown2 = 1;
+	Response->Unknown3 = 1;
+	Response->Unknown4 = 1;
 	SocketSend(Socket, Connection, Response);
 
 	// TODO: This should be calculated globally inside the mob logic when it dies by a bfx effect and no active attack!

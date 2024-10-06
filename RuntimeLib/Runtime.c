@@ -1,6 +1,7 @@
 #include "Character.h"
 #include "Force.h"
 #include "Mob.h"
+#include "MobPattern.h"
 #include "PartyManager.h"
 #include "Runtime.h"
 #include "Script.h"
@@ -39,6 +40,7 @@ RTRuntimeRef RTRuntimeCreate(
     Runtime->NotificationManager = RTNotificationManagerCreate(Runtime);
     Runtime->SkillDataPool = MemoryPoolCreate(Allocator, sizeof(struct _RTCharacterSkillData), RUNTIME_MEMORY_MAX_CHARACTER_SKILL_DATA_COUNT);
     Runtime->ForceEffectFormulaPool = MemoryPoolCreate(Allocator, sizeof(struct _RTForceEffectFormula), RUNTIME_FORCE_EFFECT_COUNT);
+    Runtime->MobPatternDataPool = MemoryPoolCreate(Allocator, sizeof(struct _RTMobPatternData), RUNTIME_MEMORY_MAX_MOB_PATTERN_COUNT);
     Runtime->DungeonData = IndexDictionaryCreate(Allocator, 8);
     Runtime->PatternPartData = IndexDictionaryCreate(Allocator, 8);
     Runtime->UserData = UserData;
@@ -83,6 +85,7 @@ Void RTRuntimeDestroy(
         DictionaryDestroy(DungeonData->TriggerGroups);
         DictionaryDestroy(DungeonData->ActionGroups);
         DictionaryDestroy(DungeonData->TimeControls);
+        DictionaryDestroy(DungeonData->ImmuneControls);
         ArrayDestroy(DungeonData->DropTable.WorldDropPool);
 
         Iterator = DictionaryKeyIteratorNext(Iterator);
@@ -97,8 +100,9 @@ Void RTRuntimeDestroy(
 
     DictionaryDestroy(Runtime->DungeonData);
     DictionaryDestroy(Runtime->PatternPartData);
-    MemoryPoolDestroy(Runtime->ForceEffectFormulaPool);
     MemoryPoolDestroy(Runtime->SkillDataPool);
+    MemoryPoolDestroy(Runtime->ForceEffectFormulaPool);
+    MemoryPoolDestroy(Runtime->MobPatternDataPool);
     RTNotificationManagerDestroy(Runtime->NotificationManager);
     RTScriptManagerDestroy(Runtime->ScriptManager);
     RTRuntimeDataContextDestroy(Runtime->Context);

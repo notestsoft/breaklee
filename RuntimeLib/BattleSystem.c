@@ -235,6 +235,10 @@ Void RTCalculateNormalAttackResult(
 		Result->AppliedDamage = MIN(Result->TotalDamage, Defender->Values[RUNTIME_ATTRIBUTE_HP_CURRENT]);
 	}
 
+	if (Defender->Values[RUNTIME_ATTRIBUTE_ABSOLUTE_DAMAGE] > 0) {
+		Result->AppliedDamage = MIN(Result->AppliedDamage, Defender->Values[RUNTIME_ATTRIBUTE_ABSOLUTE_DAMAGE]);
+	}
+
 	Result->IsDead = (Defender->Values[RUNTIME_ATTRIBUTE_HP_CURRENT] - Result->AppliedDamage) <= 0;
 
 	// TODO: Add damage absorb shield and other stuff

@@ -1,11 +1,15 @@
 <?xml version="1.0" ?>
-<Dungeon DungeonIndex="4298">
-	<WorldDropPool>
-		<Item ItemID="1500" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".03000000000000"/>
-		<Item ItemID="4069" ItemOption="129" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".50"/>
-		<Item ItemID="1155" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05"/>
-		<Item ItemID="1156" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05"/>
-		<Item ItemID="1214" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05"/>
-		<Item ItemID="1215" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05"/>
-	</WorldDropPool>
+<Dungeon DungeonIndex="4298" StartKillMobList="">
+	<TriggerGroup Index="1">
+		<Trigger Type="1" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="2"/>
+	</TriggerGroup>
+	<TriggerGroup Index="2">
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="1"/>
+	</TriggerGroup>
+	<ActionGroup Index="1">
+		<Action Delay="100" TargetMobIndex="0" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="2">
+		<Action Delay="100" TargetMobIndex="1" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
 </Dungeon>

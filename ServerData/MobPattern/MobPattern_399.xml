@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<MobPattern Index="399">
+	<MobTriggerGroup Index="1" Type="1" Parameters="10">
+		<MobActionGroup Index="1" Delay="0">
+			<MobAction Index="1" Type="10" Parameters="740" Duration="0" TargetType="1" TargetParameters="" Loop="1" LoopDelay="100" Priority="-10"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="2" Type="5" Parameters="1:1">
+		<MobActionGroup Index="2" Delay="0">
+			<MobAction Index="1" Type="11" Parameters="1:1" Duration="0" TargetType="5" TargetParameters="" Loop="0" LoopDelay="100000" Priority="-10"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="3" Type="5" Parameters="2:1">
+		<MobActionGroup Index="3" Delay="0">
+			<MobAction Index="1" Type="19" Parameters="-1" Duration="0" TargetType="5" TargetParameters="" Loop="0" LoopDelay="100000" Priority="-10"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+</MobPattern>

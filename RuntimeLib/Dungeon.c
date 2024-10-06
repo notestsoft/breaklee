@@ -68,31 +68,90 @@ Bool RTDungeonStartNextPatternPart(
 }
 
 Bool RTDungeonStart(
-	RTWorldContextRef World
+	RTWorldContextRef WorldContext
 ) {
-    RTRuntimeRef Runtime = World->WorldManager->Runtime;
+    RTRuntimeRef Runtime = WorldContext->WorldManager->Runtime;
 
-    if (World->Active) return true;
+    if (WorldContext->Active) return true;
 
-    RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, World->DungeonIndex);
+    RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, WorldContext->DungeonIndex);
     assert(DungeonData);
 
-    World->PatternPartIndex = -1;
-    World->DungeonTimeout = GetTimestamp() + DungeonData->MissionTimeout;
-    RTDungeonStartNextPatternPart(World);
+    WorldContext->PatternPartIndex = -1;
+    WorldContext->DungeonTimeout = GetTimestampMs() + DungeonData->MissionTimeout * 1000;
+    WorldContext->TimerIndex = -1;
+    WorldContext->TimerTimeout = UINT64_MAX;
+
+    RTDungeonStartNextPatternPart(WorldContext);
 
     // TODO: Generate maze 
 
-    World->Active = true;
+    WorldContext->Active = true;
+
+    if (DungeonData->TimerData.Active && DungeonData->TimerData.ItemID > 0) {
+        RTPartyRef Party = RTRuntimeGetParty(Runtime, WorldContext->Party);
+        assert(Party);
+
+        NOTIFICATION_DATA_DUNGEON_TIMER_INFO* Notification = RTNotificationInit(DUNGEON_TIMER_INFO);
+        Notification->Type = DUNGEON_TIMER_INFO_TYPE_DROP;
+        Notification->Drop.ItemID = DungeonData->TimerData.ItemID;
+        Notification->Drop.ItemCount = WorldContext->TimerItemCount;
+        RTNotificationDispatchToParty(Notification, Party);
+    }
+
+    // RTDungeonStartNextTimer(WorldContext);
+
+    for (Int32 Index = 0; Index < DungeonData->StartKillMobCount; Index += 1) {
+        RTEntityID MobID = { 0 };
+        MobID.EntityIndex = DungeonData->StartKillMobList[Index];
+        MobID.WorldIndex = WorldContext->WorldData->WorldIndex;
+        MobID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
+
+        RTMobRef Mob = RTWorldContextGetMob(WorldContext, MobID);
+        assert(Mob);
+
+        RTWorldDespawnMobEvent(Runtime, WorldContext, Mob, 1);
+    }
+
 	return true;
 }
 
 Bool RTDungeonUpdate(
     RTWorldContextRef World
 ) {
-    Timestamp Timestamp = GetTimestamp();
+    RTRuntimeRef Runtime = World->WorldManager->Runtime;
+    Timestamp Timestamp = GetTimestampMs();
     if (World->DungeonTimeout <= Timestamp) {
         return RTDungeonFail(World);
+    }
+
+    RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, World->DungeonIndex);
+    assert(DungeonData);
+
+    if (DungeonData->TimerData.Active && World->TimerTimeout < Timestamp) {
+        if (World->TimerIndex + 1 < DungeonData->TimerData.TimerCount) {
+            RTTimerDataRef TimerData = &DungeonData->TimerData.Timers[World->TimerIndex + 1];
+
+            RTEntityID MobID = { 0 };
+            MobID.EntityIndex = TimerData->TargetMobIndex;
+            MobID.WorldIndex = World->WorldData->WorldIndex;
+            MobID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
+
+            RTMobRef Mob = RTWorldContextGetMob(World, MobID);
+            assert(Mob);
+
+            Bool IsAlive = RTMobIsAlive(Mob);
+            if (!IsAlive && TimerData->TargetEvent == RUNTIME_DUNGEON_TIMER_TARGET_EVENT_TYPE_SPAWN) {
+                RTWorldSpawnMob(Runtime, World, Mob);
+            }
+
+            if (IsAlive && TimerData->TargetEvent == RUNTIME_DUNGEON_TIMER_TARGET_EVENT_TYPE_DESPAWN) {
+                RTWorldDespawnMob(Runtime, World, Mob);
+            }
+        }
+        else {
+            World->TimerTimeout = UINT64_MAX;
+        }
     }
 
     return true;
@@ -166,6 +225,7 @@ Bool RTDungeonTriggerEvent(
     RTRuntimeRef Runtime = World->WorldManager->Runtime;
     Bool Triggered = false;
     RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, World->DungeonIndex);
+    // TODO: Assign a dungeon data pointer to the WorldContext so it doesn't have to be looked up on runtime
     assert(DungeonData);
 
     ArrayRef TriggerGroup = (ArrayRef)DictionaryLookup(DungeonData->TriggerGroups, &TriggerIndex);
@@ -241,7 +301,93 @@ Void RTDungeonAddTime(
     RTPartyRef Party = RTRuntimeGetParty(Runtime, WorldContext->Party);
     assert(Party);
 
-    NOTIFICATION_DATA_NFY_DUNGEON_TIMER* Notification = RTNotificationInit(NFY_DUNGEON_TIMER);
+    NOTIFICATION_DATA_DUNGEON_TIME_CONTROL* Notification = RTNotificationInit(DUNGEON_TIME_CONTROL);
     Notification->TimeAddition = Value;
+    RTNotificationDispatchToParty(Notification, Party);
+}
+
+Void RTDungeonUpdateTimer(
+    RTWorldContextRef WorldContext,
+    Int32 TargetEvent,
+    Int32 TargetMobIndex
+) {
+    RTRuntimeRef Runtime = WorldContext->WorldManager->Runtime;
+    RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, WorldContext->DungeonIndex);
+    assert(DungeonData);
+
+    if (!DungeonData->TimerData.Active) return;
+
+    if (WorldContext->TimerIndex + 1 < DungeonData->TimerData.TimerCount) {
+        RTTimerDataRef TimerData = &DungeonData->TimerData.Timers[WorldContext->TimerIndex + 1];
+        if (TimerData->TargetEvent == TargetEvent && TimerData->TargetMobIndex == TargetMobIndex) {
+            WorldContext->TimerIndex += 1;
+
+            if (TimerData->Interval > 0) {
+                WorldContext->TimerTimeout = GetTimestampMs() + TimerData->Interval;
+            }
+            else {
+                WorldContext->TimerTimeout = UINT64_MAX;
+            }
+
+            RTPartyRef Party = RTRuntimeGetParty(Runtime, WorldContext->Party);
+            assert(Party);
+
+            NOTIFICATION_DATA_DUNGEON_TIMER* Notification = RTNotificationInit(DUNGEON_TIMER);
+            Notification->TimerType = TimerData->Type;
+            Notification->Interval = TimerData->Interval;
+            RTNotificationDispatchToParty(Notification, Party);
+        }
+    }
+}
+
+Void RTDungeonUpdateTimerMobHP(
+    RTWorldContextRef WorldContext,
+    RTMobRef Mob
+) {
+    RTRuntimeRef Runtime = WorldContext->WorldManager->Runtime;
+    RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, WorldContext->DungeonIndex);
+    assert(DungeonData);
+
+    assert(Mob->ID.WorldIndex == DungeonData->WorldIndex);
+
+    if (!DungeonData->TimerData.Active) return;
+
+    RTPartyRef Party = RTRuntimeGetParty(Runtime, WorldContext->Party);
+    assert(Party);
+
+    NOTIFICATION_DATA_DUNGEON_TIMER_INFO* Notification = RTNotificationInit(DUNGEON_TIMER_INFO);
+    Notification->Type = DUNGEON_TIMER_INFO_TYPE_MOB;
+    Notification->Mob.EntityID = Mob->ID.EntityIndex;
+    Notification->Mob.CurrentHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+    Notification->Mob.MaxHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
+    RTNotificationDispatchToParty(Notification, Party);
+}
+
+Void RTDungeonUpdateTimerItemCount(
+    RTWorldContextRef WorldContext,
+    RTItem ItemID,
+    UInt64 ItemOptions
+) {
+    RTRuntimeRef Runtime = WorldContext->WorldManager->Runtime;
+    RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, WorldContext->DungeonIndex);
+    assert(DungeonData);
+
+    if (!DungeonData->TimerData.Active) return;
+    if (DungeonData->TimerData.ItemID != ItemID.ID & RUNTIME_ITEM_MASK_INDEX) return;
+
+    RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemID.ID);
+    assert(ItemData);
+
+    UInt64 ItemStackSizeMask = RTItemDataGetStackSizeMask(ItemData);
+    Int64 ItemStackSize = ItemOptions & ItemStackSizeMask;
+    WorldContext->TimerItemCount += ItemStackSize;
+
+    RTPartyRef Party = RTRuntimeGetParty(Runtime, WorldContext->Party);
+    assert(Party);
+
+    NOTIFICATION_DATA_DUNGEON_TIMER_INFO* Notification = RTNotificationInit(DUNGEON_TIMER_INFO);
+    Notification->Type = DUNGEON_TIMER_INFO_TYPE_DROP;
+    Notification->Drop.ItemID = DungeonData->TimerData.ItemID;
+    Notification->Drop.ItemCount = WorldContext->TimerItemCount;
     RTNotificationDispatchToParty(Notification, Party);
 }

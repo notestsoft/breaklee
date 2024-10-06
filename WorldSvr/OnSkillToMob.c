@@ -115,7 +115,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 			SkillData,
 			Character->Data.Info.Level,
 			&Character->Attributes,
-			Mob->SpeciesData->Level,
+			Mob->Spawn.Level,
 			&Mob->Attributes,
 			&Result
 		);

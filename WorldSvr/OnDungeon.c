@@ -94,8 +94,8 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_START) {
         if (!DungeonData) goto error;
 
         S2C_DATA_NFY_QUEST_DUNGEON_SPAWN* Response = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_QUEST_DUNGEON_SPAWN);
-        Response->DungeonTimeout1 = (UInt32)(World->DungeonTimeout * 1000 - GetTimestampMs());
-        Response->DungeonTimeout2 = (UInt32)(World->DungeonTimeout * 1000 - GetTimestampMs());
+        Response->DungeonTimeout1 = (UInt32)(World->DungeonTimeout - GetTimestampMs());
+        Response->DungeonTimeout2 = (UInt32)(World->DungeonTimeout - GetTimestampMs());
         SocketSend(Socket, Connection, Response);
     }
 
@@ -138,7 +138,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_SPAWN) {
 
         if (RTDungeonStart(World)) {
             S2C_DATA_NFY_QUEST_DUNGEON_SPAWN* Response = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_QUEST_DUNGEON_SPAWN);
-            Response->DungeonTimeout1 = (UInt32)(World->DungeonTimeout * 1000 - GetTimestampMs());
+            Response->DungeonTimeout1 = (UInt32)(World->DungeonTimeout - GetTimestampMs());
             Response->DungeonTimeout2 = DungeonData->MissionTimeout * 1000;
             SocketSend(Socket, Connection, Response);
         }

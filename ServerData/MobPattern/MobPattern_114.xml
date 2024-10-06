@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<MobPattern Index="114">
+	<MobTriggerGroup Index="1" Type="1" Parameters="1000">
+		<MobActionGroup Index="1" Delay="">
+			<MobAction Index="1" Type="10" Parameters="476" Duration="2666" TargetType="1" TargetParameters="" Loop="1" LoopDelay="3000" Priority="1"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="2" Type="1" Parameters="3000">
+		<MobActionGroup Index="2" Delay="">
+			<MobAction Index="1" Type="10" Parameters="477" Duration="3116" TargetType="1" TargetParameters="" Loop="1" LoopDelay="6000" Priority="1"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="3" Type="1" Parameters="40000">
+		<MobActionGroup Index="3" Delay="">
+			<MobAction Index="1" Type="10" Parameters="478" Duration="2666" TargetType="1" TargetParameters="" Loop="1" LoopDelay="40000" Priority="2"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="4" Type="1" Parameters="60000">
+		<MobActionGroup Index="4" Delay="">
+			<MobAction Index="1" Type="10" Parameters="479" Duration="3116" TargetType="1" TargetParameters="" Loop="1" LoopDelay="60000" Priority="3"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="5" Type="1" Parameters="180000">
+		<MobActionGroup Index="5" Delay="">
+			<MobAction Index="1" Type="9" Parameters="94:0" Duration="10000" TargetType="1" TargetParameters="" Loop="1" LoopDelay="160000" Priority="4"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="6" Type="5" Parameters="5:0">
+		<MobActionGroup Index="6" Delay="10000">
+			<MobAction Index="1" Type="4" Parameters="1:829:2:100" Duration="1000" TargetType="5" TargetParameters="" Loop="0" LoopDelay="100000" Priority="4"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="7" Type="11" Parameters="180000">
+		<MobActionGroup Index="7" Delay="">
+			<MobAction Index="1" Type="13" Parameters="0" Duration="600" TargetType="" TargetParameters="" Loop="0" LoopDelay="100000" Priority="0"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+</MobPattern>

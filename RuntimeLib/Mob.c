@@ -1,4 +1,5 @@
 #include "Mob.h"
+#include "MobPattern.h"
 #include "Movement.h"
 #include "Script.h"
 #include "Runtime.h"
@@ -29,7 +30,7 @@ Void RTMobInit(
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_IGNORE_ACCURACY] = Mob->SpeciesData->IgnoreAccuracy;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_IGNORE_DAMAGE_REDUCTION] = Mob->SpeciesData->IgnoreDamageReduction;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_IGNORE_PENETRATION] = Mob->SpeciesData->IgnorePenetration;
-	// Mob->Attributes.Values[?] = Mob->SpeciesData->AbsoluteDamage;
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_ABSOLUTE_DAMAGE] = Mob->SpeciesData->AbsoluteDamage;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_RESIST_SKILL_AMP] = Mob->SpeciesData->ResistSkillAmp;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_RESIST_CRITICAL_DAMAGE] = Mob->SpeciesData->ResistCriticalDamage;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_RESIST_SUPPRESSION] = Mob->SpeciesData->ResistSuppression;
@@ -173,47 +174,94 @@ RTEntityID RTMobGetMaxAggroTarget(
 	Int32 Index = 0;
 
 	while (Index < Mob->Aggro.Count) {
-		RTCharacterRef Character = RTWorldManagerGetCharacter(WorldContext->WorldManager, Mob->Aggro.Entities[Index]);
-		if (!Character) {
-			Int32 TailLength = Mob->Aggro.Count - Index - 1;
-			if (TailLength > 0) {
-				memmove(
-					&Mob->Aggro.Entities[Index], 
-					&Mob->Aggro.Entities[Index + 1], 
-					TailLength * sizeof(RTEntityID)
-				);
-				memmove(
-					&Mob->Aggro.ReceivedDamage[Index], 
-					&Mob->Aggro.ReceivedDamage[Index + 1], 
-					TailLength * sizeof(Int64)
-				);
+		RTEntityID EnemyID = Mob->Aggro.Entities[Index];
+		if (EnemyID.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) {
+			RTCharacterRef Enemy = RTWorldManagerGetCharacter(WorldContext->WorldManager, EnemyID);
+			if (!Enemy) {
+				Int32 TailLength = Mob->Aggro.Count - Index - 1;
+				if (TailLength > 0) {
+					memmove(
+						&Mob->Aggro.Entities[Index],
+						&Mob->Aggro.Entities[Index + 1],
+						TailLength * sizeof(RTEntityID)
+					);
+					memmove(
+						&Mob->Aggro.ReceivedDamage[Index],
+						&Mob->Aggro.ReceivedDamage[Index + 1],
+						TailLength * sizeof(Int64)
+					);
+				}
+
+				Mob->Aggro.Count -= 1;
+				continue;
 			}
 
-			Mob->Aggro.Count -= 1;
-			continue;
+			Int32 Distance = RTMovementDistance(&Enemy->Movement, &Mob->Movement);
+			if (!Enemy ||
+				Enemy->Data.Info.WorldIndex != WorldContext->WorldData->WorldIndex ||
+				!RTCharacterIsAlive(Runtime, Enemy) ||
+				Distance > Mob->AlertRange) {
+				Int32 TailLength = Mob->Aggro.Count - Index - 1;
+				if (TailLength > 0) {
+					memmove(
+						&Mob->Aggro.Entities[Index],
+						&Mob->Aggro.Entities[Index + 1],
+						TailLength * sizeof(RTEntityID)
+					);
+					memmove(
+						&Mob->Aggro.ReceivedDamage[Index],
+						&Mob->Aggro.ReceivedDamage[Index + 1],
+						TailLength * sizeof(Int64)
+					);
+				}
+
+				Mob->Aggro.Count -= 1;
+				continue;
+			}
 		}
 
-		Int32 Distance = RTMovementDistance(&Character->Movement, &Mob->Movement);
-		if (!Character || 
-			Character->Data.Info.WorldIndex != WorldContext->WorldData->WorldIndex ||
-			!RTCharacterIsAlive(Runtime, Character) ||
-			Distance > Mob->SpeciesData->AlertRange) {
-			Int32 TailLength = Mob->Aggro.Count - Index - 1;
-			if (TailLength > 0) {
-				memmove(
-					&Mob->Aggro.Entities[Index], 
-					&Mob->Aggro.Entities[Index + 1], 
-					TailLength * sizeof(RTEntityID)
-				);
-				memmove(
-					&Mob->Aggro.ReceivedDamage[Index], 
-					&Mob->Aggro.ReceivedDamage[Index + 1], 
-					TailLength * sizeof(Int64)
-				);
+		if (EnemyID.EntityType == RUNTIME_ENTITY_TYPE_MOB) {
+			RTMobRef Enemy = RTWorldContextGetMob(WorldContext, EnemyID);
+			if (!Enemy) {
+				Int32 TailLength = Mob->Aggro.Count - Index - 1;
+				if (TailLength > 0) {
+					memmove(
+						&Mob->Aggro.Entities[Index],
+						&Mob->Aggro.Entities[Index + 1],
+						TailLength * sizeof(RTEntityID)
+					);
+					memmove(
+						&Mob->Aggro.ReceivedDamage[Index],
+						&Mob->Aggro.ReceivedDamage[Index + 1],
+						TailLength * sizeof(Int64)
+					);
+				}
+
+				Mob->Aggro.Count -= 1;
+				continue;
 			}
 
-			Mob->Aggro.Count -= 1;
-			continue;
+			Int32 Distance = RTMovementDistance(&Enemy->Movement, &Mob->Movement);
+			if (!Enemy ||
+				!RTMobIsAlive(Enemy) ||
+				Distance > Mob->AlertRange) {
+				Int32 TailLength = Mob->Aggro.Count - Index - 1;
+				if (TailLength > 0) {
+					memmove(
+						&Mob->Aggro.Entities[Index],
+						&Mob->Aggro.Entities[Index + 1],
+						TailLength * sizeof(RTEntityID)
+					);
+					memmove(
+						&Mob->Aggro.ReceivedDamage[Index],
+						&Mob->Aggro.ReceivedDamage[Index + 1],
+						TailLength * sizeof(Int64)
+					);
+				}
+
+				Mob->Aggro.Count -= 1;
+				continue;
+			}
 		}
 
 		if (MaxAggroIndex < 0) {
@@ -262,43 +310,50 @@ Void RTMobCancelMovement(
 
 Void RTMobApplyDamage(
 	RTRuntimeRef Runtime,
-	RTWorldContextRef World,
+	RTWorldContextRef WorldContext,
 	RTMobRef Mob,
 	RTEntityID Source,
 	Int64 Damage
 ) {
+	Int64 PreviousHp = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
 	Int64 TotalDamage = MIN(Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT], Damage);
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] -= Damage;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] = MAX(0, Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT]);
 	
-	if (Source.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) {
-		Bool Found = false;
-		for (Int32 Index = 0; Index < Mob->Aggro.Count; Index += 1) {
-			if (RTEntityIsEqual(Mob->Aggro.Entities[Index], Source)) {
-				Mob->Aggro.ReceivedDamage[Index] += Damage;
-				Found = true;
-				break;
-			}
+	Bool Found = false;
+	for (Int32 Index = 0; Index < Mob->Aggro.Count; Index += 1) {
+		if (RTEntityIsEqual(Mob->Aggro.Entities[Index], Source)) {
+			Mob->Aggro.ReceivedDamage[Index] += Damage;
+			Found = true;
+			break;
 		}
-
-		if (!Found && Mob->Aggro.Count < RUNTIME_MEMORY_MAX_MOB_AGGRO_COUNT) {
-			Mob->Aggro.Entities[Mob->Aggro.Count] = Source;
-			Mob->Aggro.ReceivedDamage[Mob->Aggro.Count] = Damage;
-			Mob->Aggro.Count += 1;
-		}
-
-		RTMobCancelMovement(Runtime, World, Mob);
 	}
+
+	if (!Found && Mob->Aggro.Count < RUNTIME_MEMORY_MAX_MOB_AGGRO_COUNT) {
+		Mob->Aggro.Entities[Mob->Aggro.Count] = Source;
+		Mob->Aggro.ReceivedDamage[Mob->Aggro.Count] = Damage;
+		Mob->Aggro.Count += 1;
+	}
+
+	RTMobCancelMovement(Runtime, WorldContext, Mob);
 
 	if (Mob->Script && TotalDamage > 0) RTScriptCall(
 		Mob->Script,
 		MOB_EVENT_DAMAGE,
 		LUA_TLIGHTUSERDATA, Runtime,
-		LUA_TLIGHTUSERDATA, World,
+		LUA_TLIGHTUSERDATA, WorldContext,
 		LUA_TLIGHTUSERDATA, Mob,
 		LUA_TNUMBER, TotalDamage,
 		NULL
 	);
+
+	if (Mob->IsTimerMob) {
+		RTDungeonUpdateTimerMobHP(WorldContext, Mob);
+	}
+
+	if (Mob->Pattern) {
+		RTMobPatternHpChanged(Runtime, WorldContext, Mob, Mob->Pattern, PreviousHp, Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT]);
+	}
 }
 
 Void RTMobAttackTarget(
@@ -323,7 +378,7 @@ Void RTMobAttackTarget(
 	RTCalculateNormalAttackResult(
 		Runtime,
 		RUNTIME_SKILL_DAMAGE_TYPE_SWORD,
-		Mob->SpeciesData->Level,
+		Mob->Spawn.Level,
 		&Mob->Attributes,
 		Character->Data.Info.Level,
 		&Character->Attributes,
@@ -353,6 +408,59 @@ Void RTMobAttackTarget(
 	}
 }
 
+Void RTMobAttackTargetMob(
+	RTRuntimeRef Runtime,
+	RTWorldContextRef World,
+	RTMobRef Mob,
+	RTMobRef Target
+) {
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_ATTACK] = RandomRange(
+		&World->Seed,
+		Mob->ActiveSkill->PhysicalAttackMin,
+		Mob->ActiveSkill->PhysicalAttackMax
+	);
+
+	if (Mob->SpecialAttackSkill) {
+		// assert(false && "Not Implemented!");
+	}
+
+	// TODO: Check SkillGroup for attack patterns: single, aoe, movement, heal, buff, debuff
+
+	struct _RTBattleResult Result = { 0 };
+	RTCalculateNormalAttackResult(
+		Runtime,
+		RUNTIME_SKILL_DAMAGE_TYPE_SWORD,
+		Mob->Spawn.Level,
+		&Mob->Attributes,
+		Target->Spawn.Level,
+		&Target->Attributes,
+		&Result
+	);
+
+	RTMobApplyDamage(Runtime, World, Target, Mob->ID, Result.AppliedDamage);
+	Mob->NextTimestamp = PlatformGetTickCount() + Mob->ActiveSkill->Interval;
+
+	// TODO: Check which packet has to be sent for mob attacking another mob
+	{
+		NOTIFICATION_DATA_MOB_ATTACK_AOE* Notification = RTNotificationInit(MOB_ATTACK_AOE);
+		Notification->Entity = Mob->ID;
+		Notification->IsDefaultSkill = true;
+		Notification->Unknown1 = 0;
+		Notification->MobHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+		Notification->Unknown2 = 0;
+		Notification->TargetCount = 1;
+
+		NOTIFICATION_DATA_MOB_ATTACK_AOE_TARGET* NotificationTarget = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_MOB_ATTACK_AOE_TARGET);
+		NotificationTarget->CharacterIndex = (UInt32)Target->ID.Serial;
+		NotificationTarget->IsDead = Result.IsDead;
+		NotificationTarget->Result = Result.AttackType;
+		NotificationTarget->AppliedDamage = (UInt32)Result.AppliedDamage;
+		NotificationTarget->TargetHP = Target->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+		memset(NotificationTarget->Unknown1, 0, 33);
+		RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
+	}
+}
+
 struct _RTMobFindNearbyTargetArguments {
 	RTWorldManagerRef WorldManager;
 	RTWorldContextRef WorldContext;
@@ -367,14 +475,14 @@ Void _RTMobFindNearbyTargetProc(
 	Void* Userdata
 ) {
 	struct _RTMobFindNearbyTargetArguments* Arguments = (struct _RTMobFindNearbyTargetArguments*)Userdata;
-	
+
 	if (Entity.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) {
 		RTCharacterRef Character = RTWorldManagerGetCharacter(
 			Arguments->WorldManager,
 			Entity
 		);
 
-		Int32 LevelDifference = Character->Data.Info.Level - Arguments->Mob->SpeciesData->Level;
+		Int32 LevelDifference = Character->Data.Info.Level - Arguments->Mob->Spawn.Level;
 		if (Arguments->WorldContext->WorldData->Type == RUNTIME_WORLD_TYPE_GLOBAL &&
 			LevelDifference > RUNTIME_MOB_MAX_FIND_LEVEL_DIFFERENCE) {
 			return;
@@ -387,12 +495,85 @@ Void _RTMobFindNearbyTargetProc(
 	}
 }
 
+RTEntityID RTMobFindNearbyTarget(
+	RTRuntimeRef Runtime,
+	RTWorldContextRef WorldContext,
+	RTMobRef Mob
+) {
+	RTEntityID Target = kEntityIDNull;
+	Int32 Distance = Mob->AlertRange;
+
+	for (Int32 Index = 0; Index < Mob->EnemyCount; Index += 1) {
+		Int32 EnemyIndex = Mob->Enemies[Index];
+		if (EnemyIndex < 0) {
+			struct _RTMobFindNearbyTargetArguments Arguments = { 0 };
+			Arguments.WorldManager = WorldContext->WorldManager;
+			Arguments.WorldContext = WorldContext;
+			Arguments.Mob = Mob;
+			Arguments.Distance = Distance;
+			Arguments.Target = Target;
+
+			RTWorldContextEnumerateEntitiesInRange(
+				WorldContext,
+				RUNTIME_ENTITY_TYPE_CHARACTER,
+				Mob->Movement.PositionCurrent.X,
+				Mob->Movement.PositionCurrent.Y,
+				Mob->AlertRange,
+				Mob->Movement.CollisionMask,
+				Mob->Movement.IgnoreMask,
+				&_RTMobFindNearbyTargetProc,
+				&Arguments
+			);
+
+			Target = Arguments.Target;
+			Distance = Arguments.Distance;
+		}
+		else {
+			RTEntityID TargetMobID = {
+				.EntityIndex = EnemyIndex,
+				.WorldIndex = WorldContext->WorldData->WorldIndex,
+				.EntityType = RUNTIME_ENTITY_TYPE_MOB,
+			};
+			RTMobRef TargetMob = RTWorldContextGetMob(WorldContext, TargetMobID);
+			assert(TargetMob);
+
+			if (RTMobIsAlive(TargetMob)) {
+				Int32 TargetDistance = RTCalculateDistance(
+					Mob->Movement.PositionCurrent.X,
+					Mob->Movement.PositionCurrent.Y,
+					TargetMob->Movement.PositionCurrent.X,
+					TargetMob->Movement.PositionCurrent.Y
+				);
+
+				if (TargetDistance < Distance) {
+					Target = TargetMobID;
+					Distance = TargetDistance;
+				}
+			}
+		}
+	}
+
+	return Target;
+}
+
 Void RTMobUpdate(
 	RTRuntimeRef Runtime,
 	RTWorldContextRef WorldContext,
 	RTMobRef Mob
 ) {
-	Timestamp Timestamp = PlatformGetTickCount();
+	if (RTMobIsAlive(Mob) && Mob->Movement.IsMoving && Mob->Movement.WorldChunk) {
+		RTMovementRef Movement = &Mob->Movement;
+		RTWorldChunkRef WorldChunk = Movement->WorldChunk;
+		RTWorldChunkRef NewChunk = RTWorldContextGetChunk(Movement->WorldContext, Movement->PositionCurrent.X, Movement->PositionCurrent.Y);
+		if (WorldChunk != NewChunk) {
+			RTWorldChunkRemove(Movement->WorldChunk, Mob->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_NONE);
+			RTWorldChunkInsert(NewChunk, Mob->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_NONE);
+
+			Movement->WorldChunk = NewChunk;
+		}
+	}
+
+	Timestamp Timestamp = GetTimestampMs();
 	if (Timestamp < Mob->NextTimestamp) {
 		return;
 	}
@@ -438,6 +619,12 @@ Void RTMobUpdate(
 
 	RTMovementUpdateDeadReckoning(Runtime, &Mob->Movement);
 
+	// TODO: Check if this has to be more percise then NextTimestamp
+	if (Mob->Pattern) {
+		RTMobPatternTimeElapsed(Runtime, WorldContext, Mob, Mob->Pattern);
+		RTMobPatternUpdate(Runtime, WorldContext, Mob, Mob->Pattern);
+	}
+
 	if (Mob->Movement.IsMoving) {
 		if (Mob->Movement.PositionCurrent.X == Mob->Movement.PositionEnd.X &&
 			Mob->Movement.PositionCurrent.Y == Mob->Movement.PositionEnd.Y) {
@@ -472,30 +659,23 @@ Void RTMobUpdate(
 	}
 
 	RTEntityID Target = RTMobGetMaxAggroTarget(Runtime, WorldContext, Mob);
+	Bool IsIdle = RTEntityIsNull(Target);
+
+	if (Mob->IsIdle != IsIdle) {
+		Mob->IsIdle = IsIdle;
+		
+		if (Mob->Pattern) {
+			RTMobPatternStateChanged(Runtime, WorldContext, Mob, Mob->Pattern, IsIdle);
+		}
+	}
+
 	if (RTEntityIsNull(Target) && Mob->RemainingFindCount > 0) {
 		if (RTMobIsAggressive(Mob)) {
-			struct _RTMobFindNearbyTargetArguments Arguments = { 0 };
-			Arguments.WorldManager = WorldContext->WorldManager;
-			Arguments.WorldContext = WorldContext;
-			Arguments.Mob = Mob;
-			Arguments.Distance = Mob->SpeciesData->AlertRange;
-			Arguments.Target = kEntityIDNull;
-			RTWorldContextEnumerateEntitiesInRange(
-				WorldContext,
-				RUNTIME_ENTITY_TYPE_CHARACTER,
-				Mob->Movement.PositionCurrent.X,
-				Mob->Movement.PositionCurrent.Y,
-				Mob->SpeciesData->AlertRange,
-				Mob->Movement.CollisionMask,
-				Mob->Movement.IgnoreMask,
-				&_RTMobFindNearbyTargetProc,
-				&Arguments
-			);
-
-			if (!RTEntityIsNull(Arguments.Target)) {
+			RTEntityID NewTarget = RTMobFindNearbyTarget(Runtime, WorldContext, Mob);
+			if (!RTEntityIsNull(NewTarget)) {
 				assert(Mob->Aggro.Count < RUNTIME_MEMORY_MAX_MOB_AGGRO_COUNT);
 
-				Mob->Aggro.Entities[Mob->Aggro.Count] = Arguments.Target;
+				Mob->Aggro.Entities[Mob->Aggro.Count] = NewTarget;
 				Mob->Aggro.ReceivedDamage[Mob->Aggro.Count] = 0;
 				Mob->Aggro.Count += 1;
 				Mob->RemainingFindCount = Mob->SpeciesData->FindCount;
@@ -512,27 +692,66 @@ Void RTMobUpdate(
 	Int32 TargetPositionY = -1;
 
 	if (!RTEntityIsNull(Target) && RTMobCanAttack(Mob)) {
-		RTCharacterRef Character = RTWorldManagerGetCharacter(WorldContext->WorldManager, Target);
-		assert(Character);
+		if (Target.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) {
+			RTCharacterRef Character = RTWorldManagerGetCharacter(WorldContext->WorldManager, Target);
+			assert(Character);
 
-		Int32 Distance = RTMovementDistance(&Mob->Movement, &Character->Movement);
-		RTMobUpdateActiveSkill(Runtime, WorldContext, Mob, Distance);
+			Int32 Distance = RTMovementDistance(&Mob->Movement, &Character->Movement);
+			RTMobUpdateActiveSkill(Runtime, WorldContext, Mob, Distance);
 
-		if (Distance <= Mob->ActiveSkill->Range) {
-			RTMobAttackTarget(Runtime, WorldContext, Mob, Character);
-			return;
+			if (Mob->AggroTargetDistance != Distance) {
+				Mob->AggroTargetDistance = Distance;
+				if (Mob->Pattern) RTMobPatternDistanceChanged(Runtime, WorldContext, Mob, Mob->Pattern);
+			}
+
+			Mob->AggroTargetDistance = Distance;
+
+			if (Distance <= Mob->ActiveSkill->Range) {
+				RTMobAttackTarget(Runtime, WorldContext, Mob, Character);
+				return;
+			}
+			else {
+				Int32 SpawnDistance = RTCalculateDistance(
+					Mob->Movement.PositionCurrent.X,
+					Mob->Movement.PositionCurrent.Y,
+					Mob->Spawn.AreaX + Mob->Spawn.AreaWidth / 2,
+					Mob->Spawn.AreaY + Mob->Spawn.AreaHeight / 2
+				);
+
+				if (SpawnDistance < Mob->ChaseRange && SpawnDistance < Mob->LimitRangeB) {
+					TargetPositionX = Character->Movement.PositionCurrent.X;
+					TargetPositionY = Character->Movement.PositionCurrent.Y;
+				}
+			}
 		}
-		else {
-			Int32 SpawnDistance = RTCalculateDistance(
-				Mob->Movement.PositionCurrent.X,
-				Mob->Movement.PositionCurrent.Y,
-				Mob->Spawn.AreaX + Mob->Spawn.AreaWidth / 2,
-				Mob->Spawn.AreaY + Mob->Spawn.AreaHeight / 2
-			);
+		else if (Target.EntityType == RUNTIME_ENTITY_TYPE_MOB) {
+			RTMobRef TargetMob = RTWorldContextGetMob(WorldContext, Target);
+			assert(TargetMob);
 
-			if (SpawnDistance < Mob->SpeciesData->ChaseRange && SpawnDistance < Mob->SpeciesData->LimitRangeB) {
-				TargetPositionX = Character->Movement.PositionCurrent.X;
-				TargetPositionY = Character->Movement.PositionCurrent.Y;
+			Int32 Distance = RTMovementDistance(&Mob->Movement, &TargetMob->Movement);
+			RTMobUpdateActiveSkill(Runtime, WorldContext, Mob, Distance);
+
+			if (Mob->AggroTargetDistance != Distance) {
+				Mob->AggroTargetDistance = Distance;
+				if (Mob->Pattern) RTMobPatternDistanceChanged(Runtime, WorldContext, Mob, Mob->Pattern);
+			}
+
+			if (Distance <= Mob->ActiveSkill->Range) {
+				RTMobAttackTargetMob(Runtime, WorldContext, Mob, TargetMob);
+				return;
+			}
+			else {
+				Int32 SpawnDistance = RTCalculateDistance(
+					Mob->Movement.PositionCurrent.X,
+					Mob->Movement.PositionCurrent.Y,
+					Mob->Spawn.AreaX + Mob->Spawn.AreaWidth / 2,
+					Mob->Spawn.AreaY + Mob->Spawn.AreaHeight / 2
+				);
+
+				if (SpawnDistance < Mob->ChaseRange && SpawnDistance < Mob->LimitRangeB) {
+					TargetPositionX = TargetMob->Movement.PositionCurrent.X;
+					TargetPositionY = TargetMob->Movement.PositionCurrent.Y;
+				}
 			}
 		}
 	}

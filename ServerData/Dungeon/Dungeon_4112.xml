@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<Dungeon DungeonIndex="4112">
+<Dungeon DungeonIndex="4112" StartKillMobList="">
 	<TriggerGroup Index="1">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="1"/>
 	</TriggerGroup>
@@ -52,6 +52,9 @@
 		<Action Delay="100" TargetMobIndex="20" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="21" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="22" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="35000" TargetMobIndex="3" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="3">
 		<Action Delay="100" TargetMobIndex="23" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="24" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="25" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
@@ -60,11 +63,11 @@
 		<Action Delay="100" TargetMobIndex="28" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="29" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="30" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="80000" TargetMobIndex="3" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-	</ActionGroup>
-	<ActionGroup Index="3">
 		<Action Delay="100" TargetMobIndex="31" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="32" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="35000" TargetMobIndex="4" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="4">
 		<Action Delay="100" TargetMobIndex="33" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="34" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="35" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
@@ -76,13 +79,13 @@
 		<Action Delay="100" TargetMobIndex="41" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="42" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="43" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="35000" TargetMobIndex="5" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="5">
 		<Action Delay="100" TargetMobIndex="44" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="45" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="46" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="47" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="80000" TargetMobIndex="4" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-	</ActionGroup>
-	<ActionGroup Index="4">
 		<Action Delay="100" TargetMobIndex="48" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="49" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="50" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
@@ -91,6 +94,9 @@
 		<Action Delay="100" TargetMobIndex="53" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="54" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="55" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="35000" TargetMobIndex="6" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="6">
 		<Action Delay="100" TargetMobIndex="56" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="57" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="58" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
@@ -100,13 +106,13 @@
 		<Action Delay="100" TargetMobIndex="62" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="63" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="64" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="80000" TargetMobIndex="5" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-	</ActionGroup>
-	<ActionGroup Index="5">
 		<Action Delay="100" TargetMobIndex="65" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="66" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="67" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="68" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="35000" TargetMobIndex="7" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="7">
 		<Action Delay="100" TargetMobIndex="69" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="70" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="71" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
@@ -120,10 +126,10 @@
 		<Action Delay="100" TargetMobIndex="79" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="80" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="81" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="80000" TargetMobIndex="6" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-	</ActionGroup>
-	<ActionGroup Index="6">
 		<Action Delay="100" TargetMobIndex="82" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="35000" TargetMobIndex="8" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="8">
 		<Action Delay="100" TargetMobIndex="83" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="84" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="85" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
@@ -139,10 +145,10 @@
 		<Action Delay="100" TargetMobIndex="95" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="96" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="97" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="98" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="80000" TargetMobIndex="7" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="35000" TargetMobIndex="9" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
-	<ActionGroup Index="7">
+	<ActionGroup Index="9">
+		<Action Delay="100" TargetMobIndex="98" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="99" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="100" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="101" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
@@ -158,11 +164,11 @@
 		<Action Delay="100" TargetMobIndex="111" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="112" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="113" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="35000" TargetMobIndex="10" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="10">
 		<Action Delay="100" TargetMobIndex="114" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="115" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="80000" TargetMobIndex="8" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-	</ActionGroup>
-	<ActionGroup Index="8">
 		<Action Delay="100" TargetMobIndex="116" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="117" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="118" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
@@ -178,11 +184,11 @@
 		<Action Delay="100" TargetMobIndex="128" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="129" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="130" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="35000" TargetMobIndex="11" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+	</ActionGroup>
+	<ActionGroup Index="11">
 		<Action Delay="100" TargetMobIndex="131" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="132" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="80000" TargetMobIndex="9" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-	</ActionGroup>
-	<ActionGroup Index="9">
 		<Action Delay="100" TargetMobIndex="133" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="134" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="135" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
@@ -199,70 +205,13 @@
 		<Action Delay="100" TargetMobIndex="146" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="147" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="100" TargetMobIndex="148" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="149" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="80000" TargetMobIndex="10" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-	</ActionGroup>
-	<ActionGroup Index="10">
-		<Action Delay="100" TargetMobIndex="150" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="151" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="152" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="153" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="154" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="155" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="156" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="157" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="158" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="159" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="160" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="161" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="162" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="163" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="164" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="165" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="166" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="80000" TargetMobIndex="11" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-	</ActionGroup>
-	<ActionGroup Index="11">
-		<Action Delay="100" TargetMobIndex="167" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="168" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="169" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="170" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="171" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="172" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="173" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="174" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="175" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="176" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="177" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="178" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="179" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="180" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="181" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="182" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="100" TargetMobIndex="183" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="80000" TargetMobIndex="12" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="35000" TargetMobIndex="12" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
 	<ActionGroup Index="12">
 		<Action Delay="100" TargetMobIndex="13" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
-		<Action Delay="2100" TargetMobIndex="184" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="2100" TargetMobIndex="149" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
 	<ActionGroup Index="13">
-		<Action Delay="100" TargetMobIndex="185" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
+		<Action Delay="100" TargetMobIndex="150" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
-	<WorldDropPool>
-		<Item ItemID="10" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05"/>
-		<Item ItemID="583" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05"/>
-		<Item ItemID="4023" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05"/>
-		<Item ItemID="4020" ItemOption="0" ItemDuration="0" OptionPoolID="0" MinMobLevel="1" MaxMobLevel="250" Rate=".05"/>
-	</WorldDropPool>
-	<MobDropPool MobSpeciesIndex="1177">
-		<Item ItemID="10" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
-		<Item ItemID="583" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10"/>
-		<Item ItemID="1425" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="1426" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="638" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".2"/>
-		<Item ItemID="639" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".1"/>
-		<Item ItemID="310" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".5"/>
-		<Item ItemID="311" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate=".5"/>
-	</MobDropPool>
 </Dungeon>

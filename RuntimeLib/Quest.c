@@ -358,15 +358,22 @@ Bool RTCharacterQuestClear(
 		Character->SyncMask.InventoryInfo = true;
 	}
 
+	RTCharacterAddExp(Runtime, Character, Quest->Reward[RUNTIME_QUEST_REWARD_EXP]);
+
+	Character->Data.Info.Alz += Quest->Reward[RUNTIME_QUEST_REWARD_ALZ];
+
 	if (RewardSkillIndex > 0) {
 		assert(SlotOffset < SlotCount);
 		RTCharacterAddSkillSlot(Runtime, Character, Quest->Reward[RUNTIME_QUEST_REWARD_SKILL], 1, SlotIndex[SlotOffset++]);
 	}
 
-	// TODO: Add missing reward types
-	RTCharacterAddExp(Runtime, Character, Quest->Reward[RUNTIME_QUEST_REWARD_EXP]);
-	RTCharacterAddSkillExp(Runtime, Character, Quest->Reward[RUNTIME_QUEST_REWARD_SKILL_EXP]);
 	RTCharacterAddHonorPoint(Runtime, Character, Quest->Reward[RUNTIME_QUEST_REWARD_HONOR_POINT]);
+	RTCharacterAddSkillExp(Runtime, Character, Quest->Reward[RUNTIME_QUEST_REWARD_SKILL_EXP]);
+	RTCharacterAddAbilityExp(Runtime, Character, Quest->Reward[RUNTIME_QUEST_REWARD_AXP]);
+	
+	// TODO: Check if RUNTIME_QUEST_REWARD_PET_EXP is removed in ep39
+	// TODO: Add reward type RUNTIME_QUEST_REWARD_GUILD_EXP
+
 	RTCharacterQuestFlagSet(Character, QuestIndex);
 	RTCharacterRemoveQuestSlot(Runtime, Character, QuestSlotIndex);
 

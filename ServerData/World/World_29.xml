@@ -1,12 +1,30 @@
 <?xml version="1.0" ?>
 <World WorldIndex="29">
-	<QuestDropPool MobSpeciesIndex="204">
+	<QuestDropPool MobSpeciesIndex="0">
+		<Item ItemID="1553" ItemOption="3053" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1553" ItemOption="3053" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1553" ItemOption="3053" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1553" ItemOption="3053" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1553" ItemOption="3053" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1553" ItemOption="3053" ItemDuration="0" OptionPoolID="0" Rate="100"/>
 		<Item ItemID="1553" ItemOption="3053" ItemDuration="0" OptionPoolID="0" Rate="100"/>
 	</QuestDropPool>
 	<QuestDropPool MobSpeciesIndex="1646">
 		<Item ItemID="760" ItemOption="3104" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="760" ItemOption="3104" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="760" ItemOption="3104" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="760" ItemOption="3104" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="760" ItemOption="3104" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="760" ItemOption="3104" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="760" ItemOption="3104" ItemDuration="0" OptionPoolID="0" Rate="100"/>
 	</QuestDropPool>
 	<QuestDropPool MobSpeciesIndex="1648">
+		<Item ItemID="1106" ItemOption="3104" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1106" ItemOption="3104" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1106" ItemOption="3104" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1106" ItemOption="3104" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1106" ItemOption="3104" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1106" ItemOption="3104" ItemDuration="0" OptionPoolID="0" Rate="100"/>
 		<Item ItemID="1106" ItemOption="3104" ItemDuration="0" OptionPoolID="0" Rate="100"/>
 	</QuestDropPool>
 </World>

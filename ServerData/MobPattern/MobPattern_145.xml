@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<MobPattern Index="145">
+	<MobTriggerGroup Index="1" Type="12" Parameters="">
+		<MobActionGroup Index="33" Delay="">
+			<MobAction Index="1" Type="3" Parameters="514:0:1" Duration="" TargetType="5" TargetParameters="" Loop="0" LoopDelay="100000" Priority="-10"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="2" Type="12" Parameters="">
+		<MobActionGroup Index="1" Delay="">
+			<MobAction Index="1" Type="3" Parameters="515:0:1" Duration="" TargetType="5" TargetParameters="" Loop="0" LoopDelay="100000" Priority="-10"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="3" Type="12" Parameters="">
+		<MobActionGroup Index="2" Delay="">
+			<MobAction Index="1" Type="3" Parameters="516:0:1" Duration="" TargetType="5" TargetParameters="" Loop="0" LoopDelay="100000" Priority="-10"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="4" Type="12" Parameters="">
+		<MobActionGroup Index="3" Delay="">
+			<MobAction Index="1" Type="3" Parameters="517:0:1" Duration="" TargetType="5" TargetParameters="" Loop="0" LoopDelay="100000" Priority="-10"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="5" Type="12" Parameters="">
+		<MobActionGroup Index="4" Delay="">
+			<MobAction Index="1" Type="3" Parameters="518:0:1" Duration="" TargetType="5" TargetParameters="" Loop="0" LoopDelay="100000" Priority="-10"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="6" Type="12" Parameters="">
+		<MobActionGroup Index="5" Delay="">
+			<MobAction Index="1" Type="3" Parameters="519:0:1" Duration="" TargetType="5" TargetParameters="" Loop="0" LoopDelay="100000" Priority="-10"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+	<MobTriggerGroup Index="7" Type="12" Parameters="">
+		<MobActionGroup Index="6" Delay="">
+			<MobAction Index="1" Type="3" Parameters="520:0:1" Duration="" TargetType="5" TargetParameters="" Loop="0" LoopDelay="100000" Priority="-10"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+</MobPattern>

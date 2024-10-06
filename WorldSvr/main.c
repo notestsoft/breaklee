@@ -7,6 +7,9 @@
 #include "Notification.h"
 #include "NotificationProcedures.h"
 
+// TODO: Add protection to not enter another dungeon in a different channel when a dungeon is running
+//       Abusing chaos arena spawn delay to finish them all
+
 #define C2S_COMMAND(__NAME__, __COMMAND__)                                                                                       \
 Void SERVER_PROC_ ## __NAME__(                                                                                                   \
     ServerRef Server,                                                                                                            \

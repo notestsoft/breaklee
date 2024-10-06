@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<Dungeon DungeonIndex="4143">
+<Dungeon DungeonIndex="4143" StartKillMobList="">
 	<TriggerGroup Index="1">
 		<Trigger Type="3" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="6" ActionGroupIndex="1"/>
 	</TriggerGroup>
@@ -10,16 +10,16 @@
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="3"/>
 	</TriggerGroup>
 	<TriggerGroup Index="4">
-		<Trigger Type="2" LiveMobIndexList="17,16" DeadMobIndexList="16" NpcIndex="-1" ActionGroupIndex="4"/>
+		<Trigger Type="2" LiveMobIndexList="16,17" DeadMobIndexList="16" NpcIndex="-1" ActionGroupIndex="4"/>
 	</TriggerGroup>
 	<TriggerGroup Index="5">
 		<Trigger Type="2" LiveMobIndexList="16" DeadMobIndexList="16,17" NpcIndex="-1" ActionGroupIndex="4"/>
 	</TriggerGroup>
 	<TriggerGroup Index="6">
-		<Trigger Type="2" LiveMobIndexList="19,18" DeadMobIndexList="8" NpcIndex="-1" ActionGroupIndex="5"/>
+		<Trigger Type="2" LiveMobIndexList="18,19" DeadMobIndexList="8" NpcIndex="-1" ActionGroupIndex="5"/>
 	</TriggerGroup>
 	<TriggerGroup Index="7">
-		<Trigger Type="2" LiveMobIndexList="18" DeadMobIndexList="8,7" NpcIndex="-1" ActionGroupIndex="5"/>
+		<Trigger Type="2" LiveMobIndexList="18" DeadMobIndexList="7,8" NpcIndex="-1" ActionGroupIndex="5"/>
 	</TriggerGroup>
 	<ActionGroup Index="1">
 		<Action Delay="100" TargetMobIndex="1" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>

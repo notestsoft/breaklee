@@ -3,11 +3,35 @@
 	<QuestDropPool MobSpeciesIndex="1123">
 		<Item ItemID="1553" ItemOption="1150" ItemDuration="0" OptionPoolID="0" Rate="100"/>
 		<Item ItemID="1553" ItemOption="1151" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1553" ItemOption="1150" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1553" ItemOption="1151" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1553" ItemOption="1150" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1553" ItemOption="1151" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1553" ItemOption="1150" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1553" ItemOption="1151" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1553" ItemOption="1150" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1553" ItemOption="1151" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1553" ItemOption="1150" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1553" ItemOption="1151" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1553" ItemOption="1150" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="1553" ItemOption="1151" ItemDuration="0" OptionPoolID="0" Rate="100"/>
 	</QuestDropPool>
 	<QuestDropPool MobSpeciesIndex="1100">
 		<Item ItemID="479" ItemOption="1187" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="479" ItemOption="1187" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="479" ItemOption="1187" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="479" ItemOption="1187" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="479" ItemOption="1187" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="479" ItemOption="1187" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="479" ItemOption="1187" ItemDuration="0" OptionPoolID="0" Rate="100"/>
 	</QuestDropPool>
 	<QuestDropPool MobSpeciesIndex="1106">
+		<Item ItemID="479" ItemOption="1193" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="479" ItemOption="1193" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="479" ItemOption="1193" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="479" ItemOption="1193" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="479" ItemOption="1193" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="479" ItemOption="1193" ItemDuration="0" OptionPoolID="0" Rate="100"/>
 		<Item ItemID="479" ItemOption="1193" ItemDuration="0" OptionPoolID="0" Rate="100"/>
 	</QuestDropPool>
 </World>

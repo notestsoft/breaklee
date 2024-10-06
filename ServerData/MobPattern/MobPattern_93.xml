@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<MobPattern Index="93">
+	<MobTriggerGroup Index="1" Type="6" Parameters="3:10000">
+		<MobActionGroup Index="1" Delay="1000">
+			<MobAction Index="1" Type="10" Parameters="365" Duration="1000" TargetType="8" TargetParameters="354" Loop="0" LoopDelay="100000" Priority="5"/>
+		</MobActionGroup>
+	</MobTriggerGroup>
+</MobPattern>

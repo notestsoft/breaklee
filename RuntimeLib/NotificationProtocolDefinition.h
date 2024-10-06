@@ -169,13 +169,14 @@ NOTIFICATION_PROTOCOL_STRUCT(MOBS_SPAWN_INDEX,
     UInt8 Level;
     UInt8 Nation;
     UInt8 Unknown1;
-    UInt16 UnknownAnimationID;
-    UInt32 UnknownAnimationTickCount;
-    UInt8 Unknown2;
-    UInt8 UnknownEvent;
+    UInt32 Unknown2;
+    UInt16 MobEffectIndex;
+    UInt32 SpecialAnimationIndex;
     UInt8 Unknown3;
-    UInt32 UnknownCharacterIndex;
-    UInt8 Unknown4[12];
+    UInt16 ServerMobBalloonIndex;
+    UInt32 Unknown4;
+    UInt32 MaybeAttackTimeFrame;
+    UInt32 AttackerIndex;
     UInt8 Unknown5[22];
 )
 
@@ -415,8 +416,26 @@ NOTIFICATION_PROTOCOL(CHARACTER_SKILL_MASTERY_UPDATE, 760,
     UInt32 SkillPoint;
 )
 
-NOTIFICATION_PROTOCOL(NFY_DUNGEON_TIMER, 2074,
+NOTIFICATION_PROTOCOL(DUNGEON_TIME_CONTROL, 2074,
     Int32 TimeAddition;
+)
+
+NOTIFICATION_PROTOCOL(DUNGEON_TIMER, 2542,
+    UInt32 TimerType;
+    UInt32 Interval;
+)
+
+NOTIFICATION_PROTOCOL_ENUM(
+    DUNGEON_TIMER_INFO_TYPE_DROP = 0,
+    DUNGEON_TIMER_INFO_TYPE_MOB = 1,
+)
+
+NOTIFICATION_PROTOCOL(DUNGEON_TIMER_INFO, 2552,
+    UInt8 Type;
+    union {
+        struct { UInt64 ItemID; UInt16 ItemCount; } Drop;
+        struct { UInt32 EntityID; UInt64 CurrentHP; UInt64 MaxHP; } Mob;
+    };
 )
 
 NOTIFICATION_PROTOCOL(CHARACTER_FORCE_WING_GRADE, 2788,
