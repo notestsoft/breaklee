@@ -1,6 +1,17 @@
 #include "Mob.h"
 #include "MobPattern.h"
+#include "Runtime.h"
+#include "NotificationProtocol.h"
+#include "NotificationManager.h"
 #include "World.h"
+
+Void RTMobPatternCancelAction(
+	RTRuntimeRef Runtime,
+	RTWorldContextRef WorldContext,
+	RTMobRef Mob,
+	RTMobPatternRef MobPattern,
+	RTMobActionStateRef ActionState
+);
 
 Void RTMobPatternInsertActionState(
 	RTRuntimeRef Runtime,
@@ -8,6 +19,7 @@ Void RTMobPatternInsertActionState(
 	RTMobRef Mob,
 	RTMobPatternRef MobPattern,
 	RTMobTriggerDataRef TriggerData,
+	RTMobTriggerStateRef TriggerState,
 	RTMobActionGroupDataRef ActionGroupData,
 	RTMobActionDataRef ActionData
 ) {
@@ -43,6 +55,7 @@ Void RTMobPatternInsertActionState(
 	InsertionIndex = LowIndex;
 	struct _RTMobActionState ActionState = { 0 };
 	ActionState.TriggerData = TriggerData;
+	ActionState.TriggerState = TriggerState;
 	ActionState.ActionGroupData = ActionGroupData;
 	ActionState.ActionData = ActionData;
 	ActionState.StartTimestamp = GetTimestampMs() + ActionGroupData->Delay;
@@ -67,6 +80,7 @@ Void RTMobTriggerEnqueue(
 			Mob,
 			MobPattern,
 			TriggerData,
+			TriggerState,
 			&TriggerData->ActionGroups[Index],
 			&TriggerData->ActionGroups[Index].Actions[RandomRange(&Seed, 0, TriggerData->ActionGroups[Index].ActionCount - 1)]
 		);
@@ -83,7 +97,7 @@ Void RTMobPatternStartAction(
 	RTMobActionStateRef ActionState
 ) {
 	Trace("StartAction(%d, %d, %d) on Mob(%d:%llu:%llu)",
-		ActionState->TriggerData->Index, 
+		ActionState->TriggerData->Index,
 		ActionState->ActionGroupData->Index,
 		ActionState->ActionData->Index,
 		Mob->ID.EntityIndex, 
@@ -91,8 +105,97 @@ Void RTMobPatternStartAction(
 		WorldContext->WorldData->WorldIndex
 	);
 
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_WARP_TARGET) {
+		if (Mob->Aggro.Count < 1) goto end;
+
+		RTEntityID TargetID = Mob->Aggro.Entities[0];
+		Void* TargetContext = RTWorldContextGetEntityContext(WorldContext, TargetID);
+		if (!TargetContext) goto end;
+
+		if (TargetID.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) {
+			RTCharacterRef Target = (RTCharacterRef)TargetContext;
+			Target->MobPatternWarpX = ActionState->ActionData->Parameters.WarpTarget.PositionX;
+			Target->MobPatternWarpY = ActionState->ActionData->Parameters.WarpTarget.PositionY;
+
+			NOTIFICATION_DATA_MOB_PATTERN_WARP_TARGET* Notification = RTNotificationInit(MOB_PATTERN_WARP_TARGET);
+			Notification->SourceIndex = Mob->ID.Serial;
+			Notification->TargetIndex = Target->CharacterIndex;
+			Notification->PositionX = ActionState->ActionData->Parameters.WarpTarget.PositionX;
+			Notification->PositionY = ActionState->ActionData->Parameters.WarpTarget.PositionY;
+			RTNotificationDispatchToNearby(Notification, Target->Movement.WorldChunk);
+		}
+		else if (TargetID.EntityType == RUNTIME_ENTITY_TYPE_MOB) {
+			RTMobRef Target = (RTWorldItemRef)TargetContext;
+			RTWorldChunkRemove(Target->Movement.WorldChunk, TargetID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
+			RTMovementInitialize(
+				Runtime,
+				&Target->Movement,
+				ActionState->ActionData->Parameters.WarpTarget.PositionX,
+				ActionState->ActionData->Parameters.WarpTarget.PositionY,
+				Target->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+				RUNTIME_WORLD_TILE_WALL | RUNTIME_WORLD_TILE_TOWN
+			);
+			RTWorldChunkRef WorldChunk = RTWorldContextGetChunk(WorldContext, Target->Movement.PositionCurrent.X, Target->Movement.PositionCurrent.Y);
+			RTWorldChunkInsert(WorldChunk, TargetID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
+		}
+		else {
+			UNREACHABLE("Unexpected target type given for action WARP_TARGET!");
+		}
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_WARP_SELF) {
+
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_SPAWN_MOB) {
+
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_HEAL_TARGET) {
+
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_EVASION_SELF_1 ||
+		ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_EVASION_SELF_2 ||
+		ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_EVASION_SELF_3) {
+
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_SPECIAL_ACTION) {
+		RTMobStartSpecialAction(Runtime, WorldContext, Mob, ActionState->ActionData->Parameters.SpecialAction.ActionIndex);
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_ATTACK_1 ||
+		ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_ATTACK_2) {
+
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_CANCEL_ACTION && !ActionState->ActionData->Parameters.CancelAction.ActionFinished) {
+		Timestamp CurrentTimestamp = GetTimestampMs();
+		for (Int32 Index = 0; Index < ArrayGetElementCount(MobPattern->ActionStates); Index += 1) {
+			RTMobActionStateRef ActionState = (RTMobActionStateRef)ArrayGetElementAtIndex(MobPattern->ActionStates, Index);
+			if (ActionState->ActionData->Index != ActionState->ActionData->Parameters.CancelAction.ActionIndex) continue;
+
+			ActionState->EndTimestamp = CurrentTimestamp;
+		}
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_DESPAWN_MOB) {
+
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_RESPAWN_SELF) {
+
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_SOCIAL_ACTION) {
+
+	}
+
+end:
+
 	// TODO: Perform Runtime Action
-	RTMobPatternActionExecuted(Runtime, WorldContext, Mob, MobPattern, ActionState->ActionGroupData->Index);
+	RTMobPatternActionStarted(Runtime, WorldContext, Mob, MobPattern, ActionState->ActionGroupData->Index);
 }
 
 Void RTMobPatternCancelAction(
@@ -111,27 +214,98 @@ Void RTMobPatternCancelAction(
 		WorldContext->WorldData->WorldIndex
 	);
 
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_WARP_TARGET) {
+		
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_WARP_SELF) {
+
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_SPAWN_MOB) {
+
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_HEAL_TARGET) {
+		if (ActionState->ActionData->Parameters.Heal.WorldType == 0 && WorldContext->WorldData->Type != RUNTIME_WORLD_TYPE_GLOBAL) goto end;
+
+		RTEntityID TargetID = {
+			.EntityIndex = ActionState->ActionData->Parameters.Heal.MobIndex,
+			.WorldIndex = WorldContext->WorldData->WorldIndex,
+			.EntityType = RUNTIME_ENTITY_TYPE_MOB
+		};
+		RTMobRef Target = RTWorldContextGetMob(WorldContext, TargetID);
+		if (!Target) goto end;
+
+		Int64 Value = 0;
+		if (ActionState->ActionData->Parameters.Heal.ValueType == RUNTIME_MOB_PATTERN_VALUE_TYPE_DECIMAL) {
+			Value = ActionState->ActionData->Parameters.Heal.Value;
+		}
+
+		if (ActionState->ActionData->Parameters.Heal.ValueType == RUNTIME_MOB_PATTERN_VALUE_TYPE_PERCENT) {
+			Value = (Target->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX] * ActionState->ActionData->Parameters.Heal.Value) / 100;
+		}
+
+		RTMobHeal(Runtime, WorldContext, Target, Value);
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_EVASION_SELF_1 ||
+		ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_EVASION_SELF_2 ||
+		ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_EVASION_SELF_3) {
+
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_SPECIAL_ACTION) {
+		RTMobCancelSpecialAction(Runtime, WorldContext, Mob);
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_ATTACK_1 ||
+		ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_ATTACK_2) {
+
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_CANCEL_ACTION && ActionState->ActionData->Parameters.CancelAction.ActionFinished) {
+		Timestamp CurrentTimestamp = GetTimestampMs();
+		for (Int32 Index = 0; Index < ArrayGetElementCount(MobPattern->ActionStates); Index += 1) {
+			RTMobActionStateRef ActionState = (RTMobActionStateRef)ArrayGetElementAtIndex(MobPattern->ActionStates, Index);
+			if (ActionState->ActionData->Index != ActionState->ActionData->Parameters.CancelAction.ActionIndex) continue;
+
+			ActionState->EndTimestamp = CurrentTimestamp;
+		}
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_DESPAWN_MOB) {
+
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_RESPAWN_SELF) {
+
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_SOCIAL_ACTION) {
+
+	}
+
+end:
 	// TODO: Perform Runtime Cancellation
+	RTMobPatternActionFinished(Runtime, WorldContext, Mob, MobPattern, ActionState->ActionGroupData->Index);
 }
 
-Void RTMobPatternStart(
+Void RTMobPatternSpawn(
 	RTRuntimeRef Runtime,
 	RTWorldContextRef WorldContext,
 	RTMobRef Mob,
 	RTMobPatternRef MobPattern
 ) {
-	if (MobPattern->IsRunning) return;
-	
-	MobPattern->IsRunning = true;
-	MobPattern->IsIdle = true;
-	MobPattern->StartTimestamp = GetTimestampMs();
+	MobPattern->StartTimestamp = 0;
+	MobPattern->SpawnTimestamp = GetTimestampMs();
 	MobPattern->EventTriggerMask = 0;
 	for (Int32 TriggerIndex = 0; TriggerIndex < MobPattern->Data->TriggerCount; TriggerIndex += 1) {
-		RTMobTriggerDataRef MobTrigger = &MobPattern->Data->Triggers[TriggerIndex];
+		RTMobTriggerDataRef TriggerData = &MobPattern->Data->Triggers[TriggerIndex];
 		RTMobTriggerStateRef TriggerState = &MobPattern->TriggerStates[TriggerIndex];
 		TriggerState->IsRunning = false;
 		TriggerState->Timestamp = MobPattern->StartTimestamp;
-		MobPattern->EventTriggerMask |= (1 << MobTrigger->Type);
+		MobPattern->EventTriggerMask |= (1 << TriggerData->Type);
 	}
 }
 
@@ -141,7 +315,14 @@ Void RTMobPatternStop(
 	RTMobRef Mob,
 	RTMobPatternRef MobPattern
 ) {
-
+	MobPattern->StartTimestamp = 0;
+	MobPattern->SpawnTimestamp = 0;
+	MobPattern->EventTriggerMask = 0;
+	ArrayRemoveAllElements(MobPattern->ActionStates, true);
+	for (Int32 TriggerIndex = 0; TriggerIndex < MobPattern->Data->TriggerCount; TriggerIndex += 1) {
+		RTMobTriggerStateRef TriggerState = &MobPattern->TriggerStates[TriggerIndex];
+		TriggerState->IsRunning = false;
+	}
 }
 
 Void RTMobPatternUpdate(
@@ -170,15 +351,19 @@ Void RTMobPatternUpdate(
 				ActionState->StartTimestamp = CurrentTimestamp + ActionState->ActionData->LoopDelay;
 				ActionState->EndTimestamp = ActionState->StartTimestamp + ActionState->ActionData->Duration;
 			}
-			else {
-				ArrayRemoveElementAtIndex(MobPattern->ActionStates, Index);
-				Index -= 1;
-				continue;
-			}
 		}
 
 		if (ActionState->IsRunning) {
 			break;
+		}
+	}
+
+	for (Int32 Index = 0; Index < ArrayGetElementCount(MobPattern->ActionStates); Index += 1) {
+		RTMobActionStateRef ActionState = (RTMobActionStateRef)ArrayGetElementAtIndex(MobPattern->ActionStates, Index);
+		if (!ActionState->IsRunning && ActionState->EndTimestamp <= CurrentTimestamp) {
+			ActionState->TriggerState->IsRunning = false;
+			ArrayRemoveElementAtIndex(MobPattern->ActionStates, Index);
+			Index -= 1;
 		}
 	}
 }
@@ -189,18 +374,20 @@ Void RTMobPatternTimeElapsed(
 	RTMobRef Mob,
 	RTMobPatternRef MobPattern
 ) {
-	if (!(MobPattern->EventTriggerMask & (1 << RUNTIME_MOB_TRIGGER_TYPE_TIME_ELAPSED))) return;
+	if (!(MobPattern->EventTriggerMask & (1 << RUNTIME_MOB_TRIGGER_TYPE_START_TIME | 1 << RUNTIME_MOB_TRIGGER_TYPE_SPAWN_TIME))) return;
 
-	Timestamp ElapsedTime = GetTimestampMs() - MobPattern->StartTimestamp;
+	Timestamp StartElapsedTime = GetTimestampMs() - MobPattern->StartTimestamp;
+	Timestamp SpawnElapsedTime = GetTimestampMs() - MobPattern->SpawnTimestamp;
 
 	for (Int32 TriggerIndex = 0; TriggerIndex < MobPattern->Data->TriggerCount; TriggerIndex += 1) {
 		RTMobTriggerDataRef TriggerData = &MobPattern->Data->Triggers[TriggerIndex];
 		RTMobTriggerStateRef TriggerState = &MobPattern->TriggerStates[TriggerIndex];
 		if (TriggerState->IsRunning) continue;
-		if (TriggerData->Type != RUNTIME_MOB_TRIGGER_TYPE_TIME_ELAPSED) continue;
-		if (TriggerData->Parameters.TimeElapsed.Duration >= ElapsedTime) continue;
 
-		RTMobTriggerEnqueue(Runtime, WorldContext, Mob, MobPattern, TriggerData, TriggerState);
+		if ((MobPattern->StartTimestamp > 0 && TriggerData->Type == RUNTIME_MOB_TRIGGER_TYPE_START_TIME && TriggerData->Parameters.TimeElapsed.Duration <= StartElapsedTime) ||
+			(MobPattern->SpawnTimestamp > 0 && TriggerData->Type == RUNTIME_MOB_TRIGGER_TYPE_SPAWN_TIME && TriggerData->Parameters.TimeElapsed.Duration <= SpawnElapsedTime)) {
+			RTMobTriggerEnqueue(Runtime, WorldContext, Mob, MobPattern, TriggerData, TriggerState);
+		}
 	}
 }
 
@@ -229,7 +416,7 @@ Void RTMobPatternHpChanged(
 	}
 }
 
-Void RTMobPatternActionExecuted(
+Void RTMobPatternActionStarted(
 	RTRuntimeRef Runtime,
 	RTWorldContextRef WorldContext,
 	RTMobRef Mob,
@@ -244,7 +431,28 @@ Void RTMobPatternActionExecuted(
 		if (TriggerState->IsRunning) continue;
 		if (TriggerData->Type != RUNTIME_MOB_TRIGGER_TYPE_ACTION_EXECUTED) continue;
 		if (TriggerData->Parameters.ActionExecuted.ActionIndex != ActionIndex) continue;
-		// TODO: Check second parameter!
+		if (TriggerData->Parameters.ActionExecuted.ActionFinished) continue;
+
+		RTMobTriggerEnqueue(Runtime, WorldContext, Mob, MobPattern, TriggerData, TriggerState);
+	}
+}
+
+Void RTMobPatternActionFinished(
+	RTRuntimeRef Runtime,
+	RTWorldContextRef WorldContext,
+	RTMobRef Mob,
+	RTMobPatternRef MobPattern,
+	Int32 ActionIndex
+) {
+	if (!(MobPattern->EventTriggerMask & (1 << RUNTIME_MOB_TRIGGER_TYPE_ACTION_EXECUTED))) return;
+
+	for (Int32 TriggerIndex = 0; TriggerIndex < MobPattern->Data->TriggerCount; TriggerIndex += 1) {
+		RTMobTriggerDataRef TriggerData = &MobPattern->Data->Triggers[TriggerIndex];
+		RTMobTriggerStateRef TriggerState = &MobPattern->TriggerStates[TriggerIndex];
+		if (TriggerState->IsRunning) continue;
+		if (TriggerData->Type != RUNTIME_MOB_TRIGGER_TYPE_ACTION_EXECUTED) continue;
+		if (TriggerData->Parameters.ActionExecuted.ActionIndex != ActionIndex) continue;
+		if (!TriggerData->Parameters.ActionExecuted.ActionFinished) continue;
 
 		RTMobTriggerEnqueue(Runtime, WorldContext, Mob, MobPattern, TriggerData, TriggerState);
 	}
@@ -388,6 +596,10 @@ Void RTMobPatternStateChanged(
 	RTMobPatternRef MobPattern,
 	Bool IsIdle
 ) {
+	if (!IsIdle && MobPattern->StartTimestamp < 1) {
+		MobPattern->StartTimestamp = GetTimestampMs();
+	}
+
 	if (!(MobPattern->EventTriggerMask & (1 << RUNTIME_MOB_TRIGGER_TYPE_TIME_IDLE))) return;
 
 	Timestamp CurrentTimestamp = GetTimestampMs();

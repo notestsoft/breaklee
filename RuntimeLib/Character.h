@@ -218,6 +218,8 @@ struct _RTCharacter {
     Int32 BattleModeSkillIndex;
     Timestamp BattleModeTimeout; // TODO: Replace timeout with skill timer pool
     Timestamp GiftBoxUpdateTimestamps[RUNTIME_CHARACTER_MAX_GIFT_BOX_SLOT_COUNT];
+    Int32 MobPatternWarpX;
+    Int32 MobPatternWarpY;
 };
 
 #pragma pack(pop)

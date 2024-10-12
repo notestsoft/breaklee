@@ -273,7 +273,7 @@ Void RTWorldSpawnMob(
     Mob->Movement.WorldChunk = WorldChunk;
     Mob->Movement.Entity = Mob->ID;
 
-    if (Mob->Pattern) RTMobPatternStart(Runtime, WorldContext, Mob, Mob->Pattern);
+    if (Mob->Pattern) RTMobPatternSpawn(Runtime, WorldContext, Mob, Mob->Pattern);
 
     if (Mob->Spawn.SpawnTriggerID) {
         RTDungeonTriggerEvent(WorldContext, Mob->Spawn.SpawnTriggerID);

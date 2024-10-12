@@ -90,6 +90,36 @@ Bool RTRuntimeWarpCharacter(
     if ((RUNTIME_NPC_ID_RESERVED_BEGIN <= NpcID && NpcID <= RUNTIME_NPC_ID_RESERVED_END) ||
         (RUNTIME_NPC_ID_RESERVED_BEGIN2 <= NpcID && NpcID <= RUNTIME_NPC_ID_RESERVED_END2)) {
         switch (NpcID) {
+        case RUNTIME_NPC_ID_MOB_PATTERN: {
+            if (!Character->Movement.WorldContext) return false;
+            if (Character->MobPatternWarpX != WarpPositionX) return false;
+            if (Character->MobPatternWarpY != WarpPositionY) return false;
+
+            Character->MobPatternWarpX = -1;
+            Character->MobPatternWarpY = -1;
+
+            if (RTWorldIsTileColliding(Runtime, Character->Movement.WorldContext, WarpPositionX, WarpPositionY, Character->Movement.CollisionMask)) return false;
+
+            RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
+
+            Character->Data.Info.PositionX = WarpPositionX;
+            Character->Data.Info.PositionY = WarpPositionY;
+            Character->SyncMask.Info = true;
+
+            RTMovementInitialize(
+                Runtime,
+                &Character->Movement,
+                WarpPositionX,
+                WarpPositionY,
+                Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+                RUNTIME_WORLD_TILE_WALL
+            );
+
+            RTWorldSpawnCharacterWithoutNotification(Runtime, World, Entity);
+
+            return true;
+        }
+
         case RUNTIME_NPC_ID_WAR_0: return false;
         case RUNTIME_NPC_ID_WAR_1: return false;
         case RUNTIME_NPC_ID_WAR_WARP: return false;
@@ -119,7 +149,7 @@ Bool RTRuntimeWarpCharacter(
                 &Character->Movement,
                 WarpPoint.X,
                 WarpPoint.Y,
-                RUNTIME_MOVEMENT_SPEED_BASE,
+                Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
                 RUNTIME_WORLD_TILE_WALL
             );
 
@@ -148,7 +178,7 @@ Bool RTRuntimeWarpCharacter(
                 &Character->Movement,
                 WarpPoint.X,
                 WarpPoint.Y,
-                RUNTIME_MOVEMENT_SPEED_BASE,
+                Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
                 RUNTIME_WORLD_TILE_WALL
             );
 
@@ -186,7 +216,7 @@ Bool RTRuntimeWarpCharacter(
                 &Character->Movement,
                 WarpPoint.X,
                 WarpPoint.Y,
-                RUNTIME_MOVEMENT_SPEED_BASE,
+                Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
                 RUNTIME_WORLD_TILE_WALL
             );
 
@@ -221,7 +251,7 @@ Bool RTRuntimeWarpCharacter(
                 &Character->Movement,
                 WarpPoint.X,
                 WarpPoint.Y,
-                RUNTIME_MOVEMENT_SPEED_BASE,
+                Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
                 RUNTIME_WORLD_TILE_WALL
             );
 
@@ -280,7 +310,7 @@ Bool RTRuntimeWarpCharacter(
                 &Character->Movement,
                 WarpPoint.X,
                 WarpPoint.Y,
-                RUNTIME_MOVEMENT_SPEED_BASE,
+                Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
                 RUNTIME_WORLD_TILE_WALL
             );
 
@@ -300,7 +330,7 @@ Bool RTRuntimeWarpCharacter(
         case RUNTIME_NPC_ID_GM: return false;
         }
     }
-    
+
     if (NpcID == RUNTIME_NPC_ID_GM2) {
         if (Character->Data.StyleInfo.Nation != 3) return false;
 
@@ -322,7 +352,7 @@ Bool RTRuntimeWarpCharacter(
             &Character->Movement,
             WarpPositionX,
             WarpPositionY,
-            RUNTIME_MOVEMENT_SPEED_BASE,
+            Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
             RUNTIME_WORLD_TILE_WALL
         );
 
@@ -364,7 +394,7 @@ Bool RTRuntimeWarpCharacter(
             &Character->Movement,
             WarpPositionX,
             WarpPositionY,
-            RUNTIME_MOVEMENT_SPEED_BASE,
+            Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
             RUNTIME_WORLD_TILE_WALL
         );
 
@@ -397,7 +427,7 @@ Bool RTRuntimeWarpCharacter(
 
         RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 
-        Character->Data.Info.Alz-= Warp->Fee;
+        Character->Data.Info.Alz -= Warp->Fee;
         Character->Data.Info.PositionX = WarpPoint.X;
         Character->Data.Info.PositionY = WarpPoint.Y;
         Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
@@ -409,7 +439,7 @@ Bool RTRuntimeWarpCharacter(
             &Character->Movement,
             WarpPoint.X,
             WarpPoint.Y,
-            RUNTIME_MOVEMENT_SPEED_BASE,
+            Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
             RUNTIME_WORLD_TILE_WALL
         );
 
@@ -439,7 +469,7 @@ Bool RTRuntimeWarpCharacter(
         RTWorldContextRef DungeonWorld = RTRuntimeOpenDungeon(Runtime, Character, WarpPoint.WorldIndex, QuestDungeonData->DungeonIndex);
         if (!DungeonWorld) return false;
 
-        Character->Data.Info.Alz-= Warp->Fee;
+        Character->Data.Info.Alz -= Warp->Fee;
         Character->Data.Info.PositionX = WarpPoint.X;
         Character->Data.Info.PositionY = WarpPoint.Y;
         Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
@@ -451,7 +481,7 @@ Bool RTRuntimeWarpCharacter(
             &Character->Movement,
             WarpPoint.X,
             WarpPoint.Y,
-            RUNTIME_MOVEMENT_SPEED_BASE,
+            Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
             RUNTIME_WORLD_TILE_WALL
         );
 
@@ -499,7 +529,7 @@ Bool RTRuntimeWarpCharacter(
             &Character->Movement,
             WarpPoint.X,
             WarpPoint.Y,
-            RUNTIME_MOVEMENT_SPEED_BASE,
+            Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
             RUNTIME_WORLD_TILE_WALL
         );
 

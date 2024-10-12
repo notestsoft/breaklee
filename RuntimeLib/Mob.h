@@ -216,6 +216,10 @@ struct _RTMob {
 	Int32 LinkMobIndex;
 	RTEntityID LinkEntityID;
 
+	UInt32 ImmunityFlags;
+	Int32 SpecialActionIndex;
+	Timestamp SpecialActionStartTimestamp;
+
 	struct _RTMobSpawnData Spawn;
 	struct _RTMobAggroData Aggro;
     struct _RTMovement Movement;
@@ -265,6 +269,26 @@ Void RTMobOnEvent(
 	RTWorldContextRef World,
 	RTMobRef Mob,
 	CString Event
+);
+
+Void RTMobStartSpecialAction(
+	RTRuntimeRef Runtime,
+	RTWorldContextRef WorldContext,
+	RTMobRef Mob,
+	Int32 SpecialActionIndex
+);
+
+Void RTMobCancelSpecialAction(
+	RTRuntimeRef Runtime,
+	RTWorldContextRef WorldContext,
+	RTMobRef Mob
+);
+
+Void RTMobHeal(
+	RTRuntimeRef Runtime,
+	RTWorldContextRef WorldContext,
+	RTMobRef Mob,
+	Int64 Amount
 );
 
 EXTERN_C_END

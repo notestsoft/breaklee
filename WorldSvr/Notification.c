@@ -151,6 +151,10 @@ NOTIFICATION_PROCEDURE_BINDING(PARTY_QUEST_MISSION_MOB_KILL) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 
+NOTIFICATION_PROCEDURE_BINDING(MOB_SPECIAL_BUFF) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
 NOTIFICATION_PROCEDURE_BINDING(CREATE_ITEM) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
@@ -214,6 +218,14 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTER_FORCE_WING_EXP) {
         RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
         SendPartyData(Context, Context->ClientSocket, Party);
     }
+}
+
+NOTIFICATION_PROCEDURE_BINDING(MOB_PATTERN_SPECIAL_ACTION) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
+NOTIFICATION_PROCEDURE_BINDING(MOB_PATTERN_WARP_TARGET) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 
 NOTIFICATION_PROCEDURE_BINDING(DUNGEON_TIME_CONTROL) {

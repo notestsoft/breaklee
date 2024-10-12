@@ -707,7 +707,7 @@ Void RTMobUpdate(
 			Mob->AggroTargetDistance = Distance;
 
 			if (Distance <= Mob->ActiveSkill->Range) {
-				RTMobAttackTarget(Runtime, WorldContext, Mob, Character);
+				if (!Mob->Pattern) RTMobAttackTarget(Runtime, WorldContext, Mob, Character);
 				return;
 			}
 			else {
@@ -841,4 +841,69 @@ Void RTMobOnEvent(
         LUA_TLIGHTUSERDATA, Mob,
         NULL
     );
+}
+
+Void RTMobStartSpecialAction(
+	RTRuntimeRef Runtime,
+	RTWorldContextRef WorldContext,
+	RTMobRef Mob,
+	Int32 SpecialActionIndex
+) {
+	if (Mob->SpecialActionIndex) {
+		RTMobCancelSpecialAction(Runtime, WorldContext, Mob);
+	}
+
+	Timestamp CurrentTimestamp = GetTimestampMs();
+
+	Mob->SpecialActionIndex = SpecialActionIndex;
+	Mob->SpecialActionStartTimestamp = CurrentTimestamp;
+
+	NOTIFICATION_DATA_MOB_PATTERN_SPECIAL_ACTION* Notification = RTNotificationInit(MOB_PATTERN_SPECIAL_ACTION);
+	Notification->Count = 1;
+
+	NOTIFICATION_DATA_MOB_PATTERN_SPECIAL_ACTION_MOB* NotificationTarget = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_MOB_PATTERN_SPECIAL_ACTION_MOB);
+	NotificationTarget->MobID = Mob->ID;
+	NotificationTarget->ActionIndex = Mob->SpecialActionIndex;
+	NotificationTarget->ActionElapsedTime = CurrentTimestamp - Mob->SpecialActionStartTimestamp;
+	RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
+}
+
+Void RTMobCancelSpecialAction(
+	RTRuntimeRef Runtime,
+	RTWorldContextRef WorldContext,
+	RTMobRef Mob
+) {
+	if (!Mob->SpecialActionIndex) return;
+
+	Timestamp CurrentTimestamp = GetTimestampMs();
+
+	Mob->SpecialActionIndex = 0;
+	Mob->SpecialActionStartTimestamp = CurrentTimestamp;
+
+	NOTIFICATION_DATA_MOB_PATTERN_SPECIAL_ACTION* Notification = RTNotificationInit(MOB_PATTERN_SPECIAL_ACTION);
+	Notification->Count = 1;
+
+	NOTIFICATION_DATA_MOB_PATTERN_SPECIAL_ACTION_MOB* NotificationTarget = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_MOB_PATTERN_SPECIAL_ACTION_MOB);
+	NotificationTarget->MobID = Mob->ID;
+	NotificationTarget->ActionIndex = Mob->SpecialActionIndex;
+	NotificationTarget->ActionElapsedTime = CurrentTimestamp - Mob->SpecialActionStartTimestamp;
+	RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
+}
+
+Void RTMobHeal(
+	RTRuntimeRef Runtime,
+	RTWorldContextRef WorldContext,
+	RTMobRef Mob,
+	Int64 Amount
+) {
+	if (!RTMobIsAlive(Mob)) return;
+
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] += Amount;
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] = MIN(Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT], Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX]);
+
+	NOTIFICATION_DATA_MOB_SPECIAL_BUFF* Notification = RTNotificationInit(MOB_SPECIAL_BUFF);
+	Notification->MobID = Mob->ID;
+	Notification->CurrentHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+	Notification->Unknown1 = 1;
+	RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
 }

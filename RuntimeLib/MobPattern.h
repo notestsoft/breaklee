@@ -9,7 +9,7 @@ EXTERN_C_BEGIN
 
 enum {
 	RUNTIME_MOB_TRIGGER_TYPE_NONE,
-	RUNTIME_MOB_TRIGGER_TYPE_TIME_ELAPSED,
+	RUNTIME_MOB_TRIGGER_TYPE_START_TIME,
 	RUNTIME_MOB_TRIGGER_TYPE_HP_THRESHOLD,
 	RUNTIME_MOB_TRIGGER_TYPE_LINK_MOB_DESPAWNED,
 	RUNTIME_MOB_TRIGGER_TYPE_LINK_MOB_SPAWNED,
@@ -20,8 +20,8 @@ enum {
 	RUNTIME_MOB_TRIGGER_TYPE_MOB_SPAWNED,
 	RUNTIME_MOB_TRIGGER_TYPE_SKILL_RECEIVED,
 	RUNTIME_MOB_TRIGGER_TYPE_TIME_IDLE,
-	RUNTIME_MOB_TRIGGER_TYPE_UNKNOWN_12,
-	RUNTIME_MOB_TRIGGER_TYPE_UNKNOWN_13,
+	RUNTIME_MOB_TRIGGER_TYPE_SPAWN_TIME,
+	RUNTIME_MOB_TRIGGER_TYPE_INSTANCE_TIME,
 };
 
 enum {
@@ -29,20 +29,20 @@ enum {
 	RUNTIME_MOB_ACTION_TYPE_WARP_TARGET = 1,
 	RUNTIME_MOB_ACTION_TYPE_WARP_SELF = 2,
 	RUNTIME_MOB_ACTION_TYPE_SPAWN_MOB = 3,
-	RUNTIME_MOB_ACTION_TYPE_HEAL = 4,
-	RUNTIME_MOB_ACTION_TYPE_UNKNOWN_5 = 5,
-	RUNTIME_MOB_ACTION_TYPE_EVASION_SELF = 6,
-	RUNTIME_MOB_ACTION_TYPE_UNKNOWN_7 = 7,
-	RUNTIME_MOB_ACTION_TYPE_UNKNOWN_8 = 8,
-	RUNTIME_MOB_ACTION_TYPE_ANIMATION_STATE = 9,
-	RUNTIME_MOB_ACTION_TYPE_ATTACK = 10,
+	RUNTIME_MOB_ACTION_TYPE_HEAL_TARGET = 4,
+	RUNTIME_MOB_ACTION_TYPE_TIMEOUT = 5,
+	RUNTIME_MOB_ACTION_TYPE_EVASION_SELF_1 = 6,
+	RUNTIME_MOB_ACTION_TYPE_EVASION_SELF_2 = 7,
+	RUNTIME_MOB_ACTION_TYPE_EVASION_SELF_3 = 8,
+	RUNTIME_MOB_ACTION_TYPE_SPECIAL_ACTION = 9,
+	RUNTIME_MOB_ACTION_TYPE_ATTACK_1 = 10,
 	RUNTIME_MOB_ACTION_TYPE_CANCEL_ACTION = 11,
-	RUNTIME_MOB_ACTION_TYPE_KILL_MOB = 12,
-	RUNTIME_MOB_ACTION_TYPE_RESPAWN = 13,
-	RUNTIME_MOB_ACTION_TYPE_ANIMATION = 14,
+	RUNTIME_MOB_ACTION_TYPE_DESPAWN_MOB = 12,
+	RUNTIME_MOB_ACTION_TYPE_RESPAWN_SELF = 13,
+	RUNTIME_MOB_ACTION_TYPE_SOCIAL_ACTION = 14,
 	RUNTIME_MOB_ACTION_TYPE_ATTACK_2 = 15,
-	RUNTIME_MOB_ACTION_TYPE_UNKNOWN_16 = 16,
-	RUNTIME_MOB_ACTION_TYPE_UNKNOWN_17 = 17,
+	RUNTIME_MOB_ACTION_TYPE_ATTACK_UP_TARGET = 16,
+	RUNTIME_MOB_ACTION_TYPE_DEFENSE_UP_TARGET = 17,
 	RUNTIME_MOB_ACTION_TYPE_UNKNOWN_18 = 18,
 	RUNTIME_MOB_ACTION_TYPE_UNKNOWN_19 = 19,
 	RUNTIME_MOB_ACTION_TYPE_UNKNOWN_20 = 20,
@@ -54,10 +54,33 @@ enum {
 	RUNTIME_MOB_ACTION_STATE_RUNNING,
 };
 
+enum {
+	RUNTIME_MOB_PATTERN_VALUE_TYPE_DECIMAL = 1,
+	RUNTIME_MOB_PATTERN_VALUE_TYPE_PERCENT = 2,
+};
+
+
+union _RTMobActionParameters {
+	struct { Int32 PositionX; Int32 PositionY; } WarpTarget;
+	struct { Int32 PositionX; Int32 PositionY; } WarpSelf;
+	struct { Int32 LinkMobIndex; Int32 Unknown1; Int32 Unknown2; } LinkMobSpawn;
+	struct { Int32 WorldType; Int32 MobIndex; Int32 ValueType; Int32 Value; } Heal;
+	struct { Int32 Unknown1; } EvasionSelf;
+	struct { Int32 ActionIndex; Int32 Unknown1; } SpecialAction;
+	struct { Int32 AttackIndex; } Attack;
+	struct { Int32 ActionIndex; Int32 ActionFinished; } CancelAction;
+	struct { Int32 LinkMobIndex; } LinkMobDespawn;
+	struct { Int32 ActionIndex; } SocialAction;
+	struct { Int32 WorldType; Int32 MobIndex; Int32 ValueType; Int32 Value; } AttackUp;
+	struct { Int32 WorldType; Int32 MobIndex; Int32 ValueType; Int32 Value; } DefenseUp;
+	struct { Int32 Values[RUNTIME_MOB_PATTERN_MAX_PARAMETER_COUNT]; } Memory;
+};
+typedef union _RTMobActionParameters RTMobActionParameters;
+
 struct _RTMobActionData {
 	Int32 Index;
 	Int32 Type;
-	Int32 Parameters[RUNTIME_MOB_PATTERN_MAX_PARAMETER_COUNT]; // TODO: Replace with union
+	RTMobActionParameters Parameters;
 	Int32 Duration;
 	Int32 TargetType;
 	Int32 TargetParameters[RUNTIME_MOB_PATTERN_MAX_PARAMETER_COUNT]; // TODO: Replace with union
@@ -78,7 +101,7 @@ union _RTMobTriggerParameters {
 	struct { Int32 HpPercent; } HpThreshold;
 	struct { Int32 LinkMobIndex; Int32 Unknown1; } LinkMobKilled;
 	struct { Int32 LinkMobIndex; } LinkMobSpawned;
-	struct { Int32 ActionIndex; Int32 Count; } ActionExecuted;
+	struct { Int32 ActionIndex; Int32 ActionFinished; } ActionExecuted;
 	struct { Int32 Distance; Int32 Duration; } DistanceThreshold;
 	struct { Int32 WorldIndex; Int32 DungeonIndex; Int32 EntityIndex; } MobKilled;
 	struct { Int32 WorldIndex; Int32 DungeonIndex; Int32 EntityIndex; } MobSpawned;
@@ -109,6 +132,7 @@ struct _RTMobTriggerState {
 
 struct _RTMobActionState {
 	RTMobTriggerDataRef TriggerData;
+	RTMobTriggerStateRef TriggerState;
 	RTMobActionGroupDataRef ActionGroupData;
 	RTMobActionDataRef ActionData;
 	Bool IsRunning;
@@ -118,16 +142,15 @@ struct _RTMobActionState {
 
 struct _RTMobPattern {
 	RTMobPatternDataRef Data;
-	Bool IsRunning;
-	Bool IsIdle;
 	UInt32 EventTriggerMask;
 	Timestamp StartTimestamp;
+	Timestamp SpawnTimestamp;
 	struct _RTMobTriggerState TriggerStates[RUNTIME_MOB_PATTERN_MAX_TRIGGER_GROUP_COUNT];
 	ArrayRef ActionStates;
 	// TODO: Add link mobs
 };
 
-Void RTMobPatternStart(
+Void RTMobPatternSpawn(
 	RTRuntimeRef Runtime,
 	RTWorldContextRef WorldContext,
 	RTMobRef Mob,
@@ -164,7 +187,15 @@ Void RTMobPatternHpChanged(
 	Int64 NewHp
 );
 
-Void RTMobPatternActionExecuted(
+Void RTMobPatternActionStarted(
+	RTRuntimeRef Runtime,
+	RTWorldContextRef WorldContext,
+	RTMobRef Mob,
+	RTMobPatternRef MobPattern,
+	Int32 ActionIndex
+);
+
+Void RTMobPatternActionFinished(
 	RTRuntimeRef Runtime,
 	RTWorldContextRef WorldContext,
 	RTMobRef Mob,

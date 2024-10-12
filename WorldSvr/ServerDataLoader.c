@@ -2508,7 +2508,7 @@ Bool ServerLoadMobPatternData(
                         PatternArchive,
                         ActionIterator->Index,
                         "Parameters",
-                        &ActionData->Parameters[0],
+                        &ActionData->Parameters.Memory.Values[0],
                         RUNTIME_MOB_PATTERN_MAX_PARAMETER_COUNT,
                         ':'
                     )) goto error;
