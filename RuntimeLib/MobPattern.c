@@ -144,7 +144,17 @@ Void RTMobPatternStartAction(
 	}
 
 	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_WARP_SELF) {
-
+		RTWorldChunkRemove(Mob->Movement.WorldChunk, Mob->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
+		RTMovementInitialize(
+			Runtime,
+			&Mob->Movement,
+			ActionState->ActionData->Parameters.WarpTarget.PositionX,
+			ActionState->ActionData->Parameters.WarpTarget.PositionY,
+			Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+			RUNTIME_WORLD_TILE_WALL | RUNTIME_WORLD_TILE_TOWN
+		);
+		Mob->Movement.WorldChunk = RTWorldContextGetChunk(WorldContext, Mob->Movement.PositionCurrent.X, Mob->Movement.PositionCurrent.Y);
+		RTWorldChunkInsert(Mob->Movement.WorldChunk, Mob->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 	}
 
 	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_SPAWN_MOB) {

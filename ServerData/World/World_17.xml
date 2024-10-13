@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<World WorldIndex="17">
+	<MobDropPool MobSpeciesIndex="215">
+		<Item ItemID="33431" ItemOption="1279" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="624">
+		<Item ItemID="33212" ItemOption="1265" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="708">
+		<Item ItemID="33256" ItemOption="1282" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="709">
+		<Item ItemID="33420" ItemOption="1268" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="710">
+		<Item ItemID="33435" ItemOption="1267" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="712">
+		<Item ItemID="33421" ItemOption="1269" ItemDuration="0" OptionPoolID="0" Rate="33.00000000000000000"/>
+		<Item ItemID="33421" ItemOption="1270" ItemDuration="0" OptionPoolID="0" Rate="33.00000000000000000"/>
+		<Item ItemID="33421" ItemOption="1271" ItemDuration="0" OptionPoolID="0" Rate="34.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="716">
+		<Item ItemID="33259" ItemOption="1283" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="718">
+		<Item ItemID="33413" ItemOption="1266" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="738">
+		<Item ItemID="33434" ItemOption="1280" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+</World>

@@ -78,6 +78,7 @@ struct _RTRuntime {
     struct _RTQuestRewardItemSetData QuestRewardItemSetData[RUNTIME_MEMORY_MAX_QUEST_REWARD_ITEM_SET_DATA_COUNT];
     struct _RTTrainerData TrainerData[RUNTIME_MEMORY_MAX_TRAINER_DATA_COUNT];
     struct _RTWarp Warps[RUNTIME_MEMORY_MAX_WARP_COUNT];
+    struct _RTDropTable DropTable;
     Float32 MovementDistanceCache[RUNTIME_MOVEMENT_MAX_DISTANCE_LENGTH * RUNTIME_MOVEMENT_MAX_DISTANCE_LENGTH];
     MemoryPoolRef SkillDataPool;
     MemoryPoolRef ForceEffectFormulaPool;

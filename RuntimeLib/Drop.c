@@ -70,6 +70,15 @@ Bool RTCalculateDrop(
     DropPool = World->WorldData->DropTable.WorldDropPool;
     if (RTDropPoolRollItem(DropRateValue, &DropRateOffset, DropPool, Mob->Spawn.Level, Result)) return true;
     
+    DropPoolIndex = Mob->SpeciesData->MobSpeciesIndex;
+    DropPool = (ArrayRef)DictionaryLookup(Runtime->DropTable.MobDropPool, &DropPoolIndex);
+    if (DropPool) {
+        if (RTDropPoolRollItem(DropRateValue, &DropRateOffset, DropPool, 0, Result)) return true;
+    }
+
+    DropPool = Runtime->DropTable.WorldDropPool;
+    if (RTDropPoolRollItem(DropRateValue, &DropRateOffset, DropPool, Mob->Spawn.Level, Result)) return true;
+
     return false;
 }
 
@@ -181,6 +190,24 @@ Bool RTCalculateQuestDrop(
         }
     }
 
+    DropPool = (ArrayRef)DictionaryLookup(Runtime->DropTable.QuestDropPool, &DropPoolIndex);
+    if (DropPool) {
+        for (Int32 DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
+            RTDropItemRef DropItem = (RTDropItemRef)ArrayGetElementAtIndex(DropPool, DropIndex);
+            if (!RTCharacterHasQuestItemCounter(Runtime, Character, DropItem->ItemID, DropItem->ItemOptions)) continue;
+
+            if (DropRateValue <= DropRateOffset + DropItem->DropRate) {
+                Result->ItemID = DropItem->ItemID;
+                Result->ItemOptions = DropItem->ItemOptions;
+                Result->ItemDuration.DurationIndex = DropItem->DurationIndex;
+                Result->ItemProperty.IsQuestItem = true;
+                return true;
+            }
+
+            DropRateOffset += DropItem->DropRate;
+        }
+    }
+
     return false;
 }
 
@@ -219,6 +246,24 @@ Bool RTCalculatePartyQuestDrop(
     }
 
     ArrayRef DropPool = (ArrayRef)DictionaryLookup(World->WorldData->DropTable.QuestDropPool, &DropPoolIndex);
+    if (DropPool) {
+        for (Int32 DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
+            RTDropItemRef DropItem = (RTDropItemRef)ArrayGetElementAtIndex(DropPool, DropIndex);
+            if (!RTPartyHasQuestItemCounter(Runtime, Party, DropItem->ItemID, DropItem->ItemOptions)) continue;
+
+            if (DropRateValue <= DropRateOffset + DropItem->DropRate) {
+                Result->ItemID = DropItem->ItemID;
+                Result->ItemOptions = DropItem->ItemOptions;
+                Result->ItemDuration.DurationIndex = DropItem->DurationIndex;
+                Result->ItemProperty.IsQuestItem = true;
+                return true;
+            }
+
+            DropRateOffset += DropItem->DropRate;
+        }
+    }
+
+    DropPool = (ArrayRef)DictionaryLookup(Runtime->DropTable.QuestDropPool, &DropPoolIndex);
     if (DropPool) {
         for (Int32 DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
             RTDropItemRef DropItem = (RTDropItemRef)ArrayGetElementAtIndex(DropPool, DropIndex);

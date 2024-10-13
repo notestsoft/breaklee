@@ -276,7 +276,7 @@ Void RTWorldSpawnMob(
     if (Mob->Pattern) RTMobPatternSpawn(Runtime, WorldContext, Mob, Mob->Pattern);
 
     if (Mob->Spawn.SpawnTriggerID) {
-        RTDungeonTriggerEvent(WorldContext, Mob->Spawn.SpawnTriggerID);
+        RTDungeonTriggerEvent(WorldContext, Mob->ID, Mob->Spawn.SpawnTriggerID);
     }
 
     if (WorldContext->DungeonIndex) {
@@ -362,8 +362,23 @@ Void RTWorldDespawnMob(
     Mob->Movement.WorldContext = NULL;
     Mob->Movement.Entity = kEntityIDNull;
 
-    RTWorldChunkRemove(Mob->Movement.WorldChunk, Mob->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT);
+    RTWorldChunkRef WorldChunk = Mob->Movement.WorldChunk;
+    Int32 UpdateReason = RTEntityIsNull(Mob->EventDespawnLinkID) ? RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT : RUNTIME_WORLD_CHUNK_UPDATE_REASON_NONE;
+    RTWorldChunkRemove(WorldChunk, Mob->ID, UpdateReason);
     RTMobOnEvent(Runtime, WorldContext, Mob, MOB_EVENT_DESPAWN);
+
+    if (!RTEntityIsNull(Mob->EventDespawnLinkID)) {
+        NOTIFICATION_DATA_MOBS_DESPAWN_BY_LINK_MOB* Notification = RTNotificationInit(MOBS_DESPAWN_BY_LINK_MOB);
+        Notification->SourceID = Mob->EventDespawnLinkID;
+        Notification->Count = 1;
+
+        NOTIFICATION_DATA_MOB_DESPAWN_BY_LINK_MOB_INDEX* NotificationMob = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_MOB_DESPAWN_BY_LINK_MOB_INDEX);
+        NotificationMob->MobID = Mob->ID;
+        NotificationMob->Reason = NOTIFICATION_DESPAWN_TYPE_DEAD;
+        RTNotificationDispatchToNearby(Notification, WorldChunk);
+
+        Mob->EventDespawnLinkID = kEntityIDNull;
+    }
 
     // TODO: This should be evaluated inside the mob it self!
     if (!RTEntityIsNull(Mob->DropOwner)) { // TODO: Why do we check here if the mob has a drop owner?
@@ -424,7 +439,7 @@ Void RTWorldDespawnMob(
     }
 
     if (Mob->Spawn.KillTriggerID) {
-        RTDungeonTriggerEvent(WorldContext, Mob->Spawn.KillTriggerID);
+        RTDungeonTriggerEvent(WorldContext, Mob->ID, Mob->Spawn.KillTriggerID);
     }
 
     for (Index Index = 0; Index < RUNTIME_MOB_MAX_EVENT_COUNT; Index += 1) {

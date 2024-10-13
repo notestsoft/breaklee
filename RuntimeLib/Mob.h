@@ -205,6 +205,8 @@ struct _RTMob {
 	Timestamp NextTimestamp;
 	Timestamp EventSpawnTimestamp;
 	Timestamp EventDespawnTimestamp;
+	RTEntityID EventSpawnLinkID;
+	RTEntityID EventDespawnLinkID;
 
 	RTMobSkillDataRef ActiveSkill;
 	RTDataMobAttackDataRef SpecialAttack;

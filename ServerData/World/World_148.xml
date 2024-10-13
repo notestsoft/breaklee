@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<World WorldIndex="148">
+	<CommonDropPool MinMobLevel="1" MaxMobLevel="250">
+		<Item ItemID="683" ItemOption="513" ItemDuration="0" OptionPoolID="0" Rate="0.00500000000000000"/>
+		<Item ItemID="684" ItemOption="513" ItemDuration="0" OptionPoolID="0" Rate="0.00500000000000000"/>
+		<Item ItemID="685" ItemOption="513" ItemDuration="0" OptionPoolID="0" Rate="0.00500000000000000"/>
+		<Item ItemID="686" ItemOption="513" ItemDuration="0" OptionPoolID="0" Rate="0.00500000000000000"/>
+		<Item ItemID="687" ItemOption="513" ItemDuration="0" OptionPoolID="0" Rate="0.00500000000000000"/>
+		<Item ItemID="688" ItemOption="513" ItemDuration="0" OptionPoolID="0" Rate="0.00500000000000000"/>
+		<Item ItemID="689" ItemOption="513" ItemDuration="0" OptionPoolID="0" Rate="0.00500000000000000"/>
+		<Item ItemID="690" ItemOption="513" ItemDuration="0" OptionPoolID="0" Rate="0.00500000000000000"/>
+		<Item ItemID="691" ItemOption="513" ItemDuration="0" OptionPoolID="0" Rate="0.00500000000000000"/>
+		<Item ItemID="692" ItemOption="10753" ItemDuration="0" OptionPoolID="0" Rate="0.00100000000000000"/>
+		<Item ItemID="1204" ItemOption="129" ItemDuration="0" OptionPoolID="0" Rate="0.00050000000000000"/>
+		<Item ItemID="758" ItemOption="129" ItemDuration="0" OptionPoolID="0" Rate="0.00050000000000000"/>
+		<Item ItemID="753" ItemOption="129" ItemDuration="0" OptionPoolID="0" Rate="0.00050000000000000"/>
+		<Item ItemID="1203" ItemOption="129" ItemDuration="0" OptionPoolID="0" Rate="0.00050000000000000"/>
+		<Item ItemID="1205" ItemOption="129" ItemDuration="0" OptionPoolID="0" Rate="0.00050000000000000"/>
+		<Item ItemID="1206" ItemOption="129" ItemDuration="0" OptionPoolID="0" Rate="0.00050000000000000"/>
+		<Item ItemID="541" ItemOption="129" ItemDuration="0" OptionPoolID="0" Rate="0.00050000000000000"/>
+		<Item ItemID="459" ItemOption="129" ItemDuration="0" OptionPoolID="0" Rate="0.00050000000000000"/>
+		<Item ItemID="478" ItemOption="257" ItemDuration="0" OptionPoolID="0" Rate="0.00050000000000000"/>
+		<Item ItemID="456" ItemOption="129" ItemDuration="0" OptionPoolID="0" Rate="0.00050000000000000"/>
+		<Item ItemID="3896" ItemOption="129" ItemDuration="0" OptionPoolID="0" Rate="0.00050000000000000"/>
+		<Item ItemID="516" ItemOption="129" ItemDuration="0" OptionPoolID="0" Rate="0.00050000000000000"/>
+	</CommonDropPool>
+</World>

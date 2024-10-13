@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<World WorldIndex="40">
+	<CommonDropPool MinMobLevel="34" MaxMobLevel="59">
+		<Item ItemID="289" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="0.00781250000000000"/>
+		<Item ItemID="297" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="0.00781250000000000"/>
+		<Item ItemID="316" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="0.00781250000000000"/>
+		<Item ItemID="352" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="0.00781250000000000"/>
+		<Item ItemID="356" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="0.00781250000000000"/>
+		<Item ItemID="360" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="0.00781250000000000"/>
+		<Item ItemID="370" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="0.00781250000000000"/>
+		<Item ItemID="373" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="0.00781250000000000"/>
+	</CommonDropPool>
+	<CommonDropPool MinMobLevel="1" MaxMobLevel="200">
+		<Item ItemID="516" ItemOption="129" ItemDuration="0" OptionPoolID="0" Rate="0.00037500000000000"/>
+		<Item ItemID="753" ItemOption="129" ItemDuration="0" OptionPoolID="0" Rate="0.00037500000000000"/>
+	</CommonDropPool>
+	<MobDropPool MobSpeciesIndex="686">
+		<Item ItemID="9" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="5.00000000000000000"/>
+		<Item ItemID="582" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="5.00000000000000000"/>
+	</MobDropPool>
+</World>

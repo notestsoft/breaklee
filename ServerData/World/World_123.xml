@@ -1,0 +1,229 @@
+<?xml version="1.0" ?>
+<World WorldIndex="123">
+	<MobDropPool MobSpeciesIndex="2811">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="12.80000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2812">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="12.80000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2815">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="12.80000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2816">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="12.80000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2819">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="15.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2820">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="15.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2821">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="15.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2822">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="15.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2823">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="15.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2824">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="15.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2825">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="40.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2826">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="40.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2827">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="20.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2828">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="20.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2831">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="20.80000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2832">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="20.80000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2833">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="48.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2834">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="20.80000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2835">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="20.80000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2837">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="22.40000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2839">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="22.40000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2840">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="56.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2841">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="22.40000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2842">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="56.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2845">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="22.40000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2846">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="22.40000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2847">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="40.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2848">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="48.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2843">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="56.00000000000000000"/>
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="56.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2854">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="22.40000000000000000"/>
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="32.00000000000000000"/>
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="32.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2855">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="25.60000000000000000"/>
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="25.60000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2856">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="25.60000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2867">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="64.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2868">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="28.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2869">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="64.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2870">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="28.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2871">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="64.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2872">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="28.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2873">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="64.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2874">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="28.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2875">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="32.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2881">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="32.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2883">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="32.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2885">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="32.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2889">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="24.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2890">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="24.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2891">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="64.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2893">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="40.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2894">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="40.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2896">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="64.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2895">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="64.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2857">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="25.60000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2858">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="22.40000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2859">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="40.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2860">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="20.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2861">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="15.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2862">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="15.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2863">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="15.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2864">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="15.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2865">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="15.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2866">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="15.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2876">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="32.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2877">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="32.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2878">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="32.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2879">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="32.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2880">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="32.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2882">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="32.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2884">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="32.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2886">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="32.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2897">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2898">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2899">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2900">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2902">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+</World>

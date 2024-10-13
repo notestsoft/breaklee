@@ -7,40 +7,49 @@
 #include "NotificationManager.h"
 
 Bool RTDungeonIsPatternPartCompleted(
-    RTWorldContextRef World
+    RTRuntimeRef Runtime,
+    RTWorldContextRef WorldContext,
+    RTDungeonDataRef DungeonData
 ) {
-    if (World->PatternPartIndex == -1) return true;
+    if (WorldContext->PatternPartIndex < 0) return true;
 
     // TODO: Check mission items
 
-    for (Int32 Index = 0; Index < World->MissionMobCount; Index++) {
-        if (World->MissionMobs[Index].Count < World->MissionMobs[Index].MaxCount) {
+    for (Int32 Index = 0; Index < WorldContext->MissionMobCount; Index += 1) {
+        if (WorldContext->MissionMobs[Index].Count < WorldContext->MissionMobs[Index].MaxCount) {
             return false;
         }
+    }
+
+    RTMissionDungeonPatternPartDataRef PatternPartData = RTRuntimeGetPatternPartByID(
+        Runtime,
+        DungeonData->PatternPartIndices[WorldContext->PatternPartIndex]
+    );
+    if (PatternPartData->MissionNpcIndex > 0) {
+        return false;
     }
 
     return true;
 }
 
 Bool RTDungeonStartNextPatternPart(
-    RTWorldContextRef World
+    RTWorldContextRef WorldContext
 ) {
-    RTRuntimeRef Runtime = World->WorldManager->Runtime;
-    
-    if (!RTDungeonIsPatternPartCompleted(World)) return false;
+    RTRuntimeRef Runtime = WorldContext->WorldManager->Runtime;
+    RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, WorldContext->DungeonIndex);
 
-    RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, World->DungeonIndex);
+    if (!RTDungeonIsPatternPartCompleted(Runtime, WorldContext, DungeonData)) return false;
 
-    if (World->PatternPartIndex >= 0) {
-        RTPartyRef Party = RTRuntimeGetParty(Runtime, World->Party);
+    if (WorldContext->PatternPartIndex >= 0) {
+        RTPartyRef Party = RTRuntimeGetParty(Runtime, WorldContext->Party);
         assert(Party);
 
         NOTIFICATION_DATA_DUNGEON_PATTERN_PART_COMPLETED* Notification = RTNotificationInit(DUNGEON_PATTERN_PART_COMPLETED);
-        Notification->PatternPartIndex = World->PatternPartIndex;
+        Notification->PatternPartIndex = WorldContext->PatternPartIndex;
         RTNotificationDispatchToParty(Notification, Party);
     }
 
-    Int32 PatternPartIndex = World->PatternPartIndex + 1;
+    Int32 PatternPartIndex = WorldContext->PatternPartIndex + 1;
     if (PatternPartIndex >= DungeonData->PatternPartCount) {
         return true;
     }
@@ -50,19 +59,19 @@ Bool RTDungeonStartNextPatternPart(
         DungeonData->PatternPartIndices[PatternPartIndex]
     );
 
-    RTWorldSetMobTable(Runtime, World, PatternPartData->MobTable);
+    RTWorldSetMobTable(Runtime, WorldContext, PatternPartData->MobTable);
 
-    World->MissionItemCount = 0;
-    memset(World->MissionItems, 0, sizeof(struct _RTQuestUnitItemData) * RUNTIME_MAX_QUEST_COUNTER_COUNT);
+    WorldContext->MissionItemCount = 0;
+    memset(WorldContext->MissionItems, 0, sizeof(struct _RTQuestUnitItemData) * RUNTIME_MAX_QUEST_COUNTER_COUNT);
 
-    World->MissionMobCount = PatternPartData->MissionMobCount;
-    memcpy(World->MissionMobs, PatternPartData->MissionMobs, sizeof(struct _RTQuestUnitMobData) * RUNTIME_MAX_QUEST_COUNTER_COUNT);
+    WorldContext->MissionMobCount = PatternPartData->MissionMobCount;
+    memcpy(WorldContext->MissionMobs, PatternPartData->MissionMobs, sizeof(struct _RTQuestUnitMobData) * RUNTIME_MAX_QUEST_COUNTER_COUNT);
 
-    for (Int32 Index = 0; Index < World->MissionMobCount; Index++) {
-        World->MissionMobs[Index].Count = 0;
+    for (Int32 Index = 0; Index < WorldContext->MissionMobCount; Index++) {
+        WorldContext->MissionMobs[Index].Count = 0;
     }
     
-    World->PatternPartIndex += 1;
+    WorldContext->PatternPartIndex += 1;
 
     return true;
 }
@@ -167,7 +176,7 @@ Bool RTDungeonEnd(
     RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, World->DungeonIndex);
     assert(DungeonData);
 
-    if (!RTDungeonIsPatternPartCompleted(World)) return false;
+    if (!RTDungeonIsPatternPartCompleted(Runtime, World, DungeonData)) return false;
 
     Int32 PatternPartIndex = World->PatternPartIndex + 1;
     if (PatternPartIndex >= DungeonData->PatternPartCount) {
@@ -215,6 +224,7 @@ Bool RTWorldContextCheckMobListState(
 
 Bool RTDungeonTriggerEvent(
     RTWorldContextRef World,
+    RTEntityID TriggerSource,
     Index TriggerIndex
 ) {
     assert(
@@ -245,7 +255,7 @@ Bool RTDungeonTriggerEvent(
             RTDungeonTriggerActionDataRef ActionData = (RTDungeonTriggerActionDataRef)ArrayGetElementAtIndex(ActionGroup, ActionIndex);
 
             if (ActionData->TargetAction == RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_EVENT_CALL) {
-                RTDungeonTriggerEvent(World, ActionData->TargetMobIndex);
+                RTDungeonTriggerEvent(World, TriggerSource, ActionData->TargetMobIndex);
                 Triggered = true;
                 continue;
             }
@@ -284,6 +294,16 @@ Bool RTDungeonTriggerEvent(
                 Mob->IsPermanentDeath = true;
                 RTWorldDespawnMobEvent(Runtime, World, Mob, ActionData->Delay);
                 Triggered = true;
+            }
+
+            if (ActionData->TargetAction == RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_KILL_BY_LINK_MOB) {
+                Mob->EventDespawnLinkID = TriggerSource;
+                RTWorldDespawnMobEvent(Runtime, World, Mob, ActionData->Delay);
+                Triggered = true;
+            }
+
+            if (!Triggered) {
+                Warn("Unknown trigger type (%d) given!", ActionData->TargetAction);
             }
         }
     }

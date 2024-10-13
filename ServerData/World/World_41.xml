@@ -1,39 +1,58 @@
 <?xml version="1.0" ?>
 <World WorldIndex="41">
+	<CommonDropPool MinMobLevel="47" MaxMobLevel="72">
+		<Item ItemID="320" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="0.00781250000000000"/>
+		<Item ItemID="324" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="0.00781250000000000"/>
+		<Item ItemID="364" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="0.00781250000000000"/>
+		<Item ItemID="367" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="0.00781250000000000"/>
+	</CommonDropPool>
+	<CommonDropPool MinMobLevel="1" MaxMobLevel="200">
+		<Item ItemID="516" ItemOption="129" ItemDuration="0" OptionPoolID="0" Rate="0.00037500000000000"/>
+		<Item ItemID="753" ItemOption="129" ItemDuration="0" OptionPoolID="0" Rate="0.00037500000000000"/>
+	</CommonDropPool>
+	<MobDropPool MobSpeciesIndex="1306">
+		<Item ItemID="33360" ItemOption="1200" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="1307">
+		<Item ItemID="33209" ItemOption="1197" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="1310">
+		<Item ItemID="33268" ItemOption="1205" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="1316">
+		<Item ItemID="33208" ItemOption="1213" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="1321">
+		<Item ItemID="33361" ItemOption="1201" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="1322">
+		<Item ItemID="33271" ItemOption="1210" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="1327">
+		<Item ItemID="33266" ItemOption="1209" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="1335">
+		<Item ItemID="33252" ItemOption="1192" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="1337">
+		<Item ItemID="33363" ItemOption="1211" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="1338">
+		<Item ItemID="33364" ItemOption="1212" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="1342">
+		<Item ItemID="33257" ItemOption="1204" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
 	<QuestDropPool MobSpeciesIndex="1323">
-		<Item ItemID="542" ItemOption="1199" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="542" ItemOption="1199" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="542" ItemOption="1199" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="542" ItemOption="1199" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="542" ItemOption="1199" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="542" ItemOption="1199" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="542" ItemOption="1199" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="33310" ItemOption="1199" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
 	</QuestDropPool>
 	<QuestDropPool MobSpeciesIndex="1305">
-		<Item ItemID="478" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="478" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="478" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="478" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="478" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="478" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="478" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="33246" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
 	</QuestDropPool>
 	<QuestDropPool MobSpeciesIndex="1308">
-		<Item ItemID="564" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="564" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="564" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="564" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="564" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="564" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="564" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="33332" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
 	</QuestDropPool>
 	<QuestDropPool MobSpeciesIndex="1309">
-		<Item ItemID="443" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="443" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="443" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="443" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="443" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="443" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
-		<Item ItemID="443" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100"/>
+		<Item ItemID="33211" ItemOption="1207" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
 	</QuestDropPool>
 </World>

@@ -38,6 +38,9 @@ RTRuntimeRef RTRuntimeCreate(
         RUNTIME_MEMORY_MAX_CHARACTER_COUNT
     );
     Runtime->NotificationManager = RTNotificationManagerCreate(Runtime);
+    Runtime->DropTable.WorldDropPool = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTDropItem), 8);
+    Runtime->DropTable.MobDropPool = IndexDictionaryCreate(Runtime->Allocator, 8);
+    Runtime->DropTable.QuestDropPool = IndexDictionaryCreate(Runtime->Allocator, 8);
     Runtime->SkillDataPool = MemoryPoolCreate(Allocator, sizeof(struct _RTCharacterSkillData), RUNTIME_MEMORY_MAX_CHARACTER_SKILL_DATA_COUNT);
     Runtime->ForceEffectFormulaPool = MemoryPoolCreate(Allocator, sizeof(struct _RTForceEffectFormula), RUNTIME_FORCE_EFFECT_COUNT);
     Runtime->MobPatternDataPool = MemoryPoolCreate(Allocator, sizeof(struct _RTMobPatternData), RUNTIME_MEMORY_MAX_MOB_PATTERN_COUNT);
@@ -103,6 +106,9 @@ Void RTRuntimeDestroy(
     MemoryPoolDestroy(Runtime->SkillDataPool);
     MemoryPoolDestroy(Runtime->ForceEffectFormulaPool);
     MemoryPoolDestroy(Runtime->MobPatternDataPool);
+    ArrayDestroy(Runtime->DropTable.WorldDropPool);
+    DictionaryDestroy(Runtime->DropTable.MobDropPool);
+    DictionaryDestroy(Runtime->DropTable.QuestDropPool);
     RTNotificationManagerDestroy(Runtime->NotificationManager);
     RTScriptManagerDestroy(Runtime->ScriptManager);
     RTRuntimeDataContextDestroy(Runtime->Context);

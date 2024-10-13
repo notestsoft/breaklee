@@ -444,7 +444,7 @@ Bool RTCharacterQuestAction(
 		if (World->WorldData->Type != RUNTIME_WORLD_TYPE_DUNGEON &&
             World->WorldData->Type != RUNTIME_WORLD_TYPE_QUEST_DUNGEON) return false;
 
-		RTDungeonTriggerEvent(World, QuestNpc->Value[0]);
+		RTDungeonTriggerEvent(World, kEntityIDNull, QuestNpc->Value[0]);
 	}
 
 	/* TODO: Quest Dungeon NPC has position 0,0
@@ -884,7 +884,7 @@ Bool RTCharacterPartyQuestAction(
 		RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
 		if (World->WorldData->Type != RUNTIME_WORLD_TYPE_DUNGEON && World->WorldData->Type != RUNTIME_WORLD_TYPE_QUEST_DUNGEON) return false;
 
-		RTDungeonTriggerEvent(World, QuestNpc->Value[0]);
+		RTDungeonTriggerEvent(World, kEntityIDNull, QuestNpc->Value[0]);
 	}
 
 	/* TODO: Quest Dungeon NPC has position 0,0
@@ -952,6 +952,8 @@ Bool RTPartyHasQuestItemCounter(
 	RTItem Item,
 	UInt64 ItemOptions
 ) {
+	UInt64 QuestItemOptions = RTQuestItemGetOptions(ItemOptions);
+
 	for (Int32 SlotIndex = 0; SlotIndex < RUNTIME_PARTY_MAX_QUEST_SLOT_COUNT; SlotIndex += 1) {
 		RTQuestSlotRef QuestSlot = &Party->QuestSlot[SlotIndex];
 		if (!QuestSlot->QuestIndex) continue;
@@ -960,14 +962,13 @@ Bool RTPartyHasQuestItemCounter(
 		if (!Quest) return false;
 
 		Int32 QuestCounterIndex = Quest->MissionMobCount;
-
 		for (Int32 MissionIndex = 0; MissionIndex < Quest->MissionItemCount; MissionIndex += 1) {
 			if (QuestSlot->Counter[QuestCounterIndex] >= Quest->MissionItems[MissionIndex].Value[2]) {
 				continue;
 			}
 
 			RTQuestMissionDataRef Mission = &Quest->MissionItems[MissionIndex];
-			if (Mission->Value[0] == Item.PartyQuestItemID && Mission->Value[1] == ItemOptions) {
+			if (Mission->Value[0] == Item.PartyQuestItemID && Mission->Value[1] == QuestItemOptions) {
 				return true;
 			}
 
