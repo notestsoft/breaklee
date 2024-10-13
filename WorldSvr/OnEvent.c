@@ -141,6 +141,23 @@ CLIENT_PROCEDURE_BINDING(EVENT_ACTION) {
 	RTDataEventShopItemRef Item = RTRuntimeDataEventShopItemGet(EventShop, Packet->ShopSlotIndex);
 	if (!Item) goto error;
 
+	for (Int32 Index = 0; Index < Event->EventItemCount; Index += 1) {
+		RTDataEventItemRef EventItem = &Event->EventItemList[Index];
+		if (EventItem->ItemID == Item->ItemID && EventItem->ItemOptions == Item->ItemOptions && strlen(EventItem->Script) > 0) {
+			CString ScriptFilePath = PathCombineNoAlloc(Context->Config.WorldSvr.ScriptDataPath, EventItem->Script);
+			RTScriptRef Script = RTScriptManagerLoadScript(Runtime->ScriptManager, ScriptFilePath);
+			RTScriptCallOnEvent(Script, Runtime, Character);
+			RTScriptManagerUnloadScript(Runtime->ScriptManager, Script);
+
+			S2C_DATA_EVENT_ACTION* Response = PacketBufferInit(Connection->PacketBuffer, S2C, EVENT_ACTION);
+			Response->EventIndex = Packet->EventIndex;
+			Response->Unknown1 = Packet->Unknown1;
+			Response->ItemCount = 0;
+			SocketSend(Socket, Connection, Response);
+			return;
+		}
+	}
+
 	for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
 		if (!RTInventoryIsSlotEmpty(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index])) {
 			goto error;

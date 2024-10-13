@@ -40,6 +40,7 @@ Void RTWorldChunkInitialize(
 	Chunk->Characters = ArrayCreateEmpty(Runtime->Allocator, sizeof(RTEntityID), 8);
 	Chunk->Mobs = ArrayCreateEmpty(Runtime->Allocator, sizeof(RTEntityID), 8);
 	Chunk->Items = ArrayCreateEmpty(Runtime->Allocator, sizeof(RTEntityID), 8);
+    Chunk->Objects = ArrayCreateEmpty(Runtime->Allocator, sizeof(RTEntityID), 8);
 }
 
 Void RTWorldChunkDeinitialize(
@@ -48,6 +49,7 @@ Void RTWorldChunkDeinitialize(
 	ArrayDestroy(Chunk->Characters);
 	ArrayDestroy(Chunk->Mobs);
 	ArrayDestroy(Chunk->Items);
+    ArrayDestroy(Chunk->Objects);
 }
 
 ArrayRef RTWorldChunkGetContainer(
@@ -63,6 +65,9 @@ ArrayRef RTWorldChunkGetContainer(
 
 	case RUNTIME_ENTITY_TYPE_ITEM:
 		return Chunk->Items;
+
+    case RUNTIME_ENTITY_TYPE_OBJECT:
+        return Chunk->Objects;
 
 	default:
 		UNREACHABLE("Invalid entity type given for world chunk!");

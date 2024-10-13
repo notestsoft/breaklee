@@ -1,5 +1,19 @@
 <events>
-    <event id="1" type="2" use_flags="11" world_id="1" npc_id="49" description="Character">
+    <event id="1822" type="171" use_flags="11" world_id="1" npc_id="49" description="Special">
+        <event_description content="Special" />
+        <event_shop>
+            <item slot_id="9" item_id="1562" option="4208880" duration_id="0" price="0"></item>
+            <item slot_id="11" item_id="1562" option="4208881" duration_id="0" price="0"></item>
+            <item slot_id="13" item_id="1562" option="4208882" duration_id="0" price="0"></item>
+        </event_shop>
+
+        <event_item script="set_class_rank_21.lua" item_id="1562" option="4208880" external_id="-1" texture_item_id="2885" title="$35#Class Rank 21" description="$33#[Applied On Purchase]$__An enchanted scroll containing the_knowledge of the $11#ancient masters$._ _When purchased, it will instantly elevate the character to $35#Class Rank 21$._" />
+        <event_item script="finish_all_quests.lua" item_id="1562" option="4208881" external_id="-1" texture_item_id="2884" title="$35#Scroll of Enlightenment" description="$33#[Applied On Purchase]$____A mystical scroll imbued with the power to complete all quests._ _Upon use, it instantly grants the character completion of all current quests, rewarding them with the knowledge and experience of the $11#legendary heroes$._" />
+        <event_item script="object_madness.lua" item_id="1562" option="4208882" external_id="-1" texture_item_id="33556058" title="$35#Scroll of Hidden Revelations" description="$33#[Applied On Purchase]$____A rare scroll that unveils the presence of a secret NPC._ _Upon use, it summons the enigmatic $11#Keeper of Secrets$._ Approach with caution, as the knowledge they possess is both powerful and perilous._" />
+
+    </event>
+
+    <event id="1" type="171" use_flags="11" world_id="1" npc_id="49" description="Character">
         <event_description content="Character" />
         <event_shop>
             <item slot_id="0" item_id="33556964" option="6553600000999" duration_id="0" price="0"></item>
@@ -42,6 +56,7 @@
             <item slot_id="118" item_id="33556879" option="1" duration_id="0" price="0"></item>
             <item slot_id="117" item_id="33554677" option="460544" duration_id="0" price="0"></item>
         </event_shop>
+
     </event>
 
     <event id="2" type="2" use_flags="15" world_id="1" npc_id="49" description="Weapons">
@@ -1133,7 +1148,7 @@
         </event_shop>
     </event_info>
 
-    <event id="1822" type="2" use_flags="11" world_id="1" npc_id="49" description="Anima Mastery">
+    <event id="444" type="2" use_flags="11" world_id="1" npc_id="49" description="Anima Mastery">
         <event_description content="Anima Mastery" />
         
         <event_shop>
@@ -1159,7 +1174,6 @@
             <item slot_id = "19" item_id = "3337" option = "1" duration_id = "0" price = "0"></item>
         </event_shop>
         
-        <event_item item_id="1561" option="4208880" external_id="-1" texture_item_id="33556964" title="Event Item" description="This is a really nice item_"></event_item>
     </event>
 
     <event id="20" type="2" use_flags="11" world_id="1" npc_id="49" description="Epic Converter">

@@ -22,10 +22,38 @@ RTScriptRef RTScriptManagerLoadScript(
     CString FilePath
 );
 
+Void RTScriptManagerUnloadScript(
+    RTScriptManagerRef ScriptManager,
+    RTScriptRef Script
+);
+
+Void* RTScriptGetState(
+    RTScriptRef Script
+);
+
+Void RTScriptCreateClass(
+    RTScriptRef Script,
+    CString Name,
+    ...
+);
+
+Void RTScriptPushObject(
+    RTScriptRef Script,
+    CString Name,
+    RTRuntimeRef Runtime,
+    Void* Object
+);
+
 Bool RTScriptCall(
     RTScriptRef Script,
     const Char* Function,
     ...
+);
+
+Bool RTScriptCallOnEvent(
+    RTScriptRef Script,
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
 );
 
 EXTERN_C_BEGIN

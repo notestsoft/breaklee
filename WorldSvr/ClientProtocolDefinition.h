@@ -2257,13 +2257,13 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_SHOP_ITEM,
     UInt32 ShopSlotIndex;
     RTItem ItemID;
     UInt64 ItemOptions;
+    UInt32 ItemDuration;
     UInt8 Unknown1;
-    Int32 UnknownIndex;
     Int32 TextureIndex;
     UInt64 CurrencyPrice;
-    UInt16 Unknown2;
+    UInt16 TPointPrice;
     UInt32 ItemPriceCount;
-    UInt16 Unknown5;
+    UInt16 ItemPurchaseLimit;
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_SHOP_ITEM_PRICE,
@@ -2280,7 +2280,7 @@ CLIENT_PROTOCOL(C2S, GET_EVENT_LIST, DEFAULT, 1003,
 )
 
 CLIENT_PROTOCOL(S2C, GET_EVENT_LIST, DEFAULT, 1003,
-    UInt8 Unknown1;
+    UInt8 Result;
     UInt8 EventCount;
     UInt32 Unknown2;
     // S2C_DATA_EVENT Events[];

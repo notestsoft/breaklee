@@ -19,6 +19,18 @@ Void SendRuntimeNotification(
     SocketSend(Socket, Connection, Packet);
 }
 
+NOTIFICATION_PROCEDURE_BINDING(ERROR_CODE) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
+NOTIFICATION_PROCEDURE_BINDING(OBJECTS_SPAWN) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
+NOTIFICATION_PROCEDURE_BINDING(OBJECTS_DESPAWN) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
 NOTIFICATION_PROCEDURE_BINDING(CHARACTERS_SPAWN) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
     Trace(

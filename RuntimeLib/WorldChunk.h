@@ -23,6 +23,7 @@ struct _RTWorldChunk {
     ArrayRef Characters;
 	ArrayRef Mobs;
 	ArrayRef Items;
+    ArrayRef Objects;
     Timestamp NextItemUpdateTimestamp;
 };
 

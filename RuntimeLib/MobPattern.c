@@ -125,7 +125,7 @@ Void RTMobPatternStartAction(
 			RTNotificationDispatchToNearby(Notification, Target->Movement.WorldChunk);
 		}
 		else if (TargetID.EntityType == RUNTIME_ENTITY_TYPE_MOB) {
-			RTMobRef Target = (RTWorldItemRef)TargetContext;
+			RTMobRef Target = (RTMobRef)TargetContext;
 			RTWorldChunkRemove(Target->Movement.WorldChunk, TargetID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 			RTMovementInitialize(
 				Runtime,

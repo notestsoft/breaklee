@@ -161,6 +161,11 @@ Bool RTCharacterQuestFlagIsSet(
     Int32 QuestIndex
 );
 
+Void RTCharacterSetAllQuestFlags(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
 Void RTCharacterQuestDeleteFlagClear(
     RTCharacterRef Character,
     Int32 QuestIndex

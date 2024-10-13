@@ -191,7 +191,7 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 			RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, Packet->ForceCoreSlotIndices[SlotIndex]);			
 		}
 
-		Character->Data.Info.Alz-= ForceCodeCost->CurrencyCost;
+		Character->Data.Info.Alz -= ForceCodeCost->CurrencyCost;
 		Character->SyncMask.Info = true;
 		Character->SyncMask.InventoryInfo = true;
 	}

@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "Base.h"
@@ -297,6 +296,12 @@ Int32 RTCharacterCalculateRequiredMP(
     Int32 CoefficientA,
     Int32 CoefficientB,
     Int32 SkillLevel
+);
+
+Void RTCharacterSetBattleRank(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 BattleRank
 );
 
 Bool RTCharacterBattleRankUp(

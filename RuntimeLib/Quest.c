@@ -39,6 +39,14 @@ Bool RTCharacterQuestFlagIsSet(
 	return (Character->Data.QuestInfo.Info.FinishedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] & (1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE)));
 }
 
+Void RTCharacterSetAllQuestFlags(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+	memset(Character->Data.QuestInfo.Info.FinishedQuests, 0xFF, RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT);
+	Character->SyncMask.QuestInfo = true;
+}
+
 Void RTCharacterQuestDeleteFlagClear(
 	RTCharacterRef Character,
 	Int32 QuestIndex

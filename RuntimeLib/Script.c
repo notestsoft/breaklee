@@ -1,3 +1,4 @@
+#include "CharacterAPI.h"
 #include "Mob.h"
 #include "Runtime.h"
 #include "Script.h"
@@ -7,6 +8,7 @@ static Int32 _DebugWorldDespawnMob(lua_State* State);
 static Int32 _DebugWorldSpawnItem(lua_State* State);
 
 struct _RTScript {
+    Char FilePath[MAX_PATH];
     Index PoolIndex;
     lua_State* State;
 };
@@ -18,6 +20,12 @@ struct _RTScriptManager {
     MemoryPoolRef ScriptPool;
     DictionaryRef ScriptTable;
 };
+
+Void* RTScriptGetState(
+    RTScriptRef Script
+) {
+    return Script->State;
+}
 
 #define SCRIPT_STRUCTURE_BINDING(__TYPE__, __ACCESSOR__, __ACCESSOR_TYPE__, __NAME__)     \
 static Int32 SCRIPT_PROC_ ## __TYPE__ ## _ ## __NAME__ (lua_State* State) {               \
@@ -80,6 +88,7 @@ RTScriptRef RTScriptManagerLoadScript(
     RTScriptRef Script = (RTScriptRef)MemoryPoolReserveNext(ScriptManager->ScriptPool, &MemoryPoolIndex);
     DictionaryInsert(ScriptManager->ScriptTable, FilePath, &MemoryPoolIndex, sizeof(Index));
 
+    CStringCopySafe(Script->FilePath, MAX_PATH, FilePath);
     Script->PoolIndex = MemoryPoolIndex;
     Script->State = luaL_newstate();
     if (!Script->State) Fatal("Lua: State creation failed!");
@@ -87,6 +96,7 @@ RTScriptRef RTScriptManagerLoadScript(
     luaL_openlibs(Script->State);
 
     RTScriptBindMobAPI(Script);
+    RTScriptBindCharacterAPI(Script);
 
     lua_pushcfunction(Script->State, _DebugWorldSpawnMob);
     lua_setglobal(Script->State, "world_spawn_mob");
@@ -101,6 +111,59 @@ RTScriptRef RTScriptManagerLoadScript(
     if (lua_pcall(Script->State, 0, 0, 0) != LUA_OK) Fatal("Lua: %s", lua_tostring(Script->State, -1));
 
     return Script;
+}
+
+Void RTScriptManagerUnloadScript(
+    RTScriptManagerRef ScriptManager,
+    RTScriptRef Script
+) {
+    lua_close(Script->State);
+    DictionaryRemove(ScriptManager->ScriptTable, Script->FilePath);
+    MemoryPoolRelease(ScriptManager->ScriptPool, Script->PoolIndex);
+}
+
+Void RTScriptCreateClass(
+    RTScriptRef Script,
+    CString Name,
+    ...
+) {
+    luaL_newmetatable(Script->State, CStringFormat("%sMeta", Name));
+
+    va_list Arguments;
+    va_start(Arguments, Name);
+
+    while (true) {
+        CString CallbackName = va_arg(Arguments, CString);
+        if (!CallbackName) break;
+
+        Void* Callback = va_arg(Arguments, Void*);
+        if (!Callback) break;
+
+        lua_pushcfunction(Script->State, Callback);
+        lua_setfield(Script->State, -2, CallbackName);
+    }
+
+    va_end(Arguments);
+
+    lua_pushvalue(Script->State, -1);
+    lua_setfield(Script->State, -2, "__index");
+
+    lua_pop(Script->State, 1);
+}
+
+Void RTScriptPushObject(
+    RTScriptRef Script,
+    CString Name,
+    RTRuntimeRef Runtime,
+    Void* Object
+) {
+    lua_newtable(Script->State);
+    lua_pushlightuserdata(Script->State, Runtime);
+    lua_setfield(Script->State, -2, "_Runtime");
+    lua_pushlightuserdata(Script->State, Object);
+    lua_setfield(Script->State, -2, "_Object");
+    luaL_getmetatable(Script->State, CStringFormat("%sMeta", Name));
+    lua_setmetatable(Script->State, -2);
 }
 
 Bool RTScriptCall(
@@ -157,6 +220,25 @@ Bool RTScriptCall(
     Result = lua_pcall(Script->State, ArgumentCount, 0, 0);
     if (Result != LUA_OK) {
         Error("Lua: %s", lua_tostring(Script->State, -1));
+        return false;
+    }
+
+    return true;
+}
+
+Bool RTScriptCallOnEvent(
+    RTScriptRef Script,
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    lua_getglobal(Script->State, "OnEvent");
+
+    RTScriptPushObject(Script, "Character", Runtime, Character);
+
+    if (lua_pcall(Script->State, 1, 0, 0) != LUA_OK) {
+        CString Message = lua_tostring(Script->State, -1);
+        Error("Script: %s", Message);
+        lua_pop(Script->State, 1);
         return false;
     }
 

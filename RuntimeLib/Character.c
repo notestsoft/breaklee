@@ -840,6 +840,59 @@ Int32 RTCharacterCalculateRequiredMP(
 	return MAX(0, RequiredMP);
 }
 
+Void RTCharacterSetBattleRank(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 BattleRank
+) {
+	Int32 BattleStyleIndex = Character->Data.StyleInfo.Style.BattleStyle | (Character->Data.StyleInfo.Style.ExtendedBattleStyle << 3);
+	Int32 LevelDiff = BattleRank - Character->Data.StyleInfo.Style.BattleRank;
+	for (Int32 NextRank = Character->Data.StyleInfo.Style.BattleRank + 1; NextRank <= BattleRank; NextRank += 1) {
+		RTBattleStyleRankDataRef NextRankData = RTRuntimeGetBattleStyleRankData(Runtime, BattleStyleIndex, Character->Data.StyleInfo.Style.BattleRank + 1);
+		if (NextRankData) {
+			if (NextRankData->SkillSlot[0] > 0 && NextRankData->SkillIndex[0] > 0) {
+				RTCharacterAddSkillSlot(
+					Runtime,
+					Character,
+					NextRankData->SkillSlot[0],
+					1,
+					NextRankData->SkillIndex[0]
+				);
+
+				Character->SyncMask.SkillSlotInfo = true;
+			}
+
+			if (NextRankData->SkillSlot[1] > 0 && NextRankData->SkillIndex[1] > 0) {
+				RTCharacterAddSkillSlot(
+					Runtime,
+					Character,
+					NextRankData->SkillSlot[1],
+					1,
+					NextRankData->SkillIndex[1]
+				);
+
+				Character->SyncMask.SkillSlotInfo = true;
+			}
+		}
+
+		{
+			NOTIFICATION_DATA_CHARACTER_BATTLE_RANK_UP* Notification = RTNotificationInit(CHARACTER_BATTLE_RANK_UP);
+			Notification->Level = NextRankData->Level;
+			RTNotificationDispatchToCharacter(Notification, Character);
+		}
+
+		{
+			NOTIFICATION_DATA_CHARACTER_EVENT* Notification = RTNotificationInit(CHARACTER_EVENT);
+			Notification->Type = NOTIFICATION_CHARACTER_EVENT_TYPE_RANK_UP;
+			Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
+			RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
+		}
+	}
+
+	Character->Data.StyleInfo.Style.BattleRank = BattleRank;
+	Character->SyncMask.StyleInfo = true;
+}
+
 Bool RTCharacterBattleRankUp(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character
@@ -858,7 +911,7 @@ Bool RTCharacterBattleRankUp(
 	}
 
 	// TODO: Upgrade pre existing battle mode levels by one, the issue is that they are registered after creation also on official
-
+	// TODO: Check if we need to add the skills of current or next rank here..
 	if (RankData->SkillSlot[0] > 0 && RankData->SkillIndex[0] > 0) {
 		RTCharacterAddSkillSlot(
 			Runtime,
