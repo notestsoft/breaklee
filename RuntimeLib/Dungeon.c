@@ -21,14 +21,6 @@ Bool RTDungeonIsPatternPartCompleted(
         }
     }
 
-    RTMissionDungeonPatternPartDataRef PatternPartData = RTRuntimeGetPatternPartByID(
-        Runtime,
-        DungeonData->PatternPartIndices[WorldContext->PatternPartIndex]
-    );
-    if (PatternPartData->MissionNpcIndex > 0) {
-        return false;
-    }
-
     return true;
 }
 

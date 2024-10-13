@@ -4183,4 +4183,19 @@
 		<Timer Type="1" Index="545" Event="2" Value="30000"/>
 		<Timer Type="3" Index="546" Event="2" Value="0"/>
 	</TimerControl>
+	<MobDropPool MobSpeciesIndex="2897">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2898">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2899">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2900">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2902">
+		<Item ItemID="33560058" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="100.00000000000000000"/>
+	</MobDropPool>
 </Dungeon>

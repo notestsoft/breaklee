@@ -213,6 +213,7 @@ struct _RTMob {
 	RTDataMobSkillRef SpecialAttackSkill;
 
 	Timestamp NextPhaseTimestamp;
+	Timestamp NextRegenTimestamp;
 	Int64 HPTriggerThreshold;
 	Int32 AggroTargetDistance;
 	Int32 LinkMobIndex;
@@ -236,12 +237,6 @@ struct _RTMob {
 Void RTMobInit(
 	RTRuntimeRef Runtime,
 	RTMobRef Mob
-);
-
-Void RTMobInitFromSpeciesData(
-	RTRuntimeRef Runtime,
-	RTMobRef Mob,
-	RTMobSpeciesDataRef MobSpeciesData
 );
 
 Void RTMobApplyDamage(

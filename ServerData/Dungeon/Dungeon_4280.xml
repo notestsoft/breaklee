@@ -246,4 +246,25 @@
 		<Action Delay="100" TargetMobIndex="36" TargetAction="2" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 		<Action Delay="1000" TargetMobIndex="55" TargetAction="1" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
+	<MobDropPool MobSpeciesIndex="647">
+		<Item ItemID="1" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="49.75000000000000000"/>
+		<Item ItemID="1214" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="49.75000000000000000"/>
+		<Item ItemID="34081627" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="0.50000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="1177">
+		<Item ItemID="639" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="0.00200000000000000"/>
+		<Item ItemID="1216" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="0.00020000000000000"/>
+		<Item ItemID="33555565" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="1.00000000000000000"/>
+		<Item ItemID="33555566" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="1.00000000000000000"/>
+		<Item ItemID="33555567" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="1.00000000000000000"/>
+		<Item ItemID="33555568" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="1.00000000000000000"/>
+		<Item ItemID="3581" ItemOption="130" ItemDuration="0" OptionPoolID="0" Rate="0.50000000000000000"/>
+		<Item ItemID="33554686" ItemOption="2" ItemDuration="0" OptionPoolID="0" Rate="0.50000000000000000"/>
+		<Item ItemID="34081623" ItemOption="500" ItemDuration="0" OptionPoolID="0" Rate="1.00000000000000000"/>
+		<Item ItemID="1" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="46.99890000000000000"/>
+		<Item ItemID="1214" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="46.99890000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="2640">
+		<Item ItemID="33555111" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="50.00000000000000000"/>
+	</MobDropPool>
 </Dungeon>

@@ -146,8 +146,6 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 				Notification->SkillIndex = 0;
 				SocketSend(Socket, Connection, Notification);
 			}
-
-			Mob->DropOwner = Character->ID;
 		}
 
 		TargetCount += 1;

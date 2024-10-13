@@ -30,7 +30,6 @@ CLIENT_PROCEDURE_BINDING(ATTACK_TO_MOB) {
 	);
 
 	RTMobApplyDamage(Runtime, World, Mob, Character->ID, Result.AppliedDamage);
-
 	RTCharacterAddExp(Runtime, Character, Result.Exp);
 
 	S2C_DATA_ATTACK_TO_MOB* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ATTACK_TO_MOB);
@@ -60,8 +59,6 @@ CLIENT_PROCEDURE_BINDING(ATTACK_TO_MOB) {
 			Notification->SkillIndex = 0;
 			SocketSend(Socket, Connection, Notification);
 		}
-
-		Mob->DropOwner = Character->ID;
 	}
 
 	S2C_DATA_NFY_ATTACK_TO_MOB* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_ATTACK_TO_MOB);

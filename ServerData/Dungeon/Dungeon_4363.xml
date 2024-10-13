@@ -4556,4 +4556,32 @@
 	<ActionGroup Index="731">
 		<Action Delay="500" TargetMobIndex="540" TargetAction="4" TargetSpawnInterval="0" TargetSpawnCount="0"/>
 	</ActionGroup>
+	<MobDropPool MobSpeciesIndex="648">
+		<Item ItemID="2" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="25.00000000000000000"/>
+		<Item ItemID="1215" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="25.00000000000000000"/>
+		<Item ItemID="33560916" ItemOption="65536000001" ItemDuration="0" OptionPoolID="0" Rate="35.00000000000000000"/>
+		<Item ItemID="33560916" ItemOption="131072000001" ItemDuration="0" OptionPoolID="0" Rate="10.00000000000000000"/>
+		<Item ItemID="33560916" ItemOption="196608000001" ItemDuration="0" OptionPoolID="0" Rate="5.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="649">
+		<Item ItemID="2" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="25.00000000000000000"/>
+		<Item ItemID="1215" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="25.00000000000000000"/>
+		<Item ItemID="33560916" ItemOption="65536000001" ItemDuration="0" OptionPoolID="0" Rate="26.00000000000000000"/>
+		<Item ItemID="33560916" ItemOption="131072000001" ItemDuration="0" OptionPoolID="0" Rate="17.00000000000000000"/>
+		<Item ItemID="33560916" ItemOption="196608000001" ItemDuration="0" OptionPoolID="0" Rate="7.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="1177">
+		<Item ItemID="2" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10.00000000000000000"/>
+		<Item ItemID="1215" ItemOption="0" ItemDuration="0" OptionPoolID="0" Rate="10.00000000000000000"/>
+		<Item ItemID="33560916" ItemOption="65536000001" ItemDuration="0" OptionPoolID="0" Rate="15.00000000000000000"/>
+		<Item ItemID="33560916" ItemOption="131072000001" ItemDuration="0" OptionPoolID="0" Rate="25.00000000000000000"/>
+		<Item ItemID="33560916" ItemOption="196608000001" ItemDuration="0" OptionPoolID="0" Rate="10.00000000000000000"/>
+		<Item ItemID="33557013" ItemOption="1" ItemDuration="0" OptionPoolID="0" Rate="30.00000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="3417">
+		<Item ItemID="33557993" ItemOption="2" ItemDuration="0" OptionPoolID="0" Rate="0.30000000000000000"/>
+	</MobDropPool>
+	<MobDropPool MobSpeciesIndex="3418">
+		<Item ItemID="33557993" ItemOption="2" ItemDuration="0" OptionPoolID="0" Rate="0.30000000000000000"/>
+	</MobDropPool>
 </Dungeon>

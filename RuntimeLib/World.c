@@ -694,7 +694,9 @@ Void RTWorldIncrementQuestMobCounter(
         World->MissionMobs[Index].Count = MIN(World->MissionMobs[Index].Count + 1, World->MissionMobs[Index].MaxCount);
     }
 
-    RTDungeonStartNextPatternPart(World);
+    if (World->MissionMobCount > 0) {
+        RTDungeonStartNextPatternPart(World);
+    }
 
     if (!RTEntityIsNull(World->Party)) {
         RTPartyIncrementQuestMobCounter(Runtime, World->Party, MobSpeciesIndex);
