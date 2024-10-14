@@ -48,7 +48,7 @@ RUNTIME_DATA_TYPE_BEGIN(Event, "events.event", 64)
 		RUNTIME_DATA_PROPERTY(Int32, ExternalID, "external_id")
 		RUNTIME_DATA_PROPERTY(UInt32, TextureItemID, "texture_item_id")
 		RUNTIME_DATA_PROPERTY_ARRAY(Char, Title, "title", 260, '\0')
-		RUNTIME_DATA_PROPERTY_ARRAY(Char, Description, "description", 260, '\0')
+		RUNTIME_DATA_PROPERTY_ARRAY(Char, Description, "description", 512, '\0')
 		RUNTIME_DATA_PROPERTY_ARRAY(Char, Script, "script", 260, '\0')
 	RUNTIME_DATA_TYPE_END_CHILD(EventItem, 32)
 

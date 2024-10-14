@@ -31,6 +31,230 @@ Int32 lua_RTCharacterSetAllQuestFlags(lua_State* State) {
     return 0;
 }
 
+Int32 lua_RTCharacterAddExp(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    Int64 Exp = luaL_checkinteger(State, 2);
+    RTCharacterAddExp(Runtime, Character, Exp);
+    return 0;
+}
+
+Int32 lua_RTCharacterAddSkillExp(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    Int64 Exp = luaL_checkinteger(State, 2);
+    RTCharacterAddSkillExp(Runtime, Character, Exp);
+    return 0;
+}
+
+Int32 lua_RTCharacterAddWingExp(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    Int64 Exp = luaL_checkinteger(State, 2);
+    RTCharacterAddWingExp(Runtime, Character, Exp);
+    return 0;
+}
+
+Int32 lua_RTCharacterAddHonorPoint(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    Int64 HonorPoint = luaL_checkinteger(State, 2);
+    RTCharacterAddHonorPoint(Runtime, Character, HonorPoint);
+    return 0;
+}
+
+Int32 lua_RTCharacterAddAbilityExp(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    Int64 Exp = luaL_checkinteger(State, 2);
+    RTCharacterAddAbilityExp(Runtime, Character, Exp);
+    return 0;
+}
+
+Int32 lua_RTCharacterAddRage(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    Int32 Rage = luaL_checkinteger(State, 2);
+    RTCharacterAddRage(Runtime, Character, Rage);
+    return 0;
+}
+
+Int32 lua_RTCharacterConsumeRage(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    Int32 Rage = luaL_checkinteger(State, 2);
+    RTCharacterConsumeRage(Runtime, Character, Rage);
+    return 0;
+}
+
+Int32 lua_RTCharacterSetHP(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    Int64 Hp = luaL_checkinteger(State, 2);
+    RTCharacterSetHP(Runtime, Character, Hp, false);
+    return 0;
+}
+
+Int32 lua_RTCharacterAddHP(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    Int64 Hp = luaL_checkinteger(State, 2);
+    RTCharacterAddHP(Runtime, Character, Hp, false);
+    return 0;
+}
+
+Int32 lua_RTCharacterSetMP(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    Int32 Mp = luaL_checkinteger(State, 2);
+    RTCharacterSetMP(Runtime, Character, Mp, false);
+    return 0;
+}
+
+Int32 lua_RTCharacterAddMP(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    Int32 Mp = luaL_checkinteger(State, 2);
+    RTCharacterAddMP(Runtime, Character, Mp, false);
+    return 0;
+}
+
+Int32 lua_RTCharacterSetSP(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    Int32 Sp = luaL_checkinteger(State, 2);
+    RTCharacterSetSP(Runtime, Character, Sp);
+    return 0;
+}
+
+Int32 lua_RTCharacterAddSP(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    Int32 Sp = luaL_checkinteger(State, 2);
+    RTCharacterAddSP(Runtime, Character, Sp);
+    return 0;
+}
+
+Int32 lua_RTCharacterSetBP(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    Int32 Bp = luaL_checkinteger(State, 2);
+    RTCharacterSetBP(Runtime, Character, Bp);
+    return 0;
+}
+
+Int32 lua_RTCharacterAddBP(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    Int32 Bp = luaL_checkinteger(State, 2);
+    RTCharacterAddBP(Runtime, Character, Bp);
+    return 0;
+}
+
+Int32 lua_RTCharacterApplyDamage(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    Int32 Damage = luaL_checkinteger(State, 2);
+    RTCharacterApplyDamage(Runtime, Character, kEntityIDNull, Damage);
+    return 0;
+}
+
 Int32 lua_RTCharacterDisconnectWorld(lua_State* State) {
     lua_getfield(State, 1, "_Runtime");
     RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
@@ -72,7 +296,7 @@ Int32 lua_RTCharacterSpawnObject(lua_State* State) {
     NOTIFICATION_DATA_OBJECTS_SPAWN_INDEX* NotificationObject = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_OBJECTS_SPAWN_INDEX);
     NotificationObject->Entity.EntityIndex = EntityIndex;
     NotificationObject->Entity.WorldIndex = Character->Movement.WorldContext->WorldData->WorldIndex;
-    NotificationObject->Entity.EntityType = RUNTIME_ENTITY_TYPE_OBJECT;
+    NotificationObject->Entity.EntityType = RUNTIME_ENTITY_TYPE_ITEM;
     NotificationObject->ObjectType = ObjectType;
     NotificationObject->EntitySourceIndex = EntitySourceIndex;
     NotificationObject->PositionX = PositionX;
@@ -96,21 +320,9 @@ Void RTScriptBindCharacterAPI(
         "Character",
         "SetBattleRank", lua_RTCharacterSetBattleRank,
         "SetAllQuestFlags", lua_RTCharacterSetAllQuestFlags,
-        "DisconnectWorld", lua_RTCharacterDisconnectWorld,
-        "SpawnObject", lua_RTCharacterSpawnObject,
-        NULL
-    );
-}
-/*
-Void RTScriptBindCharacterAPI(
-    RTScriptRef Script
-) {
-    CString MetaName = RTScriptCreateTableBinding(
-        Script,
-        "Character",
-        "SetBattleRank", lua_RTCharacterSetBattleRank,
         "AddExp", lua_RTCharacterAddExp,
         "AddSkillExp", lua_RTCharacterAddSkillExp,
+        "AddWingExp", lua_RTCharacterAddWingExp,
         "AddHonorPoint", lua_RTCharacterAddHonorPoint,
         "AddAbilityExp", lua_RTCharacterAddAbilityExp,
         "AddRage", lua_RTCharacterAddRage,
@@ -124,18 +336,8 @@ Void RTScriptBindCharacterAPI(
         "SetBP", lua_RTCharacterSetBP,
         "AddBP", lua_RTCharacterAddBP,
         "ApplyDamage", lua_RTCharacterApplyDamage,
+        "DisconnectWorld", lua_RTCharacterDisconnectWorld,
+        "SpawnObject", lua_RTCharacterSpawnObject,
         NULL
     );
-
-    // Lua function to set class rank using lightuserdata
-    int lua_Character_SetClassRank(lua_State * L) {
-        lua_getfield(L, 1, "ptr");  // Get the lightuserdata (the pointer)
-        Character* character = (Character*)lua_touserdata(L, -1);
-        lua_pop(L, 1);
-
-        int rank = luaL_checkinteger(L, 2);
-        character->SetClassRank(rank);
-        return 0;
-    }
 }
-*/
