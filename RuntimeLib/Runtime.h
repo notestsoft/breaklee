@@ -55,7 +55,7 @@ struct _RTRuntime {
     RTScriptManagerRef ScriptManager;
     RTWorldManagerRef WorldManager;
     RTNotificationManagerRef NotificationManager;
-
+    RTOptionPoolManagerRef OptionPoolManager;
     Int32 SlopeFormulaDataCount;
     Int32 ItemDataCount;
     Int32 MobDataCount;

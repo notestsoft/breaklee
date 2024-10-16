@@ -80,4 +80,10 @@ Bool ServerLoadMobPatternData(
     CString ServerDirectory
 );
 
+Bool ServerLoadOptionPoolData(
+    ServerContextRef Context,
+    CString RuntimeDirectory,
+    CString ServerDirectory
+);
+
 EXTERN_C_END

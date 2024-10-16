@@ -265,6 +265,7 @@ Void RTWorldSpawnMob(
     Mob->IsTimerMob = false;
     Mob->EventSpawnTimestamp = 0;
     Mob->EventDespawnTimestamp = 0;
+    Mob->EventRespawnTimestamp = 0;
 
     RTWorldChunkRef WorldChunk = RTWorldContextGetChunk(WorldContext, X, Y);
     RTWorldChunkInsert(WorldChunk, Mob->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT);
@@ -502,6 +503,84 @@ Void RTWorldDespawnMob(
 
         Iterator = DictionaryKeyIteratorNext(Iterator);
     }
+}
+
+Void RTWorldRespawnMobEvent(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef World,
+    RTMobRef Mob,
+    Timestamp Delay
+) {
+    Mob->NextTimestamp = 0;
+    Mob->EventRespawnTimestamp = GetTimestampMs() + Delay;
+}
+
+Void RTWorldRespawnMob(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef WorldContext,
+    RTMobRef Mob
+) {
+    assert(WorldContext->WorldData->WorldIndex == Mob->ID.WorldIndex);
+    
+    if (Mob->IsSpawned) {
+        if (Mob->Pattern) RTMobPatternStop(Runtime, WorldContext, Mob, Mob->Pattern);
+
+        Mob->Pattern = NULL;
+        Mob->IsSpawned = false;
+        Mob->IsDead = true;
+        Mob->IsIdle = true;
+
+        RTWorldChunkRef WorldChunk = Mob->Movement.WorldChunk;
+        Int32 UpdateReason = RTEntityIsNull(Mob->EventDespawnLinkID) ? RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT : RUNTIME_WORLD_CHUNK_UPDATE_REASON_NONE;
+        RTWorldChunkRemove(WorldChunk, Mob->ID, UpdateReason);
+    }
+    
+    UInt32 CollisionMask = RUNTIME_WORLD_TILE_WALL | RUNTIME_WORLD_TILE_TOWN;
+    Int32 X = Mob->Spawn.AreaX;
+    Int32 Y = Mob->Spawn.AreaY;
+
+    if (!Mob->Spawn.IsMissionGate && (Mob->Spawn.AreaWidth > 1 || Mob->Spawn.AreaHeight > 1)) {
+        Int32 RemainingRandomCount = 3;
+        while (RemainingRandomCount >= 0) {
+            Int32 RandomX = RandomRange(&WorldContext->Seed, Mob->Spawn.AreaX, Mob->Spawn.AreaX + Mob->Spawn.AreaWidth);
+            Int32 RandomY = RandomRange(&WorldContext->Seed, Mob->Spawn.AreaY, Mob->Spawn.AreaY + Mob->Spawn.AreaHeight);
+
+            if (!RTWorldIsTileColliding(Runtime, WorldContext, RandomX, RandomY, CollisionMask)) {
+                X = RandomX;
+                Y = RandomY;
+                break;
+            }
+
+            RemainingRandomCount -= 1;
+        }
+    }
+
+    RTMovementInitialize(
+        Runtime,
+        &Mob->Movement,
+        X,
+        Y,
+        Mob->SpeciesData->MoveSpeed,
+        CollisionMask
+    );
+
+    RTMobInit(Runtime, Mob);
+    Mob->ActiveSkill = &Mob->SpeciesData->DefaultSkill;
+    Mob->IsDead = false;
+    Mob->IsIdle = true;
+    Mob->IsSpawned = true;
+    Mob->IsTimerMob = false;
+    Mob->EventSpawnTimestamp = 0;
+    Mob->EventDespawnTimestamp = 0;
+    Mob->EventRespawnTimestamp = 0;
+
+    RTWorldChunkRef WorldChunk = RTWorldContextGetChunk(WorldContext, X, Y);
+    Mob->Movement.WorldContext = WorldContext;
+    Mob->Movement.WorldChunk = WorldChunk;
+    Mob->Movement.Entity = Mob->ID;
+    RTWorldChunkInsert(WorldChunk, Mob->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT);
+
+    if (Mob->Pattern) RTMobPatternSpawn(Runtime, WorldContext, Mob, Mob->Pattern);
 }
 
 RTWorldItemRef RTWorldContextGetItem(

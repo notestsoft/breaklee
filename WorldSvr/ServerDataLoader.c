@@ -2392,3 +2392,129 @@ error:
     ArchiveDestroy(PatternArchive);
     return false;
 }
+
+Bool ServerLoadOptionPoolData(
+    ServerContextRef Context,
+    CString RuntimeDirectory,
+    CString ServerDirectory
+) {
+    RTRuntimeRef Runtime = Context->Runtime;
+    ArchiveRef Archive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
+
+    CString FilePath = PathCombineNoAlloc(ServerDirectory, "OptionPool.xml");
+    if (FileExists(FilePath)) {
+        Info("Loading option pool file: %s", FilePath);
+
+        if (!ArchiveLoadFromFile(Archive, FilePath, false)) goto error;
+
+        Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "OptionPool");
+        if (ParentIndex < 0) goto error;
+
+        ArchiveIteratorRef PoolIterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "Pool");
+        while (PoolIterator) {
+            Index PoolIndex = 0;
+            if (!ParseAttributeIndex(Archive, PoolIterator->Index, "Index", &PoolIndex)) goto error;
+
+            ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorByPathFirst(Archive, PoolIterator->Index, "ItemLevelPool.ItemLevel");
+            while (ChildIterator) {
+                Int32 Level = 0;
+                Float64 Rate = 0;
+                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Level", &Level)) goto error;
+                if (!ParseAttributeFloat64(Archive, ChildIterator->Index, "Rate", &Rate)) goto error;
+
+                RTOptionPoolManagerAddItemLevel(Context->Runtime->OptionPoolManager, PoolIndex, Level, Rate);
+
+                ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
+            }
+
+            ChildIterator = ArchiveQueryNodeIteratorByPathFirst(Archive, PoolIterator->Index, "EpicLevelPool.EpicLevel");
+            while (ChildIterator) {
+                Int32 Level = 0;
+                Float64 Rate = 0;
+                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Level", &Level)) goto error;
+                if (!ParseAttributeFloat64(Archive, ChildIterator->Index, "Rate", &Rate)) goto error;
+
+                RTOptionPoolManagerAddEpicLevel(Context->Runtime->OptionPoolManager, PoolIndex, Level, Rate);
+
+                ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
+            }
+
+            ChildIterator = ArchiveQueryNodeIteratorByPathFirst(Archive, PoolIterator->Index, "EpicOptionPool.EpicOptionGroup");
+            while (ChildIterator) {
+                Int32 ItemType = 0;
+                Int32 Level = 0;
+                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "ItemType", &ItemType)) goto error;
+                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Level", &Level)) goto error;
+
+                ArchiveIteratorRef SubChildIterator = ArchiveQueryNodeIteratorFirst(Archive, ChildIterator->Index, "EpicOption");
+                while (SubChildIterator) {
+                    Int32 ForceIndex = 0;
+                    Float64 Rate = 0;
+                    if (!ParseAttributeInt32(Archive, SubChildIterator->Index, "ForceIndex", &ForceIndex)) goto error;
+                    if (!ParseAttributeFloat64(Archive, SubChildIterator->Index, "Rate", &Rate)) goto error;
+
+                    RTOptionPoolManagerAddEpicOption(Context->Runtime->OptionPoolManager, PoolIndex, ItemType, Level, ForceIndex, Rate);
+
+                    SubChildIterator = ArchiveQueryNodeIteratorNext(Archive, SubChildIterator);
+                }
+
+                ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
+            }
+
+            ChildIterator = ArchiveQueryNodeIteratorByPathFirst(Archive, PoolIterator->Index, "ForceSlotPool.ForceSlot");
+            while (ChildIterator) {
+                Int32 Count = 0;
+                Float64 Rate = 0;
+                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Count", &Count)) goto error;
+                if (!ParseAttributeFloat64(Archive, ChildIterator->Index, "Rate", &Rate)) goto error;
+
+                RTOptionPoolManagerAddForceSlot(Context->Runtime->OptionPoolManager, PoolIndex, Count, Rate);
+
+                ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
+            }
+
+            ChildIterator = ArchiveQueryNodeIteratorByPathFirst(Archive, PoolIterator->Index, "ForceOptionSlotPool.ForceOptionSlot");
+            while (ChildIterator) {
+                Int32 Count = 0;
+                Float64 Rate = 0;
+                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Count", &Count)) goto error;
+                if (!ParseAttributeFloat64(Archive, ChildIterator->Index, "Rate", &Rate)) goto error;
+
+                RTOptionPoolManagerAddForceOptionSlot(Context->Runtime->OptionPoolManager, PoolIndex, Count, Rate);
+
+                ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
+            }
+
+            ChildIterator = ArchiveQueryNodeIteratorByPathFirst(Archive, PoolIterator->Index, "ForceOptionPool.ForceOptionGroup");
+            while (ChildIterator) {
+                Int32 ItemType = 0;
+                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "ItemType", &ItemType)) goto error;
+
+                ArchiveIteratorRef SubChildIterator = ArchiveQueryNodeIteratorFirst(Archive, ChildIterator->Index, "ForceOption");
+                while (SubChildIterator) {
+                    Int32 ForceIndex = 0;
+                    Float64 Rate = 0;
+                    if (!ParseAttributeInt32(Archive, SubChildIterator->Index, "ForceIndex", &ForceIndex)) goto error;
+                    if (!ParseAttributeFloat64(Archive, SubChildIterator->Index, "Rate", &Rate)) goto error;
+
+                    RTOptionPoolManagerAddForceOption(Context->Runtime->OptionPoolManager, PoolIndex, ItemType, ForceIndex, Rate);
+
+                    SubChildIterator = ArchiveQueryNodeIteratorNext(Archive, SubChildIterator);
+                }
+
+                ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
+            }
+
+            PoolIterator = ArchiveQueryNodeIteratorNext(Archive, PoolIterator);
+        }
+
+        ArchiveClear(Archive, true);
+    }
+
+    ArchiveDestroy(Archive);
+    return true;
+
+error:
+    ArchiveDestroy(Archive);
+    return false;
+}

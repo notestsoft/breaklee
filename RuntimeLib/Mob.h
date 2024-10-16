@@ -205,6 +205,7 @@ struct _RTMob {
 	Timestamp NextTimestamp;
 	Timestamp EventSpawnTimestamp;
 	Timestamp EventDespawnTimestamp;
+	Timestamp EventRespawnTimestamp;
 	RTEntityID EventSpawnLinkID;
 	RTEntityID EventDespawnLinkID;
 
@@ -219,7 +220,6 @@ struct _RTMob {
 	Int32 LinkMobIndex;
 	RTEntityID LinkEntityID;
 
-	UInt32 ImmunityFlags;
 	Int32 SpecialActionIndex;
 	Timestamp SpecialActionStartTimestamp;
 
@@ -258,6 +258,10 @@ Bool RTMobCanRespawn(
 );
 
 Bool RTMobIsAlive(
+	RTMobRef Mob
+);
+
+Bool RTMobIsImmune(
 	RTMobRef Mob
 );
 

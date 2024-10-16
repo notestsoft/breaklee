@@ -1,17 +1,12 @@
 #include "Character.h"
 #include "Drop.h"
 #include "Mob.h"
-#include "World.h"
+#include "OptionPool.h"
 #include "Runtime.h"
+#include "World.h"
 
-Void RTCalculateDropOptions(
-    RTDropItemRef DropItem,
-    RTDropResultRef DropResult
-) {
-
-}
-
-Bool RTDropPoolRollItem(
+Bool RTDropPoolRollItem( 
+    RTRuntimeRef Runtime,
     Int32 DropRateValue,
     Int32* DropRateOffset,
     ArrayRef DropPool,
@@ -26,7 +21,7 @@ Bool RTDropPoolRollItem(
             Result->ItemID = DropItem->ItemID;
             Result->ItemOptions = DropItem->ItemOptions;
             Result->ItemDuration.DurationIndex = DropItem->DurationIndex;
-            RTCalculateDropOptions(DropItem, Result);
+            RTOptionPoolManagerCalculateOptions(Runtime, Runtime->OptionPoolManager, DropItem->OptionPoolIndex, Result);
             return true;
         }
 
@@ -54,30 +49,30 @@ Bool RTCalculateDrop(
         Index DropPoolIndex = Mob->SpeciesData->MobSpeciesIndex;
         ArrayRef DropPool = (ArrayRef)DictionaryLookup(DungeonData->DropTable.MobDropPool, &DropPoolIndex);
         if (DropPool) {
-            if (RTDropPoolRollItem(DropRateValue, &DropRateOffset, DropPool, 0, Result)) return true;
+            if (RTDropPoolRollItem(Runtime, DropRateValue, &DropRateOffset, DropPool, 0, Result)) return true;
         }
 
         DropPool = DungeonData->DropTable.WorldDropPool;
-        if (RTDropPoolRollItem(DropRateValue, &DropRateOffset, DropPool, Mob->Spawn.Level, Result)) return true;
+        if (RTDropPoolRollItem(Runtime, DropRateValue, &DropRateOffset, DropPool, Mob->Spawn.Level, Result)) return true;
     }
 
     Index DropPoolIndex = Mob->SpeciesData->MobSpeciesIndex;
     ArrayRef DropPool = (ArrayRef)DictionaryLookup(World->WorldData->DropTable.MobDropPool, &DropPoolIndex);
     if (DropPool) {
-        if (RTDropPoolRollItem(DropRateValue, &DropRateOffset, DropPool, 0, Result)) return true;
+        if (RTDropPoolRollItem(Runtime, DropRateValue, &DropRateOffset, DropPool, 0, Result)) return true;
     }
 
     DropPool = World->WorldData->DropTable.WorldDropPool;
-    if (RTDropPoolRollItem(DropRateValue, &DropRateOffset, DropPool, Mob->Spawn.Level, Result)) return true;
+    if (RTDropPoolRollItem(Runtime, DropRateValue, &DropRateOffset, DropPool, Mob->Spawn.Level, Result)) return true;
     
     DropPoolIndex = Mob->SpeciesData->MobSpeciesIndex;
     DropPool = (ArrayRef)DictionaryLookup(Runtime->DropTable.MobDropPool, &DropPoolIndex);
     if (DropPool) {
-        if (RTDropPoolRollItem(DropRateValue, &DropRateOffset, DropPool, 0, Result)) return true;
+        if (RTDropPoolRollItem(Runtime, DropRateValue, &DropRateOffset, DropPool, 0, Result)) return true;
     }
 
     DropPool = Runtime->DropTable.WorldDropPool;
-    if (RTDropPoolRollItem(DropRateValue, &DropRateOffset, DropPool, Mob->Spawn.Level, Result)) return true;
+    if (RTDropPoolRollItem(Runtime, DropRateValue, &DropRateOffset, DropPool, Mob->Spawn.Level, Result)) return true;
 
     return false;
 }

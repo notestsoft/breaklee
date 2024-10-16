@@ -22,6 +22,7 @@
 #include <RuntimeLib/NotificationManager.h>
 #include <RuntimeLib/NotificationProtocol.h>
 #include <RuntimeLib/Npc.h>
+#include <RuntimeLib/OptionPool.h>
 #include <RuntimeLib/OverlordMastery.h>
 #include <RuntimeLib/Party.h>
 #include <RuntimeLib/PartyManager.h>

@@ -2,6 +2,7 @@
 #include "Mob.h"
 #include "Runtime.h"
 #include "Script.h"
+#include "WorldAPI.h"
 
 static Int32 _DebugWorldSpawnMob(lua_State* State);
 static Int32 _DebugWorldDespawnMob(lua_State* State);
@@ -97,6 +98,7 @@ RTScriptRef RTScriptManagerLoadScript(
 
     RTScriptBindMobAPI(Script);
     RTScriptBindCharacterAPI(Script);
+    RTScriptBindWorldAPI(Script);
 
     lua_pushcfunction(Script->State, _DebugWorldSpawnMob);
     lua_setglobal(Script->State, "world_spawn_mob");

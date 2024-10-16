@@ -240,6 +240,10 @@ NOTIFICATION_PROCEDURE_BINDING(MOB_PATTERN_WARP_TARGET) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 
+NOTIFICATION_PROCEDURE_BINDING(BUFF_BY_OBJECT) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
 NOTIFICATION_PROCEDURE_BINDING(MOBS_DESPAWN_BY_LINK_MOB) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }

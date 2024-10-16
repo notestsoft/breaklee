@@ -1,3 +1,4 @@
+#include "Force.h"
 #include "Mob.h"
 #include "MobPattern.h"
 #include "Runtime.h"
@@ -135,8 +136,9 @@ Void RTMobPatternStartAction(
 				Target->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
 				RUNTIME_WORLD_TILE_WALL | RUNTIME_WORLD_TILE_TOWN
 			);
-			RTWorldChunkRef WorldChunk = RTWorldContextGetChunk(WorldContext, Target->Movement.PositionCurrent.X, Target->Movement.PositionCurrent.Y);
-			RTWorldChunkInsert(WorldChunk, TargetID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
+			Target->Movement.WorldContext = WorldContext;
+			Target->Movement.WorldChunk = RTWorldContextGetChunk(WorldContext, Target->Movement.PositionCurrent.X, Target->Movement.PositionCurrent.Y);
+			RTWorldChunkInsert(Target->Movement.WorldChunk, TargetID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 		}
 		else {
 			UNREACHABLE("Unexpected target type given for action WARP_TARGET!");
@@ -153,6 +155,7 @@ Void RTMobPatternStartAction(
 			Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
 			RUNTIME_WORLD_TILE_WALL | RUNTIME_WORLD_TILE_TOWN
 		);
+		Mob->Movement.WorldContext = WorldContext;
 		Mob->Movement.WorldChunk = RTWorldContextGetChunk(WorldContext, Mob->Movement.PositionCurrent.X, Mob->Movement.PositionCurrent.Y);
 		RTWorldChunkInsert(Mob->Movement.WorldChunk, Mob->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 	}
@@ -168,7 +171,13 @@ Void RTMobPatternStartAction(
 	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_EVASION_SELF_1 ||
 		ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_EVASION_SELF_2 ||
 		ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_EVASION_SELF_3) {
-
+		RTMobApplyForceEffect(
+			Runtime,
+			Mob,
+			RUNTIME_FORCE_EFFECT_COMPLETE_EVASION,
+			1,
+			RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+		);
 	}
 
 	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_SPECIAL_ACTION) {
@@ -195,11 +204,75 @@ Void RTMobPatternStartAction(
 	}
 
 	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_RESPAWN_SELF) {
-
+		RTWorldRespawnMobEvent(Runtime, WorldContext, Mob, 1);
 	}
 
 	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_SOCIAL_ACTION) {
 
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_ATTACK_UP_TARGET) {
+		if (ActionState->ActionData->Parameters.AttackUp.WorldType == 0 && WorldContext->WorldData->Type != RUNTIME_WORLD_TYPE_GLOBAL) goto end;
+
+		RTEntityID TargetID = {
+			.EntityIndex = ActionState->ActionData->Parameters.AttackUp.MobIndex,
+			.WorldIndex = WorldContext->WorldData->WorldIndex,
+			.EntityType = RUNTIME_ENTITY_TYPE_MOB
+		};
+		RTMobRef Target = RTWorldContextGetMob(WorldContext, TargetID);
+		if (!Target) goto end;
+
+		if (ActionState->ActionData->Parameters.AttackUp.ValueType == RUNTIME_MOB_PATTERN_VALUE_TYPE_DECIMAL) {
+			RTMobApplyForceEffect(
+				Runtime,
+				Target,
+				RUNTIME_FORCE_EFFECT_ALL_ATTACK_UP,
+				ActionState->ActionData->Parameters.AttackUp.Value,
+				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+			);
+		}
+
+		if (ActionState->ActionData->Parameters.AttackUp.ValueType == RUNTIME_MOB_PATTERN_VALUE_TYPE_PERCENT) {
+			RTMobApplyForceEffect(
+				Runtime,
+				Target,
+				RUNTIME_FORCE_EFFECT_ALL_ATTACK_UP_PERCENT,
+				ActionState->ActionData->Parameters.AttackUp.Value,
+				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+			);
+		}
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_DEFENSE_UP_TARGET) {
+		if (ActionState->ActionData->Parameters.DefenseUp.WorldType == 0 && WorldContext->WorldData->Type != RUNTIME_WORLD_TYPE_GLOBAL) goto end;
+
+		RTEntityID TargetID = {
+			.EntityIndex = ActionState->ActionData->Parameters.DefenseUp.MobIndex,
+			.WorldIndex = WorldContext->WorldData->WorldIndex,
+			.EntityType = RUNTIME_ENTITY_TYPE_MOB
+		};
+		RTMobRef Target = RTWorldContextGetMob(WorldContext, TargetID);
+		if (!Target) goto end;
+
+		if (ActionState->ActionData->Parameters.DefenseUp.ValueType == RUNTIME_MOB_PATTERN_VALUE_TYPE_DECIMAL) {
+			RTMobApplyForceEffect(
+				Runtime,
+				Target,
+				RUNTIME_FORCE_EFFECT_DEFENSE_UP,
+				ActionState->ActionData->Parameters.DefenseUp.Value,
+				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+			);
+		}
+
+		if (ActionState->ActionData->Parameters.DefenseUp.ValueType == RUNTIME_MOB_PATTERN_VALUE_TYPE_PERCENT) {
+			RTMobApplyForceEffect(
+				Runtime,
+				Target,
+				RUNTIME_FORCE_EFFECT_DEFENSE_UP_PERCENT,
+				ActionState->ActionData->Parameters.DefenseUp.Value,
+				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+			);
+		}
 	}
 
 end:
@@ -240,7 +313,7 @@ Void RTMobPatternCancelAction(
 		if (ActionState->ActionData->Parameters.Heal.WorldType == 0 && WorldContext->WorldData->Type != RUNTIME_WORLD_TYPE_GLOBAL) goto end;
 
 		RTEntityID TargetID = {
-			.EntityIndex = ActionState->ActionData->Parameters.Heal.MobIndex,
+			.EntityIndex = ActionState->ActionData->Parameters.AttackUp.MobIndex,
 			.WorldIndex = WorldContext->WorldData->WorldIndex,
 			.EntityType = RUNTIME_ENTITY_TYPE_MOB
 		};
@@ -262,7 +335,13 @@ Void RTMobPatternCancelAction(
 	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_EVASION_SELF_1 ||
 		ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_EVASION_SELF_2 ||
 		ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_EVASION_SELF_3) {
-
+		RTMobCancelForceEffect(
+			Runtime,
+			Mob,
+			RUNTIME_FORCE_EFFECT_COMPLETE_EVASION,
+			1,
+			RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+		);
 	}
 
 	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_SPECIAL_ACTION) {
@@ -296,6 +375,71 @@ Void RTMobPatternCancelAction(
 
 	}
 
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_ATTACK_UP_TARGET) {
+		if (ActionState->ActionData->Duration < 1) goto end;
+		if (ActionState->ActionData->Parameters.AttackUp.WorldType == 0 && WorldContext->WorldData->Type != RUNTIME_WORLD_TYPE_GLOBAL) goto end;
+
+		RTEntityID TargetID = {
+			.EntityIndex = ActionState->ActionData->Parameters.Heal.MobIndex,
+			.WorldIndex = WorldContext->WorldData->WorldIndex,
+			.EntityType = RUNTIME_ENTITY_TYPE_MOB
+		};
+		RTMobRef Target = RTWorldContextGetMob(WorldContext, TargetID);
+		if (!Target) goto end;
+
+		if (ActionState->ActionData->Parameters.AttackUp.ValueType == RUNTIME_MOB_PATTERN_VALUE_TYPE_DECIMAL) {
+			RTMobCancelForceEffect(
+				Runtime,
+				Target,
+				RUNTIME_FORCE_EFFECT_ALL_ATTACK_UP,
+				ActionState->ActionData->Parameters.AttackUp.Value,
+				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+			);
+		}
+
+		if (ActionState->ActionData->Parameters.AttackUp.ValueType == RUNTIME_MOB_PATTERN_VALUE_TYPE_PERCENT) {
+			RTMobCancelForceEffect(
+				Runtime,
+				Target,
+				RUNTIME_FORCE_EFFECT_ALL_ATTACK_UP_PERCENT,
+				ActionState->ActionData->Parameters.AttackUp.Value,
+				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+			);
+		}
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_DEFENSE_UP_TARGET) {
+		if (ActionState->ActionData->Parameters.DefenseUp.WorldType == 0 && WorldContext->WorldData->Type != RUNTIME_WORLD_TYPE_GLOBAL) goto end;
+
+		RTEntityID TargetID = {
+			.EntityIndex = ActionState->ActionData->Parameters.DefenseUp.MobIndex,
+			.WorldIndex = WorldContext->WorldData->WorldIndex,
+			.EntityType = RUNTIME_ENTITY_TYPE_MOB
+		};
+		RTMobRef Target = RTWorldContextGetMob(WorldContext, TargetID);
+		if (!Target) goto end;
+
+		if (ActionState->ActionData->Parameters.DefenseUp.ValueType == RUNTIME_MOB_PATTERN_VALUE_TYPE_DECIMAL) {
+			RTMobCancelForceEffect(
+				Runtime,
+				Target,
+				RUNTIME_FORCE_EFFECT_DEFENSE_UP,
+				ActionState->ActionData->Parameters.DefenseUp.Value,
+				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+			);
+		}
+
+		if (ActionState->ActionData->Parameters.DefenseUp.ValueType == RUNTIME_MOB_PATTERN_VALUE_TYPE_PERCENT) {
+			RTMobCancelForceEffect(
+				Runtime,
+				Target,
+				RUNTIME_FORCE_EFFECT_DEFENSE_UP_PERCENT,
+				ActionState->ActionData->Parameters.DefenseUp.Value,
+				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
+			);
+		}
+	}
+
 end:
 	// TODO: Perform Runtime Cancellation
 	RTMobPatternActionFinished(Runtime, WorldContext, Mob, MobPattern, ActionState->ActionGroupData->Index);
@@ -325,6 +469,15 @@ Void RTMobPatternStop(
 	RTMobRef Mob,
 	RTMobPatternRef MobPattern
 ) {
+	Timestamp CurrentTimestamp = GetTimestampMs();
+	for (Int32 Index = 0; Index < ArrayGetElementCount(MobPattern->ActionStates); Index += 1) {
+		RTMobActionStateRef ActionState = (RTMobActionStateRef)ArrayGetElementAtIndex(MobPattern->ActionStates, Index);
+		if (ActionState->IsRunning) {
+			ActionState->IsRunning = false;
+			RTMobPatternCancelAction(Runtime, WorldContext, Mob, MobPattern, ActionState);
+		}
+	}
+
 	MobPattern->StartTimestamp = 0;
 	MobPattern->SpawnTimestamp = 0;
 	MobPattern->EventTriggerMask = 0;

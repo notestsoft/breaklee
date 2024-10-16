@@ -494,6 +494,19 @@ NOTIFICATION_PROTOCOL(MOB_PATTERN_WARP_TARGET, 933,
     UInt16 PositionY;
 )
 
+NOTIFICATION_PROTOCOL_STRUCT(BUFF_BY_OBJECT_TARGET,
+    Int32 Result;
+    UInt32 TargetIndex;
+    UInt8 TargetEntityType;
+)
+
+NOTIFICATION_PROTOCOL(BUFF_BY_OBJECT, 935,
+    UInt32 SourceIndex;
+    UInt8 SourceEntityType;
+    Int32 SkillIndex;
+    UInt8 TargetCount;
+)
+
 NOTIFICATION_PROTOCOL_STRUCT(MOB_DESPAWN_BY_LINK_MOB_INDEX,
     RTEntityID MobID;
     Int16 Reason;

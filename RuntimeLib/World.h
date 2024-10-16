@@ -155,6 +155,19 @@ Void RTWorldDespawnMob(
     RTMobRef Mob
 );
 
+Void RTWorldRespawnMobEvent(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef World,
+    RTMobRef Mob,
+    Timestamp Delay
+);
+
+Void RTWorldRespawnMob(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef WorldContext,
+    RTMobRef Mob
+);
+
 RTWorldItemRef RTWorldSpawnItem(
     RTRuntimeRef Runtime,
     RTWorldContextRef World,

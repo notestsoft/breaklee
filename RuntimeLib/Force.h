@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base.h"
+#include "Constants.h"
 
 EXTERN_C_BEGIN
 
@@ -280,6 +281,22 @@ Void RTCharacterApplyForceEffect(
 Void RTCharacterCancelForceEffect(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
+	Index ForceEffectIndex,
+	Int64 ForceValue,
+	Int32 ForceValueType
+);
+
+Void RTMobApplyForceEffect(
+	RTRuntimeRef Runtime,
+	RTMobRef Mob,
+	Index ForceEffectIndex,
+	Int64 ForceValue,
+	Int32 ForceValueType
+);
+
+Void RTMobCancelForceEffect(
+	RTRuntimeRef Runtime,
+	RTMobRef Mob,
 	Index ForceEffectIndex,
 	Int64 ForceValue,
 	Int32 ForceValueType

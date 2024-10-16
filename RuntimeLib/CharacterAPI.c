@@ -296,7 +296,7 @@ Int32 lua_RTCharacterSpawnObject(lua_State* State) {
     NOTIFICATION_DATA_OBJECTS_SPAWN_INDEX* NotificationObject = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_OBJECTS_SPAWN_INDEX);
     NotificationObject->Entity.EntityIndex = EntityIndex;
     NotificationObject->Entity.WorldIndex = Character->Movement.WorldContext->WorldData->WorldIndex;
-    NotificationObject->Entity.EntityType = RUNTIME_ENTITY_TYPE_ITEM;
+    NotificationObject->Entity.EntityType = RUNTIME_ENTITY_TYPE_OBJECT;
     NotificationObject->ObjectType = ObjectType;
     NotificationObject->EntitySourceIndex = EntitySourceIndex;
     NotificationObject->PositionX = PositionX;

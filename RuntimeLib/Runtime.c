@@ -4,11 +4,12 @@
 #include "MobPattern.h"
 #include "PartyManager.h"
 #include "Runtime.h"
+#include "NotificationProtocol.h"
+#include "NotificationManager.h"
+#include "OptionPool.h"
 #include "Script.h"
 #include "World.h"
 #include "WorldManager.h"
-#include "NotificationProtocol.h"
-#include "NotificationManager.h"
 
 RTRuntimeRef RTRuntimeCreate(
     AllocatorRef Allocator,
@@ -38,6 +39,7 @@ RTRuntimeRef RTRuntimeCreate(
         RUNTIME_MEMORY_MAX_CHARACTER_COUNT
     );
     Runtime->NotificationManager = RTNotificationManagerCreate(Runtime);
+    Runtime->OptionPoolManager = RTOptionPoolManagerCreate(Runtime->Allocator);
     Runtime->DropTable.WorldDropPool = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTDropItem), 8);
     Runtime->DropTable.MobDropPool = IndexDictionaryCreate(Runtime->Allocator, 8);
     Runtime->DropTable.QuestDropPool = IndexDictionaryCreate(Runtime->Allocator, 8);
@@ -110,6 +112,7 @@ Void RTRuntimeDestroy(
     DictionaryDestroy(Runtime->DropTable.MobDropPool);
     DictionaryDestroy(Runtime->DropTable.QuestDropPool);
     RTNotificationManagerDestroy(Runtime->NotificationManager);
+    RTOptionPoolManagerDestroy(Runtime->OptionPoolManager);
     RTScriptManagerDestroy(Runtime->ScriptManager);
     RTRuntimeDataContextDestroy(Runtime->Context);
     RTWorldManagerDestroy(Runtime->WorldManager);

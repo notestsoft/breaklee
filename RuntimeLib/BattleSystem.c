@@ -206,6 +206,10 @@ Void RTCalculateNormalAttackResult(
 		Result->AttackType = RUNTIME_ATTACK_TYPE_NORMAL;
 	}
 
+	if (Defender->Values[RUNTIME_ATTRIBUTE_COMPLETE_EVASION] > 0) {
+		Result->AttackType = RUNTIME_ATTACK_TYPE_MISS;
+	}
+
 	Int32 MinDamageRate = RandomRange(&Attacker->Seed, (Int32)Attributes.MinDamage, 100);
 	Result->TotalDamage = Attributes.Attack * MinDamageRate / 100;
 	Result->TotalDamage = Result->TotalDamage * (100 + Attributes.SkillAmp) / 100;

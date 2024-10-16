@@ -78,6 +78,12 @@ Bool RTMobIsAlive(RTMobRef Mob) {
 	return Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] > 0;
 }
 
+Bool RTMobIsImmune(
+	RTMobRef Mob
+) {
+	return Mob->Attributes.Values[RUNTIME_ATTRIBUTE_COMPLETE_EVASION] > 0;
+}
+
 Bool RTMobIsUnmovable(RTMobRef Mob) {
 	return false;
 }
@@ -547,6 +553,8 @@ Void RTMobUpdate(
 	RTMobRef Mob
 ) {
 	if (RTMobIsAlive(Mob) && Mob->Movement.IsMoving && Mob->Movement.WorldChunk) {
+		assert(Mob->Movement.WorldContext);
+
 		RTMovementRef Movement = &Mob->Movement;
 		RTWorldChunkRef WorldChunk = Movement->WorldChunk;
 		RTWorldChunkRef NewChunk = RTWorldContextGetChunk(Movement->WorldContext, Movement->PositionCurrent.X, Movement->PositionCurrent.Y);
@@ -586,6 +594,14 @@ Void RTMobUpdate(
 		}
 
 		return;
+	}
+
+	if (Mob->EventRespawnTimestamp > 0 && Mob->EventRespawnTimestamp <= Timestamp) {
+		Mob->EventRespawnTimestamp = 0;
+
+		if (Mob->IsSpawned) {
+			RTWorldRespawnMob(Runtime, WorldContext, Mob);
+		}
 	}
 
 	if (!RTMobIsAlive(Mob) && Mob->IsSpawned) {
