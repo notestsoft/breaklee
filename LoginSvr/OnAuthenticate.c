@@ -196,48 +196,43 @@ CLIENT_PROCEDURE_BINDING(AUTHENTICATE) {
     Int32 PasswordLength = (Int32)strlen(Password);
     if (PasswordLength > MAX_PASSWORD_LENGTH) goto error;
 
-    Char PasswordHash[SALTED_HASH_LENGTH] = { 0 };
     Bool InsertedAccount = false;
 
 authenticate:
     GenerateRandomKey(Client->SessionKey, sizeof(Client->SessionKey));
+
     Bool Success = DatabaseCallProcedure(
         Context->Database,
         "Authenticate",
         DB_INPUT_STRING(Username, strlen(Username)),
+        DB_INPUT_STRING(Password, strlen(Password)),
+        DB_INPUT_INT32(Context->Config.Login.HashIterations),
         DB_INPUT_STRING(Connection->AddressIP, strlen(Connection->AddressIP)),
         DB_INPUT_STRING(Client->SessionKey, strlen(Client->SessionKey)),
         DB_INPUT_BOOL(Context->Config.Login.EmailVerificationEnabled),
         DB_OUTPUT_INT32(Client->LoginStatus),
         DB_OUTPUT_INT32(Client->AccountStatus),
         DB_OUTPUT_INT32(Client->AccountID),
-        DB_OUTPUT_DATA(PasswordHash, SALTED_HASH_LENGTH),
         DB_PARAM_END
     );
+
     if (!Success) {
         Client->LoginStatus = LOGIN_STATUS_ERROR;
         Client->AccountStatus = ACCOUNT_STATUS_OUT_OF_SERVICE;
     }
 
-    if (Client->LoginStatus == LOGIN_STATUS_SUCCESS && Client->AccountStatus == ACCOUNT_STATUS_NORMAL) {
-        if (!ValidatePasswordHash(Password, (UInt8*)PasswordHash)) {
-            Client->LoginStatus = LOGIN_STATUS_ERROR;
-            Client->AccountStatus = ACCOUNT_STATUS_INVALID_CREDENTIALS;
-        }        
-    }
-
     if (!InsertedAccount && Context->Config.Login.AutoCreateAccountOnLogin &&
         Client->AccountStatus == ACCOUNT_STATUS_INVALID_CREDENTIALS) {
-        if (CreatePasswordHash(Password, (UInt8*)PasswordHash)) {
-            DatabaseCallProcedure(
-                Context->Database,
-                "InsertAccount",
-                DB_INPUT_STRING(Username, strlen(Username)),
-                DB_INPUT_STRING(Username, strlen(Username)),
-                DB_INPUT_DATA(PasswordHash, SALTED_HASH_LENGTH),
-                DB_PARAM_END
-            );
-        }
+
+        DatabaseCallProcedure(
+            Context->Database,
+            "InsertAccount",
+            DB_INPUT_STRING(Username, strlen(Username)),
+            DB_INPUT_STRING(Username, strlen(Username)),
+            DB_INPUT_STRING(Password, strlen(Password)),
+            DB_INPUT_INT32(Context->Config.Login.HashIterations),
+            DB_PARAM_END
+        );
 
         InsertedAccount = true;
         goto authenticate;

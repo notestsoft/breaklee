@@ -14,6 +14,7 @@ CREATE PROCEDURE Authentication.ApplyMigration(
     IN InMigrationName VARCHAR(255), 
     IN InMigrationSQL TEXT
 )
+
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM Migrations WHERE MigrationName = InMigrationName) THEN
         SET @MigrationQuery = InMigrationSQL;

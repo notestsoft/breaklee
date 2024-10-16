@@ -8,20 +8,15 @@ IPC_PROCEDURE_BINDING(W2L, VERIFY_PASSWORD) {
     Response->Header.TargetConnectionID = Packet->Header.SourceConnectionID;
     Response->Success = false;
     
-    UInt8 PasswordHash[SALTED_HASH_LENGTH] = { 0 };
-
     if (!DatabaseCallProcedure(
         Context->Database,
-        "GetPasswordHash",
+        "AccountVerifyPassword",
         DB_INPUT_INT32(Packet->AccountID),
+        DB_INPUT_STRING(Packet->Credentials, sizeof(Packet->Credentials)),
+        DB_INPUT_INT32(Context->Config.Login.HashIterations),
         DB_OUTPUT_BOOL(Response->Success),
-        DB_OUTPUT_DATA(PasswordHash, SALTED_HASH_LENGTH),
         DB_PARAM_END
     )) {
-        Response->Success = false;
-    }
-
-    if (Response->Success && !ValidatePasswordHash(Packet->Credentials, PasswordHash)) {
         Response->Success = false;
     }
 

@@ -44,16 +44,6 @@ Bool GetPlatformErrorMessage(
 	Int32 Length
 );
 
-Bool CreatePasswordHash(
-    CString Password,
-    UInt8* PasswordHash
-);
-
-Bool ValidatePasswordHash(
-    CString Password,
-    UInt8* PasswordHash
-);
-
 Void GenerateRandomKey(
     CString Buffer,
     Int32 Length
