@@ -1,4 +1,4 @@
-RUNTIME_DATA_FILE_BEGIN(EpicBoost.xml)
+RUNTIME_DATA_FILE_BEGIN(DIR_PATH(Upgrade, EpicBoost.xml))
 
 RUNTIME_DATA_TYPE_BEGIN(EpicBoostMain, "EpicBoost.EpicBoostMain.Item", 16)
 	RUNTIME_DATA_PROPERTY(Int32, ItemType, "ItemType")

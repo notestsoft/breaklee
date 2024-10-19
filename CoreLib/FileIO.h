@@ -69,6 +69,11 @@ Int32 FilesProcess(
 #define PathGetCurrentDirectory getcwd
 #endif
 
+CString PathCombineAll(
+	CString Path,
+	...
+);
+
 CString PathCombineNoAlloc(
 	CString Directory,
 	CString File

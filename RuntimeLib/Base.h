@@ -68,6 +68,7 @@ typedef struct _RTMob* RTMobRef;
 typedef struct _RTMobActionData* RTMobActionDataRef;
 typedef struct _RTMobActionGroupData* RTMobActionGroupDataRef;
 typedef struct _RTMobTriggerData* RTMobTriggerDataRef;
+typedef struct _RTMobPatternSpawnData* RTMobPatternSpawnDataRef;
 typedef struct _RTMobPatternData* RTMobPatternDataRef;
 typedef struct _RTMobTriggerState* RTMobTriggerStateRef;
 typedef struct _RTMobActionState* RTMobActionStateRef;

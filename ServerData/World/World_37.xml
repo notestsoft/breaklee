@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <World WorldIndex="37">
+	<MobPool/>
 	<CommonDropPool MinMobLevel="1" MaxMobLevel="250">
 		<Item ItemID="683" ItemOption="513" ItemDuration="0" OptionPoolID="0" Rate="0.00500000000000000"/>
 		<Item ItemID="684" ItemOption="513" ItemDuration="0" OptionPoolID="0" Rate="0.00500000000000000"/>

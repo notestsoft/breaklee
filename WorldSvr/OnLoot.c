@@ -9,36 +9,19 @@
 CLIENT_PROCEDURE_BINDING(LOOT_INVENTORY_ITEM) {
     if (!Character) goto error;
 
-    RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
-    if (!World) goto error;
-
-    RTWorldItemRef Item = RTWorldGetItem(Runtime, World, Packet->Entity, Packet->UniqueKey);
-    if (!Item) goto error;
+    RTLootResult Result = RTCharacterLootItem(
+        Runtime,
+        Character,
+        Packet->Entity,
+        Packet->UniqueKey,
+        Packet->InventorySlotIndex
+    );
 
     S2C_DATA_LOOT_INVENTORY_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOOT_INVENTORY_ITEM);
-
-    // TODO: Check character distance to item (S2C_DATA_LOOT_RESULT_OUTOFRANGE_ERROR)
-    // TODO: Check item ownership (S2C_DATA_LOOT_RESULT_OWNERSHIP_ERROR)
-
-    struct _RTItemSlot Slot = { 0 };
-    Slot.Item = Item->Item;
-    Slot.ItemOptions = Item->ItemOptions;
-    Slot.SlotIndex = Packet->InventorySlotIndex;
-    if (RTInventorySetSlot(Runtime, &Character->Data.InventoryInfo, &Slot)) {
-        Response->Result = S2C_DATA_LOOT_RESULT_SUCCESS;
-        Response->ItemID = Slot.Item.Serial;
-        Response->ItemOptions = Slot.ItemOptions;
-        Response->InventorySlotIndex = Packet->InventorySlotIndex;
-
-        RTCharacterUpdateQuestItemCounter(Runtime, Character, Slot.Item, Slot.ItemOptions);
-    } else {
-        Response->Result = S2C_DATA_LOOT_RESULT_SLOTINUSE_ERROR;
-    }
-
-    Character->SyncMask.Info = true;
-    Character->SyncMask.InventoryInfo = true;
-
-    RTWorldDespawnItem(Runtime, World, Item);
+    Response->Result = Result.Result;
+    Response->ItemID = Result.ItemID.Serial;
+    Response->ItemOptions = Result.ItemOptions;
+    Response->InventorySlotIndex = Result.InventorySlotIndex;
     SocketSend(Socket, Connection, Response);
     return;
 
@@ -84,4 +67,48 @@ CLIENT_PROCEDURE_BINDING(LOOT_CURRENCY_ITEM) {
 
 error:
     SocketDisconnect(Socket, Connection);
+}
+
+CLIENT_PROCEDURE_BINDING(LOOT_GROUP_ITEM) {
+    if (!Character) goto error;
+
+    Int32 PacketLength = sizeof(C2S_DATA_LOOT_GROUP_ITEM) + sizeof(C2S_DATA_LOOT_GROUP_ITEM_INDEX) * Packet->ItemCount;
+    if (Packet->Length != PacketLength) goto error;
+
+    S2C_DATA_LOOT_GROUP_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOOT_GROUP_ITEM);
+    Response->Result = 1;
+    Response->ItemCount = 0;
+
+    for (Int32 Index = 0; Index < Packet->ItemCount; Index += 1) {
+        RTLootResult Result = RTCharacterLootItem(
+            Runtime,
+            Character,
+            Packet->Items[Index].Entity,
+            Packet->Items[Index].UniqueKey,
+            Packet->Items[Index].InventorySlotIndex
+        );
+
+        if (Result.Result != S2C_DATA_LOOT_GROUP_ITEM_RESULT_SUCCESS) {
+            if (Index > 0) goto error;
+
+            Response->Result = Result.Result;
+            break;
+        }
+        
+        S2C_DATA_LOOT_GROUP_ITEM_INDEX* ResponseItem = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_LOOT_GROUP_ITEM_INDEX);
+        ResponseItem->ItemID = Result.ItemID.Serial;
+        ResponseItem->ItemOptions = Result.ItemOptions;
+        ResponseItem->InventorySlotIndex = Result.InventorySlotIndex;
+        Response->ItemCount += 1;
+    }
+
+    SocketSend(Socket, Connection, Response);
+    return;
+
+error:
+    {
+        S2C_DATA_LOOT_GROUP_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOOT_GROUP_ITEM);
+        Response->Result = S2C_DATA_LOOT_RESULT_OWNERSHIP_ERROR;
+        SocketSend(Socket, Connection, Response);
+    }
 }

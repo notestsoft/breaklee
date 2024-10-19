@@ -132,12 +132,6 @@ Int64 ArchiveQueryNodeWithAttribute(
     CString AttributeValue
 );
 
-ArchiveIteratorRef ArchiveQueryNodeIteratorByPathFirst(
-    ArchiveRef Archive,
-    Int64 NodeIndex,
-    CString Path
-);
-
 ArchiveIteratorRef ArchiveQueryNodeIteratorFirst(
     ArchiveRef Archive,
     Int64 ParentIndex,

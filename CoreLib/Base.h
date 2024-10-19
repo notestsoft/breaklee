@@ -117,6 +117,14 @@ ATTRIBUTE_NORETURN void __unreachable(const char* message, const char* file, siz
 #define CONCAT(__LHS__, __RHS__) __LHS__##__RHS__
 #endif
 
+#ifndef TO_STRING
+#define TO_STRING(__A__) #__A__
+#endif
+
+#ifndef EXPAND_AND_QUOTE
+#define EXPAND_AND_QUOTE(__A__) TO_STRING(__A__)
+#endif
+
 #ifndef UNIQUE
 #define UNIQUE(__PREFIX__) CONCAT(__PREFIX__, __COUNTER__)
 #endif
@@ -136,9 +144,17 @@ ATTRIBUTE_NORETURN void __unreachable(const char* message, const char* file, siz
 #endif
 
 #ifdef _WIN32
-#define PLATFORM_PATH_SEPARATOR ((char)'\\')
+#define PLATFORM_PATH_SEPARATOR '\\'
+#define PLATFORM_PATH_SEPARATOR_STRING "\\"
 #else
-#define PLATFORM_PATH_SEPARATOR ((char)'/')
+#define PLATFORM_PATH_SEPARATOR '/'
+#define PLATFORM_PATH_SEPARATOR_STRING "/"
+#endif
+
+#ifdef _WIN32
+#define DIR_PATH(__A__, __B__) __A__\\__B__
+#else
+#define DIR_PATH(__A__, __B__) __A__/__B__
 #endif
 
 typedef void Void;

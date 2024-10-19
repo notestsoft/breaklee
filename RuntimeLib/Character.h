@@ -210,7 +210,7 @@ struct _RTCharacter {
 
     struct _RTMovement Movement;
     struct _RTBattleAttributes Attributes;
-    Int32 AxpFieldRate;
+    Int32 AbilityExpRate;
     Int32 SkillComboLevel;
     Timestamp DebugSpRegenTimeout;
 

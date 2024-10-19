@@ -103,6 +103,13 @@ Void RTRuntimeDestroy(
         Iterator = DictionaryKeyIteratorNext(Iterator);
     }
 
+    for (Int32 Index = 0; Index < MemoryPoolGetBlockCount(Runtime->MobPatternDataPool); Index += 1) {
+        if (!MemoryPoolIsReserved(Runtime->MobPatternDataPool, Index)) continue;
+
+        RTMobPatternDataRef MobPattern = (RTMobPatternDataRef)MemoryPoolFetch(Runtime->MobPatternDataPool, Index);
+        ArrayDestroy(MobPattern->MobPool);
+    }
+
     DictionaryDestroy(Runtime->DungeonData);
     DictionaryDestroy(Runtime->PatternPartData);
     MemoryPoolDestroy(Runtime->SkillDataPool);

@@ -1,0 +1,16 @@
+<Ability>
+    <SlotLimit>
+        <Passive MinCount="16" MaxCount="60" />
+        <Blended MinCount="3" MaxCount="30" />
+        <Karma MinCount="10" MaxCount="60" />
+    </SlotLimit>
+    <ExpRate>
+        <LevelRange MinLevel="1" MaxLevel="119" Rate="0" />
+        <LevelRange MinLevel="120" MaxLevel="129" Rate="75" />
+        <LevelRange MinLevel="130" MaxLevel="139" Rate="80" />
+        <LevelRange MinLevel="140" MaxLevel="149" Rate="85" />
+        <LevelRange MinLevel="150" MaxLevel="159" Rate="90" />
+        <LevelRange MinLevel="160" MaxLevel="169" Rate="95" />
+        <LevelRange MinLevel="170" MaxLevel="200" Rate="100" />
+    </ExpRate>
+</Ability>

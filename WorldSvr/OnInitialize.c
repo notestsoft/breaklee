@@ -1096,7 +1096,7 @@ struct _RTCharacterCostumeInfo {
         Context->Runtime->Context,
         Context->Config.WorldSvr.RuntimeDataPath,
         Context->Config.WorldSvr.ServerDataPath,
-        "Event.xml"
+        "Event/Event.xml"
     );
 
     // TODO: Move event data to database and trigger request on init

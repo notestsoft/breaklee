@@ -26,13 +26,13 @@ RUNTIME_DATA_TYPE_INDEX(DestroyItemPool, UInt32, PoolID)
 
 RUNTIME_DATA_FILE_END
 
-RUNTIME_DATA_FILE_BEGIN(DestroyOptionPool.xml)
+RUNTIME_DATA_FILE_BEGIN(DIR_PATH(Loot, DestroyOptionPool.xml))
 
 RUNTIME_DATA_TYPE_BEGIN(DestroyItemOptionPool, "DestroyOptionPool.Pool", 32)
-	RUNTIME_DATA_PROPERTY(UInt64, ItemID, "item_id")
+	RUNTIME_DATA_PROPERTY(UInt64, ItemID, "ItemID")
 	RUNTIME_DATA_TYPE_BEGIN_CHILD(DestroyItemOptionPoolOption, "Option", 32)
-		RUNTIME_DATA_PROPERTY(UInt64, Option, "option")
-		RUNTIME_DATA_PROPERTY(Int32, Rate, "rate")
+		RUNTIME_DATA_PROPERTY(UInt64, Option, "Option")
+		RUNTIME_DATA_PROPERTY(Int32, Rate, "Rate")
 	RUNTIME_DATA_TYPE_END_CHILD(DestroyItemOptionPoolOption, 32)
 RUNTIME_DATA_TYPE_END(DestroyItemOptionPool)
 RUNTIME_DATA_TYPE_INDEX(DestroyItemOptionPool, UInt64, ItemID)

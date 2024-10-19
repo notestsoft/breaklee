@@ -8,7 +8,7 @@ RUNTIME_DATA_TYPE_INDEX(CostumeItem, UInt32, ItemID)
 
 RUNTIME_DATA_FILE_END
 
-RUNTIME_DATA_FILE_BEGIN(CostumeWarehouse.xml)
+RUNTIME_DATA_FILE_BEGIN(DIR_PATH(Service, CostumeWarehouse.xml))
 
 RUNTIME_DATA_TYPE_BEGIN(CostumeWarehousePrice, "PriceList.Item", 1024)
 	RUNTIME_DATA_PROPERTY(UInt32, ItemID, "ItemID")

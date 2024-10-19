@@ -1,4 +1,4 @@
-RUNTIME_DATA_FILE_BEGIN(GiftBox.xml)
+RUNTIME_DATA_FILE_BEGIN(DIR_PATH(Loot, GiftBox.xml))
 
 RUNTIME_DATA_TYPE_BEGIN(GiftBoxCondition, "GiftBox.Condition.GiftBox", 8)
 	RUNTIME_DATA_PROPERTY(Int32, Index, "Index")

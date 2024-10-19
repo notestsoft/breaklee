@@ -1,0 +1,428 @@
+<!-- Random sum = 1000000 -->
+<StellarMastery>
+	<ForceEffectPoolGroup>
+		<Pool ID="201">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="1" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="1" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="1" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="4" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="4" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="5" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="10" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="155" Value="4" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="98" Value="1" ValueType="2" />
+			<ForceEffect Rate="2000" ForceIndex="73" Value="1" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="163" Value="2" ValueType="1" />
+			<ForceEffect Rate="35000" ForceIndex="124" Value="1" ValueType="1" />
+		</Pool>
+		<Pool ID="202">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="2" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="2" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="2" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="6" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="6" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="7" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="15" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="155" Value="6" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="98" Value="2" ValueType="2" />
+			<ForceEffect Rate="2000" ForceIndex="73" Value="2" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="163" Value="3" ValueType="1" />
+			<ForceEffect Rate="35000" ForceIndex="124" Value="2" ValueType="1" />
+		</Pool>
+		<Pool ID="203">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="3" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="3" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="3" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="8" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="8" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="9" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="20" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="155" Value="9" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="98" Value="3" ValueType="2" />
+			<ForceEffect Rate="2000" ForceIndex="73" Value="3" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="163" Value="5" ValueType="1" />
+			<ForceEffect Rate="35000" ForceIndex="124" Value="3" ValueType="1" />
+		</Pool>
+		<Pool ID="204">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="4" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="4" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="4" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="10" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="10" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="11" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="30" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="155" Value="9" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="98" Value="4" ValueType="2" />
+			<ForceEffect Rate="2000" ForceIndex="73" Value="4" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="163" Value="8" ValueType="1" />
+			<ForceEffect Rate="35000" ForceIndex="124" Value="5" ValueType="1" />
+		</Pool>
+		<Pool ID="205">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="5" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="5" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="5" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="12" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="12" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="14" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="50" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="155" Value="16" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="98" Value="5" ValueType="2" />
+			<ForceEffect Rate="2000" ForceIndex="73" Value="5" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="163" Value="15" ValueType="1" />
+			<ForceEffect Rate="35000" ForceIndex="124" Value="10" ValueType="1" />
+		</Pool>
+		<Pool ID="206">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="1" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="1" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="1" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="4" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="4" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="5" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="20" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="155" Value="4" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="150" Value="1" ValueType="2" />
+			<ForceEffect Rate="2000" ForceIndex="132" Value="1" ValueType="2" />
+			<ForceEffect Rate="35000" ForceIndex="157" Value="2" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="158" Value="1" ValueType="2" />
+		</Pool>
+		<Pool ID="207">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="2" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="2" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="2" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="6" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="6" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="7" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="25" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="155" Value="6" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="150" Value="2" ValueType="2" />
+			<ForceEffect Rate="2000" ForceIndex="132" Value="2" ValueType="2" />
+			<ForceEffect Rate="35000" ForceIndex="157" Value="3" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="158" Value="1" ValueType="2" />
+		</Pool>
+		<Pool ID="208">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="3" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="3" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="3" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="8" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="8" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="9" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="35" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="155" Value="8" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="150" Value="3" ValueType="2" />
+			<ForceEffect Rate="2000" ForceIndex="132" Value="3" ValueType="2" />
+			<ForceEffect Rate="35000" ForceIndex="157" Value="6" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="158" Value="2" ValueType="2" />
+		</Pool>
+		<Pool ID="209">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="4" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="4" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="4" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="10" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="10" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="11" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="50" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="155" Value="11" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="150" Value="4" ValueType="2" />
+			<ForceEffect Rate="2000" ForceIndex="132" Value="4" ValueType="2" />
+			<ForceEffect Rate="35000" ForceIndex="157" Value="6" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="158" Value="4" ValueType="2" />
+		</Pool>
+		<Pool ID="210">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="5" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="5" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="5" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="12" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="12" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="14" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="85" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="155" Value="20" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="150" Value="5" ValueType="2" />
+			<ForceEffect Rate="2000" ForceIndex="132" Value="5" ValueType="2" />
+			<ForceEffect Rate="35000" ForceIndex="157" Value="10" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="158" Value="7" ValueType="2" />
+		</Pool>
+		<Pool ID="211">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="1" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="1" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="1" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="6" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="6" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="4" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="20" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="59" Value="4" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="98" Value="1" ValueType="2" />
+			<ForceEffect Rate="2000" ForceIndex="132" Value="1" ValueType="2" />
+			<ForceEffect Rate="35000" ForceIndex="163" Value="2" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="58" Value="4" ValueType="1" />
+		</Pool>
+		<Pool ID="212">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="2" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="2" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="2" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="8" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="8" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="5" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="30" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="59" Value="5" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="98" Value="2" ValueType="2" />
+			<ForceEffect Rate="2000" ForceIndex="132" Value="2" ValueType="2" />
+			<ForceEffect Rate="35000" ForceIndex="163" Value="3" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="58" Value="8" ValueType="1" />
+		</Pool>
+		<Pool ID="213">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="3" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="3" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="3" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="10" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="10" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="6" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="40" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="59" Value="8" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="98" Value="3" ValueType="2" />
+			<ForceEffect Rate="2000" ForceIndex="132" Value="3" ValueType="2" />
+			<ForceEffect Rate="35000" ForceIndex="163" Value="5" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="58" Value="12" ValueType="1" />
+		</Pool>
+		<Pool ID="214">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="4" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="4" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="4" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="12" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="12" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="8" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="55" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="59" Value="15" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="98" Value="4" ValueType="2" />
+			<ForceEffect Rate="2000" ForceIndex="132" Value="4" ValueType="2" />
+			<ForceEffect Rate="35000" ForceIndex="163" Value="7" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="58" Value="20" ValueType="1" />
+		</Pool>
+		<Pool ID="215">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="5" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="5" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="5" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="14" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="14" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="9" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="100" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="59" Value="25" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="98" Value="6" ValueType="2" />
+			<ForceEffect Rate="2000" ForceIndex="132" Value="5" ValueType="2" />
+			<ForceEffect Rate="35000" ForceIndex="163" Value="13" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="58" Value="40" ValueType="1" />
+		</Pool> 
+		<Pool ID="216">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="1" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="1" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="1" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="8" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="8" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="4" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="30" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="59" Value="4" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="150" Value="1" ValueType="2" />
+			<ForceEffect Rate="35000" ForceIndex="157" Value="2" ValueType="1" />
+			<ForceEffect Rate="2000" ForceIndex="139" Value="1" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="80" Value="2" ValueType="1" />
+		</Pool>
+		<Pool ID="217">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="2" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="2" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="2" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="10" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="10" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="6" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="35" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="59" Value="6" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="150" Value="2" ValueType="2" />
+			<ForceEffect Rate="35000" ForceIndex="157" Value="3" ValueType="1" />
+			<ForceEffect Rate="2000" ForceIndex="139" Value="2" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="80" Value="3" ValueType="1" />
+		</Pool>
+		<Pool ID="218">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="3" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="3" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="3" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="12" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="12" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="8" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="45" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="59" Value="9" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="150" Value="3" ValueType="2" />
+			<ForceEffect Rate="35000" ForceIndex="157" Value="4" ValueType="1" />
+			<ForceEffect Rate="2000" ForceIndex="139" Value="3" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="80" Value="4" ValueType="1" />
+		</Pool>
+		<Pool ID="219">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="4" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="4" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="4" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="14" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="14" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="8" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="60" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="59" Value="16" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="150" Value="4" ValueType="2" />
+			<ForceEffect Rate="35000" ForceIndex="157" Value="5" ValueType="1" />
+			<ForceEffect Rate="2000" ForceIndex="139" Value="4" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="80" Value="5" ValueType="1" />
+		</Pool>
+		<Pool ID="220">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="5" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="5" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="5" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="16" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="16" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="10" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="115" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="59" Value="30" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="150" Value="5" ValueType="2" />
+			<ForceEffect Rate="35000" ForceIndex="157" Value="8" ValueType="1" />
+			<ForceEffect Rate="2000" ForceIndex="139" Value="6" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="80" Value="16" ValueType="1" />
+		</Pool>
+		<Pool ID="221">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="1" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="1" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="1" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="12" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="12" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="5" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="35" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="59" Value="6" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="98" Value="1" ValueType="2" />
+			<ForceEffect Rate="35000" ForceIndex="157" Value="2" ValueType="1" />
+			<ForceEffect Rate="2000" ForceIndex="139" Value="1" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="173" Value="1" ValueType="2" />
+		</Pool>
+		<Pool ID="222">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="2" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="2" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="2" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="14" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="14" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="8" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="40" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="59" Value="9" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="98" Value="2" ValueType="2" />
+			<ForceEffect Rate="35000" ForceIndex="157" Value="3" ValueType="1" />
+			<ForceEffect Rate="2000" ForceIndex="139" Value="2" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="173" Value="2" ValueType="2" />
+		</Pool>
+		<Pool ID="223">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="3" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="3" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="3" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="16" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="16" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="10" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="50" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="59" Value="10" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="98" Value="3" ValueType="2" />
+			<ForceEffect Rate="35000" ForceIndex="157" Value="5" ValueType="1" />
+			<ForceEffect Rate="2000" ForceIndex="139" Value="3" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="173" Value="3" ValueType="2" />
+		</Pool>
+		<Pool ID="224">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="4" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="4" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="4" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="18" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="18" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="8" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="65" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="59" Value="18" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="98" Value="4" ValueType="2" />
+			<ForceEffect Rate="35000" ForceIndex="157" Value="7" ValueType="1" />
+			<ForceEffect Rate="2000" ForceIndex="139" Value="5" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="173" Value="5" ValueType="2" />
+		</Pool>
+		<Pool ID="225">
+			<ForceEffect Rate="5000" ForceIndex="45" Value="5" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="46" Value="5" ValueType="1" />
+			<ForceEffect Rate="5000" ForceIndex="47" Value="5" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="72" Value="20" ValueType="1" />
+			<ForceEffect Rate="260000" ForceIndex="71" Value="20" ValueType="1" />
+			<ForceEffect Rate="247500" ForceIndex="156" Value="9" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="1" Value="125" ValueType="1" />
+			<ForceEffect Rate="40000" ForceIndex="59" Value="35" ValueType="1" />
+			<ForceEffect Rate="100000" ForceIndex="98" Value="7" ValueType="2" />
+			<ForceEffect Rate="35000" ForceIndex="157" Value="20" ValueType="1" />
+			<ForceEffect Rate="2000" ForceIndex="139" Value="8" ValueType="1" />
+			<ForceEffect Rate="500" ForceIndex="173" Value="7" ValueType="2" />
+		</Pool>
+	</ForceEffectPoolGroup>
+	<ForceValuePoolGroup>
+		<Pool ID="1">
+			<ForceValue Rate="444000" PoolIndex="201" />
+			<ForceValue Rate="450000" PoolIndex="202" />
+			<ForceValue Rate="100000" PoolIndex="203" />
+			<ForceValue Rate="5000" PoolIndex="204" />
+			<ForceValue Rate="1000" PoolIndex="205" />
+		</Pool>
+		<Pool ID="2">
+			<ForceValue Rate="338000" PoolIndex="206" />
+			<ForceValue Rate="500000" PoolIndex="207" />
+			<ForceValue Rate="150000" PoolIndex="208" />
+			<ForceValue Rate="10000" PoolIndex="209" />
+			<ForceValue Rate="2000" PoolIndex="210" />
+		</Pool>
+		<Pool ID="3">
+			<ForceValue Rate="260000" PoolIndex="211" />
+			<ForceValue Rate="520000" PoolIndex="212" />
+			<ForceValue Rate="200000" PoolIndex="213" />
+			<ForceValue Rate="15000" PoolIndex="214" />
+			<ForceValue Rate="5000" PoolIndex="215" />
+		</Pool>
+		<Pool ID="4">
+			<ForceValue Rate="150000" PoolIndex="216" />
+			<ForceValue Rate="300000" PoolIndex="217" />
+			<ForceValue Rate="430000" PoolIndex="218" />
+			<ForceValue Rate="80000" PoolIndex="219" />
+			<ForceValue Rate="40000" PoolIndex="220" />
+		</Pool>
+		<Pool ID="5">
+			<ForceValue Rate="50000" PoolIndex="221" />
+			<ForceValue Rate="200000" PoolIndex="222" />
+			<ForceValue Rate="500000" PoolIndex="223" />
+			<ForceValue Rate="180000" PoolIndex="224" />
+			<ForceValue Rate="70000" PoolIndex="225" />
+		</Pool>
+	</ForceValuePoolGroup>
+	<ForceLinkPoolGroup>
+		<Pool ID="1">
+			<ForceLink Rate="380000" Grade="1" />
+			<ForceLink Rate="370000" Grade="2" />
+			<ForceLink Rate="200000" Grade="3" />
+			<ForceLink Rate="40000" Grade="4" />
+			<ForceLink Rate="10000" Grade="5" />
+		</Pool>		
+		<Pool ID="2">
+			<ForceLink Rate="330000" Grade="1" />
+			<ForceLink Rate="320000" Grade="2" />
+			<ForceLink Rate="250000" Grade="3" />
+			<ForceLink Rate="85000" Grade="4" />
+			<ForceLink Rate="15000" Grade="5" />
+		</Pool>		
+		<Pool ID="3">
+			<ForceLink Rate="270000" Grade="1" />
+			<ForceLink Rate="300000" Grade="2" />
+			<ForceLink Rate="300000" Grade="3" />
+			<ForceLink Rate="110000" Grade="4" />
+			<ForceLink Rate="20000" Grade="5" />
+		</Pool>		
+		<Pool ID="4">
+			<ForceLink Rate="100000" Grade="1" />
+			<ForceLink Rate="280000" Grade="2" />
+			<ForceLink Rate="360000" Grade="3" />
+			<ForceLink Rate="230000" Grade="4" />
+			<ForceLink Rate="30000" Grade="5" />
+		</Pool>		
+		<Pool ID="5">
+			<ForceLink Rate="250000" Grade="2" />
+			<ForceLink Rate="380000" Grade="3" />
+			<ForceLink Rate="310000" Grade="4" />
+			<ForceLink Rate="60000" Grade="5" />
+		</Pool>
+	</ForceLinkPoolGroup>
+</StellarMastery>

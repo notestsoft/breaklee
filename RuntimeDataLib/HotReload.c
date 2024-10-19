@@ -53,7 +53,7 @@ Bool CONCAT(RTRuntimeData, __NAME__ ## HotReload)(                              
                                                                                     \
     CString Query = __QUERY__;                                                      \
     CString PropertyQuery = NULL;                                                   \
-    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorByPathFirst(Archive, -1, Query); \
+    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, -1, Query); \
     Context->CONCAT(__NAME__, Count) = 0; \
     memset(&Context->CONCAT(__NAME__, List)[0], 0, sizeof(struct CONCAT(_RTData, __NAME__)) * __COUNT__); \
     while (Iterator) { \

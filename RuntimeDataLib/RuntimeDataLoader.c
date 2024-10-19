@@ -29,35 +29,39 @@ Bool RTRuntimeDataContextLoad(
     Bool Success = false;
 
 #define RUNTIME_DATA_FILE_BEGIN(__NAME__) \
-    Info("Loading runtime data: %s", # __NAME__); \
-    if (CStringIsEqual(PathGetFileNameExtension(# __NAME__), "xml")) { \
+{\
+    CString Name = EXPAND_AND_QUOTE(__NAME__); \
+    Info("Loading runtime data: %s", Name); \
+    if (CStringIsEqual(PathGetFileNameExtension(Name), "xml")) { \
         Success = ArchiveLoadFromFile( \
             Archive, \
-            PathCombineNoAlloc(ServerDataPath, # __NAME__), \
+            PathCombineNoAlloc(ServerDataPath, Name), \
             IgnoreErrors \
         ); \
     } \
     else { \
         Success = ArchiveLoadFromFileEncryptedNoAlloc( \
             Archive, \
-            PathCombineNoAlloc(RuntimeDataPath, # __NAME__), \
+            PathCombineNoAlloc(RuntimeDataPath, Name), \
             IgnoreErrors \
         ); \
     } \
     if (!Success) { \
-        Error("Error loading runtime data: %s", # __NAME__); \
+        Error("Error loading runtime data: %s", Name); \
         goto error; \
-    } 
+    }
 
 #define RUNTIME_DATA_FILE_END \
-    ArchiveClear(Archive, true);
+    ArchiveClear(Archive, true); \
+    }
 
 #define RUNTIME_DATA_TYPE_BEGIN(__NAME__, __QUERY__, __COUNT__) \
     { \
         Trace("Data %s memory size: %llu total: %.3f KB", #__NAME__, sizeof(struct CONCAT(_RTData, __NAME__)), (Float32)sizeof(struct CONCAT(_RTData, __NAME__)) * __COUNT__ / 1000); \
         CString Query = __QUERY__; \
         CString PropertyQuery = NULL; \
-        Iterator = ArchiveQueryNodeIteratorByPathFirst(Archive, -1, Query); \
+        Iterator = ArchiveQueryNodeIteratorFirst(Archive, -1, Query); \
+        if (!Iterator) Error("Element not found for query: %s\n", Query); \
         while (Iterator) { \
             assert(Context->CONCAT(__NAME__, Count) < __COUNT__); \
             CONCAT(RTData, __NAME__ ## Ref) Data = &Context->CONCAT(__NAME__, List)[Context->CONCAT(__NAME__, Count)];

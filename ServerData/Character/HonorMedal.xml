@@ -1,0 +1,87 @@
+<HonorMedal>
+    <Category Index="0">
+        <Group Index="1">
+            <Medal ForceIndex="1" Rate="80" />
+            <Medal ForceIndex="2" Rate="80" />
+            <Medal ForceIndex="6" Rate="80" />
+            <Medal ForceIndex="7" Rate="80" />
+            <Medal ForceIndex="37" Rate="110" />
+            <Medal ForceIndex="38" Rate="110" />
+            <Medal ForceIndex="45" Rate="50" />
+            <Medal ForceIndex="46" Rate="50" />
+            <Medal ForceIndex="47" Rate="50" />
+            <Medal ForceIndex="73" Rate="70" />
+            <Medal ForceIndex="74" Rate="50" />
+            <Medal ForceIndex="36" Rate="60" />
+            <Medal ForceIndex="79" Rate="70" />
+            <Medal ForceIndex="78" Rate="60" />
+        </Group>
+        <Group Index="2">
+            <Medal ForceIndex="2" Rate="80" />
+            <Medal ForceIndex="5" Rate="80" />
+            <Medal ForceIndex="6" Rate="90" />
+            <Medal ForceIndex="7" Rate="90" />
+            <Medal ForceIndex="37" Rate="120" />
+            <Medal ForceIndex="38" Rate="120" />
+            <Medal ForceIndex="113" Rate="70" />
+            <Medal ForceIndex="127" Rate="60" />
+            <Medal ForceIndex="39" Rate="80" />
+            <Medal ForceIndex="98" Rate="50" />
+            <Medal ForceIndex="112" Rate="50" />
+            <Medal ForceIndex="71" Rate="50" />
+            <Medal ForceIndex="72" Rate="40" />
+            <Medal ForceIndex="8" Rate="20" />
+        </Group>
+        <Group Index="3">
+            <Medal ForceIndex="1" Rate="80" />
+            <Medal ForceIndex="2" Rate="80" />
+            <Medal ForceIndex="6" Rate="70" />
+            <Medal ForceIndex="7" Rate="70" />
+            <Medal ForceIndex="71" Rate="50" />
+            <Medal ForceIndex="72" Rate="30" />
+            <Medal ForceIndex="73" Rate="50" />
+            <Medal ForceIndex="5" Rate="80" />
+            <Medal ForceIndex="78" Rate="50" />
+            <Medal ForceIndex="113" Rate="70" />
+            <Medal ForceIndex="98" Rate="40" />
+            <Medal ForceIndex="101" Rate="80" />
+            <Medal ForceIndex="102" Rate="80" />
+            <Medal ForceIndex="103" Rate="80" />
+            <Medal ForceIndex="112" Rate="40" />
+            <Medal ForceIndex="114" Rate="20" />
+            <Medal ForceIndex="79" Rate="30" />
+        </Group>
+        <Group Index="4">
+            <Medal ForceIndex="2" Rate="80" />
+            <Medal ForceIndex="5" Rate="80" />
+            <Medal ForceIndex="6" Rate="90" />
+            <Medal ForceIndex="7" Rate="90" />
+            <Medal ForceIndex="71" Rate="50" />
+            <Medal ForceIndex="72" Rate="30" />
+            <Medal ForceIndex="73" Rate="50" />
+            <Medal ForceIndex="80" Rate="20" />
+            <Medal ForceIndex="112" Rate="50" />
+            <Medal ForceIndex="113" Rate="70" />
+            <Medal ForceIndex="128" Rate="70" />
+            <Medal ForceIndex="127" Rate="80" />
+            <Medal ForceIndex="129" Rate="80" />
+            <Medal ForceIndex="130" Rate="80" />
+            <Medal ForceIndex="131" Rate="80" />
+        </Group>
+        <Group Index="5">
+            <Medal ForceIndex="1" Rate="110" />
+            <Medal ForceIndex="5" Rate="90" />
+            <Medal ForceIndex="6" Rate="70" />
+            <Medal ForceIndex="7" Rate="70" />
+            <Medal ForceIndex="71" Rate="60" />
+            <Medal ForceIndex="79" Rate="50" />
+            <Medal ForceIndex="73" Rate="120" />
+            <Medal ForceIndex="139" Rate="20" />
+            <Medal ForceIndex="81" Rate="100" />
+            <Medal ForceIndex="113" Rate="60" />
+            <Medal ForceIndex="127" Rate="50" />
+            <Medal ForceIndex="83" Rate="100" />
+            <Medal ForceIndex="85" Rate="100" />
+        </Group>
+    </Category>
+</HonorMedal>

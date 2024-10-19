@@ -688,7 +688,7 @@ CString GetItemDescription(
     ArchiveRef Messages,
     CString Name
 ) {
-    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorByPathFirst(Messages, -1, "cabal_message.item_msg.msg");
+    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Messages, -1, "cabal_message.item_msg.msg");
     while (Iterator) {
         Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Messages, Iterator->Index, "id");
         if (AttributeIndex >= 0) {
@@ -723,7 +723,7 @@ Bool ServerLoadItemData(
     };
 
     for (Int32 FileIndex = 0; FileIndex < 4; FileIndex += 1) {
-        CString FilePath = PathCombineNoAlloc(RuntimeDirectory, FileNames[FileIndex]);
+        CString FilePath = PathCombineAll(RuntimeDirectory, FileNames[FileIndex], NULL);
         UInt8* Buffer = NULL;
         Int32 BufferLength = 0;
 
@@ -769,8 +769,7 @@ Bool ServerLoadMobData(
     CString ServerDirectory
 ) {
     RTRuntimeRef Runtime = Context->Runtime;
-
-    CString FilePath = PathCombineNoAlloc(RuntimeDirectory, "mobserver.dat");
+    CString FilePath = PathCombineAll(RuntimeDirectory, "mobserver.dat", NULL);
     UInt8* Memory = NULL;
     Int32 MemoryLength;
     FileRef File = FileOpen(FilePath);
@@ -946,6 +945,58 @@ Bool ServerLoadWarpData(
     ArchiveRef Archive
 );
 
+Bool ServerLoadWorldMobData(
+    RTRuntimeRef Runtime,
+    CString RuntimeDirectory,
+    CString ServerDirectory,
+    CString ScriptDirectory,
+    ArchiveRef Archive,
+    Int32 ArchiveParentIndex,
+    RTWorldDataRef WorldData
+) {
+    ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, ArchiveParentIndex, "MobPool.Mob");
+    while (ChildIterator) {
+        RTMobRef Mob = (RTMobRef)ArrayAppendUninitializedElement(WorldData->MobTable);
+        memset(Mob, 0, sizeof(struct _RTMob));
+
+        if (!ParseAttributeUInt16(Archive, ChildIterator->Index, "MobIndex", &Mob->ID.EntityIndex)) goto error;
+        Mob->ID.WorldIndex = WorldData->WorldIndex;
+        Mob->ID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
+
+        if (!ParseAttributeIndex(Archive, ChildIterator->Index, "SpeciesIndex", &Mob->Spawn.MobSpeciesIndex)) goto error;
+        if (!ParseAttributeInt32(Archive, ChildIterator->Index, "X", &Mob->Spawn.AreaX)) goto error;
+        if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Y", &Mob->Spawn.AreaY)) goto error;
+        if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Width", &Mob->Spawn.AreaWidth)) goto error;
+        if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Height", &Mob->Spawn.AreaHeight)) goto error;
+        if (!ParseAttributeInt32(Archive, ChildIterator->Index, "SpawnInterval", &Mob->Spawn.SpawnInterval)) goto error;
+        if (!ParseAttributeInt32(Archive, ChildIterator->Index, "SpawnDefault", &Mob->Spawn.SpawnDefault)) goto error;
+        if (!ParseAttributeInt32(Archive, ChildIterator->Index, "MissionGate", &Mob->Spawn.IsMissionGate)) goto error;
+        if (!ParseAttributeInt32(Archive, ChildIterator->Index, "PerfectDrop", &Mob->Spawn.PerfectDrop)) goto error;
+        if (!ParseAttributeInt32(Archive, ChildIterator->Index, "MobPatternIndex", &Mob->Spawn.MobPatternIndex)) goto error;
+        
+        Char MobScriptFileName[MAX_PATH] = { 0 };
+        if (ParseAttributeString(Archive, ChildIterator->Index, "Script", MobScriptFileName, MAX_PATH)) {
+            if (strlen(MobScriptFileName) > 0) {
+                CString MobScriptFilePath = PathCombineAll(ScriptDirectory, MobScriptFileName, NULL);
+                Mob->Script = RTScriptManagerLoadScript(Runtime->ScriptManager, MobScriptFilePath);
+            }
+        }
+
+        Mob->SpeciesData = &Runtime->MobData[Mob->Spawn.MobSpeciesIndex];
+        Mob->Spawn.Level = Mob->SpeciesData->Level;
+        Mob->IsInfiniteSpawn = true;
+        Mob->IsPermanentDeath = false;
+        Mob->RemainingSpawnCount = 0;
+
+        ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
+    }
+
+    return true;
+
+error:
+    return false;
+}
+
 Bool ServerLoadCommonDropData(
     RTRuntimeRef Runtime,
     ArchiveRef Archive,
@@ -1081,20 +1132,16 @@ Bool ServerLoadWorldData(
     Int32 GpsOrder = 0;
     Int32 WarAllowed = 0;
     Int32 WarControl = 0;
-    Char MapFileName[MAX_PATH] = { 0 };
 
     for (Index WorldIndex = 0; WorldIndex < Runtime->WorldManager->MaxWorldDataCount; WorldIndex += 1) {
         if (!RTWorldDataExists(Runtime->WorldManager, WorldIndex)) continue;
         
         RTWorldDataRef World = RTWorldDataGet(Runtime->WorldManager, WorldIndex);
+        CString WorldFilePath = CStringFormat(
+            PathCombineAll(RuntimeDirectory, "World", "world%zu.enc", NULL),
+            World->WorldIndex
+        );
 
-        Char WorldFilePath[MAX_PATH] = { 0 };
-        Char WorldFileDirectory[MAX_PATH] = { 0 };
-        Char WorldFileName[MAX_PATH] = { 0 };
-
-        sprintf(WorldFileName, "world%zu.enc", World->WorldIndex);
-        PathCombine(RuntimeDirectory, "World", WorldFileDirectory);
-        PathCombine(WorldFileDirectory, WorldFileName, WorldFilePath);
         ArchiveClear(Archive, true);
 
         if (!ArchiveLoadFromFileEncryptedNoAlloc(Archive, WorldFilePath, false)) {
@@ -1119,7 +1166,6 @@ Bool ServerLoadWorldData(
         assert(WorldIndex == World->WorldIndex);
 
         if (!ParseAttributeInt32(Archive, NodeIndex, "type", &World->Type)) goto error;
-        if (!ParseAttributeString(Archive, NodeIndex, "map_file", MapFileName, MAX_PATH)) goto error;
         if (!ParseAttributeInt32(Archive, NodeIndex, "m_code", &HasMapCode)) goto error;
         if (!ParseAttributeInt32(Archive, NodeIndex, "gpsorder", &World->MapCodeIndex)) goto error;
         if (!ParseAttributeInt32(Archive, NodeIndex, "allowedwar", &WarAllowed)) goto error;
@@ -1129,12 +1175,10 @@ Bool ServerLoadWorldData(
         if (WarAllowed) World->Flags |= RUNTIME_WORLD_FLAGS_WAR_ALLOWED;
         if (WarControl) World->Flags |= RUNTIME_WORLD_FLAGS_WAR_CONTROL;
 
+        Char MapFileName[MAX_PATH] = { 0 };
+        if (!ParseAttributeString(Archive, NodeIndex, "map_file", MapFileName, MAX_PATH)) goto error;
         if (strlen(MapFileName) > 0) {
-            Char MapFilePath[MAX_PATH] = { 0 };
-            Char MapFileDirectory[MAX_PATH] = { 0 };
-
-            PathCombine(RuntimeDirectory, "Map", MapFileDirectory);
-            PathCombine(MapFileDirectory, MapFileName, MapFilePath);
+            CString MapFilePath = PathCombineAll(RuntimeDirectory, "Map", MapFileName, NULL);
             Info("Loading map file: %s", MapFilePath);
 
             FileRef MapFile = FileOpen(MapFilePath);
@@ -1231,74 +1275,20 @@ Bool ServerLoadWorldData(
             }
         }
 
-        Char MobFilePath[MAX_PATH];
-        Char MobFileName[MAX_PATH];
-        Char MobScriptFileName[MAX_PATH];
-        Char MobScriptFilePath[MAX_PATH];
-        sprintf(MobFileName, "world%zu-mmap.xml", World->WorldIndex);
-        PathCombine(ServerDirectory, MobFileName, MobFilePath);
-        Info("Loading mmap file: %s", MobFilePath);
-        if (FileExists(MobFilePath)) {
-            if (!ArchiveLoadFromFile(Archive, MobFilePath, false)) goto error;
+        WorldFilePath = CStringFormat(
+            PathCombineAll(ServerDirectory, "World", "World_%zu.xml", NULL),
+            World->WorldIndex
+        );
 
-            Int64 MobParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "world");
-            if (MobParentIndex < 0) goto error;
+        if (FileExists(WorldFilePath)) {
+            Info("Loading world file: %s", WorldFilePath);
 
-            ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, MobParentIndex, "spawn");
-            while (ChildIterator) {
-                RTMobRef Mob = (RTMobRef)ArrayAppendUninitializedElement(World->MobTable);
-                memset(Mob, 0, sizeof(struct _RTMob));
-
-                //Mob->ID.EntityIndex = ArrayGetElementCount(World->MobTable);
-                if (!ParseAttributeUInt16(Archive, ChildIterator->Index, "order", &Mob->ID.EntityIndex)) goto error;
-                Mob->ID.WorldIndex = World->WorldIndex;
-                Mob->ID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
-
-                if (!ParseAttributeIndex(Archive, ChildIterator->Index, "SpeciesIdx", &Mob->Spawn.MobSpeciesIndex)) goto error;
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "PosX", &Mob->Spawn.AreaX)) goto error;
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "PosY", &Mob->Spawn.AreaY)) goto error;
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Width", &Mob->Spawn.AreaWidth)) goto error;
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Height", &Mob->Spawn.AreaHeight)) goto error;
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "SpwnInterval", &Mob->Spawn.SpawnInterval)) goto error;
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "SpawnDefault", &Mob->Spawn.SpawnDefault)) goto error;
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "MissionGate", &Mob->Spawn.IsMissionGate)) goto error;
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "PerfectDrop", &Mob->Spawn.PerfectDrop)) goto error;
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Loot_Delay", &Mob->Spawn.LootDelay)) goto error;
-
-                if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Server_Mob", &Mob->Spawn.MobPatternIndex)) goto error;
-                if (ParseAttributeString(Archive, ChildIterator->Index, "Script", MobScriptFileName, MAX_PATH)) {
-                    PathCombine(ScriptDirectory, MobScriptFileName, MobScriptFilePath);
-                    Mob->Script = RTScriptManagerLoadScript(Runtime->ScriptManager, MobScriptFilePath);
-                }
-
-                Mob->SpeciesData = &Runtime->MobData[Mob->Spawn.MobSpeciesIndex];
-                Mob->Spawn.Level = Mob->SpeciesData->Level;
-                Mob->IsInfiniteSpawn = true;
-                Mob->IsPermanentDeath = false;
-                Mob->RemainingSpawnCount = 0;
-
-                ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
-            }
-
-            ArchiveClear(Archive, true);
-        }
-
-        Char DropFilePath[MAX_PATH] = { 0 };
-        Char DropFileDirectory[MAX_PATH] = { 0 };
-        Char DropFileName[MAX_PATH] = { 0 };
-
-        sprintf(DropFileName, "World_%zu.xml", World->WorldIndex);
-        PathCombine(ServerDirectory, "World", DropFileDirectory);
-        PathCombine(DropFileDirectory, DropFileName, DropFilePath);
-
-        if (FileExists(DropFilePath)) {
-            Info("Loading world file: %s", DropFilePath);
-
-            if (!ArchiveLoadFromFile(Archive, DropFilePath, false)) goto error;
+            if (!ArchiveLoadFromFile(Archive, WorldFilePath, false)) goto error;
 
             Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "World");
             if (ParentIndex < 0) goto error;
 
+            if (!ServerLoadWorldMobData(Runtime, RuntimeDirectory, ServerDirectory, ScriptDirectory, Archive, ParentIndex, World)) goto error;
             if (!ServerLoadCommonDropData(Runtime, Archive, ParentIndex, World->DropTable.WorldDropPool, "CommonDropPool")) goto error;
             if (!ServerLoadSpeciesDropData(Runtime, Archive, ParentIndex, World->DropTable.MobDropPool, "MobDropPool", false)) goto error;
             if (!ServerLoadSpeciesDropData(Runtime, Archive, ParentIndex, World->DropTable.QuestDropPool, "QuestDropPool", true)) goto error;
@@ -1520,15 +1510,13 @@ Bool ServerLoadDungeonExtraData(
     RTDungeonDataRef DungeonData
 ) {
     ArchiveRef Archive = ArchiveCreateEmpty(Context->Runtime->Allocator);
+    CString FilePath = CStringFormat(
+        PathCombineAll(ServerDirectory, "World", "Dungeon", "Dungeon_%d.xml", NULL),
+        DungeonData->DungeonIndex
+    );
 
-    Char Directory[MAX_PATH] = { 0 };
-    PathCombine(ServerDirectory, "Dungeon", Directory);
-
-    Char FileName[MAX_PATH] = { 0 };
-    sprintf(FileName, "Dungeon_%d.xml", DungeonData->DungeonIndex);
-
-    CString FilePath = PathCombineNoAlloc(Directory, FileName);
     if (ArchiveLoadFromFile(Archive, FilePath, false)) {
+        Info("Loading dungeon data: %s", FilePath);
         Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "Dungeon");
         if (ParentIndex < 0) goto error;
 
@@ -1734,14 +1722,11 @@ Bool ServerLoadDungeonMissionData(
 ) {
     RTRuntimeRef Runtime = Context->Runtime;
     ArchiveRef Archive = ArchiveCreateEmpty(Runtime->Allocator);
+    CString WorldFilePath = CStringFormat(
+        PathCombineAll(RuntimeDirectory, "World", "world%d.enc", NULL),
+        DungeonData->WorldIndex
+    );
 
-    Char WorldFilePath[MAX_PATH] = { 0 };
-    Char WorldFileDirectory[MAX_PATH] = { 0 };
-    Char WorldFileName[MAX_PATH] = { 0 };
-
-    sprintf(WorldFileName, "world%d.enc", DungeonData->WorldIndex);
-    PathCombine(RuntimeDirectory, "World", WorldFileDirectory);
-    PathCombine(WorldFileDirectory, WorldFileName, WorldFilePath);
     ArchiveClear(Archive, true);
 
     if (!ArchiveLoadFromFileEncryptedNoAlloc(Archive, WorldFilePath, false)) {
@@ -1816,6 +1801,7 @@ Bool ServerLoadPatternPartData(
     ArchiveRef Archive = ArchiveCreateEmpty(Context->Runtime->Allocator);
 
     if (ArchiveLoadFromFile(Archive, FilePath, false)) {
+        Info("Loading pattern part data: %s", FilePath);
         Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "PatternPart");
         if (ParentIndex < 0) 
             goto error;
@@ -1963,7 +1949,6 @@ Bool ServerLoadQuestDungeonData(
     Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.cabal_quest_dungeon");
     if (ParentIndex < 0) goto error;
 
-
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "dungeon");
     while (Iterator) {
         Index DungeonIndex = 0;
@@ -2071,14 +2056,12 @@ Bool ServerLoadQuestDungeonData(
         ParseAttributeInt32(Archive, Iterator->Index, "mission_npc", &PatternPartData.MissionNpcIndex);
         DictionaryInsert(Runtime->PatternPartData, &PatternPartIndex, &PatternPartData, sizeof(struct _RTMissionDungeonPatternPartData));
 
-        Char Directory[MAX_PATH] = { 0 };
-        PathCombine(ServerDirectory, "Dungeon", Directory);
+        CString PatternPartFilePath = CStringFormat(
+            PathCombineAll(ServerDirectory, "World", "Dungeon", "PatternPart", "PatternPart_%zu.xml", NULL),
+            PatternPartIndex
+        );
 
-        Char FileName[MAX_PATH] = { 0 };
-        sprintf(FileName, "PatternPart_%zu.xml", PatternPartIndex);
-
-        CString FilePath = PathCombineNoAlloc(Directory, FileName);
-        if (!ServerLoadPatternPartData(Context, FilePath)) goto error;
+        if (!ServerLoadPatternPartData(Context, PatternPartFilePath)) goto error;
 
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
     }
@@ -2200,17 +2183,14 @@ Bool ServerLoadMissionDungeonData(
         );
 
         ParseAttributeInt32(Archive, Iterator->Index, "mission_npc", &PatternPartData.MissionNpcIndex);
-
         DictionaryInsert(Runtime->PatternPartData, &PatternPartIndex, &PatternPartData, sizeof(struct _RTMissionDungeonPatternPartData));
 
-        Char Directory[MAX_PATH] = { 0 };
-        PathCombine(ServerDirectory, "Dungeon", Directory);
+        CString PatternPartFilePath = CStringFormat(
+            PathCombineAll(ServerDirectory, "World", "Dungeon", "PatternPart", "PatternPart_%zu.xml", NULL),
+            PatternPartIndex
+        );
 
-        Char FileName[MAX_PATH] = { 0 };
-        sprintf(FileName, "PatternPart_%zu.xml", PatternPartIndex);
-
-        CString FilePath = PathCombineNoAlloc(Directory, FileName);
-        if (!ServerLoadPatternPartData(Context, FilePath)) goto error;
+        if (!ServerLoadPatternPartData(Context, PatternPartFilePath)) goto error;
 
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
     }
@@ -2243,13 +2223,7 @@ Bool ServerLoadWorldDropData(
 ) {
     RTRuntimeRef Runtime = Context->Runtime;
     ArchiveRef Archive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
-
-    Char DropFilePath[MAX_PATH] = { 0 };
-    Char DropFileDirectory[MAX_PATH] = { 0 };
-
-    PathCombine(ServerDirectory, "World", DropFileDirectory);
-    PathCombine(DropFileDirectory, "World_0.xml", DropFilePath);
-
+    CString DropFilePath = PathCombineAll(ServerDirectory, "World", "World_0.xml", NULL);
     if (FileExists(DropFilePath)) {
         Info("Loading world file: %s", DropFilePath);
 
@@ -2281,9 +2255,8 @@ Bool ServerLoadMobPatternData(
     RTRuntimeRef Runtime = Context->Runtime;
     ArchiveRef Archive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
     ArchiveRef PatternArchive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
+    CString FilePath = PathCombineAll(ServerDirectory, "MobPatternList.xml", NULL);
 
-    Char FilePath[MAX_PATH];
-    PathCombine(ServerDirectory, "MobPatternList.xml", FilePath);
     if (!ArchiveLoadFromFile(Archive, FilePath, false)) goto error;
 
     Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "MobPatternList");
@@ -2299,7 +2272,7 @@ Bool ServerLoadMobPatternData(
         Char FilePath[MAX_PATH] = { 0 };
         if (!ParseAttributeString(Archive, Iterator->Index, "FilePath", FilePath, MAX_PATH)) goto error;
 
-        CString PatternFilePath = PathCombineNoAlloc(ServerDirectory, FilePath);
+        CString PatternFilePath = PathCombineAll(ServerDirectory, FilePath, NULL);
         if (!ArchiveLoadFromFile(PatternArchive, PatternFilePath, false)) goto error;
 
         Int64 PatternParentIndex = ArchiveNodeGetChildByPath(PatternArchive, -1, "MobPattern");
@@ -2308,6 +2281,7 @@ Bool ServerLoadMobPatternData(
         RTMobPatternDataRef PatternData = (RTMobPatternDataRef)MemoryPoolReserve(Runtime->MobPatternDataPool, PatternIndex);
         PatternData->Index = (Int32)PatternIndex;
         PatternData->TriggerCount = 0;
+        PatternData->MobPool = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTMobPatternSpawnData), 8);
 
         ArchiveIteratorRef TriggerIterator = ArchiveQueryNodeIteratorFirst(PatternArchive, PatternParentIndex, "MobTriggerGroup");
         while (TriggerIterator) {
@@ -2380,6 +2354,50 @@ Bool ServerLoadMobPatternData(
             TriggerIterator = ArchiveQueryNodeIteratorNext(PatternArchive, TriggerIterator);
         }
 
+        ArchiveIteratorRef MobIterator = ArchiveQueryNodeIteratorFirst(PatternArchive, PatternParentIndex, "MobPool.Mob");
+        while (MobIterator) {
+            RTMobPatternSpawnDataRef MobSpawn = (RTMobPatternSpawnDataRef)ArrayAppendUninitializedElement(PatternData->MobPool);
+            memset(MobSpawn, 0, sizeof(struct _RTMobPatternSpawnData));
+
+            if (!ParseAttributeInt32(Archive, MobIterator->Index, "MobIndex", &MobSpawn->Index)) {
+                Error("Loading '%s' in '%s' failed!", "MobIndex", FilePath);
+                goto error;
+            }
+
+            if (!ParseAttributeInt32(Archive, MobIterator->Index, "SpeciesIndex", &MobSpawn->MobSpeciesIndex)) {
+                Error("Loading '%s' in '%s' failed!", "SpeciesIndex", FilePath);
+                goto error;
+            }
+
+            ParseAttributeInt32(Archive, MobIterator->Index, "X", &MobSpawn->AreaX);
+            ParseAttributeInt32(Archive, MobIterator->Index, "Y", &MobSpawn->AreaY);
+
+            if (!ParseAttributeInt32(Archive, MobIterator->Index, "Width", &MobSpawn->AreaWidth)) {
+                Error("Loading '%s' in '%s' failed!", "Width", FilePath);
+                goto error;
+            }
+
+            if (!ParseAttributeInt32(Archive, MobIterator->Index, "Height", &MobSpawn->AreaHeight)) {
+                Error("Loading '%s' in '%s' failed!", "Height", FilePath);
+                goto error;
+            }
+
+            if (!ParseAttributeInt32(Archive, MobIterator->Index, "SpawnInterval", &MobSpawn->Interval)) {
+                Error("Loading '%s' in '%s' failed!", "SpawnInterval", FilePath);
+                goto error;
+            }
+
+            if (!ParseAttributeInt32(Archive, MobIterator->Index, "SpawnCount", &MobSpawn->Count)) {
+                Error("Loading '%s' in '%s' failed!", "SpawnCount", FilePath);
+                goto error;
+            }
+
+            ParseAttributeInt32(Archive, MobIterator->Index, "MobPatternIndex", &MobSpawn->MobPatternIndex);
+            ParseAttributeString(Archive, MobIterator->Index, "Script", MobSpawn->Script, MAX_PATH);
+
+            MobIterator = ArchiveQueryNodeIteratorNext(PatternArchive, MobIterator);
+        }
+
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
     }
 
@@ -2400,8 +2418,7 @@ Bool ServerLoadOptionPoolData(
 ) {
     RTRuntimeRef Runtime = Context->Runtime;
     ArchiveRef Archive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
-
-    CString FilePath = PathCombineNoAlloc(ServerDirectory, "OptionPool.xml");
+    CString FilePath = PathCombineAll(ServerDirectory, "Loot", "OptionPool.xml", NULL);
     if (FileExists(FilePath)) {
         Info("Loading option pool file: %s", FilePath);
 
@@ -2415,7 +2432,7 @@ Bool ServerLoadOptionPoolData(
             Index PoolIndex = 0;
             if (!ParseAttributeIndex(Archive, PoolIterator->Index, "Index", &PoolIndex)) goto error;
 
-            ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorByPathFirst(Archive, PoolIterator->Index, "ItemLevelPool.ItemLevel");
+            ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, PoolIterator->Index, "ItemLevelPool.ItemLevel");
             while (ChildIterator) {
                 Int32 Level = 0;
                 Float64 Rate = 0;
@@ -2427,7 +2444,7 @@ Bool ServerLoadOptionPoolData(
                 ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
             }
 
-            ChildIterator = ArchiveQueryNodeIteratorByPathFirst(Archive, PoolIterator->Index, "EpicLevelPool.EpicLevel");
+            ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, PoolIterator->Index, "EpicLevelPool.EpicLevel");
             while (ChildIterator) {
                 Int32 Level = 0;
                 Float64 Rate = 0;
@@ -2439,7 +2456,7 @@ Bool ServerLoadOptionPoolData(
                 ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
             }
 
-            ChildIterator = ArchiveQueryNodeIteratorByPathFirst(Archive, PoolIterator->Index, "EpicOptionPool.EpicOptionGroup");
+            ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, PoolIterator->Index, "EpicOptionPool.EpicOptionGroup");
             while (ChildIterator) {
                 Int32 ItemType = 0;
                 Int32 Level = 0;
@@ -2461,7 +2478,7 @@ Bool ServerLoadOptionPoolData(
                 ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
             }
 
-            ChildIterator = ArchiveQueryNodeIteratorByPathFirst(Archive, PoolIterator->Index, "ForceSlotPool.ForceSlot");
+            ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, PoolIterator->Index, "ForceSlotPool.ForceSlot");
             while (ChildIterator) {
                 Int32 Count = 0;
                 Float64 Rate = 0;
@@ -2473,7 +2490,7 @@ Bool ServerLoadOptionPoolData(
                 ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
             }
 
-            ChildIterator = ArchiveQueryNodeIteratorByPathFirst(Archive, PoolIterator->Index, "ForceOptionSlotPool.ForceOptionSlot");
+            ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, PoolIterator->Index, "ForceOptionSlotPool.ForceOptionSlot");
             while (ChildIterator) {
                 Int32 Count = 0;
                 Float64 Rate = 0;
@@ -2485,7 +2502,7 @@ Bool ServerLoadOptionPoolData(
                 ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
             }
 
-            ChildIterator = ArchiveQueryNodeIteratorByPathFirst(Archive, PoolIterator->Index, "ForceOptionPool.ForceOptionGroup");
+            ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, PoolIterator->Index, "ForceOptionPool.ForceOptionGroup");
             while (ChildIterator) {
                 Int32 ItemType = 0;
                 if (!ParseAttributeInt32(Archive, ChildIterator->Index, "ItemType", &ItemType)) goto error;

@@ -119,10 +119,24 @@ struct _RTMobTriggerData {
 	struct _RTMobActionGroupData ActionGroups[RUNTIME_MOB_PATTERN_MAX_ACTION_GROUP_COUNT];
 };
 
+struct _RTMobPatternSpawnData {
+	Int32 Index;
+	Int32 MobSpeciesIndex;
+	Int32 AreaX;
+	Int32 AreaY;
+	Int32 AreaWidth;
+	Int32 AreaHeight;
+	Int32 Interval;
+	Int32 Count;
+	Int32 MobPatternIndex;
+	Char Script[MAX_PATH];
+};
+
 struct _RTMobPatternData {
 	Int32 Index;
 	Int32 TriggerCount;
 	struct _RTMobTriggerData Triggers[RUNTIME_MOB_PATTERN_MAX_TRIGGER_GROUP_COUNT];
+	ArrayRef MobPool;
 };
 
 struct _RTMobTriggerState {

@@ -429,9 +429,9 @@ Void RTCharacterInitializeAttributes(
 
 	// TODO: Values are still broken and check HP! It is way too big, new deltas don't make sense or whats broken with the packets actually?
 	
-	RTDataAxpFieldRateRef AxpFieldRate = RTRuntimeDataAxpFieldRateGet(Runtime->Context, Character->Data.Info.Level);
-	if (AxpFieldRate) {
-		Character->AxpFieldRate = AxpFieldRate->Rate;
+	RTDataAbilityExpRateRef AbilityExpRate = RTRuntimeDataAbilityExpRateGet(Runtime->Context, Character->Data.Info.Level);
+	if (AbilityExpRate) {
+		Character->AbilityExpRate = AbilityExpRate->Rate;
 	}
 
 	RTMovementSetSpeed(Runtime, &Character->Movement, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED]);
@@ -960,7 +960,7 @@ Void RTCharacterAddExp(
 	RTCharacterRef Character,
 	UInt64 Exp
 ) {
-	UInt64 Axp = (Exp / 100) * Character->AxpFieldRate;
+	UInt64 Axp = (Exp / 100) * Character->AbilityExpRate;
 	RTCharacterAddAbilityExp(Runtime, Character, Axp);
 
 	if (Character->Data.OverlordMasteryInfo.Info.Level > 0) {

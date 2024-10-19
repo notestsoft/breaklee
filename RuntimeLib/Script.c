@@ -238,7 +238,7 @@ Bool RTScriptCallOnEvent(
     RTScriptPushObject(Script, "Character", Runtime, Character);
 
     if (lua_pcall(Script->State, 1, 0, 0) != LUA_OK) {
-        CString Message = lua_tostring(Script->State, -1);
+        CString Message = (CString)lua_tostring(Script->State, -1);
         Error("Script: %s", Message);
         lua_pop(Script->State, 1);
         return false;

@@ -33,7 +33,7 @@ Void SendPremiumServiceList(
         RTDataPremiumServiceRef PremiumService = &Context->Runtime->Context->PremiumServiceList[Index];
 
         S2C_DATA_PREMIUM_BENEFIT_INFO* ResponseInfo = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_PREMIUM_BENEFIT_INFO);
-        ResponseInfo->DurationServiceID = PremiumService->DurationServiceID;
+        ResponseInfo->ServiceID = PremiumService->ServiceID;
         ResponseInfo->Type = PremiumService->Type;
         ResponseInfo->XP = PremiumService->XP;
         ResponseInfo->SkillXP = PremiumService->SkillXP;

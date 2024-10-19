@@ -75,22 +75,9 @@ RUNTIME_DATA_TYPE_BEGIN(UpgradeCostSafeguard, "enchant.enchant_buffer.result", 3
 RUNTIME_DATA_TYPE_END(UpgradeCostSafeguard)
 RUNTIME_DATA_TYPE_INDEX(UpgradeCostSafeguard, Int32, ItemLevel)
 
-/* NOT IN USE
-RUNTIME_DATA_TYPE_BEGIN(UpgradeRate, "enchant.enchant_rate.result", 32)
-	RUNTIME_DATA_PROPERTY(Int32, ItemLevel, "lv")
-	RUNTIME_DATA_PROPERTY(Int32, NormalRate1, "level1uprate")
-	RUNTIME_DATA_PROPERTY(Int32, NormalRate2, "level2uprate")
-	RUNTIME_DATA_PROPERTY(Int32, EnhancedRate1, "enhancedlevel1uprate")
-	RUNTIME_DATA_PROPERTY(Int32, EnhancedRate2, "enhancedlevel2uprate")
-	RUNTIME_DATA_PROPERTY(Int32, SuperiorRate1, "superiorlevel1uprate")
-	RUNTIME_DATA_PROPERTY(Int32, SuperiorRate2, "superiorlevel2uprate")
-RUNTIME_DATA_TYPE_END(UpgradeRate)
-RUNTIME_DATA_TYPE_INDEX(UpgradeRate, Int32, ItemLevel)
-*/
-
 RUNTIME_DATA_FILE_END
 
-RUNTIME_DATA_FILE_BEGIN(enchant.xml)
+RUNTIME_DATA_FILE_BEGIN(DIR_PATH(Upgrade, NormalUpgrade.xml))
 
 RUNTIME_DATA_TYPE_BEGIN(UpgradeGrade, "enchant.enchant_grade.enchant_grade_value", 32)
 	RUNTIME_DATA_PROPERTY(Int32, ItemGrade, "item_grade")

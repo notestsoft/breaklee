@@ -91,15 +91,15 @@ RUNTIME_DATA_TYPE_INDEX_SUFFIXED(HonorMedalSeal, ByForceID, Int32, ForceEffectIn
 
 RUNTIME_DATA_FILE_END
 
-RUNTIME_DATA_FILE_BEGIN(honormedal_upgrade.xml)
+RUNTIME_DATA_FILE_BEGIN(DIR_PATH(Character, HonorMedal.xml))
 
-RUNTIME_DATA_TYPE_BEGIN(HonorMedalUpgradeCategory, "honor_medal.honor_medal_upgrade", 1)
-	RUNTIME_DATA_PROPERTY(Int32, Category, "Category")
-	RUNTIME_DATA_TYPE_BEGIN_CHILD(HonorMedalUpgradeGroup, "honormedal_rate", 5)
-		RUNTIME_DATA_PROPERTY(Int32, Group, "group")
-		RUNTIME_DATA_TYPE_BEGIN_CHILD(HonorMedalUpgradeMedal, "medal", 32)
-			RUNTIME_DATA_PROPERTY(Int32, ForceEffectIndex, "force_id")
-			RUNTIME_DATA_PROPERTY(Int32, Rate, "rate")
+RUNTIME_DATA_TYPE_BEGIN(HonorMedalUpgradeCategory, "HonorMedal.Category", 1)
+	RUNTIME_DATA_PROPERTY(Int32, Category, "Index")
+	RUNTIME_DATA_TYPE_BEGIN_CHILD(HonorMedalUpgradeGroup, "Group", 5)
+		RUNTIME_DATA_PROPERTY(Int32, Group, "Index")
+		RUNTIME_DATA_TYPE_BEGIN_CHILD(HonorMedalUpgradeMedal, "Medal", 32)
+			RUNTIME_DATA_PROPERTY(Int32, ForceEffectIndex, "ForceIndex")
+			RUNTIME_DATA_PROPERTY(Int32, Rate, "Rate")
 		RUNTIME_DATA_TYPE_END_CHILD(HonorMedalUpgradeMedal, 32)
 	RUNTIME_DATA_TYPE_END_CHILD(HonorMedalUpgradeGroup, 5)
 RUNTIME_DATA_TYPE_END(HonorMedalUpgradeCategory)

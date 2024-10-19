@@ -1,4 +1,4 @@
-RUNTIME_DATA_FILE_BEGIN(DummySkill.xml)
+RUNTIME_DATA_FILE_BEGIN(DIR_PATH(Character, DummySkill.xml))
 
 RUNTIME_DATA_TYPE_BEGIN(DummySkill, "DummySkillList.DummySkill", 16)
 	RUNTIME_DATA_PROPERTY(Int32, Case, "Case")

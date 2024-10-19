@@ -120,6 +120,7 @@ Bool ArchiveLoadFromFile(
     FileClose(File);
     File = NULL;
 
+    ArchiveClear(Archive, true);
     if (!ArchiveParseFromSource(Archive, (CString)Source, SourceLength, IgnoreErrors)) {
         goto error;
     }
@@ -545,45 +546,7 @@ Int64 ArchiveQueryNodeWithAttribute(
     return -1;
 }
 
-ArchiveIteratorRef ArchiveQueryNodeIteratorByPathFirst(
-    ArchiveRef Archive,
-    Int64 NodeIndex,
-    CString Path
-) {
-    CString Cursor = strchr(Path, '.');
-    if (!Cursor) {
-        return ArchiveQueryNodeIteratorFirst(
-            Archive,
-            NodeIndex,
-            Path
-        );
-    }
-
-    Int32 Length = (Int32)(Cursor - Path);
-    if (Length < 1) return NULL;
-
-    Char Name[MAX_PATH];
-    assert(Length < 64);
-    memcpy(Name, Path, Length);
-    Name[Length] = '\0';
-
-    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(
-        Archive,
-        NodeIndex,
-        Name
-    );
-
-    if (!Iterator) return NULL;
-
-    Int32 Offset = Length + 1;
-    Length = (Int32)strlen(Path) - Offset;
-    memcpy(Name, Path + Offset, Length);
-    Name[Length] = '\0';
-
-    return ArchiveQueryNodeIteratorByPathFirst(Archive, Iterator->Index, Name);
-}
-
-ArchiveIteratorRef ArchiveQueryNodeIteratorFirst(
+ArchiveIteratorRef ArchiveQueryNodeIteratorSingleFirst(
     ArchiveRef Archive,
     Int64 ParentIndex,
     CString Query
@@ -599,6 +562,44 @@ ArchiveIteratorRef ArchiveQueryNodeIteratorFirst(
     }
 
     return NULL;
+}
+
+ArchiveIteratorRef ArchiveQueryNodeIteratorFirst(
+    ArchiveRef Archive,
+    Int64 NodeIndex,
+    CString Path
+) {
+    CString Cursor = strchr(Path, '.');
+    if (!Cursor) {
+        return ArchiveQueryNodeIteratorSingleFirst(
+            Archive,
+            NodeIndex,
+            Path
+        );
+    }
+
+    Int32 Length = (Int32)(Cursor - Path);
+    if (Length < 1) return NULL;
+
+    Char Name[MAX_PATH];
+    assert(Length < 64);
+    memcpy(Name, Path, Length);
+    Name[Length] = '\0';
+
+    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorSingleFirst(
+        Archive,
+        NodeIndex,
+        Name
+    );
+
+    if (!Iterator) return NULL;
+
+    Int32 Offset = Length + 1;
+    Length = (Int32)strlen(Path) - Offset;
+    memcpy(Name, Path + Offset, Length);
+    Name[Length] = '\0';
+    
+    return ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, Name);
 }
 
 ArchiveIteratorRef ArchiveQueryNodeIteratorNext(

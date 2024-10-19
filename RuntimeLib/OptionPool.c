@@ -204,6 +204,8 @@ Void RTOptionPoolManagerCalculateOptions(
     Index OptionPoolIndex,
     RTDropResultRef DropResult
 ) {
+    if (OptionPoolIndex < 1) return;
+
     RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, DropResult->ItemID.ID);
     RTOptionPoolRef OptionPool = RTOptionPoolManagerGetOptionPool(OptionPoolManager, OptionPoolIndex);
     if (!OptionPool) return;

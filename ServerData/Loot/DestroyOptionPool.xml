@@ -1,0 +1,231 @@
+<DestroyOptionPool>
+    <Pool ItemID="2702">
+        <Option Option="1" Rate="114245" />
+        <Option Option="385" Rate="152296" />
+        <Option Option="513" Rate="152296" />
+        <Option Option="769" Rate="152334" />
+        <Option Option="1025" Rate="181290" />
+        <Option Option="1153" Rate="19" />
+        <Option Option="1281" Rate="133260" />
+        <Option Option="4993" Rate="114222" />
+        <Option Option="3841" Rate="19" />
+        <Option Option="4097" Rate="19" />
+    </Pool>
+    <Pool ItemID="2703">
+        <Option Option="1" Rate="114245" />
+        <Option Option="385" Rate="152296" />
+        <Option Option="513" Rate="152296" />
+        <Option Option="769" Rate="152334" />
+        <Option Option="1025" Rate="181290" />
+        <Option Option="1153" Rate="19" />
+        <Option Option="1281" Rate="133260" />
+        <Option Option="4993" Rate="114222" />
+        <Option Option="3841" Rate="19" />
+        <Option Option="4097" Rate="19" />
+    </Pool>
+    <Pool ItemID="2704">
+        <Option Option="1" Rate="114245" />
+        <Option Option="385" Rate="152296" />
+        <Option Option="513" Rate="152296" />
+        <Option Option="769" Rate="152334" />
+        <Option Option="1025" Rate="181290" />
+        <Option Option="1153" Rate="19" />
+        <Option Option="1281" Rate="133260" />
+        <Option Option="4993" Rate="114222" />
+        <Option Option="3841" Rate="19" />
+        <Option Option="4097" Rate="19" />
+    </Pool>
+    <Pool ItemID="2705">
+        <Option Option="1" Rate="114245" />
+        <Option Option="385" Rate="152296" />
+        <Option Option="513" Rate="152296" />
+        <Option Option="769" Rate="152334" />
+        <Option Option="1025" Rate="181290" />
+        <Option Option="1153" Rate="19" />
+        <Option Option="1281" Rate="133260" />
+        <Option Option="4993" Rate="114222" />
+        <Option Option="3841" Rate="19" />
+        <Option Option="4097" Rate="19" />
+    </Pool>
+    <Pool ItemID="33556424">
+        <Option Option="1" Rate="114245" />
+        <Option Option="385" Rate="152296" />
+        <Option Option="513" Rate="152296" />
+        <Option Option="769" Rate="152334" />
+        <Option Option="1025" Rate="181290" />
+        <Option Option="1153" Rate="19" />
+        <Option Option="1281" Rate="133260" />
+        <Option Option="4993" Rate="114222" />
+        <Option Option="3841" Rate="19" />
+        <Option Option="4097" Rate="19" />
+    </Pool>
+    <Pool ItemID="2706">
+        <Option Option="1" Rate="54272" />
+        <Option Option="129" Rate="67840" />
+        <Option Option="257" Rate="67840" />
+        <Option Option="385" Rate="81408" />
+        <Option Option="3073" Rate="81408" />
+        <Option Option="641" Rate="108546" />
+        <Option Option="769" Rate="108546" />
+        <Option Option="897" Rate="108546" />
+        <Option Option="1025" Rate="77338" />
+        <Option Option="1153" Rate="8" />
+        <Option Option="1537" Rate="5088" />
+        <Option Option="1665" Rate="30528" />
+        <Option Option="3201" Rate="8" />
+        <Option Option="4353" Rate="5088" />
+        <Option Option="4481" Rate="50880" />
+        <Option Option="4609" Rate="50880" />
+        <Option Option="4737" Rate="50880" />
+        <Option Option="4865" Rate="50880" />
+        <Option Option="3841" Rate="8" />
+        <Option Option="4097" Rate="8" />
+    </Pool>
+    <Pool ItemID="2707">
+        <Option Option="1" Rate="54272" />
+        <Option Option="129" Rate="67840" />
+        <Option Option="257" Rate="67840" />
+        <Option Option="385" Rate="81408" />
+        <Option Option="3073" Rate="81408" />
+        <Option Option="641" Rate="108546" />
+        <Option Option="769" Rate="108546" />
+        <Option Option="897" Rate="108546" />
+        <Option Option="1025" Rate="77338" />
+        <Option Option="1153" Rate="8" />
+        <Option Option="1537" Rate="5088" />
+        <Option Option="1665" Rate="30528" />
+        <Option Option="3201" Rate="8" />
+        <Option Option="4353" Rate="5088" />
+        <Option Option="4481" Rate="50880" />
+        <Option Option="4609" Rate="50880" />
+        <Option Option="4737" Rate="50880" />
+        <Option Option="4865" Rate="50880" />
+        <Option Option="3841" Rate="8" />
+        <Option Option="4097" Rate="8" />
+    </Pool>
+    <Pool ItemID="2708">
+        <Option Option="1" Rate="54272" />
+        <Option Option="129" Rate="67840" />
+        <Option Option="257" Rate="67840" />
+        <Option Option="385" Rate="81408" />
+        <Option Option="3073" Rate="81408" />
+        <Option Option="641" Rate="108546" />
+        <Option Option="769" Rate="108546" />
+        <Option Option="897" Rate="108546" />
+        <Option Option="1025" Rate="77338" />
+        <Option Option="1153" Rate="8" />
+        <Option Option="1537" Rate="5088" />
+        <Option Option="1665" Rate="30528" />
+        <Option Option="3201" Rate="8" />
+        <Option Option="4353" Rate="5088" />
+        <Option Option="4481" Rate="50880" />
+        <Option Option="4609" Rate="50880" />
+        <Option Option="4737" Rate="50880" />
+        <Option Option="4865" Rate="50880" />
+        <Option Option="3841" Rate="8" />
+        <Option Option="4097" Rate="8" />
+    </Pool>
+    <Pool ItemID="2709">
+        <Option Option="1" Rate="54272" />
+        <Option Option="129" Rate="67840" />
+        <Option Option="257" Rate="67840" />
+        <Option Option="385" Rate="81408" />
+        <Option Option="3073" Rate="81408" />
+        <Option Option="641" Rate="108546" />
+        <Option Option="769" Rate="108546" />
+        <Option Option="897" Rate="108546" />
+        <Option Option="1025" Rate="77338" />
+        <Option Option="1153" Rate="8" />
+        <Option Option="1537" Rate="5088" />
+        <Option Option="1665" Rate="30528" />
+        <Option Option="3201" Rate="8" />
+        <Option Option="4353" Rate="5088" />
+        <Option Option="4481" Rate="50880" />
+        <Option Option="4609" Rate="50880" />
+        <Option Option="4737" Rate="50880" />
+        <Option Option="4865" Rate="50880" />
+        <Option Option="3841" Rate="8" />
+        <Option Option="4097" Rate="8" />
+    </Pool>
+    <Pool ItemID="33556425">
+        <Option Option="1" Rate="54272" />
+        <Option Option="129" Rate="67840" />
+        <Option Option="257" Rate="67840" />
+        <Option Option="385" Rate="81408" />
+        <Option Option="3073" Rate="81408" />
+        <Option Option="641" Rate="108546" />
+        <Option Option="769" Rate="108546" />
+        <Option Option="897" Rate="108546" />
+        <Option Option="1025" Rate="77338" />
+        <Option Option="1153" Rate="8" />
+        <Option Option="1537" Rate="5088" />
+        <Option Option="1665" Rate="30528" />
+        <Option Option="3201" Rate="8" />
+        <Option Option="4353" Rate="5088" />
+        <Option Option="4481" Rate="50880" />
+        <Option Option="4609" Rate="50880" />
+        <Option Option="4737" Rate="50880" />
+        <Option Option="4865" Rate="50880" />
+        <Option Option="3841" Rate="8" />
+        <Option Option="4097" Rate="8" />
+    </Pool>
+    <Pool ItemID="3109">
+        <Option Option="129" Rate="316300" />
+        <Option Option="385" Rate="212727" />
+        <Option Option="513" Rate="212727" />
+        <Option Option="1025" Rate="12640" />
+        <Option Option="1153" Rate="6320" />
+        <Option Option="3201" Rate="6320" />
+        <Option Option="3841" Rate="4213" />
+        <Option Option="4097" Rate="4213" />
+        <Option Option="12417" Rate="640" />
+        <Option Option="12545" Rate="640" />
+        <Option Option="14337" Rate="6320" />
+        <Option Option="14465" Rate="212727" />
+        <Option Option="14593" Rate="4213" />
+    </Pool>
+    <Pool ItemID="3110">
+        <Option Option="129" Rate="316300" />
+        <Option Option="385" Rate="212727" />
+        <Option Option="513" Rate="212727" />
+        <Option Option="1025" Rate="12640" />
+        <Option Option="1153" Rate="6320" />
+        <Option Option="3201" Rate="6320" />
+        <Option Option="3841" Rate="4213" />
+        <Option Option="4097" Rate="4213" />
+        <Option Option="12417" Rate="640" />
+        <Option Option="12545" Rate="640" />
+        <Option Option="14337" Rate="6320" />
+        <Option Option="14465" Rate="212727" />
+        <Option Option="14593" Rate="4213" />
+    </Pool>
+    <Pool ItemID="3111">
+        <Option Option="129" Rate="316300" />
+        <Option Option="385" Rate="319090" />
+        <Option Option="513" Rate="319090" />
+        <Option Option="1025" Rate="12641" />
+        <Option Option="1153" Rate="6320" />
+        <Option Option="3201" Rate="6320" />
+        <Option Option="3841" Rate="4213" />
+        <Option Option="4097" Rate="4213" />
+        <Option Option="14337" Rate="3160" />
+        <Option Option="14465" Rate="3160" />
+        <Option Option="14593" Rate="4213" />
+        <Option Option="10113" Rate="640" />
+        <Option Option="10241" Rate="640" />
+    </Pool>
+    <Pool ItemID="33556591">
+        <Option Option="129" Rate="316300" />
+        <Option Option="1025" Rate="226410" />
+        <Option Option="1153" Rate="113200" />
+        <Option Option="3201" Rate="113200" />
+        <Option Option="14337" Rate="41600" />
+        <Option Option="14465" Rate="41600" />
+        <Option Option="10113" Rate="8900" />
+        <Option Option="10241" Rate="8900" />
+        <Option Option="16257" Rate="42130" />
+        <Option Option="16385" Rate="42130" />
+        <Option Option="12545" Rate="42130" />
+        <Option Option="9473" Rate="3500" />
+    </Pool>
+</DestroyOptionPool>

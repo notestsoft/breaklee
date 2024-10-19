@@ -196,9 +196,10 @@ RTWorldContextRef RTWorldContextCreateGlobal(
     WorldContext->TimerItemCount = 0;
     WorldContext->TimerTimeout = UINT64_MAX;
     WorldContext->MobPool = MemoryPoolCreate(WorldManager->Allocator, sizeof(struct _RTMob), RUNTIME_MEMORY_MAX_MOB_COUNT);
-    WorldContext->MobPatterns = ArrayCreateEmpty(WorldManager->Allocator, sizeof(struct _RTMobPattern), 8);
+    WorldContext->MobPatternPool = MemoryPoolCreate(WorldManager->Allocator, sizeof(struct _RTMobPattern), RUNTIME_MEMORY_MAX_MOB_COUNT);
     WorldContext->ItemPool = MemoryPoolCreate(WorldManager->Allocator, sizeof(struct _RTWorldItem), RUNTIME_MEMORY_MAX_ITEM_COUNT);
     WorldContext->EntityToMob = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_MOB_COUNT);
+    WorldContext->EntityToMobPattern = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_MOB_COUNT);
     WorldContext->EntityToItem = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_ITEM_COUNT);
    
     MemoryPoolReserve(WorldContext->ItemPool, 0);
@@ -247,15 +248,19 @@ Void RTWorldContextDestroyGlobal(
         RTWorldChunkDeinitialize(&WorldContext->Chunks[ChunkIndex]);
     }
 
-    for (Int32 Index = 0; Index < ArrayGetElementCount(WorldContext->MobPatterns); Index += 1) {
-        RTMobPatternRef MobPattern = (RTMobPatternRef)ArrayGetElementAtIndex(WorldContext->MobPatterns, Index);
+    DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(WorldContext->EntityToMobPattern);
+    while (Iterator.Key) {
+        Index MemoryPoolIndex = *(Index*)DictionaryLookup(WorldContext->EntityToMobPattern, Iterator.Key);
+        RTMobPatternRef MobPattern = (RTMobPatternRef)MemoryPoolFetch(WorldContext->MobPatternPool, MemoryPoolIndex);
         ArrayDestroy(MobPattern->ActionStates);
+        Iterator = DictionaryKeyIteratorNext(Iterator);
     }
-    ArrayDestroy(WorldContext->MobPatterns);
 
     MemoryPoolDestroy(WorldContext->MobPool);
+    MemoryPoolDestroy(WorldContext->MobPatternPool);
     MemoryPoolDestroy(WorldContext->ItemPool);
     DictionaryDestroy(WorldContext->EntityToMob);
+    DictionaryDestroy(WorldContext->EntityToMobPattern);
     DictionaryDestroy(WorldContext->EntityToItem);
     MemoryPoolRelease(WorldManager->GlobalWorldContextPool, WorldContext->WorldData->WorldIndex);
 }
@@ -291,9 +296,10 @@ RTWorldContextRef RTWorldContextCreateParty(
     WorldContext->TimerItemCount = 0;
     WorldContext->TimerTimeout = UINT64_MAX;
     WorldContext->MobPool = MemoryPoolCreate(WorldManager->Allocator, sizeof(struct _RTMob), RUNTIME_MEMORY_MAX_MOB_COUNT);
-    WorldContext->MobPatterns = ArrayCreateEmpty(WorldManager->Allocator, sizeof(struct _RTMobPattern), 8);
+    WorldContext->MobPatternPool = MemoryPoolCreate(WorldManager->Allocator, sizeof(struct _RTMobPattern), RUNTIME_MEMORY_MAX_MOB_COUNT);
     WorldContext->ItemPool = MemoryPoolCreate(WorldManager->Allocator, sizeof(struct _RTWorldItem), RUNTIME_MEMORY_MAX_ITEM_COUNT);
     WorldContext->EntityToMob = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_MOB_COUNT);
+    WorldContext->EntityToMobPattern = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_MOB_COUNT);
     WorldContext->EntityToItem = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_ITEM_COUNT);
     
     MemoryPoolReserve(WorldContext->ItemPool, 0);
@@ -355,14 +361,20 @@ Void RTWorldContextDestroyParty(
         RTWorldChunkDeinitialize(&WorldContext->Chunks[ChunkIndex]);
     }
 
-    for (Int32 Index = 0; Index < ArrayGetElementCount(WorldContext->MobPatterns); Index += 1) {
-        RTMobPatternRef MobPattern = (RTMobPatternRef)ArrayGetElementAtIndex(WorldContext->MobPatterns, Index);
+    DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(WorldContext->EntityToMobPattern);
+    while (Iterator.Key) {
+        Index MemoryPoolIndex = *(Index*)DictionaryLookup(WorldContext->EntityToMobPattern, Iterator.Key);
+        RTMobPatternRef MobPattern = (RTMobPatternRef)MemoryPoolFetch(WorldContext->MobPatternPool, MemoryPoolIndex);
         ArrayDestroy(MobPattern->ActionStates);
+        Iterator = DictionaryKeyIteratorNext(Iterator);
     }
-    ArrayDestroy(WorldContext->MobPatterns);
 
     MemoryPoolDestroy(WorldContext->MobPool);
+    MemoryPoolDestroy(WorldContext->MobPatternPool);
     MemoryPoolDestroy(WorldContext->ItemPool);
+    DictionaryDestroy(WorldContext->EntityToMob);
+    DictionaryDestroy(WorldContext->EntityToMobPattern);
+    DictionaryDestroy(WorldContext->EntityToItem);
     MemoryPoolRelease(WorldManager->PartyWorldContextPool, WorldContext->WorldPoolIndex);
     DictionaryRemove(WorldManager->PartyToWorldContextPoolIndex, &Party);
 }

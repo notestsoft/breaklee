@@ -1,4 +1,4 @@
-RUNTIME_DATA_FILE_BEGIN(LotteryItemPool.xml)
+RUNTIME_DATA_FILE_BEGIN(DIR_PATH(Loot, LotteryItemPool.xml))
 
 RUNTIME_DATA_TYPE_BEGIN(LotteryItemPool, "LotteryItemPool.Pool", 1024)
 	RUNTIME_DATA_PROPERTY(Int32, PoolID, "PoolID")

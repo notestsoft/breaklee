@@ -2,6 +2,32 @@
 #include "FileIO.h"
 #include "Diagnostic.h"
 
+CString PathCombineAll(
+    CString Path,
+    ...
+) {
+    static char FilePathBuffer[MAX_PATH] = { 0 };
+    memset(FilePathBuffer, 0, MAX_PATH);
+    snprintf(FilePathBuffer, MAX_PATH, "%s", Path);
+
+    va_list Arguments;
+    va_start(Arguments, Path);
+
+    while (true) {
+        CString NextArgument = va_arg(Arguments, CString);
+        if (!NextArgument || !NextArgument[0]) break;
+
+        if (FilePathBuffer[strlen(FilePathBuffer) - 1] != '/') {
+            strncat(FilePathBuffer, PLATFORM_PATH_SEPARATOR_STRING, MAX_PATH - strlen(FilePathBuffer) - 1);
+        }
+
+        strncat(FilePathBuffer, NextArgument, MAX_PATH - strlen(FilePathBuffer) - 1);
+    }
+    va_end(Arguments);
+
+    return FilePathBuffer;
+}
+
 CString PathGetFileName(
     CString Path
 ) {

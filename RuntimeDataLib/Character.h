@@ -1,7 +1,7 @@
-RUNTIME_DATA_FILE_BEGIN(CharacterTemplates.xml)
+RUNTIME_DATA_FILE_BEGIN(DIR_PATH(Character, Character.xml))
 
-RUNTIME_DATA_TYPE_BEGIN(CharacterTemplate, "CharacterTemplates.CharacterTemplate", 9)
-	RUNTIME_DATA_PROPERTY(Int32, BattleStyle, "BattleStyle")
+RUNTIME_DATA_TYPE_BEGIN(CharacterTemplate, "Character.BattleStyle", 9)
+	RUNTIME_DATA_PROPERTY(Int32, BattleStyle, "Index")
 	RUNTIME_DATA_TYPE_BEGIN_CHILD(CharacterTemplateSkillSlot, "SkillSlot", 32)
 		RUNTIME_DATA_PROPERTY(Int32, SkillIndex, "SkillIndex")
 		RUNTIME_DATA_PROPERTY(Int32, SlotIndex, "SlotIndex")

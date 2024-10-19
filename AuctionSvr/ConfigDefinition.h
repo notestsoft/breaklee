@@ -30,7 +30,7 @@ CONFIG_PARAMETER(Int16, NoCancelCommissionTimeout, "Environment.NoCancelCommissi
 CONFIG_PARAMETER(Int16, NoServerResponseTimeout, "Environment.NoServerResponseTimeout", 20)
 CONFIG_PARAMETER(Int16, UseForceGem, "Environment.UseForceGem", 1)
 CONFIG_PARAMETER(Int16, CommissionRateForSell, "Environment.CommissionRateForSell", 400)
-CONFIG_PARAMETER(Int16, CommissionRateForSellForceGem, "Environment.CommissionRateForSell", 400)
+CONFIG_PARAMETER(Int16, CommissionRateForSellForceGem, "Environment.CommissionRateForSellForceGem", 400)
 CONFIG_PARAMETER_ARRAY(Char, 21, Name, "Environment.Name", [BREAKLEE])
 CONFIG_PARAMETER(Int16, AlertAveragePrice, "Environment.AlertAveragePrice", 25)
 CONFIG_PARAMETER(Int16, EntrySlotCount, "Environment.EntrySlotCount", 3)

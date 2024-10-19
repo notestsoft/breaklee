@@ -1,0 +1,239 @@
+<ChaosUpgrade>
+	<Group	Index="-1"	>
+		<Level	Level="0"	Rate="1000,0,0,0,0,0"	/>
+		<Level	Level="1"	Rate="950,0,0,0,0,0"	/>
+		<Level	Level="2"	Rate="900,0,0,0,0,0"	/>
+		<Level	Level="3"	Rate="750,0,0,0,0,0"	/>
+		<Level	Level="4"	Rate="650,0,0,0,0,0"	/>
+		<Level	Level="5"	Rate="600,0,0,0,0,0"	/>
+		<Level	Level="6"	Rate="400,0,0,0,0,0"	/>
+		<Level	Level="7"	Rate="400,0,0,0,0,0"	/>
+		<Level	Level="8"	Rate="360,0,0,0,0,0"	/>
+		<Level	Level="9"	Rate="360,0,0,0,0,0"	/>
+		<Level	Level="10"	Rate="360,0,0,0,0,0"	/>
+		<Level	Level="11"	Rate="360,0,0,0,0,0"	/>
+		<Level	Level="12"	Rate="360,0,0,0,0,0"	/>
+		<Level	Level="13"	Rate="360,0,0,0,0,0"	/>
+		<Level	Level="14"	Rate="360,0,0,0,0,0"	/>
+		<Level	Level="15"	Rate="130,0,0,0,0,0"	/>
+		<Level	Level="16"	Rate="170,0,0,0,0,0"	/>
+		<Level	Level="17"	Rate="140,0,0,0,0,0"	/>
+	</Group>
+	<Group	Index="1"	>
+		<Level	Level="0"	Rate="1000,0,0,0,0,0"	/>
+		<Level	Level="1"	Rate="950,50,0,0,0,0"	/>
+		<Level	Level="2"	Rate="900,100,0,0,0,0"	/>
+		<Level	Level="3"	Rate="750,250,0,0,0,0"	/>
+		<Level	Level="4"	Rate="650,350,0,0,0,0"	/>
+		<Level	Level="5"	Rate="600,400,0,0,0,0"	/>
+		<Level	Level="6"	Rate="400,600,0,0,0,0"	/>
+		<Level	Level="7"	Rate="400,600,0,0,0,0"	/>
+		<Level	Level="8"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="9"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="10"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="11"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="12"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="13"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="14"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="15"	Rate="150,0,850,0,0,0"	/>
+		<Level	Level="16"	Rate="200,0,200,600,0,0"	/>
+		<Level	Level="17"	Rate="160,0,220,260,360,0"	/>
+		<Level	Level="18"	Rate="120,0,130,200,300,250"	/>
+		<Level	Level="19"	Rate="80,0,120,200,350,250"	/>
+	</Group>
+	<Group	Index="2"	>
+		<Level	Level="0"	Rate="1000,0,0,0,0,0"	/>
+		<Level	Level="1"	Rate="950,50,0,0,0,0"	/>
+		<Level	Level="2"	Rate="900,100,0,0,0,0"	/>
+		<Level	Level="3"	Rate="750,250,0,0,0,0"	/>
+		<Level	Level="4"	Rate="650,350,0,0,0,0"	/>
+		<Level	Level="5"	Rate="600,400,0,0,0,0"	/>
+		<Level	Level="6"	Rate="400,600,0,0,0,0"	/>
+		<Level	Level="7"	Rate="400,600,0,0,0,0"	/>
+		<Level	Level="8"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="9"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="10"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="11"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="12"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="13"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="14"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="15"	Rate="150,0,850,0,0,0"	/>
+		<Level	Level="16"	Rate="200,0,200,600,0,0"	/>
+		<Level	Level="17"	Rate="160,0,220,260,360,0"	/>
+		<Level	Level="18"	Rate="120,0,130,200,300,250"	/>
+		<Level	Level="19"	Rate="80,0,120,200,350,250"	/>
+	</Group>
+	<Group	Index="3"	>
+		<Level	Level="0"	Rate="1000,0,0,0,0,0"	/>
+		<Level	Level="1"	Rate="950,50,0,0,0,0"	/>
+		<Level	Level="2"	Rate="900,100,0,0,0,0"	/>
+		<Level	Level="3"	Rate="750,250,0,0,0,0"	/>
+		<Level	Level="4"	Rate="650,350,0,0,0,0"	/>
+		<Level	Level="5"	Rate="600,400,0,0,0,0"	/>
+		<Level	Level="6"	Rate="400,600,0,0,0,0"	/>
+		<Level	Level="7"	Rate="400,600,0,0,0,0"	/>
+		<Level	Level="8"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="9"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="10"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="11"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="12"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="13"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="14"	Rate="360,640,0,0,0,0"	/>
+		<Level	Level="15"	Rate="150,0,850,0,0,0"	/>
+		<Level	Level="16"	Rate="200,0,200,600,0,0"	/>
+		<Level	Level="17"	Rate="160,0,220,260,360,0"	/>
+		<Level	Level="18"	Rate="120,0,130,200,300,250"	/>
+		<Level	Level="19"	Rate="80,0,120,200,350,250"	/>
+	</Group>
+	<Group	Index="4"	>
+		<Level	Level="0"	Rate="800,200,0,0,0,0"	/>
+		<Level	Level="1"	Rate="750,250,0,0,0,0"	/>
+		<Level	Level="2"	Rate="650,350,0,0,0,0"	/>
+		<Level	Level="3"	Rate="600,400,0,0,0,0"	/>
+		<Level	Level="4"	Rate="550,450,0,0,0,0"	/>
+		<Level	Level="5"	Rate="400,600,0,0,0,0"	/>
+		<Level	Level="6"	Rate="300,700,0,0,0,0"	/>
+		<Level	Level="7"	Rate="200,800,0,0,0,0"	/>
+		<Level	Level="8"	Rate="200,800,0,0,0,0"	/>
+		<Level	Level="9"	Rate="150,850,0,0,0,0"	/>
+	</Group>
+	<Group	Index="6"	>
+		<Level	Level="0"	Rate="1000,0,0,0,0,0"	/>
+		<Level	Level="1"	Rate="950,50,0,0,0,0"	/>
+		<Level	Level="2"	Rate="900,100,0,0,0,0"	/>
+		<Level	Level="3"	Rate="750,250,0,0,0,0"	/>
+		<Level	Level="4"	Rate="650,350,0,0,0,0"	/>
+		<Level	Level="5"	Rate="600,400,0,0,0,0"	/>
+		<Level	Level="6"	Rate="400,600,0,0,0,0"	/>
+		<Level	Level="7"	Rate="400,600,0,0,0,0"	/>
+		<Level	Level="8"	Rate="300,700,0,0,0,0"	/>
+		<Level	Level="9"	Rate="300,700,0,0,0,0"	/>
+		<Level	Level="10"	Rate="300,700,0,0,0,0"	/>
+		<Level	Level="11"	Rate="300,700,0,0,0,0"	/>
+		<Level	Level="12"	Rate="300,700,0,0,0,0"	/>
+		<Level	Level="13"	Rate="300,700,0,0,0,0"	/>
+		<Level	Level="14"	Rate="300,700,0,0,0,0"	/>
+		<Level	Level="15"	Rate="130,0,870,0,0,0"	/>
+		<Level	Level="16"	Rate="170,0,170,660,0,0"	/>
+		<Level	Level="17"	Rate="140,0,220,270,370,0"	/>
+		<Level	Level="18"	Rate="90,0,130,200,320,260"	/>
+		<Level	Level="19"	Rate="60,0,120,200,360,260"	/>
+	</Group>
+	<Group	Index="7"	>
+		<Level	Level="0"	Rate="1000,0,0,0,0,0"	/>
+		<Level	Level="1"	Rate="950,50,0,0,0,0"	/>
+		<Level	Level="2"	Rate="900,100,0,0,0,0"	/>
+		<Level	Level="3"	Rate="750,250,0,0,0,0"	/>
+		<Level	Level="4"	Rate="650,350,0,0,0,0"	/>
+		<Level	Level="5"	Rate="600,400,0,0,0,0"	/>
+		<Level	Level="6"	Rate="400,600,0,0,0,0"	/>
+		<Level	Level="7"	Rate="400,600,0,0,0,0"	/>
+		<Level	Level="8"	Rate="300,700,0,0,0,0"	/>
+		<Level	Level="9"	Rate="300,700,0,0,0,0"	/>
+		<Level	Level="10"	Rate="300,700,0,0,0,0"	/>
+		<Level	Level="11"	Rate="300,700,0,0,0,0"	/>
+		<Level	Level="12"	Rate="300,700,0,0,0,0"	/>
+		<Level	Level="13"	Rate="300,700,0,0,0,0"	/>
+		<Level	Level="14"	Rate="300,700,0,0,0,0"	/>
+		<Level	Level="15"	Rate="120,0,880,0,0,0"	/>
+		<Level	Level="16"	Rate="100,0,150,750,0,0"	/>
+		<Level	Level="17"	Rate="80,0,130,440,350,0"	/>
+		<Level	Level="18"	Rate="60,0,110,280,350,200"	/>
+		<Level	Level="19"	Rate="40,0,90,270,350,250"	/>
+	</Group>
+	<Group	Index="8"	>
+		<Level	Level="0"	Rate="1000,0,0,0,0,0"	/>
+		<Level	Level="1"	Rate="950,50,0,0,0,0"	/>
+		<Level	Level="2"	Rate="900,100,0,0,0,0"	/>
+		<Level	Level="3"	Rate="750,250,0,0,0,0"	/>
+		<Level	Level="4"	Rate="650,350,0,0,0,0"	/>
+		<Level	Level="5"	Rate="600,400,0,0,0,0"	/>
+		<Level	Level="6"	Rate="400,600,0,0,0,0"	/>
+		<Level	Level="7"	Rate="400,600,0,0,0,0"	/>
+		<Level	Level="8"	Rate="330,670,0,0,0,0"	/>
+		<Level	Level="9"	Rate="330,670,0,0,0,0"	/>
+		<Level	Level="10"	Rate="330,670,0,0,0,0"	/>
+		<Level	Level="11"	Rate="330,670,0,0,0,0"	/>
+		<Level	Level="12"	Rate="330,670,0,0,0,0"	/>
+		<Level	Level="13"	Rate="330,670,0,0,0,0"	/>
+		<Level	Level="14"	Rate="330,670,0,0,0,0"	/>
+		<Level	Level="15"	Rate="120,0,880,0,0,0"	/>
+		<Level	Level="16"	Rate="100,0,150,750,0,0"	/>
+		<Level	Level="17"	Rate="80,0,130,440,350,0"	/>
+		<Level	Level="18"	Rate="60,0,110,280,350,200"	/>
+		<Level	Level="19"	Rate="40,0,90,270,350,250"	/>
+	</Group>
+	<Group	Index="9"	>
+		<Level	Level="0"	Rate="1000,0,0,0,0,0"	/>
+		<Level	Level="1"	Rate="950,50,0,0,0,0"	/>
+		<Level	Level="2"	Rate="900,100,0,0,0,0"	/>
+		<Level	Level="3"	Rate="750,250,0,0,0,0"	/>
+		<Level	Level="4"	Rate="650,350,0,0,0,0"	/>
+		<Level	Level="5"	Rate="600,400,0,0,0,0"	/>
+		<Level	Level="6"	Rate="400,600,0,0,0,0"	/>
+		<Level	Level="7"	Rate="400,600,0,0,0,0"	/>
+		<Level	Level="8"	Rate="330,670,0,0,0,0"	/>
+		<Level	Level="9"	Rate="330,670,0,0,0,0"	/>
+		<Level	Level="10"	Rate="330,670,0,0,0,0"	/>
+		<Level	Level="11"	Rate="330,670,0,0,0,0"	/>
+		<Level	Level="12"	Rate="330,670,0,0,0,0"	/>
+		<Level	Level="13"	Rate="330,670,0,0,0,0"	/>
+		<Level	Level="14"	Rate="330,670,0,0,0,0"	/>
+		<Level	Level="15"	Rate="120,0,880,0,0,0"	/>
+		<Level	Level="16"	Rate="100,0,150,750,0,0"	/>
+		<Level	Level="17"	Rate="80,0,130,440,350,0"	/>
+		<Level	Level="18"	Rate="60,0,110,280,350,200"	/>
+		<Level	Level="19"	Rate="40,0,90,270,350,250"	/>
+	</Group>
+	<Group	Index="10"	>
+		<Level	Level="0"	Rate="1000,0,0,0,0,0"	/>
+		<Level	Level="1"	Rate="950,50,0,0,0,0"	/>
+		<Level	Level="2"	Rate="900,100,0,0,0,0"	/>
+		<Level	Level="3"	Rate="750,250,0,0,0,0"	/>
+		<Level	Level="4"	Rate="650,350,0,0,0,0"	/>
+		<Level	Level="5"	Rate="600,400,0,0,0,0"	/>
+		<Level	Level="6"	Rate="400,600,0,0,0,0"	/>
+		<Level	Level="7"	Rate="300,700,0,0,0,0"	/>
+		<Level	Level="8"	Rate="250,750,0,0,0,0"	/>
+		<Level	Level="9"	Rate="240,760,0,0,0,0"	/>
+		<Level	Level="10"	Rate="230,770,0,0,0,0"	/>
+		<Level	Level="11"	Rate="220,780,0,0,0,0"	/>
+		<Level	Level="12"	Rate="210,790,0,0,0,0"	/>
+		<Level	Level="13"	Rate="200,800,0,0,0,0"	/>
+		<Level	Level="14"	Rate="200,800,0,0,0,0"	/>
+	</Group>
+	<Group	Index="11"	>
+		<Level	Level="0"	Rate="1000,0,0,0,0,0"	/>
+		<Level	Level="1"	Rate="950,50,0,0,0,0"	/>
+		<Level	Level="2"	Rate="900,100,0,0,0,0"	/>
+		<Level	Level="3"	Rate="750,250,0,0,0,0"	/>
+		<Level	Level="4"	Rate="650,350,0,0,0,0"	/>
+		<Level	Level="5"	Rate="600,400,0,0,0,0"	/>
+		<Level	Level="6"	Rate="400,600,0,0,0,0"	/>
+		<Level	Level="7"	Rate="300,700,0,0,0,0"	/>
+		<Level	Level="8"	Rate="250,750,0,0,0,0"	/>
+		<Level	Level="9"	Rate="240,760,0,0,0,0"	/>
+		<Level	Level="10"	Rate="230,770,0,0,0,0"	/>
+		<Level	Level="11"	Rate="220,780,0,0,0,0"	/>
+		<Level	Level="12"	Rate="210,790,0,0,0,0"	/>
+		<Level	Level="13"	Rate="200,800,0,0,0,0"	/>
+		<Level	Level="14"	Rate="200,800,0,0,0,0"	/>
+	</Group>
+	<Group	Index="12"	>
+		<Level	Level="0"	Rate="1000,0,0,0,0,0"	/>
+		<Level	Level="1"	Rate="950,50,0,0,0,0"	/>
+		<Level	Level="2"	Rate="900,100,0,0,0,0"	/>
+		<Level	Level="3"	Rate="750,250,0,0,0,0"	/>
+		<Level	Level="4"	Rate="650,350,0,0,0,0"	/>
+		<Level	Level="5"	Rate="600,400,0,0,0,0"	/>
+		<Level	Level="6"	Rate="400,600,0,0,0,0"	/>
+		<Level	Level="7"	Rate="300,700,0,0,0,0"	/>
+		<Level	Level="8"	Rate="250,750,0,0,0,0"	/>
+		<Level	Level="9"	Rate="240,760,0,0,0,0"	/>
+		<Level	Level="10"	Rate="230,770,0,0,0,0"	/>
+		<Level	Level="11"	Rate="220,780,0,0,0,0"	/>
+		<Level	Level="12"	Rate="210,790,0,0,0,0"	/>
+		<Level	Level="13"	Rate="200,800,0,0,0,0"	/>
+		<Level	Level="14"	Rate="200,800,0,0,0,0"	/>
+	</Group>
+</ChaosUpgrade>

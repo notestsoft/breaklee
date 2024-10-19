@@ -1,4 +1,4 @@
-RUNTIME_DATA_FILE_BEGIN(ShopList.xml)
+RUNTIME_DATA_FILE_BEGIN(DIR_PATH(Shop, ShopList.xml))
 
 RUNTIME_DATA_TYPE_BEGIN(ShopIndex, "ShopList.Shop", 128)
 	RUNTIME_DATA_PROPERTY(Int32, WorldIndex, "WorldIndex")
@@ -9,7 +9,7 @@ RUNTIME_DATA_TYPE_END(ShopIndex)
 
 RUNTIME_DATA_FILE_END
 
-RUNTIME_DATA_FILE_BEGIN(ShopPool.xml)
+RUNTIME_DATA_FILE_BEGIN(DIR_PATH(Shop, ShopPool.xml))
 
 RUNTIME_DATA_TYPE_BEGIN(ShopPool, "ShopPool.Shop", 64)
 	RUNTIME_DATA_PROPERTY(Int32, ShopIndex, "ShopIndex")
@@ -41,7 +41,7 @@ RUNTIME_DATA_TYPE_INDEX(ShopPool, Int32, ShopIndex)
 
 RUNTIME_DATA_FILE_END
 
-RUNTIME_DATA_FILE_BEGIN(ShopPricePool.xml)
+RUNTIME_DATA_FILE_BEGIN(DIR_PATH(Shop, ShopPricePool.xml))
 
 RUNTIME_DATA_TYPE_BEGIN(ShopPricePool, "ShopPricePool.ItemPrice", 512)
 	RUNTIME_DATA_PROPERTY(Int32, PoolIndex, "PoolIndex")

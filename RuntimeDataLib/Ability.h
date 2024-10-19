@@ -81,31 +81,31 @@ RUNTIME_DATA_TYPE_INDEX_CHILD(KarmaAbilityValue, KarmaAbilityValueLevel, Int32, 
 
 RUNTIME_DATA_FILE_END
 
-RUNTIME_DATA_FILE_BEGIN(ability.xml)
+RUNTIME_DATA_FILE_BEGIN(DIR_PATH(Character, Ability.xml))
 
-RUNTIME_DATA_TYPE_BEGIN(PassiveAbilitySlotLimit, "ability.ability_slot_limit.passive_ability_slot", 1)
-    RUNTIME_DATA_PROPERTY(Int32, MinCount, "min_count")
-    RUNTIME_DATA_PROPERTY(Int32, MaxCount, "max_count")
+RUNTIME_DATA_TYPE_BEGIN(PassiveAbilitySlotLimit, "Ability.SlotLimit.Passive", 1)
+    RUNTIME_DATA_PROPERTY(Int32, MinCount, "MinCount")
+    RUNTIME_DATA_PROPERTY(Int32, MaxCount, "MaxCount")
 RUNTIME_DATA_TYPE_END(PassiveAbilitySlotLimit)
 RUNTIME_DATA_TYPE_INDEX_SINGLE(PassiveAbilitySlotLimit)
 
-RUNTIME_DATA_TYPE_BEGIN(BlendedAbilitySlotLimit, "ability.ability_slot_limit.blended_ability_slot", 1)
-    RUNTIME_DATA_PROPERTY(Int32, MinCount, "min_count")
-    RUNTIME_DATA_PROPERTY(Int32, MaxCount, "max_count")
+RUNTIME_DATA_TYPE_BEGIN(BlendedAbilitySlotLimit, "Ability.SlotLimit.Blended", 1)
+    RUNTIME_DATA_PROPERTY(Int32, MinCount, "MinCount")
+    RUNTIME_DATA_PROPERTY(Int32, MaxCount, "MaxCount")
 RUNTIME_DATA_TYPE_END(BlendedAbilitySlotLimit)
 RUNTIME_DATA_TYPE_INDEX_SINGLE(BlendedAbilitySlotLimit)
 
-RUNTIME_DATA_TYPE_BEGIN(KarmaAbilitySlotLimit, "ability.ability_slot_limit.karma_ability_slot", 1)
-    RUNTIME_DATA_PROPERTY(Int32, MinCount, "min_count")
-    RUNTIME_DATA_PROPERTY(Int32, MaxCount, "max_count")
+RUNTIME_DATA_TYPE_BEGIN(KarmaAbilitySlotLimit, "Ability.SlotLimit.Karma", 1)
+    RUNTIME_DATA_PROPERTY(Int32, MinCount, "MinCount")
+    RUNTIME_DATA_PROPERTY(Int32, MaxCount, "MaxCount")
 RUNTIME_DATA_TYPE_END(KarmaAbilitySlotLimit)
 RUNTIME_DATA_TYPE_INDEX_SINGLE(KarmaAbilitySlotLimit)
 
-RUNTIME_DATA_TYPE_BEGIN(AxpFieldRate, "ability.axp_field_rate.rate_limit", 16)
-    RUNTIME_DATA_PROPERTY(Int32, MinLevel, "min_level")
-    RUNTIME_DATA_PROPERTY(Int32, MaxLevel, "max_level")
-    RUNTIME_DATA_PROPERTY(Int32, Rate, "rate")
-RUNTIME_DATA_TYPE_END(AxpFieldRate)
-RUNTIME_DATA_TYPE_INDEX_RANGE(AxpFieldRate, Int32, MinLevel, MaxLevel)
+RUNTIME_DATA_TYPE_BEGIN(AbilityExpRate, "Ability.ExpRate.LevelRange", 16)
+    RUNTIME_DATA_PROPERTY(Int32, MinLevel, "MinLevel")
+    RUNTIME_DATA_PROPERTY(Int32, MaxLevel, "MaxLevel")
+    RUNTIME_DATA_PROPERTY(Int32, Rate, "Rate")
+RUNTIME_DATA_TYPE_END(AbilityExpRate)
+RUNTIME_DATA_TYPE_INDEX_RANGE(AbilityExpRate, Int32, MinLevel, MaxLevel)
 
 RUNTIME_DATA_FILE_END

@@ -385,7 +385,7 @@ Void RTDungeonUpdateTimerItemCount(
     assert(DungeonData);
 
     if (!DungeonData->TimerData.Active) return;
-    if (DungeonData->TimerData.ItemID != ItemID.ID & RUNTIME_ITEM_MASK_INDEX) return;
+    if (DungeonData->TimerData.ItemID != (ItemID.ID & RUNTIME_ITEM_MASK_INDEX)) return;
 
     RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemID.ID);
     assert(ItemData);

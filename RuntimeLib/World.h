@@ -84,9 +84,10 @@ struct _RTWorldContext {
     Int32 TimerItemCount;
     Timestamp TimerTimeout;
     MemoryPoolRef MobPool;
-    ArrayRef MobPatterns;
+    MemoryPoolRef MobPatternPool;
     MemoryPoolRef ItemPool;
     DictionaryRef EntityToMob;
+    DictionaryRef EntityToMobPattern;
     DictionaryRef EntityToItem;
 };
 
@@ -135,6 +136,21 @@ Void RTWorldSpawnMob(
     RTRuntimeRef Runtime,
     RTWorldContextRef World,
     RTMobRef Mob
+);
+
+Void RTWorldCreateMob(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef WorldContext,
+    Int32 MobSpeciesIndex,
+    Int32 AreaX,
+    Int32 AreaY,
+    Int32 AreaWidth,
+    Int32 AreaHeight,
+    Int32 Interval,
+    Int32 Count,
+    Int32 MobPatternIndex,
+    CString Script,
+    Timestamp Delay
 );
 
 RTMobRef RTWorldContextGetMob(

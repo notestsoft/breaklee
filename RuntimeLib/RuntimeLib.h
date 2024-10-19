@@ -16,6 +16,7 @@
 #include <RuntimeLib/Inventory.h>
 #include <RuntimeLib/Item.h>
 #include <RuntimeLib/Level.h>
+#include <RuntimeLib/Loot.h>
 #include <RuntimeLib/Mob.h>
 #include <RuntimeLib/MobPattern.h>
 #include <RuntimeLib/NewbieSupport.h>

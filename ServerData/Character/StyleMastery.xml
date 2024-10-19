@@ -1,0 +1,234 @@
+<StyleMastery>
+    <SpiritPointLimit>
+        <Level Level="1" Value="0" />
+        <Level Level="2" Value="5000" />
+        <Level Level="3" Value="10000" />
+        <Level Level="4" Value="15000" />
+        <Level Level="5" Value="20000" />
+        <Level Level="6" Value="25000" />
+        <Level Level="7" Value="25000" />
+        <Level Level="8" Value="25000" />
+        <Level Level="9" Value="25000" />
+        <Level Level="10" Value="25000" />
+        <Level Level="11" Value="25000" />
+        <Level Level="12" Value="25000" />
+        <Level Level="13" Value="25000" />
+        <Level Level="14" Value="25000" />
+        <Level Level="15" Value="25000" />
+        <Level Level="16" Value="25000" />
+        <Level Level="17" Value="25000" />
+        <Level Level="18" Value="25000" />
+        <Level Level="19" Value="30000" />
+        <Level Level="20" Value="35000" />
+        <Level Level="21" Value="35000" />
+    </SpiritPointLimit>
+    <RagePointLimit>
+        <Style Index="1">
+            <Level Level="1" Value="0" />
+            <Level Level="2" Value="0" />
+            <Level Level="3" Value="0" />
+            <Level Level="4" Value="0" />
+            <Level Level="5" Value="0" />
+            <Level Level="6" Value="0" />
+            <Level Level="7" Value="0" />
+            <Level Level="8" Value="0" />
+            <Level Level="9" Value="0" />
+            <Level Level="10" Value="0" />
+            <Level Level="11" Value="0" />
+            <Level Level="12" Value="0" />
+            <Level Level="13" Value="0" />
+            <Level Level="14" Value="0" />
+            <Level Level="15" Value="0" />
+            <Level Level="16" Value="0" />
+            <Level Level="17" Value="0" />
+            <Level Level="18" Value="0" />
+            <Level Level="19" Value="0" />
+            <Level Level="20" Value="0" />
+            <Level Level="21" Value="0" />
+        </Style>
+        <Style Index="2">
+            <Level Level="1" Value="0" />
+            <Level Level="2" Value="0" />
+            <Level Level="3" Value="0" />
+            <Level Level="4" Value="0" />
+            <Level Level="5" Value="0" />
+            <Level Level="6" Value="0" />
+            <Level Level="7" Value="0" />
+            <Level Level="8" Value="0" />
+            <Level Level="9" Value="0" />
+            <Level Level="10" Value="0" />
+            <Level Level="11" Value="0" />
+            <Level Level="12" Value="0" />
+            <Level Level="13" Value="0" />
+            <Level Level="14" Value="0" />
+            <Level Level="15" Value="0" />
+            <Level Level="16" Value="0" />
+            <Level Level="17" Value="0" />
+            <Level Level="18" Value="0" />
+            <Level Level="19" Value="0" />
+            <Level Level="20" Value="0" />
+            <Level Level="21" Value="0" />
+        </Style>
+        <Style Index="3">
+            <Level Level="1" Value="0" />
+            <Level Level="2" Value="0" />
+            <Level Level="3" Value="0" />
+            <Level Level="4" Value="0" />
+            <Level Level="5" Value="0" />
+            <Level Level="6" Value="0" />
+            <Level Level="7" Value="0" />
+            <Level Level="8" Value="0" />
+            <Level Level="9" Value="0" />
+            <Level Level="10" Value="0" />
+            <Level Level="11" Value="0" />
+            <Level Level="12" Value="0" />
+            <Level Level="13" Value="0" />
+            <Level Level="14" Value="0" />
+            <Level Level="15" Value="0" />
+            <Level Level="16" Value="0" />
+            <Level Level="17" Value="0" />
+            <Level Level="18" Value="0" />
+            <Level Level="19" Value="0" />
+            <Level Level="20" Value="0" />
+            <Level Level="21" Value="0" />
+        </Style>
+        <Style Index="4">
+            <Level Level="1" Value="0" />
+            <Level Level="2" Value="0" />
+            <Level Level="3" Value="0" />
+            <Level Level="4" Value="0" />
+            <Level Level="5" Value="0" />
+            <Level Level="6" Value="0" />
+            <Level Level="7" Value="0" />
+            <Level Level="8" Value="0" />
+            <Level Level="9" Value="0" />
+            <Level Level="10" Value="0" />
+            <Level Level="11" Value="0" />
+            <Level Level="12" Value="0" />
+            <Level Level="13" Value="0" />
+            <Level Level="14" Value="0" />
+            <Level Level="15" Value="0" />
+            <Level Level="16" Value="0" />
+            <Level Level="17" Value="0" />
+            <Level Level="18" Value="0" />
+            <Level Level="19" Value="0" />
+            <Level Level="20" Value="0" />
+            <Level Level="21" Value="0" />
+        </Style>
+        <Style Index="5">
+            <Level Level="1" Value="0" />
+            <Level Level="2" Value="0" />
+            <Level Level="3" Value="0" />
+            <Level Level="4" Value="0" />
+            <Level Level="5" Value="0" />
+            <Level Level="6" Value="0" />
+            <Level Level="7" Value="0" />
+            <Level Level="8" Value="0" />
+            <Level Level="9" Value="0" />
+            <Level Level="10" Value="0" />
+            <Level Level="11" Value="0" />
+            <Level Level="12" Value="0" />
+            <Level Level="13" Value="0" />
+            <Level Level="14" Value="0" />
+            <Level Level="15" Value="0" />
+            <Level Level="16" Value="0" />
+            <Level Level="17" Value="0" />
+            <Level Level="18" Value="0" />
+            <Level Level="19" Value="0" />
+            <Level Level="20" Value="0" />
+            <Level Level="21" Value="0" />
+        </Style>
+        <Style Index="6">
+            <Level Level="1" Value="0" />
+            <Level Level="2" Value="0" />
+            <Level Level="3" Value="0" />
+            <Level Level="4" Value="0" />
+            <Level Level="5" Value="0" />
+            <Level Level="6" Value="0" />
+            <Level Level="7" Value="0" />
+            <Level Level="8" Value="0" />
+            <Level Level="9" Value="0" />
+            <Level Level="10" Value="0" />
+            <Level Level="11" Value="0" />
+            <Level Level="12" Value="0" />
+            <Level Level="13" Value="0" />
+            <Level Level="14" Value="0" />
+            <Level Level="15" Value="0" />
+            <Level Level="16" Value="0" />
+            <Level Level="17" Value="0" />
+            <Level Level="18" Value="0" />
+            <Level Level="19" Value="0" />
+            <Level Level="20" Value="0" />
+            <Level Level="21" Value="0" />
+        </Style>
+        <Style Index="7">
+            <Level Level="1" Value="0" />
+            <Level Level="2" Value="1" />
+            <Level Level="3" Value="1" />
+            <Level Level="4" Value="1" />
+            <Level Level="5" Value="1" />
+            <Level Level="6" Value="3" />
+            <Level Level="7" Value="3" />
+            <Level Level="8" Value="5" />
+            <Level Level="9" Value="5" />
+            <Level Level="10" Value="6" />
+            <Level Level="11" Value="7" />
+            <Level Level="12" Value="7" />
+            <Level Level="13" Value="8" />
+            <Level Level="14" Value="8" />
+            <Level Level="15" Value="9" />
+            <Level Level="16" Value="9" />
+            <Level Level="17" Value="10" />
+            <Level Level="18" Value="10" />
+            <Level Level="19" Value="10" />
+            <Level Level="20" Value="10" />
+            <Level Level="21" Value="10" />
+        </Style>
+        <Style Index="8">
+            <Level Level="1" Value="0" />
+            <Level Level="2" Value="0" />
+            <Level Level="3" Value="0" />
+            <Level Level="4" Value="0" />
+            <Level Level="5" Value="0" />
+            <Level Level="6" Value="0" />
+            <Level Level="7" Value="0" />
+            <Level Level="8" Value="0" />
+            <Level Level="9" Value="0" />
+            <Level Level="10" Value="0" />
+            <Level Level="11" Value="0" />
+            <Level Level="12" Value="0" />
+            <Level Level="13" Value="0" />
+            <Level Level="14" Value="0" />
+            <Level Level="15" Value="0" />
+            <Level Level="16" Value="0" />
+            <Level Level="17" Value="0" />
+            <Level Level="18" Value="0" />
+            <Level Level="19" Value="0" />
+            <Level Level="20" Value="0" />
+            <Level Level="21" Value="0" />
+        </Style>
+        <Style Index="9">
+            <Level Level="1" Value="0" />
+            <Level Level="2" Value="0" />
+            <Level Level="3" Value="0" />
+            <Level Level="4" Value="0" />
+            <Level Level="5" Value="0" />
+            <Level Level="6" Value="0" />
+            <Level Level="7" Value="0" />
+            <Level Level="8" Value="0" />
+            <Level Level="9" Value="0" />
+            <Level Level="10" Value="0" />
+            <Level Level="11" Value="0" />
+            <Level Level="12" Value="0" />
+            <Level Level="13" Value="0" />
+            <Level Level="14" Value="0" />
+            <Level Level="15" Value="0" />
+            <Level Level="16" Value="0" />
+            <Level Level="17" Value="0" />
+            <Level Level="18" Value="0" />
+            <Level Level="19" Value="0" />
+            <Level Level="20" Value="0" />
+            <Level Level="21" Value="0" />
+        </Style>
+    </RagePointLimit>
+</StyleMastery>
