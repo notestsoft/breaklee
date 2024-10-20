@@ -1,0 +1,31 @@
+<!-- Type: 0 = Walk, 1 = Warp -->
+<MobPatrol>
+    <Branch Index="1" LinkList="2,3">
+        <Waypoint Type="0" X="42" Y="128" Delay="100" />
+    </Branch>
+    <Branch Index="2" LinkList="4,5">
+        <Waypoint Type="0" X="42" Y="128" Delay="0" />
+        <Waypoint Type="0" X="33" Y="132" Delay="0" />
+        <Waypoint Type="0" X="34" Y="138" Delay="1000" />
+        <Waypoint Type="0" X="21" Y="132" Delay="0" />
+        <Waypoint Type="0" X="14" Y="155" Delay="0" />
+    </Branch>
+    <Branch Index="3" LinkList="4,5">
+        <Waypoint Type="0" X="42" Y="128" Delay="0" />
+        <Waypoint Type="0" X="47" Y="159" Delay="1000" />
+        <Waypoint Type="0" X="14" Y="155" Delay="0" />
+    </Branch>
+    <Branch Index="4" LinkList="2,3">
+        <Waypoint Type="0" X="14" Y="155" Delay="0" />
+        <Waypoint Type="0" X="47" Y="159" Delay="1000" />
+        <Waypoint Type="0" X="42" Y="128" Delay="0" />
+    </Branch>
+    <Branch Index="5" LinkList="2,3">
+        <Waypoint Type="0" X="14" Y="155" Delay="0" />
+        <Waypoint Type="0" X="22" Y="193" Delay="0" />
+        <Waypoint Type="0" X="34" Y="203" Delay="500" />
+        <Waypoint Type="0" X="42" Y="194" Delay="500" />
+        <Waypoint Type="0" X="45" Y="158" Delay="0" />
+        <Waypoint Type="0" X="42" Y="128" Delay="0" />
+    </Branch>
+</MobPatrol>

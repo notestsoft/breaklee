@@ -62,6 +62,7 @@ target_link_libraries(NetLib PRIVATE CoreLib lua::lua)
 target_include_directories(NetLib PUBLIC ${PROJECT_SOURCE_DIR} ${lua_INCLUDE_DIR})
 
 add_library(RuntimeDataLib STATIC ${RUNTIME_DATA_LIB_HEADERS} ${RUNTIME_DATA_LIB_SOURCES})
+target_link_libraries(RuntimeDataLib PRIVATE CoreLib)
 target_include_directories(RuntimeDataLib PUBLIC ${PROJECT_SOURCE_DIR})
 
 add_library(RuntimeLib STATIC ${RUNTIME_LIB_HEADERS} ${RUNTIME_LIB_SOURCES})

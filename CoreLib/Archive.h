@@ -143,6 +143,12 @@ ArchiveIteratorRef ArchiveQueryNodeIteratorNext(
     ArchiveIteratorRef Iterator
 );
 
+Int32 ArchiveQueryNodeCount(
+    ArchiveRef Archive,
+    Int64 ParentIndex,
+    CString Query
+);
+
 ArchiveIteratorRef ArchiveNodeIteratorFirst(
     ArchiveRef Archive,
     Int64 ParentIndex

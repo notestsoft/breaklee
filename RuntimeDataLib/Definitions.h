@@ -6,25 +6,25 @@
 
 // Forward Declarations
 
-#define RUNTIME_DATA_TYPE_BEGIN(__NAME__, __QUERY__, __COUNT__) \
-typedef struct CONCAT(_RTData, __NAME__)* CONCAT(RTData, __NAME__##Ref);
+#define RUNTIME_DATA_TYPE_BEGIN(__NAME__, __QUERY__) \
+typedef struct CONCAT(_RTData, __NAME__) *CONCAT(RTData, __NAME__##Ref);
 
-#define RUNTIME_DATA_TYPE_BEGIN_CHILD(__NAME__, __QUERY__, __COUNT__) \
-typedef struct CONCAT(_RTData, __NAME__)* CONCAT(RTData, __NAME__##Ref);
+#define RUNTIME_DATA_TYPE_BEGIN_CHILD(__NAME__, __QUERY__) \
+typedef struct CONCAT(_RTData, __NAME__) *CONCAT(RTData, __NAME__##Ref);
 
 #include "Macro.h"
 
 // Type Declarations
 
-#define RUNTIME_DATA_TYPE_BEGIN(__NAME__, __QUERY__, __COUNT__) \
+#define RUNTIME_DATA_TYPE_BEGIN(__NAME__, __QUERY__) \
 struct CONCAT(_RTData, __NAME__) {
 
-#define RUNTIME_DATA_TYPE_BEGIN_CHILD(__NAME__, __QUERY__, __COUNT__) \
+#define RUNTIME_DATA_TYPE_BEGIN_CHILD(__NAME__, __QUERY__) \
 Int32 CONCAT(__NAME__, Count);										  \
 struct CONCAT(_RTData, __NAME__) {
 
-#define RUNTIME_DATA_TYPE_END_CHILD(__NAME__, __COUNT__) \
-} CONCAT(__NAME__, List)[__COUNT__];
+#define RUNTIME_DATA_TYPE_END_CHILD(__NAME__) \
+} *CONCAT(__NAME__, List);
 
 #define RUNTIME_DATA_PROPERTY(__TYPE__, __NAME__, __QUERY__) \
 	__TYPE__ __NAME__;

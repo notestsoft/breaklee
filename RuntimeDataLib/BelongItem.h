@@ -1,6 +1,6 @@
 RUNTIME_DATA_FILE_BEGIN(belongitem.enc)
 
-RUNTIME_DATA_TYPE_BEGIN(BelongItem, "belongitem.belong_item_info.belong_item", 1024)
+RUNTIME_DATA_TYPE_BEGIN(BelongItem, "belongitem.belong_item_info.belong_item")
 	RUNTIME_DATA_PROPERTY(Int32, ItemID, "item_id")
 	RUNTIME_DATA_PROPERTY(Int32, ItemOption, "option")
 	RUNTIME_DATA_PROPERTY(Int32, PossessionType, "possession_type")

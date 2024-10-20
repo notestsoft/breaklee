@@ -1,6 +1,6 @@
 RUNTIME_DATA_FILE_BEGIN(DIR_PATH(Service, PremiumServiceList.xml))
 
-RUNTIME_DATA_TYPE_BEGIN(PremiumService, "PremiumServiceList.Service", 128)
+RUNTIME_DATA_TYPE_BEGIN(PremiumService, "PremiumServiceList.Service")
 	RUNTIME_DATA_PROPERTY(Int32, ServiceID, "ID")
 	RUNTIME_DATA_PROPERTY(Int32, Type, "Type")
 	RUNTIME_DATA_PROPERTY(Int32, XP, "XP")

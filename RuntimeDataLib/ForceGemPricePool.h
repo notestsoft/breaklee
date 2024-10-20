@@ -1,6 +1,6 @@
 RUNTIME_DATA_FILE_BEGIN(DIR_PATH(Service, ForceGemPricePool.xml))
 
-RUNTIME_DATA_TYPE_BEGIN(ForceGemPrice, "ForceGemPricePool.Price", 256)
+RUNTIME_DATA_TYPE_BEGIN(ForceGemPrice, "ForceGemPricePool.Price")
 	RUNTIME_DATA_PROPERTY(Int32, PoolIndex, "PoolIndex")
 	RUNTIME_DATA_PROPERTY(Int32, PriceIndex, "PriceIndex")
 	RUNTIME_DATA_PROPERTY(Int32, Price, "Price")

@@ -620,6 +620,21 @@ ArchiveIteratorRef ArchiveQueryNodeIteratorNext(
     return NULL;
 }
 
+Int32 ArchiveQueryNodeCount(
+    ArchiveRef Archive,
+    Int64 ParentIndex,
+    CString Query
+) {
+    Int32 Result = 0;
+    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, Query);
+    while (Iterator) {
+        Result += 1;
+        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+    }
+
+    return Result;
+}
+
 ArchiveIteratorRef ArchiveNodeIteratorFirst(
     ArchiveRef Archive,
     Int64 ParentIndex

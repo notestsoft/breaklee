@@ -1,29 +1,74 @@
 #include "RuntimeDataLoader.h"
 
-RTRuntimeDataContextRef RTRuntimeDataContextCreate() {
-	RTRuntimeDataContextRef Context = malloc(sizeof(struct _RTRuntimeDataContext));
-	if (!Context) Fatal("Memory allocation failed!");
+#define RUNTIME_DATA_TYPE_BEGIN(__NAME__, __QUERY__)	                        \
+Void CONCAT(RTRuntimeData, __NAME__ ## OnFileChange)(	                        \
+	CString FileName,                                                           \
+    Void* UserData                                                              \
+) {                                                                             \
+    RTRuntimeDataContextRef Context = (RTRuntimeDataContextRef)UserData;        \
+    CString Name = Context->CONCAT(__NAME__, FileName);                         \
+    if (CStringIsEqual(PathGetFileNameExtension(Name), "xml")) {                \
+        CString FileName = PathCombineNoAlloc(Context->ServerDataPath, Name);   \
+        CONCAT(RTRuntimeData, __NAME__ ## HotReload)(Context, Name);            \
+    }                                                                           \
+    else {                                                                      \
+        CString FileName = PathCombineNoAlloc(Context->RuntimeDataPath, Name);  \
+        CONCAT(RTRuntimeData, __NAME__ ## HotReload)(Context, Name);            \
+    }                                                                           \
+}
+#include "Macro.h"
 
+Bool RTRuntimeDataContextLoad(
+    RTRuntimeDataContextRef Context
+);
+
+RTRuntimeDataContextRef RTRuntimeDataContextCreate(
+    CString RuntimeDataPath,
+    CString ServerDataPath,
+    Bool* Result
+) {
+    AllocatorRef Allocator = BumpAllocatorCreate(AllocatorGetSystemDefault());
+	RTRuntimeDataContextRef Context = AllocatorAllocate(Allocator, sizeof(struct _RTRuntimeDataContext));
+	if (!Context) Fatal("Memory allocation failed!");
 	memset(Context, 0, sizeof(struct _RTRuntimeDataContext));
+    Context->Allocator = Allocator;
+    Context->FileEvents = ArrayCreateEmpty(AllocatorGetSystemDefault(), sizeof(FileEventRef), 8);
+    CStringCopySafe(Context->RuntimeDataPath, MAX_PATH, RuntimeDataPath);
+    CStringCopySafe(Context->ServerDataPath, MAX_PATH, ServerDataPath);
+
+    {
+        CString CurrentFileName = NULL;
+#define RUNTIME_DATA_FILE_BEGIN(__NAME__) \
+        CurrentFileName = EXPAND_AND_QUOTE(__NAME__);
+
+#define RUNTIME_DATA_TYPE_BEGIN(__NAME__, __QUERY__) \
+	    Context->CONCAT(__NAME__, FileName) = CurrentFileName;
+
+#include "Macro.h"
+    }
+
+    *Result = RTRuntimeDataContextLoad(Context);
 	return Context;
 }
 
 Void RTRuntimeDataContextDestroy(
 	RTRuntimeDataContextRef Context
 ) {
-	assert(Context);
-	free(Context);
+    for (Int32 Index = 0; Index < ArrayGetElementCount(Context->FileEvents); Index += 1) {
+        FileEventRef Event = *(FileEventRef*)ArrayGetElementAtIndex(Context->FileEvents, Index);
+        FileEventDestroy(Event);
+    }
+
+    AllocatorDestroy(Context->Allocator);
 }
 
 Bool RTRuntimeDataContextLoad(
-	RTRuntimeDataContextRef Context,
-    CString RuntimeDataPath,
-    CString ServerDataPath
+	RTRuntimeDataContextRef Context
 ) {
     assert(Context);
 
-    AllocatorRef Allocator = AllocatorGetSystemDefault();
-    ArchiveRef Archive = ArchiveCreateEmpty(Allocator);
+    AllocatorRef ArchiveAllocator = AllocatorGetSystemDefault();
+    ArchiveRef Archive = ArchiveCreateEmpty(ArchiveAllocator);
     Bool IgnoreErrors = true;
     ArchiveIteratorRef Iterator = NULL;
     Bool Success = false;
@@ -31,23 +76,18 @@ Bool RTRuntimeDataContextLoad(
 #define RUNTIME_DATA_FILE_BEGIN(__NAME__) \
 {\
     CString Name = EXPAND_AND_QUOTE(__NAME__); \
+    CString FileName = NULL;                   \
     Info("Loading runtime data: %s", Name); \
     if (CStringIsEqual(PathGetFileNameExtension(Name), "xml")) { \
-        Success = ArchiveLoadFromFile( \
-            Archive, \
-            PathCombineNoAlloc(ServerDataPath, Name), \
-            IgnoreErrors \
-        ); \
+        FileName = PathCombineNoAlloc(Context->ServerDataPath, Name); \
+        Success = ArchiveLoadFromFile(Archive, FileName, IgnoreErrors); \
     } \
     else { \
-        Success = ArchiveLoadFromFileEncryptedNoAlloc( \
-            Archive, \
-            PathCombineNoAlloc(RuntimeDataPath, Name), \
-            IgnoreErrors \
-        ); \
+        FileName = PathCombineNoAlloc(Context->RuntimeDataPath, Name); \
+        Success = ArchiveLoadFromFileEncryptedNoAlloc(Archive, FileName, IgnoreErrors); \
     } \
     if (!Success) { \
-        Error("Error loading runtime data: %s", Name); \
+        Error("Error loading runtime data: %s", FileName); \
         goto error; \
     }
 
@@ -55,16 +95,21 @@ Bool RTRuntimeDataContextLoad(
     ArchiveClear(Archive, true); \
     }
 
-#define RUNTIME_DATA_TYPE_BEGIN(__NAME__, __QUERY__, __COUNT__) \
+#define RUNTIME_DATA_TYPE_BEGIN(__NAME__, __QUERY__) \
     { \
-        Trace("Data %s memory size: %llu total: %.3f KB", #__NAME__, sizeof(struct CONCAT(_RTData, __NAME__)), (Float32)sizeof(struct CONCAT(_RTData, __NAME__)) * __COUNT__ / 1000); \
         CString Query = __QUERY__; \
         CString PropertyQuery = NULL; \
+        Context->CONCAT(__NAME__, Count) = ArchiveQueryNodeCount(Archive, -1, Query); \
+        Index MemorySize = MAX(1, sizeof(struct CONCAT(_RTData, __NAME__)) * Context->CONCAT(__NAME__, Count)); \
+        Trace("Data %s memory size: %llu total: %.3f KB", #__NAME__, MemorySize, (Float32)MemorySize / 1000); \
+        Context->CONCAT(__NAME__, List) = (CONCAT(RTData, __NAME__ ## Ref))(AllocatorAllocate(Context->Allocator, MemorySize)); \
         Iterator = ArchiveQueryNodeIteratorFirst(Archive, -1, Query); \
         if (!Iterator) Error("Element not found for query: %s\n", Query); \
+        Int32 IteratorIndex = 0; \
         while (Iterator) { \
-            assert(Context->CONCAT(__NAME__, Count) < __COUNT__); \
-            CONCAT(RTData, __NAME__ ## Ref) Data = &Context->CONCAT(__NAME__, List)[Context->CONCAT(__NAME__, Count)];
+            assert(IteratorIndex < Context->CONCAT(__NAME__, Count)); \
+            CONCAT(RTData, __NAME__ ## Ref) Data = &Context->CONCAT(__NAME__, List)[IteratorIndex]; \
+            IteratorIndex += 1;
 
 #define RUNTIME_DATA_PROPERTY(__TYPE__, __NAME__, __QUERY__) \
             PropertyQuery = __QUERY__; \
@@ -83,28 +128,34 @@ Bool RTRuntimeDataContextLoad(
             PropertyQuery = __QUERY__; \
             Data->CONCAT(__NAME__, Count) = CONCAT(ParseAttribute, __TYPE__ ## ArrayCounted)(Archive, Iterator->Index, PropertyQuery, Data->__NAME__, __COUNT__, __SEPARATOR__);
 
-#define RUNTIME_DATA_TYPE_BEGIN_CHILD(__NAME__, __QUERY__, __COUNT__) \
+#define RUNTIME_DATA_TYPE_BEGIN_CHILD(__NAME__, __QUERY__) \
             { \
                 CString Query = __QUERY__; \
                 ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, Query); \
+                Data->CONCAT(__NAME__, Count) = ArchiveQueryNodeCount(Archive, Iterator->Index, Query); \
+                Index MemorySize = MAX(1, sizeof(struct CONCAT(_RTData, __NAME__)) * Data->CONCAT(__NAME__, Count)); \
+                Data->CONCAT(__NAME__, List) = (CONCAT(RTData, __NAME__ ## Ref))(AllocatorAllocate(Context->Allocator, MemorySize)); \
+                Int32 ChildIteratorIndex = 0; \
                 while (ChildIterator) { \
                     ArchiveIteratorRef Iterator = ChildIterator; \
-                    assert(Data->CONCAT(__NAME__, Count) < __COUNT__); \
-                    CONCAT(RTData, __NAME__ ## Ref) ChildData = &Data->CONCAT(__NAME__, List)[Data->CONCAT(__NAME__, Count)]; \
+                    assert(ChildIteratorIndex < Data->CONCAT(__NAME__, Count)); \
+                    CONCAT(RTData, __NAME__ ## Ref) ChildData = &Data->CONCAT(__NAME__, List)[ChildIteratorIndex]; \
+                    ChildIteratorIndex += 1; \
                     { \
                         CONCAT(RTData, __NAME__ ## Ref) Data = ChildData;
 
-#define RUNTIME_DATA_TYPE_END_CHILD(__NAME__, __COUNT__) \
+#define RUNTIME_DATA_TYPE_END_CHILD(__NAME__) \
                     } \
-                    Data->CONCAT(__NAME__, Count) += 1; \
                     ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator); \
                 } \
             }
 
 #define RUNTIME_DATA_TYPE_END(__NAME__) \
-           Context->CONCAT(__NAME__, Count) += 1; \
            Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator); \
         } \
+        FileChangeCallback Callback = CONCAT(RTRuntimeData, __NAME__ ## OnFileChange); \
+        FileEventRef Event = FileEventCreate(FileName, Callback, Context); \
+        if (Event) ArrayAppendElement(Context->FileEvents, &Event); \
     }
 
 #include "Macro.h"

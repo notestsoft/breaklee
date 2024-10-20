@@ -1,6 +1,6 @@
 RUNTIME_DATA_FILE_BEGIN(Warp.enc)
 
-RUNTIME_DATA_TYPE_BEGIN(WarpPoint, "Warp.warp_point.warp_index", 1024)
+RUNTIME_DATA_TYPE_BEGIN(WarpPoint, "Warp.warp_point.warp_index")
 	RUNTIME_DATA_PROPERTY(Int32, X, "x")
 	RUNTIME_DATA_PROPERTY(Int32, Y, "y")
 	RUNTIME_DATA_PROPERTY(Int32, Nation1X, "nation1x")

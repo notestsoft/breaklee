@@ -46,8 +46,7 @@ ServerRef ServerCreate(
         (Host) ? 1 : IPC_SOCKET_MAX_CONNECTION_COUNT,
         LogPackets,
         Server
-    ); 
-
+    );
     Server->OnUpdate = OnUpdate;
     Server->IsRunning = false;
     Server->Userdata = ServerContext;
@@ -110,18 +109,18 @@ SocketRef ServerCreateSocket(
     SocketContext->CommandRegistry = IndexDictionaryCreate(Server->Allocator, 8);
     SocketContext->OnConnect = OnConnect;
     SocketContext->OnDisconnect = OnDisconnect;
-    SocketContext->PacketGetCommandCallback = &ClientPacketGetCommand;
-    SocketContext->PacketGetLengthCallback = &PacketGetLength;
-    SocketContext->PacketGetHeaderLengthCallback = &ClientPacketGetHeaderLength;
+    SocketContext->PacketGetCommand = &ClientPacketGetCommand;
+    SocketContext->PacketGetLength = &PacketGetLength;
+    SocketContext->PacketGetHeaderLength = &ClientPacketGetHeaderLength;
     
     if (SocketFlags & SOCKET_FLAGS_CLIENT) {
-        SocketContext->PacketGetCommandCallback = &ServerPacketGetCommand;
-        SocketContext->PacketGetHeaderLengthCallback = &ServerPacketGetHeaderLength;
+        SocketContext->PacketGetCommand = &ServerPacketGetCommand;
+        SocketContext->PacketGetHeaderLength = &ServerPacketGetHeaderLength;
     }
     
     if (SocketFlags & SOCKET_FLAGS_IPC) {
-        SocketContext->PacketGetCommandCallback = &ServerPacketGetCommand;
-        SocketContext->PacketGetHeaderLengthCallback = &ServerPacketGetHeaderLength;
+        SocketContext->PacketGetCommand = &ServerPacketGetCommand;
+        SocketContext->PacketGetHeaderLength = &ServerPacketGetHeaderLength;
     }
 
     return SocketContext->Socket;
@@ -219,7 +218,7 @@ Void _ServerSocketOnReceived(
     Void *Packet
 ) {
     ServerSocketContextRef SocketContext = (ServerSocketContextRef)Socket->Userdata;
-    Index Command = (Index)SocketContext->PacketGetCommandCallback(
+    Index Command = (Index)SocketContext->PacketGetCommand(
         Socket->ProtocolIdentifier,
         Socket->ProtocolVersion,
         Socket->ProtocolExtension,
@@ -227,14 +226,14 @@ Void _ServerSocketOnReceived(
     );
     Trace("_ServerSocketOnReceived(%d)", (Int32)Command);
 
-    Int32 PacketLength = SocketContext->PacketGetLengthCallback(
+    Int32 PacketLength = SocketContext->PacketGetLength(
         Socket->ProtocolIdentifier,
         Socket->ProtocolVersion,
         Socket->ProtocolExtension,
         Packet
     );
 
-    Int32 HeaderLength = SocketContext->PacketGetHeaderLengthCallback(
+    Int32 HeaderLength = SocketContext->PacketGetHeaderLength(
         Socket->ProtocolIdentifier,
         Socket->ProtocolVersion,
         Socket->ProtocolExtension,

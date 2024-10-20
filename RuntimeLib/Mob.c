@@ -44,6 +44,28 @@ Void RTMobInit(
 	Mob->SpecialAttackSkill = NULL;
 	Mob->ActiveSkill = &Mob->SpeciesData->DefaultSkill;
 	memset(&Mob->Aggro, 0, sizeof(struct _RTMobAggroData));
+
+	Mob->AlertRange = Mob->SpeciesData->AlertRange;
+	Mob->ChaseRange = Mob->SpeciesData->ChaseRange;
+	Mob->LimitRangeB = Mob->SpeciesData->LimitRangeB;
+
+	if (Mob->EnemyCount < 1) {
+		Mob->EnemyCount = 1;
+		Mob->Enemies[0] = -1;
+	}
+	else {
+		Mob->AlertRange = INT32_MAX;
+		Mob->ChaseRange = INT32_MAX;
+		Mob->LimitRangeB = INT32_MAX;
+	}
+
+	Mob->IsAttackingCharacter = Mob->EnemyCount < 1;
+	for (Int32 Index = 0; Index < Mob->EnemyCount; Index += 1) {
+		if (Mob->Enemies[Index] < 0) {
+			Mob->IsAttackingCharacter = true;
+			break;
+		}
+	}
 }
 
 Bool RTMobCanMove(RTMobRef Mob) {

@@ -1,6 +1,6 @@
 RUNTIME_DATA_FILE_BEGIN(level.enc)
 
-RUNTIME_DATA_TYPE_BEGIN(Level, "Level.level_up.con", 256)
+RUNTIME_DATA_TYPE_BEGIN(Level, "Level.level_up.con")
 	RUNTIME_DATA_PROPERTY(Int32, Level, "level")
 	RUNTIME_DATA_PROPERTY(UInt64, Exp, "exp")
 	RUNTIME_DATA_PROPERTY(UInt64, AccumulatedExp, "accuexp")

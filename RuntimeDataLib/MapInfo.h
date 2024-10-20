@@ -1,6 +1,6 @@
 RUNTIME_DATA_FILE_BEGIN(mapinfo.enc)
 
-RUNTIME_DATA_TYPE_BEGIN(MapCode, "cabal.mapcode_guide.guide", 16)
+RUNTIME_DATA_TYPE_BEGIN(MapCode, "cabal.mapcode_guide.guide")
 	RUNTIME_DATA_PROPERTY(Int32, EntryLevel, "entry_lv")
 	RUNTIME_DATA_PROPERTY(Int32, WorldID, "world_id")
 	RUNTIME_DATA_PROPERTY(Int32, WarpIndex, "warp_index")

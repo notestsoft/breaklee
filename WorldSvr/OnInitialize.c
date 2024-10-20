@@ -1092,13 +1092,6 @@ struct _RTCharacterCostumeInfo {
 
     RTWorldSpawnCharacter(Runtime, World, Character->ID);
     
-    RTRuntimeDataEventHotReload(
-        Context->Runtime->Context,
-        Context->Config.WorldSvr.RuntimeDataPath,
-        Context->Config.WorldSvr.ServerDataPath,
-        "Event/Event.xml"
-    );
-
     // TODO: Move event data to database and trigger request on init
     SendCharacterStatus(Context, Context->ClientSocket, Client->Connection, Character);
     SendEventInfo(Context, Client);

@@ -988,6 +988,10 @@ Bool ServerLoadWorldMobData(
         Mob->IsPermanentDeath = false;
         Mob->RemainingSpawnCount = 0;
 
+        if (Mob->Spawn.Level < 2) {
+            Mob->Spawn.Level = Mob->SpeciesData->Level;
+        }
+
         ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
     }
 
@@ -1899,27 +1903,6 @@ Bool ServerLoadPatternPartData(
             Mob->IsInfiniteSpawn = true;
             Mob->IsPermanentDeath = false;
             Mob->RemainingSpawnCount = 0;
-            Mob->AlertRange = Mob->SpeciesData->AlertRange;
-            Mob->ChaseRange = Mob->SpeciesData->ChaseRange;
-            Mob->LimitRangeB = Mob->SpeciesData->LimitRangeB;
-
-            if (Mob->EnemyCount < 1) {
-                Mob->EnemyCount = 1;
-                Mob->Enemies[0] = -1;
-            }
-            else {
-                Mob->AlertRange = INT32_MAX;
-                Mob->ChaseRange = INT32_MAX;
-                Mob->LimitRangeB = INT32_MAX;
-            }
-
-            Mob->IsAttackingCharacter = Mob->EnemyCount < 1;
-            for (Int32 Index = 0; Index < Mob->EnemyCount; Index += 1) {
-                if (Mob->Enemies[Index] < 0) {
-                    Mob->IsAttackingCharacter = true;
-                    break;
-                }
-            }
 
             if (Mob->Spawn.Level < 2) {
                 Mob->Spawn.Level = Mob->SpeciesData->Level;

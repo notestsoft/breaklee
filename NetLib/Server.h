@@ -12,7 +12,7 @@ typedef struct _Server* ServerRef;
 
 typedef Void (*ServerUpdateCallback)(
     ServerRef Server,
-    Void *ServerContext
+    Void* UserData
 );
 
 typedef Void (*ServerConnectionCallback)(
@@ -65,9 +65,9 @@ struct _ServerSocketContext {
     DictionaryRef CommandRegistry;
     ServerConnectionCallback OnConnect;
     ServerConnectionCallback OnDisconnect;
-    PacketGetCommandCallback PacketGetCommandCallback;
-    PacketGetLengthCallback PacketGetLengthCallback;
-    PacketGetLengthCallback PacketGetHeaderLengthCallback;
+    PacketGetCommandCallback PacketGetCommand;
+    PacketGetLengthCallback PacketGetLength;
+    PacketGetLengthCallback PacketGetHeaderLength;
 };
 
 struct _Server {

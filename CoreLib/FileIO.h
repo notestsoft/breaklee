@@ -13,6 +13,7 @@
 EXTERN_C_BEGIN
 
 typedef Void* FileRef;
+typedef struct _FileEvent* FileEventRef;
 
 FileRef FileOpen(
 	CString FilePath
@@ -61,6 +62,21 @@ Int32 FilesProcess(
 	CString Pattern,
 	FilesProcessCallback Callback,
 	Void* UserData
+);
+
+typedef Void(*FileChangeCallback)(
+	CString FileName,
+	Void* UserData
+);
+
+FileEventRef FileEventCreate(
+	CString FilePath,
+	FileChangeCallback Callback,
+	Void* UserData
+);
+
+Void FileEventDestroy(
+	FileEventRef Event
 );
 
 #ifdef _WIN32

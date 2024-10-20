@@ -28,7 +28,7 @@ RTRuntimeRef RTRuntimeCreate(
     }
 
     Runtime->Environment.RawValue = 0;
-    Runtime->Context = RTRuntimeDataContextCreate();
+    Runtime->Context = NULL;
     Runtime->PartyManager = RTPartyManagerCreate(Allocator, MaxPartyCount);
     Runtime->ScriptManager = RTScriptManagerCreate(Runtime, RUNTIME_MEMORY_MAX_SCRIPT_COUNT);
     Runtime->WorldManager = RTWorldManagerCreate(
@@ -121,7 +121,7 @@ Void RTRuntimeDestroy(
     RTNotificationManagerDestroy(Runtime->NotificationManager);
     RTOptionPoolManagerDestroy(Runtime->OptionPoolManager);
     RTScriptManagerDestroy(Runtime->ScriptManager);
-    RTRuntimeDataContextDestroy(Runtime->Context);
+    if (Runtime->Context) RTRuntimeDataContextDestroy(Runtime->Context);
     RTWorldManagerDestroy(Runtime->WorldManager);
     AllocatorDeallocate(Runtime->Allocator, Runtime);
 }
@@ -132,8 +132,10 @@ Bool RTRuntimeLoadData(
     CString ServerDataPath
 ) {
     RTRuntimeInitForceEffectFormulas(Runtime);
- 
-    return RTRuntimeDataContextLoad(Runtime->Context, RuntimeDataPath, ServerDataPath);
+
+    Bool Result = false;
+    Runtime->Context = RTRuntimeDataContextCreate(RuntimeDataPath, ServerDataPath, &Result);
+    return Result;
 }
 
 Void RTRuntimeUpdate(

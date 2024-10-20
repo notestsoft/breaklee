@@ -8,10 +8,18 @@ EXTERN_C_BEGIN
 #pragma pack(push, 1)
 
 struct _RTRuntimeDataContext {
-#define RUNTIME_DATA_TYPE_BEGIN(__NAME__, __QUERY__, __COUNT__) \
-	Int32 CONCAT(__NAME__, Count);									\
-	struct CONCAT(_RTData, __NAME__) CONCAT(__NAME__, List)[__COUNT__];
+	AllocatorRef Allocator;
+	ArrayRef FileEvents;
+	Char RuntimeDataPath[MAX_PATH];
+	Char ServerDataPath[MAX_PATH];
 
+#define RUNTIME_DATA_TYPE_BEGIN(__NAME__, __QUERY__) \
+	CString CONCAT(__NAME__, FileName);
+#include "Macro.h"
+
+#define RUNTIME_DATA_TYPE_BEGIN(__NAME__, __QUERY__) \
+	Int32 CONCAT(__NAME__, Count);					 \
+	struct CONCAT(_RTData, __NAME__)* CONCAT(__NAME__, List);
 #include "Macro.h"
 };
 typedef struct _RTRuntimeDataContext* RTRuntimeDataContextRef;
@@ -25,24 +33,20 @@ typedef struct _RTDataForceCodeFormula RTDataForceCodeFormula;
 
 #pragma pack(pop)
 
-RTRuntimeDataContextRef RTRuntimeDataContextCreate();
+RTRuntimeDataContextRef RTRuntimeDataContextCreate(
+	CString RuntimeDataPath,
+	CString ServerDataPath,
+	Bool* Result
+);
 
 Void RTRuntimeDataContextDestroy(
 	RTRuntimeDataContextRef Context
 );
 
-Bool RTRuntimeDataContextLoad(
-	RTRuntimeDataContextRef Context,
-	CString RuntimeDataPath,
-	CString ServerDataPath
-);
-
-#define RUNTIME_DATA_TYPE_BEGIN(__NAME__, __QUERY__, __COUNT__)	\
-Bool CONCAT(RTRuntimeData, __NAME__ ## HotReload)(				\
-	RTRuntimeDataContextRef Context,							\
-    CString RuntimeDataPath,									\
-	CString ServerDataPath,										\
-	CString FileName											\
+#define RUNTIME_DATA_TYPE_BEGIN(__NAME__, __QUERY__)	\
+Bool CONCAT(RTRuntimeData, __NAME__ ## HotReload)(		\
+	RTRuntimeDataContextRef Context,					\
+	CString FileName									\
 );
 #include "Macro.h"
 
