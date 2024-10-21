@@ -76,6 +76,7 @@
 #include "CheckItemAbility.h"
 #include "Collection.h"
 #include "Const.h"
+#include "Cooltime.h"
 #include "CostumeWarehouse.h"
 #include "Craft.h"
 #include "Destroy.h"
