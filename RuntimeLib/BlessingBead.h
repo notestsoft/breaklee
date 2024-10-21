@@ -9,8 +9,8 @@ EXTERN_C_BEGIN
 
 struct _RTBlessingBeadSlot {
     UInt32 Index;
-    UInt32 Unknown1;
-    UInt32 Unknown2;
+    UInt32 Value;
+    RTItemDuration Duration;
 };
 
 struct _RTBlessingBeadInfo {

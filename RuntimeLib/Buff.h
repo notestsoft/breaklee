@@ -7,6 +7,11 @@ EXTERN_C_BEGIN
 
 #pragma pack(push, 1)
 
+struct _RTSkillCooldownSlot {
+    UInt16 SkillIndex;
+    UInt32 Interval;
+};
+
 struct _RTBuffSlot {
     UInt16 Unknown1;
     UInt32 Unknown2;

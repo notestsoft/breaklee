@@ -119,6 +119,19 @@ struct _RTSkillValueData {
 	Int32 CheckReadiness;
 };
 
+struct _RTCharacterSkillValue {
+	Int32 SwordSkillAmp;
+	Int32 MagicSkillAmp;
+	Int32 Attack;
+	Int32 MagicAttack;
+	Int32 AttackRate;
+	Int32 Penetration;
+	Int32 CriticalDamage;
+	Int32 Mp;
+	Int32 Sp;
+};
+typedef struct _RTCharacterSkillValue RTCharacterSkillValue;
+
 struct _RTCharacterSkillData {
 	Int32 SkillID;
 	Int32 SkillType;
@@ -201,6 +214,11 @@ Bool RTCheckSkillTargetDistance(
 Int32 RTCalculateSkillSlopeValue(
 	Int32 CoefficientA,
 	Int32 CoefficientB,
+	Int32 Level
+);
+
+RTCharacterSkillValue RTCalculateSkillValue(
+	RTCharacterSkillDataRef SkillData,
 	Int32 Level
 );
 

@@ -87,6 +87,32 @@ Int32 RTCalculateSkillSlopeValue(
 	return Value;
 }
 
+RTCharacterSkillValue RTCalculateSkillValue(
+	RTCharacterSkillDataRef SkillData,
+	Int32 Level
+) {
+	RTCharacterSkillValue Result = { 0 };
+	Result.Attack = RTCalculateSkillSlopeValue(SkillData->Atk[0], SkillData->Atk[1], Level);
+	Result.AttackRate = RTCalculateSkillSlopeValue(SkillData->SHit[0], SkillData->SHit[1], Level);
+	Result.Penetration = RTCalculateSkillSlopeValue(SkillData->SPenet[0], SkillData->SPenet[1], Level);
+	Result.CriticalDamage = RTCalculateSkillSlopeValue(SkillData->CritDmg[0], SkillData->CritDmg[1], Level);
+
+	Int32 SkillAmp = RTCalculateSkillSlopeValue(SkillData->SAmp[0], SkillData->SAmp[1], Level);
+	Int32 Attack = RTCalculateSkillSlopeValue(SkillData->Atk[0], SkillData->Atk[1], Level);
+
+	if (SkillData->DamageType == RUNTIME_SKILL_DAMAGE_TYPE_SWORD) {
+		Result.SwordSkillAmp = SkillAmp;
+		Result.Attack = Attack;
+	}
+	else {
+		Result.MagicSkillAmp = SkillAmp;
+		Result.MagicAttack = Attack;
+	}
+	
+	return Result;
+}
+
+
 Int32 RTCharacterApplyBuff(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,

@@ -1,3 +1,4 @@
+#include "BattleMode.h"
 #include "Character.h"
 #include "Inventory.h"
 #include "Force.h"
@@ -441,25 +442,9 @@ Void RTCharacterUpdate(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character
 ) {
-	Timestamp Timestamp = PlatformGetTickCount();
-	if (Character->Data.StyleInfo.ExtendedStyle.BattleModeFlags && Character->BattleModeTimeout <= Timestamp) {
-		Character->Data.StyleInfo.ExtendedStyle.BattleModeFlags = 0;
-		Character->SyncMask.StyleInfo = true;
-		Character->BattleModeSkillIndex = 0;
-		Character->BattleModeTimeout = INT64_MAX;
-		
-		// TODO: After cancelation next activation of battle mode is using the duration of an extension with aura
-		NOTIFICATION_DATA_SKILL_TO_CHARACTER* Notification = RTNotificationInit(SKILL_TO_CHARACTER);
-		Notification->SkillIndex = Character->BattleModeSkillIndex;
+	if (!RTCharacterIsAlive(Runtime, Character)) return;
 
-		NOTIFICATION_DATA_SKILL_TO_CHARACTER_BATTLE_MODE* NotificationData = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_SKILL_TO_CHARACTER_BATTLE_MODE);
-		NotificationData->CharacterIndex = (UInt32)Character->CharacterIndex;
-		NotificationData->CharacterStyle = Character->Data.StyleInfo.Style.RawValue;
-		NotificationData->CharacterLiveStyle = Character->Data.StyleInfo.LiveStyle.RawValue;
-		NotificationData->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
-		NotificationData->IsActivation = false;
-		RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
-	}
+	RTCharacterUpdateBattleMode(Runtime, Character);
 }
 
 Bool RTCharacterIsAlive(
