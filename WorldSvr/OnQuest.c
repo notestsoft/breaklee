@@ -333,3 +333,44 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_LOOT_ITEM) {
 error:
 	SocketDisconnect(Socket, Connection);
 }
+
+CLIENT_PROCEDURE_BINDING(QUEST_DELETE) {
+	if (!Character) goto error;
+	if (0 > Packet->QuestIndex || Packet->QuestIndex > RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT) goto error;
+
+	RTQuestDataRef QuestData = RTRuntimeGetQuestByIndex(Runtime, Packet->QuestIndex);
+	if (!QuestData) goto error;
+	if (!QuestData->DeleteType) goto error;
+	if (RTCharacterQuestFlagIsSet(Character, Packet->QuestIndex)) goto error;
+
+	RTCharacterQuestFlagSet(Character, Packet->QuestIndex);
+	RTCharacterQuestDeleteFlagSet(Character, Packet->QuestIndex);
+
+	S2C_DATA_QUEST_DELETE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, QUEST_DELETE);
+	Response->QuestIndex = Packet->QuestIndex;
+	SocketSend(Socket, Connection, Response);
+
+	return;
+
+error:
+	SocketDisconnect(Socket, Connection);
+}
+
+CLIENT_PROCEDURE_BINDING(QUEST_RESTORE) {
+	if (!Character) goto error;
+	if (0 > Packet->QuestIndex || Packet->QuestIndex > RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT) goto error;
+
+	if (!RTCharacterQuestDeleteFlagIsSet(Character, Packet->QuestIndex)) goto error;
+
+	RTCharacterQuestFlagClear(Character, Packet->QuestIndex);
+	RTCharacterQuestDeleteFlagClear(Character, Packet->QuestIndex);
+
+	S2C_DATA_QUEST_RESTORE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, QUEST_RESTORE);
+	Response->QuestIndex = Packet->QuestIndex;
+	SocketSend(Socket, Connection, Response);
+
+	return;
+
+error:
+	SocketDisconnect(Socket, Connection);
+}

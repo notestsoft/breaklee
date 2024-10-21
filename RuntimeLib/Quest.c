@@ -36,7 +36,7 @@ Bool RTCharacterQuestFlagIsSet(
 ) {
 	assert(0 <= QuestIndex && QuestIndex < RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT);
 
-	return (Character->Data.QuestInfo.Info.FinishedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] & (1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE)));
+	return (Character->Data.QuestInfo.Info.FinishedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] & (1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE))) > 0;
 }
 
 Void RTCharacterSetAllQuestFlags(
@@ -51,7 +51,7 @@ Void RTCharacterQuestDeleteFlagClear(
 	RTCharacterRef Character,
 	Int32 QuestIndex
 ) {
-	assert(0 <= QuestIndex && QuestIndex < RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_NORMAL_QUEST_FLAG_COUNT);
+	assert(0 <= QuestIndex && QuestIndex < RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT);
 
 	Character->Data.QuestInfo.Info.DeletedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] &= ~(1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
 
@@ -62,7 +62,7 @@ Void RTCharacterQuestDeleteFlagSet(
 	RTCharacterRef Character,
 	Int32 QuestIndex
 ) {
-	assert(0 <= QuestIndex && QuestIndex < RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_NORMAL_QUEST_FLAG_COUNT);
+	assert(0 <= QuestIndex && QuestIndex < RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT);
 
 	Character->Data.QuestInfo.Info.DeletedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] |= (1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
 
@@ -73,19 +73,18 @@ Bool RTCharacterQuestDeleteFlagIsSet(
 	RTCharacterRef Character,
 	Int32 QuestIndex
 ) {
-	assert(0 <= QuestIndex && QuestIndex < RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_NORMAL_QUEST_FLAG_COUNT);
+	assert(0 <= QuestIndex && QuestIndex < RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT);
 
-	return (Character->Data.QuestInfo.Info.DeletedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] & (1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE)));
+	return (Character->Data.QuestInfo.Info.DeletedQuests[QuestIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] & (1 << (QuestIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE))) > 0;
 }
 
 Void RTCharacterDungeonQuestFlagClear(
 	RTCharacterRef Character,
 	Int32 DungeonIndex
 ) {
-	assert(0 <= DungeonIndex && DungeonIndex < RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_DUNGEON_FLAG_COUNT);
+	if (DungeonIndex < 0 || DungeonIndex >= RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_DUNGEON_FLAG_COUNT) return;
 
 	Character->Data.QuestInfo.Info.FinishedDungeons[DungeonIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] &= ~(1 << (DungeonIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
-
 	Character->SyncMask.QuestInfo = true;
 }
 
@@ -106,7 +105,7 @@ Bool RTCharacterDungeonQuestFlagIsSet(
 ) {
 	assert(0 <= DungeonIndex && DungeonIndex < RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_DUNGEON_FLAG_COUNT);
 
-	return (Character->Data.QuestInfo.Info.FinishedDungeons[DungeonIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] & (1 << (DungeonIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE)));
+	return (Character->Data.QuestInfo.Info.FinishedDungeons[DungeonIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] & (1 << (DungeonIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE))) > 0;
 }
 
 RTQuestSlotRef RTCharacterAddQuestSlot(

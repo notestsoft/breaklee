@@ -92,7 +92,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_PREMIUM_SERVICE) {
 	Notification->ExpirationDate = Packet->ExpiredAt;
 	SocketSend(Context->ClientSocket, ClientConnection, Notification);
 
-	S2C_DATA_NFY_UNKNOWN_2518* UnknownNotification = PacketBufferInit(ClientConnection->PacketBuffer, S2C, NFY_UNKNOWN_2518);
+	S2C_DATA_NFY_BUDDY_POINTS* UnknownNotification = PacketBufferInit(ClientConnection->PacketBuffer, S2C, NFY_BUDDY_POINTS);
 	/*
 	UnknownNotification->Unknown1[0] = 4;
 	UnknownNotification->Unknown1[1] = 1;

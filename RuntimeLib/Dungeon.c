@@ -175,6 +175,19 @@ Bool RTDungeonEnd(
         World->Active = false;
         World->Closed = true;
         World->Cleared = true;
+
+        RTPartyRef Party = RTRuntimeGetParty(Runtime, World->Party);
+        if (Party) {
+            for (Int32 Index = 0; Index < Party->MemberCount; Index += 1) {
+                RTCharacterRef Character = RTWorldManagerGetCharacter(Runtime->WorldManager, Party->Members[Index].MemberID);
+                if (!Character) continue;
+                if (Character->Data.Info.WorldIndex != World->WorldData->WorldIndex) continue;
+                if (Character->Data.Info.DungeonIndex != DungeonData->DungeonIndex) continue;
+
+                RTCharacterDungeonQuestFlagClear(Character, DungeonData->DungeonIndex);
+            }
+        }
+
         return true;
     }
 
