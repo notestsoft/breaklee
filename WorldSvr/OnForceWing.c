@@ -99,6 +99,24 @@ CLIENT_PROCEDURE_BINDING(FORCE_WING_GRADE_UP) {
 		SkillSlot->SlotIndex = SkillData->SlotIndex;
 	}
 
+	Int32 ForceWingSkillSlotIndices[] = {
+		RUNTIME_SPECIAL_SKILL_SLOT_FORCE_WING_1,
+		RUNTIME_SPECIAL_SKILL_SLOT_FORCE_WING_2,
+		RUNTIME_SPECIAL_SKILL_SLOT_FORCE_WING_3,
+	};
+
+	for (Int32 Index = 0; Index < sizeof(ForceWingSkillSlotIndices) / sizeof(Int32); Index += 1) {
+		Int32 SlotIndex = ForceWingSkillSlotIndices[Index];
+		RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotBySlotIndex(Runtime, Character, SlotIndex);
+		if (!SkillSlot) continue;
+
+		RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillSlot->ID);
+		assert(SkillData);
+		if (SkillData->SkillGroup != RUNTIME_SKILL_GROUP_WING) continue;
+		
+		RTCharacterChangeSkillLevel(Runtime, Character, SkillSlot->ID, SkillSlot->Index, SkillSlot->Level, Character->Data.ForceWingInfo.Info.Grade);
+	}
+
 	Character->SyncMask.InventoryInfo = true;
 	Character->SyncMask.ForceWingInfo = true;
 

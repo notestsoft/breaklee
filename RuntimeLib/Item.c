@@ -826,6 +826,10 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSkillBook) {
     RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, ItemData->SkillBook.SkillID);
     if (!SkillData) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
+	if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_WING && Character->Data.ForceWingInfo.Info.Level < 1) {
+		return RUNTIME_ITEM_USE_RESULT_FAILED;
+	}
+
     // TODO: Check if character is allowed to learn the skill by battle style and skill ranks...
 
     RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotBySlotIndex(Runtime, Character, Data->SkillSlotIndex);
@@ -836,6 +840,10 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSkillBook) {
     Int32 SkillLevel = MAX(1, (Int32)ItemSlot->ItemOptions);
     SkillSlot = RTCharacterAddSkillSlot(Runtime, Character, SkillData->SkillID, SkillLevel, Data->SkillSlotIndex);
     if (!SkillSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_WING) {
+		RTCharacterChangeSkillLevel(Runtime, Character, SkillSlot->ID, SkillSlot->Index, SkillSlot->Level, Character->Data.ForceWingInfo.Info.Grade);
+	}
 
     RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
 	Character->SyncMask.InventoryInfo = true;
