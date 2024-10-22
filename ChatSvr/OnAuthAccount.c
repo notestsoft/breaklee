@@ -1,13 +1,21 @@
 #include "ClientProtocol.h"
 #include "ClientProcedures.h"
 #include "ClientSocket.h"
-#include "Notification.h"
 #include "Server.h"
 
 CLIENT_PROCEDURE_BINDING(AUTH_ACCOUNT) {
-    S2C_DATA_AUTH_ACCOUNT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, AUTH_ACCOUNT);
-    Response->CharacterIndex = Packet->CharacterIndex;
-    Response->GuildIndex = 0;
-    Response->Result = 0;
-    SocketSend(Socket, Connection, Response);
+	if (!Client->Flags & CLIENT_FLAGS_CONNECTED) goto error;
+
+	// TODO: Check if connection ip is same as worldsvr ip
+	Client->CharacterIndex = Packet->CharacterIndex;
+
+	S2C_DATA_AUTH_ACCOUNT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, AUTH_ACCOUNT);
+	Response->CharacterIndex = Client->CharacterIndex;
+	Response->GuildIndex = 0;
+	Response->Result = 0;
+	SocketSend(Socket, Connection, Response);
+	return;
+
+error:
+	SocketDisconnect(Socket, Connection);
 }

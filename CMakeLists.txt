@@ -11,7 +11,7 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG=1")
 
 option(CONFIG_BUILD_TARGET_AUCTION_SVR "Build Auction Server" ON)
 option(CONFIG_BUILD_TARGET_BREAKLEE "Build Breaklee" ON)
-option(CONFIG_BUILD_TARGET_CHAT_SVR "Build Chat Server" OFF)
+option(CONFIG_BUILD_TARGET_CHAT_SVR "Build Chat Server" ON)
 option(CONFIG_BUILD_TARGET_LOGIN_SVR "Build Login Server" ON)
 option(CONFIG_BUILD_TARGET_MASTER_DBAGENT "Build Master DB Agent" ON)
 option(CONFIG_BUILD_TARGET_MASTER_SVR "Build Master Server" ON)

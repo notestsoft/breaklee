@@ -15,23 +15,25 @@
 #endif
 
 CONFIG_BEGIN(ChatSvr)
-CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, Host, "ChatSvr.Host", 127.0.0.1)
+CONFIG_PARAMETER(UInt8, GroupIndex, "ChatSvr.GroupIndex", 21)
 CONFIG_PARAMETER(UInt16, Port, "ChatSvr.Port", 38170)
-CONFIG_PARAMETER(Int32, MaxConnectionCount, "ChatSvr.MaxConnectionCount", 64)
+CONFIG_PARAMETER(Int32, MaxConnectionCount, "ChatSvr.MaxConnectionCount", 5)
+CONFIG_PARAMETER(Int32, LogLevel, "ChatSvr.LogLevel", 5)
 CONFIG_END(ChatSvr)
 
 CONFIG_BEGIN(MasterSvr)
 CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, Host, "MasterSvr.Host", 127.0.0.1)
 CONFIG_PARAMETER(UInt16, Port, "MasterSvr.Port", 38161)
 CONFIG_PARAMETER(UInt64, Timeout, "MasterSvr.Timeout", 1000)
+CONFIG_PARAMETER(Bool, LogPackets, "MasterSvr.LogPackets", 0)
 CONFIG_END(MasterSvr)
 
 CONFIG_BEGIN(NetLib)
 CONFIG_PARAMETER(UInt16, ProtocolIdentifier, "NetLib.ProtocolIdentifier", 0xB7D9)
 CONFIG_PARAMETER(UInt16, ProtocolVersion, "NetLib.ProtocolVersion", 0x0009)
 CONFIG_PARAMETER(UInt16, ProtocolExtension, "NetLib.ProtocolExtension", 0x1111)
-CONFIG_PARAMETER(Index, ReadBufferSize, "NetLib.ReadBufferSize", 0x1FFFF)
-CONFIG_PARAMETER(Index, WriteBufferSize, "NetLib.WriteBufferSize", 0x7FFFF)
+CONFIG_PARAMETER(Int32, ReadBufferSize, "NetLib.ReadBufferSize", 0x0FFFF)
+CONFIG_PARAMETER(Int32, WriteBufferSize, "NetLib.WriteBufferSize", 0x0FFFF)
 CONFIG_PARAMETER(Bool, LogPackets, "NetLib.LogPackets", 0)
 CONFIG_END(NetLib)
 

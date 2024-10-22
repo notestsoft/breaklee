@@ -7,9 +7,7 @@ EXTERN_C_BEGIN
 
 ClientContextRef ServerGetClientByIndex(
     ServerContextRef Context,
-    UInt32 CharacterIndex,
-    CString CharacterName,
-    Int32 CharacterNameLength
+    UInt32 CharacterIndex
 );
 
 EXTERN_C_END

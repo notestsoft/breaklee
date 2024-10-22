@@ -1107,6 +1107,14 @@ struct _RTCharacterCostumeInfo {
     Request->Header.Target.Type = IPC_TYPE_PARTY;
     Request->CharacterIndex = Character->CharacterIndex;
     IPCSocketUnicast(Server->IPCSocket, Request);
+
+    IPC_W2C_DATA_CLIENT_CONNECT* ChatRequest = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2C, CLIENT_CONNECT);
+    ChatRequest->Header.Source = Server->IPCSocket->NodeID;
+    ChatRequest->Header.SourceConnectionID = Client->Connection->ID;
+    ChatRequest->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+    ChatRequest->Header.Target.Type = IPC_TYPE_CHAT;
+    ChatRequest->CharacterIndex = Character->CharacterIndex;
+    IPCSocketUnicast(Server->IPCSocket, ChatRequest);
     return;
 
 error:

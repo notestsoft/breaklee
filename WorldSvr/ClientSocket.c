@@ -27,12 +27,21 @@ Void ClientSocketOnDisconnect(
     ServerContextRef Context = (ServerContextRef)ServerContext;
     ClientContextRef Client = (ClientContextRef)ConnectionContext;
     if (Client->CharacterIndex > 0) {
-        // TODO: @DungeonCleanUp Delete character dungeon instance and respawn to global world
-
         RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Client->CharacterIndex);
+
+        IPC_W2C_DATA_CLIENT_DISCONNECT* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2C, CLIENT_DISCONNECT);
+        Request->Header.Source = Server->IPCSocket->NodeID;
+        Request->Header.SourceConnectionID = Client->Connection->ID;
+        Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+        Request->Header.Target.Type = IPC_TYPE_CHAT;
+        Request->CharacterIndex = Character->CharacterIndex;
+        IPCSocketUnicast(Server->IPCSocket, Request);
+
+        // TODO: @DungeonCleanUp Delete character dungeon instance and respawn to global world
         RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Context->Runtime, Character);
         RTWorldDespawnCharacter(WorldContext->WorldManager->Runtime, WorldContext, Character->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT);
         RTWorldManagerDestroyCharacter(WorldContext->WorldManager, Client->CharacterIndex);
+
         Client->CharacterIndex = 0;
     }
     

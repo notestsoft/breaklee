@@ -24,16 +24,5 @@ Void ClientSocketOnDisconnect(
 ) {
     ServerContextRef Context = (ServerContextRef)ServerContext;
     ClientContextRef Client = (ClientContextRef)ConnectionContext;
-    /*
-    if (Client->CharacterIndex > 0) {
-        // TODO: @DungeonCleanUp Delete character dungeon instance and respawn to global world
-
-        RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Client->CharacterIndex);
-        RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Context->Runtime, Character);
-        RTWorldDespawnCharacter(WorldContext->WorldManager->Runtime, WorldContext, Character->ID);
-        RTWorldManagerDestroyCharacter(WorldContext->WorldManager, Client->CharacterIndex);
-        Client->CharacterIndex = 0;
-    }
-    */
     Info("Client disconnected...");
 }

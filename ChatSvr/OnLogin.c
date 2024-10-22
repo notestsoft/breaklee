@@ -1,11 +1,18 @@
 #include "ClientProtocol.h"
 #include "ClientProcedures.h"
 #include "ClientSocket.h"
-#include "Notification.h"
 #include "Server.h"
 
 CLIENT_PROCEDURE_BINDING(LOGIN) {
-    S2C_DATA_LOGIN* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOGIN);
-    Response->Result = 0;
-    SocketSend(Socket, Connection, Response);
+	if (!Client->Flags & CLIENT_FLAGS_CONNECTED) goto error;
+
+	Client->WorldServerIndex = Packet->WorldServerIndex;
+
+	S2C_DATA_LOGIN* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOGIN);
+	Response->Result = 0;
+	SocketSend(Socket, Connection, Response);
+	return;
+
+error:
+	SocketDisconnect(Socket, Connection);
 }

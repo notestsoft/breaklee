@@ -3,6 +3,8 @@
 #include "Base.h"
 #include "Config.h"
 #include "Constants.h"
+#include "IPCProtocol.h"
+#include "MasterDBProtocol.h"
 
 EXTERN_C_BEGIN
 
@@ -14,8 +16,9 @@ enum {
 };
 
 struct _ServerContext {
+    ServerRef Server;
     SocketRef ClientSocket;
-    SocketRef WorldSocket;
+    IPCSocketRef IPCSocket;
     ServerConfig Config;
 };
 typedef struct _ServerContext* ServerContextRef;
@@ -23,15 +26,10 @@ typedef struct _ServerContext* ServerContextRef;
 struct _ClientContext {
     SocketConnectionRef Connection;
     UInt32 Flags;
-    UInt32 AuthKey;
-    Index CharacterIndex;
-    Char CharacterName[MAX_CHARACTER_NAME_LENGTH + 1];
+    UInt32 AuthKey;	
+    UInt32 CharacterIndex;
+    Int32 WorldServerIndex;
 };
 typedef struct _ClientContext* ClientContextRef;
-
-struct _WorldContext {
-    UInt8 ServerID;
-};
-typedef struct _WorldContext* WorldContextRef;
 
 EXTERN_C_END
