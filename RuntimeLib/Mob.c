@@ -399,7 +399,7 @@ Void RTMobAttackTarget(
 	);
 
 	RTCharacterAddHP(Runtime, Character, -Result.AppliedDamage, false);
-	Mob->NextTimestamp = PlatformGetTickCount() + Mob->ActiveSkill->Interval;
+	Mob->NextTimestamp = GetTimestampMs() + Mob->ActiveSkill->Interval;
 
 	{
 		NOTIFICATION_DATA_MOB_ATTACK_AOE* Notification = RTNotificationInit(MOB_ATTACK_AOE);
@@ -451,7 +451,7 @@ Void RTMobAttackTargetMob(
 	);
 
 	RTMobApplyDamage(Runtime, World, Target, Mob->ID, Result.AppliedDamage);
-	Mob->NextTimestamp = PlatformGetTickCount() + Mob->ActiveSkill->Interval;
+	Mob->NextTimestamp = GetTimestampMs() + Mob->ActiveSkill->Interval;
 
 	// TODO: Check which packet has to be sent for mob attacking another mob
 	{
