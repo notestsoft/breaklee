@@ -19,6 +19,10 @@ enum {
 
 	RUNTIME_SPECIAL_SKILL_SLOT_COMBO_BOARD			= 102,
 	RUNTIME_SPECIAL_SKILL_SLOT_COMBO_BIKE			= 103,
+
+	RUNTIME_SPECIAL_SKILL_SLOT_FORCE_WING_1			= 115,
+	RUNTIME_SPECIAL_SKILL_SLOT_FORCE_WING_2			= 116,
+	RUNTIME_SPECIAL_SKILL_SLOT_FORCE_WING_3			= 117,
 };
 
 enum {
@@ -128,7 +132,6 @@ struct _RTCharacterSkillValue {
 	Int32 Penetration;
 	Int32 CriticalDamage;
 	Int32 Mp;
-	Int32 Sp;
 };
 typedef struct _RTCharacterSkillValue RTCharacterSkillValue;
 
@@ -219,7 +222,8 @@ Int32 RTCalculateSkillSlopeValue(
 
 RTCharacterSkillValue RTCalculateSkillValue(
 	RTCharacterSkillDataRef SkillData,
-	Int32 Level
+	Int32 Level,
+	Int32 Rage
 );
 
 Int32 RTCharacterApplyBuff(

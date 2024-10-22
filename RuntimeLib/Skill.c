@@ -78,40 +78,32 @@ Int32 RTCalculateSkillSlopeValue(
 	Int32 CoefficientB,
 	Int32 Level
 ) {
-	Int32 Value = (CoefficientA * Level + CoefficientB) / 10;
-	// TODO: Check if level table is calculating correct value
-	Value += (Int32)(Level / 10) * CoefficientA / 10;
-	Value += (Int32)(Level / 13) * CoefficientA / 10;
-	Value += (Int32)(Level / 16) * CoefficientA / 10;
-	Value += (Int32)(Level / 19) * CoefficientA / 10;
-	return Value;
+	return (CoefficientA * Level + CoefficientB) / 10;
 }
 
 RTCharacterSkillValue RTCalculateSkillValue(
 	RTCharacterSkillDataRef SkillData,
-	Int32 Level
+	Int32 Level,
+	Int32 Rage
 ) {
 	RTCharacterSkillValue Result = { 0 };
-	Result.Attack = RTCalculateSkillSlopeValue(SkillData->Atk[0], SkillData->Atk[1], Level);
+	if (SkillData->DamageType == RUNTIME_SKILL_DAMAGE_TYPE_SWORD) {
+		Result.SwordSkillAmp = RTCalculateSkillSlopeValue(SkillData->SAmp[0], SkillData->SAmp[1], Level);
+		Result.Attack = RTCalculateSkillSlopeValue(SkillData->Atk[0], SkillData->Atk[1], Level);
+		Result.Attack += Rage * ((SkillData->Atk[2] * Level) / 10);
+	}
+	else {
+		Result.MagicSkillAmp = RTCalculateSkillSlopeValue(SkillData->SAmp[0], SkillData->SAmp[1], Level);
+		Result.MagicAttack = RTCalculateSkillSlopeValue(SkillData->SAmp[0], SkillData->SAmp[1], Level);
+		Result.MagicAttack += Rage * ((SkillData->Atk[2] * Level) / 10);
+	}
+
 	Result.AttackRate = RTCalculateSkillSlopeValue(SkillData->SHit[0], SkillData->SHit[1], Level);
 	Result.Penetration = RTCalculateSkillSlopeValue(SkillData->SPenet[0], SkillData->SPenet[1], Level);
 	Result.CriticalDamage = RTCalculateSkillSlopeValue(SkillData->CritDmg[0], SkillData->CritDmg[1], Level);
-
-	Int32 SkillAmp = RTCalculateSkillSlopeValue(SkillData->SAmp[0], SkillData->SAmp[1], Level);
-	Int32 Attack = RTCalculateSkillSlopeValue(SkillData->Atk[0], SkillData->Atk[1], Level);
-
-	if (SkillData->DamageType == RUNTIME_SKILL_DAMAGE_TYPE_SWORD) {
-		Result.SwordSkillAmp = SkillAmp;
-		Result.Attack = Attack;
-	}
-	else {
-		Result.MagicSkillAmp = SkillAmp;
-		Result.MagicAttack = Attack;
-	}
-	
+	Result.Mp = RTCalculateSkillSlopeValue(SkillData->Mp[0], SkillData->Mp[1], Level);
 	return Result;
 }
-
 
 Int32 RTCharacterApplyBuff(
     RTRuntimeRef Runtime,

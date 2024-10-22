@@ -265,25 +265,14 @@ Void RTCalculateSkillAttackResult(
 ) {
 	Bool IsDefenderCharacter = false; // TODO: Add entity type to battle attributes
 
-	// TODO: Skill Amp and Attack are slightly higher then they should be! 
-	Int32 SkillAmp = RTCalculateSkillSlopeValue(Skill->SAmp[0], Skill->SAmp[1], SkillLevel);
-
-	// TODO: Check what Atk[2] means...
-	Int32 Attack = RTCalculateSkillSlopeValue(Skill->Atk[0], Skill->Atk[1], SkillLevel);
-	Int32 AttackRate = RTCalculateSkillSlopeValue(Skill->SHit[0], Skill->SHit[1], SkillLevel);
-	Int32 Penetration = RTCalculateSkillSlopeValue(Skill->SPenet[0], Skill->SPenet[1], SkillLevel);
-	Int32 CriticalDamage = RTCalculateSkillSlopeValue(Skill->CritDmg[0], Skill->CritDmg[1], SkillLevel);
-
-	// TODO: Add additional effect of skills like knock back, stun, ...
-
-	Int32 SkillAmpIndex = (Skill->DamageType == RUNTIME_SKILL_DAMAGE_TYPE_SWORD) ? RUNTIME_ATTRIBUTE_SWORD_SKILL_AMP : RUNTIME_ATTRIBUTE_MAGIC_SKILL_AMP;
-	Int32 AttackIndex = (Skill->DamageType == RUNTIME_SKILL_DAMAGE_TYPE_SWORD) ? RUNTIME_ATTRIBUTE_ATTACK : RUNTIME_ATTRIBUTE_MAGIC_ATTACK;
-
-	Attacker->Values[SkillAmpIndex] += SkillAmp;
-	Attacker->Values[AttackIndex] += Attack;
-	Attacker->Values[RUNTIME_ATTRIBUTE_ATTACK_RATE] += AttackRate;
-	Attacker->Values[RUNTIME_ATTRIBUTE_PENETRATION] += Penetration;
-	Attacker->Values[RUNTIME_ATTRIBUTE_CRITICAL_DAMAGE] += CriticalDamage;
+	RTCharacterSkillValue SkillValue = RTCalculateSkillValue(Skill, SkillLevel, Attacker->Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]);
+	Attacker->Values[RUNTIME_ATTRIBUTE_SWORD_SKILL_AMP] += SkillValue.SwordSkillAmp;
+	Attacker->Values[RUNTIME_ATTRIBUTE_MAGIC_SKILL_AMP] += SkillValue.MagicSkillAmp;
+	Attacker->Values[RUNTIME_ATTRIBUTE_ATTACK] += SkillValue.Attack;
+	Attacker->Values[RUNTIME_ATTRIBUTE_MAGIC_ATTACK] += SkillValue.MagicAttack;
+	Attacker->Values[RUNTIME_ATTRIBUTE_ATTACK_RATE] += SkillValue.AttackRate;
+	Attacker->Values[RUNTIME_ATTRIBUTE_PENETRATION] += SkillValue.Penetration;
+	Attacker->Values[RUNTIME_ATTRIBUTE_CRITICAL_DAMAGE] += SkillValue.CriticalDamage;
 
 	RTCalculateNormalAttackResult(
 		Runtime,
@@ -295,11 +284,13 @@ Void RTCalculateSkillAttackResult(
 		Result
 	);
 
-	Attacker->Values[SkillAmpIndex] -= SkillAmp;
-	Attacker->Values[AttackIndex] -= Attack;
-	Attacker->Values[RUNTIME_ATTRIBUTE_ATTACK_RATE] -= AttackRate;
-	Attacker->Values[RUNTIME_ATTRIBUTE_PENETRATION] -= Penetration;
-	Attacker->Values[RUNTIME_ATTRIBUTE_CRITICAL_DAMAGE] -= CriticalDamage;
+	Attacker->Values[RUNTIME_ATTRIBUTE_SWORD_SKILL_AMP] -= SkillValue.SwordSkillAmp;
+	Attacker->Values[RUNTIME_ATTRIBUTE_MAGIC_SKILL_AMP] -= SkillValue.MagicSkillAmp;
+	Attacker->Values[RUNTIME_ATTRIBUTE_ATTACK] -= SkillValue.Attack;
+	Attacker->Values[RUNTIME_ATTRIBUTE_MAGIC_ATTACK] -= SkillValue.MagicAttack;
+	Attacker->Values[RUNTIME_ATTRIBUTE_ATTACK_RATE] -= SkillValue.AttackRate;
+	Attacker->Values[RUNTIME_ATTRIBUTE_PENETRATION] -= SkillValue.Penetration;
+	Attacker->Values[RUNTIME_ATTRIBUTE_CRITICAL_DAMAGE] -= SkillValue.CriticalDamage;
 
 	if (Result->AttackType == RUNTIME_ATTACK_TYPE_NORMAL) {
 		Result->SkillExp = Skill->SkillExp1;
