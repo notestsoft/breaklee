@@ -337,7 +337,12 @@ Void RTCharacterInitializeForceWingMastery(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 ) {
-    // TODO: Force wing values
+	Int32 ForceValue = MAX(0, Character->Data.ForceWingInfo.Info.Grade - 1) * 100 + Character->Data.ForceWingInfo.Info.Level;
+	RTCharacterApplyForceEffect(Runtime, Character, RUNTIME_FORCE_EFFECT_HP_UP, ForceValue, RUNTIME_FORCE_VALUE_TYPE_ADDITIVE);
+	RTCharacterApplyForceEffect(Runtime, Character, RUNTIME_FORCE_EFFECT_ALL_ATTACK_UP, ForceValue, RUNTIME_FORCE_VALUE_TYPE_ADDITIVE);
+	RTCharacterApplyForceEffect(Runtime, Character, RUNTIME_FORCE_EFFECT_DEFENSE_UP, ForceValue, RUNTIME_FORCE_VALUE_TYPE_ADDITIVE);
+
+    // TODO: Force wing training values
 }
 
 Void RTCharacterInitializeCollection(
