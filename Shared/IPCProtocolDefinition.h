@@ -306,6 +306,7 @@ IPC_PROTOCOL(D2W, GET_CHARACTER,
 	UInt32 CharacterIndex;
 	IPC_D2W_DATA_INITIALIZE_CHARACTER Character;
 	struct _RTCharacterSettingsInfo SettingsInfo;
+	struct _RTWarehouseInfo WarehouseInfo;
 	UInt8 Data[0];
 )
 

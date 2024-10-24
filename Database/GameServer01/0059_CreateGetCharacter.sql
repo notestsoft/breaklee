@@ -250,6 +250,8 @@ BEGIN
         Settings.HotKeysDataLength,
         Settings.OptionsDataLength,
         Settings.MacrosDataLength,
+        Warehouse.Count,
+        Warehouse.Currency,
         LENGTH(Characters.Name) AS NameLength,
         Characters.Name,
         Equipment.EquipmentSlotData,
@@ -310,7 +312,8 @@ BEGIN
         AnimaMastery.CategoryData,
         Settings.HotKeysData,
         Settings.OptionsData,
-        Settings.MacrosData
+        Settings.MacrosData,
+        Warehouse.SlotData
     FROM Characters
     LEFT JOIN Accounts ON Characters.AccountID = Accounts.AccountID
     LEFT JOIN Equipment ON Characters.CharacterID = Equipment.CharacterID
@@ -356,5 +359,6 @@ BEGIN
     LEFT JOIN AnimaMastery ON Characters.AccountID = AnimaMastery.AccountID
     LEFT JOIN Preset ON Characters.CharacterID = Preset.CharacterID
     LEFT JOIN Settings ON Characters.AccountID = Settings.AccountID
+    LEFT JOIN Warehouse ON Characters.AccountID = Warehouse.AccountID
     WHERE Characters.CharacterID = InCharacterID;
 END;

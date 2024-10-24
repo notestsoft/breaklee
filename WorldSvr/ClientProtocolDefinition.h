@@ -2725,24 +2725,22 @@ CLIENT_PROTOCOL(S2C, NFY_MESSAGE_BROADCAST, DEFAULT, 2091,
 CLIENT_PROTOCOL(S2C, NFY_CHARACTER_STATUS, DEFAULT, 2110,
     Int64 CurrentHP;
     Int32 CurrentMP;
-    Int32 UnknownShield1;
-    Int32 UnknownShield2;
-    UInt32 UnknownBattleMode1; // RestoreBattleMode[0]
-    UInt8 UnknownBattleModeIndex; // BattleModeIndex | RestoreBattleMode[1]
-    UInt8 UnknownBattleMode2; // RestoreBattleMode[2]
-    UInt8 UnknownBattleStyleMask; // BattleModeStyleMask | AwakenAuraMode | AuraSkillIndex
-    UInt8 UnknownBattleMode3; // RestoreBattleMode[3]
-    UInt8 UnknownBattleMode4; // RestoreBattleMode[4]
-    Int32 RemainingAuraDuration;
-    UInt8 Unknown1;
+    Int64 CurrentShield;
+    UInt32 BattleModeDuration;
+    UInt8 BattleModeIndex;
+    UInt8 BattleModeUnknown1;
+    UInt8 BattleModeStyleRank;
+    UInt8 AuraModeIndex;
+    UInt8 AuraModeUnknown1;
+    UInt8 AuraStyleRank;
+    UInt32 AuraDuration;
     Int32 VehicleState;
-    Int8 EffectorBuffCount;
-    Int8 UnknownBuffPotionCount1;
+    Int8 SkillBuffCount;
+    Int8 PotionBuffCount;
+    Int8 GmBuffCount;
     Int8 UnknownBuffCount1;
     Int8 UnknownBuffCount2;
-    Int8 UnknownBuffCount3;
-    Int8 UnknownBuffCount4;
-    Int8 UnknownBuffPotionCount2;
+    Int8 ForceWingBuffCount;
     // UInt8[30] BuffSlot[] for EffectorBuffCount, UnknownBuffPotionCount1, ..., UnknownBuffPotionCount2
 )
 

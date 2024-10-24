@@ -103,7 +103,7 @@ Bool RTCharacterDungeonQuestFlagIsSet(
 	RTCharacterRef Character,
 	Int32 DungeonIndex
 ) {
-	assert(0 <= DungeonIndex && DungeonIndex < RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_DUNGEON_FLAG_COUNT);
+	if (DungeonIndex < 0 || DungeonIndex >= RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_DUNGEON_FLAG_COUNT) return false;
 
 	return (Character->Data.QuestInfo.Info.FinishedDungeons[DungeonIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] & (1 << (DungeonIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE))) > 0;
 }

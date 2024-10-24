@@ -67,6 +67,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
     struct _RTExplorationSlot ExplorationSlots[RUNTIME_CHARACTER_MAX_EXPLORATION_SLOT_COUNT] = { 0 };
     struct _RTAnimaMasteryPresetData AnimaMasteryPresetData[RUNTIME_MAX_ANIMA_MASTERY_PRESET_COUNT] = { 0 };
     struct _RTAnimaMasteryCategoryData AnimaMasteryCategoryData[RUNTIME_MAX_ANIMA_MASTERY_STORAGE_COUNT * RUNTIME_MAX_ANIMA_MASTERY_CATEGORY_COUNT] = { 0 };
+    struct _RTItemSlot WarehouseSlots[RUNTIME_WAREHOUSE_TOTAL_SIZE] = { 0 };
 
     DatabaseHandleRef Handle = DatabaseCallProcedureFetch(
         Context->Database,
@@ -279,6 +280,8 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_INT32, &Response->SettingsInfo.HotKeysDataLength,
         DB_TYPE_INT32, &Response->SettingsInfo.OptionsDataLength,
         DB_TYPE_INT32, &Response->SettingsInfo.MacrosDataLength,
+        DB_TYPE_UINT16, &Response->WarehouseInfo.SlotCount,
+        DB_TYPE_INT64, &Response->WarehouseInfo.Currency,
         DB_TYPE_UINT8, &Response->Character.NameLength,
         DB_TYPE_STRING, &Response->Character.Name[0], sizeof(Response->Character.Name),
         DB_TYPE_DATA, &EquipmentSlots[0], sizeof(EquipmentSlots),
@@ -340,6 +343,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_DATA, &Response->SettingsInfo.HotKeysData[0], sizeof(Response->SettingsInfo.HotKeysData),
         DB_TYPE_DATA, &Response->SettingsInfo.OptionsData[0], sizeof(Response->SettingsInfo.OptionsData),
         DB_TYPE_DATA, &Response->SettingsInfo.MacrosData[0], sizeof(Response->SettingsInfo.MacrosData),
+        DB_TYPE_DATA, &WarehouseSlots[0], sizeof(WarehouseSlots),
         DB_PARAM_END
     )) {
         goto error;
@@ -403,6 +407,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, ExplorationSlots, sizeof(struct _RTExplorationSlot) * Response->Character.ExplorationInfo.SlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, AnimaMasteryPresetData, sizeof(struct _RTAnimaMasteryPresetData) * Response->Character.AnimaMasteryInfo.PresetCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, AnimaMasteryCategoryData, sizeof(struct _RTAnimaMasteryCategoryData) * Response->Character.AnimaMasteryInfo.StorageCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, WarehouseSlots, sizeof(struct _RTItemSlot) * Response->WarehouseInfo.SlotCount);
 
     Response->Success = true;
     IPCSocketUnicast(Socket, Response);

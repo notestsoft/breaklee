@@ -15,6 +15,7 @@ Void SendCharacterStatus(
     Notification->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
     Notification->CurrentMP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
     Notification->VehicleState = -1;
+    PacketBufferAppendValue(Connection->PacketBuffer, UInt8, 0); // NOTE: This is only appended when there is no dynamic data
     SocketSend(Socket, Connection, Notification);
 }
 
@@ -501,6 +502,14 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     Character->Data.PresetInfo = Packet->Character.PresetInfo;
     Character->Data.SettingsInfo = Packet->SettingsInfo;
+    Character->Data.WarehouseInfo.Info = Packet->WarehouseInfo;
+
+    if (Packet->WarehouseInfo.SlotCount > 0) {
+        Int32 Length = sizeof(struct _RTItemSlot) * Packet->WarehouseInfo.SlotCount;
+        memcpy(Character->Data.WarehouseInfo.Slots, Memory, Length);
+        Memory += Length;
+    }
+
     CStringCopySafe(Character->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->Character.Name);
 
     RTCharacterInitializeAttributes(Runtime, Character);
