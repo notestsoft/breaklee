@@ -373,7 +373,7 @@ Void RTWorldDespawnMob(
     if (Mob->Pattern) RTMobPatternStop(Runtime, WorldContext, Mob, Mob->Pattern);
 
     // TODO: This should be evaluated inside the mob it self!
-    if (!RTEntityIsNull(Mob->DropOwner)) { // TODO: Why do we check here if the mob has a drop owner?
+    if (!RTEntityIsNull(Mob->DropOwner) && Mob->DropOwner.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) { // TODO: Why do we check here if the mob has a drop owner?
         RTCharacterRef Character = RTWorldManagerGetCharacter(WorldContext->WorldManager, Mob->DropOwner);
         if (Character) {
             RTDropResult Drop = { 0 };
