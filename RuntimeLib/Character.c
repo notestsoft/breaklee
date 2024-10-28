@@ -121,7 +121,7 @@ Void RTCharacterInitializeBattleStyleStats(
 				RTBattleStyleSlopeDataRef SlopeData = RTRuntimeGetBattleStyleSlopeData(
 					Runtime,
 					StatsFormulaIndices[Index].SlopeID,
-					Character->Attributes.Values[StatsIndex]
+					Character->Attributes.Values[StatsIndices[StatsIndex]]
 				);
 
 				AttributeValue += Character->Attributes.Values[StatsIndices[StatsIndex]] * SlopeData->Slope + SlopeData->Intercept;
