@@ -22,8 +22,8 @@ Void SendEnvironmentNotification(
     CStringCopySafe(Notification->Name, 21, Context->Config.Environment.Name);
     Notification->AlertAveragePrice = Context->Config.Environment.AlertAveragePrice;
     Notification->EntrySlotCount = Context->Config.Environment.EntrySlotCount;
-    Notification->EntrySlotUnknown1 = 10140;
-    Notification->EntrySlotUnknown2 = 100;
+    Notification->EntrySlotDurationInMinutes = 10140;
+    Notification->EntrySlotMaxQuantity = 100;
     Notification->DefaultSlotCount = Context->Config.Environment.DefaultSlotCount;
     Notification->PremiumSlotCount = Context->Config.Environment.PremiumSlotCount;
     Notification->Unknown1 = 94371840;

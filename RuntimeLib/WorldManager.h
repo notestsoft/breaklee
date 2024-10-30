@@ -99,6 +99,10 @@ Void RTWorldContextDestroyParty(
     RTEntityID Party
 );
 
+Index RTWorldContextGetPartyInstanceCount(
+    RTWorldManagerRef WorldManager
+);
+
 RTCharacterRef RTWorldManagerCreateCharacter(
     RTWorldManagerRef WorldManager,
     Index CharacterIndex

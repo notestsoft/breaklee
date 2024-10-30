@@ -30,6 +30,10 @@ CONFIG_PARAMETER(Bool, AutoReconnect, "Database.AutoReconnect", 1)
 CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, MigrationDataPath, "Database.MigrationDataPath", Database\\GameServer01)
 CONFIG_END(Database)
 
+CONFIG_BEGIN(AuctionSvr)
+CONFIG_PARAMETER(Int16, CommissionRateForSell, "AuctionSvr.CommissionRateForSell", 400)
+CONFIG_END(AuctionSvr)
+
 CONFIG_BEGIN(MasterSvr)
 CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, Host, "MasterSvr.Host", 127.0.0.1)
 CONFIG_PARAMETER(UInt16, Port, "MasterSvr.Port", 38161)

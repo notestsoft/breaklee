@@ -1,7 +1,6 @@
 CREATE PROCEDURE InsertAuctionItem(
     IN InAccountID INT,
     IN InCharacterID INT,
-    IN InCharacterIndex INT UNSIGNED,
     IN InSlotIndex TINYINT,
     IN InItemID BIGINT UNSIGNED,
     IN InItemOptions BIGINT UNSIGNED,
@@ -54,7 +53,7 @@ BEGIN
         Category3, 
         Category4, 
         Category5, 
-        CharacterIndex,
+        CharacterID,
         CharacterName,
         ExpiresAt
     )
@@ -71,7 +70,7 @@ BEGIN
         InCategory3, 
         InCategory4, 
         InCategory5, 
-        InCharacterIndex,
+        InCharacterID,
         TempCharacterName,
         UNIX_TIMESTAMP() + InExpirationTime
     );

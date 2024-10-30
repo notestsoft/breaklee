@@ -54,6 +54,16 @@ CLIENT_PROTOCOL(S2C, LOGIN, DEFAULT, 403,
     UInt8 Result;
 )
 
+CLIENT_PROTOCOL(S2C, AUCTION_ITEM_SOLD, DEFAULT, 501,
+    UInt8 Unknown1;
+    UInt64 ItemID;
+    UInt64 ItemOptions;
+    UInt32 ItemDuration;
+    Int16 ItemCount;
+    Int64 ItemPrice;
+    UInt8 Unknown2[83];
+)
+
 #undef CLIENT_PROTOCOL_ENUM
 #undef CLIENT_PROTOCOL_STRUCT
 #undef CLIENT_PROTOCOL

@@ -379,6 +379,12 @@ Void RTWorldContextDestroyParty(
     DictionaryRemove(WorldManager->PartyToWorldContextPoolIndex, &Party);
 }
 
+Index RTWorldContextGetPartyInstanceCount(
+    RTWorldManagerRef WorldManager
+) {
+    return MemoryPoolGetReservedBlockCount(WorldManager->PartyWorldContextPool);
+}
+
 RTCharacterRef RTWorldManagerCreateCharacter(
     RTWorldManagerRef WorldManager,
     Index CharacterIndex

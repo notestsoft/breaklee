@@ -61,6 +61,7 @@ struct _PacketField {
 struct _PacketLayout {
     PacketManagerRef Manager;
     Index Index;
+    Bool IsIntrinsic;
     Char Name[MAX_PATH];
     ArrayRef Fields;
     DictionaryRef NameToField;
@@ -98,6 +99,29 @@ Bool PacketLayoutParse(
     lua_State* State
 );
 
+Void PacketManagerRegisterIntrinsics(
+    PacketManagerRef PacketManager
+) {
+    typedef Void(*Callback)(PacketLayoutRef, CString);
+
+    struct { CString Name; Callback Callback; } Intrinsics[] = {
+        { "i8", PacketLayoutAddInt8 },
+        { "i16", PacketLayoutAddInt16 },
+        { "i32", PacketLayoutAddInt32 },
+        { "i64", PacketLayoutAddInt64 },
+        { "u8", PacketLayoutAddUInt8 },
+        { "u16", PacketLayoutAddUInt16 },
+        { "u32", PacketLayoutAddUInt32 },
+        { "u64", PacketLayoutAddUInt64 }
+    };
+
+    for (Int32 Index = 0; Index < sizeof(Intrinsics) / sizeof(Intrinsics[0]); Index++) {
+        PacketLayoutRef PacketLayout = PacketManagerRegisterLayout(PacketManager, Intrinsics[Index].Name);
+        PacketLayout->IsIntrinsic = true;
+        Intrinsics[Index].Callback(PacketLayout, "$0");
+    }
+}
+
 PacketManagerRef PacketManagerCreate(
     AllocatorRef Allocator
 ) {
@@ -118,6 +142,7 @@ PacketManagerRef PacketManagerCreate(
     PacketManager->PacketLayouts = ArrayCreateEmpty(Allocator, sizeof(struct _PacketLayout), 8);
     PacketManager->NameToPacketLayout = CStringDictionaryCreate(Allocator, 8);
     PacketManager->CommandToPacketHandler = IndexDictionaryCreate(Allocator, 8);
+    PacketManagerRegisterIntrinsics(PacketManager);
     PacketManagerRegisterScriptAPI(PacketManager);
     return PacketManager;
 }
@@ -721,13 +746,31 @@ Bool PacketLayoutEncode(
     PacketBufferRef PacketBuffer,
     lua_State* State
 ) {
+    if (PacketLayout->IsIntrinsic) {
+        assert(ArrayGetElementCount(PacketLayout->Fields) == 1);
+
+        PacketFieldRef PacketField = (PacketFieldRef)ArrayGetElementAtIndex(PacketLayout->Fields, 0);
+        assert(CStringIsEqual(PacketField->Name, "$0"));
+
+        if (!lua_isinteger(State, -1)) {
+            Error("Invalid type '%s' given for field '%s' in layout '%s'", lua_typename(State, -1), PacketField->Name, PacketLayout->Name);
+            lua_pop(State, 1);
+            return false;
+        }
+
+        lua_Integer Value = lua_tointeger(State, -1);
+        PacketFieldWritePrimitive(PacketField, PacketBuffer, Value);
+        lua_pop(State, 1);
+        return true;
+    }
+
     if (!lua_istable(State, -1)) {
         return false;
     }
 
     for (Int32 FieldIndex = 0; FieldIndex < ArrayGetElementCount(PacketLayout->Fields); FieldIndex += 1) {
         PacketFieldRef PacketField = (PacketFieldRef)ArrayGetElementAtIndex(PacketLayout->Fields, FieldIndex);
-      
+
         if (PacketField->ArrayIndex >= 0) {
             PacketFieldRef ArrayField = (PacketFieldRef)ArrayGetElementAtIndex(PacketLayout->Fields, PacketField->ArrayIndex);
             

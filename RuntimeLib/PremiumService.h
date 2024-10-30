@@ -8,10 +8,12 @@ EXTERN_C_BEGIN
 #pragma pack(push, 1)
 
 struct _RTPremiumServiceSlot {
-	Int64 Index;
-	UInt8 Unknown1[16];
-	Int16 Order;
-	UInt32 Duration;
+	RTItem ItemID;
+	UInt64 ItemOptions;
+	Int32 UnknownCount;
+	Int32 Unknown1;
+	Int16 SlotIndex;
+	RTItemDuration Duration;
 };
 
 struct _RTPremiumServiceInfo {

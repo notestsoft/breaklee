@@ -43,6 +43,7 @@ IPC_PROCEDURE_BINDING(D2A, SEARCH) {
         ResponseSlot->StackSize = Packet->Results[Index].StackSize;
         ResponseSlot->PriceType = Packet->Results[Index].PriceType;
         ResponseSlot->Price = Packet->Results[Index].Price;
+        ResponseSlot->AccountID = Packet->Results[Index].AccountID;
         ResponseSlot->NameLength = strlen(Packet->Results[Index].CharacterName);
         PacketBufferAppendCString(ClientConnection->PacketBuffer, Packet->Results[Index].CharacterName);
     }

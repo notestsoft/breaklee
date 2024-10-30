@@ -13,7 +13,7 @@ CLIENT_PROCEDURE_BINDING(MESSAGE_NEARBY) {
 
 	S2C_DATA_MESSAGE_NEARBY* Notification = PacketBufferInit(Socket->PacketBuffer, S2C, MESSAGE_NEARBY);
 	Notification->CharacterIndex = Character->CharacterIndex;
-	Notification->Unknown1 = 0;
+	Notification->Nation = Character->Data.StyleInfo.Nation;
 	Notification->PayloadLength = Packet->PayloadLength;
 	PacketBufferAppendCopy(Socket->PacketBuffer, &Packet->Payload[0], Packet->PayloadLength);
 

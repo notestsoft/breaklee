@@ -165,7 +165,7 @@ IPC_PROCEDURE_BINDING(D2W, CREATE_CHARACTER) {
 	}
 	
 	S2C_DATA_CREATE_CHARACTER* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, CREATE_CHARACTER);
-	Response->CharacterIndex = Packet->Character.CharacterID * MAX_CHARACTER_COUNT + Packet->CharacterSlotIndex;
+	Response->CharacterIndex = Packet->Character.CharacterIndex;
 	Response->CharacterStatus = Packet->Status;
 	SocketSend(Context->ClientSocket, ClientConnection, Response);
 }

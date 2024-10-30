@@ -15,7 +15,6 @@ Void SendCharacterStatus(
     Notification->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
     Notification->CurrentMP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
     Notification->VehicleState = -1;
-    PacketBufferAppendValue(Connection->PacketBuffer, UInt8, 0); // NOTE: This is only appended when there is no dynamic data
     SocketSend(Socket, Connection, Notification);
 }
 
@@ -94,7 +93,6 @@ CLIENT_PROCEDURE_BINDING(INITIALIZE) {
     Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
     Request->Header.Target.Type = IPC_TYPE_MASTERDB;
 	Request->AccountID = Client->AccountID;
-    Request->CharacterID = (Packet->CharacterIndex - Packet->CharacterIndex % MAX_CHARACTER_COUNT) / MAX_CHARACTER_COUNT;
     Request->CharacterIndex = Packet->CharacterIndex;
     IPCSocketUnicast(Server->IPCSocket, Request);
     return;
@@ -268,10 +266,10 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         Memory += Length;
     }
 
-    Character->Data.BuffInfo.Info = Packet->Character.BuffInfo;
-    if (Packet->Character.BuffInfo.BuffCount > 0) {
-        Int32 Length = sizeof(struct _RTBuffSlot) * Packet->Character.BuffInfo.BuffCount;
-        memcpy(Character->Data.BuffInfo.Slots, Memory, Length);
+    Character->Data.CooldownInfo.Info = Packet->Character.CooldownInfo;
+    if (Packet->Character.CooldownInfo.SlotCount > 0) {
+        Int32 Length = sizeof(struct _RTCooldownSlot) * Packet->Character.CooldownInfo.SlotCount;
+        memcpy(Character->Data.CooldownInfo.Slots, Memory, Length);
         Memory += Length;
     }
 
@@ -522,7 +520,6 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         RUNTIME_WORLD_TILE_WALL
     );
 
-    Client->CharacterDatabaseID = Packet->CharacterID;
     Client->CharacterIndex = Packet->CharacterIndex;
 
     RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
@@ -588,7 +585,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->Server.MaxPlayerCount = Context->Config.WorldSvr.MaxConnectionCount;
     memcpy(Response->Server.Address.Host, Context->Config.WorldSvr.Host, strlen(Context->Config.WorldSvr.Host));
     Response->Server.Address.Port = Context->Config.WorldSvr.Port;
-    Response->Server.WorldType = (UInt32)Runtime->Environment.RawValue;
+    Response->Server.WorldType = Runtime->Environment.RawValue;
     Response->Entity = Character->ID;
     Response->CharacterInfo = Character->Data.Info;
     // TODO: Check if max hp or base hp is requested here...
@@ -699,7 +696,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
             sizeof(struct _RTKarmaAbilitySlot) * Character->Data.AbilityInfo.Info.KarmaAbilityCount
         );
     }
-    
+
     Response->BlessingBeadInfo = Character->Data.BlessingBeadInfo.Info;
     if (Character->Data.BlessingBeadInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(

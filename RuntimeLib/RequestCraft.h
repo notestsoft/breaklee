@@ -18,11 +18,10 @@ struct _RTRequestCraftSlot {
 
 struct _RTRequestCraftInfo {
     UInt8 SlotCount;
-    UInt16 Exp;
-    UInt8 Unknown1;
+    UInt32 Exp;
     UInt8 RegisteredFlags[1024];
+    UInt32 SortingOrder;
     UInt8 FavoriteFlags[1024];
-    UInt16 SortingOrder;
 };
 
 struct _RTCharacterRequestCraftInfo {

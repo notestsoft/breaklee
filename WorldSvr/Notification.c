@@ -70,6 +70,10 @@ NOTIFICATION_PROCEDURE_BINDING(MOBS_DESPAWN) {
     );
 }
 
+NOTIFICATION_PROCEDURE_BINDING(MOBS_DESPAWN_LIST) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
 NOTIFICATION_PROCEDURE_BINDING(ITEMS_SPAWN) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
     Trace("ItemsSpawn -> Character(%lld)",

@@ -136,7 +136,8 @@ struct _RTQuestInfo {
     UInt16 SlotCount;
     UInt8 FinishedQuests[RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT];
     UInt8 DeletedQuests[RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT];
-    UInt8 FinishedDungeons[RUNTIME_CHARACTER_MAX_QUEST_DUNGEON_FLAG_COUNT];
+    UInt8 FinishedQuestDungeons[RUNTIME_CHARACTER_MAX_QUEST_DUNGEON_FLAG_COUNT];
+    UInt8 FinishedMissionDungeons[RUNTIME_CHARACTER_MAX_MISSION_DUNGEON_FLAG_COUNT];
 };
 
 struct _RTCharacterQuestData {

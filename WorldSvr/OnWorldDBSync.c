@@ -19,7 +19,7 @@ Void ServerSyncCharacter(
 	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
 	Request->Header.Target.Type = IPC_TYPE_MASTERDB;
 	Request->AccountID = Client->AccountID;
-	Request->CharacterID = Client->CharacterDatabaseID;
+	Request->CharacterIndex = Client->CharacterIndex;
 	Request->SyncMask = Character->SyncMask;
 
 	if (Character->SyncMask.AccountInfo) {
@@ -167,14 +167,14 @@ Void ServerSyncCharacter(
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.RequestCraftInfo.Slots, sizeof(struct _RTRequestCraftSlot) * Character->Data.RequestCraftInfo.Info.SlotCount);
 	}
 
-	if (Character->SyncMask.BuffInfo) {
-		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.BuffInfo.Info, sizeof(struct _RTBuffInfo));
-		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.BuffInfo.Slots, sizeof(struct _RTBuffSlot) * Character->Data.BuffInfo.Info.BuffCount);
+	if (Character->SyncMask.CooldownInfo) {
+		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.CooldownInfo.Info, sizeof(struct _RTCooldownInfo));
+		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.CooldownInfo.Slots, sizeof(struct _RTCooldownSlot) * Character->Data.CooldownInfo.Info.SlotCount);
 	}
 
 	if (Character->SyncMask.VehicleInventoryInfo) {
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.VehicleInventoryInfo.Info, sizeof(struct _RTVehicleInventoryInfo));
-		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.VehicleInventoryInfo.Slots, sizeof(struct _RTBuffSlot) * Character->Data.VehicleInventoryInfo.Info.SlotCount);
+		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.VehicleInventoryInfo.Slots, sizeof(struct _RTItemSlot) * Character->Data.VehicleInventoryInfo.Info.SlotCount);
 	}
 
 	if (Character->SyncMask.WarpServiceInfo) {

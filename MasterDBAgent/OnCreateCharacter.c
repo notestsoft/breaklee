@@ -50,7 +50,7 @@ IPC_PROCEDURE_BINDING(W2D, CREATE_CHARACTER) {
 		DB_INPUT_UINT16(QuickSlotInfo->SlotCount),
 		DB_INPUT_DATA(QuickSlots, QuickSlotsLength),
         DB_OUTPUT_INT8(Response->Status),
-        DB_OUTPUT_INT32(Response->Character.CharacterID),
+        DB_OUTPUT_INT32(Response->Character.CharacterIndex),
 		DB_PARAM_END
 	);
 
@@ -58,7 +58,7 @@ IPC_PROCEDURE_BINDING(W2D, CREATE_CHARACTER) {
 		DatabaseHandleRef Handle = DatabaseCallProcedureFetch(
 			Context->Database,
 			"GetCharacterInfo",
-            DB_INPUT_INT32(Response->Character.CharacterID),
+            DB_INPUT_INT32(Response->Character.CharacterIndex),
 			DB_PARAM_END
 		);
 
@@ -67,7 +67,7 @@ IPC_PROCEDURE_BINDING(W2D, CREATE_CHARACTER) {
 			Context->Database,
 			Handle,
 			DB_TYPE_UINT8, &Response->CharacterSlotIndex,
-			DB_TYPE_INT32, &CharacterInfo.CharacterID,
+			DB_TYPE_INT32, &CharacterInfo.CharacterIndex,
 			DB_TYPE_UINT64, &CharacterInfo.CreationDate,
 			DB_TYPE_INT32, &CharacterInfo.Style,
 			DB_TYPE_INT32, &CharacterInfo.Level,

@@ -56,6 +56,12 @@ Index MemoryPoolGetBlockCount(
     return MemoryPool->BlockCount;
 }
 
+Index MemoryPoolGetReservedBlockCount(
+    MemoryPoolRef MemoryPool
+) {
+    return MemoryPool->ReservedBlockCount;
+}
+
 Bool MemoryPoolIsFull(
     MemoryPoolRef MemoryPool
 ) {

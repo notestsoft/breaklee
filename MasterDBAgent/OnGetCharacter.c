@@ -7,7 +7,6 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
     Response->Header.Target = Packet->Header.Source;
     Response->Header.TargetConnectionID = Packet->Header.SourceConnectionID;
     Response->AccountID = Packet->AccountID;
-    Response->CharacterID = Packet->CharacterID;
     Response->CharacterIndex = Packet->CharacterIndex;
 
     struct _RTItemSlot EquipmentSlots[RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT] = { 0 };
@@ -32,7 +31,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
     struct _RTAchievementRewardSlot AchievementRewardSlots[RUNTIME_CHARACTER_MAX_ACHIEVEMENT_SLOT_COUNT] = { 0 };
     struct _RTCraftSlot CraftSlots[RUNTIME_CHARACTER_MAX_CRAFT_SLOT_COUNT] = { 0 };
     struct _RTRequestCraftSlot RequestCraftSlots[RUNTIME_CHARACTER_MAX_REQUEST_CRAFT_SLOT_COUNT] = { 0 };
-    struct _RTBuffSlot BuffSlots[RUNTIME_CHARACTER_MAX_BUFF_SLOT_COUNT] = { 0 };
+    struct _RTCooldownSlot CooldownSlots[RUNTIME_CHARACTER_MAX_COOLDOWN_SLOT_COUNT] = { 0 };
     struct _RTGoldMeritMasterySlot GoldMeritMasterySlots[RUNTIME_CHARACTER_MAX_GOLD_MERIT_MASTERY_SLOT_COUNT] = { 0 };
     struct _RTPlatinumMeritExtendedMemorizeSlot PlatinumMeritExtendedMemorizeSlots[RUNTIME_CHARACTER_MAX_PLATINUM_MERIT_MEMORIZE_COUNT] = { 0 };
     struct _RTPlatinumMeritUnlockedSlot PlatinumMeritUnlockedSlots[RUNTIME_CHARACTER_MAX_PLATINUM_MERIT_MASTERY_SLOT_COUNT] = { 0 };
@@ -72,7 +71,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
     DatabaseHandleRef Handle = DatabaseCallProcedureFetch(
         Context->Database,
         "GetCharacter",
-        DB_INPUT_INT32(Packet->CharacterID),
+        DB_INPUT_INT32(Packet->CharacterIndex),
         DB_PARAM_END
     );
 
@@ -141,7 +140,8 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_INT16, &Response->Character.QuestInfo.SlotCount,
         DB_TYPE_DATA, &Response->Character.QuestInfo.FinishedQuests[0], sizeof(Response->Character.QuestInfo.FinishedQuests),
         DB_TYPE_DATA, &Response->Character.QuestInfo.DeletedQuests[0], sizeof(Response->Character.QuestInfo.DeletedQuests),
-        DB_TYPE_DATA, &Response->Character.QuestInfo.FinishedDungeons[0], sizeof(Response->Character.QuestInfo.FinishedDungeons),
+        DB_TYPE_DATA, &Response->Character.QuestInfo.FinishedQuestDungeons[0], sizeof(Response->Character.QuestInfo.FinishedQuestDungeons),
+        DB_TYPE_DATA, &Response->Character.QuestInfo.FinishedMissionDungeons[0], sizeof(Response->Character.QuestInfo.FinishedMissionDungeons),
         DB_TYPE_INT32, &Response->Character.DailyQuestInfo.SlotCount,
         DB_TYPE_INT32, &Response->Character.HelpWindow,
         DB_TYPE_UINT8, &Response->Character.AppearanceInfo.EquipmentAppearanceCount,
@@ -173,9 +173,8 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_DATA, &Response->Character.RequestCraftInfo.RegisteredFlags[0], sizeof(Response->Character.RequestCraftInfo.RegisteredFlags),
         DB_TYPE_DATA, &Response->Character.RequestCraftInfo.FavoriteFlags[0], sizeof(Response->Character.RequestCraftInfo.FavoriteFlags),
         DB_TYPE_INT16, &Response->Character.RequestCraftInfo.SortingOrder,
-        DB_TYPE_UINT8, &Response->Character.BuffInfo.SkillCooldownCount,
-        DB_TYPE_INT16, &Response->Character.BuffInfo.BuffCount,
-        DB_TYPE_INT32, &Response->Character.BuffInfo.SpiritRaiseBuffCooldown,
+        DB_TYPE_INT16, &Response->Character.CooldownInfo.SlotCount,
+        DB_TYPE_INT32, &Response->Character.CooldownInfo.SpiritRaiseCooldown,
         DB_TYPE_INT32, &Response->Character.UpgradeInfo.UpgradePoints,
         DB_TYPE_INT64, &Response->Character.UpgradeInfo.UpgradePointTimestamp,
         DB_TYPE_INT32, &Response->Character.GoldMeritMasteryInfo.SlotCount,
@@ -304,7 +303,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_DATA, &AchievementSlots[0], sizeof(AchievementSlots),
         DB_TYPE_DATA, &AchievementRewardSlots[0], sizeof(AchievementRewardSlots),
         DB_TYPE_DATA, &AchievementExtendedRewardSlots[0], sizeof(AchievementExtendedRewardSlots),
-        DB_TYPE_DATA, &BuffSlots[0], sizeof(BuffSlots),
+        DB_TYPE_DATA, &CooldownSlots[0], sizeof(CooldownSlots),
         DB_TYPE_DATA, &CraftSlots[0], sizeof(CraftSlots),
         DB_TYPE_DATA, &RequestCraftSlots[0], sizeof(RequestCraftSlots),
         DB_TYPE_DATA, &VehicleInventorySlots[0], sizeof(VehicleInventorySlots),
@@ -372,7 +371,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, AchievementRewardSlots, sizeof(struct _RTAchievementRewardSlot) * Response->Character.AchievementInfo.RewardSlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, CraftSlots, sizeof(struct _RTCraftSlot) * Response->Character.CraftInfo.SlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, RequestCraftSlots, sizeof(struct _RTRequestCraftSlot) * Response->Character.RequestCraftInfo.SlotCount);
-    IPCPacketBufferAppendCopy(Connection->PacketBuffer, BuffSlots, sizeof(struct _RTBuffSlot) * Response->Character.BuffInfo.BuffCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, CooldownSlots, sizeof(struct _RTCooldownSlot) * Response->Character.CooldownInfo.SlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, GoldMeritMasterySlots, sizeof(struct _RTGoldMeritMasterySlot) * Response->Character.GoldMeritMasteryInfo.SlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, PlatinumMeritExtendedMemorizeSlots, sizeof(struct _RTPlatinumMeritExtendedMemorizeSlot) * Response->Character.PlatinumMeritMasteryInfo.ExtendedMemorizeCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, PlatinumMeritUnlockedSlots, sizeof(struct _RTPlatinumMeritUnlockedSlot) * Response->Character.PlatinumMeritMasteryInfo.UnlockedSlotCount);

@@ -20,7 +20,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER_LIST) {
 		Context->Database,
 		Handle,
 		DB_TYPE_UINT8, &CharacterSlotIndex,
-		DB_TYPE_INT32, &CharacterInfo.CharacterID,
+		DB_TYPE_INT32, &CharacterInfo.CharacterIndex,
 		DB_TYPE_UINT64, &CharacterInfo.CreationDate,
 		DB_TYPE_INT32, &CharacterInfo.Style,
 		DB_TYPE_INT32, &CharacterInfo.Level,

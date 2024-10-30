@@ -82,9 +82,13 @@ Void RTCharacterDungeonQuestFlagClear(
 	RTCharacterRef Character,
 	Int32 DungeonIndex
 ) {
-	if (DungeonIndex < 0 || DungeonIndex >= RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_DUNGEON_FLAG_COUNT) return;
+	Bool IsMissionDungeon = DungeonIndex >= RUNTIME_CHARACTER_QUEST_DUNGEON_FLAG_LIMIT;
+	Int32 FlagIndex = DungeonIndex % RUNTIME_CHARACTER_QUEST_DUNGEON_FLAG_LIMIT;
+	if (FlagIndex < 0 || FlagIndex >= RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_DUNGEON_FLAG_COUNT) return;
 
-	Character->Data.QuestInfo.Info.FinishedDungeons[DungeonIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] &= ~(1 << (DungeonIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
+	UInt8* Flags = (IsMissionDungeon) ? &Character->Data.QuestInfo.Info.FinishedMissionDungeons[0] : &Character->Data.QuestInfo.Info.FinishedQuestDungeons[0];
+	Flags[FlagIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] &= ~(1 << (FlagIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
+
 	Character->SyncMask.QuestInfo = true;
 }
 
@@ -92,9 +96,12 @@ Void RTCharacterDungeonQuestFlagSet(
 	RTCharacterRef Character,
 	Index DungeonIndex
 ) {
-	if (DungeonIndex < 0 || DungeonIndex >= RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_DUNGEON_FLAG_COUNT) return;
+	Bool IsMissionDungeon = DungeonIndex >= RUNTIME_CHARACTER_QUEST_DUNGEON_FLAG_LIMIT;
+	Int32 FlagIndex = DungeonIndex % RUNTIME_CHARACTER_QUEST_DUNGEON_FLAG_LIMIT;
+	if (FlagIndex < 0 || FlagIndex >= RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_DUNGEON_FLAG_COUNT) return;
 
-	Character->Data.QuestInfo.Info.FinishedDungeons[DungeonIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] |= (1 << (DungeonIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
+	UInt8* Flags = (IsMissionDungeon) ? &Character->Data.QuestInfo.Info.FinishedMissionDungeons[0] : &Character->Data.QuestInfo.Info.FinishedQuestDungeons[0];
+	Flags[FlagIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] |= (1 << (FlagIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE));
 
 	Character->SyncMask.QuestInfo = true;
 }
@@ -103,9 +110,12 @@ Bool RTCharacterDungeonQuestFlagIsSet(
 	RTCharacterRef Character,
 	Int32 DungeonIndex
 ) {
-	if (DungeonIndex < 0 || DungeonIndex >= RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_DUNGEON_FLAG_COUNT) return false;
+	Bool IsMissionDungeon = DungeonIndex >= RUNTIME_CHARACTER_QUEST_DUNGEON_FLAG_LIMIT;
+	Int32 FlagIndex = DungeonIndex % RUNTIME_CHARACTER_QUEST_DUNGEON_FLAG_LIMIT;
+	if (FlagIndex < 0 || FlagIndex >= RUNTIME_CHARACTER_QUEST_FLAG_SIZE * RUNTIME_CHARACTER_MAX_QUEST_DUNGEON_FLAG_COUNT) return false;
 
-	return (Character->Data.QuestInfo.Info.FinishedDungeons[DungeonIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] & (1 << (DungeonIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE))) > 0;
+	UInt8* Flags = (IsMissionDungeon) ? &Character->Data.QuestInfo.Info.FinishedMissionDungeons[0] : &Character->Data.QuestInfo.Info.FinishedQuestDungeons[0];
+	return (Flags[FlagIndex / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] & (1 << (FlagIndex % RUNTIME_CHARACTER_QUEST_FLAG_SIZE))) > 0;
 }
 
 RTQuestSlotRef RTCharacterAddQuestSlot(

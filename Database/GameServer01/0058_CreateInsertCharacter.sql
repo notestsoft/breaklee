@@ -34,6 +34,7 @@ BEGIN
     DECLARE CHARACTER_STATUS_SUCCESS INT DEFAULT 0xA8;
     DECLARE MIN_NAME_LENGTH INT DEFAULT 4; 
     DECLARE MAX_NAME_LENGTH INT DEFAULT 16;
+    DECLARE MAX_SLOT_COUNT INT DEFAULT 16;
     
     DECLARE Success BOOLEAN DEFAULT FALSE;
     DECLARE IsNameOccupied INT DEFAULT 0;
@@ -44,6 +45,11 @@ BEGIN
 
     -- Label for the entire procedure
     ProcLabelBody: BEGIN
+
+        if InSlotIndex >= MAX_SLOT_COUNT THEN
+            SET OutStatus = CHARACTER_STATUS_NOT_ALLOWED;
+            LEAVE ProcLabelBody;
+        END IF;
 
         -- Check if the character name already exists
         SELECT COUNT(*) INTO IsNameOccupied
@@ -96,9 +102,9 @@ BEGIN
         
         START TRANSACTION;
 
-        INSERT INTO Characters (AccountID, Name, SlotIndex, Style, StatSTR, StatDEX, StatINT, WorldIndex, X, Y) VALUES (InAccountID, InName, InSlotIndex, InStyle, InStatSTR, InStatDEX, InStatINT, InWorldIndex, InPositionX, InPositionY);
+        SET OutCharacterID = InAccountID * MAX_SLOT_COUNT + InSlotIndex;
 
-        SET OutCharacterID = LAST_INSERT_ID();
+        INSERT INTO Characters (AccountID, CharacterID, Name, SlotIndex, Style, StatSTR, StatDEX, StatINT, WorldIndex, X, Y) VALUES (InAccountID, OutCharacterID, InName, InSlotIndex, InStyle, InStatSTR, InStatDEX, InStatINT, InWorldIndex, InPositionX, InPositionY);
 
         INSERT INTO Equipment (CharacterID, EquipmentSlotCount, InventorySlotCount, LinkSlotCount, LockSlotCount, EquipmentSlotData, InventorySlotData, LinkSlotData, LockSlotData) VALUES (OutCharacterID, InEquipmentSlotCount, InEquipmentInventorySlotCount, InEquipmentLinkSlotCount, InEquipmentLockSlotCount, InEquipmentSlotData, InEquipmentInventorySlotData, InEquipmentLinkSlotData, InEquipmentLockSlotData);
         INSERT INTO Inventory (CharacterID, SlotCount, SlotData) VALUES (OutCharacterID, InInventorySlotCount, InInventorySlotData);
@@ -107,7 +113,7 @@ BEGIN
         INSERT INTO Ability (CharacterID, EssenceAbilityData, BlendedAbilityData, KarmaAbilityData) VALUES (OutCharacterID, '', '', '');
         INSERT INTO BlessingBead (CharacterID, SlotData) VALUES (OutCharacterID, '');
         INSERT INTO PremiumService (CharacterID, SlotData) VALUES (OutCharacterID, '');
-        INSERT INTO Quest (CharacterID, FinishedQuestData, DeletedQuestData, FinishedDungeonData, QuestSlotData) VALUES (OutCharacterID, CONCAT(REPEAT(CHAR(0), 512)), CONCAT(REPEAT(CHAR(0), 128)), CONCAT(REPEAT(CHAR(0), 640)), '');
+        INSERT INTO Quest (CharacterID, FinishedQuestData, DeletedQuestData, FinishedQuestDungeonData, FinishedMissionDungeonData, QuestSlotData) VALUES (OutCharacterID, CONCAT(REPEAT(CHAR(0), 512)), CONCAT(REPEAT(CHAR(0), 512)), CONCAT(REPEAT(CHAR(0), 128)), CONCAT(REPEAT(CHAR(0), 128)),'');
         INSERT INTO DailyQuest (CharacterID, SlotData) VALUES (OutCharacterID, '');
         INSERT INTO Mercenary (CharacterID, SlotData) VALUES (OutCharacterID, '');
         INSERT INTO Appearance (CharacterID, EquipmentSlotData, InventorySlotData) VALUES (OutCharacterID, '', '');
@@ -115,7 +121,7 @@ BEGIN
         INSERT INTO AchievementExtended (CharacterID, SlotData) VALUES (OutCharacterID, '');
         INSERT INTO Craft (CharacterID, SlotData) VALUES (OutCharacterID, '');
         INSERT INTO RequestCraft (CharacterID, RegisteredFlagData, FavoriteFlagData, SlotData) VALUES (OutCharacterID, CONCAT(REPEAT(CHAR(0), 1024)), CONCAT(REPEAT(CHAR(0), 1024)), '');
-        INSERT INTO Buff (CharacterID, BuffSlotData) VALUES (OutCharacterID, '');
+        INSERT INTO Cooldown (CharacterID, CooldownSlotData) VALUES (OutCharacterID, '');
         INSERT INTO Upgrade (CharacterID) VALUES (OutCharacterID);
         INSERT INTO VehicleInventory (CharacterID, SlotData) VALUES (OutCharacterID, '');
         INSERT INTO WarpService (CharacterID, SlotData) VALUES (OutCharacterID, '');

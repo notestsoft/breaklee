@@ -316,6 +316,10 @@ struct _RTItemData {
 			Int32 MaxEvaluationCount;
 		} MeritMedal;
 
+		struct {
+			Int32 Index;
+		} BlessingBead;
+
 		// TODO: Add other item types like potion, pet, ...
 
 		struct { Int32 Options[22]; };

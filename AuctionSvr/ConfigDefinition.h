@@ -21,6 +21,8 @@ CONFIG_PARAMETER(Int32, MaxConnectionCount, "AuctionSvr.MaxConnectionCount", 5)
 CONFIG_PARAMETER(Int32, LogLevel, "AuctionSvr.LogLevel", 5)
 CONFIG_END(AuctionSvr)
 
+// TODO: Move Environment to database
+
 CONFIG_BEGIN(Environment)
 CONFIG_PARAMETER(Int16, MaxSearchResultCount, "Environment.MaxSearchResultCount", 100)
 CONFIG_PARAMETER(Int16, BuyListCooldown, "Environment.BuyListCooldown", 1)

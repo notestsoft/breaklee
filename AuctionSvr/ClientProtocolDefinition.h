@@ -73,8 +73,8 @@ CLIENT_PROTOCOL(S2C, SERVER_ENVIRONMENT, DEFAULT, 103,
     Char Name[21];
     UInt8 AlertAveragePrice;
     Int16 EntrySlotCount;
-    Int16 EntrySlotUnknown1;
-    Int16 EntrySlotUnknown2;
+    Int16 EntrySlotDurationInMinutes;
+    Int16 EntrySlotMaxQuantity;
     Int16 DefaultSlotCount;
     Int16 PremiumSlotCount;
     UInt32 Unknown1;
@@ -100,7 +100,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_SEARCH_RESULT_SLOT,
     Int16 StackSize;
     UInt8 PriceType;
     Int64 Price;
-    UInt32 CharacterIndex;
+    UInt32 AccountID;
     UInt8 NameLength;
     // Char Name[0];
     // UInt8 GuildNameLength;
@@ -124,7 +124,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_GET_ITEM_LIST_INDEX,
     UInt64 ItemOptions;
     UInt32 Unknown1;
     UInt16 ItemCount;
-    UInt8 Unknown2;
+    UInt8 ItemPriceType;
     UInt64 ItemPrice;
     UInt16 SoldItemCount;
     UInt64 ExpirationDate;
@@ -135,6 +135,38 @@ CLIENT_PROTOCOL(S2C, GET_ITEM_LIST, DEFAULT, 112,
     UInt8 Result;
     UInt8 ItemCount;
     // S2C_DATA_GET_ITEM_LIST_INDEX Items[0];
+)
+
+CLIENT_PROTOCOL(C2S, GUILD_INVENTORY_GET_ITEM_LIST, DEFAULT, 115,
+    // TODO: Add packet layout
+)
+
+CLIENT_PROTOCOL(S2C, GUILD_INVENTORY_GET_ITEM_LIST, DEFAULT, 115,
+    // TODO: Add packet layout
+)
+
+CLIENT_PROTOCOL(S2C, GUILD_INVENTORY_CHANGE_CURRENCY, DEFAULT, 116,
+    // TODO: Add packet layout
+)
+
+CLIENT_PROTOCOL(S2C, GUILD_INVENTORY_CHANGE_ITEM, DEFAULT, 117,
+    // TODO: Add packet layout
+)
+
+CLIENT_PROTOCOL(C2S, GUILD_INVENTORY_MERGE_ITEM, DEFAULT, 118,
+    // TODO: Add packet layout
+)
+
+CLIENT_PROTOCOL(S2C, GUILD_INVENTORY_MERGE_ITEM, DEFAULT, 118,
+    // TODO: Add packet layout
+)
+
+CLIENT_PROTOCOL(C2S, GUILD_INVENTORY_GET_HISTORY, DEFAULT, 119,
+    // TODO: Add packet layout
+)
+
+CLIENT_PROTOCOL(S2C, GUILD_INVENTORY_GET_HISTORY, DEFAULT, 119,
+    // TODO: Add packet layout
 )
 
 CLIENT_PROTOCOL(C2S, GET_ITEM_AVERAGE_PRICE, DEFAULT, 2001,

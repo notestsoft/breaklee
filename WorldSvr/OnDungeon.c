@@ -7,21 +7,42 @@
 CLIENT_PROCEDURE_BINDING(CHECK_DUNGEON_PLAYTIME) {
 	if (!Character) goto error;
 	
-    Trace("CheckDungeonPlayTime");
-	// TODO: Add xml data
+    RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, Packet->DungeonIndex);
+    if (!DungeonData) goto error;
 
-	S2C_DATA_CHECK_DUNGEON_PLAYTIME* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHECK_DUNGEON_PLAYTIME);
-	Response->DungeonID = Packet->DungeonID;
-	Response->MaxInstanceCount = 10;
-	Response->InstanceCount = 0;
-	Response->Unknown1[0] = 0x01;
-	Response->RemainingPlayTimeInSeconds = 21600;
-	Response->MaxEntryCount = 99;
+    RTDataDungeonGroupRef DungeonGroupData = RTRuntimeDataDungeonGroupGet(Runtime->Context, Packet->DungeonIndex);
+    if (!DungeonGroupData) goto error;
+
+    S2C_DATA_CHECK_DUNGEON_PLAYTIME* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHECK_DUNGEON_PLAYTIME);
+    Response->DungeonIndex = Packet->DungeonIndex;
+    Response->MaxInstanceCount = Runtime->WorldManager->MaxPartyWorldContextCount;
+    Response->InstanceCount = RTWorldContextGetPartyInstanceCount(Runtime->WorldManager);
+    Response->IsAccessible = Response->InstanceCount < Response->MaxInstanceCount;
+
+    if (DungeonData->IsElite) {
+        Response->MaxEliteEntryCount = 1;
+        Response->EliteEntryCount = 0;
+    }
+
+    RTDataDungeonTimeRef DungeonTimeData = RTRuntimeDataDungeonTimeGet(Runtime->Context, DungeonGroupData->DungeonGroup);
+    if (DungeonTimeData) {
+        for (Int32 Index = 0; Index < DungeonTimeData->DungeonPlayTimeCount; Index += 1) {
+            RTDataDungeonPlayTimeRef DungeonPlayTimeData = &DungeonTimeData->DungeonPlayTimeList[Index];
+            Response->WeekdayPlaytimeInSeconds[DungeonPlayTimeData->DayOfWeek] = DungeonPlayTimeData->PlayTime;
+        }
+    }
+
+    Response->RemainingPlaytimeInSeconds = 3600;
+    Response->MaxEntryCount = 1;
+    Response->EntryCount = 0;
 	SocketSend(Socket, Connection, Response);
     return;
 
 error:
-	SocketDisconnect(Socket, Connection);
+    {
+        S2C_DATA_CHECK_DUNGEON_PLAYTIME* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHECK_DUNGEON_PLAYTIME);
+        SocketSend(Socket, Connection, Response);
+    }
 }
 
 CLIENT_PROCEDURE_BINDING(GET_DUNGEON_REWARD_LIST) {

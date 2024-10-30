@@ -219,7 +219,6 @@ CLIENT_PROCEDURE_BINDING(OPEN_AUCTION_HOUSE) {
 	Notification->Header.Target.Group = Server->IPCSocket->NodeID.Group;
 	Notification->Header.Target.Type = IPC_TYPE_AUCTION;
 	Notification->AccountID = Client->AccountID;
-	Notification->CharacterID = Client->CharacterDatabaseID;
 	Notification->CharacterIndex = Client->CharacterIndex;
 	IPCSocketUnicast(Server->IPCSocket, Notification);
 	return;
@@ -237,7 +236,6 @@ CLIENT_PROCEDURE_BINDING(CLOSE_AUCTION_HOUSE) {
 	Notification->Header.Target.Group = Server->IPCSocket->NodeID.Group;
 	Notification->Header.Target.Type = IPC_TYPE_AUCTION;
 	Notification->AccountID = Client->AccountID;
-	Notification->CharacterID = Client->CharacterDatabaseID;
 	Notification->CharacterIndex = Client->CharacterIndex;
 	IPCSocketUnicast(Server->IPCSocket, Notification);
 	return;

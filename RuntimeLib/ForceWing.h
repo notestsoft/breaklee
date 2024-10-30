@@ -30,7 +30,7 @@ struct _RTForceWingInfo {
     UInt8 Grade;
     UInt8 Level;
     Int64 Exp;
-    Int64 Unknown1;
+    Int32 RegisteredMaterialCount[2];
     UInt8 ActivePresetIndex;
     UInt8 PresetEnabled[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT];
     Int32 PresetTrainingPointCount[RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT];

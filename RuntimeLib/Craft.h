@@ -15,11 +15,10 @@ struct _RTCraftSlot {
 };
 
 struct _RTCraftInfo {
-    Int32 Unknown1;
-    Int32 SlotCount;
-    UInt8 Unknown2;
+    UInt8 SlotCount;
+    UInt32 Unknown1;
     Int32 Energy;
-    UInt8 Unknown3[8];
+    UInt64 ChargingTimestamp;
 };
 
 struct _RTCharacterCraftData {

@@ -44,7 +44,6 @@ struct _ClientContext {
     //       verify that it is not called multiple times together with the DEINITIALIZE packet!
 
     /* Runtime Data */
-    Int32 CharacterDatabaseID;
     Index CharacterIndex;
 };
 typedef struct _ClientContext* ClientContextRef;

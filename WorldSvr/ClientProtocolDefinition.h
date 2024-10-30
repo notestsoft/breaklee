@@ -140,15 +140,16 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_SERVER,
     UInt8 ServerID;
     UInt8 WorldServerID;
     UInt16 PlayerCount;
-    UInt8 Unknown1[18];
+    UInt64 Unknown1;
+    UInt64 Unknown2;
+    UInt16 Unknown3;
     UInt8 MaxPlayerLevel;
     UInt8 MinPlayerLevel;
     UInt8 MaxRank;
     UInt8 MinRank;
     UInt16 MaxPlayerCount;
     S2C_DATA_INITIALIZE_SERVER_ADDRESS Address;
-    UInt32 WorldType;
-    UInt32 Unknown2;
+    UInt64 WorldType;
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_QUEST_INDEX,
@@ -239,14 +240,16 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     struct _RTBlessingBeadInfo BlessingBeadInfo;
     struct _RTPremiumServiceInfo PremiumServiceInfo;
     struct _RTQuestInfo QuestInfo;
-    UInt8 Unknown15[4097];
+    UInt8 DungeonBookmarkEnabled;
+    UInt8 DungeonBookmarkInfo[4096];
     struct _RTDailyQuestInfo DailyQuestInfo;
     UInt32 HelpWindow;
     struct _RTAppearanceInfo AppearanceInfo;
     struct _RTAchievementInfo AchievementInfo;
     struct _RTCraftInfo CraftInfo;
     struct _RTRequestCraftInfo RequestCraftInfo;
-    struct _RTBuffInfo BuffInfo;
+    Int32 Unknown3;
+    struct _RTCooldownInfo CooldownInfo;
     struct _RTUpgradeInfo UpgradeInfo;
     struct _RTGoldMeritMasteryInfo GoldMeritMasteryInfo;
     struct _RTPlatinumMeritMasteryInfo PlatinumMeritMasteryInfo;
@@ -254,13 +257,15 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     struct _RTAchievementExtendedInfo AchievementExtendedInfo;
     UInt32 ForceGem;
     struct _RTWarpServiceInfo WarpServiceInfo;
-    UInt16 Unknown3332[5];
+    Int32 Unknown1;
+    Int32 Unknown2;
+    Int16 FrontierStoneCount;
     struct _RTOverlordMasteryInfo OverlordMasteryInfo;
     struct _RTHonorMedalInfo HonorMedalInfo;
     struct _RTForceWingInfo ForceWingInfo;
-    UInt8 Unknown2111[1];
+    UInt8 Unknown2111;
     struct _RTGiftBoxInfo GiftBoxInfo;
-    struct { UInt32 RewardIndex; UInt64 Unknown1; } GuildRewardSlots[3];
+    struct { UInt32 RewardIndex; UInt64 Timestamp; } GuildRewardSlots[3];
     struct _RTCollectionInfo CollectionInfo;
     struct _RTTransformInfo TransformInfo;
     UInt8 Unknown32[6];
@@ -947,7 +952,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_MESSAGE_NEARBY_PAYLOAD,
 
 CLIENT_PROTOCOL(S2C, MESSAGE_NEARBY, DEFAULT, 217,
     UInt32 CharacterIndex;
-    UInt8 Unknown1;
+    UInt8 Nation;
     UInt16 PayloadLength;
     UInt8 Payload[0];
 )
@@ -1523,6 +1528,12 @@ CLIENT_PROTOCOL(S2C, NFY_PARTY_QUEST_MISSION_MOB_KILL, DEFAULT, 379,
     UInt16 MobSpeciesIndex;
 )
 
+CLIENT_PROTOCOL(S2C, MOB_SPECIAL_BUFF, DEFAULT, 390,
+    RTEntityID MobID;
+    UInt64 CurrentHP;
+    UInt32 ReceivedDamage;
+)
+
 CLIENT_PROTOCOL(C2S, CHANGE_DIRECTION, DEFAULT, 391,
     Float32 Direction;
 )
@@ -1620,6 +1631,33 @@ CLIENT_PROTOCOL(S2C, NFY_MOB_ATTACK_AOE, DEFAULT, 413,
     S2C_DATA_MOB_ATTACK_TARGET Data[0];
 )
 
+CLIENT_PROTOCOL(C2S, HEART_BEAT, DEFAULT, 420,
+)
+
+CLIENT_PROTOCOL(S2C, HEART_BEAT, DEFAULT, 420,
+)
+
+CLIENT_PROTOCOL(C2S, DESTROY_CASH_ITEM, DEFAULT, 422,
+    UInt64 ItemID;
+    UInt8 InventoryType;
+    UInt16 InventorySlotIndex;
+)
+
+CLIENT_PROTOCOL(S2C, DESTROY_CASH_ITEM, DEFAULT, 422,
+    UInt8 Result;
+    UInt32 Unknown1;
+    UInt64 Unknown2;
+    UInt64 Unknown3;
+    UInt64 Unknown4;
+    UInt64 Unknown5;
+)
+
+CLIENT_PROTOCOL(S2C, NFY_DESTROY_CASH_ITEM, DEFAULT, 423,
+    UInt64 ItemID;
+    UInt8 InventoryType;
+    UInt16 InventorySlotIndex;
+)
+
 CLIENT_PROTOCOL(C2S, GET_CASH_INVENTORY, DEFAULT, 428,
     Int32 Unknown1;
 )
@@ -1633,6 +1671,22 @@ CLIENT_PROTOCOL(S2C, GET_CASH_INVENTORY, DEFAULT, 428,
     UInt8 Unknown1;
     UInt16 Count;
     S2C_DATA_GET_CASH_INVENTORY_SLOT_INDEX Slots[0];
+)
+
+CLIENT_PROTOCOL_STRUCT(C2S_DATA_INITIALIZE_GUILD_PAYLOAD,
+    UInt16 GuildNameLength;
+    Char GuildName[0];
+)
+
+CLIENT_PROTOCOL(C2S, INITIALIZE_GUILD, DEFAULT, 445,
+    UInt32 GuildIndex;
+    UInt32 CharacterIndex;
+    UInt16 PayloadLength;
+//    C2S_DATA_INITIALIZE_GUILD_PAYLOAD Payload;
+)
+
+CLIENT_PROTOCOL(S2C, INITIALIZE_GUILD, DEFAULT, 445,
+    UInt8 Result;
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_ENVIRONMENT_WORLD_RESTRICTION,
@@ -1696,25 +1750,36 @@ CLIENT_PROTOCOL(S2C, GET_SERVER_ENVIRONMENT, DEFAULT, 464,
 )
 
 CLIENT_PROTOCOL(S2C, NFY_PC_BANG_ALERT, DEFAULT, 480,
-    // TODO: Add playload
+    UInt8 Status;
+    UInt32 RemainingTime;
+    UInt32 RemainingPoints;
 )
 
 CLIENT_PROTOCOL(C2S, CHECK_DUNGEON_PLAYTIME, DEFAULT, 485,
-    UInt32 DungeonID;
+    Int32 DungeonIndex;
 )
 
 CLIENT_PROTOCOL(S2C, CHECK_DUNGEON_PLAYTIME, DEFAULT, 485,
-    UInt32 DungeonID;
+    Int32 DungeonIndex;
     Int32 MaxInstanceCount;
     Int32 InstanceCount;
-    UInt32 Unknown1[3];
-    UInt16 Unknown2;
-    UInt16 RemainingPlayTimeInSeconds;
-    UInt32 Unknown3[7];
-    UInt16 Unknown4;
-    UInt16 MaxEntryCount;
-    UInt16 Unknown5;
-    UInt32 Unknown6;
+    UInt8 IsAccessible;
+    UInt32 Unknown2;
+    UInt8 MaxEliteEntryCount;
+    UInt8 EliteEntryCount;
+    UInt8 Unknown22;
+    UInt8 Unknown23;
+    UInt8 Unknown24;
+    UInt32 Unknown5;
+    UInt32 RemainingPlaytimeInSeconds;
+    UInt32 WeekdayPlaytimeInSeconds[7];
+    UInt8 MaxEntryCount;
+    UInt8 EntryCount;
+    UInt8 Unknown18;
+    UInt8 Unknown19;
+    UInt8 Unknown20;
+    UInt32 Unknown14;
+    UInt32 Unknown15;
 )
 
 CLIENT_PROTOCOL(C2S, PUSH_EQUIPMENT_ITEM, DEFAULT, 486,
@@ -2010,10 +2075,27 @@ CLIENT_PROTOCOL(S2C, UPGRADE_ITEM_LEVEL, DEFAULT, 951,
     UInt32 RemainingCoreCount;
 )
 
+CLIENT_PROTOCOL(C2S, AUCTION_HOUSE_BUY_ITEM, DEFAULT, 969,
+    Int32 AccountID;
+    UInt8 Unknown1;
+    UInt64 ItemID;
+    UInt64 ItemOptions;
+    UInt32 ItemOptionExtended;
+    UInt8 ItemPriceType;
+    Int64 ItemPrice;
+    Char ItemName[101];
+    UInt16 InventorySlotCount;
+    UInt16 InventorySlotIndex[0];
+)
+
+CLIENT_PROTOCOL(S2C, AUCTION_HOUSE_BUY_ITEM, DEFAULT, 969,
+    UInt8 Result;
+)
+
 CLIENT_PROTOCOL(C2S, AUCTION_HOUSE_REGISTER_ITEM, DEFAULT, 970,
     UInt8 SlotIndex;
     UInt16 ItemCount;
-    UInt8 Unknown1;
+    UInt8 ItemPriceType;
     UInt64 ItemPrice;
     UInt16 InventorySlotIndex[0];
 )
@@ -2033,10 +2115,21 @@ CLIENT_PROTOCOL(S2C, AUCTION_HOUSE_UNREGISTER_ITEM, DEFAULT, 971,
     UInt8 Result;
 )
 
+CLIENT_PROTOCOL(C2S, AUCTION_HOUSE_PROCEED_ITEM, DEFAULT, 972,
+    UInt8 SlotIndex;
+    UInt8 UseCoupon;
+    UInt16 InventorySlotIndex;
+)
+
+CLIENT_PROTOCOL(S2C, AUCTION_HOUSE_PROCEED_ITEM, DEFAULT, 972,
+    UInt8 Result;
+    Int32 SoldItemCount;
+)
+
 CLIENT_PROTOCOL(C2S, AUCTION_HOUSE_UPDATE_ITEM, DEFAULT, 973,
     UInt8 SlotIndex;
     UInt16 ItemCount;
-    UInt8 Unknown1;
+    UInt8 ItemPriceType;
     UInt64 ItemPrice;
     UInt8 ItemCountDecreased;
     UInt16 InventorySlotCount;
@@ -2470,6 +2563,11 @@ CLIENT_PROTOCOL(S2C, BUY_SKILLBOOK, DEFAULT, 2003,
     UInt32 Unknown3[6];
 )
 
+CLIENT_PROTOCOL(S2C, PARTY_QUEST_INFO, DEFAULT, 2004,
+    UInt8 Unknown1;
+    UInt16 Unknown2;
+)
+
 CLIENT_PROTOCOL(S2C, NFY_QUEST_MOB_KILL, DEFAULT, 2006,
     Int16 MobSpeciesIndex;
     Int32 SkillIndex;
@@ -2722,6 +2820,16 @@ CLIENT_PROTOCOL(S2C, NFY_MESSAGE_BROADCAST, DEFAULT, 2091,
     S2C_DATA_NFY_MESSAGE_BROADCAST_PAYLOAD Payload;
 )
 
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_CHARACTER_STATUS_BUFF,
+    Int32 SkillIndex;
+    Int32 SkillLevel;
+    Int32 Duration;
+    UInt8 Unknown1[10];
+    Int32 SkillTranscendenceLevel;
+    Int32 SkillTranscendenceIndex;
+    UInt8 Unknown2[66];
+)
+
 CLIENT_PROTOCOL(S2C, NFY_CHARACTER_STATUS, DEFAULT, 2110,
     Int64 CurrentHP;
     Int32 CurrentMP;
@@ -2741,6 +2849,7 @@ CLIENT_PROTOCOL(S2C, NFY_CHARACTER_STATUS, DEFAULT, 2110,
     Int8 UnknownBuffCount1;
     Int8 UnknownBuffCount2;
     Int8 ForceWingBuffCount;
+    Int8 FirePlaceBuffCount;
     // UInt8[30] BuffSlot[] for EffectorBuffCount, UnknownBuffPotionCount1, ..., UnknownBuffPotionCount2
 )
 

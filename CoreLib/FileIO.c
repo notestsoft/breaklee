@@ -28,7 +28,7 @@ Void OnFileSystemEvent(
         Trace("File modified: %s\n", FileName ? FileName : "---");
 
         FileEventRef Context = (FileEventRef)Event->data;
-        Context->Callback(FileName, Context->UserData);
+        Context->Callback((CString)FileName, Context->UserData);
     }
 }
 

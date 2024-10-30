@@ -10,7 +10,7 @@
 #include "AuraMastery.h"
 #include "BattleSystem.h"
 #include "BlessingBead.h"
-#include "Buff.h"
+#include "Cooldown.h"
 #include "Collection.h"
 #include "Costume.h"
 #include "Craft.h"

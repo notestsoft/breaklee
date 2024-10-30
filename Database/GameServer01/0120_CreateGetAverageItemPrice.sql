@@ -7,5 +7,7 @@ BEGIN
     SELECT COALESCE(AVG(ItemPrice), 0)
     INTO OutPrice
     FROM AuctionItems
-    WHERE ItemID = InItemID AND ItemOptions = InItemOptions;
+    WHERE ItemID = InItemID 
+      AND ItemOptions = InItemOptions 
+      AND ItemCount > SoldItemCount;
 END

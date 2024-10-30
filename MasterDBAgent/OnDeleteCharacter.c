@@ -6,13 +6,13 @@ IPC_PROCEDURE_BINDING(W2D, DELETE_CHARACTER) {
 	Response->Header.Source = Server->IPCSocket->NodeID;
 	Response->Header.Target = Packet->Header.Source;
 	Response->Header.TargetConnectionID = Packet->Header.SourceConnectionID;
-	Response->CharacterID = Packet->CharacterID;
+	Response->CharacterIndex = Packet->CharacterIndex;
 
 	if (!DatabaseCallProcedure(
 		Context->Database,
 		"DeleteCharacter",
 		DB_INPUT_INT32(Packet->AccountID),
-		DB_INPUT_INT32(Packet->CharacterID),
+		DB_INPUT_INT32(Packet->CharacterIndex),
 		DB_OUTPUT_BOOL(Response->Success),
 		DB_PARAM_END
 	)) {

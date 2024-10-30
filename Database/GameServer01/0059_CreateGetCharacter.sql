@@ -111,7 +111,8 @@ BEGIN
         Quest.QuestSlotCount,
         Quest.FinishedQuestData,
         Quest.DeletedQuestData,
-        Quest.FinishedDungeonData,
+        Quest.FinishedQuestDungeonData,
+        Quest.FinishedMissionDungeonData,
         DailyQuest.SlotCount,
         0 AS HelpWindow,
         Appearance.EquipmentSlotCount,
@@ -143,9 +144,8 @@ BEGIN
         RequestCraft.RegisteredFlagData,
         RequestCraft.FavoriteFlagData,
         RequestCraft.SortingOrder,
-        Buff.SkillCooldownCount,
-        Buff.BuffSlotCount,
-        Buff.SpiritRaiseBuffCooldown,
+        Cooldown.CooldownSlotCount,
+        Cooldown.SpiritRaiseCooldown,
         Upgrade.Point,
         Upgrade.Timestamp,
         GoldMeritMastery.MasterySlotCount,
@@ -274,7 +274,7 @@ BEGIN
         Achievement.SlotData,
         Achievement.RewardSlotData,
         AchievementExtended.SlotData,
-        Buff.BuffSlotData,
+        Cooldown.CooldownSlotData,
         Craft.SlotData,
         RequestCraft.SlotData,
         VehicleInventory.SlotData,
@@ -331,7 +331,7 @@ BEGIN
     LEFT JOIN Achievement ON Characters.CharacterID = Achievement.CharacterID
     LEFT JOIN Craft ON Characters.CharacterID = Craft.CharacterID
     LEFT JOIN RequestCraft ON Characters.CharacterID = RequestCraft.CharacterID
-    LEFT JOIN Buff ON Characters.CharacterID = Buff.CharacterID
+    LEFT JOIN Cooldown ON Characters.CharacterID = Cooldown.CharacterID
     LEFT JOIN Upgrade ON Characters.CharacterID = Upgrade.CharacterID
     LEFT JOIN GoldMeritMastery ON Characters.AccountID = GoldMeritMastery.AccountID
     LEFT JOIN PlatinumMeritMastery ON Characters.AccountID = PlatinumMeritMastery.AccountID

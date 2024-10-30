@@ -8,10 +8,9 @@
 CLIENT_PROCEDURE_BINDING(AUTH_ACCOUNT) {
 	if (!Client->Flags & CLIENT_FLAGS_CONNECTED) goto error;
 
-	Client->CharacterIndex = Packet->CharacterIndex;
 	Client->WorldServerIndex = Packet->WorldServerIndex;
 	Client->AccountID = -1;
-	Client->CharacterID = -1;
+	Client->CharacterIndex = Packet->CharacterIndex;
 	return;
 
 error:
@@ -24,7 +23,7 @@ IPC_PROCEDURE_BINDING(W2A, VERIFY_LINKS) {
 	ClientConnection = Client->Connection;
 
 	Client->AccountID = Packet->AccountID;
-	Client->CharacterID = Packet->CharacterID;
+	Client->CharacterIndex = Packet->CharacterIndex;
 
 	S2C_DATA_AUTH_ACCOUNT* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, AUTH_ACCOUNT);
 	SocketSend(Context->ClientSocket, ClientConnection, Response);

@@ -26,6 +26,10 @@ Index MemoryPoolGetBlockCount(
     MemoryPoolRef MemoryPool
 );
 
+Index MemoryPoolGetReservedBlockCount(
+    MemoryPoolRef MemoryPool
+);
+
 Bool MemoryPoolIsFull(
     MemoryPoolRef MemoryPool
 );

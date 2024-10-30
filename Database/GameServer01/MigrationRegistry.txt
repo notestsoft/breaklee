@@ -17,7 +17,7 @@ AddMigration 0016_CreateAppearance.sql
 AddMigration 0017_CreateAchievement.sql
 AddMigration 0018_CreateCraft.sql
 AddMigration 0019_CreateRequestCraft.sql
-AddMigration 0020_CreateBuff.sql
+AddMigration 0020_CreateCooldown.sql
 AddMigration 0021_CreateUpgrade.sql
 AddMigration 0022_CreateGoldMeritMastery.sql
 AddMigration 0023_CreatePlatinumMeritMastery.sql
@@ -88,7 +88,7 @@ AddMigration 0089_CreateSyncAppearance.sql
 AddMigration 0090_CreateSyncAchievement.sql
 AddMigration 0091_CreateSyncCraft.sql
 AddMigration 0092_CreateSyncRequestCraft.sql
-AddMigration 0093_CreateSyncBuff.sql
+AddMigration 0093_CreateSyncCooldown.sql
 AddMigration 0094_CreateSyncVehicleInventory.sql
 AddMigration 0095_CreateSyncWarpService.sql
 AddMigration 0096_CreateSyncOverlordMastery.sql
@@ -119,3 +119,8 @@ AddMigration 0120_CreateGetAverageItemPrice.sql
 AddMigration 0121_CreateGetMinimumItemPrice.sql
 AddMigration 0122_CreateInsertAuctionItem.sql
 AddMigration 0123_CreateSearchAuctionItems.sql
+AddMigration 0124_CreateBuyAuctionItem.sql
+AddMigration 0125_CreateProceedAuctionItem.sql
+AddMigration 0126_CreateDeleteAuctionItem.sql
+AddMigration 0127_CreateUpdateAuctionItemIncrease.sql
+AddMigration 0128_CreateUpdateAuctionItemDecrease.sql

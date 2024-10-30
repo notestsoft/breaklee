@@ -7,7 +7,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 	Response->Header.Target = Packet->Header.Source;
 	Response->Header.TargetConnectionID = Packet->Header.SourceConnectionID;
 	Response->AccountID = Packet->AccountID;
-	Response->CharacterID = Packet->CharacterID;
+	Response->CharacterIndex = Packet->CharacterIndex;
 	Response->SyncMaskFailed.RawValue = 0;
 
 	UInt8* Memory = (UInt8*)&Packet->Data[0];
@@ -251,7 +251,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncCharacter",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_UINT16(Info->PKState.RawValue),
 				DB_INPUT_UINT8(Info->Level),
 				DB_INPUT_UINT64(Info->Exp),
@@ -289,7 +289,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncCharacterStyle",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_UINT8(Info->Nation),
 				DB_INPUT_UINT32(Info->WarpMask),
 				DB_INPUT_UINT32(Info->MapsMask),
@@ -312,7 +312,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncEquipment",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_UINT8(Info->EquipmentSlotCount),
 				DB_INPUT_UINT8(Info->InventorySlotCount),
 				DB_INPUT_UINT8(Info->LinkSlotCount),
@@ -334,7 +334,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncInventory",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_UINT16(Info->SlotCount),
 				DB_INPUT_DATA(Slots, SlotsLength),
 				DB_PARAM_END
@@ -350,7 +350,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncSkillSlot",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_UINT16(Info->SlotCount),
 				DB_INPUT_DATA(Slots, SlotsLength),
 				DB_PARAM_END
@@ -366,7 +366,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncQuickSlot",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_UINT16(Info->SlotCount),
 				DB_INPUT_DATA(Slots, SlotsLength),
 				DB_PARAM_END
@@ -384,7 +384,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncAbility",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_UINT16(Info->APTotal),
 				DB_INPUT_UINT16(Info->AP),
 				DB_INPUT_UINT32(Info->Axp),
@@ -410,7 +410,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncBlessingBead",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_UINT8(Info->SlotCount),
 				DB_INPUT_DATA(Slots, SlotsLength),
 				DB_PARAM_END
@@ -426,7 +426,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncPremiumService",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_UINT8(Info->SlotCount),
 				DB_INPUT_DATA(Slots, SlotsLength),
 				DB_PARAM_END
@@ -442,11 +442,12 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncQuest",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_UINT16(Info->SlotCount),
 				DB_INPUT_DATA(&Info->FinishedQuests[0], sizeof(Info->FinishedQuests)),
 				DB_INPUT_DATA(&Info->DeletedQuests[0], sizeof(Info->DeletedQuests)),
-				DB_INPUT_DATA(&Info->FinishedDungeons[0], sizeof(Info->FinishedDungeons)),
+				DB_INPUT_DATA(&Info->FinishedQuestDungeons[0], sizeof(Info->FinishedQuestDungeons)),
+				DB_INPUT_DATA(&Info->FinishedMissionDungeons[0], sizeof(Info->FinishedMissionDungeons)),
 				DB_INPUT_DATA(Slots, SlotsLength),
 				DB_PARAM_END
 			)) {
@@ -461,7 +462,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncDailyQuest",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_UINT32(Info->SlotCount),
 				DB_INPUT_DATA(Slots, SlotsLength),
 				DB_PARAM_END
@@ -477,7 +478,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncMercenary",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_UINT16(Info->SlotCount),
 				DB_INPUT_DATA(Slots, SlotsLength),
 				DB_PARAM_END
@@ -494,7 +495,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncAppearance",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_INT8(Info->EquipmentAppearanceCount),
 				DB_INPUT_INT16(Info->InventoryAppearanceCount),
 				DB_INPUT_DATA(EquipmentSlots, EquipmentSlotsLength),
@@ -513,7 +514,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncAchievement",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_INT32(Info->AllAchievementScore),
 				DB_INPUT_INT32(Info->NormalAchievementScore),
 				DB_INPUT_INT32(Info->QuestAchievementScore),
@@ -549,7 +550,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncCraft",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_INT32(Info->SlotCount),
 				DB_INPUT_INT32(Info->Energy),
 				DB_INPUT_DATA(Slots, SlotsLength),
@@ -566,7 +567,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncRequestCraft",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_UINT8(Info->SlotCount),
 				DB_INPUT_UINT16(Info->Exp),
 				DB_INPUT_DATA(&Info->RegisteredFlags[0], sizeof(Info->RegisteredFlags)),
@@ -579,21 +580,20 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			}
 		}
 
-		if (Packet->SyncMask.BuffInfo) {
-			ReadMemory(struct _RTBuffInfo, Info, 1);
-			ReadMemory(struct _RTBuffSlot, Slots, Info->BuffCount);
+		if (Packet->SyncMask.CooldownInfo) {
+			ReadMemory(struct _RTCooldownInfo, Info, 1);
+			ReadMemory(struct _RTCooldownSlot, Slots, Info->SlotCount);
 
 			if (!DatabaseCallProcedure(
 				Context->Database,
-				"SyncBuff",
-				DB_INPUT_INT32(Packet->CharacterID),
-				DB_INPUT_UINT8(Info->SkillCooldownCount),
-				DB_INPUT_UINT16(Info->BuffCount),
-				DB_INPUT_UINT32(Info->SpiritRaiseBuffCooldown),
+				"SyncCooldown",
+				DB_INPUT_INT32(Packet->CharacterIndex),
+				DB_INPUT_UINT8(Info->SlotCount),
+				DB_INPUT_UINT32(Info->SpiritRaiseCooldown),
 				DB_INPUT_DATA(Slots, SlotsLength),
 				DB_PARAM_END
 			)) {
-				Response->SyncMaskFailed.BuffInfo = true;
+				Response->SyncMaskFailed.CooldownInfo = true;
 			}
 		}
 
@@ -604,7 +604,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncVehicleInventory",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_INT16(Info->SlotCount),
 				DB_INPUT_DATA(Slots, SlotsLength),
 				DB_PARAM_END
@@ -620,7 +620,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncWarpService",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_INT32(Info->SlotCount),
 				DB_INPUT_DATA(Slots, SlotsLength),
 				DB_PARAM_END
@@ -636,7 +636,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncOverlordMastery",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_INT16(Info->Level),
 				DB_INPUT_INT64(Info->Exp),
 				DB_INPUT_INT16(Info->Point),
@@ -655,7 +655,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncHonorMedal",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_INT32(Info->Grade),
 				DB_INPUT_INT32(Info->Score),
 				DB_INPUT_INT8(Info->SlotCount),
@@ -674,7 +674,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncForceWing",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_UINT8(Info->Grade),
 				DB_INPUT_UINT8(Info->Level),
 				DB_INPUT_INT64(Info->Exp),
@@ -702,7 +702,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncGiftbox",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_INT16(Info->SpecialPoints),
 				DB_INPUT_UINT8(Info->SlotCount),
 				DB_INPUT_DATA(Slots, SlotsLength),
@@ -720,7 +720,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncTransform",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_UINT16(Info->SlotCount),
 				DB_INPUT_DATA(Slots, SlotsLength),
 				DB_PARAM_END
@@ -736,7 +736,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncSkillTranscendence",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_INT32(Info->Points),
 				DB_INPUT_INT32(Info->SlotCount),
 				DB_INPUT_DATA(Slots, SlotsLength),
@@ -753,7 +753,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncStellarMastery",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_UINT8(Info->SlotCount),
 				DB_INPUT_DATA(Slots, SlotsLength),
 				DB_PARAM_END
@@ -769,7 +769,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncMythMastery",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_INT32(Info->Rebirth),
 				DB_INPUT_INT32(Info->HolyPower),
 				DB_INPUT_INT32(Info->Level),
@@ -793,7 +793,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncNewbieSupport",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_UINT64(Info->Timestamp),
 				DB_INPUT_INT32(Info->SlotCount),
 				DB_INPUT_DATA(Slots, SlotsLength),
@@ -811,7 +811,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncCostume",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_INT32(Info->PageCount),
 				DB_INPUT_INT32(Info->AppliedSlotCount),
 				DB_INPUT_INT32(Info->ActivePageIndex),
@@ -830,7 +830,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncTemporaryInventory",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_UINT16(Info->SlotCount),
 				DB_INPUT_DATA(Slots, SlotsLength),
 				DB_PARAM_END
@@ -847,7 +847,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncRecovery",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_INT32(Info->SlotCount),
 				DB_INPUT_DATA(Prices, PricesLength),
 				DB_INPUT_DATA(Slots, SlotsLength),
@@ -863,7 +863,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncRecovery",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_DATA(&Info->Configurations[0], sizeof(Info->Configurations)),
 				DB_INPUT_INT32(Info->ActiveEquipmentPresetIndex),
 				DB_INPUT_INT32(Info->ActiveAnimaMasteryPresetIndex),
@@ -880,7 +880,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncAuraMastery",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_INT32(Info->Points),
 				DB_INPUT_INT32(Info->AccumulatedTimeInMinutes),
 				DB_INPUT_INT8(Info->SlotCount),
@@ -897,7 +897,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncAuraMastery",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_UINT8(Info->RefreshCost),
 				DB_INPUT_DATA(&Info->Slots[0], sizeof(Info->Slots)),
 				DB_PARAM_END
@@ -913,7 +913,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncDamageBooster",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_DATA(Info->ItemID, sizeof(Info->ItemID)),
 				DB_INPUT_INT8(Info->SlotCount),
 				DB_INPUT_DATA(Slots, SlotsLength),
@@ -930,7 +930,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			if (!DatabaseCallProcedure(
 				Context->Database,
 				"SyncExploration",
-				DB_INPUT_INT32(Packet->CharacterID),
+				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_INT64(Info->EndDate),
 				DB_INPUT_INT32(Info->Points),
 				DB_INPUT_INT32(Info->Level),

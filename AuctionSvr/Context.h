@@ -27,10 +27,9 @@ struct _ClientContext {
     SocketConnectionRef Connection;
     UInt32 Flags;
     UInt32 AuthKey;	
-    UInt32 CharacterIndex;
     Int32 WorldServerIndex;
     Int32 AccountID;
-    Int32 CharacterID;
+    Int32 CharacterIndex;
 };
 typedef struct _ClientContext* ClientContextRef;
 

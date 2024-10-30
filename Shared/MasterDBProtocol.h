@@ -16,7 +16,7 @@ typedef struct {
 
 typedef struct {
     Int64 AccountID;
-    Int32 CharacterID;
+    Int32 CharacterIndex;
     Char Name[MAX_CHARACTER_NAME_LENGTH + 1];
     UInt8 Index;
     Timestamp CreatedAt;
@@ -26,7 +26,7 @@ typedef struct {
 typedef struct {
     Int32 AccountID;
 
-    Int32 CharacterID;
+    Int32 CharacterIndex;
     Char Name[MAX_CHARACTER_NAME_LENGTH + 1];
     UInt8 Index;
 

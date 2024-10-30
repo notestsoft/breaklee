@@ -10,10 +10,8 @@ CLIENT_PROCEDURE_BINDING(DELETE_CHARACTER) {
 
     for (Int32 Index = 0; Index < MAX_CHARACTER_COUNT; Index++) {
         IPC_DATA_CHARACTER_INFO* Character = &Client->Characters[Index];
-        if (Character->CharacterID < 1) continue;
-
-        UInt32 CharacterIndex = Character->CharacterID * MAX_CHARACTER_COUNT + Index;
-        if (CharacterIndex != Packet->CharacterIndex) continue;
+        if (Character->CharacterIndex < 1) continue;
+        if (Character->CharacterIndex != Packet->CharacterIndex) continue;
 
         IPC_W2D_DATA_DELETE_CHARACTER* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2D, DELETE_CHARACTER);
         Request->Header.SourceConnectionID = Client->Connection->ID;
@@ -21,7 +19,7 @@ CLIENT_PROCEDURE_BINDING(DELETE_CHARACTER) {
         Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
         Request->Header.Target.Type = IPC_TYPE_MASTERDB;
         Request->AccountID = Client->AccountID;
-        Request->CharacterID = Character->CharacterID;
+        Request->CharacterIndex = Character->CharacterIndex;
         IPCSocketUnicast(Server->IPCSocket, Request);
         return;
     }
@@ -41,10 +39,8 @@ IPC_PROCEDURE_BINDING(D2W, DELETE_CHARACTER) {
 
     for (Int32 Index = 0; Index < MAX_CHARACTER_COUNT; Index++) {
         IPC_DATA_CHARACTER_INFO* Character = &Client->Characters[Index];
-        if (Character->CharacterID < 1) continue;
-
-        UInt32 CharacterIndex = Character->CharacterID * MAX_CHARACTER_COUNT + Index;
-        if (Character->CharacterID != Packet->CharacterID) continue;
+        if (Character->CharacterIndex < 1) continue;
+        if (Character->CharacterIndex != Packet->CharacterIndex) continue;
 
         memset(Character, 0, sizeof(IPC_DATA_CHARACTER_INFO));
         break;

@@ -35,6 +35,7 @@ IPC_PROCEDURE_BINDING(D2A, GET_ITEM_LIST) {
 		ResponseItem->ItemOptions = Packet->Items[Index].ItemOptions;
 		ResponseItem->ItemCount = Packet->Items[Index].ItemCount;
 		ResponseItem->ItemPrice = Packet->Items[Index].ItemPrice;
+		ResponseItem->ItemPriceType = 0;
 		ResponseItem->SoldItemCount = Packet->Items[Index].SoldItemCount;
 		ResponseItem->ExpirationDate = Packet->Items[Index].ExpirationDate;
 		ResponseItem->RegistrationDate = Packet->Items[Index].RegistrationDate;

@@ -3,7 +3,8 @@ CREATE PROCEDURE SyncQuest (
     IN InQuestSlotCount SMALLINT UNSIGNED,
     IN InFinishedQuestData BLOB,
     IN InDeletedQuestData BLOB,
-    IN InFinishedDungeonData BLOB,
+    IN InFinishedQuestDungeonData BLOB,
+    IN InFinishedMissinDungeonData BLOB,
     IN InQuestSlotData BLOB
 )
 BEGIN
@@ -12,7 +13,8 @@ BEGIN
         QuestSlotCount = InQuestSlotCount,
         FinishedQuestData = InFinishedQuestData,
         DeletedQuestData = InDeletedQuestData,
-        FinishedDungeonData = InFinishedDungeonData,
+        FinishedQuestDungeonData = InFinishedQuestDungeonData,
+        FinishedMissinDungeonData = InFinishedMissinDungeonData,
         QuestSlotData = InQuestSlotData
     WHERE CharacterID = InCharacterID;
 END;

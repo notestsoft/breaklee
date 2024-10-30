@@ -33,15 +33,6 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER_LIST) {
     Response->IsSubpasswordSet = Client->IsSubpasswordSet;
     Response->CanJoinBeginnerGuild = 0;
     Response->AccountInfo = Client->AccountInfo;
-
-    for (Int32 Index = 0; Index < MAX_CHARACTER_COUNT; Index++) {
-        IPC_DATA_CHARACTER_INFO* Character = &Packet->Characters[Index];
-        if (Character->CharacterID < 1) continue;
-
-        Character->CharacterID = Character->CharacterID * MAX_CHARACTER_COUNT + Index;
-        Character->Style = Character->Style;
-    }
-
     memcpy(Response->Characters, Packet->Characters, sizeof(Packet->Characters));
     SocketSend(Context->ClientSocket, ClientConnection, Response);
 }

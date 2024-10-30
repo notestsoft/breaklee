@@ -1,6 +1,6 @@
 CREATE TABLE Characters (
     AccountID INT NOT NULL,
-    CharacterID INT NOT NULL AUTO_INCREMENT,
+    CharacterID INT NOT NULL,
     Name VARCHAR(17) NOT NULL,
     SlotIndex TINYINT UNSIGNED NOT NULL,
     Style INT UNSIGNED NOT NULL, 

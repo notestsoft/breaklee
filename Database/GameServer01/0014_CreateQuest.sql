@@ -3,7 +3,8 @@ CREATE TABLE Quest (
     QuestSlotCount SMALLINT UNSIGNED NOT NULL DEFAULT 0,
     FinishedQuestData BLOB NOT NULL,
     DeletedQuestData BLOB NOT NULL,
-    FinishedDungeonData BLOB NOT NULL,
+    FinishedQuestDungeonData BLOB NOT NULL,
+    FinishedMissionDungeonData BLOB NOT NULL,
     QuestSlotData BLOB NOT NULL,
 
     PRIMARY KEY (CharacterID),
