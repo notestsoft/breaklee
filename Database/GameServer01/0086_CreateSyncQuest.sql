@@ -4,7 +4,7 @@ CREATE PROCEDURE SyncQuest (
     IN InFinishedQuestData BLOB,
     IN InDeletedQuestData BLOB,
     IN InFinishedQuestDungeonData BLOB,
-    IN InFinishedMissinDungeonData BLOB,
+    IN InFinishedMissionDungeonData BLOB,
     IN InQuestSlotData BLOB
 )
 BEGIN
@@ -14,7 +14,7 @@ BEGIN
         FinishedQuestData = InFinishedQuestData,
         DeletedQuestData = InDeletedQuestData,
         FinishedQuestDungeonData = InFinishedQuestDungeonData,
-        FinishedMissinDungeonData = InFinishedMissinDungeonData,
+        FinishedMissionDungeonData = InFinishedMissionDungeonData,
         QuestSlotData = InQuestSlotData
     WHERE CharacterID = InCharacterID;
 END;
