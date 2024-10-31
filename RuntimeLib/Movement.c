@@ -20,10 +20,10 @@ Void RTMovementInitialize(
 	Movement->PositionCurrent.Y = Y;
 	Movement->PositionEnd.X = X;
 	Movement->PositionEnd.Y = Y;
-	Movement->Speed = (Float32)Speed / RUNTIME_MOVEMENT_SPEED_SCALE;
 	Movement->CollisionMask = CollisionMask;
 	Movement->IgnoreMask = 0;
 	Movement->TickCount = (UInt32)PlatformGetTickCount();
+	RTMovementSetSpeed(Runtime, Movement, Speed);
 }
 
 Void RTMovementStartDeadReckoning(
@@ -110,6 +110,7 @@ Void RTMovementUpdateDeadReckoning(
 
 	while (Overflow >= Movement->Distance) {
 		Movement->Base += Movement->Distance;
+
 		WaypointA = WaypointB;
 
 		if (Movement->WaypointIndex + 2 >= Movement->WaypointCount) {

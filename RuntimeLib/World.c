@@ -248,16 +248,16 @@ Void RTWorldSpawnMob(
         }
     }
 
+    RTMobInit(Runtime, Mob);
     RTMovementInitialize(
         Runtime,
         &Mob->Movement,
         X,
         Y,
-        Mob->SpeciesData->MoveSpeed,
+        Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
         CollisionMask
     );
 
-    RTMobInit(Runtime, Mob);
     Mob->ActiveSkill = &Mob->SpeciesData->DefaultSkill;
     Mob->IsDead = false;
     Mob->IsIdle = true;
@@ -577,16 +577,16 @@ Void RTWorldRespawnMob(
         }
     }
 
+    RTMobInit(Runtime, Mob);
     RTMovementInitialize(
         Runtime,
         &Mob->Movement,
         X,
         Y,
-        Mob->SpeciesData->MoveSpeed,
+        Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
         CollisionMask
     );
 
-    RTMobInit(Runtime, Mob);
     Mob->ActiveSkill = &Mob->SpeciesData->DefaultSkill;
     Mob->IsDead = false;
     Mob->IsIdle = true;

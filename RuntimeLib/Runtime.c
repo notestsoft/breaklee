@@ -1,6 +1,7 @@
 #include "Character.h"
 #include "Force.h"
 #include "Mob.h"
+#include "MobPatrol.h"
 #include "MobPattern.h"
 #include "PartyManager.h"
 #include "Runtime.h"
@@ -45,6 +46,7 @@ RTRuntimeRef RTRuntimeCreate(
     Runtime->DropTable.QuestDropPool = IndexDictionaryCreate(Runtime->Allocator, 8);
     Runtime->SkillDataPool = MemoryPoolCreate(Allocator, sizeof(struct _RTCharacterSkillData), RUNTIME_MEMORY_MAX_CHARACTER_SKILL_DATA_COUNT);
     Runtime->ForceEffectFormulaPool = MemoryPoolCreate(Allocator, sizeof(struct _RTForceEffectFormula), RUNTIME_FORCE_EFFECT_COUNT);
+    Runtime->MobPatrolDataPool = MemoryPoolCreate(Allocator, sizeof(struct _RTMobPatrolData), RUNTIME_MEMORY_MAX_MOB_PATROL_COUNT);
     Runtime->MobPatternDataPool = MemoryPoolCreate(Allocator, sizeof(struct _RTMobPatternData), RUNTIME_MEMORY_MAX_MOB_PATTERN_COUNT);
     Runtime->DungeonData = IndexDictionaryCreate(Allocator, 8);
     Runtime->PatternPartData = IndexDictionaryCreate(Allocator, 8);
@@ -103,6 +105,18 @@ Void RTRuntimeDestroy(
         Iterator = DictionaryKeyIteratorNext(Iterator);
     }
 
+    for (Int32 Index = 0; Index < MemoryPoolGetBlockCount(Runtime->MobPatrolDataPool); Index += 1) {
+        if (!MemoryPoolIsReserved(Runtime->MobPatrolDataPool, Index)) continue;
+
+        RTMobPatrolDataRef MobPatrolData = (RTMobPatternDataRef)MemoryPoolFetch(Runtime->MobPatrolDataPool, Index);
+        for (Int32 BranchIndex = 0; BranchIndex < ArrayGetElementCount(MobPatrolData->Branches); BranchIndex += 1) {
+            RTMobPatrolBranchDataRef BranchData = (RTMobPatrolBranchDataRef)ArrayGetElementAtIndex(MobPatrolData->Branches, BranchIndex);
+            ArrayDestroy(BranchData->Waypoints);
+        }
+        
+        ArrayDestroy(MobPatrolData->Branches);
+    }
+
     for (Int32 Index = 0; Index < MemoryPoolGetBlockCount(Runtime->MobPatternDataPool); Index += 1) {
         if (!MemoryPoolIsReserved(Runtime->MobPatternDataPool, Index)) continue;
 
@@ -114,6 +128,7 @@ Void RTRuntimeDestroy(
     DictionaryDestroy(Runtime->PatternPartData);
     MemoryPoolDestroy(Runtime->SkillDataPool);
     MemoryPoolDestroy(Runtime->ForceEffectFormulaPool);
+    MemoryPoolDestroy(Runtime->MobPatrolDataPool);
     MemoryPoolDestroy(Runtime->MobPatternDataPool);
     ArrayDestroy(Runtime->DropTable.WorldDropPool);
     DictionaryDestroy(Runtime->DropTable.MobDropPool);

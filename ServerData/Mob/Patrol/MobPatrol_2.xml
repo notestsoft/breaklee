@@ -1,0 +1,11 @@
+<MobPatrol>
+    <Branch Index="1" LinkList="2">
+        <Waypoint Type="1" X="14" Y="96" Delay="3000" />
+    </Branch>
+    <Branch Index="2" LinkList="3">
+        <Waypoint Type="0" X="26" Y="99" Delay="3000" />
+    </Branch>
+    <Branch Index="3" LinkList="1">
+        <Waypoint Type="1" X="20" Y="91" Delay="3000" />
+    </Branch>
+</MobPatrol>

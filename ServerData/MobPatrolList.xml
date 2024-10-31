@@ -1,3 +1,7 @@
 <MobPatrolList>
-	<MobPattern Index="1" FilePath="Mob/Patrol/MobPatrol_1.xml"/>
+	<MobPatrol Index="1" FilePath="Mob/Patrol/MobPatrol_1.xml"/>
+	<MobPatrol Index="2" FilePath="Mob/Patrol/MobPatrol_2.xml"/>
+	<MobPatrol Index="3" FilePath="Mob/Patrol/MobPatrol_3.xml"/>
+	<MobPatrol Index="4" FilePath="Mob/Patrol/MobPatrol_4.xml"/>
+	<MobPatrol Index="5" FilePath="Mob/Patrol/MobPatrol_5.xml"/>
 </MobPatrolList>

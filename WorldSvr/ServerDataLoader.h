@@ -74,6 +74,12 @@ Bool ServerLoadWorldDropData(
     CString ServerDirectory
 );
 
+Bool ServerLoadMobPatrolData(
+    ServerContextRef Context,
+    CString RuntimeDirectory,
+    CString ServerDirectory
+);
+
 Bool ServerLoadMobPatternData(
     ServerContextRef Context,
     CString RuntimeDirectory,

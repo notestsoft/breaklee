@@ -789,8 +789,8 @@ Bool ServerLoadMobData(
 
         MobData->MobSpeciesIndex = Index;
         MobData->Level = ArchiveMobData->Level;
-        MobData->MoveSpeed = ArchiveMobData->MovementSpeed / 100;
-        MobData->ChaseSpeed = ArchiveMobData->ChaseSpeed / 100;
+        MobData->MoveSpeed = ArchiveMobData->MovementSpeed;
+        MobData->ChaseSpeed = ArchiveMobData->ChaseSpeed;
         MobData->Radius = 0; // TODO: Load radius from mobs data
         MobData->Property = ArchiveMobData->Property;
         MobData->AttackPattern = ArchiveMobData->AttackPattern;
@@ -972,6 +972,7 @@ Bool ServerLoadWorldMobData(
         if (!ParseAttributeInt32(Archive, ChildIterator->Index, "SpawnDefault", &Mob->Spawn.SpawnDefault)) goto error;
         if (!ParseAttributeInt32(Archive, ChildIterator->Index, "MissionGate", &Mob->Spawn.IsMissionGate)) goto error;
         if (!ParseAttributeInt32(Archive, ChildIterator->Index, "PerfectDrop", &Mob->Spawn.PerfectDrop)) goto error;
+        ParseAttributeInt32(Archive, ChildIterator->Index, "MobPatrolIndex", &Mob->Spawn.MobPatrolIndex);
         if (!ParseAttributeInt32(Archive, ChildIterator->Index, "MobPatternIndex", &Mob->Spawn.MobPatternIndex)) goto error;
         
         Char MobScriptFileName[MAX_PATH] = { 0 };
@@ -2227,6 +2228,87 @@ Bool ServerLoadWorldDropData(
 
 error:
     ArchiveDestroy(Archive);
+    return false;
+}
+
+Bool ServerLoadMobPatrolData(
+    ServerContextRef Context,
+    CString RuntimeDirectory,
+    CString ServerDirectory
+) {
+    RTRuntimeRef Runtime = Context->Runtime;
+    ArchiveRef Archive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
+    ArchiveRef PatrolArchive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
+    CString FilePath = PathCombineAll(ServerDirectory, "MobPatrolList.xml", NULL);
+
+    if (!ArchiveLoadFromFile(Archive, FilePath, false)) goto error;
+
+    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "MobPatrolList");
+    if (ParentIndex < 0) goto error;
+
+    ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "MobPatrol");
+    while (Iterator) {
+        ArchiveClear(PatrolArchive, true);
+
+        Index PatrolIndex = -1;
+        if (!ParseAttributeIndex(Archive, Iterator->Index, "Index", &PatrolIndex)) goto error;
+
+        Char FilePath[MAX_PATH] = { 0 };
+        if (!ParseAttributeString(Archive, Iterator->Index, "FilePath", FilePath, MAX_PATH)) goto error;
+
+        CString PatternFilePath = PathCombineAll(ServerDirectory, FilePath, NULL);
+        if (!ArchiveLoadFromFile(PatrolArchive, PatternFilePath, false)) goto error;
+
+        Int64 PatrolParentIndex = ArchiveNodeGetChildByPath(PatrolArchive, -1, "MobPatrol");
+        if (PatrolParentIndex < 0) goto error;
+
+        RTMobPatrolDataRef PatrolData = (RTMobPatrolDataRef)MemoryPoolReserve(Runtime->MobPatrolDataPool, PatrolIndex);
+        PatrolData->Index = (Int32)PatrolIndex;
+        PatrolData->Branches = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTMobPatrolBranchData), 8);
+
+        ArchiveIteratorRef BranchIterator = ArchiveQueryNodeIteratorFirst(PatrolArchive, PatrolParentIndex, "Branch");
+        while (BranchIterator) {
+            RTMobPatrolBranchDataRef BranchData = (RTMobPatrolBranchDataRef)ArrayAppendUninitializedElement(PatrolData->Branches);
+            memset(BranchData, 0, sizeof(struct _RTMobPatrolBranchData));
+            BranchData->Waypoints = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTMobPatrolWaypointData), 8);
+
+            if (!ParseAttributeInt32(PatrolArchive, BranchIterator->Index, "Index", &BranchData->Index)) goto error;
+
+            BranchData->LinkCount = ParseAttributeInt32ArrayCounted(
+                PatrolArchive,
+                BranchIterator->Index,
+                "LinkList",
+                &BranchData->LinkList,
+                RUNTIME_MOB_PATROL_MAX_LINK_COUNT,
+                ','
+            );
+
+            ArchiveIteratorRef WaypointIterator = ArchiveQueryNodeIteratorFirst(PatrolArchive, BranchIterator->Index, "Waypoint");
+            while (WaypointIterator) {
+                RTMobPatrolWaypointDataRef WaypointData = (RTMobPatrolWaypointDataRef)ArrayAppendUninitializedElement(BranchData->Waypoints);
+                memset(WaypointData, 0, sizeof(struct _RTMobPatrolWaypointData));
+
+                if (!ParseAttributeInt32(PatrolArchive, WaypointIterator->Index, "Type", &WaypointData->Type)) goto error;
+                if (!ParseAttributeInt32(PatrolArchive, WaypointIterator->Index, "X", &WaypointData->X)) goto error;
+                if (!ParseAttributeInt32(PatrolArchive, WaypointIterator->Index, "Y", &WaypointData->Y)) goto error;
+                if (!ParseAttributeInt32(PatrolArchive, WaypointIterator->Index, "Delay", &WaypointData->Delay)) goto error;
+
+                WaypointIterator = ArchiveQueryNodeIteratorNext(PatrolArchive, WaypointIterator);
+            }
+
+            BranchIterator = ArchiveQueryNodeIteratorNext(PatrolArchive, BranchIterator);
+        }
+
+        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+    }
+
+    ArchiveDestroy(Archive);
+    ArchiveDestroy(PatrolArchive);
+    return true;
+
+error:
+    ArchiveDestroy(Archive);
+    ArchiveDestroy(PatrolArchive);
     return false;
 }
 

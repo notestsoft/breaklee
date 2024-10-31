@@ -4,6 +4,7 @@
 #include "BattleSystem.h"
 #include "Entity.h"
 #include "Movement.h"
+#include "MobPatrol.h"
 #include "MobPattern.h"
 
 EXTERN_C_BEGIN
@@ -146,6 +147,7 @@ struct _RTMobPhaseData {
 struct _RTMobSpawnData {
 	Index PatternPartIndex;
 	Index MobSpeciesIndex;
+	Int32 MobPatrolIndex;
 	Int32 MobPatternIndex;
 	Int32 AreaX;
 	Int32 AreaY;
@@ -227,6 +229,7 @@ struct _RTMob {
 	struct _RTMobAggroData Aggro;
     struct _RTMovement Movement;
 	struct _RTBattleAttributes Attributes;
+	struct _RTMobPatrol Patrol;
 	
 	Int32 EnemyCount;
 	Int32 Enemies[RUNTIME_MEMORY_MAX_MOB_ENEMY_COUNT];

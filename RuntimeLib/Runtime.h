@@ -82,6 +82,7 @@ struct _RTRuntime {
     Float32 MovementDistanceCache[RUNTIME_MOVEMENT_MAX_DISTANCE_LENGTH * RUNTIME_MOVEMENT_MAX_DISTANCE_LENGTH];
     MemoryPoolRef SkillDataPool;
     MemoryPoolRef ForceEffectFormulaPool;
+    MemoryPoolRef MobPatrolDataPool;
     MemoryPoolRef MobPatternDataPool;
     DictionaryRef DungeonData;
     DictionaryRef PatternPartData;

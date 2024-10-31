@@ -28,6 +28,7 @@ Void ClientSocketOnDisconnect(
     ClientContextRef Client = (ClientContextRef)ConnectionContext;
     if (Client->CharacterIndex > 0) {
         RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Client->CharacterIndex);
+        ServerSyncCharacter(Server, Context, Client, Character);
 
         IPC_W2C_DATA_CLIENT_DISCONNECT* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2C, CLIENT_DISCONNECT);
         Request->Header.Source = Server->IPCSocket->NodeID;

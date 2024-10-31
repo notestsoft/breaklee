@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BlessingBeadPricePool PerCost="10">
+    <BlessingBead Index="1" Cost="3" Min="30" Max="200" IsPremium="0" Order="1">
+        <DurationList>
+            <Duration Index="1" Cost="1" Discount="0" />
+            <Duration Index="2" Cost="2" Discount="25" />
+            <Duration Index="3" Cost="3" Discount="35" />
+            <Duration Index="4" Cost="4" Discount="45" />
+            <Duration Index="5" Cost="5" Discount="50" />
+            <Duration Index="6" Cost="6" Discount="55" />
+            <Duration Index="7" Cost="10" Discount="70" />
+            <Duration Index="8" Cost="12" Discount="73" />
+            <Duration Index="9" Cost="24" Discount="85" />
+            <Duration Index="12" Cost="0" Discount="0" />
+            <Duration Index="17" Cost="0" Discount="0" />
+            <Duration Index="20" Cost="0" Discount="0" />
+        </DurationList>
+    </BlessingBead>
+    <BlessingBead Index="2" Cost="3" Min="30" Max="200" IsPremium="0" Order="2">
+        <DurationList>
+            <Duration Index="1" Cost="1" Discount="0" />
+            <Duration Index="2" Cost="2" Discount="25" />
+            <Duration Index="3" Cost="3" Discount="35" />
+            <Duration Index="4" Cost="4" Discount="45" />
+            <Duration Index="5" Cost="5" Discount="50" />
+            <Duration Index="6" Cost="6" Discount="55" />
+            <Duration Index="7" Cost="10" Discount="70" />
+            <Duration Index="8" Cost="12" Discount="73" />
+            <Duration Index="9" Cost="24" Discount="85" />
+            <Duration Index="12" Cost="0" Discount="0" />
+            <Duration Index="17" Cost="0" Discount="0" />
+            <Duration Index="20" Cost="0" Discount="0" />
+        </DurationList>
+    </BlessingBead>
+    <BlessingBead Index="3" Cost="3" Min="30" Max="200" IsPremium="0" Order="0">
+        <DurationList>
+            <Duration Index="1" Cost="1" Discount="0" />
+            <Duration Index="2" Cost="2" Discount="25" />
+            <Duration Index="3" Cost="3" Discount="35" />
+            <Duration Index="4" Cost="4" Discount="45" />
+            <Duration Index="5" Cost="5" Discount="50" />
+            <Duration Index="6" Cost="6" Discount="55" />
+            <Duration Index="7" Cost="10" Discount="70" />
+            <Duration Index="8" Cost="12" Discount="73" />
+            <Duration Index="9" Cost="24" Discount="85" />
+            <Duration Index="12" Cost="0" Discount="0" />
+            <Duration Index="17" Cost="0" Discount="0" />
+            <Duration Index="20" Cost="0" Discount="0" />
+        </DurationList>
+    </BlessingBead>
+    <BlessingBead Index="4" Cost="3" Min="30" Max="200" IsPremium="0" Order="3">
+        <DurationList>
+            <Duration Index="1" Cost="1" Discount="0" />
+            <Duration Index="2" Cost="2" Discount="25" />
+            <Duration Index="3" Cost="3" Discount="35" />
+            <Duration Index="4" Cost="4" Discount="45" />
+            <Duration Index="5" Cost="5" Discount="50" />
+            <Duration Index="6" Cost="6" Discount="55" />
+            <Duration Index="7" Cost="10" Discount="70" />
+            <Duration Index="8" Cost="12" Discount="73" />
+            <Duration Index="9" Cost="24" Discount="85" />
+            <Duration Index="12" Cost="0" Discount="0" />
+            <Duration Index="17" Cost="0" Discount="0" />
+            <Duration Index="20" Cost="0" Discount="0" />
+        </DurationList>
+    </BlessingBead>
+    <BlessingBead Index="5" Cost="3" Min="30" Max="200" IsPremium="0" Order="4">
+        <DurationList>
+            <Duration Index="1" Cost="1" Discount="0" />
+            <Duration Index="2" Cost="2" Discount="25" />
+            <Duration Index="3" Cost="3" Discount="35" />
+            <Duration Index="4" Cost="4" Discount="45" />
+            <Duration Index="5" Cost="5" Discount="50" />
+            <Duration Index="6" Cost="6" Discount="55" />
+            <Duration Index="7" Cost="10" Discount="70" />
+            <Duration Index="8" Cost="12" Discount="73" />
+            <Duration Index="9" Cost="24" Discount="85" />
+            <Duration Index="12" Cost="0" Discount="0" />
+            <Duration Index="17" Cost="0" Discount="0" />
+            <Duration Index="20" Cost="0" Discount="0" />
+        </DurationList>
+    </BlessingBead>
+    <BlessingBead Index="6" Cost="3" Min="30" Max="200" IsPremium="0" Order="5">
+        <DurationList>
+            <Duration Index="1" Cost="1" Discount="0" />
+            <Duration Index="2" Cost="2" Discount="25" />
+            <Duration Index="3" Cost="3" Discount="35" />
+            <Duration Index="4" Cost="4" Discount="45" />
+            <Duration Index="5" Cost="5" Discount="50" />
+            <Duration Index="6" Cost="6" Discount="55" />
+            <Duration Index="7" Cost="10" Discount="70" />
+            <Duration Index="8" Cost="12" Discount="73" />
+            <Duration Index="9" Cost="24" Discount="85" />
+            <Duration Index="12" Cost="0" Discount="0" />
+            <Duration Index="17" Cost="0" Discount="0" />
+            <Duration Index="20" Cost="0" Discount="0" />
+        </DurationList>
+    </BlessingBead>
+    <BlessingBead Index="7" Cost="0" Min="0" Max="0" IsPremium="1" Order="1">
+        <DurationList>
+            <Duration Index="1" Cost="8" Discount="0" />
+            <Duration Index="2" Cost="16" Discount="0" />
+            <Duration Index="3" Cost="22" Discount="0" />
+            <Duration Index="4" Cost="30" Discount="0" />
+            <Duration Index="5" Cost="35" Discount="0" />
+            <Duration Index="6" Cost="42" Discount="0" />
+            <Duration Index="7" Cost="62" Discount="0" />
+            <Duration Index="8" Cost="74" Discount="0" />
+            <Duration Index="9" Cost="106" Discount="0" />
+            <Duration Index="12" Cost="0" Discount="0" />
+            <Duration Index="17" Cost="0" Discount="0" />
+            <Duration Index="20" Cost="0" Discount="0" />
+        </DurationList>
+    </BlessingBead>
+    <BlessingBead Index="8" Cost="0" Min="0" Max="0" IsPremium="1" Order="2">
+        <DurationList>
+            <Duration Index="1" Cost="0" Discount="0" />
+            <Duration Index="2" Cost="0" Discount="0" />
+            <Duration Index="3" Cost="0" Discount="0" />
+            <Duration Index="4" Cost="0" Discount="0" />
+            <Duration Index="5" Cost="0" Discount="0" />
+            <Duration Index="6" Cost="0" Discount="0" />
+            <Duration Index="7" Cost="0" Discount="0" />
+            <Duration Index="8" Cost="0" Discount="0" />
+            <Duration Index="9" Cost="60" Discount="0" />
+            <Duration Index="12" Cost="210" Discount="0" />
+            <Duration Index="17" Cost="416" Discount="0" />
+            <Duration Index="20" Cost="1047" Discount="0" />
+        </DurationList>
+    </BlessingBead>
+    <BlessingBead Index="9" Cost="0" Min="0" Max="0" IsPremium="1" Order="0">
+        <DurationList>
+            <Duration Index="1" Cost="0" Discount="0" />
+            <Duration Index="2" Cost="0" Discount="0" />
+            <Duration Index="3" Cost="0" Discount="0" />
+            <Duration Index="4" Cost="0" Discount="0" />
+            <Duration Index="5" Cost="0" Discount="0" />
+            <Duration Index="6" Cost="0" Discount="0" />
+            <Duration Index="7" Cost="0" Discount="0" />
+            <Duration Index="8" Cost="0" Discount="0" />
+            <Duration Index="9" Cost="0" Discount="0" />
+            <Duration Index="12" Cost="0" Discount="0" />
+            <Duration Index="17" Cost="0" Discount="0" />
+            <Duration Index="20" Cost="0" Discount="0" />
+        </DurationList>
+    </BlessingBead>
+    <BlessingBead Index="10" Cost="0" Min="0" Max="0" IsPremium="1" Order="0">
+        <DurationList>
+            <Duration Index="1" Cost="0" Discount="0" />
+            <Duration Index="2" Cost="0" Discount="0" />
+            <Duration Index="3" Cost="0" Discount="0" />
+            <Duration Index="4" Cost="0" Discount="0" />
+            <Duration Index="5" Cost="0" Discount="0" />
+            <Duration Index="6" Cost="0" Discount="0" />
+            <Duration Index="7" Cost="0" Discount="0" />
+            <Duration Index="8" Cost="0" Discount="0" />
+            <Duration Index="9" Cost="0" Discount="0" />
+            <Duration Index="12" Cost="0" Discount="0" />
+            <Duration Index="17" Cost="0" Discount="0" />
+            <Duration Index="20" Cost="0" Discount="0" />
+        </DurationList>
+    </BlessingBead>
+    <ValueDiscount>
+        <Discount Index="49" Value="0" />
+        <Discount Index="99" Value="0" />
+        <Discount Index="149" Value="0" />
+        <Discount Index="199" Value="0" />
+        <Discount Index="499" Value="0" />
+        <Discount Index="1001" Value="0" />
+    </ValueDiscount>
+    <DiscountRate>
+        <Rate Index="1" Value="0" />
+        <Rate Index="2" Value="0" />
+        <Rate Index="3" Value="3" />
+        <Rate Index="4" Value="4" />
+        <Rate Index="5" Value="5" />
+        <Rate Index="6" Value="6" />
+        <Rate Index="7" Value="7" />
+        <Rate Index="8" Value="8" />
+    </DiscountRate>
+</BlessingBeadPricePool>

@@ -1,0 +1,19 @@
+<!-- TODO: Add support for relative movement not absolute positions -->
+<!-- TODO: Add support for disabling default mob patterns dynamically with flags-->
+<MobPatrol>
+    <Branch Index="1" LinkList="2">
+        <Waypoint Type="0" X="19" Y="110" Delay="0" />
+        <Waypoint Type="0" X="18" Y="93" Delay="0" />
+        <Waypoint Type="0" X="15" Y="89" Delay="0" />
+        <Waypoint Type="0" X="19" Y="83" Delay="0" />
+        <Waypoint Type="0" X="15" Y="73" Delay="0" />
+        <Waypoint Type="0" X="21" Y="62" Delay="0" />
+        <Waypoint Type="0" X="21" Y="57" Delay="0" />
+        <Waypoint Type="0" X="15" Y="65" Delay="0" />
+    </Branch>
+    <Branch Index="2" LinkList="1">
+        <Waypoint Type="0" X="15" Y="65" Delay="3000" />
+        <Waypoint Type="1" X="0" Y="0" Delay="60000" />
+        <Waypoint Type="1" X="19" Y="110" Delay="0" />
+    </Branch>
+</MobPatrol>

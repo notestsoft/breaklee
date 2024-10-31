@@ -26,22 +26,31 @@ struct _RTMobPatrolBranchData {
 	Int32 Index;
 	Int32 LinkCount;
 	Int32 LinkList[RUNTIME_MOB_PATROL_MAX_LINK_COUNT];
-	Int32 WaypointCount;
-	RTMobPatrolWaypointDataRef Waypoints;
+	ArrayRef Waypoints;
 };
 
 struct _RTMobPatrolData {
 	Int32 Index;
-	Int32 Type;
-	Int32 BranchCount;
-	RTMobPatrolBranchDataRef Branches;
+	ArrayRef Branches;
 };
 
-Void RTMobPatrolUpdate(
+struct _RTMobPatrol {
+	RTMobPatrolDataRef Data;
+	Int32 BranchIndex;
+	Int32 WaypointIndex;
+	Int32 WaypointDelay;
+	Timestamp MovementTimestamp;
+};
+
+Void RTMobPatrolInit(
+	RTRuntimeRef Runtime,
+	RTMobRef Mob
+);
+
+Bool RTMobPatrolUpdate(
 	RTRuntimeRef Runtime,
 	RTWorldContextRef WorldContext,
-	RTMobRef Mob,
-	RTMobPatrolDataRef MobPatrol
+	RTMobRef Mob
 );
 
 EXTERN_C_END

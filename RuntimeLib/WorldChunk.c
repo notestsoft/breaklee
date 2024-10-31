@@ -409,7 +409,7 @@ Void RTWorldChunkNotify(
 
     RTRuntimeRef Runtime = WorldChunk->Runtime;
 
-    if (IsInsertion && Entity.EntityType == RUNTIME_ENTITY_TYPE_MOB && Reason == RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT) {
+    if (IsInsertion && Entity.EntityType == RUNTIME_ENTITY_TYPE_MOB/* && Reason == RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT*/) {
         NOTIFICATION_DATA_MOBS_SPAWN* Notification = RTNotificationInit(MOBS_SPAWN);
         Notification->Count = 1;
         
@@ -431,7 +431,7 @@ Void RTWorldChunkNotify(
         RTNotificationDispatchToNearby(Notification, WorldChunk);
     }
 
-    if (!IsInsertion && Entity.EntityType == RUNTIME_ENTITY_TYPE_MOB && Reason == RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT) {
+    if (!IsInsertion && Entity.EntityType == RUNTIME_ENTITY_TYPE_MOB/* && Reason == RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT*/) {
         NOTIFICATION_DATA_MOBS_DESPAWN* Notification = RTNotificationInit(MOBS_DESPAWN);
         Notification->Entity = Entity;
         Notification->DespawnType = Reason;

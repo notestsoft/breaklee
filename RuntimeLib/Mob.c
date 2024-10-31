@@ -66,6 +66,8 @@ Void RTMobInit(
 			break;
 		}
 	}
+
+	RTMobPatrolInit(Runtime, Mob);
 }
 
 Bool RTMobCanMove(RTMobRef Mob) {
@@ -655,8 +657,12 @@ Void RTMobUpdate(
 	}
 
 	if (Mob->Movement.IsMoving) {
-		if (Mob->Movement.PositionCurrent.X == Mob->Movement.PositionEnd.X &&
-			Mob->Movement.PositionCurrent.Y == Mob->Movement.PositionEnd.Y) {
+		Bool Finished = (
+			!Mob->Movement.IsDeadReckoning ||
+			(Mob->Movement.PositionCurrent.X == Mob->Movement.PositionEnd.X && Mob->Movement.PositionCurrent.Y == Mob->Movement.PositionEnd.Y)
+		);
+
+		if (Finished) {
 			RTMovementEndDeadReckoning(Runtime, &Mob->Movement);
             
 			if (Mob->IsChasing) {
@@ -785,20 +791,25 @@ Void RTMobUpdate(
 		}
 	}
 
-	if (RTMobCanMove(Mob) && !RTMobIsUnmovable(Mob)) {
+	Bool IsPatrolling = RTMobPatrolUpdate(Runtime, WorldContext, Mob);
+	if (IsPatrolling) {
+		Mob->NextTimestamp = Timestamp + Mob->SpeciesData->MoveInterval;
+		return;
+	}
+
+	if (RTMobCanMove(Mob) && !RTMobIsUnmovable(Mob) && !IsPatrolling) {
 		if (TargetPositionX < 0 || TargetPositionY < 0) {
 			TargetPositionX = RandomRange(&WorldContext->Seed, Mob->Spawn.AreaX, Mob->Spawn.AreaX + Mob->Spawn.AreaWidth);
 			TargetPositionY = RandomRange(&WorldContext->Seed, Mob->Spawn.AreaY, Mob->Spawn.AreaY + Mob->Spawn.AreaHeight);
 			Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED] = Mob->SpeciesData->MoveSpeed;
-			Mob->Movement.Speed = Mob->SpeciesData->MoveSpeed;
 			Mob->IsChasing = false;
 		}
 		else {
 			Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED] = Mob->SpeciesData->ChaseSpeed;
-			Mob->Movement.Speed = Mob->SpeciesData->ChaseSpeed;
 			Mob->IsChasing = true;
 		}
-
+		
+		RTMovementSetSpeed(Runtime, &Mob->Movement, Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED]);
 		Mob->Movement.PositionEnd.X = TargetPositionX;
 		Mob->Movement.PositionEnd.Y = TargetPositionY;
 

@@ -227,6 +227,13 @@
 		<Mob MobIndex="223" SpeciesIndex="176" X="140" Y="90" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="224" SpeciesIndex="176" X="113" Y="73" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="225" SpeciesIndex="176" X="135" Y="70" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+
+        <Mob MobIndex="226" SpeciesIndex="3104" X="42" Y="128" Width="1" Height="1" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatrolIndex="1" MobPatternIndex="0" Script=""/>        
+        <Mob MobIndex="227" SpeciesIndex="768" X="14" Y="96" Width="1" Height="1" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatrolIndex="2" MobPatternIndex="0" Script=""/>        
+        <Mob MobIndex="228" SpeciesIndex="2716" X="19" Y="110" Width="1" Height="1" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatrolIndex="3" MobPatternIndex="0" Script=""/>        
+        <Mob MobIndex="229" SpeciesIndex="454" X="18" Y="108" Width="1" Height="1" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatrolIndex="4" MobPatternIndex="0" Script=""/>        
+        <Mob MobIndex="230" SpeciesIndex="454" X="20" Y="108" Width="1" Height="1" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatrolIndex="5" MobPatternIndex="0" Script=""/>        
+
 	</MobPool>
 	<CommonDropPool MinMobLevel="1" MaxMobLevel="7">
 		<Item ItemID="16" ItemOption="0" ItemDuration="0" OptionPoolID="1" Rate="0.70875000000000000"/>
