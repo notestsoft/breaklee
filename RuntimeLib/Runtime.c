@@ -108,7 +108,7 @@ Void RTRuntimeDestroy(
     for (Int32 Index = 0; Index < MemoryPoolGetBlockCount(Runtime->MobPatrolDataPool); Index += 1) {
         if (!MemoryPoolIsReserved(Runtime->MobPatrolDataPool, Index)) continue;
 
-        RTMobPatrolDataRef MobPatrolData = (RTMobPatternDataRef)MemoryPoolFetch(Runtime->MobPatrolDataPool, Index);
+        RTMobPatrolDataRef MobPatrolData = (RTMobPatrolDataRef)MemoryPoolFetch(Runtime->MobPatrolDataPool, Index);
         for (Int32 BranchIndex = 0; BranchIndex < ArrayGetElementCount(MobPatrolData->Branches); BranchIndex += 1) {
             RTMobPatrolBranchDataRef BranchData = (RTMobPatrolBranchDataRef)ArrayGetElementAtIndex(MobPatrolData->Branches, BranchIndex);
             ArrayDestroy(BranchData->Waypoints);
