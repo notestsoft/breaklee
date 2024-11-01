@@ -249,6 +249,8 @@ IPC_PROTOCOL_STRUCT(IPC_D2W_DATA_INITIALIZE_CHARACTER,
 	UInt8 IsInventoryLocked;
 	struct _RTCharacterInfo CharacterInfo;
 	struct _RTCharacterStyleInfo CharacterStyleInfo;
+	struct _RTCharacterBattleModeInfo BattleModeInfo;
+	struct _RTBuffInfo BuffInfo;
 	struct _RTEquipmentInfo EquipmentInfo;
 	struct _RTInventoryInfo InventoryInfo;
 	struct _RTVehicleInventoryInfo VehicleInventoryInfo;

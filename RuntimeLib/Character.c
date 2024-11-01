@@ -1392,3 +1392,30 @@ Void RTCharacterApplyDamage(
 	// TODO: Send notification
 	Character->SyncMask.Info = true;
 }
+
+Void RTCharacterNotifyStatus(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+	NOTIFICATION_DATA_CHARACTER_STATUS* Notification = RTNotificationInit(CHARACTER_STATUS);
+	Notification->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+	Notification->CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+	Notification->CurrentShield = Character->Attributes.Values[RUNTIME_ATTRIBUTE_ABSORB_DAMAGE];
+	Notification->BattleModeInfo = Character->Data.BattleModeInfo;
+	Notification->BuffInfo = Character->Data.BuffInfo.Info;
+
+	Int32 BuffSlotCount = (
+		Character->Data.BuffInfo.Info.SkillBuffCount +
+		Character->Data.BuffInfo.Info.PotionBuffCount +
+		Character->Data.BuffInfo.Info.GmBuffCount +
+		Character->Data.BuffInfo.Info.UnknownBuffCount1 +
+		Character->Data.BuffInfo.Info.UnknownBuffCount2 +
+		Character->Data.BuffInfo.Info.ForceWingBuffCount +
+		Character->Data.BuffInfo.Info.FirePlaceBuffCount
+	);
+	if (BuffSlotCount > 0) {
+		RTNotificationAppendCopy(Notification, &Character->Data.BuffInfo.Slots[0], sizeof(struct _RTBuffSlot) * BuffSlotCount);
+	}
+
+	RTNotificationDispatchToCharacter(Notification, Character);
+}

@@ -8,8 +8,10 @@
 #include "AnimaMastery.h"
 #include "Appearance.h"
 #include "AuraMastery.h"
+#include "BattleMode.h"
 #include "BattleSystem.h"
 #include "BlessingBead.h"
+#include "Buff.h"
 #include "Cooldown.h"
 #include "Collection.h"
 #include "Costume.h"
@@ -212,10 +214,7 @@ struct _RTCharacter {
     struct _RTBattleAttributes Attributes;
     Int32 AbilityExpRate;
     Int32 SkillComboLevel;
-    Timestamp DebugSpRegenTimeout;
-
-    Int32 BattleModeSkillIndex;
-    Timestamp BattleModeTimeout; // TODO: Replace timeout with skill timer pool
+    Timestamp RegenUpdateTimestamp;
     Timestamp GiftBoxUpdateTimestamps[RUNTIME_CHARACTER_MAX_GIFT_BOX_SLOT_COUNT];
     Int32 MobPatternWarpX;
     Int32 MobPatternWarpY;
@@ -426,6 +425,11 @@ Void RTCharacterApplyDamage(
     RTCharacterRef Character,
     RTEntityID Source,
     Int32 Damage
+);
+
+Void RTCharacterNotifyStatus(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
 );
 
 EXTERN_C_END

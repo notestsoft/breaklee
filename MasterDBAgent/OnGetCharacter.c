@@ -67,6 +67,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
     struct _RTAnimaMasteryPresetData AnimaMasteryPresetData[RUNTIME_MAX_ANIMA_MASTERY_PRESET_COUNT] = { 0 };
     struct _RTAnimaMasteryCategoryData AnimaMasteryCategoryData[RUNTIME_MAX_ANIMA_MASTERY_STORAGE_COUNT * RUNTIME_MAX_ANIMA_MASTERY_CATEGORY_COUNT] = { 0 };
     struct _RTItemSlot WarehouseSlots[RUNTIME_WAREHOUSE_TOTAL_SIZE] = { 0 };
+    struct _RTBuffSlot BuffSlots[RUNTIME_CHARACTER_MAX_BUFF_SLOT_COUNT] = { 0 };
 
     DatabaseHandleRef Handle = DatabaseCallProcedureFetch(
         Context->Database,
@@ -281,6 +282,22 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_INT32, &Response->SettingsInfo.MacrosDataLength,
         DB_TYPE_UINT16, &Response->WarehouseInfo.SlotCount,
         DB_TYPE_INT64, &Response->WarehouseInfo.Currency,
+        DB_TYPE_UINT32, &Response->Character.BattleModeInfo.Info.BattleModeDuration,
+        DB_TYPE_UINT8, &Response->Character.BattleModeInfo.Info.BattleModeIndex,
+        DB_TYPE_UINT8, &Response->Character.BattleModeInfo.Info.BattleModeUnknown1,
+        DB_TYPE_UINT8, &Response->Character.BattleModeInfo.Info.BattleModeStyleRank,
+        DB_TYPE_UINT8, &Response->Character.BattleModeInfo.Info.AuraModeIndex,
+        DB_TYPE_UINT8, &Response->Character.BattleModeInfo.Info.AuraModeUnknown1,
+        DB_TYPE_UINT8, &Response->Character.BattleModeInfo.Info.AuraModeStyleRank,
+        DB_TYPE_UINT32, &Response->Character.BattleModeInfo.Info.AuraModeDuration,
+        DB_TYPE_INT32, &Response->Character.BattleModeInfo.VehicleState,
+        DB_TYPE_UINT8, &Response->Character.BuffInfo.SkillBuffCount,
+        DB_TYPE_UINT8, &Response->Character.BuffInfo.PotionBuffCount,
+        DB_TYPE_UINT8, &Response->Character.BuffInfo.GmBuffCount,
+        DB_TYPE_UINT8, &Response->Character.BuffInfo.UnknownBuffCount1,
+        DB_TYPE_UINT8, &Response->Character.BuffInfo.UnknownBuffCount2,
+        DB_TYPE_UINT8, &Response->Character.BuffInfo.ForceWingBuffCount,
+        DB_TYPE_UINT8, &Response->Character.BuffInfo.FirePlaceBuffCount,
         DB_TYPE_UINT8, &Response->Character.NameLength,
         DB_TYPE_STRING, &Response->Character.Name[0], sizeof(Response->Character.Name),
         DB_TYPE_DATA, &EquipmentSlots[0], sizeof(EquipmentSlots),
@@ -343,6 +360,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_DATA, &Response->SettingsInfo.OptionsData[0], sizeof(Response->SettingsInfo.OptionsData),
         DB_TYPE_DATA, &Response->SettingsInfo.MacrosData[0], sizeof(Response->SettingsInfo.MacrosData),
         DB_TYPE_DATA, &WarehouseSlots[0], sizeof(WarehouseSlots),
+        DB_TYPE_DATA, &BuffSlots[0], sizeof(BuffSlots),
         DB_PARAM_END
     )) {
         goto error;
@@ -407,6 +425,17 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, AnimaMasteryPresetData, sizeof(struct _RTAnimaMasteryPresetData) * Response->Character.AnimaMasteryInfo.PresetCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, AnimaMasteryCategoryData, sizeof(struct _RTAnimaMasteryCategoryData) * Response->Character.AnimaMasteryInfo.StorageCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, WarehouseSlots, sizeof(struct _RTItemSlot) * Response->WarehouseInfo.SlotCount);
+
+    Int32 BuffSlotCount = (
+        Response->Character.BuffInfo.SkillBuffCount +
+        Response->Character.BuffInfo.PotionBuffCount +
+        Response->Character.BuffInfo.GmBuffCount +
+        Response->Character.BuffInfo.UnknownBuffCount1 +
+        Response->Character.BuffInfo.UnknownBuffCount2 +
+        Response->Character.BuffInfo.ForceWingBuffCount +
+        Response->Character.BuffInfo.FirePlaceBuffCount
+    );
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, BuffSlots, sizeof(struct _RTBuffSlot) * BuffSlotCount);
 
     Response->Success = true;
     IPCSocketUnicast(Socket, Response);

@@ -552,7 +552,8 @@ CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_GROUP_MOVEMENT,
 CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_GROUP_ASTRAL,
     UInt16 IsActivation;
     UInt32 Unknown2;
-    UInt32 Unknown3;
+    Int32 InventorySlotCount;
+    UInt16 InventorySlotIndex[0];
 )
 
 CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_GROUP_BATTLE_MODE,
@@ -2834,22 +2835,8 @@ CLIENT_PROTOCOL(S2C, NFY_CHARACTER_STATUS, DEFAULT, 2110,
     Int64 CurrentHP;
     Int32 CurrentMP;
     Int64 CurrentShield;
-    UInt32 BattleModeDuration;
-    UInt8 BattleModeIndex;
-    UInt8 BattleModeUnknown1;
-    UInt8 BattleModeStyleRank;
-    UInt8 AuraModeIndex;
-    UInt8 AuraModeUnknown1;
-    UInt8 AuraStyleRank;
-    UInt32 AuraDuration;
-    Int32 VehicleState;
-    Int8 SkillBuffCount;
-    Int8 PotionBuffCount;
-    Int8 GmBuffCount;
-    Int8 UnknownBuffCount1;
-    Int8 UnknownBuffCount2;
-    Int8 ForceWingBuffCount;
-    Int8 FirePlaceBuffCount;
+    struct _RTCharacterBattleModeInfo BattleModeInfo;
+    struct _RTBuffInfo BuffInfo;
     // UInt8[30] BuffSlot[] for EffectorBuffCount, UnknownBuffPotionCount1, ..., UnknownBuffPotionCount2
 )
 
@@ -3080,6 +3067,13 @@ CLIENT_PROTOCOL(C2S, GET_CASH_BALANCE, DEFAULT, 2181,
 
 CLIENT_PROTOCOL(S2C, GET_CASH_BALANCE, DEFAULT, 2182,
     UInt32 Amount;
+)
+
+CLIENT_PROTOCOL(C2S, CANCEL_BATTLE_MODE_SYNERGY, DEFAULT, 2203,
+    UInt16 Unknown1;
+)
+
+CLIENT_PROTOCOL(S2C, CANCEL_BATTLE_MODE_SYNERGY, DEFAULT, 2204,
 )
 
 CLIENT_PROTOCOL(C2S, OPEN_AUCTION_HOUSE, DEFAULT, 2241,

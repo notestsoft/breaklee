@@ -132,18 +132,18 @@ RTNotificationRef _RTNotificationInit(
 }
 
 Void* RTNotificationAppend(
-    RTNotificationRef Notification,
+    Void* Notification,
     Index Length
 ) {
-    assert(Notification->Length + Length <= RUNTIME_MAX_NOTIFICATION_BUFFER_LENGTH);
-    Void* Memory = ((UInt8*)Notification) + Notification->Length;
+    assert(((RTNotificationRef)Notification)->Length + Length <= RUNTIME_MAX_NOTIFICATION_BUFFER_LENGTH);
+    Void* Memory = ((UInt8*)Notification) + ((RTNotificationRef)Notification)->Length;
     memset(Memory, 0, Length);
-    Notification->Length += Length;
+    ((RTNotificationRef)Notification)->Length += Length;
     return Memory;
 }
 
 Void* RTNotificationAppendCopy(
-    RTNotificationRef Notification,
+    Void* Notification,
     Void* Source,
     Index Length
 ) {

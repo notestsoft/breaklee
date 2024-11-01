@@ -252,6 +252,22 @@ BEGIN
         Settings.MacrosDataLength,
         Warehouse.Count,
         Warehouse.Currency,
+        BattleMode.BattleModeDuration,
+        BattleMode.BattleModeIndex,
+        BattleMode.BattleModeUnknown1,
+        BattleMode.BattleModeStyleRank,
+        BattleMode.AuraModeIndex,
+        BattleMode.AuraModeUnknown1,
+        BattleMode.AuraModeStyleRank,
+        BattleMode.AuraModeDuration,
+        BattleMode.VehicleState,
+        Buff.SkillBuffCount,
+        Buff.PotionBuffCount,
+        Buff.GmBuffCount,
+        Buff.UnknownBuffCount1,
+        Buff.UnknownBuffCount2,
+        Buff.ForceWingBuffCount,
+        Buff.FirePlaceBuffCount,
         LENGTH(Characters.Name) AS NameLength,
         Characters.Name,
         Equipment.EquipmentSlotData,
@@ -313,9 +329,12 @@ BEGIN
         Settings.HotKeysData,
         Settings.OptionsData,
         Settings.MacrosData,
-        Warehouse.SlotData
+        Warehouse.SlotData,
+        Buff.SlotData
     FROM Characters
     LEFT JOIN Accounts ON Characters.AccountID = Accounts.AccountID
+    LEFT JOIN BattleMode ON Characters.CharacterID = BattleMode.CharacterID
+    LEFT JOIN Buff ON Characters.CharacterID = Buff.CharacterID
     LEFT JOIN Equipment ON Characters.CharacterID = Equipment.CharacterID
     LEFT JOIN Inventory ON Characters.CharacterID = Inventory.CharacterID
     LEFT JOIN VehicleInventory ON Characters.CharacterID = VehicleInventory.CharacterID

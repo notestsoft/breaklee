@@ -1,5 +1,7 @@
-#include "Skill.h"
+#include "Character.h"
 #include "Mob.h"
+#include "Runtime.h"
+#include "Skill.h"
 
 Int32 RTCharacterSkillDataGetSkillType(
 	RTCharacterSkillDataRef Skill,
@@ -105,6 +107,17 @@ RTCharacterSkillValue RTCalculateSkillValue(
 	return Result;
 }
 
+Int32 RTCalculateSkillDuration(
+	RTCharacterSkillDataRef SkillData
+) {
+	if (SkillData->Sp > 0) {
+		return 10000000 / SkillData->Sp;
+	}
+
+	// TODO: Calculate normal skill duration
+	return 0;
+}
+
 Int32 RTCharacterApplyBuff(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
@@ -117,4 +130,56 @@ Int32 RTCharacterApplyBuff(
 	// TODO: Add force effect system with buff support...
     
 	return RUNTIME_SKILL_RESULT_BUFF_SUCCESS;
+}
+
+Int32 RTCharacterGetBattleModeSkillIndex(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 BattleModeIndex
+) {
+	Int32 SkillSlotIndices[] = {
+		RUNTIME_SPECIAL_SKILL_SLOT_BATTLE_MODE_1,
+		RUNTIME_SPECIAL_SKILL_SLOT_BATTLE_MODE_2,
+		RUNTIME_SPECIAL_SKILL_SLOT_BATTLE_MODE_3,
+	};
+
+	for (Int32 Index = 0; Index < sizeof(SkillSlotIndices) / sizeof(SkillSlotIndices[0]); Index += 1) {
+		RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotBySlotIndex(Runtime, Character, SkillSlotIndices[Index]);
+		if (!SkillSlot) continue;
+
+		RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillSlot->ID);
+		if (!SkillData) continue;
+		if (SkillData->Intensity != BattleModeIndex) continue;
+
+		return SkillData->SkillID;
+	}
+
+	return 0;
+}
+
+Int32 RTCharacterGetAuraModeSkillIndex(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 AuraModeIndex
+) {
+	Int32 SkillSlotIndices[] = {
+		RUNTIME_SPECIAL_SKILL_SLOT_AURA_MODE_1,
+		RUNTIME_SPECIAL_SKILL_SLOT_AURA_MODE_2,
+		RUNTIME_SPECIAL_SKILL_SLOT_AURA_MODE_3,
+		RUNTIME_SPECIAL_SKILL_SLOT_AURA_MODE_4,
+		RUNTIME_SPECIAL_SKILL_SLOT_AURA_MODE_5,
+	};
+
+	for (Int32 Index = 0; Index < sizeof(SkillSlotIndices) / sizeof(SkillSlotIndices[0]); Index += 1) {
+		RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotBySlotIndex(Runtime, Character, SkillSlotIndices[Index]);
+		if (!SkillSlot) continue;
+
+		RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillSlot->ID);
+		if (!SkillData) continue;
+		if (SkillData->Intensity != AuraModeIndex) continue;
+
+		return SkillData->SkillID;
+	}
+
+	return 0;
 }

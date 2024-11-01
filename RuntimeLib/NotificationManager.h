@@ -82,12 +82,12 @@ RTNotificationManagerDispatchToChunk(Runtime->NotificationManager, Notification,
 RTNotificationManagerDispatchToNearby(Runtime->NotificationManager, Notification, WorldChunk)
 
 Void* RTNotificationAppend(
-    RTNotificationRef Notification,
+    Void* Notification,
     Index Length
 );
 
 Void* RTNotificationAppendCopy(
-    RTNotificationRef Notification,
+    Void* Notification,
     Void* Source,
     Index Length
 );
@@ -98,9 +98,9 @@ CString RTNotificationAppendCString(
 );
 
 #define RTNotificationAppendValue(Notification, __TYPE__, __VALUE__) \
-*((__TYPE__*)RTNotificationAppend((RTNotificationRef)Notification, sizeof(__TYPE__))) = __VALUE__
+*((__TYPE__*)RTNotificationAppend(Notification, sizeof(__TYPE__))) = __VALUE__
 
 #define RTNotificationAppendStruct(Notification, __TYPE__) \
-(__TYPE__*)RTNotificationAppend((RTNotificationRef)Notification, sizeof(__TYPE__))
+(__TYPE__*)RTNotificationAppend(Notification, sizeof(__TYPE__))
 
 EXTERN_C_END

@@ -11,7 +11,6 @@ CREATE TABLE Equipment (
 
     PRIMARY KEY (CharacterID),
 
-    -- Foreign key constraint
     CONSTRAINT FK_Character_Equipment FOREIGN KEY (CharacterID)
         REFERENCES Characters(CharacterID)
         ON DELETE CASCADE

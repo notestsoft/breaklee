@@ -106,6 +106,8 @@ BEGIN
 
         INSERT INTO Characters (AccountID, CharacterID, Name, SlotIndex, Style, StatSTR, StatDEX, StatINT, WorldIndex, X, Y) VALUES (InAccountID, OutCharacterID, InName, InSlotIndex, InStyle, InStatSTR, InStatDEX, InStatINT, InWorldIndex, InPositionX, InPositionY);
 
+        INSERT INTO BattleMode (CharacterID) VALUES (OutCharacterID);
+        INSERT INTO Buff (CharacterID, SlotData) VALUES (OutCharacterID, '');
         INSERT INTO Equipment (CharacterID, EquipmentSlotCount, InventorySlotCount, LinkSlotCount, LockSlotCount, EquipmentSlotData, InventorySlotData, LinkSlotData, LockSlotData) VALUES (OutCharacterID, InEquipmentSlotCount, InEquipmentInventorySlotCount, InEquipmentLinkSlotCount, InEquipmentLockSlotCount, InEquipmentSlotData, InEquipmentInventorySlotData, InEquipmentLinkSlotData, InEquipmentLockSlotData);
         INSERT INTO Inventory (CharacterID, SlotCount, SlotData) VALUES (OutCharacterID, InInventorySlotCount, InInventorySlotData);
         INSERT INTO SkillSlot (CharacterID, SlotCount, SlotData) VALUES (OutCharacterID, InSkillSlotCount, InSkillSlotData);

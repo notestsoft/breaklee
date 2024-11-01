@@ -169,6 +169,8 @@ Void RTWorldSpawnCharacterWithoutNotification(
     Character->Movement.WorldContext = WorldContext;
     Character->Movement.WorldChunk = WorldChunk;
     Character->Movement.Entity = Character->ID;
+
+    RTCharacterNotifyStatus(Runtime, Character);
 }
 
 Void RTWorldSpawnCharacter(

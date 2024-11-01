@@ -4,7 +4,10 @@
 #include <RuntimeLib/Ability.h>
 #include <RuntimeLib/AnimaMastery.h>
 #include <RuntimeLib/Constants.h>
+#include <RuntimeLib/BattleMode.h>
 #include <RuntimeLib/BattleSystem.h>
+#include <RuntimeLib/BlessingBead.h>
+#include <RuntimeLib/Buff.h>
 #include <RuntimeLib/Character.h>
 #include <RuntimeLib/Collection.h>
 #include <RuntimeLib/Drop.h>

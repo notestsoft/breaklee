@@ -256,6 +256,10 @@ NOTIFICATION_PROCEDURE_BINDING(DUNGEON_TIME_CONTROL) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 
+NOTIFICATION_PROCEDURE_BINDING(CHARACTER_STATUS) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
 NOTIFICATION_PROCEDURE_BINDING(DUNGEON_TIMER) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }

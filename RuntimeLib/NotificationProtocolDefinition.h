@@ -334,6 +334,15 @@ NOTIFICATION_PROTOCOL_STRUCT(SKILL_TO_CHARACTER_BATTLE_MODE,
     UInt16 IsActivation;
 )
 
+NOTIFICATION_PROTOCOL_STRUCT(SKILL_TO_CHARACTER_ASTRAL_MODE,
+    UInt32 CharacterIndex;
+    UInt32 CharacterStyle;
+    UInt32 CharacterLiveStyle;
+    UInt8 CharacterExtendedStyle;
+    UInt16 IsActivation;
+    UInt32 Unknown2;
+)
+
 NOTIFICATION_PROTOCOL(SKILL_TO_CHARACTER, 221,
     UInt16 SkillIndex;
 )
@@ -529,6 +538,15 @@ NOTIFICATION_PROTOCOL(MOBS_DESPAWN_BY_LINK_MOB, 998,
 
 NOTIFICATION_PROTOCOL(DUNGEON_TIME_CONTROL, 2074,
     Int32 TimeAddition;
+)
+
+NOTIFICATION_PROTOCOL(CHARACTER_STATUS, 2110,
+    Int64 CurrentHP;
+    Int32 CurrentMP;
+    Int64 CurrentShield;
+    struct _RTCharacterBattleModeInfo BattleModeInfo;
+    struct _RTBuffInfo BuffInfo;
+    struct _RTBuffSlot BuffSlots[0];
 )
 
 NOTIFICATION_PROTOCOL(DUNGEON_TIMER, 2542,

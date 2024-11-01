@@ -164,6 +164,7 @@ Void _OnRead(
     }
 
     SocketFetchReadBuffer(Connection->Socket, Connection);
+    SocketProcessDeferred(Connection->Socket);
 }
 
 Void _OnNewConnection(
@@ -303,6 +304,7 @@ SocketRef SocketCreate(
     Socket->OnReceived = OnReceived;
     Socket->ConnectionIndices = IndexSetCreate(Allocator, MaxConnectionCount);
     Socket->ConnectionPool = MemoryPoolCreate(Allocator, sizeof(struct _SocketConnection), MaxConnectionCount);
+    Socket->DeferredWriteRequests = ArrayCreateEmpty(Allocator, sizeof(struct _SocketConnectionWriteRequest*), 8);
     Socket->Userdata = Userdata;
     return Socket;
 }
@@ -382,11 +384,24 @@ Void _OnWrite(
     AllocatorDeallocate(Connection->Socket->Allocator, WriteRequest);
 }
 
+Void SocketProcessDeferred(
+    SocketRef Socket
+) {
+    for (Int32 Index = 0; Index < ArrayGetElementCount(Socket->DeferredWriteRequests); Index += 1) {
+        struct _SocketConnectionWriteRequest* WriteRequest = *(struct _SocketConnectionWriteRequest**)ArrayGetElementAtIndex(Socket->DeferredWriteRequests, Index);
+        SocketConnectionRef Connection = (SocketConnectionRef)WriteRequest->Request.data;
+        uv_write(&WriteRequest->Request, (uv_stream_t*)Connection->Handle, &WriteRequest->Buffer, 1, _OnWrite);
+    }
+
+    ArrayRemoveAllElements(Socket->DeferredWriteRequests, true);
+}
+
 Void SocketSendRaw(
     SocketRef Socket,
     SocketConnectionRef Connection,
     UInt8 *Data,
-    Int32 Length
+    Int32 Length,
+    Bool IsDeferred
 ) {
     if (Socket->State != SOCKET_STATE_CONNECTED) return;
     if (Connection->Flags & SOCKET_CONNECTION_FLAGS_DISCONNECTED) return;
@@ -424,13 +439,19 @@ Void SocketSendRaw(
         KeychainEncryptPacket(&Connection->Keychain, (UInt8*)WriteRequest->Buffer.base, PacketLength);
     }
 
-    uv_write(&WriteRequest->Request, (uv_stream_t*)Connection->Handle, &WriteRequest->Buffer, 1, _OnWrite);
+    if (IsDeferred) {
+        ArrayAppendElement(Socket->DeferredWriteRequests, &WriteRequest);
+    }
+    else {
+        uv_write(&WriteRequest->Request, (uv_stream_t*)Connection->Handle, &WriteRequest->Buffer, 1, _OnWrite);
+    }
 }
 
 Void SocketSendAllRaw(
     SocketRef Socket,
     UInt8* Data,
-    Int32 Length
+    Int32 Length,
+    Bool IsDeferred
 ) {
     if (!(Socket->Flags & (SOCKET_FLAGS_LISTENING | SOCKET_FLAGS_CONNECTED))) return;
 
@@ -440,7 +461,7 @@ Void SocketSendAllRaw(
         Iterator = IndexSetIteratorNext(Socket->ConnectionIndices, Iterator);
 
         SocketConnectionRef Connection = (SocketConnectionRef)MemoryPoolFetch(Socket->ConnectionPool, ConnectionPoolIndex);
-        SocketSendRaw(Socket, Connection, Data, Length);
+        SocketSendRaw(Socket, Connection, Data, Length, IsDeferred);
     }
 }
 
@@ -460,7 +481,27 @@ Void SocketSend(
         PacketLength = *((UInt16*)((UInt8*)Packet + sizeof(UInt16)));
     }
 
-    SocketSendRaw(Socket, Connection, Packet, PacketLength);
+    SocketSendRaw(Socket, Connection, Packet, PacketLength, false);
+}
+
+Void SocketSendDeferred(
+    SocketRef Socket,
+    SocketConnectionRef Connection,
+    Void* Packet
+) {
+    UInt16 PacketMagic = *((UInt16*)Packet);
+    PacketMagic -= Socket->ProtocolIdentifier;
+    PacketMagic -= Socket->ProtocolVersion;
+
+    UInt32 PacketLength = 0;
+    if (PacketMagic == Socket->ProtocolExtension) {
+        PacketLength = *((UInt32*)((UInt8*)Packet + sizeof(UInt16)));
+    }
+    else {
+        PacketLength = *((UInt16*)((UInt8*)Packet + sizeof(UInt16)));
+    }
+
+    SocketSendRaw(Socket, Connection, Packet, PacketLength, true);
 }
 
 Void SocketSendAll(

@@ -5,19 +5,6 @@
 #include "Notification.h"
 #include "Server.h"
 
-Void SendCharacterStatus(
-    ServerContextRef Context,
-    SocketRef Socket,
-    SocketConnectionRef Connection,
-    RTCharacterRef Character
-) {
-    S2C_DATA_NFY_CHARACTER_STATUS* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_CHARACTER_STATUS);
-    Notification->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-    Notification->CurrentMP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
-    Notification->VehicleState = -1;
-    SocketSend(Socket, Connection, Notification);
-}
-
 Void SendEventList(
     ServerContextRef Context,
     ClientContextRef Client
@@ -505,6 +492,24 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     if (Packet->WarehouseInfo.SlotCount > 0) {
         Int32 Length = sizeof(struct _RTItemSlot) * Packet->WarehouseInfo.SlotCount;
         memcpy(Character->Data.WarehouseInfo.Slots, Memory, Length);
+        Memory += Length;
+    }
+
+    Character->Data.BattleModeInfo = Packet->Character.BattleModeInfo;
+    Character->Data.BuffInfo.Info = Packet->Character.BuffInfo;
+
+    Int32 BuffSlotCount = (
+        Packet->Character.BuffInfo.SkillBuffCount +
+        Packet->Character.BuffInfo.PotionBuffCount +
+        Packet->Character.BuffInfo.GmBuffCount +
+        Packet->Character.BuffInfo.UnknownBuffCount1 +
+        Packet->Character.BuffInfo.UnknownBuffCount2 +
+        Packet->Character.BuffInfo.ForceWingBuffCount +
+        Packet->Character.BuffInfo.FirePlaceBuffCount
+    );
+    if (BuffSlotCount > 0) {
+        Int32 Length = sizeof(struct _RTBuffSlot) * BuffSlotCount;
+        memcpy(Character->Data.BuffInfo.Slots, Memory, Length);
         Memory += Length;
     }
 
@@ -1080,26 +1085,11 @@ struct _RTCharacterCostumeInfo {
         );
     }
 
-    /*
-    Response->Unknown7[0] = 113;
-    Response->Unknown7[1] = 201;
-    Response->Unknown7[2] = 9;
-    Response->UnknownSkillRank = Response->SkillRank + 1;
-    Response->Unknown1[55] = 1;
-    Response->Unknown1[58] = 20;
-    */
-
-    /* this contains counters
-    Int32 Seed = Character->Data.Info.PositionX;
-    for (Int32 Index = 0; Index < 282; Index++)
-        Response->Unknown14[Index] = Random(&Seed);
-        */
     SocketSend(Context->ClientSocket, ClientConnection, Response);
 
     RTWorldSpawnCharacter(Runtime, World, Character->ID);
     
     // TODO: Move event data to database and trigger request on init
-    SendCharacterStatus(Context, Context->ClientSocket, Client->Connection, Character);
     SendEventInfo(Context, Client);
     SendEventList(Context, Client);
     SendGiftBoxPricePoolList(Context, Client);

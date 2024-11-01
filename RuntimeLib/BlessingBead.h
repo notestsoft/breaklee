@@ -2,6 +2,7 @@
 
 #include "Base.h"
 #include "Constants.h"
+#include "Item.h"
 
 EXTERN_C_BEGIN
 

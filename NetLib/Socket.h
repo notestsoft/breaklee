@@ -74,6 +74,7 @@ struct _Socket {
     SocketPacketCallback OnReceived;
     IndexSetRef ConnectionIndices;
     MemoryPoolRef ConnectionPool;
+    ArrayRef DeferredWriteRequests;
     Void* Userdata;
 };
 
@@ -128,23 +129,35 @@ Void SocketListen(
     UInt16 Port
 );
 
+Void SocketProcessDeferred(
+    SocketRef Socket
+);
+
 Void SocketSendRaw(
     SocketRef Socket,
     SocketConnectionRef Connection,
     UInt8* Data,
-    Int32 Length
+    Int32 Length,
+    Bool IsDeferred
 );
 
 Void SocketSendAllRaw(
     SocketRef Socket,
     UInt8* Data,
-    Int32 Length
+    Int32 Length,
+    Bool IsDeferred
 );
 
 Void SocketSend(
     SocketRef Socket,
     SocketConnectionRef Connection,
     Void *Packet
+);
+
+Void SocketSendDeferred(
+    SocketRef Socket,
+    SocketConnectionRef Connection,
+    Void* Packet
 );
 
 Void SocketSendAll(

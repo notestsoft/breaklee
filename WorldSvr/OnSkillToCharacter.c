@@ -30,9 +30,11 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		if (SkillData->SkillGroup != RUNTIME_SKILL_GROUP_ASTRAL) goto error;
 
 		Int32 PacketLength = sizeof(C2S_DATA_SKILL_TO_CHARACTER) + sizeof(C2S_DATA_SKILL_GROUP_ASTRAL);
-		if (Packet->Length != PacketLength) goto error;
+		if (Packet->Length < PacketLength) goto error;
 
 		C2S_DATA_SKILL_GROUP_ASTRAL* PacketData = (C2S_DATA_SKILL_GROUP_ASTRAL*)&Packet->Data[0];
+		PacketLength += sizeof(UInt16) * PacketData->InventorySlotCount;
+		if (Packet->Length != PacketLength) goto error;
 
 		if (Packet->SlotIndex == RUNTIME_SPECIAL_SKILL_SLOT_ASTRAL_SKILL) {
 			Character->Data.StyleInfo.ExtendedStyle.IsAstralWeaponActive = PacketData->IsActivation;
@@ -170,40 +172,77 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 	}
 	else if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_ASTRAL) {
 		Int32 PacketLength = sizeof(C2S_DATA_SKILL_TO_CHARACTER) + sizeof(C2S_DATA_SKILL_GROUP_ASTRAL);
-		if (Packet->Length != PacketLength) goto error;
+		if (Packet->Length < PacketLength) goto error;
 
 		C2S_DATA_SKILL_GROUP_ASTRAL* PacketData = (C2S_DATA_SKILL_GROUP_ASTRAL*)&Packet->Data[0];
+		PacketLength += sizeof(UInt16) * PacketData->InventorySlotCount;
+		if (Packet->Length != PacketLength) goto error;
+
+		if (SkillData->Intensity == RUNTIME_SKILL_INTENSITY_ASTRAL_WEAPON) {
+			Character->Data.StyleInfo.ExtendedStyle.IsAstralWeaponActive = PacketData->IsActivation;
+			Character->SyncMask.StyleInfo = true;
+
+			S2C_DATA_NFY_SKILL_TO_CHARACTER* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_SKILL_TO_CHARACTER);
+			Notification->SkillIndex = Packet->SkillIndex;
+
+			S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON* NotificationData = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON);
+			NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
+			NotificationData->CharacterStyle = Character->Data.StyleInfo.Style.RawValue;
+			NotificationData->CharacterLiveStyle = Character->Data.StyleInfo.LiveStyle.RawValue;
+			NotificationData->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
+			NotificationData->IsActivation = PacketData->IsActivation;
+			NotificationData->Unknown2 = PacketData->Unknown2;
+
+			BroadcastToWorld(
+				Context,
+				RTRuntimeGetWorldByCharacter(Runtime, Character),
+				kEntityIDNull,
+				Character->Movement.PositionCurrent.X,
+				Character->Movement.PositionCurrent.Y,
+				Notification
+			);
+		}
+		else if (SkillData->Intensity == RUNTIME_SKILL_INTENSITY_ASTRAL_VEHICLE) {
+			Character->Data.StyleInfo.ExtendedStyle.IsVehicleActive = PacketData->IsActivation;
+			Character->SyncMask.StyleInfo = true;
+
+			S2C_DATA_NFY_SKILL_TO_CHARACTER* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_SKILL_TO_CHARACTER);
+			Notification->SkillIndex = Packet->SkillIndex;
+
+			S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON* NotificationData = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON);
+			NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
+			NotificationData->CharacterStyle = Character->Data.StyleInfo.Style.RawValue;
+			NotificationData->CharacterLiveStyle = Character->Data.StyleInfo.LiveStyle.RawValue;
+			NotificationData->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
+			NotificationData->IsActivation = PacketData->IsActivation;
+			NotificationData->Unknown2 = PacketData->Unknown2;
+
+			BroadcastToWorld(
+				Context,
+				RTRuntimeGetWorldByCharacter(Runtime, Character),
+				kEntityIDNull,
+				Character->Movement.PositionCurrent.X,
+				Character->Movement.PositionCurrent.Y,
+				Notification
+			);
+		}
+		else if (SkillData->Intensity == RUNTIME_SKILL_INTENSITY_ASTRAL_AURA) {
+			if (PacketData->IsActivation) {
+				RTCharacterStartAuraMode(Runtime, Character, SkillData->SkillID);
+			}
+			else {
+				RTCharacterCancelAuraMode(Runtime, Character);
+			}
+		}
 
 		// TODO: Activate, deactivate battle mode, do runtime validations
 		// TODO: It can also activate board
-		Character->Data.StyleInfo.ExtendedStyle.IsAstralWeaponActive = PacketData->IsActivation;
-		Character->SyncMask.StyleInfo = true;
-
+		
 		S2C_DATA_SKILL_GROUP_ASTRAL* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_ASTRAL);
 		ResponseData->CurrentMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 		ResponseData->IsActivation = PacketData->IsActivation;
 		ResponseData->Unknown2 = PacketData->Unknown2;
 		SocketSend(Socket, Connection, Response);
-
-		S2C_DATA_NFY_SKILL_TO_CHARACTER* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_SKILL_TO_CHARACTER);
-		Notification->SkillIndex = Packet->SkillIndex;
-
-		S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON* NotificationData = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON);
-		NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
-		NotificationData->CharacterStyle = Character->Data.StyleInfo.Style.RawValue;
-		NotificationData->CharacterLiveStyle = Character->Data.StyleInfo.LiveStyle.RawValue;
-		NotificationData->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
-		NotificationData->IsActivation = PacketData->IsActivation;
-		NotificationData->Unknown2 = PacketData->Unknown2;
-
-		BroadcastToWorld(
-			Context,
-			RTRuntimeGetWorldByCharacter(Runtime, Character),
-			kEntityIDNull,
-			Character->Movement.PositionCurrent.X,
-			Character->Movement.PositionCurrent.Y,
-			Notification
-		);
 		return;
 	}
 	else if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_BATTLE_MODE) {
@@ -212,42 +251,17 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 		C2S_DATA_SKILL_GROUP_BATTLE_MODE* PacketData = (C2S_DATA_SKILL_GROUP_BATTLE_MODE*)&Packet->Data[0];
 
-		// TODO: Activate, deactivate battle mode, do runtime validations
-
 		if (PacketData->IsActivation) {
-			Character->Data.StyleInfo.ExtendedStyle.BattleModeFlags |= (1 << (SkillData->Intensity - 1));
-			Character->SyncMask.StyleInfo = true;
-			Character->BattleModeSkillIndex = SkillData->SkillID;
-			Character->BattleModeTimeout = PlatformGetTickCount() + 90000; // TODO: Check where the duration is stored in
+			RTCharacterStartBattleMode(Runtime, Character, SkillData->SkillID);
 		}
 		else {
-			Character->Data.StyleInfo.ExtendedStyle.BattleModeFlags &= ~(1 << (SkillData->Intensity - 1));
-			Character->SyncMask.StyleInfo = true;
+			RTCharacterCancelBattleMode(Runtime, Character);
 		}
 
 		S2C_DATA_SKILL_GROUP_BATTLE_MODE* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_BATTLE_MODE);
 		ResponseData->CurrentMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
-		ResponseData->IsActivation = PacketData->IsActivation;
+		ResponseData->IsActivation = RTCharacterIsBattleModeActive(Runtime, Character);
 		SocketSend(Socket, Connection, Response);
-
-		S2C_DATA_NFY_SKILL_TO_CHARACTER* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_SKILL_TO_CHARACTER);
-		Notification->SkillIndex = Packet->SkillIndex;
-
-		S2C_DATA_NFY_SKILL_GROUP_BATTLE_MODE* NotificationData = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_SKILL_GROUP_BATTLE_MODE);
-		NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
-		NotificationData->CharacterStyle = Character->Data.StyleInfo.Style.RawValue;
-		NotificationData->CharacterLiveStyle = Character->Data.StyleInfo.LiveStyle.RawValue;
-		NotificationData->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
-		NotificationData->IsActivation = PacketData->IsActivation;
-
-		BroadcastToWorld(
-			Context,
-			RTRuntimeGetWorldByCharacter(Runtime, Character),
-			kEntityIDNull,
-			Character->Movement.PositionCurrent.X,
-			Character->Movement.PositionCurrent.Y,
-			Notification
-		);
 		return;
 	}
 	else {
@@ -295,3 +309,12 @@ error:
 	SocketDisconnect(Socket, Connection);
 }
 
+CLIENT_PROCEDURE_BINDING(CANCEL_BATTLE_MODE_SYNERGY) {
+	if (!Character) goto error;
+
+	S2C_DATA_CANCEL_BATTLE_MODE_SYNERGY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CANCEL_BATTLE_MODE_SYNERGY);
+	SocketSend(Socket, Connection, Response);
+
+error:
+	SocketDisconnect(Socket, Connection);
+}

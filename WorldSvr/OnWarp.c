@@ -31,7 +31,6 @@ CLIENT_PROCEDURE_BINDING(WARP) {
     SocketSend(Socket, Connection, Response);
     
     RTWorldChunkNotify(Character->Movement.WorldChunk, Character->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP, true);
-    SendCharacterStatus(Context, Socket, Connection, Character);
     return;
 
 error:
