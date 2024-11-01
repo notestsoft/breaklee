@@ -515,6 +515,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     CStringCopySafe(Character->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->Character.Name);
 
+    RTCharacterToggleAstralWeapon(Runtime, Character, false, false);
     RTCharacterInitializeAttributes(Runtime, Character);
     RTMovementInitialize(
         Runtime,

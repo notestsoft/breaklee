@@ -14,7 +14,7 @@
         <event_item script="Event/add_all_exp.lua" item_id="1562" option="4208883" external_id="-1" texture_item_id="33554531" title="$35#Capsule of Limitless Power" description="$33#[Applied On Purchase]$____An ancient tome inscribed with the essence of limitless growth._ _    $11#100,000,000 Exp$_    $11#100,000,000 Skill Exp$_    $11#1,000,000 Wing Exp$_    $11#1,000,000,000 Honor Points$_    $11#100,000,000 Axp$._" />
     </event>
 
-    <event id="1" type="171" use_flags="11" world_id="1" npc_id="49" description="Character">
+    <event id="1" type="2" use_flags="11" world_id="1" npc_id="49" description="Character">
         <event_description content="Character" />
         <event_shop>
             <item slot_id="0" item_id="33556964" option="6553600000999" duration_id="0" price="0"></item>
@@ -348,7 +348,7 @@
             <item slot_id="104" item_id="33555958" option="0" duration_id="0" price="0"></item>
             <item slot_id="105" item_id="33555992" option="0" duration_id="0" price="0"></item>
             <item slot_id="106" item_id="33555992" option="12885884943" duration_id="0" price="0"></item>
-            <item slot_id="107" item_id="33555992" option="8590917647" duration_id="0" price="0"></item>
+            <item slot_id="107" item_id="33555992" option="4295950351" duration_id="0" price="0"></item>
             <item slot_id="108" item_id="33555992" option="94490198031" duration_id="0" price="0"></item>            
 
         </event_shop>
@@ -974,18 +974,25 @@
         </event_shop>
     </event>
 
-    <event id="15" type="2" use_flags="15" world_id="1" npc_id="49" description="Normal Upgrade">
+    <event id="15" type="2" use_flags="11" world_id="1" npc_id="49" description="Normal Upgrade">
         <event_description content="Normal Upgrade" />
         
         <event_shop>
-            <item slot_id="0" item_id="33556431" option="0" duration_id="0" price="0"></item>
-            <item slot_id="1" item_id="33556423" option="0" duration_id="0" price="0"></item>
-            <item slot_id="2" item_id="33555958" option="0" duration_id="0" price="0"></item>
-            <item slot_id="3" item_id="33556074" option="999" duration_id="0" price="0"></item>
-            <item slot_id="4" item_id="33554722" option="0" duration_id="0" price="0"></item>
-            <item slot_id="5" item_id="33554636" option="0" duration_id="0" price="0"></item>
-
+            <item slot_id="9" item_id="33556431" option="0" duration_id="0" price="0"></item>
+            <item slot_id="11" item_id="33556423" option="0" duration_id="0" price="0"></item>
             
+            <item slot_id="25" item_id="33556518" option="999" duration_id="0" price="0"></item>
+            <item slot_id="27" item_id="33555958" option="0" duration_id="0" price="0"></item>
+            <item slot_id="29" item_id="33556074" option="999" duration_id="0" price="0"></item>
+            <item slot_id="31" item_id="33555992" option="0" duration_id="0" price="0"></item>
+
+            <item slot_id="41" item_id="33556517" option="999" duration_id="0" price="0"></item>
+            <item slot_id="43" item_id="33556338" option="0" duration_id="0" price="0"></item>
+            <item slot_id="45" item_id="33555756" option="999" duration_id="0" price="0"></item>
+            <item slot_id="47" item_id="33556339" option="0" duration_id="0" price="0"></item>
+            
+            <item slot_id="57" item_id="33554722" option="0" duration_id="0" price="0"></item>
+            <item slot_id="59" item_id="33554636" option="0" duration_id="0" price="0"></item>
         </event_shop>
     </event>
 

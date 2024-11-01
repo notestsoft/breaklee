@@ -94,7 +94,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 	if (Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] < RequiredMP) {
 		// TODO: Send error notification
-		return;
+		// return; TODO: Some skills should always be executed like the astral skill even if there is no mp left!
 	}
 
     RTCharacterAddMP(Runtime, Character, -RequiredMP, false);
@@ -179,28 +179,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		if (Packet->Length != PacketLength) goto error;
 
 		if (SkillData->Intensity == RUNTIME_SKILL_INTENSITY_ASTRAL_WEAPON) {
-			Character->Data.StyleInfo.ExtendedStyle.IsAstralWeaponActive = PacketData->IsActivation;
-			Character->SyncMask.StyleInfo = true;
-
-			S2C_DATA_NFY_SKILL_TO_CHARACTER* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_SKILL_TO_CHARACTER);
-			Notification->SkillIndex = Packet->SkillIndex;
-
-			S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON* NotificationData = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON);
-			NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
-			NotificationData->CharacterStyle = Character->Data.StyleInfo.Style.RawValue;
-			NotificationData->CharacterLiveStyle = Character->Data.StyleInfo.LiveStyle.RawValue;
-			NotificationData->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
-			NotificationData->IsActivation = PacketData->IsActivation;
-			NotificationData->Unknown2 = PacketData->Unknown2;
-
-			BroadcastToWorld(
-				Context,
-				RTRuntimeGetWorldByCharacter(Runtime, Character),
-				kEntityIDNull,
-				Character->Movement.PositionCurrent.X,
-				Character->Movement.PositionCurrent.Y,
-				Notification
-			);
+			RTCharacterToggleAstralWeapon(Runtime, Character, PacketData->IsActivation, true);
 		}
 		else if (SkillData->Intensity == RUNTIME_SKILL_INTENSITY_ASTRAL_VEHICLE) {
 			Character->Data.StyleInfo.ExtendedStyle.IsVehicleActive = PacketData->IsActivation;
@@ -234,9 +213,6 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 				RTCharacterCancelAuraMode(Runtime, Character);
 			}
 		}
-
-		// TODO: Activate, deactivate battle mode, do runtime validations
-		// TODO: It can also activate board
 		
 		S2C_DATA_SKILL_GROUP_ASTRAL* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_ASTRAL);
 		ResponseData->CurrentMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];

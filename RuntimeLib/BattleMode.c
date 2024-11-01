@@ -190,8 +190,6 @@ Bool RTCharacterStartAuraMode(
 
 	RTCharacterAddSP(Runtime, Character, -RUNTIME_BATTLE_MODE_SP_CONSUMPTION);
 
-	Int32 DurationScale = RTCharacterIsBattleModeActive(Runtime, Character) ? 2 : 1;
-
 	if (RTCharacterIsBattleModeActive(Runtime, Character)) {
 		Character->Data.BattleModeInfo.Info.BattleModeDuration += RUNTIME_BATTLE_MODE_SP_CONSUMPTION;
 	}

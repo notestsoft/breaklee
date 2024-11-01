@@ -3,6 +3,8 @@
 #include <RuntimeLib/Account.h>
 #include <RuntimeLib/Ability.h>
 #include <RuntimeLib/AnimaMastery.h>
+#include <RuntimeLib/Appearance.h>
+#include <RuntimeLib/AstralWeapon.h>
 #include <RuntimeLib/Constants.h>
 #include <RuntimeLib/BattleMode.h>
 #include <RuntimeLib/BattleSystem.h>
