@@ -4,6 +4,7 @@
 #include <RuntimeLib/Ability.h>
 #include <RuntimeLib/AnimaMastery.h>
 #include <RuntimeLib/Appearance.h>
+#include <RuntimeLib/AstralVehicle.h>
 #include <RuntimeLib/AstralWeapon.h>
 #include <RuntimeLib/Constants.h>
 #include <RuntimeLib/BattleMode.h>

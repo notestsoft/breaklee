@@ -89,7 +89,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		Character,
 		SkillData->Mp[0],
 		SkillData->Mp[1],
-		SkillSlot->Level
+		SkillSlot->Level // TODO: This level has to be set to the item grade for the astral skill as it can be level 0
 	);
 
 	if (Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] < RequiredMP) {
@@ -182,28 +182,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 			RTCharacterToggleAstralWeapon(Runtime, Character, PacketData->IsActivation, true);
 		}
 		else if (SkillData->Intensity == RUNTIME_SKILL_INTENSITY_ASTRAL_VEHICLE) {
-			Character->Data.StyleInfo.ExtendedStyle.IsVehicleActive = PacketData->IsActivation;
-			Character->SyncMask.StyleInfo = true;
-
-			S2C_DATA_NFY_SKILL_TO_CHARACTER* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_SKILL_TO_CHARACTER);
-			Notification->SkillIndex = Packet->SkillIndex;
-
-			S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON* NotificationData = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON);
-			NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
-			NotificationData->CharacterStyle = Character->Data.StyleInfo.Style.RawValue;
-			NotificationData->CharacterLiveStyle = Character->Data.StyleInfo.LiveStyle.RawValue;
-			NotificationData->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
-			NotificationData->IsActivation = PacketData->IsActivation;
-			NotificationData->Unknown2 = PacketData->Unknown2;
-
-			BroadcastToWorld(
-				Context,
-				RTRuntimeGetWorldByCharacter(Runtime, Character),
-				kEntityIDNull,
-				Character->Movement.PositionCurrent.X,
-				Character->Movement.PositionCurrent.Y,
-				Notification
-			);
+			RTCharacterToggleAstralVehicle(Runtime, Character, PacketData->IsActivation, SkillSlot->ID);
 		}
 		else if (SkillData->Intensity == RUNTIME_SKILL_INTENSITY_ASTRAL_AURA) {
 			if (PacketData->IsActivation) {
