@@ -126,3 +126,5 @@ AddMigration 0125_CreateProceedAuctionItem.sql
 AddMigration 0126_CreateDeleteAuctionItem.sql
 AddMigration 0127_CreateUpdateAuctionItemIncrease.sql
 AddMigration 0128_CreateUpdateAuctionItemDecrease.sql
+AddMigration 0129_CreateSyncBattleMode.sql
+AddMigration 0130_CreateSyncBuff.sql

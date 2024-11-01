@@ -262,4 +262,10 @@ Int32 RTCharacterGetAuraModeSkillIndex(
 	Int32 AuraModeIndex
 );
 
+Int32 RTCharacterGetAuraModeIndexForSkillIndex(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 SkillIndex
+);
+
 EXTERN_C_END

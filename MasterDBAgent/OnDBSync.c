@@ -302,6 +302,60 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			}
 		}
 
+		if (Packet->SyncMask.BattleModeInfo) {
+			ReadMemory(struct _RTCharacterBattleModeInfo, Info, 1);
+
+			if (!DatabaseCallProcedure(
+				Context->Database,
+				"SyncBattleMode",
+				DB_INPUT_INT32(Packet->CharacterIndex),
+				DB_INPUT_UINT32(Info->Info.BattleModeDuration),
+				DB_INPUT_UINT8(Info->Info.BattleModeIndex),
+				DB_INPUT_UINT8(Info->Info.BattleModeUnknown1),
+				DB_INPUT_UINT8(Info->Info.BattleModeStyleRank),
+				DB_INPUT_UINT8(Info->Info.AuraModeIndex),
+				DB_INPUT_UINT8(Info->Info.AuraModeUnknown1),
+				DB_INPUT_UINT8(Info->Info.AuraModeStyleRank),
+				DB_INPUT_UINT32(Info->Info.AuraModeDuration),
+				DB_INPUT_INT32(Info->VehicleState),
+				DB_PARAM_END
+			)) {
+				Response->SyncMaskFailed.BattleModeInfo = true;
+			}
+		}
+
+		if (Packet->SyncMask.BuffInfo) {
+			ReadMemory(struct _RTBuffInfo, Info, 1);
+
+			Int32 BuffSlotCount = (
+				Info->SkillBuffCount +
+				Info->PotionBuffCount +
+				Info->GmBuffCount +
+				Info->UnknownBuffCount1 +
+				Info->UnknownBuffCount2 +
+				Info->ForceWingBuffCount +
+				Info->FirePlaceBuffCount
+			);
+			ReadMemory(struct _RTBuffSlot, Slots, BuffSlotCount);
+
+			if (!DatabaseCallProcedure(
+				Context->Database,
+				"SyncBuff",
+				DB_INPUT_INT32(Packet->CharacterIndex),
+				DB_INPUT_UINT8(Info->SkillBuffCount),
+				DB_INPUT_UINT8(Info->PotionBuffCount),
+				DB_INPUT_UINT8(Info->GmBuffCount),
+				DB_INPUT_UINT8(Info->UnknownBuffCount1),
+				DB_INPUT_UINT8(Info->UnknownBuffCount2),
+				DB_INPUT_UINT8(Info->ForceWingBuffCount),
+				DB_INPUT_UINT8(Info->FirePlaceBuffCount),
+				DB_INPUT_DATA(Slots, SlotsLength),
+				DB_PARAM_END
+			)) {
+				Response->SyncMaskFailed.BuffInfo = true;
+			}
+		}
+
 		if (Packet->SyncMask.EquipmentInfo) {
 			ReadMemory(struct _RTEquipmentInfo, Info, 1);
 			ReadMemory(struct _RTItemSlot, Slots, Info->EquipmentSlotCount);

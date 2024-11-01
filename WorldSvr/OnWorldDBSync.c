@@ -90,6 +90,25 @@ Void ServerSyncCharacter(
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.StyleInfo, sizeof(struct _RTCharacterStyleInfo));
 	}
 
+	if (Character->SyncMask.BattleModeInfo) {
+		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.BattleModeInfo, sizeof(struct _RTCharacterBattleModeInfo));
+	}
+
+	if (Character->SyncMask.BuffInfo) {
+		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.BuffInfo.Info, sizeof(struct _RTBuffInfo));
+		
+		Int32 BuffSlotCount = (
+			Character->Data.BuffInfo.Info.SkillBuffCount +
+			Character->Data.BuffInfo.Info.PotionBuffCount +
+			Character->Data.BuffInfo.Info.GmBuffCount +
+			Character->Data.BuffInfo.Info.UnknownBuffCount1 +
+			Character->Data.BuffInfo.Info.UnknownBuffCount2 +
+			Character->Data.BuffInfo.Info.ForceWingBuffCount +
+			Character->Data.BuffInfo.Info.FirePlaceBuffCount
+		);
+		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.BuffInfo.Slots[0], sizeof(struct _RTBuffSlot) * BuffSlotCount);
+	}
+
 	if (Character->SyncMask.EquipmentInfo) {
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.EquipmentInfo.Info, sizeof(struct _RTEquipmentInfo));
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.EquipmentInfo.EquipmentSlots, sizeof(struct _RTItemSlot) * Character->Data.EquipmentInfo.Info.EquipmentSlotCount);

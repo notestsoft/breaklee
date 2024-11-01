@@ -47,11 +47,9 @@ Bool RTCharacterStartBattleMode(
 
 	RTCharacterAddSP(Runtime, Character, -RUNTIME_BATTLE_MODE_SP_CONSUMPTION);
 
-	Int32 DurationScale = RTCharacterIsAuraModeActive(Runtime, Character) ? 2 : 1;
-
 	Character->Data.BattleModeInfo.Info.BattleModeIndex = SkillData->Intensity;
 	Character->Data.BattleModeInfo.Info.BattleModeStyleRank = Character->Data.StyleInfo.Style.BattleRank;
-	Character->Data.BattleModeInfo.Info.BattleModeDuration = RUNTIME_BATTLE_MODE_SP_CONSUMPTION / DurationScale;
+	Character->Data.BattleModeInfo.Info.BattleModeDuration += RUNTIME_BATTLE_MODE_SP_CONSUMPTION;
 	Character->SyncMask.BattleModeInfo = true;
 
 	Character->Data.StyleInfo.ExtendedStyle.BattleModeFlags |= (1 << (SkillData->Intensity - 1));
@@ -97,7 +95,7 @@ Void RTCharacterUpdateBattleMode(
 
 		}
 
-		Bool IsAuraModeActive = RTCharacterIsBattleModeActive(Runtime, Character);
+		Bool IsAuraModeActive = RTCharacterIsAuraModeActive(Runtime, Character);
 		if (IsAuraModeActive) {
 			RTCharacterSkillDataRef SkillData = RTCharacterGetAuraModeSkillData(
 				Runtime,
@@ -113,15 +111,17 @@ Void RTCharacterUpdateBattleMode(
 			Character->Data.BattleModeInfo.Info.BattleModeDuration = MAX(0,
 				Character->Data.BattleModeInfo.Info.BattleModeDuration - SpConsumptionRate
 			);
-			Character->Data.BattleModeInfo.Info.AuraModeDuration = MAX(0,
-				Character->Data.BattleModeInfo.Info.AuraModeDuration - SpConsumptionRate
-			);
+			
+			if (IsAuraModeActive) {
+				Character->Data.BattleModeInfo.Info.AuraModeDuration += SpConsumptionRate;
+			}
+
+			Character->SyncMask.BattleModeInfo = true;
 		}
 
 		Bool CancelBattleMode = (
 			(IsBattleModeActive || IsAuraModeActive) &&
-			Character->Data.BattleModeInfo.Info.BattleModeDuration <= 0 &&
-			Character->Data.BattleModeInfo.Info.AuraModeDuration <= 0
+			Character->Data.BattleModeInfo.Info.BattleModeDuration <= 0
 		);
 		if (CancelBattleMode) {
 			RTCharacterCancelBattleMode(Runtime, Character);
@@ -190,13 +190,9 @@ Bool RTCharacterStartAuraMode(
 
 	RTCharacterAddSP(Runtime, Character, -RUNTIME_BATTLE_MODE_SP_CONSUMPTION);
 
-	if (RTCharacterIsBattleModeActive(Runtime, Character)) {
-		Character->Data.BattleModeInfo.Info.BattleModeDuration += RUNTIME_BATTLE_MODE_SP_CONSUMPTION;
-	}
-
-	Character->Data.BattleModeInfo.Info.AuraModeIndex = SkillData->Intensity;
+	Character->Data.BattleModeInfo.Info.BattleModeDuration += RUNTIME_BATTLE_MODE_SP_CONSUMPTION;
+	Character->Data.BattleModeInfo.Info.AuraModeIndex = RTCharacterGetAuraModeIndexForSkillIndex(Runtime, Character, SkillIndex);
 	Character->Data.BattleModeInfo.Info.AuraModeStyleRank = Character->Data.StyleInfo.Style.BattleRank;
-	Character->Data.BattleModeInfo.Info.AuraModeDuration = RUNTIME_BATTLE_MODE_SP_CONSUMPTION;
 	Character->SyncMask.BattleModeInfo = true;
 
 	Character->Data.StyleInfo.ExtendedStyle.IsAuraActive = true;
@@ -224,6 +220,7 @@ Bool RTCharacterCancelAuraMode(
 
 	Int32 AuraModeIndex = Character->Data.BattleModeInfo.Info.AuraModeIndex;
 
+	Character->Data.BattleModeInfo.Info.BattleModeDuration = 0;
 	Character->Data.BattleModeInfo.Info.AuraModeIndex = 0;
 	Character->Data.BattleModeInfo.Info.AuraModeStyleRank = 0;
 	Character->Data.BattleModeInfo.Info.AuraModeDuration = 0;

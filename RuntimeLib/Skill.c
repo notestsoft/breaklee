@@ -169,16 +169,38 @@ Int32 RTCharacterGetAuraModeSkillIndex(
 		RUNTIME_SPECIAL_SKILL_SLOT_AURA_MODE_4,
 		RUNTIME_SPECIAL_SKILL_SLOT_AURA_MODE_5,
 	};
+	Int32 SkillSlotCount = sizeof(SkillSlotIndices) / sizeof(SkillSlotIndices[0]);
+	Int32 SkillSlotIndex = AuraModeIndex - 1;
+	if (SkillSlotIndex < 0 || SkillSlotIndex > SkillSlotCount) return 0;
 
-	for (Int32 Index = 0; Index < sizeof(SkillSlotIndices) / sizeof(SkillSlotIndices[0]); Index += 1) {
-		RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotBySlotIndex(Runtime, Character, SkillSlotIndices[Index]);
-		if (!SkillSlot) continue;
+	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotBySlotIndex(Runtime, Character, SkillSlotIndices[SkillSlotIndex]);
+	if (!SkillSlot) return 0;
 
-		RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillSlot->ID);
-		if (!SkillData) continue;
-		if (SkillData->Intensity != AuraModeIndex) continue;
+	RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillSlot->ID);
+	if (!SkillData) return 0;
 
-		return SkillData->SkillID;
+	return SkillData->SkillID;
+}
+
+Int32 RTCharacterGetAuraModeIndexForSkillIndex(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 SkillIndex
+) {
+	Int32 SkillSlotIndices[] = {
+		RUNTIME_SPECIAL_SKILL_SLOT_AURA_MODE_1,
+		RUNTIME_SPECIAL_SKILL_SLOT_AURA_MODE_2,
+		RUNTIME_SPECIAL_SKILL_SLOT_AURA_MODE_3,
+		RUNTIME_SPECIAL_SKILL_SLOT_AURA_MODE_4,
+		RUNTIME_SPECIAL_SKILL_SLOT_AURA_MODE_5,
+	};
+	Int32 SkillSlotCount = sizeof(SkillSlotIndices) / sizeof(SkillSlotIndices[0]);
+
+	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotBySkillIndex(Runtime, Character, SkillIndex);
+	if (!SkillSlot) return 0;
+
+	for (Int32 Index = 0; Index < SkillSlotCount; Index += 1) {
+		if (SkillSlotIndices[Index] == SkillSlot->Index) return Index + 1;
 	}
 
 	return 0;

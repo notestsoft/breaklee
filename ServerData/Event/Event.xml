@@ -43,6 +43,7 @@
             <item slot_id="64" item_id="33556474" option="999" duration_id="0" price="0"></item>
             <item slot_id="65" item_id="33556475" option="999" duration_id="0" price="0"></item>
             <item slot_id="66" item_id="2105" option="0" duration_id="0" price="0"></item>
+            <item slot_id="67" item_id="2106" option="0" duration_id="0" price="0"></item>
 
             <item slot_id="80" item_id="3105" option="999" duration_id="0" price="0"></item>
             <item slot_id="81" item_id="33556426" option="0" duration_id="0" price="0"></item>
@@ -442,7 +443,50 @@
         </event_shop>
     </event>
 
-    <event id="4" type="2" use_flags="15" world_id="1" npc_id="49" description="Accessories">
+    <event id="4" type="2" use_flags="15" world_id="1" npc_id="49" description="Vehicle">
+        <event_description content="Vehicle" />
+        <event_shop>
+           <item slot_id = "0" item_id = "464" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "1" item_id = "477" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "2" item_id = "480" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "3" item_id = "482" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "4" item_id = "483" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "5" item_id = "507" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "6" item_id = "937" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "7" item_id = "938" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "8" item_id = "1373" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "9" item_id = "1721" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "10" item_id = "1722" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "11" item_id = "1723" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "12" item_id = "1724" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "13" item_id = "1725" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "14" item_id = "1726" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "15" item_id = "1727" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "16" item_id = "1728" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "17" item_id = "1729" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "18" item_id = "1730" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "19" item_id = "2371" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "20" item_id = "3040" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "21" item_id = "3041" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "22" item_id = "33558261" option = "0" duration_id = "0" price = "0"></item>
+           
+           <item slot_id = "32" item_id = "437" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "33" item_id = "439" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "34" item_id = "1442" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "35" item_id = "1443" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "36" item_id = "3128" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "37" item_id = "3129" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "38" item_id = "3130" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "39" item_id = "3131" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "40" item_id = "4084" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "41" item_id = "33556579" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "42" item_id = "33557922" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "43" item_id = "33557923" option = "0" duration_id = "0" price = "0"></item>
+           <item slot_id = "44" item_id = "33557924" option = "0" duration_id = "0" price = "0"></item>
+        </event_shop>
+    </event>
+
+    <event id="5" type="2" use_flags="15" world_id="1" npc_id="49" description="Accessories">
         <event_description content="Accessories" />
         
         <event_shop>
@@ -527,7 +571,7 @@
         </event_shop>
     </event>
 
-    <event id="5" type="2" use_flags="15" world_id="1" npc_id="49" description="Essence Ability">
+    <event id="6" type="2" use_flags="15" world_id="1" npc_id="49" description="Essence Ability">
         <event_description content="Essence Ability" />
         
         <event_shop>
@@ -598,7 +642,7 @@
         </event_shop>
     </event>
 
-    <event id="6" type="2" use_flags="15" world_id="1" npc_id="49" description="Blended Ability">
+    <event id="7" type="2" use_flags="15" world_id="1" npc_id="49" description="Blended Ability">
         <event_description content="Blended Ability" />
         
         <event_shop>
@@ -652,7 +696,7 @@
         </event_shop>
     </event>
 
-    <event id="7" type="2" use_flags="15" world_id="1" npc_id="49" description="Karma Ability">
+    <event id="8" type="2" use_flags="15" world_id="1" npc_id="49" description="Karma Ability">
         <event_description content="Karma Ability" />
         
         <event_shop>
@@ -702,7 +746,7 @@
         </event_shop>
     </event>
 
-    <event id="8" type="2" use_flags="15" world_id="1" npc_id="49" description="Mercenaries I">
+    <event id="9" type="2" use_flags="15" world_id="1" npc_id="49" description="Mercenaries I">
         <event_description content="Mercenaries I" />
         
         <event_shop>
@@ -837,7 +881,7 @@
         </event_shop>
     </event>
 
-    <event id="9" type="2" use_flags="15" world_id="1" npc_id="49" description="Mercenaries II">
+    <event id="10" type="2" use_flags="15" world_id="1" npc_id="49" description="Mercenaries II">
         <event_description content="Mercenaries II" />
         
         <event_shop>
@@ -857,7 +901,7 @@
         </event_shop>
     </event>
 
-    <event id="10" type="2" use_flags="15" world_id="1" npc_id="49" description="Merit Mastery">
+    <event id="11" type="2" use_flags="15" world_id="1" npc_id="49" description="Merit Mastery">
         <event_description content="Merit Mastery" />
         
         <event_shop>
@@ -896,7 +940,7 @@
         </event_shop>
     </event>
 
-    <event id="11" type="2" use_flags="15" world_id="1" npc_id="49" description="Honor Medal">
+    <event id="12" type="2" use_flags="15" world_id="1" npc_id="49" description="Honor Medal">
         <event_description content="Honor Medal" />
         
         <event_shop>
@@ -910,7 +954,7 @@
         </event_shop>
     </event>
 
-    <event id="12" type="2" use_flags="15" world_id="1" npc_id="49" description="Collection I">
+    <event id="13" type="2" use_flags="15" world_id="1" npc_id="49" description="Collection I">
         <event_description content="Collection I" />
         
         <event_shop>
@@ -919,7 +963,7 @@
         </event_shop>
     </event>
 
-    <event id="13" type="2" use_flags="15" world_id="1" npc_id="49" description="Collection II">
+    <event id="14" type="2" use_flags="15" world_id="1" npc_id="49" description="Collection II">
         <event_description content="Collection II" />
         
         <event_shop>
@@ -928,7 +972,7 @@
         </event_shop>
     </event>
 
-    <event id="14" type="2" use_flags="15" world_id="1" npc_id="49" description="Transformation">
+    <event id="15" type="2" use_flags="15" world_id="1" npc_id="49" description="Transformation">
         <event_description content="Transformation" />
         
         <event_shop>
@@ -974,7 +1018,7 @@
         </event_shop>
     </event>
 
-    <event id="15" type="2" use_flags="11" world_id="1" npc_id="49" description="Normal Upgrade">
+    <event id="16" type="2" use_flags="11" world_id="1" npc_id="49" description="Normal Upgrade">
         <event_description content="Normal Upgrade" />
         
         <event_shop>
@@ -996,7 +1040,7 @@
         </event_shop>
     </event>
 
-    <event id="16" type="2" use_flags="15" world_id="1" npc_id="49" description="Upgrade II">
+    <event id="17" type="2" use_flags="15" world_id="1" npc_id="49" description="Upgrade II">
         <event_description content="Upgrade II" />
         
         <event_shop>
@@ -1005,7 +1049,7 @@
         </event_shop>
     </event>
 
-    <event id="17" type="2" use_flags="15" world_id="1" npc_id="49" description="Effectors">
+    <event id="18" type="2" use_flags="15" world_id="1" npc_id="49" description="Effectors">
         <event_description content="Effectors" />
         
         <event_shop>
@@ -1051,7 +1095,7 @@
         </event_shop>
     </event>
 
-    <event id="18" type="2" use_flags="15" world_id="1" npc_id="49" description="Basic Craft I">
+    <event id="19" type="2" use_flags="15" world_id="1" npc_id="49" description="Basic Craft I">
         <event_description content="Basic Craft I" />
         
         <event_shop>
@@ -1060,7 +1104,7 @@
         </event_shop>
     </event>
 
-    <event id="19" type="2" use_flags="15" world_id="1" npc_id="49" description="Professional Craft I">
+    <event id="20" type="2" use_flags="15" world_id="1" npc_id="49" description="Professional Craft I">
         <event_description content="Professional Craft I" />
         
         <event_shop>
@@ -1168,7 +1212,7 @@
         </event_shop>
     </event>
 
-    <event id="444" type="2" use_flags="11" world_id="1" npc_id="49" description="Anima Mastery">
+    <event id="21" type="2" use_flags="11" world_id="1" npc_id="49" description="Anima Mastery">
         <event_description content="Anima Mastery" />
         
         <event_shop>
@@ -1196,7 +1240,7 @@
         
     </event>
 
-    <event id="20" type="2" use_flags="11" world_id="1" npc_id="49" description="Epic Converter">
+    <event id="22" type="2" use_flags="11" world_id="1" npc_id="49" description="Epic Converter">
         <event_description content="Epic Converter" />
         
         <event_shop>
@@ -1208,7 +1252,7 @@
         
     </event>
 
-    <event id="21" type = "2" use_flags = "15" world_id = "1" npc_id = "49" description = "Option Scroll">
+    <event id="23" type = "2" use_flags = "15" world_id = "1" npc_id = "49" description = "Option Scroll">
         <event_description content = "Option Scroll" />
         <event_shop>
             <item slot_id = "0" item_id = "33556424" option = "0" duration_id = "0" price = "0">
@@ -1526,7 +1570,7 @@
         </event_shop>
     </event>
     
-    <event id="22" type="2" use_flags="11" world_id="1" npc_id="49" description="Dungeons">
+    <event id="24" type="2" use_flags="11" world_id="1" npc_id="49" description="Dungeons">
         <event_description content="Dungeons" />
         <event_shop>
             <item slot_id="0" item_id="33557330" option="2201" duration_id="0" price="0"></item>
