@@ -82,6 +82,8 @@ Void RTCharacterUpdateBattleMode(
 		// TODO: Calculate spirit point regeneration
 		// TODO: Calculate hp, mp regeneration
 
+		Int32 SpConsumptionRate = 0;
+
 		Bool IsBattleModeActive = RTCharacterIsBattleModeActive(Runtime, Character);
 		if (IsBattleModeActive) {
 			RTCharacterSkillDataRef SkillData = RTCharacterGetBattleModeSkillData(
@@ -90,10 +92,9 @@ Void RTCharacterUpdateBattleMode(
 				Character->Data.BattleModeInfo.Info.BattleModeIndex
 			);
 			if (SkillData) {
-				Character->Data.BattleModeInfo.Info.BattleModeDuration = MAX(0,
-					Character->Data.BattleModeInfo.Info.BattleModeDuration - SkillData->Sp
-				);
+				SpConsumptionRate += SkillData->Sp;
 			}
+
 		}
 
 		Bool IsAuraModeActive = RTCharacterIsBattleModeActive(Runtime, Character);
@@ -104,10 +105,17 @@ Void RTCharacterUpdateBattleMode(
 				Character->Data.BattleModeInfo.Info.AuraModeIndex
 			);
 			if (SkillData) {
-				Character->Data.BattleModeInfo.Info.AuraModeDuration = MAX(0,
-					Character->Data.BattleModeInfo.Info.AuraModeDuration - SkillData->Sp
-				);
+				SpConsumptionRate += SkillData->Sp;
 			}
+		}
+
+		if (SpConsumptionRate > 0) {
+			Character->Data.BattleModeInfo.Info.BattleModeDuration = MAX(0,
+				Character->Data.BattleModeInfo.Info.BattleModeDuration - SpConsumptionRate
+			);
+			Character->Data.BattleModeInfo.Info.AuraModeDuration = MAX(0,
+				Character->Data.BattleModeInfo.Info.AuraModeDuration - SpConsumptionRate
+			);
 		}
 
 		Bool CancelBattleMode = (
@@ -118,6 +126,11 @@ Void RTCharacterUpdateBattleMode(
 		if (CancelBattleMode) {
 			RTCharacterCancelBattleMode(Runtime, Character);
 			RTCharacterCancelAuraMode(Runtime, Character);
+
+			NOTIFICATION_DATA_CHARACTER_DATA* Notification = RTNotificationInit(CHARACTER_DATA);
+			Notification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_SP_DECREASE_EX;
+			Notification->SP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+			RTNotificationDispatchToCharacter(Notification, Character);
 		}
 	}
 }
@@ -148,14 +161,7 @@ Bool RTCharacterCancelBattleMode(
 	NotificationData->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
 	NotificationData->IsActivation = false;
 	RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
-	/*
-	{
-		NOTIFICATION_DATA_CHARACTER_DATA* Notification = RTNotificationInit(CHARACTER_DATA);
-		Notification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_SP_DECREASE_EX;
-		Notification->SP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
-		RTNotificationDispatchToCharacter(Notification, Character);
-	}
-	*/
+
 	return true;
 }
 
@@ -186,9 +192,13 @@ Bool RTCharacterStartAuraMode(
 
 	Int32 DurationScale = RTCharacterIsBattleModeActive(Runtime, Character) ? 2 : 1;
 
+	if (RTCharacterIsBattleModeActive(Runtime, Character)) {
+		Character->Data.BattleModeInfo.Info.BattleModeDuration += RUNTIME_BATTLE_MODE_SP_CONSUMPTION;
+	}
+
 	Character->Data.BattleModeInfo.Info.AuraModeIndex = SkillData->Intensity;
 	Character->Data.BattleModeInfo.Info.AuraModeStyleRank = Character->Data.StyleInfo.Style.BattleRank;
-	Character->Data.BattleModeInfo.Info.AuraModeDuration = RUNTIME_BATTLE_MODE_SP_CONSUMPTION / DurationScale;
+	Character->Data.BattleModeInfo.Info.AuraModeDuration = RUNTIME_BATTLE_MODE_SP_CONSUMPTION;
 	Character->SyncMask.BattleModeInfo = true;
 
 	Character->Data.StyleInfo.ExtendedStyle.IsAuraActive = true;
@@ -234,13 +244,6 @@ Bool RTCharacterCancelAuraMode(
 	NotificationData->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
 	NotificationData->IsActivation = false;
 	RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
-	/*
-	{
-		NOTIFICATION_DATA_CHARACTER_DATA* Notification = RTNotificationInit(CHARACTER_DATA);
-		Notification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_SP_DECREASE_EX;
-		Notification->SP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
-		RTNotificationDispatchToCharacter(Notification, Character);
-	}
-	*/
+
 	return true;
 }
