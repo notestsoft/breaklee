@@ -269,6 +269,7 @@ CLIENT_PROCEDURE_BINDING(CANCEL_BATTLE_MODE_SYNERGY) {
 
 	S2C_DATA_CANCEL_BATTLE_MODE_SYNERGY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CANCEL_BATTLE_MODE_SYNERGY);
 	SocketSend(Socket, Connection, Response);
+	return;
 
 error:
 	SocketDisconnect(Socket, Connection);
