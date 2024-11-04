@@ -48,7 +48,14 @@ Timestamp GetTimestamp() {
 
 Timestamp GetTimestampMs() {
 #if defined(_WIN32) || defined(_WIN64)
-    return GetTickCount64();
+    FILETIME FileTime;
+    ULARGE_INTEGER LargeInt = { 0 };
+    GetSystemTimeAsFileTime(&FileTime);
+    LargeInt.LowPart = FileTime.dwLowDateTime;
+    LargeInt.HighPart = FileTime.dwHighDateTime;
+
+    Timestamp Milliseconds = LargeInt.QuadPart / 10000;
+    return Milliseconds - 11644473600000ULL;
 #else
     struct timeval tv;
     gettimeofday(&tv, NULL);

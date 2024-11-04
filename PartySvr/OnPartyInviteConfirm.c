@@ -18,7 +18,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CONFIRM) {
         DictionaryInsert(Context->PartyManager->CharacterToPartyEntity, &Invitation->Member.Info.CharacterIndex, &Party->ID, sizeof(struct _RTEntityID));
 
         Member->MemberID = Invitation->Member.MemberID;
-        Member->NodeIndex = Invitation->Member.NodeIndex;
+        Member->Info.WorldServerIndex = Invitation->Member.Info.WorldServerIndex;
         memcpy(&Member->Info, &Invitation->Member.Info, sizeof(struct _RTPartyMemberInfo));
 
         BroadcastPartyInfo(Server, Context, Socket, Party);

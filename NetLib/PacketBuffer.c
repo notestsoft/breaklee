@@ -38,6 +38,22 @@ Void PacketBufferDestroy(
     AllocatorDeallocate(PacketBuffer->Allocator, PacketBuffer);
 }
 
+UInt16 PacketBufferGetMagic(
+    PacketBufferRef PacketBuffer,
+    Bool Extended
+) {
+    if (PacketBuffer->IsClient) {
+        return PacketBuffer->ProtocolIdentifier + PacketBuffer->ProtocolVersion;
+    }
+    else {
+        if (Extended) {
+            return PacketBuffer->ProtocolIdentifier + PacketBuffer->ProtocolVersion + PacketBuffer->ProtocolExtension;
+        }
+
+        return PacketBuffer->ProtocolIdentifier + PacketBuffer->ProtocolVersion;
+    }
+}
+
 Void* _PacketBufferInit(
     PacketBufferRef PacketBuffer,
     Bool Extended,

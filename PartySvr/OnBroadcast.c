@@ -13,7 +13,7 @@ IPC_PROCEDURE_BINDING(W2P, BROADCAST_TO_PARTY) {
         IPC_P2W_DATA_BROADCAST_TO_CHARACTER* Response = IPCPacketBufferInit(Connection->PacketBuffer, P2W, BROADCAST_TO_CHARACTER);
         Response->Header.Source = Server->IPCSocket->NodeID;
         Response->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
-        Response->Header.Target.Index = (UInt32)Member->NodeIndex;
+        Response->Header.Target.Index = (UInt32)Member->Info.WorldServerIndex;
         Response->Header.Target.Type = IPC_TYPE_WORLD;
         Response->CharacterIndex = Member->Info.CharacterIndex;
         Response->Length = Packet->Length;

@@ -7,10 +7,20 @@ EXTERN_C_BEGIN
 
 #pragma pack(push, 1)
 
+enum {
+    RUNTIME_BUFF_SLOT_TYPE_SKILL,
+    RUNTIME_BUFF_SLOT_TYPE_POTION,
+    RUNTIME_BUFF_SLOT_TYPE_GM_BUFF,
+    RUNTIME_BUFF_SLOT_TYPE_UNKNOWN_1,
+    RUNTIME_BUFF_SLOT_TYPE_UNKNOWN_2,
+    RUNTIME_BUFF_SLOT_TYPE_FORCE_WING,
+    RUNTIME_BUFF_SLOT_TYPE_FIRE_PLACE,
+};
+
 struct _RTBuffSlot {
     Int32 SkillIndex;
     Int32 SkillLevel;
-    Int32 Duration;
+    UInt32 Duration;
     UInt8 Unknown1[10];
     Int32 SkillTranscendenceLevel;
     Int32 SkillTranscendenceIndex;
@@ -33,5 +43,43 @@ struct _RTCharacterBuffInfo {
 };
 
 #pragma pack(pop)
+
+Void RTCharacterInitializeBuffs(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Void RTCharacterUpdateBuffs(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Bool ForceUpdate
+);
+
+RTBuffSlotRef RTCharacterGetBuffSlotBySkillIndex(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 SkillIndex,
+    Int32* ResultSlotIndex
+);
+
+UInt32 RTCharacterApplyBuff(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    RTSkillSlotRef SkillSlot,
+    RTCharacterSkillDataRef SkillData
+);
+
+Bool RTCharacterRemoveBuff(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 SkillIndex
+);
+
+UInt32 RTMobApplyBuff(
+    RTRuntimeRef Runtime,
+    RTMobRef Mob,
+    RTSkillSlotRef SkillSlot,
+    RTCharacterSkillDataRef SkillData
+);
 
 EXTERN_C_END

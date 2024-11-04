@@ -19,6 +19,6 @@ BEGIN
         UnknownBuffCount2 = InUnknownBuffCount2,
         ForceWingBuffCount = InForceWingBuffCount,
         FirePlaceBuffCount = InFirePlaceBuffCount,
-        InSlotData = SlotData
+        SlotData = InSlotData
     WHERE CharacterID = InCharacterID;
 END;

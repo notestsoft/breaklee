@@ -13,7 +13,7 @@
         <event_item script="Event/object_madness.lua" item_id="1562" option="4208882" external_id="-1" texture_item_id="33556058" title="$35#Bottle of Hidden Revelations" description="$33#[Applied On Purchase]$____A rare bottle that unveils the presence of a secret NPC._ _When purchased, it summons the enigmatic $11#Keeper of Secrets$._ Approach with caution, as the knowledge they possess is both powerful and perilous._" />
         <event_item script="Event/add_all_exp.lua" item_id="1562" option="4208883" external_id="-1" texture_item_id="33554531" title="$35#Capsule of Limitless Power" description="$33#[Applied On Purchase]$____An ancient tome inscribed with the essence of limitless growth._ _    $11#100,000,000 Exp$_    $11#100,000,000 Skill Exp$_    $11#1,000,000 Wing Exp$_    $11#1,000,000,000 Honor Points$_    $11#100,000,000 Axp$._" />
     </event>
-
+    
     <event id="1" type="2" use_flags="11" world_id="1" npc_id="49" description="Character">
         <event_description content="Character" />
         <event_shop>
@@ -56,6 +56,7 @@
             <item slot_id="91" item_id="33556184" option="0" duration_id="0" price="0"></item>
             <item slot_id="92" item_id="2338" option="999" duration_id="0" price="0"></item>
             <item slot_id="93" item_id="2317" option="999" duration_id="0" price="0"></item>
+			<item slot_id="94" item_id="33557041" option="0" duration_id="0" price="0"></item>
 
             <item slot_id="119" item_id="33558399" option="0" duration_id="0" price="0"></item>
             <item slot_id="120" item_id="2842" option="1000000000" duration_id="0" price="0"></item>

@@ -266,13 +266,6 @@ Void RTCharacterInitializeAchievements(
     // TODO: Achievement values
 }
 
-Void RTCharacterInitializeBuffs(
-    RTRuntimeRef Runtime,
-    RTCharacterRef Character
-) {
-    // TODO: Buff values
-}
-
 Void RTCharacterInitializeGoldMeritMastery(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
@@ -323,7 +316,6 @@ Void RTCharacterInitializeOverlordMastery(
 
 		assert(Found);
 	}
-	
 }
 
 Void RTCharacterInitializeHonorMedalMastery(
@@ -407,7 +399,8 @@ Void RTCharacterInitializeAttributes(
 	RTCharacterInitializeAnimaMastery(Runtime, Character);
 	RTCharacterInitializeBattleStyleStats(Runtime, Character);
 	RTCharacterInitializeEquipment(Runtime, Character);
-    
+	RTCharacterInitializeBattleMode(Runtime, Character);
+
 	RTCharacterSetHP(Runtime, Character, MIN(
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX],
 		Character->Data.Info.CurrentHP
@@ -449,7 +442,17 @@ Void RTCharacterUpdate(
 ) {
 	if (!RTCharacterIsAlive(Runtime, Character)) return;
 
-	RTCharacterUpdateBattleMode(Runtime, Character);
+	Timestamp CurrentTimestamp = GetTimestampMs();
+	if (Character->RegenUpdateTimestamp <= CurrentTimestamp) {
+		Character->RegenUpdateTimestamp = CurrentTimestamp + RUNTIME_REGENERATION_INTERVAL;
+
+		// TODO: Calculate spirit point regeneration
+		// TODO: Calculate hp, mp regeneration
+
+		RTCharacterUpdateBattleMode(Runtime, Character);
+	}
+
+	RTCharacterUpdateBuffs(Runtime, Character, false);
 }
 
 Bool RTCharacterIsAlive(
@@ -900,7 +903,6 @@ Bool RTCharacterBattleRankUp(
 		return false;
 	}
 
-	// TODO: Upgrade pre existing battle mode levels by one, the issue is that they are registered after creation also on official
 	// TODO: Check if we need to add the skills of current or next rank here..
 	if (RankData->SkillSlot[0] > 0 && RankData->SkillIndex[0] > 0) {
 		RTCharacterAddSkillSlot(

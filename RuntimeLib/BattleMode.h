@@ -62,4 +62,9 @@ Bool RTCharacterCancelAuraMode(
 	RTCharacterRef Character
 );
 
+Void RTCharacterInitializeBattleMode(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+);
+
 EXTERN_C_END

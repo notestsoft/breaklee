@@ -26,63 +26,11 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotBySlotIndex(Runtime, Character, Packet->SlotIndex);
 	if (!SkillSlot) SkillSlot = RTCharacterGetSkillSlotBySkillIndex(Runtime, Character, Packet->SkillIndex);
-	if (!SkillSlot) {
-		if (SkillData->SkillGroup != RUNTIME_SKILL_GROUP_ASTRAL) goto error;
-
-		Int32 PacketLength = sizeof(C2S_DATA_SKILL_TO_CHARACTER) + sizeof(C2S_DATA_SKILL_GROUP_ASTRAL);
-		if (Packet->Length < PacketLength) goto error;
-
-		C2S_DATA_SKILL_GROUP_ASTRAL* PacketData = (C2S_DATA_SKILL_GROUP_ASTRAL*)&Packet->Data[0];
-		PacketLength += sizeof(UInt16) * PacketData->InventorySlotCount;
-		if (Packet->Length != PacketLength) goto error;
-
-		if (Packet->SlotIndex == RUNTIME_SPECIAL_SKILL_SLOT_ASTRAL_SKILL) {
-			Character->Data.StyleInfo.ExtendedStyle.IsAstralWeaponActive = PacketData->IsActivation;
-			Character->SyncMask.StyleInfo = true;
-		} else if (Packet->SlotIndex == RUNTIME_SPECIAL_SKILL_SLOT_ASTRAL_BIKE || Packet->SlotIndex == RUNTIME_SPECIAL_SKILL_SLOT_ASTRAL_BOARD) {
-			Character->Data.StyleInfo.ExtendedStyle.IsVehicleActive = PacketData->IsActivation;
-			Character->SyncMask.StyleInfo = true;
-		}
-		else {
-			// TODO: Add other cases
-			goto error;
-		}
-		
-		S2C_DATA_SKILL_GROUP_ASTRAL* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_ASTRAL);
-		ResponseData->CurrentMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
-		ResponseData->IsActivation = PacketData->IsActivation;
-		ResponseData->Unknown2 = PacketData->Unknown2;
-		SocketSend(Socket, Connection, Response);
-
-		S2C_DATA_NFY_SKILL_TO_CHARACTER* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_SKILL_TO_CHARACTER);
-		Notification->SkillIndex = Packet->SkillIndex;
-
-		S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON* NotificationData = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_SKILL_GROUP_ASTRAL_WEAPON);
-		NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
-		NotificationData->CharacterStyle = Character->Data.StyleInfo.Style.RawValue;
-		NotificationData->CharacterLiveStyle = Character->Data.StyleInfo.LiveStyle.RawValue;
-		NotificationData->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
-		NotificationData->IsActivation = PacketData->IsActivation;
-		NotificationData->Unknown2 = PacketData->Unknown2;
-
-		BroadcastToWorld(
-			Context,
-			RTRuntimeGetWorldByCharacter(Runtime, Character),
-			kEntityIDNull,
-			Character->Movement.PositionCurrent.X,
-			Character->Movement.PositionCurrent.Y,
-			Notification
-		);
-
-		return;
-	} 
-
-	// 3, 32
-
 	if (SkillSlot->ID != Packet->SkillIndex) goto error;
 
 	// TODO: Add SkillData validations
 	// TODO: Add skill cast time and cooldown checks
+	// TODO: Consume sp
 
 	Int32 RequiredMP = RTCharacterCalculateRequiredMP(
 		Runtime,
@@ -227,38 +175,6 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 	SocketSend(Socket, Connection, Response);
 	return;
-
-	/* TODO: Send notification S2C_DATA_SKILL_TO_CHARACTER_UPDATE
-	
-	S2C_DATA_SKILL_TO_MOB_UPDATE* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, SKILL_TO_MOB_UPDATE);
-	Notification->SkillIndex = Response->SkillIndex;
-	Notification->TargetCount = Response->TargetCount;
-	Notification->CharacterID = Character->ID;
-	Notification->SetPositionX = Character->Data.Info.PositionX;
-	Notification->SetPositionY = Character->Data.Info.PositionY;
-	Notification->CharacterHP = Response->CharacterHP;
-
-	for (Int32 Index = 0; Index < Response->TargetCount; Index++) {
-		S2C_DATA_SKILL_TO_MOB_TARGET* TargetResponse = &Response->Data[Index];
-		S2C_DATA_SKILL_TO_MOB_TARGET_UPDATE* TargetNotification = PacketAppendStruct(S2C_DATA_SKILL_TO_MOB_TARGET_UPDATE);
-		TargetNotification->EntityID = TargetResponse->EntityID;
-		TargetNotification->WorldID = TargetResponse->WorldID;
-		TargetNotification->EntityType = TargetResponse->EntityType;
-		TargetNotification->AttackType = TargetResponse->AttackType;
-		TargetNotification->MobHP = TargetResponse->MobHP;
-		TargetNotification->Unknown3 = 1;
-	}
-
-	return BroadcastToWorld(
-		Server,
-		World,
-        kEntityNull,
-		Character->ID,
-		Character->Data.Info.PositionX,
-		Character->Data.Info.PositionY,
-		Notification
-	);
-	*/
 
 error:
 	SocketDisconnect(Socket, Connection);

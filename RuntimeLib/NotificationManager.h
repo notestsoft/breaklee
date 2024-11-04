@@ -9,8 +9,9 @@ EXTERN_C_BEGIN
 #pragma pack(push, 1)
 
 struct _RTNotification {
-    Int32 Length;
-    Int32 Command;
+    UInt16 Magic;
+    UInt16 Length;
+    UInt16 Command;
 };
 
 #pragma pack(pop)

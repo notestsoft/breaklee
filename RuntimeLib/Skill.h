@@ -47,6 +47,15 @@ enum {
 };
 
 enum {
+	RUNTIME_SKILL_TARGET_NONE		= 0,
+	RUNTIME_SKILL_TARGET_MOB		= 1 << 0,
+	RUNTIME_SKILL_TARGET_CHARACTER	= 1 << 1,
+	RUNTIME_SKILL_TARGET_SELF		= 1 << 2,
+	RUNTIME_SKILL_TARGET_NATION		= 1 << 3,
+	RUNTIME_SKILL_TARGET_PARTY		= 1 << 4,
+};
+
+enum {
 	RUNTIME_SKILL_DAMAGE_TYPE_NONE,
 	RUNTIME_SKILL_DAMAGE_TYPE_SWORD,
 	RUNTIME_SKILL_DAMAGE_TYPE_MAGIC,
@@ -56,11 +65,7 @@ enum {
 	RUNTIME_SKILL_GROUP_PASSIVE = 0,
 	RUNTIME_SKILL_GROUP_ATTACK = 1,
 	/* RESERVED NOT IN USE */
-	RUNTIME_SKILL_GROUP_ATTACK_UNKNOWN = 3,
-	/* RESERVED NOT IN USE */
 	RUNTIME_SKILL_GROUP_MOVEMENT = 5,
-	/* RESERVED NOT IN USE */
-	RUNTIME_SKILL_GROUP_UNKNOWN_13 = 13,
 	/* RESERVED NOT IN USE */
 	RUNTIME_SKILL_GROUP_BUFF = 24,
 	RUNTIME_SKILL_GROUP_DEBUFF = 25,
@@ -77,6 +82,7 @@ enum {
 	RUNTIME_SKILL_GROUP_UNKNOWN_42 = 42,
 	RUNTIME_SKILL_GROUP_TOTEM = 43,
 	RUNTIME_SKILL_GROUP_AGGRO = 44,
+	RUNTIME_SKILL_GROUP_FIREPLACE = 45,
 	/* RESERVED NOT IN USE */
 	RUNTIME_SKILL_GROUP_COUNT = 50
 };
@@ -108,6 +114,14 @@ enum {
 enum {
 	RUNTIME_SKILL_RANGE_TYPE_RECT,
 	RUNTIME_SKILL_RANGE_TYPE_LINE,
+};
+
+enum {
+	RUNTIME_BUFF_TYPE_SKILL = 0,
+
+	RUNTIME_BUFF_TYPE_GM_BLESSING = 3,
+
+	RUNTIME_BUFF_TYPE_FORCE_WING_ARRIVAL_SKILL = 13,
 };
 
 struct _RTSkillLevelData {
@@ -150,6 +164,7 @@ struct _RTCharacterSkillData {
 	Int32 SkillID;
 	Int32 SkillType;
 	Int32 SkillGroup;
+	Int32 Duration[2];
 	Int32 Multi;
 	Int32 Intensity;
 	Int32 Element;
@@ -237,11 +252,13 @@ RTCharacterSkillValue RTCalculateSkillValue(
 	Int32 Rage
 );
 
-Int32 RTCalculateSkillDuration(
-	RTCharacterSkillDataRef SkillData
+UInt32 RTCalculateSkillDuration(
+	RTCharacterSkillDataRef SkillData,
+	Int32 SkillLevel,
+	Int32 BattleRank
 );
 
-Int32 RTCharacterApplyBuff(
+Int32 RTCharacterApplyForceEffectBuff(
     RTRuntimeRef Runtime,
 	RTCharacterRef Character,
 	Int32 ForceEffectIndex,

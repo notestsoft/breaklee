@@ -214,6 +214,8 @@ struct _RTCharacter {
     struct _RTBattleAttributes Attributes;
     Int32 AbilityExpRate;
     Int32 SkillComboLevel;
+    Timestamp BuffUpdateTimestamp;
+    Timestamp LastBuffUpdateTimestamp;
     Timestamp RegenUpdateTimestamp;
     Timestamp GiftBoxUpdateTimestamps[RUNTIME_CHARACTER_MAX_GIFT_BOX_SLOT_COUNT];
     Int32 MobPatternWarpX;

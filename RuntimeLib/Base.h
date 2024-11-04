@@ -22,6 +22,8 @@ typedef struct _RTBattleStyleSkillRankData* RTBattleStyleSkillRankDataRef;
 typedef struct _RTBattleStyleSkillFormulaData* RTBattleStyleSkillFormulaDataRef;
 typedef struct _RTBattleStyleRankData* RTBattleStyleRankDataRef;
 typedef struct _RTBattleStyleRankFormulaData* RTBattleStyleRankFormulaDataRef;
+typedef struct _RTBuffSlot* RTBuffSlotRef;
+typedef struct _RTBuffInfo* RTBuffInfoRef;
 typedef struct _RTFinalBattleAttributes* RTFinalBattleAttributesRef;
 typedef struct _RTBattleResult* RTBattleResultRef;
 typedef struct _RTCharacterInfo* RTCharacterInfoRef;

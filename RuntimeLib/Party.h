@@ -13,22 +13,31 @@ enum {
     RUNTIME_PARTY_TYPE_SOLO_DUNGEON = 1,
 };
 
+#pragma pack(push, 1)
+
 struct _RTPartyMemberInfo {
-    Index CharacterIndex;
+    UInt32 CharacterIndex;
     Int32 Level;
+    Int32 Unknown1;
+    Int32 Unknown2;
+    UInt8 WorldServerIndex;
     UInt8 BattleStyleIndex;
+    Int32 IsOnline;
     UInt16 OverlordLevel;
     Int32 MythRebirth;
     Int32 MythHolyPower;
     Int32 MythLevel;
     UInt8 ForceWingGrade;
     UInt8 ForceWingLevel;
+    UInt8 NameLength;
     Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1];
+    UInt8 Unknown6[35];
 };
+
+#pragma pack(pop)
 
 struct _RTPartySlot {
 	Int32 SlotIndex;
-    Index NodeIndex;
     RTEntityID MemberID; // TODO: Remove
     struct _RTPartyMemberInfo Info;
 };
