@@ -1162,7 +1162,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSpecialPotion) {
 	RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
 	assert(World);
  
-    Int32 BuffResult = RTCharacterApplyBuff(
+    Int32 BuffResult = RTCharacterApplyForceEffectBuff(
         Runtime,
 		Character,
 		ItemData->SpecialPotion.ForceEffectIndex,

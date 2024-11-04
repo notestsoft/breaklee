@@ -107,18 +107,35 @@ RTCharacterSkillValue RTCalculateSkillValue(
 	return Result;
 }
 
-Int32 RTCalculateSkillDuration(
-	RTCharacterSkillDataRef SkillData
+UInt32 RTCalculateSkillDuration(
+	RTCharacterSkillDataRef SkillData,
+	Int32 SkillLevel,
+	Int32 BattleRank
 ) {
+	/* Aura, Battlemode duration
 	if (SkillData->Sp > 0) {
 		return 10000000 / SkillData->Sp;
 	}
+	*/
 
-	// TODO: Calculate normal skill duration
-	return 0;
+	Int32 BattleRankBonus = 0;
+	if (BattleRank >= 16) {
+		BattleRankBonus = 200;
+	}
+	else if (BattleRank >= 13) {
+		BattleRankBonus = 150;
+	}
+	else if (BattleRank >= 9) {
+		BattleRankBonus = 100;
+	}
+	else if (BattleRank >= 5) {
+		BattleRankBonus = 50;
+	}
+
+	return ((100 + BattleRankBonus) * (SkillData->Duration[0] * SkillLevel + SkillData->Duration[1])) / 100;
 }
 
-Int32 RTCharacterApplyBuff(
+Int32 RTCharacterApplyForceEffectBuff(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
 	Int32 ForceEffectIndex,

@@ -1808,12 +1808,17 @@ CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_TO_TARGET_BUFF_TARGET,
     UInt8 TargetType;
 )
 
+CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_TO_TARGET_BUFF_TAIL,
+    UInt8 Data[5];
+)
+
 CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_TO_TARGET_BUFF,
     Int32 SlotIndex;
     Int32 Unknown2;
     Int32 Unknown3;
     UInt8 TargetCount;
-    // C2S_DATA_SKILL_TO_TARGET_BUFF_TARGET Targets[TargetCount + 1];
+    // C2S_DATA_SKILL_TO_TARGET_BUFF_TARGET Targets[TargetCount];
+    // C2S_DATA_SKILL_TO_TARGET_BUFF_TAIL Tail;
 )
 
 CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_TO_TARGET_WING_TARGET,
@@ -1826,52 +1831,59 @@ CLIENT_PROTOCOL(C2S, SKILL_TO_TARGET, DEFAULT, 701,
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_SKILL_TO_TARGET_BUFF_TARGET,
-    UInt32 SourceIndex;
     UInt32 TargetIndex;
     UInt8 TargetType;
-    UInt8 Result;
+    UInt32 Result;
     Int32 Unknown1;
-    Int16 Unknown2;
-    UInt8 Unknown3[39];
+    Int32 Unknown2;
+    Int32 Shield;
+    Int32 Unknown3;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_SKILL_TO_TARGET_BUFF_TAIL,
+    UInt8 Data[26];
 )
 
 CLIENT_PROTOCOL(S2C, SKILL_TO_TARGET_BUFF, DEFAULT, 703,
     Int32 SkillIndex;
-    Int8 SkillLevel;
-    Int16 Unknown1;
+    Int16 SkillLevel;
+    Int8 BuffType;
     Int8 TargetCount;
-    Int8 Unknown2;
-    Int32 Unknown3;
-    Int16 Unknown4;
-    Int8 Unknown5;
+    Int32 Unknown1;
+    UInt32 ItemID;
     Int64 CurrentHP;
     Int32 CurrentMP;
+    Int32 CurrentSP;
     // S2C_DATA_SKILL_TO_TARGET_BUFF_TARGET Targets[TargetCount];
+    // S2C_DATA_SKILL_TO_TARGET_BUFF_TAIL Tail;
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_SKILL_TO_TARGET_BUFF_TARGET,
     UInt32 TargetIndex;
     UInt8 TargetType;
-    Int16 Result;
-    UInt8 UnknownA[6];
-    UInt32 UnknownTimer;
-    UInt8 Unknown4[100];
+    UInt32 Result;
+    UInt32 BfxIndex;
+    UInt32 Unknown2;
+    Timestamp Duration;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_SKILL_TO_TARGET_BUFF_TAIL,
+    UInt8 Data[92];
 )
 
 CLIENT_PROTOCOL(S2C, NFY_SKILL_TO_TARGET_BUFF, DEFAULT, 704,
     UInt32 CharacterIndex;
     Int32 SkillIndex;
     Int16 SkillLevel;
+    Int32 Unknown1;
+    Int8 BuffType;
     Int32 Unknown2;
-    Int8 Unknown3;
-    Int32 Unknown4;
     Int8 TargetCount;
-    Int32 Unknown5;
+    UInt32 ItemID;
     UInt32 EffectorItemID;
-    UInt32 EffectorItemOptions;
-    Int32 Unknown6;
-    Int32 Unknown7;
-    Int32 Unknown8;
+    UInt64 EffectorItemOptions;
+    Int32 SkillTranscendenceLevel;
+    Int32 SkillTranscendenceIndex;
 )
 
 CLIENT_PROTOCOL(S2C, UPDATE_SKILL_STATUS, DEFAULT, 760,
@@ -1894,6 +1906,15 @@ CLIENT_PROTOCOL(C2S, VERIFY_CREDENTIALS, DEFAULT, 800,
 
 CLIENT_PROTOCOL(S2C, VERIFY_CREDENTIALS, DEFAULT, 800,
     Bool Success;
+)
+
+CLIENT_PROTOCOL(C2S, REMOVE_BUFF, DEFAULT, 803,
+    Int16 SkillIndex;
+)
+
+CLIENT_PROTOCOL(S2C, REMOVE_BUFF, DEFAULT, 803,
+    Int16 SkillIndex;
+    UInt8 Result;
 )
 
 CLIENT_PROTOCOL_ENUM(
@@ -2616,25 +2637,6 @@ CLIENT_PROTOCOL(S2C, NFY_PARTY_INVITE_TIMEOUT, DEFAULT, 2014,
     UInt32 IsAccept;
 )
 
-CLIENT_PROTOCOL_STRUCT(S2C_DATA_PARTY_MEMBER,
-    UInt32 CharacterIndex;
-    Int32 Level;
-    Int32 Unknown1;
-    Int32 Unknown2;
-    UInt8 Unknown3;
-    UInt8 BattleStyleIndex;
-    Int32 Unknown5;
-    UInt16 OverlordLevel;
-    Int32 MythRebirth;
-    Int32 MythHolyPower;
-    Int32 MythLevel;
-    UInt8 ForceWingGrade;
-    UInt8 ForceWingLevel;
-    UInt8 NameLength;
-    Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH];
-    UInt8 Unknown6[36];
-)
-
 CLIENT_PROTOCOL(S2C, NFY_PARTY_INFO, DEFAULT, 2016,
     UInt32 Result;
     UInt32 LeaderCharacterIndex;
@@ -2643,7 +2645,7 @@ CLIENT_PROTOCOL(S2C, NFY_PARTY_INFO, DEFAULT, 2016,
     UInt8 WorldServerID;
     UInt8 Unknown3;
     UInt32 MemberCount;
-    S2C_DATA_PARTY_MEMBER Members[RUNTIME_PARTY_MAX_MEMBER_COUNT];
+    struct _RTPartyMemberInfo Members[RUNTIME_PARTY_MAX_MEMBER_COUNT];
 )
 
 CLIENT_PROTOCOL(C2S, PARTY_INVITE_CANCEL, DEFAULT, 2017,
@@ -2701,7 +2703,7 @@ CLIENT_PROTOCOL(S2C, NFY_PARTY_INVITE_RULE, DEFAULT, 2026,
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_PARTY_MEMBER_DATA,
-    Int32 Unknown1;
+    Int32 WorldIndex;
     Int64 MaxHP;
     Int64 CurrentHP;
     Int32 MaxMP;
@@ -2716,7 +2718,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_PARTY_MEMBER_DATA,
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_PARTY_UPDATE_MEMBER,
-    S2C_DATA_PARTY_MEMBER Info;
+    struct _RTPartyMemberInfo Info;
     S2C_DATA_PARTY_MEMBER_DATA Data;
 )
 
@@ -2753,25 +2755,6 @@ CLIENT_PROTOCOL(S2C, ENTER_DUNGEON_GATE, DEFAULT, 2029,
     UInt16 DungeonBoostLevel;
 )
 
-CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_PARTY_INIT_MEMBER,
-    UInt32 CharacterIndex;
-    Int32 Level;
-    Int32 Unknown1;
-    Int32 Unknown2;
-    UInt8 Unknown3;
-    UInt8 BattleStyleIndex;
-    Int32 Unknown5;
-    UInt16 OverlordLevel;
-    Int32 MythRebirth;
-    Int32 MythHolyPower;
-    Int32 MythLevel;
-    UInt8 ForceWingGrade;
-    UInt8 ForceWingLevel;
-    UInt8 NameLength;
-    Char Name[MAX_CHARACTER_NAME_LENGTH];
-    UInt8 Unknown6[36];
-)
-
 CLIENT_PROTOCOL(C2S, PARTY_CHANGE_LOOTING_RULE, DEFAULT, 2033,
     Int32 NewRule;
     Int32 OldRule;
@@ -2794,7 +2777,7 @@ CLIENT_PROTOCOL(S2C, NFY_PARTY_INIT, DEFAULT, 2056,
     UInt8 WorldServerIndex;
     UInt8 Unknown4;
     Int32 MemberCount;
-    S2C_DATA_NFY_PARTY_INIT_MEMBER Members[RUNTIME_PARTY_MAX_MEMBER_COUNT];
+    struct _RTPartyMemberInfo Members[RUNTIME_PARTY_MAX_MEMBER_COUNT];
     UInt8 Padding[100];
     UInt8 Unknown5;
     UInt32 SoloDungeonIndex;

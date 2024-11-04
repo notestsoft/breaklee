@@ -1357,8 +1357,9 @@ Bool ServerLoadSkillData(
         SkillData->SkillID = SkillIndex;
 
         if (!ParseAttributeInt32(Archive, Iterator->Index, "type", &SkillData->SkillType)) goto error;
-        if (!ParseAttributeInt32(Archive, Iterator->Index, "group", &SkillData->SkillGroup)) goto error;
         if (!ParseAttributeInt32(Archive, Iterator->Index, "multi", &SkillData->Multi)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "group", &SkillData->SkillGroup)) goto error;
+        ParseAttributeInt32Array(Archive, Iterator->Index, "dur", SkillData->Duration, 2, ',');
         if (!ParseAttributeInt32(Archive, Iterator->Index, "intensity", &SkillData->Intensity)) goto error;
         if (!ParseAttributeInt32(Archive, Iterator->Index, "element", &SkillData->Element)) goto error;
         
@@ -2278,7 +2279,7 @@ Bool ServerLoadMobPatrolData(
                 PatrolArchive,
                 BranchIterator->Index,
                 "LinkList",
-                &BranchData->LinkList,
+                &BranchData->LinkList[0],
                 RUNTIME_MOB_PATROL_MAX_LINK_COUNT,
                 ','
             );

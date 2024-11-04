@@ -20,6 +20,11 @@ Void PacketBufferDestroy(
     PacketBufferRef PacketBuffer
 );
 
+UInt16 PacketBufferGetMagic(
+    PacketBufferRef PacketBuffer,
+    Bool Extended
+);
+
 Void* _PacketBufferInit(
     PacketBufferRef PacketBuffer,
     Bool Extended,

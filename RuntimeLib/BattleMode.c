@@ -1,5 +1,6 @@
 #include "BattleMode.h"
 #include "Character.h"
+#include "Force.h"
 #include "NotificationProtocol.h"
 #include "NotificationManager.h"
 #include "Runtime.h"
@@ -14,6 +15,18 @@ RTCharacterSkillDataRef RTCharacterGetBattleModeSkillData(
 	return RTRuntimeGetCharacterSkillDataByID(Runtime, SkillIndex);
 }
 
+Int32 RTCharacterGetBattleModeSkillLevel(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 BattleModeIndex
+) {
+	if (BattleModeIndex <= 0 || BattleModeIndex >= 4) return 0;
+
+	Int32 BattleModeStartRank[] = { 0, 3, 5, 13 };
+
+	return MAX(1, Character->Data.StyleInfo.Style.BattleRank - BattleModeStartRank[BattleModeIndex]);
+}
+
 RTCharacterSkillDataRef RTCharacterGetAuraModeSkillData(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
@@ -21,6 +34,14 @@ RTCharacterSkillDataRef RTCharacterGetAuraModeSkillData(
 ) {
 	Int32 SkillIndex = RTCharacterGetAuraModeSkillIndex(Runtime, Character, AuraModeIndex);
 	return RTRuntimeGetCharacterSkillDataByID(Runtime, SkillIndex);
+}
+
+Int32 RTCharacterGetAuraModeSkillLevel(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 AuraModeIndex
+) {
+	return MAX(1, Character->Data.StyleInfo.Style.BattleRank - 2);
 }
 
 Bool RTCharacterIsBattleModeActive(
@@ -55,6 +76,8 @@ Bool RTCharacterStartBattleMode(
 	Character->Data.StyleInfo.ExtendedStyle.BattleModeFlags |= (1 << (SkillData->Intensity - 1));
 	Character->SyncMask.StyleInfo = true;
 
+	RTCharacterInitializeAttributes(Runtime, Character);
+
 	NOTIFICATION_DATA_SKILL_TO_CHARACTER* Notification = RTNotificationInit(SKILL_TO_CHARACTER);
 	Notification->SkillIndex = SkillIndex;
 
@@ -73,65 +96,57 @@ Void RTCharacterUpdateBattleMode(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character
 ) {
-	Timestamp CurrentTimestamp = GetTimestampMs();
-	if (Character->RegenUpdateTimestamp <= CurrentTimestamp) {
-		Character->RegenUpdateTimestamp = CurrentTimestamp + RUNTIME_REGENERATION_INTERVAL;
+	Int32 SpConsumptionRate = 0;
 
-		// TODO: Calculate spirit point regeneration
-		// TODO: Calculate hp, mp regeneration
-
-		Int32 SpConsumptionRate = 0;
-
-		Bool IsBattleModeActive = RTCharacterIsBattleModeActive(Runtime, Character);
-		if (IsBattleModeActive) {
-			RTCharacterSkillDataRef SkillData = RTCharacterGetBattleModeSkillData(
-				Runtime,
-				Character,
-				Character->Data.BattleModeInfo.Info.BattleModeIndex
-			);
-			if (SkillData) {
-				SpConsumptionRate += SkillData->Sp;
-			}
-
-		}
-
-		Bool IsAuraModeActive = RTCharacterIsAuraModeActive(Runtime, Character);
-		if (IsAuraModeActive) {
-			RTCharacterSkillDataRef SkillData = RTCharacterGetAuraModeSkillData(
-				Runtime,
-				Character,
-				Character->Data.BattleModeInfo.Info.AuraModeIndex
-			);
-			if (SkillData) {
-				SpConsumptionRate += SkillData->Sp;
-			}
-		}
-
-		if (SpConsumptionRate > 0) {
-			Character->Data.BattleModeInfo.Info.BattleModeDuration = MAX(0,
-				Character->Data.BattleModeInfo.Info.BattleModeDuration - SpConsumptionRate
-			);
-			
-			if (IsAuraModeActive) {
-				Character->Data.BattleModeInfo.Info.AuraModeDuration += SpConsumptionRate;
-			}
-
-			Character->SyncMask.BattleModeInfo = true;
-		}
-
-		Bool CancelBattleMode = (
-			(IsBattleModeActive || IsAuraModeActive) &&
-			Character->Data.BattleModeInfo.Info.BattleModeDuration <= 0
+	Bool IsBattleModeActive = RTCharacterIsBattleModeActive(Runtime, Character);
+	if (IsBattleModeActive) {
+		RTCharacterSkillDataRef SkillData = RTCharacterGetBattleModeSkillData(
+			Runtime,
+			Character,
+			Character->Data.BattleModeInfo.Info.BattleModeIndex
 		);
-		if (CancelBattleMode) {
-			RTCharacterCancelBattleMode(Runtime, Character);
-			RTCharacterCancelAuraMode(Runtime, Character);
-
-			NOTIFICATION_DATA_CHARACTER_DATA* Notification = RTNotificationInit(CHARACTER_DATA);
-			Notification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_SP_DECREASE_EX;
-			Notification->SP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
-			RTNotificationDispatchToCharacter(Notification, Character);
+		if (SkillData) {
+			SpConsumptionRate += SkillData->Sp;
 		}
+
+	}
+
+	Bool IsAuraModeActive = RTCharacterIsAuraModeActive(Runtime, Character);
+	if (IsAuraModeActive) {
+		RTCharacterSkillDataRef SkillData = RTCharacterGetAuraModeSkillData(
+			Runtime,
+			Character,
+			Character->Data.BattleModeInfo.Info.AuraModeIndex
+		);
+		if (SkillData) {
+			SpConsumptionRate += SkillData->Sp;
+		}
+	}
+
+	if (SpConsumptionRate > 0) {
+		Character->Data.BattleModeInfo.Info.BattleModeDuration = MAX(0,
+			Character->Data.BattleModeInfo.Info.BattleModeDuration - SpConsumptionRate
+		);
+
+		if (IsAuraModeActive) {
+			Character->Data.BattleModeInfo.Info.AuraModeDuration += SpConsumptionRate;
+		}
+
+		Character->SyncMask.BattleModeInfo = true;
+	}
+
+	Bool CancelBattleMode = (
+		(IsBattleModeActive || IsAuraModeActive) &&
+		Character->Data.BattleModeInfo.Info.BattleModeDuration <= 0
+	);
+	if (CancelBattleMode) {
+		RTCharacterCancelBattleMode(Runtime, Character);
+		RTCharacterCancelAuraMode(Runtime, Character);
+
+		NOTIFICATION_DATA_CHARACTER_DATA* Notification = RTNotificationInit(CHARACTER_DATA);
+		Notification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_SP_DECREASE_EX;
+		Notification->SP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+		RTNotificationDispatchToCharacter(Notification, Character);
 	}
 }
 
@@ -150,6 +165,8 @@ Bool RTCharacterCancelBattleMode(
 
 	Character->Data.StyleInfo.ExtendedStyle.BattleModeFlags = 0;
 	Character->SyncMask.StyleInfo = true;
+
+	RTCharacterInitializeAttributes(Runtime, Character);
 
 	NOTIFICATION_DATA_SKILL_TO_CHARACTER* Notification = RTNotificationInit(SKILL_TO_CHARACTER);
 	Notification->SkillIndex = RTCharacterGetBattleModeSkillIndex(Runtime, Character, BattleModeIndex);
@@ -198,6 +215,8 @@ Bool RTCharacterStartAuraMode(
 	Character->Data.StyleInfo.ExtendedStyle.IsAuraActive = true;
 	Character->SyncMask.StyleInfo = true;
 
+	RTCharacterInitializeAttributes(Runtime, Character);
+
 	NOTIFICATION_DATA_SKILL_TO_CHARACTER* Notification = RTNotificationInit(SKILL_TO_CHARACTER);
 	Notification->SkillIndex = SkillIndex;
 
@@ -229,6 +248,8 @@ Bool RTCharacterCancelAuraMode(
 	Character->Data.StyleInfo.ExtendedStyle.IsAuraActive = 0;
 	Character->SyncMask.StyleInfo = true;
 	
+	RTCharacterInitializeAttributes(Runtime, Character);
+
 	NOTIFICATION_DATA_SKILL_TO_CHARACTER* Notification = RTNotificationInit(SKILL_TO_CHARACTER);
 	Notification->SkillIndex = RTCharacterGetAuraModeSkillIndex(Runtime, Character, AuraModeIndex);
 
@@ -241,4 +262,47 @@ Bool RTCharacterCancelAuraMode(
 	RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
 
 	return true;
+}
+
+Void RTCharacterInitializeBattleMode(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+	if (RTCharacterIsAuraModeActive(Runtime, Character)) {
+		RTCharacterSkillDataRef SkillData = RTCharacterGetAuraModeSkillData(Runtime, Character, Character->Data.BattleModeInfo.Info.AuraModeIndex);
+		Int32 SkillLevel = RTCharacterGetAuraModeSkillLevel(Runtime, Character, Character->Data.BattleModeInfo.Info.AuraModeIndex);
+		if (SkillData) {
+			for (Int32 ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
+				RTSkillValueDataRef SkillValue = &SkillData->SkillValues[ValueIndex];
+				Int64 ForceValue = ((Int64)SkillValue->ForceEffectValue[0] * SkillLevel + SkillValue->ForceEffectValue[1] + SkillValue->ForceEffectValue[2]) / 10;
+
+				RTCharacterApplyForceEffect(
+					Runtime,
+					Character,
+					SkillValue->ForceEffectIndex,
+					ForceValue,
+					SkillValue->ValueType
+				);
+			}
+		}
+	}
+
+	if (RTCharacterIsBattleModeActive(Runtime, Character)) {
+		RTCharacterSkillDataRef SkillData = RTCharacterGetBattleModeSkillData(Runtime, Character, Character->Data.BattleModeInfo.Info.BattleModeIndex);
+		Int32 SkillLevel = RTCharacterGetBattleModeSkillLevel(Runtime, Character, Character->Data.BattleModeInfo.Info.BattleModeIndex);
+		if (SkillData) {
+			for (Int32 ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
+				RTSkillValueDataRef SkillValue = &SkillData->SkillValues[ValueIndex];
+				Int64 ForceValue = ((Int64)SkillValue->ForceEffectValue[0] * SkillLevel + SkillValue->ForceEffectValue[1] + SkillValue->ForceEffectValue[2]) / 10;
+
+				RTCharacterApplyForceEffect(
+					Runtime,
+					Character,
+					SkillValue->ForceEffectIndex,
+					ForceValue,
+					SkillValue->ValueType
+				);
+			}
+		}
+	}
 }

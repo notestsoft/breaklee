@@ -22,7 +22,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
 
 		RTPartySlotRef Member = RTPartyGetMember(Party, Source->Info.CharacterIndex);
 		Member->MemberID = Packet->Source.MemberID;
-		Member->NodeIndex = Packet->Source.NodeIndex;
+		Member->Info.WorldServerIndex = Packet->Source.Info.WorldServerIndex;
 		memcpy(&Member->Info, &Source->Info, sizeof(struct _RTPartyMemberInfo));
 	}
 
@@ -36,7 +36,6 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
 	Invitation->InviterCharacterIndex = Packet->Source.Info.CharacterIndex;
 	Invitation->PartyID = Party->ID;
 	Invitation->Member.MemberID = Packet->Target.MemberID;
-	Invitation->Member.NodeIndex = Packet->Target.NodeIndex;
 	memcpy(&Invitation->Member.Info, &Target->Info, sizeof(struct _RTPartyMemberInfo));
 	Invitation->InvitationTimestamp = GetTimestampMs();
 
@@ -48,7 +47,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
 	Request->Header.Source = Packet->Header.Source;
 	Request->Header.SourceConnectionID = Packet->Header.SourceConnectionID;
 	Request->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
-	Request->Header.Target.Index = (UInt32)Packet->Target.NodeIndex;
+	Request->Header.Target.Index = (UInt32)Packet->Target.Info.WorldServerIndex;
 	Request->Header.Target.Type = IPC_TYPE_WORLD;
 	Request->Source = Packet->Source;
 	Request->Target = Packet->Target;
@@ -82,7 +81,6 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_ACK) {
 
 	if (Packet->Success) {
 		Invitation->Member.MemberID = Packet->Target.MemberID;
-		Invitation->Member.NodeIndex = Packet->Target.NodeIndex;
 		memcpy(&Invitation->Member.Info, &Target->Info, sizeof(struct _RTPartyMemberInfo));
 	}
 	else if (Party->PartyType == RUNTIME_PARTY_TYPE_NORMAL) {
@@ -96,7 +94,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_ACK) {
 	Response->Header.Source = Packet->Header.Source;
 	Response->Header.SourceConnectionID = Packet->Header.SourceConnectionID;
 	Response->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
-	Response->Header.Target.Index = (UInt32)Packet->Source.NodeIndex;
+	Response->Header.Target.Index = (UInt32)Packet->Source.Info.WorldServerIndex;
 	Response->Header.Target.Type = IPC_TYPE_WORLD;
 	Response->Success = Packet->Success;
 	Response->Source = Packet->Source;
@@ -123,7 +121,7 @@ error:
 		Response->Header.Source = Packet->Header.Source;
 		Response->Header.SourceConnectionID = Packet->Header.SourceConnectionID;
 		Response->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
-		Response->Header.Target.Index = (UInt32)Packet->Source.NodeIndex;
+		Response->Header.Target.Index = (UInt32)Packet->Source.Info.WorldServerIndex;
 		Response->Header.Target.Type = IPC_TYPE_WORLD;
 		Response->Success = Packet->Success;
 		Response->Source = Packet->Source;

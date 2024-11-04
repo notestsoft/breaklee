@@ -9,14 +9,8 @@ Void SendRuntimeNotification(
     SocketConnectionRef Connection,
     RTNotificationRef Notification
 ) {
-    S2C_DATA_RUNTIME_NOTIFICATION* Packet = PacketBufferInit(Socket->PacketBuffer, S2C, RUNTIME_NOTIFICATION);
-    Packet->Command = (UInt16)Notification->Command;
-
-    UInt8* Data = ((UInt8*)Notification) + sizeof(struct _RTNotification);
-    Int32 DataLength = Notification->Length - sizeof(struct _RTNotification);
-    UInt8* Payload = PacketBufferAppend(Socket->PacketBuffer, DataLength);
-    memcpy(Payload, Data, DataLength);
-    SocketSend(Socket, Connection, Packet);
+    Notification->Magic = PacketBufferGetMagic(Socket->PacketBuffer, false);
+    SocketSend(Socket, Connection, Notification);
 }
 
 NOTIFICATION_PROCEDURE_BINDING(ERROR_CODE) {
@@ -249,6 +243,10 @@ NOTIFICATION_PROCEDURE_BINDING(BUFF_BY_OBJECT) {
 }
 
 NOTIFICATION_PROCEDURE_BINDING(MOBS_DESPAWN_BY_LINK_MOB) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
+NOTIFICATION_PROCEDURE_BINDING(REMOVE_BUFF) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 

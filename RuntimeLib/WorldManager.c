@@ -421,7 +421,8 @@ RTCharacterRef RTWorldManagerGetCharacter(
     RTWorldManagerRef WorldManager,
     RTEntityID Entity
 ) {
-    assert(!RTEntityIsNull(Entity));
+    if (RTEntityIsNull(Entity)) return NULL;
+
     assert(Entity.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER);
 
     return (RTCharacterRef)MemoryPoolFetch(WorldManager->CharacterContextPool, Entity.EntityIndex);

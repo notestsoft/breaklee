@@ -718,6 +718,11 @@ Void RTCharacterApplyForceEffect(
 	// TODO: Check if ForceValueType is relevant for the runtime
     if (ForceEffectIndex < 1) return;
     RTForceEffectFormulaRef Formula = (RTForceEffectFormulaRef)MemoryPoolFetch(Runtime->ForceEffectFormulaPool, ForceEffectIndex);
+    if (!Formula) {
+        Warn("Force effect formula not found for index: %d", ForceEffectIndex);
+        return;
+    }
+
     Formula->OnApply(Runtime, Formula, &Character->Attributes, ForceValue);
 }
 
