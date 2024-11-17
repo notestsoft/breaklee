@@ -1869,8 +1869,8 @@ CLIENT_PROTOCOL(S2C, NFY_SKILL_TO_TARGET_BUFF, DEFAULT, 704,
 )
 
 CLIENT_PROTOCOL(S2C, UPDATE_SKILL_STATUS, DEFAULT, 760,
-    UInt32 SkillRank;
-    UInt32 SkillLevel;
+    Int32 SkillRank;
+    Int32 SkillLevel;
     UInt32 SkillLevelMax;
     UInt32 SkillExp;
     UInt32 SkillPoint;
