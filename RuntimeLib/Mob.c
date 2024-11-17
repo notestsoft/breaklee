@@ -14,30 +14,29 @@ Void RTMobInit(
 	assert(Mob && Mob->SpeciesData);
 
 	Mob->Attributes.Seed = (Int32)PlatformGetTickCount();
-	Mob->Attributes.AttackTimeout = 0;
 	memset(Mob->Attributes.Values, 0, sizeof(Mob->Attributes.Values));
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_EXP] = Mob->SpeciesData->Exp;
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL] = Mob->Spawn.Level;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED] = Mob->SpeciesData->MoveSpeed;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX] = Mob->SpeciesData->HP;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] = Mob->SpeciesData->HP;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_ATTACK_RATE] = Mob->SpeciesData->AttackRate;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_DEFENSE] = Mob->SpeciesData->Defense;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_DEFENSE_RATE] = Mob->SpeciesData->DefenseRate;
-	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_EXP] = Mob->SpeciesData->Exp;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_DAMAGE_REDUCTION] = Mob->SpeciesData->DamageReduction;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_ACCURACY] = Mob->SpeciesData->Accuracy;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_PENETRATION] = Mob->SpeciesData->Penetration;
-	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_RESIST_CRITICAL_RATE] = Mob->SpeciesData->ResistCriticalRate;
-	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_IGNORE_ACCURACY] = Mob->SpeciesData->IgnoreAccuracy;
-	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_IGNORE_DAMAGE_REDUCTION] = Mob->SpeciesData->IgnoreDamageReduction;
-	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_IGNORE_PENETRATION] = Mob->SpeciesData->IgnorePenetration;
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_CRITICAL_RATE_RESIST] = Mob->SpeciesData->ResistCriticalRate;
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_ACCURACY_RESIST] = Mob->SpeciesData->IgnoreAccuracy;
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_DAMAGE_REDUCTION_RESIST] = Mob->SpeciesData->IgnoreDamageReduction;
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_PENETRATION_RESIST] = Mob->SpeciesData->IgnorePenetration;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_ABSOLUTE_DAMAGE] = Mob->SpeciesData->AbsoluteDamage;
-	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_RESIST_SKILL_AMP] = Mob->SpeciesData->ResistSkillAmp;
-	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_RESIST_CRITICAL_DAMAGE] = Mob->SpeciesData->ResistCriticalDamage;
-	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_RESIST_SUPPRESSION] = Mob->SpeciesData->ResistSuppression;
-	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_RESIST_SILENCE] = Mob->SpeciesData->ResistSilence;
-	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_AUTO_HEAL_HP] = Mob->SpeciesData->HPRecharge;
-
-	// Mob->Attributes.Values[?] = Mob->SpeciesData->ReflectDamage;
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_ALL_SKILL_AMP_RESIST] = Mob->SpeciesData->ResistSkillAmp;
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_CRITICAL_DAMAGE_RESIST] = Mob->SpeciesData->ResistCriticalDamage;
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_SUPPRESSION_RESIST] = Mob->SpeciesData->ResistSuppression;
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_SILENCE_RESIST] = Mob->SpeciesData->ResistSilence;
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_REGEN] = Mob->SpeciesData->HPRecharge;
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_DAMAGE_REFLECT] = Mob->SpeciesData->ReflectDamage;
 	Mob->NextRegenTimestamp = GetTimestampMs() + RUNTIME_REGENERATION_INTERVAL;
 	Mob->HPTriggerThreshold = (Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX] * 300) / 1000;
 	Mob->SpecialAttack = NULL;
@@ -95,7 +94,7 @@ Bool RTMobIsAlive(RTMobRef Mob) {
 		return false;
 	}
 
-    if (Mob->IsKilled) {
+    if (Mob->IsDead) {
         return false;
     }
 
@@ -105,7 +104,7 @@ Bool RTMobIsAlive(RTMobRef Mob) {
 Bool RTMobIsImmune(
 	RTMobRef Mob
 ) {
-	return Mob->Attributes.Values[RUNTIME_ATTRIBUTE_COMPLETE_EVASION] > 0;
+	return Mob->Attributes.Values[RUNTIME_ATTRIBUTE_EVASION_COMPLETE] > 0;
 }
 
 Bool RTMobIsUnmovable(RTMobRef Mob) {
@@ -322,7 +321,8 @@ Void RTMobApplyDamage(
 	RTWorldContextRef WorldContext,
 	RTMobRef Mob,
 	RTEntityID Source,
-	Int64 Damage
+	Int64 Damage,
+	Timestamp Delay
 ) {
 	Int64 PreviousHp = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
 	Int64 TotalDamage = MIN(Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT], Damage);
@@ -367,7 +367,7 @@ Void RTMobApplyDamage(
 	if (!RTMobIsAlive(Mob)) {
 		Mob->DropOwner = Source;
 		Mob->NextTimestamp = GetTimestampMs() + Mob->Spawn.SpawnInterval;
-		RTWorldDespawnMob(Runtime, WorldContext, Mob);
+		RTWorldDespawnMobEvent(Runtime, WorldContext, Mob, Delay);
 	}
 }
 
@@ -389,15 +389,15 @@ Void RTMobAttackTarget(
 
 	// TODO: Check SkillGroup for attack patterns: single, aoe, movement, heal, buff, debuff
 
-	struct _RTBattleResult Result = { 0 };
-	RTCalculateNormalAttackResult(
+	RTBattleResult Result = RTCalculateNormalAttackResult(
 		Runtime,
+		World,
 		RUNTIME_SKILL_DAMAGE_TYPE_SWORD,
-		Mob->Spawn.Level,
+		true,
 		&Mob->Attributes,
-		Character->Data.Info.Level,
 		&Character->Attributes,
-		&Result
+		&Mob->Movement,
+		&Character->Movement
 	);
 
 	RTCharacterAddHP(Runtime, Character, -Result.AppliedDamage, false);
@@ -418,7 +418,8 @@ Void RTMobAttackTarget(
 		NotificationTarget->Result = Result.AttackType;
 		NotificationTarget->AppliedDamage = (UInt32)Result.AppliedDamage;
 		NotificationTarget->TargetHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-		memset(NotificationTarget->Unknown1, 0, 33);
+		NotificationTarget->TargetShield = Character->Attributes.Values[RUNTIME_ATTRIBUTE_DAMAGE_ABSORB];
+		memset(NotificationTarget->Unknown1, 0, 29);
 		RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
 	}
 }
@@ -441,18 +442,18 @@ Void RTMobAttackTargetMob(
 
 	// TODO: Check SkillGroup for attack patterns: single, aoe, movement, heal, buff, debuff
 
-	struct _RTBattleResult Result = { 0 };
-	RTCalculateNormalAttackResult(
+	RTBattleResult Result = RTCalculateNormalAttackResult(
 		Runtime,
+		World,
 		RUNTIME_SKILL_DAMAGE_TYPE_SWORD,
-		Mob->Spawn.Level,
+		true,
 		&Mob->Attributes,
-		Target->Spawn.Level,
 		&Target->Attributes,
-		&Result
+		&Mob->Movement,
+		&Target->Movement
 	);
 
-	RTMobApplyDamage(Runtime, World, Target, Mob->ID, Result.AppliedDamage);
+	RTMobApplyDamage(Runtime, World, Target, Mob->ID, Result.AppliedDamage, Result.Delay);
 	Mob->NextTimestamp = GetTimestampMs() + Mob->ActiveSkill->Interval;
 
 	// TODO: Check which packet has to be sent for mob attacking another mob
@@ -471,7 +472,8 @@ Void RTMobAttackTargetMob(
 		NotificationTarget->Result = Result.AttackType;
 		NotificationTarget->AppliedDamage = (UInt32)Result.AppliedDamage;
 		NotificationTarget->TargetHP = Target->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-		memset(NotificationTarget->Unknown1, 0, 33);
+		NotificationTarget->TargetShield = Target->Attributes.Values[RUNTIME_ATTRIBUTE_DAMAGE_ABSORB];
+		memset(NotificationTarget->Unknown1, 0, 29);
 		RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
 	}
 }
@@ -592,24 +594,30 @@ Void RTMobUpdate(
 
 	Timestamp Timestamp = GetTimestampMs();
 
-	if (RTMobIsAlive(Mob) && Mob->NextRegenTimestamp <= Timestamp && Mob->Attributes.Values[RUNTIME_ATTRIBUTE_AUTO_HEAL_HP] > 0) {
+	if (RTMobIsAlive(Mob) && Mob->NextRegenTimestamp <= Timestamp && Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_REGEN] > 0) {
 		Mob->NextRegenTimestamp = Timestamp + RUNTIME_REGENERATION_INTERVAL;
-		RTMobHeal(Runtime, WorldContext, Mob, Mob->Attributes.Values[RUNTIME_ATTRIBUTE_AUTO_HEAL_HP]);
+		RTMobHeal(Runtime, WorldContext, Mob, Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_REGEN]);
+	}
+
+	if (RTMobIsAlive(Mob)) {
+		RTMobUpdateBuffs(Runtime, Mob);
 	}
 
 	if (Timestamp < Mob->NextTimestamp) {
 		return;
 	}
 
-	RTMobOnEvent(Runtime, WorldContext, Mob, MOB_EVENT_UPDATE);
-	
-	if (Mob->EventSpawnTimestamp > 0 && Mob->EventSpawnTimestamp <= Timestamp) {
+	if (Mob->EventSpawnTimestamp > 0) {
+		if (Mob->EventSpawnTimestamp > Timestamp) return;
+
 		Mob->EventSpawnTimestamp = 0;
 		RTWorldSpawnMob(Runtime, WorldContext, Mob);
 		return;
 	}
 
-	if (Mob->EventDespawnTimestamp > 0 && Mob->EventDespawnTimestamp <= Timestamp) {
+	if (Mob->EventDespawnTimestamp > 0) {
+		if (Mob->EventDespawnTimestamp > Timestamp) return;
+
 		Mob->EventDespawnTimestamp = 0;
 
 		if (Mob->IsSpawned) {
@@ -620,13 +628,17 @@ Void RTMobUpdate(
 		return;
 	}
 
-	if (Mob->EventRespawnTimestamp > 0 && Mob->EventRespawnTimestamp <= Timestamp) {
+	if (Mob->EventRespawnTimestamp > 0) {
+		if (Mob->EventRespawnTimestamp > Timestamp) return;
+
 		Mob->EventRespawnTimestamp = 0;
 
 		if (Mob->IsSpawned) {
 			RTWorldRespawnMob(Runtime, WorldContext, Mob);
 		}
 	}
+
+	RTMobOnEvent(Runtime, WorldContext, Mob, MOB_EVENT_UPDATE);
 
 	if (!RTMobIsAlive(Mob) && Mob->IsSpawned) {
 		Mob->NextTimestamp = Timestamp + Mob->Spawn.SpawnInterval;
@@ -639,7 +651,6 @@ Void RTMobUpdate(
 			Mob->Aggro.Count = 0;
 			memset(&Mob->Aggro.Entities, 0, sizeof(Mob->Aggro.Entities));
 
-			Mob->IsKilled = false;
 			Mob->RemainingSpawnCount = MAX(0, Mob->RemainingSpawnCount - 1);
 			Mob->NextTimestamp = Timestamp;
 			RTWorldSpawnMob(Runtime, WorldContext, Mob);
@@ -741,7 +752,7 @@ Void RTMobUpdate(
 
 			Mob->AggroTargetDistance = Distance;
 
-			if (Distance <= Mob->ActiveSkill->Range) {
+			if (Distance <= Mob->ActiveSkill->Distance) {
 				if (!Mob->Pattern) RTMobAttackTarget(Runtime, WorldContext, Mob, Character);
 				return;
 			}
@@ -756,6 +767,49 @@ Void RTMobUpdate(
 				if (SpawnDistance < Mob->ChaseRange && SpawnDistance < Mob->LimitRangeB) {
 					TargetPositionX = Character->Movement.PositionCurrent.X;
 					TargetPositionY = Character->Movement.PositionCurrent.Y;
+
+					Int32 DeltaX = TargetPositionX - Mob->Movement.PositionCurrent.X;
+					Int32 DeltaY = TargetPositionY - Mob->Movement.PositionCurrent.Y;
+					Int32 AbsDeltaX = ABS(DeltaX);
+					Int32 AbsDeltaY = ABS(DeltaY);
+					Int32 OffsetPoint = 0;
+					Int32 OffsetX = 0;
+					Int32 OffsetY = 0;
+
+					if (AbsDeltaX >= AbsDeltaY) {
+						OffsetPoint = AbsDeltaX - Mob->ActiveSkill->Offset;
+						if (OffsetPoint < 0) {
+							TargetPositionX = Mob->Movement.PositionCurrent.X;
+							TargetPositionY = Mob->Movement.PositionCurrent.Y;
+						}
+						else {
+							OffsetX = OffsetPoint;
+							OffsetY = (AbsDeltaY * OffsetX + (AbsDeltaX >> 1)) / AbsDeltaX;
+
+							if (DeltaX < 0) OffsetX = -OffsetX;
+							if (DeltaY < 0) OffsetY = -OffsetY;
+
+							TargetPositionX = Mob->Movement.PositionCurrent.X + OffsetX;
+							TargetPositionY = Mob->Movement.PositionCurrent.Y + OffsetY;
+						}
+					}
+					else {
+						OffsetPoint = AbsDeltaY - Mob->ActiveSkill->Offset;
+						if (OffsetPoint < 0) {
+							TargetPositionX = Mob->Movement.PositionCurrent.X;
+							TargetPositionY = Mob->Movement.PositionCurrent.Y;
+						}
+						else {
+							OffsetY = OffsetPoint;
+							OffsetX = (AbsDeltaX * OffsetY + (AbsDeltaY >> 1)) / AbsDeltaY;
+
+							if (DeltaX < 0) OffsetX = -OffsetX;
+							if (DeltaY < 0) OffsetY = -OffsetY;
+
+							TargetPositionX = Mob->Movement.PositionCurrent.X + OffsetX;
+							TargetPositionY = Mob->Movement.PositionCurrent.Y + OffsetY;
+						}
+					}
 				}
 			}
 		}
@@ -771,7 +825,7 @@ Void RTMobUpdate(
 				if (Mob->Pattern) RTMobPatternDistanceChanged(Runtime, WorldContext, Mob, Mob->Pattern);
 			}
 
-			if (Distance <= Mob->ActiveSkill->Range) {
+			if (Distance <= Mob->ActiveSkill->Distance) {
 				RTMobAttackTargetMob(Runtime, WorldContext, Mob, TargetMob);
 				return;
 			}
@@ -798,17 +852,22 @@ Void RTMobUpdate(
 	}
 
 	if (RTMobCanMove(Mob) && !RTMobIsUnmovable(Mob) && !IsPatrolling) {
+		Bool IsChasing = true;
 		if (TargetPositionX < 0 || TargetPositionY < 0) {
 			TargetPositionX = RandomRange(&WorldContext->Seed, Mob->Spawn.AreaX, Mob->Spawn.AreaX + Mob->Spawn.AreaWidth);
-			TargetPositionY = RandomRange(&WorldContext->Seed, Mob->Spawn.AreaY, Mob->Spawn.AreaY + Mob->Spawn.AreaHeight);
-			Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED] = Mob->SpeciesData->MoveSpeed;
-			Mob->IsChasing = false;
+			TargetPositionY = RandomRange(&WorldContext->Seed, Mob->Spawn.AreaY, Mob->Spawn.AreaY + Mob->Spawn.AreaHeight); 
+			IsChasing = false;
 		}
-		else {
-			Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED] = Mob->SpeciesData->ChaseSpeed;
-			Mob->IsChasing = true;
+
+		UInt32 CollisionMask = Mob->Movement.CollisionMask | RUNTIME_WORLD_TILE_USER | RUNTIME_WORLD_TILE_MOBS;
+		if (RTWorldIsTileColliding(Runtime, WorldContext, TargetPositionX, TargetPositionY, CollisionMask)) {
+			Mob->NextTimestamp = Timestamp + RUNTIME_MOB_MIN_PHASE_TIMEOUT;
+			return;
 		}
-		
+
+		Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED] = IsChasing ? Mob->SpeciesData->ChaseSpeed : Mob->SpeciesData->MoveSpeed;
+		Mob->IsChasing = IsChasing;
+
 		RTMovementSetSpeed(Runtime, &Mob->Movement, Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED]);
 		Mob->Movement.PositionEnd.X = TargetPositionX;
 		Mob->Movement.PositionEnd.Y = TargetPositionY;
@@ -946,5 +1005,20 @@ Void RTMobHeal(
 	Notification->MobID = Mob->ID;
 	Notification->CurrentHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
 	Notification->ReceivedDamage = 0;
+	RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
+}
+
+Void RTMobCurse(
+	RTRuntimeRef Runtime,
+	RTWorldContextRef WorldContext,
+	RTMobRef Mob,
+	Int64 Amount
+) {
+	RTMobApplyDamage(Runtime, WorldContext, Mob, kEntityIDNull, Amount, 0);
+
+	NOTIFICATION_DATA_MOB_SPECIAL_BUFF* Notification = RTNotificationInit(MOB_SPECIAL_BUFF);
+	Notification->MobID = Mob->ID;
+	Notification->CurrentHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+	Notification->ReceivedDamage = Amount;
 	RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
 }

@@ -32,6 +32,11 @@ enum {
 	RUNTIME_DUNGEON_TIMER_TARGET_EVENT_TYPE_DESPAWN = 2,
 };
 
+enum {
+	RUNTIME_DUNGEON_IMMUNE_ACTIVATION_TYPE_DEAD = 0,
+	RUNTIME_DUNGEON_IMMUNE_ACTIVATION_TYPE_ALIVE = 1,
+};
+
 struct _RTDungeonTriggerData {
 	Int32 Type;
 	Int32 LiveMobCount;
@@ -83,6 +88,16 @@ struct _RTDungeonImmuneControlData {
 	struct _RTImmuneData ImmuneList[RUNTIME_DUNGEON_MAX_IMMUNE_CONTROL_COUNT];
 };
 
+struct _RTDungeonGateControlData {
+	Int32 Rotation;
+	RTPosition Position;
+	Int32 CanAttack;
+	Int32 CanSelect;
+	Int32 CanDebuff;
+	Int32 CellCount;
+	RTPosition CellList[RUNTIME_DUNGEON_MAX_GATE_CELL_COUNT];
+};
+
 struct _RTDungeonData {
 	Int32 DungeonType;
 	Int32 CreateType;
@@ -118,6 +133,7 @@ struct _RTDungeonData {
 	DictionaryRef ActionGroups;
 	DictionaryRef TimeControls;
 	DictionaryRef ImmuneControls;
+	DictionaryRef GateControls;
 	struct _RTDungeonTimerData TimerData;
 	struct _RTDropTable DropTable;
 };

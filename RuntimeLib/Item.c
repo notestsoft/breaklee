@@ -55,9 +55,9 @@ Bool RTCharacterCheckItemStatRequirements(
 	Int64 RequiredDex = ItemData->Weapon.Dex + ItemData->Weapon.DeltaDex * (1 + MIN(ItemUpgradeLevel, RUNTIME_ENCHANT_MAX_STAT_INCREASE_LEVEL));
 	Int64 RequiredInt = ItemData->Weapon.Int + ItemData->Weapon.DeltaInt * (1 + MIN(ItemUpgradeLevel, RUNTIME_ENCHANT_MAX_STAT_INCREASE_LEVEL));
 
-	Int64 CurrentStr = Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_STR];
-	Int64 CurrentDex = Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_DEX];
-	Int64 CurrentInt = Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_INT];
+	Int64 CurrentStr = Character->Attributes.Values[RUNTIME_ATTRIBUTE_STR];
+	Int64 CurrentDex = Character->Attributes.Values[RUNTIME_ATTRIBUTE_DEX];
+	Int64 CurrentInt = Character->Attributes.Values[RUNTIME_ATTRIBUTE_INT];
 
 	if (CurrentStr < RequiredStr || CurrentDex < RequiredDex || CurrentInt < RequiredInt) {
 		return false;
@@ -92,6 +92,7 @@ Void RTCharacterApplyItemUpgradeForceEffect(
 			RTCharacterApplyForceEffect(
 				Runtime,
 				Character,
+				kEntityIDNull,
 				Value->ForceID,
 				ForceValue,
 				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
@@ -115,6 +116,7 @@ Void RTCharacterApplyItemUpgradeForceEffect(
 			RTCharacterApplyForceEffect(
 				Runtime,
 				Character,
+				kEntityIDNull,
 				Value->ForceID,
 				ForceValue,
 				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
@@ -145,6 +147,7 @@ Void RTCharacterApplyItemForceOptionEffect(
 				RTCharacterApplyForceEffect(
 					Runtime,
 					Character,
+					kEntityIDNull,
 					MasterItemOptionValue->ForceEffectIndex,
 					MasterItemOptionValue->ForceValue,
 					MasterItemOptionValue->ForceValueType == 1 ? RUNTIME_FORCE_VALUE_TYPE_ADDITIVE : RUNTIME_FORCE_VALUE_TYPE_MULTIPLICATIVE
@@ -177,6 +180,7 @@ Void RTCharacterApplyItemForceOptionEffect(
 			RTCharacterApplyForceEffect(
 				Runtime,
 				Character,
+				kEntityIDNull,
 				Formula.ForceEffectIndex,
 				Formula.ForceValue,
 				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
@@ -200,6 +204,7 @@ Void RTCharacterApplyItemForceOptionEffect(
 			RTCharacterApplyForceEffect(
 				Runtime,
 				Character,
+				kEntityIDNull,
 				Formula.ForceEffectIndex,
 				Formula.ForceValue,
 				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
@@ -237,6 +242,7 @@ Void RTCharacterApplyItemExtremeLevelEffect(
 				RTCharacterApplyForceEffect(
 					Runtime,
 					Character,
+					kEntityIDNull,
 					ExtremeUpgradeValueOption->ForceEffectIndex,
 					ExtremeUpgradeValueOption->ForceValue,
 					ExtremeUpgradeValueOption->ForceValueType == 1 ? RUNTIME_FORCE_VALUE_TYPE_ADDITIVE : RUNTIME_FORCE_VALUE_TYPE_MULTIPLICATIVE
@@ -262,6 +268,7 @@ Void RTCharacterApplyItemChaosLevelEffect(
 			RTCharacterApplyForceEffect(
 				Runtime,
 				Character,
+				kEntityIDNull,
 				UpgradeGroupValueLevel->ForceEffectIndex,
 				UpgradeGroupValueLevel->ForceValue,
 				UpgradeGroupValueLevel->ForceValueType == 1 ? RUNTIME_FORCE_VALUE_TYPE_ADDITIVE : RUNTIME_FORCE_VALUE_TYPE_MULTIPLICATIVE
@@ -287,6 +294,7 @@ Void RTCharacterApplyItemDivineLevelEffect(
 				RTCharacterApplyForceEffect(
 					Runtime,
 					Character,
+					kEntityIDNull,
 					DivineUpgradeGroupValueLevel->ForceEffectIndex,
 					DivineUpgradeGroupValueLevel->ForceValue,
 					DivineUpgradeGroupValueLevel->ForceValueType == 1 ? RUNTIME_FORCE_VALUE_TYPE_ADDITIVE : RUNTIME_FORCE_VALUE_TYPE_MULTIPLICATIVE
@@ -923,7 +931,8 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemWeapon) {
 	RTCharacterApplyForceEffect(
 		Runtime,
 		Character,
-		RUNTIME_FORCE_EFFECT_ATTACK_RATE_UP,
+		kEntityIDNull,
+		RUNTIME_FORCE_EFFECT_ATTACK_RATE_UP_1,
 		ItemData->Weapon.AttackRate,
 		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 	);
@@ -931,7 +940,8 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemWeapon) {
 	RTCharacterApplyForceEffect(
 		Runtime,
 		Character,
-		RUNTIME_FORCE_EFFECT_ATTACK_UP,
+		kEntityIDNull,
+		RUNTIME_FORCE_EFFECT_ATTACK_UP_1,
 		ItemData->Weapon.Attack,
 		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 	);
@@ -939,7 +949,8 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemWeapon) {
 	RTCharacterApplyForceEffect(
 		Runtime,
 		Character,
-		RUNTIME_FORCE_EFFECT_MAGIC_ATTACK_UP,
+		kEntityIDNull,
+		RUNTIME_FORCE_EFFECT_MAGIC_ATTACK_UP_1,
 		ItemData->Weapon.MagicAttack,
 		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 	);
@@ -967,7 +978,8 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemArmor) {
 		RTCharacterApplyForceEffect(
 			Runtime,
 			Character,
-			RUNTIME_FORCE_EFFECT_HP_UP,
+			kEntityIDNull,
+			RUNTIME_FORCE_EFFECT_HP_UP_1,
 			ItemData->Armor.HP,
 			RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 		);
@@ -976,7 +988,8 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemArmor) {
 	RTCharacterApplyForceEffect(
 		Runtime,
 		Character,
-		RUNTIME_FORCE_EFFECT_DEFENSE_RATE_UP,
+		kEntityIDNull,
+		RUNTIME_FORCE_EFFECT_DEFENSE_RATE_UP_1,
 		ItemData->Armor.DefenseRate,
 		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 	);
@@ -984,12 +997,13 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemArmor) {
 	RTCharacterApplyForceEffect(
 		Runtime,
 		Character,
-		RUNTIME_FORCE_EFFECT_DEFENSE_UP,
+		kEntityIDNull,
+		RUNTIME_FORCE_EFFECT_DEFENSE_UP_1,
 		ItemData->Armor.Defense,
 		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 	);
 
-	Int32 FilterForceEffectIndex = ApplyForceEffectHP ? RUNTIME_FORCE_EFFECT_NONE : RUNTIME_FORCE_EFFECT_HP_UP;
+	Int32 FilterForceEffectIndex = ApplyForceEffectHP ? RUNTIME_FORCE_EFFECT_NONE : RUNTIME_FORCE_EFFECT_HP_UP_1;
 	RTItemOptions ItemOptions = { .Serial = ItemSlot->ItemOptions };
 	if (ItemOptions.Equipment.SlotCount > 0) {
 		RTCharacterApplyItemUpgradeForceEffect(Runtime, Character, ItemData, 2, FilterForceEffectIndex);
@@ -1007,6 +1021,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemAccessory) {
 	RTCharacterApplyForceEffect(
 		Runtime,
 		Character,
+		kEntityIDNull,
 		ItemData->Accessory.ForceEffect1,
 		ItemData->Accessory.ForceValue1,
 		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
@@ -1015,6 +1030,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemAccessory) {
 	RTCharacterApplyForceEffect(
 		Runtime,
 		Character,
+		kEntityIDNull,
 		ItemData->Accessory.ForceEffect2,
 		ItemData->Accessory.ForceValue2,
 		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
@@ -1023,6 +1039,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemAccessory) {
 	RTCharacterApplyForceEffect(
 		Runtime,
 		Character,
+		kEntityIDNull,
 		ItemData->Accessory.ForceEffect3,
 		ItemData->Accessory.ForceValue3,
 		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
@@ -1031,6 +1048,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemAccessory) {
 	RTCharacterApplyForceEffect(
 		Runtime,
 		Character,
+		kEntityIDNull,
 		ItemData->Accessory.ForceEffect4,
 		ItemData->Accessory.ForceValue4,
 		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
@@ -1039,6 +1057,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemAccessory) {
 	RTCharacterApplyForceEffect(
 		Runtime,
 		Character,
+		kEntityIDNull,
 		ItemData->Accessory.ForceEffect5,
 		ItemData->Accessory.ForceValue5,
 		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
@@ -1047,6 +1066,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemAccessory) {
 	RTCharacterApplyForceEffect(
 		Runtime,
 		Character,
+		kEntityIDNull,
 		ItemData->ExtendedAccessory.ForceEffect1,
 		ItemData->ExtendedAccessory.ForceValue1,
 		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
@@ -1055,6 +1075,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemAccessory) {
 	RTCharacterApplyForceEffect(
 		Runtime,
 		Character,
+		kEntityIDNull,
 		ItemData->ExtendedAccessory.ForceEffect2,
 		ItemData->ExtendedAccessory.ForceValue2,
 		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
@@ -1063,6 +1084,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemAccessory) {
 	RTCharacterApplyForceEffect(
 		Runtime,
 		Character,
+		kEntityIDNull,
 		ItemData->ExtendedAccessory.ForceEffect3,
 		ItemData->ExtendedAccessory.ForceValue3,
 		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
@@ -1103,23 +1125,21 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemVehicleBike) {
 	RTCharacterApplyForceEffect(
 		Runtime,
 		Character,
-		RUNTIME_FORCE_EFFECT_DEFENSE_UP,
+		kEntityIDNull,
+		RUNTIME_FORCE_EFFECT_DEFENSE_UP_1,
 		ItemData->VehicleBike.Defense,
 		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 	);
 
-	RTCharacterApplyForceEffect(
-		Runtime,
-		Character,
-		RUNTIME_FORCE_EFFECT_INCREASE_MOVEMENT_SPEED,
-		ItemData->VehicleBike.MovementSpeed,
-		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
-	);
+	if (Character->Data.BattleModeInfo.VehicleState > -1) {
+		Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED] = ItemData->VehicleBike.MovementSpeed;
+	}
 
 	RTCharacterApplyForceEffect(
 		Runtime,
 		Character,
-		RUNTIME_FORCE_EFFECT_DEFENSE_RATE_UP,
+		kEntityIDNull,
+		RUNTIME_FORCE_EFFECT_DEFENSE_RATE_UP_1,
 		ItemData->VehicleBike.DefenseRate,
 		RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 	);

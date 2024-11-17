@@ -977,7 +977,7 @@ CLIENT_PROTOCOL(S2C, NFY_SKILL_TO_MOB, DEFAULT, 220,
     CSC_POSITION PositionSet;
     UInt8 Unknown1;
     UInt64 CharacterHP;
-    UInt32 Unknown2;
+    UInt32 Shield;
     S2C_DATA_NFY_SKILL_TO_MOB_TARGET Data[0];
 )
 
@@ -1221,7 +1221,7 @@ CLIENT_PROTOCOL(C2S, QUEST_DUNGEON_START, DEFAULT, 290,
 )
 
 CLIENT_PROTOCOL(S2C, QUEST_DUNGEON_START, DEFAULT, 290,
-    UInt32 Unknown1;
+    UInt32 Active;
 )
 
 CLIENT_PROTOCOL(C2S, QUEST_DUNGEON_END, DEFAULT, 291,
@@ -1613,25 +1613,6 @@ CLIENT_PROTOCOL(S2C, EXTRACT_ITEM, DEFAULT, 411,
     S2C_EXTRACT_ITEM_SLOT_INDEX Items[0];
 )
 
-CLIENT_PROTOCOL_STRUCT(S2C_DATA_MOB_ATTACK_TARGET,
-    UInt32 CharacterIndex;
-    Bool IsDead;
-    UInt8 Result;
-    UInt32 AppliedDamage;
-    UInt64 TargetHP;
-    UInt8 Unknown1[33];
-)
-
-CLIENT_PROTOCOL(S2C, NFY_MOB_ATTACK_AOE, DEFAULT, 413,
-    RTEntityID Entity;
-    Bool IsDefaultSkill;
-    UInt8 Unknown1;
-    UInt64 MobHP;
-    UInt32 Unknown2;
-    UInt16 TargetCount;
-    S2C_DATA_MOB_ATTACK_TARGET Data[0];
-)
-
 CLIENT_PROTOCOL(C2S, HEART_BEAT, DEFAULT, 420,
 )
 
@@ -1821,8 +1802,8 @@ CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_TO_TARGET_BUFF,
     // C2S_DATA_SKILL_TO_TARGET_BUFF_TAIL Tail;
 )
 
-CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_TO_TARGET_WING_TARGET,
-    UInt8 Unknown1;
+CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_TO_TARGET_WING,
+    UInt16 SlotIndex;
 )
 
 CLIENT_PROTOCOL(C2S, SKILL_TO_TARGET, DEFAULT, 701,
@@ -1833,11 +1814,12 @@ CLIENT_PROTOCOL(C2S, SKILL_TO_TARGET, DEFAULT, 701,
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_SKILL_TO_TARGET_BUFF_TARGET,
     UInt32 TargetIndex;
     UInt8 TargetType;
-    UInt32 Result;
-    Int32 Unknown1;
+    UInt8 Result;
+    UInt16 Unknown1;
+    UInt8 BfxType;
     Int32 Unknown2;
-    Int32 Shield;
     Int32 Unknown3;
+    Timestamp Duration;
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_SKILL_TO_TARGET_BUFF_TAIL,
@@ -1863,7 +1845,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_SKILL_TO_TARGET_BUFF_TARGET,
     UInt8 TargetType;
     UInt32 Result;
     UInt32 BfxIndex;
-    UInt32 Unknown2;
+    UInt32 Unknown1;
     Timestamp Duration;
 )
 
@@ -1989,92 +1971,136 @@ CLIENT_PROTOCOL(S2C, NFY_CHARACTER_PARAMETERS, DEFAULT, 904,
     Int32 Str;
     Int32 Dex;
     Int32 Int;
-    Int64 HP;
-    Int32 MP;
-    Int32 SP;
-    Int64 MaxHP;
-    Int64 BaseHP;
-    Int32 MaxMP;
-    Int32 MaxSP;
-    Int32 MaxSPUse;
-    Int32 iOC;
-    Int32 PysicalAttackMin;
-    Int32 PysicalAttackMax;
-    Int32 PysicalAttackDifference;
-    Int32 MagicAttackValue;
-    Int32 Defense;
-    UInt8 UsingArtOfDefense;
-    Int32 DefensePercent;
-    Int32 AttacksRate;
-    Int32 DefenseRate;
-    Int32 EvasionRate;
-    Int32 idPhyAttMax;
-    Int32 idMagAttVal;
-    Int32 idDefense;
-    Int32 idAttacksR;
-    Int32 idDefenseR;
-    Int32 id2HPMax;
-    Int32 id2MPMax;
-    Int32 id3PhyAttVal;
-    Int32 id3MagAttVal;
-    Int32 id3Defense;
-    Int32 id3AttacksR;
-    Int32 id3DefenseR;
-    Int32 id3HPMaxVal;
-    Int32 id3MPMaxVal;
-    Int32 id3HPRechagR;
-    Int32 id3MPRechagR;
-    Int32 id3SPUseVal;
-    Int32 id3MPWasteB;
-    Int32 id3CriticalR;
-    Int32 id3CriticalM;
-    Int32 id4SPUseVal;
-    Int32 iCriticalR;
-    Int32 iCriticalM;
-    Int32 iHPRechagR;
-    Int32 iMPRechagR;
-    Int32 iSPUseVal;
-    Int32 iHPStealVal;
-    Int32 iMPStealVal;
-    Int32 iRP;
-    Int32 iAggro;
-    Int32 iExpM;
-    Int32 iStance;
-    Int32 iReputation;
-    Int32 iReputationClass;
-    Int32 iPKPenalty;
-    Int32 iAlzDropM;
-    Int32 iDropRate1SlotP;
-    Int32 iDropRate2SlotP;
-    Int32 iSkillAmpS;
-    Int32 iSkillAmpM;
-    Int32 iSkillExpP;
-    Int32 iDemageP;
-    Int32 iMinDmgRate;
-    Int32 iMinDmgRateP;
-    Int32 iMpStealLimitP;
-    Int32 iHpStealLimitP;
-    Int32 iCriticalRLimitP;
-    Float32 fHitMultiDmg;
-    UInt8 bNation;
-    UInt64 iCraftEXP[4 + 1];
-    Int32 iCraftLEV[4 + 1];
-    UInt8 bCraftFlags[16];
-    UInt8 bIsForceTowerDamage;
-    Int32 iRestEXP;
-    Int32 iConsumExp;
-    Int32 iPenaltyEXP;
-    Int32 iSpRegenP;
-    Int32 iSpAcquireR;
-    Int32 iSpSubtractionR;
-    Int32 iAttackRange;
-    Int32 iHealR;
-    UInt8 isIrremovable;
-    Int32 iHpDurDamage;
-    Int32 iMpDurDamage;
-    Int32 iBfxStunR;
-    Int32 iBfxDownR;
-    Int32 iBfxBlowR;
+    UInt8 Unknown1[16];
+    Int64 MaxHp;
+    Int32 MaxMp;
+    UInt8 Unknown2[4];
+    Int32 Bp;
+    Int32 BpMax;
+    Int32 BpConsumeDecRate;
+    Int32 Atk;
+    Int32 MAtk;
+    Int32 Def;
+    UInt8 Unknown3[5];
+    Int32 AtkRate;
+    Int32 DefRate;
+    Int32 Evasion;
+    UInt8 Unknown4[12];
+    Int32 CRate;
+    Int32 CDmg;
+    UInt8 Unknown5[8];
+    Int32 HPSteal;
+    Int32 MPSteal;
+    UInt8 Unknown6[44];
+    Int32 MPStealLimit;
+    Int32 HPStealLimit;
+    Int32 CLimit;
+    UInt8 Unknown7[59];
+    Int32 BlowR;
+    Int32 DownR;
+    Int32 StunR;
+    Int32 MoveR;
+    Int32 CRateR;
+    Int32 CDmgR;
+    Int32 AmpR;
+    Int32 ResistSurprize;
+    Int32 ResistSilence;
+    UInt8 Unknown8[4];
+    Int32 ServerAlzDropRate;
+    Int32 ServerAlzBombRate;
+    Int32 ServerAxpPercentInc;
+    Int32 ServerSkillExpPercentInc;
+    UInt8 Unknown9[8];
+    Int32 DamageDrop;
+    Int32 Hit;
+    Int32 Penetration;
+    UInt8 Unknown10[24];
+    Int32 IgnoreAvoid;
+    Int32 IgnoreHit;
+    Int32 IgnorePenetration;
+    Int32 IgnoreDamagedrop;
+    Int32 OffsetIgnoreAvoid;
+    Int32 OffsetIgnoreDamageDrop;
+    Int32 FinalDmgRateUp;
+    Int32 FinalDmgRateDown;
+    Int32 HPRecoveryPercent;
+    Int32 IgnoreCRateR;
+    Int32 AbsoluteDmgRes;
+    Int32 IgnoreCDmgR;
+    Int32 IgnoreAmpR;
+    Int32 IgnoreDownR;
+    Int32 IgnoreBlowR;
+    Int32 IgnoreStunR;
+    Int32 NormalAtkDmgInc;
+    Int32 OffsetIgnorePenetration;
+    Int32 Speed;
+    Int32 PVPResistSkillAmpSword;
+    Int32 PVPResistSkillAmpMagic;
+    Int32 PVESkillAmpSword;
+    Int32 PVESkillAmpMagic;
+    Int32 PVEDefense;
+    Int32 PVEDamageDrop;
+    Int32 PVEIgnorePenetration;
+    Int32 PVECriticalDamage;
+    Int32 PVEPenetration;
+    Int32 PVPSkillAmpSword;
+    Int32 PVPSkillAmpMagic;
+    Int32 PVPCriticalDamage;
+    Int32 AttackPVP;
+    Int32 MAttackPVP;
+    Int32 AttackPVE;
+    Int32 MAttackPVE;
+    Int32 PVPAttackRate;
+    Int32 PVEAttackRate;
+    Int32 PVPCriticalRate;
+    Int32 PVECriticalRate;
+    Int32 PVPHit;
+    Int32 PVEHit;
+    Int32 PVPPenetration;
+    Int32 PVPDefense;
+    Int32 PVEDrate;
+    Int32 PVPDrate;
+    Int32 PVPAvoid;
+    Int32 PVEAvoid;
+    Int32 PVPDamageDrop;
+    Int32 PVPIgnorePenetration;
+    Int32 PVPFDMD;
+    Int32 PVEFDMD;
+    Int32 PVPNormalAttackDmgInc;
+    Int32 PVENormalAttackDmgInc;
+    Int32 PVPFDMU;
+    Int32 PVEFDMU;
+    Int32 PVPAddDmg;
+    Int32 PVEAddDmg;
+    Int32 PVPOffsetIgnoreAvoid;
+    Int32 PVEOffsetIgnoreAvoid;
+    Int32 PVPIgnoreResistCriDmg;
+    Int32 PVEIgnoreResistCriDmg;
+    Int32 PVPOffsetIgnorePenetration;
+    Int32 PVEOffsetIgnorePenetration;
+    Int32 PVPIgnoreHit;
+    Int32 PVEIgnoreHit;
+    Int32 PVPIgnoreAvoid;
+    Int32 PVEIgnoreAvoid;
+    Int32 PVPIgnoreResistAmp;
+    Int32 PVEIgnoreResistAmp;
+    Int32 PVPIgnoreDmgDrop;
+    Int32 PVEIgnoreDmgDrop;
+    Int32 PVPIgnoreResistCriRate;
+    Int32 PVEIgnoreResistCriRate;
+    Int64 CombatAttackBasicTotal;
+    Int64 CombatAttackPveTotal;
+    Int64 CombatAttackPvpTotal;
+    Int64 CombatDefenseBasicTotal;
+    Int64 CombatDefensePveTotal;
+    Int64 CombatDefensePvpTotal;
+    Int64 Unknown11;
+    Int64 CombatAttackBasicPassive;
+    Int64 CombatDefensePvePassive1;
+    Int64 CombatDefensePvpPassive1;
+    Int64 CombatDefenseBasicPassive;
+    Int64 CombatDefensePvePassive2; 
+    Int64 CombatDefensePvpPassive2;
 )
 
 CLIENT_PROTOCOL(C2S, UPGRADE_ITEM_LEVEL, DEFAULT, 951,

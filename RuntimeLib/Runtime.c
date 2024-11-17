@@ -93,6 +93,7 @@ Void RTRuntimeDestroy(
         DictionaryDestroy(DungeonData->ActionGroups);
         DictionaryDestroy(DungeonData->TimeControls);
         DictionaryDestroy(DungeonData->ImmuneControls);
+        DictionaryDestroy(DungeonData->GateControls);
         ArrayDestroy(DungeonData->DropTable.WorldDropPool);
 
         Iterator = DictionaryKeyIteratorNext(Iterator);
@@ -606,11 +607,11 @@ Void RTRuntimeBroadcastCharacterData(
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_DAMAGE_CELL) {
-        assert(false && "Implementation missing!");
+        Notification->HP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_DEFFICIENCY) {
-        assert(false && "Implementation missing!");
+        Notification->HP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
     }
 
     if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_AUTH_HP_POTION) {

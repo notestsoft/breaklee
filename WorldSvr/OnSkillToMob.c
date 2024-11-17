@@ -108,16 +108,17 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 			continue;
 		}
 		*/
-		struct _RTBattleResult Result = { 0 };
-		RTCalculateSkillAttackResult(
+
+		RTBattleResult Result = RTCalculateSkillAttackResult(
 			Runtime,
+			World,
 			SkillSlot->Level,
 			SkillData,
-			Character->Data.Info.Level,
+			true,
 			&Character->Attributes,
-			Mob->Spawn.Level,
 			&Mob->Attributes,
-			&Result
+			&Character->Movement,
+			&Mob->Movement
 		);
 
 		if (Index == 0) {
@@ -126,10 +127,15 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 			}
 		}
 
-		RTMobApplyDamage(Runtime, World, Mob, Character->ID, Result.AppliedDamage);
+		RTMobApplyDamage(Runtime, World, Mob, Character->ID, Result.AppliedDamage, Result.Delay);
 		RTCharacterAddExp(Runtime, Character, Result.Exp);
 
 		ReceivedSkillExp += RTCharacterAddSkillExp(Runtime, Character, Result.SkillExp);
+
+		if (Character->Data.BattleModeInfo.Info.BattleModeIndex < 1 && Character->Data.BattleModeInfo.Info.AuraModeIndex < 1) {
+			Int32 SpReward = RTCalculateSPReward(Result.SkillExp, 0, RUNTIME_COMBO_TIMING_INVALID);
+			RTCharacterAddSP(Runtime, Character, SpReward);
+		}
 
 		TargetResponse->AttackType = Result.AttackType;
 		TargetResponse->MobAppliedDamage = (UInt32)Result.AppliedDamage;
@@ -172,6 +178,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 	Notification->PositionSet.X = Character->Data.Info.PositionX;
 	Notification->PositionSet.Y = Character->Data.Info.PositionY;
 	Notification->CharacterHP = Response->CharacterHP;
+	Notification->Shield = Character->Attributes.Values[RUNTIME_ATTRIBUTE_ABSOLUTE_DAMAGE];
 
 	for (Int32 Index = 0; Index < Response->TargetCount; Index++) {
 		S2C_DATA_SKILL_TO_MOB_TARGET* TargetResponse = &Response->Data[Index];

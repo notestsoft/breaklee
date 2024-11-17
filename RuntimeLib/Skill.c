@@ -83,7 +83,17 @@ Int32 RTCalculateSkillSlopeValue(
 	return (CoefficientA * Level + CoefficientB) / 10;
 }
 
-RTCharacterSkillValue RTCalculateSkillValue(
+Int64 RTCalculateSkillValue(
+	RTSkillValueDataRef SkillValue,
+	Int32 Level,
+	Int32 Rage
+) {
+	Int64 Value = RTCalculateSkillSlopeValue(SkillValue->ForceEffectValue[0], SkillValue->ForceEffectValue[1], Level);
+	Value += (Int64)Rage * (((Int64)SkillValue->ForceEffectValue[2] * Level) / 10);
+	return Value;
+}
+
+RTCharacterSkillValue RTCalculateSkillBasicValue(
 	RTCharacterSkillDataRef SkillData,
 	Int32 Level,
 	Int32 Rage

@@ -4,6 +4,7 @@
 Void RTMovementInitialize(
 	RTRuntimeRef Runtime,
 	RTMovementRef Movement,
+	RTEntityID Entity,
 	Int32 X,
 	Int32 Y,
 	Int32 Speed,
@@ -13,13 +14,15 @@ Void RTMovementInitialize(
 
 	Movement->WorldContext = NULL;
     Movement->WorldChunk = NULL;
-	Movement->Entity = kEntityIDNull;
+	Movement->Entity = Entity;
 	Movement->PositionBegin.X = X;
 	Movement->PositionBegin.Y = Y;
 	Movement->PositionCurrent.X = X;
 	Movement->PositionCurrent.Y = Y;
 	Movement->PositionEnd.X = X;
 	Movement->PositionEnd.Y = Y;
+	Movement->PositionTile.X = X;
+	Movement->PositionTile.Y = Y;
 	Movement->CollisionMask = CollisionMask;
 	Movement->IgnoreMask = 0;
 	Movement->TickCount = (UInt32)PlatformGetTickCount();
@@ -53,6 +56,19 @@ Void RTMovementStartDeadReckoning(
 	Movement->IsMoving = true;
 	Movement->IsDeadReckoning = true;
 	Movement->TickCount = (UInt32)PlatformGetTickCount();
+
+	if (Movement->Entity.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) {
+		RTWorldTileDecreaseCharacterCount(Runtime, Movement->WorldContext, Movement->PositionTile.X, Movement->PositionTile.Y);
+		Movement->PositionTile.X = Movement->PositionEnd.X;
+		Movement->PositionTile.Y = Movement->PositionEnd.Y;
+		RTWorldTileIncreaseCharacterCount(Runtime, Movement->WorldContext, Movement->PositionTile.X, Movement->PositionTile.Y);
+	}
+	else if (Movement->Entity.EntityType == RUNTIME_ENTITY_TYPE_MOB) {
+		RTWorldTileDecreaseMobCount(Runtime, Movement->WorldContext, Movement->PositionTile.X, Movement->PositionTile.Y);
+		Movement->PositionTile.X = Movement->PositionEnd.X;
+		Movement->PositionTile.Y = Movement->PositionEnd.Y;
+		RTWorldTileIncreaseMobCount(Runtime, Movement->WorldContext, Movement->PositionTile.X, Movement->PositionTile.Y);
+	}
 }
 
 Void RTMovementRestartDeadReckoning(
@@ -82,6 +98,19 @@ Void RTMovementRestartDeadReckoning(
 	Movement->Sin = (Float32)DeltaY / Movement->Distance;
 	Movement->Cos = (Float32)DeltaX / Movement->Distance;
 	Movement->IsDeadReckoning = true;
+
+	if (Movement->Entity.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) {
+		RTWorldTileDecreaseCharacterCount(Runtime, Movement->WorldContext, Movement->PositionTile.X, Movement->PositionTile.Y);
+		Movement->PositionTile.X = Movement->PositionEnd.X;
+		Movement->PositionTile.Y = Movement->PositionEnd.Y;
+		RTWorldTileIncreaseCharacterCount(Runtime, Movement->WorldContext, Movement->PositionTile.X, Movement->PositionTile.Y);
+	}
+	else if (Movement->Entity.EntityType == RUNTIME_ENTITY_TYPE_MOB) {
+		RTWorldTileDecreaseMobCount(Runtime, Movement->WorldContext, Movement->PositionTile.X, Movement->PositionTile.Y);
+		Movement->PositionTile.X = Movement->PositionEnd.X;
+		Movement->PositionTile.Y = Movement->PositionEnd.Y;
+		RTWorldTileIncreaseMobCount(Runtime, Movement->WorldContext, Movement->PositionTile.X, Movement->PositionTile.Y);
+	}
 }
 
 Void RTMovementEndDeadReckoning(
@@ -92,6 +121,19 @@ Void RTMovementEndDeadReckoning(
 	Movement->PositionBegin.Y = Movement->PositionEnd.Y;
 	Movement->IsMoving = false;
 	Movement->IsDeadReckoning = false;
+
+	if (Movement->Entity.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) {
+		RTWorldTileDecreaseCharacterCount(Runtime, Movement->WorldContext, Movement->PositionTile.X, Movement->PositionTile.Y);
+		Movement->PositionTile.X = Movement->PositionEnd.X;
+		Movement->PositionTile.Y = Movement->PositionEnd.Y;
+		RTWorldTileIncreaseCharacterCount(Runtime, Movement->WorldContext, Movement->PositionTile.X, Movement->PositionTile.Y);
+	}
+	else if (Movement->Entity.EntityType == RUNTIME_ENTITY_TYPE_MOB) {
+		RTWorldTileDecreaseMobCount(Runtime, Movement->WorldContext, Movement->PositionTile.X, Movement->PositionTile.Y);
+		Movement->PositionTile.X = Movement->PositionEnd.X;
+		Movement->PositionTile.Y = Movement->PositionEnd.Y;
+		RTWorldTileIncreaseMobCount(Runtime, Movement->WorldContext, Movement->PositionTile.X, Movement->PositionTile.Y);
+	}
 }
 
 Void RTMovementUpdateDeadReckoning(

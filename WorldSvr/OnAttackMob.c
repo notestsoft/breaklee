@@ -18,18 +18,18 @@ CLIENT_PROCEDURE_BINDING(ATTACK_TO_MOB) {
 	if (!Mob) goto error;
 	if (Mob->IsDead) goto error; // TODO: (auto miss target)
 
-	struct _RTBattleResult Result = { 0 };
-	RTCalculateNormalAttackResult(
+	RTBattleResult Result = RTCalculateNormalAttackResult(
 		Runtime,
+		World,
 		RUNTIME_SKILL_DAMAGE_TYPE_SWORD,
-		Character->Data.Info.Level,
+		true,
 		&Character->Attributes,
-		Mob->Spawn.Level,
 		&Mob->Attributes,
-		&Result
+		&Character->Movement,
+		&Mob->Movement
 	);
 
-	RTMobApplyDamage(Runtime, World, Mob, Character->ID, Result.AppliedDamage);
+	RTMobApplyDamage(Runtime, World, Mob, Character->ID, Result.AppliedDamage, Result.Delay);
 	RTCharacterAddExp(Runtime, Character, Result.Exp);
 
 	S2C_DATA_ATTACK_TO_MOB* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ATTACK_TO_MOB);

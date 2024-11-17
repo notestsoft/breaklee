@@ -201,7 +201,7 @@ RTWorldContextRef RTWorldContextCreateGlobal(
     WorldContext->EntityToMob = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_MOB_COUNT);
     WorldContext->EntityToMobPattern = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_MOB_COUNT);
     WorldContext->EntityToItem = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_ITEM_COUNT);
-   
+    memcpy(WorldContext->Tiles, WorldContext->WorldData->Tiles, sizeof(RTWorldTile) * RUNTIME_WORLD_SIZE * RUNTIME_WORLD_SIZE);
     MemoryPoolReserve(WorldContext->ItemPool, 0);
     
     for (Int32 ChunkX = 0; ChunkX < RUNTIME_WORLD_CHUNK_COUNT; ChunkX += 1) {
@@ -301,6 +301,7 @@ RTWorldContextRef RTWorldContextCreateParty(
     WorldContext->EntityToMob = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_MOB_COUNT);
     WorldContext->EntityToMobPattern = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_MOB_COUNT);
     WorldContext->EntityToItem = EntityDictionaryCreate(WorldManager->Allocator, RUNTIME_MEMORY_MAX_ITEM_COUNT);
+    memcpy(WorldContext->Tiles, WorldContext->WorldData->Tiles, sizeof(RTWorldTile) * RUNTIME_WORLD_SIZE * RUNTIME_WORLD_SIZE);
     
     MemoryPoolReserve(WorldContext->ItemPool, 0);
     

@@ -93,12 +93,14 @@ union _RTCharacterStyle {
 
 union _RTCharacterLiveStyle {
     struct {
-        UInt32 Padding1 : 24;
-        UInt32 IsDancing : 1;
-        UInt32 IsSitting : 1;
-        UInt32 IsDancing2 : 1;
-        UInt32 IsDancing3 : 1;
-        UInt32 Padding2 : 4;
+        UInt32 IsDancing        : 1;
+        UInt32 IsSitting        : 1;
+        UInt32 Padding1         : 2;
+        UInt32 IsDancing2       : 1;
+        UInt32 Padding2         : 3;
+        UInt32 IsDancing3       : 1;
+        UInt32 IsTransforming   : 1;
+        UInt32 TransformIndex   : 6;
     };
 
     UInt32 RawValue;
@@ -382,6 +384,13 @@ Void RTCharacterAddHP(
     RTCharacterRef Character,
     Int64 HP,
     Bool IsPotion
+);
+
+Void RTCharacterSubtractHP(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int64 HP,
+    Bool IsCurse
 );
 
 Void RTCharacterSetMP(

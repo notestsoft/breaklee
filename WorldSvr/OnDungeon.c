@@ -107,7 +107,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_START) {
         World->WorldData->Type != RUNTIME_WORLD_TYPE_QUEST_DUNGEON) goto error;
 
     S2C_DATA_QUEST_DUNGEON_START* Response = PacketBufferInit(Connection->PacketBuffer, S2C, QUEST_DUNGEON_START);
-    Response->Unknown1 = World->Active;
+    Response->Active = World->Active;
     SocketSend(Socket, Connection, Response);
 
     if (World->Active) {

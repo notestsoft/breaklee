@@ -180,16 +180,17 @@ Void RTCharacterInitializeBuffs(
         } 
 
         Int32 BuffType = RTCharacterGetBuffSlotIndexBuffType(Runtime, Character, Index);
-        if (BuffType == RUNTIME_BUFF_SLOT_TYPE_SKILL) {
+        if (BuffType == RUNTIME_BUFF_SLOT_TYPE_SKILL || BuffType == RUNTIME_BUFF_SLOT_TYPE_FORCE_WING) {
             RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, BuffSlot->SkillIndex);
             if (SkillData) {
                 for (Int32 ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
                     RTSkillValueDataRef SkillValue = &SkillData->SkillValues[ValueIndex];
-                    Int64 ForceValue = ((Int64)SkillValue->ForceEffectValue[0] * BuffSlot->SkillLevel + SkillValue->ForceEffectValue[1] + SkillValue->ForceEffectValue[2]) / 10;
+                    Int64 ForceValue = RTCalculateSkillValue(SkillValue, BuffSlot->SkillLevel, Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]);
 
                     RTCharacterApplyForceEffect(
                         Runtime,
                         Character,
+                        kEntityIDNull,
                         SkillValue->ForceEffectIndex,
                         ForceValue,
                         SkillValue->ValueType
@@ -198,7 +199,7 @@ Void RTCharacterInitializeBuffs(
             }
         }
         else {
-            assert(false && "Implementation missing!");
+            //assert(false && "Implementation missing!");
         }
     }
 }
@@ -242,6 +243,14 @@ Void RTCharacterUpdateBuffs(
             RTBuffSlotRef BuffSlot = &Character->Data.BuffInfo.Slots[Index];
             if (BuffSlot->Duration > 0) continue;
 
+            NOTIFICATION_DATA_REMOVE_BUFF* Notification = RTNotificationInit(REMOVE_BUFF);
+            Notification->EntityType = RUNTIME_ENTITY_TYPE_CHARACTER;
+            Notification->EntityID = Character->CharacterIndex;
+            Notification->BuffType = RUNTIME_BUFF_TYPE_BUFF;
+            Notification->BuffSlotIndex = 0;
+            Notification->SkillIndex = BuffSlot->SkillIndex;
+            RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
+
             RTCharacterRemoveBuffSlot(Runtime, Character, Index);
             UpdateAttributes = true;
         }
@@ -256,7 +265,8 @@ UInt32 RTCharacterApplyBuff(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     RTSkillSlotRef SkillSlot,
-    RTCharacterSkillDataRef SkillData
+    RTCharacterSkillDataRef SkillData,
+    Int32 BuffType
 ) {
     Int32 BuffSlotIndex = 0;
     RTBuffSlotRef BuffSlot = RTCharacterGetBuffSlotBySkillIndex(Runtime, Character, SkillSlot->ID, &BuffSlotIndex);
@@ -266,15 +276,15 @@ UInt32 RTCharacterApplyBuff(
         NOTIFICATION_DATA_REMOVE_BUFF* Notification = RTNotificationInit(REMOVE_BUFF);
         Notification->EntityType = RUNTIME_ENTITY_TYPE_CHARACTER;
         Notification->EntityID = Character->CharacterIndex;
-        Notification->BuffType = RUNTIME_BUFF_TYPE_SKILL;
+        Notification->BuffType = BuffType;
         Notification->BuffSlotIndex = 0;
         Notification->SkillIndex = BuffSlot->SkillIndex;
         RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
 
         RTCharacterRemoveBuffSlot(Runtime, Character, BuffSlotIndex);
     }
-   
-    BuffSlot = RTCharacterInsertBuffSlot(Runtime, Character, RUNTIME_BUFF_SLOT_TYPE_SKILL);
+    
+    BuffSlot = RTCharacterInsertBuffSlot(Runtime, Character, BuffType);
     BuffSlot->SkillIndex = SkillSlot->ID;
     BuffSlot->SkillLevel = SkillSlot->Level;
     BuffSlot->Duration = RTCalculateSkillDuration(SkillData, SkillSlot->Level, Character->Data.StyleInfo.Style.BattleRank);
@@ -288,6 +298,43 @@ UInt32 RTCharacterApplyBuff(
     return 1;
 }
 
+Void RTCharacterRemoveAllBuffs(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    Timestamp CurrentTimestamp = GetTimestampMs();
+    Int32 BuffSlotCount = (
+        Character->Data.BuffInfo.Info.SkillBuffCount +
+        Character->Data.BuffInfo.Info.PotionBuffCount +
+        Character->Data.BuffInfo.Info.GmBuffCount +
+        Character->Data.BuffInfo.Info.UnknownBuffCount1 +
+        Character->Data.BuffInfo.Info.UnknownBuffCount2 +
+        Character->Data.BuffInfo.Info.ForceWingBuffCount +
+        Character->Data.BuffInfo.Info.FirePlaceBuffCount
+    );
+
+    for (Int32 Index = 0; Index < BuffSlotCount; Index += 1) {
+        RTBuffSlotRef BuffSlot = &Character->Data.BuffInfo.Slots[Index];
+
+        NOTIFICATION_DATA_REMOVE_BUFF* Notification = RTNotificationInit(REMOVE_BUFF);
+        Notification->EntityType = RUNTIME_ENTITY_TYPE_CHARACTER;
+        Notification->EntityID = Character->CharacterIndex;
+        Notification->BuffType = RUNTIME_BUFF_TYPE_BUFF;
+        Notification->BuffSlotIndex = 0;
+        Notification->SkillIndex = BuffSlot->SkillIndex;
+        RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
+    }
+
+    Character->Data.BuffInfo.Info.SkillBuffCount = 0;
+    Character->Data.BuffInfo.Info.PotionBuffCount = 0;
+    Character->Data.BuffInfo.Info.GmBuffCount = 0;
+    Character->Data.BuffInfo.Info.UnknownBuffCount1 = 0;
+    Character->Data.BuffInfo.Info.UnknownBuffCount2 = 0;
+    Character->Data.BuffInfo.Info.ForceWingBuffCount = 0;
+    Character->Data.BuffInfo.Info.FirePlaceBuffCount = 0;
+    Character->SyncMask.BuffInfo = true;
+}
+
 Bool RTCharacterRemoveBuff(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
@@ -299,24 +346,165 @@ Bool RTCharacterRemoveBuff(
         NOTIFICATION_DATA_REMOVE_BUFF* Notification = RTNotificationInit(REMOVE_BUFF);
         Notification->EntityType = RUNTIME_ENTITY_TYPE_CHARACTER;
         Notification->EntityID = Character->CharacterIndex;
-        Notification->BuffType = RUNTIME_BUFF_TYPE_SKILL;
+        Notification->BuffType = RUNTIME_BUFF_TYPE_BUFF;
         Notification->BuffSlotIndex = 0;
         Notification->SkillIndex = SkillIndex;
         RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
 
+        Int64 CurrentShield = Character->Attributes.Values[RUNTIME_ATTRIBUTE_DAMAGE_ABSORB];
+
         RTCharacterRemoveBuffSlot(Runtime, Character, ResultSlotIndex);
         RTCharacterInitializeAttributes(Runtime, Character);
+
+        if (CurrentShield != Character->Attributes.Values[RUNTIME_ATTRIBUTE_DAMAGE_ABSORB]) {
+            // TODO: Send notification to cancel shield
+        }
+
         return true;
     }
 
     return false;
 }
 
+RTMobBuffSlotRef RTMobGetBuffSlotBySkillIndex(
+    RTRuntimeRef Runtime,
+    RTMobRef Mob,
+    Int32 SkillIndex,
+    Int32* ResultSlotIndex
+) {
+    for (Int32 Index = 0; Index < Mob->Buffs.SlotCount; Index += 1) {
+        RTMobBuffSlotRef BuffSlot = &Mob->Buffs.Slots[Index];
+        if (BuffSlot->SkillIndex == SkillIndex) {
+            *ResultSlotIndex = Index;
+            return BuffSlot;
+        }
+    }
+
+    return NULL;
+}
+
+RTMobBuffSlotRef RTMobInsertBuffSlot(
+    RTRuntimeRef Runtime,
+    RTMobRef Mob
+) {
+    assert(Mob->Buffs.SlotCount < RUNTIME_MOB_MAX_BUFF_SLOT_COUNT);
+
+    RTMobBuffSlotRef BuffSlot = &Mob->Buffs.Slots[Mob->Buffs.SlotCount];
+    memset(BuffSlot, 0, sizeof(struct _RTMobBuffSlot));
+    Mob->Buffs.SlotCount += 1;
+    return BuffSlot;
+}
+
+Void RTMobRemoveBuffSlot(
+    RTRuntimeRef Runtime,
+    RTMobRef Mob,
+    Int32 SlotIndex
+) {
+    RTMobBuffSlotRef BuffSlot = &Mob->Buffs.Slots[SlotIndex];
+
+    RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, BuffSlot->SkillIndex);
+    for (Int32 ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
+        RTSkillValueDataRef SkillValue = &SkillData->SkillValues[ValueIndex];
+        Int64 ForceValue = RTCalculateSkillValue(SkillValue, BuffSlot->SkillLevel, BuffSlot->Rage);
+
+        RTMobCancelForceEffect(
+            Runtime,
+            Mob,
+            kEntityIDNull,
+            SkillValue->ForceEffectIndex,
+            ForceValue,
+            SkillValue->ValueType
+        );
+    }
+
+    NOTIFICATION_DATA_REMOVE_BUFF* Notification = RTNotificationInit(REMOVE_BUFF);
+    Notification->EntityType = RUNTIME_ENTITY_TYPE_MOB;
+    Notification->EntityID = Mob->ID.Serial;
+    Notification->BuffType = RUNTIME_BUFF_TYPE_BUFF;
+    Notification->BuffSlotIndex = 0;
+    Notification->SkillIndex = BuffSlot->SkillIndex;
+    RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
+
+    Int32 TailLength = Mob->Buffs.SlotCount - SlotIndex - 1;
+    if (TailLength > 0) {
+        memmove(
+            &Mob->Buffs.Slots[SlotIndex],
+            &Mob->Buffs.Slots[SlotIndex + 1],
+            sizeof(struct _RTMobBuffSlot) * TailLength
+        );
+    }
+
+    Mob->Buffs.SlotCount -= 1;
+}
+
+Void RTMobUpdateBuffs(
+    RTRuntimeRef Runtime,
+    RTMobRef Mob
+) {
+    Timestamp CurrentTimestamp = GetTimestampMs();
+    if (Mob->BuffUpdateTimestamp <= CurrentTimestamp) {
+        Timestamp Interval = CurrentTimestamp - Mob->LastBuffUpdateTimestamp;
+        Mob->BuffUpdateTimestamp = UINT64_MAX;
+        Mob->LastBuffUpdateTimestamp = CurrentTimestamp;
+
+        for (Int32 Index = 0; Index < Mob->Buffs.SlotCount; Index += 1) {
+            RTMobBuffSlotRef BuffSlot = &Mob->Buffs.Slots[Index];
+            if (BuffSlot->Duration > Interval) {
+                BuffSlot->Duration -= Interval;
+                Mob->BuffUpdateTimestamp = MIN(Mob->BuffUpdateTimestamp, CurrentTimestamp + BuffSlot->Duration);
+            }
+            else {
+                BuffSlot->Duration = 0;
+            }
+        }
+
+        for (Int32 Index = Mob->Buffs.SlotCount - 1; Index >= 0; Index -= 1) {
+            RTMobBuffSlotRef BuffSlot = &Mob->Buffs.Slots[Index];
+            if (BuffSlot->Duration > 0) continue;
+
+            RTMobRemoveBuffSlot(Runtime, Mob, Index);
+        }
+    }
+}
+
 UInt32 RTMobApplyBuff(
     RTRuntimeRef Runtime,
+    RTCharacterRef Character,
     RTMobRef Mob,
     RTSkillSlotRef SkillSlot,
     RTCharacterSkillDataRef SkillData
 ) {
-    return 0;
+    Int32 BuffSlotIndex = 0;
+    RTMobBuffSlotRef BuffSlot = RTMobGetBuffSlotBySkillIndex(Runtime, Mob, SkillSlot->ID, &BuffSlotIndex);
+    if (BuffSlot) {
+        if (BuffSlot->SkillLevel > SkillSlot->Level) return 0;
+
+        RTMobRemoveBuffSlot(Runtime, Mob, BuffSlotIndex);
+    }
+
+    BuffSlot = RTMobInsertBuffSlot(Runtime, Mob);
+    BuffSlot->SkillIndex = SkillSlot->ID;
+    BuffSlot->SkillLevel = SkillSlot->Level;
+    BuffSlot->BattleRank = Character->Data.StyleInfo.Style.BattleRank;
+    BuffSlot->Rage = Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT];
+    BuffSlot->Duration = RTCalculateSkillDuration(SkillData, SkillSlot->Level, BuffSlot->BattleRank);
+
+    for (Int32 ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
+        RTSkillValueDataRef SkillValue = &SkillData->SkillValues[ValueIndex];
+        Int64 ForceValue = RTCalculateSkillValue(SkillValue, BuffSlot->SkillLevel, BuffSlot->Rage);
+
+        RTMobApplyForceEffect(
+            Runtime,
+            Mob,
+            Character->ID,
+            SkillValue->ForceEffectIndex,
+            ForceValue,
+            SkillValue->ValueType
+        );
+    }
+
+    Timestamp ExpirationTimestamp = GetTimestampMs() + BuffSlot->Duration;
+    Mob->BuffUpdateTimestamp = MIN(Mob->BuffUpdateTimestamp, ExpirationTimestamp);
+
+    return 1;
 }

@@ -117,7 +117,8 @@ enum {
 };
 
 enum {
-	RUNTIME_BUFF_TYPE_SKILL = 0,
+	RUNTIME_BUFF_TYPE_BUFF = 0,
+	RUNTIME_BUFF_TYPE_DEBUFF = 1,
 
 	RUNTIME_BUFF_TYPE_GM_BLESSING = 3,
 
@@ -178,7 +179,7 @@ struct _RTCharacterSkillData {
 	Int32 AniCode;
 	Int32 FxCodeOn;
 	Int32 FxCodeKeep;
-	Int32 FrameTerm;
+	Int32 CastFrame;
 	Int32 BlendLimit;
 	Int32 HitFrame;
 	Int32 FiringFrame;
@@ -246,7 +247,13 @@ Int32 RTCalculateSkillSlopeValue(
 	Int32 Level
 );
 
-RTCharacterSkillValue RTCalculateSkillValue(
+Int64 RTCalculateSkillValue(
+	RTSkillValueDataRef SkillValue,
+	Int32 Level,
+	Int32 Rage
+);
+
+RTCharacterSkillValue RTCalculateSkillBasicValue(
 	RTCharacterSkillDataRef SkillData,
 	Int32 Level,
 	Int32 Rage

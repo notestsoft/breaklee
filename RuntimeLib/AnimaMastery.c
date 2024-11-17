@@ -26,6 +26,7 @@ Void RTCharacterInitializeAnimaMastery(
             RTCharacterApplyForceEffect(
                 Runtime,
                 Character,
+                kEntityIDNull,
                 AnimaMasteryValue->ForceEffectIndex,
                 AnimaMasteryValue->ForceValue,
                 (AnimaMasteryValue->ForceValueType == 1) ? RUNTIME_FORCE_VALUE_TYPE_ADDITIVE : RUNTIME_FORCE_VALUE_TYPE_MULTIPLICATIVE
@@ -70,7 +71,7 @@ UInt8 RTCharacterAnimaMasteryTrainSlot(
     else {
         RTDataAnimaMasteryPriceRef Price = RTRuntimeDataAnimaMasteryPriceGet(Runtime->Context, CategoryIndex);
         if (!Price) return 0;
-        if (Price->SlotPrice > 0 && Character->Data.Info.Alz< Price->SlotPrice) return 0;
+        if (Price->SlotPrice > 0 && Character->Data.Info.Alz < Price->SlotPrice) return 0;
 
         if (Price->RequiredItemID > 0 && Price->RequiredItemCount > 0) {
             Int32 ConsumableItemCount = 0;
@@ -90,7 +91,7 @@ UInt8 RTCharacterAnimaMasteryTrainSlot(
         }
 
         if (Price->SlotPrice > 0) {
-            Character->Data.Info.Alz-= Price->SlotPrice;
+            Character->Data.Info.Alz -= Price->SlotPrice;
             Character->SyncMask.Info = true;
         }
 
@@ -212,9 +213,9 @@ Bool RTCharacterAnimaMasteryUnlockCategory(
     if (!Price) return false;
 
     if (Price->OpenPrice > 0) {
-        if (Character->Data.Info.Alz< Price->OpenPrice) return false;
+        if (Character->Data.Info.Alz < Price->OpenPrice) return false;
 
-        Character->Data.Info.Alz-= Price->OpenPrice;
+        Character->Data.Info.Alz -= Price->OpenPrice;
         Character->SyncMask.Info = true;
     }
 

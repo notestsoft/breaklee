@@ -1,4 +1,4 @@
-#include "ServerDataLoader.h"
+﻿#include "ServerDataLoader.h"
 
 #pragma pack(push, 1)
 
@@ -79,7 +79,8 @@ struct _ArchiveMobData {
     Int32 DefaultSkillGroup;
     Int32 SpecialSkillGroup;
     UInt32 Property;
-    Int32 D[4];
+    Int32 CanAttack;
+    Int32 D[3];
     Int32 DamageDiscount;
     Int32 MoveInterval;
     Int32 Accuracy;
@@ -842,6 +843,7 @@ Bool ServerLoadMobData(
         MobData->SpecialSkill.Interval = ArchiveMobData->SpecialSkillInterval * 1000;
         MobData->AttackSignal = ArchiveMobData->AttackSignalValue;
         MobData->IsWorldBoss = ArchiveMobData->IsWorldBoss;
+//        MobData->CanAttack = ArchiveMobData->CanAttack;
         MobData->Exp = ArchiveMobData->Exp;
 
         Int32 Radius = (MobData->Scale + 1) >> 1;
@@ -856,9 +858,7 @@ Bool ServerLoadMobData(
         if (MobData->SpecialSkill.Offset < Radius) {
             MobData->SpecialSkill.Offset = Radius;
         }
-
-        // TODO: Replace this with other computations based on attack types and patterns...
-        MobData->CanAttack = 1;
+        MobData->CanAttack = ArchiveMobData->CanAttack == 0; // TODO: Resolve correct mapping
         MobData->CanMove = (MobData->FindCount >= RUNTIME_MOB_FIND_COUNT_UNMOVABLE) ? 0 : 1;
     }
 
@@ -1382,7 +1382,7 @@ Bool ServerLoadSkillData(
 
             ArchiveIteratorRef FrameIterator = ArchiveQueryNodeIteratorFirst(Archive, AttributeIterator->Index, "frame");
             if (FrameIterator) {
-                if (!ParseAttributeInt32(Archive, FrameIterator->Index, "term", &SkillData->FrameTerm)) goto error;
+                if (!ParseAttributeInt32(Archive, FrameIterator->Index, "term", &SkillData->CastFrame)) goto error;
                 if (!ParseAttributeInt32(Archive, FrameIterator->Index, "blendlimit", &SkillData->BlendLimit)) goto error;
                 if (!ParseAttributeInt32(Archive, FrameIterator->Index, "hit_frame", &SkillData->HitFrame)) goto error;
                 if (!ParseAttributeInt32(Archive, FrameIterator->Index, "firing_frame", &SkillData->FiringFrame)) goto error;
@@ -1791,6 +1791,40 @@ Bool ServerLoadDungeonMissionData(
         NodeIterator = ArchiveQueryNodeIteratorNext(Archive, NodeIterator);
     }
 
+    NodeIterator = ArchiveQueryNodeIteratorFirst(Archive, MissionNodeIndex, "gate");
+    while (NodeIterator) {
+        Index MobIndex = 0;
+        if (!ParseAttributeIndex(Archive, NodeIterator->Index, "id", &MobIndex))
+            goto error;
+
+        RTDungeonGateControlDataRef GateControlData = DictionaryLookup(DungeonData->GateControls, &MobIndex);
+        if (!GateControlData) {
+            struct _RTDungeonGateControlData NewGateControlData = { 0 };
+            DictionaryInsert(DungeonData->GateControls, &MobIndex, &NewGateControlData, sizeof(struct _RTDungeonGateControlData));
+            GateControlData = DictionaryLookup(DungeonData->GateControls, &MobIndex);
+        }
+        assert(GateControlData);
+
+        if (!ParseAttributeInt32(Archive, NodeIterator->Index, "r", &GateControlData->Rotation)) goto error;
+        if (!ParseAttributeInt32Array(Archive, NodeIterator->Index, "position", &GateControlData->Position.X, 2, ':')) goto error;
+        if (!ParseAttributeInt32(Archive, NodeIterator->Index, "attack", &GateControlData->CanAttack)) goto error;
+        if (!ParseAttributeInt32(Archive, NodeIterator->Index, "select", &GateControlData->CanSelect)) goto error;
+        if (!ParseAttributeInt32(Archive, NodeIterator->Index, "use_debuff", &GateControlData->CanDebuff)) goto error;
+
+        GateControlData->CellCount = ParseAttributeInt32Array2D(
+            Archive,
+            NodeIterator->Index,
+            "cells",
+            &GateControlData->CellList[0].X,
+            2,
+            RUNTIME_DUNGEON_MAX_GATE_CELL_COUNT,
+            ':',
+            ','
+        );
+
+        NodeIterator = ArchiveQueryNodeIteratorNext(Archive, NodeIterator);
+    }
+
     ArchiveDestroy(Archive);
     return true;
 
@@ -1996,6 +2030,7 @@ Bool ServerLoadQuestDungeonData(
         DungeonData->ActionGroups = IndexDictionaryCreate(Runtime->Allocator, 8);
         DungeonData->TimeControls = IndexDictionaryCreate(Runtime->Allocator, 8);
         DungeonData->ImmuneControls = IndexDictionaryCreate(Runtime->Allocator, 8);
+        DungeonData->GateControls = IndexDictionaryCreate(Runtime->Allocator, 8);
         DungeonData->DropTable.WorldDropPool = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTDropItem), 8);
         DungeonData->DropTable.MobDropPool = IndexDictionaryCreate(Runtime->Allocator, 8);
         DungeonData->DropTable.QuestDropPool = IndexDictionaryCreate(Runtime->Allocator, 8);
@@ -2136,6 +2171,7 @@ Bool ServerLoadMissionDungeonData(
         DungeonData->ActionGroups = IndexDictionaryCreate(Runtime->Allocator, 8);
         DungeonData->TimeControls = IndexDictionaryCreate(Runtime->Allocator, 8);
         DungeonData->ImmuneControls = IndexDictionaryCreate(Runtime->Allocator, 8);
+        DungeonData->GateControls = IndexDictionaryCreate(Runtime->Allocator, 8);
         DungeonData->DropTable.WorldDropPool = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTDropItem), 8);
         DungeonData->DropTable.MobDropPool = IndexDictionaryCreate(Runtime->Allocator, 8);
         DungeonData->DropTable.QuestDropPool = IndexDictionaryCreate(Runtime->Allocator, 8);

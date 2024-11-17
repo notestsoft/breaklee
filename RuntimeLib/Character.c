@@ -10,10 +10,15 @@ Void RTCharacterInitializeConstantAttributes(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character
 ) {
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_EXP] = Character->Data.Info.Exp;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL] = Character->Data.Info.Level;
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_CRITICAL_DAMAGE] += 20;
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_CRITICAL_RATE] += 5;
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_CRITICAL_RATE_MAX] += 50;
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED] = RUNTIME_MOVEMENT_SPEED_BASE;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_STR] = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_STR];
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_DEX] = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_DEX];
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_INT] = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_INT];
 }
 
 Void RTCharacterInitializeBattleStyleLevel(
@@ -40,7 +45,7 @@ Void RTCharacterInitializeBattleStyleLevel(
 		Character->Data.StyleInfo.Style.BattleRank,
 		LevelFormula->DeltaHP2
 	);
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX] = LevelFormula->BaseMP + LevelFormula->DeltaMP * (Character->Data.Info.Level - 1) / 10;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX] = (Int64)LevelFormula->BaseMP + LevelFormula->DeltaMP * (Character->Data.Info.Level - 1) / 10;
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX] = SpiritPointLimitData->Value;
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_MAX] = 0;
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX] = RageLimitLevelData->Value;
@@ -63,8 +68,8 @@ Void RTCharacterInitializeBattleStyleClass(
 		{ RUNTIME_ATTRIBUTE_DAMAGE_REDUCTION, ClassFormula->DamageReduction },
 		{ RUNTIME_ATTRIBUTE_ACCURACY, ClassFormula->Accuracy },
 		{ RUNTIME_ATTRIBUTE_PENETRATION, ClassFormula->Penetration },
-		{ RUNTIME_ATTRIBUTE_IGNORE_ACCURACY, ClassFormula->AccuracyPenalty },
-		{ RUNTIME_ATTRIBUTE_IGNORE_PENETRATION, ClassFormula->PenetrationPenalty },
+		{ RUNTIME_ATTRIBUTE_ACCURACY_RESIST, ClassFormula->AccuracyPenalty },
+		{ RUNTIME_ATTRIBUTE_PENETRATION_RESIST, ClassFormula->PenetrationPenalty },
 	};
 
 	Int32 ClassFormulaIndexCount = sizeof(ClassFormulaIndices) / sizeof(ClassFormulaIndices[0]);
@@ -79,10 +84,6 @@ Void RTCharacterInitializeBattleStyleStats(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 ) {
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_STR] += Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_STR];
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_DEX] += Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_DEX];
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_INT] += Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_INT];
-
 	Int32 BattleStyleIndex = Character->Data.StyleInfo.Style.BattleStyle | (Character->Data.StyleInfo.Style.ExtendedBattleStyle << 3);
 
 	RTBattleStyleStatsFormulaDataRef StatsFormula = RTRuntimeGetBattleStyleStatsFormulaData(Runtime, BattleStyleIndex);
@@ -94,23 +95,23 @@ Void RTCharacterInitializeBattleStyleStats(
 		{ RUNTIME_ATTRIBUTE_EVASION, StatsFormula->Evasion, StatsFormula->EvasionSlopeID },
 		{ RUNTIME_ATTRIBUTE_ATTACK_RATE, StatsFormula->AttackRate, StatsFormula->AttackRateSlopeID },
 		{ RUNTIME_ATTRIBUTE_DEFENSE_RATE, StatsFormula->DefenseRate, StatsFormula->DefenseRateSlopeID },
-		{ RUNTIME_ATTRIBUTE_RESIST_CRITICAL_RATE, StatsFormula->ResistCriticalRate, StatsFormula->ResistCriticalRateSlopeID },
-		{ RUNTIME_ATTRIBUTE_RESIST_SKILL_AMP, StatsFormula->ResistSkillAmp, StatsFormula->ResistSkillAmpSlopeID },
-		{ RUNTIME_ATTRIBUTE_RESIST_CRITICAL_DAMAGE, StatsFormula->ResistCriticalDamage, StatsFormula->ResistCriticalDamageSlopeID },
-		{ RUNTIME_ATTRIBUTE_RESIST_UNMOVABLE, StatsFormula->ResistUnmovable, StatsFormula->ResistUnmovableSlopeID },
-		{ RUNTIME_ATTRIBUTE_RESIST_STUN, StatsFormula->ResistStun, StatsFormula->ResistStunSlopeID },
-		{ RUNTIME_ATTRIBUTE_RESIST_DOWN, StatsFormula->ResistDown, StatsFormula->ResistDownSlopeID },
-		{ RUNTIME_ATTRIBUTE_RESIST_KNOCK_BACK, StatsFormula->ResistKnockback, StatsFormula->ResistKnockbackSlopeID },
+		{ RUNTIME_ATTRIBUTE_CRITICAL_RATE_RESIST, StatsFormula->ResistCriticalRate, StatsFormula->ResistCriticalRateSlopeID },
+		{ RUNTIME_ATTRIBUTE_ALL_SKILL_AMP_RESIST, StatsFormula->ResistSkillAmp, StatsFormula->ResistSkillAmpSlopeID },
+		{ RUNTIME_ATTRIBUTE_CRITICAL_DAMAGE_RESIST, StatsFormula->ResistCriticalDamage, StatsFormula->ResistCriticalDamageSlopeID },
+		{ RUNTIME_ATTRIBUTE_IMMOBILITY_RESIST, StatsFormula->ResistUnmovable, StatsFormula->ResistUnmovableSlopeID },
+		{ RUNTIME_ATTRIBUTE_STUN_RESIST, StatsFormula->ResistStun, StatsFormula->ResistStunSlopeID },
+		{ RUNTIME_ATTRIBUTE_DOWN_RESIST, StatsFormula->ResistDown, StatsFormula->ResistDownSlopeID },
+		{ RUNTIME_ATTRIBUTE_KNOCK_BACK_RESIST, StatsFormula->ResistKnockback, StatsFormula->ResistKnockbackSlopeID },
 		{ RUNTIME_ATTRIBUTE_HP_MAX, StatsFormula->HP, StatsFormula->HPSlopeID },
 		{ RUNTIME_ATTRIBUTE_MP_MAX, StatsFormula->MP, StatsFormula->MPSlopeID },
-		{ RUNTIME_ATTRIBUTE_IGNORE_PENETRATION, StatsFormula->IgnorePenetration, StatsFormula->IgnorePenetrationSlopeID },
+		{ RUNTIME_ATTRIBUTE_PENETRATION_RESIST, StatsFormula->IgnorePenetration, StatsFormula->IgnorePenetrationSlopeID },
 	};
 
 	Int32 StatsFormulaIndexCount = sizeof(StatsFormulaIndices) / sizeof(StatsFormulaIndices[0]);
 	Int32 StatsIndices[] = {
-		RUNTIME_ATTRIBUTE_STAT_STR,
-		RUNTIME_ATTRIBUTE_STAT_DEX,
-		RUNTIME_ATTRIBUTE_STAT_INT,
+		RUNTIME_ATTRIBUTE_STR,
+		RUNTIME_ATTRIBUTE_DEX,
+		RUNTIME_ATTRIBUTE_INT,
 	};
 	Int32 StatsIndexCount = sizeof(StatsIndices) / sizeof(StatsIndices[0]);
 	for (Int32 Index = 0; Index < StatsFormulaIndexCount; Index++) {
@@ -167,11 +168,12 @@ Void RTCharacterInitializeSkillStats(
 		
 		for (Int32 ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
 			RTSkillValueDataRef SkillValue = &SkillData->SkillValues[ValueIndex];
-			Int64 ForceValue = ((Int64)SkillValue->ForceEffectValue[0] * SkillSlot->Level + SkillValue->ForceEffectValue[1] + SkillValue->ForceEffectValue[2]) / 10;
-			
+			Int64 ForceValue = RTCalculateSkillValue(SkillValue, SkillSlot->Level, Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]);
+
 			RTCharacterApplyForceEffect(
 				Runtime,
-				Character,
+				Character, 
+				kEntityIDNull,
 				SkillValue->ForceEffectIndex,
 				ForceValue,
 				SkillValue->ValueType
@@ -202,6 +204,7 @@ Void RTCharacterInitializeEssenceAbilities(
 		RTCharacterApplyForceEffect(
 			Runtime,
 			Character,
+			kEntityIDNull,
 			AbilityValue->ForceCode,
 			AbilityLevel->ForceValue,
 			AbilityValue->ValueType
@@ -238,6 +241,7 @@ Void RTCharacterInitializeKarmaAbilities(
 		RTCharacterApplyForceEffect(
 			Runtime,
 			Character,
+			kEntityIDNull,
 			AbilityValue->ForceCode,
 			AbilityLevel->ForceValue,
 			AbilityValue->ValueType
@@ -303,6 +307,7 @@ Void RTCharacterInitializeOverlordMastery(
 				RTCharacterApplyForceEffect(
 					Runtime,
 					Character,
+					kEntityIDNull,
 					MasteryValue->OverlordMasteryValueLevelList[LevelIndex].ForceEffect,
 					MasteryValue->OverlordMasteryValueLevelList[LevelIndex].ForceValue,
 					MasteryValue->OverlordMasteryValueLevelList[LevelIndex].ForceValueType
@@ -330,9 +335,9 @@ Void RTCharacterInitializeForceWingMastery(
     RTCharacterRef Character
 ) {
 	Int32 ForceValue = MAX(0, Character->Data.ForceWingInfo.Info.Grade - 1) * 100 + Character->Data.ForceWingInfo.Info.Level;
-	RTCharacterApplyForceEffect(Runtime, Character, RUNTIME_FORCE_EFFECT_HP_UP, ForceValue, RUNTIME_FORCE_VALUE_TYPE_ADDITIVE);
-	RTCharacterApplyForceEffect(Runtime, Character, RUNTIME_FORCE_EFFECT_ALL_ATTACK_UP, ForceValue, RUNTIME_FORCE_VALUE_TYPE_ADDITIVE);
-	RTCharacterApplyForceEffect(Runtime, Character, RUNTIME_FORCE_EFFECT_DEFENSE_UP, ForceValue, RUNTIME_FORCE_VALUE_TYPE_ADDITIVE);
+	RTCharacterApplyForceEffect(Runtime, Character, kEntityIDNull, RUNTIME_FORCE_EFFECT_HP_UP_1, ForceValue, RUNTIME_FORCE_VALUE_TYPE_ADDITIVE);
+	RTCharacterApplyForceEffect(Runtime, Character, kEntityIDNull, RUNTIME_FORCE_EFFECT_FINAL_ATTACK_UP_1, ForceValue, RUNTIME_FORCE_VALUE_TYPE_ADDITIVE);
+	RTCharacterApplyForceEffect(Runtime, Character, kEntityIDNull, RUNTIME_FORCE_EFFECT_DEFENSE_UP_1, ForceValue, RUNTIME_FORCE_VALUE_TYPE_ADDITIVE);
 
     // TODO: Force wing training values
 }
@@ -372,9 +377,7 @@ Void RTCharacterInitializeAttributes(
 ) {
 	memset(Character->Attributes.Values, 0, sizeof(Character->Attributes.Values));
 
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED] = RUNTIME_MOVEMENT_SPEED_BASE;
 	Character->Attributes.Seed = PlatformGetTickCount();
-
 	RTCharacterInitializeConstantAttributes(Runtime, Character);
     RTCharacterInitializeBattleStyleLevel(Runtime, Character);
 	RTCharacterInitializeBattleStyleClass(Runtime, Character);
@@ -385,7 +388,6 @@ Void RTCharacterInitializeAttributes(
     RTCharacterInitializeBlessingBeads(Runtime, Character);
     RTCharacterInitializePremiumServices(Runtime, Character);
     RTCharacterInitializeAchievements(Runtime, Character);
-    RTCharacterInitializeBuffs(Runtime, Character);
     RTCharacterInitializeGoldMeritMastery(Runtime, Character);
     RTCharacterInitializePlatinumMeritMastery(Runtime, Character);
 	RTCharacterInitializeDiamondMeritMastery(Runtime, Character);
@@ -400,6 +402,7 @@ Void RTCharacterInitializeAttributes(
 	RTCharacterInitializeBattleStyleStats(Runtime, Character);
 	RTCharacterInitializeEquipment(Runtime, Character);
 	RTCharacterInitializeBattleMode(Runtime, Character);
+	RTCharacterInitializeBuffs(Runtime, Character);
 
 	RTCharacterSetHP(Runtime, Character, MIN(
 		Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX],
@@ -446,8 +449,37 @@ Void RTCharacterUpdate(
 	if (Character->RegenUpdateTimestamp <= CurrentTimestamp) {
 		Character->RegenUpdateTimestamp = CurrentTimestamp + RUNTIME_REGENERATION_INTERVAL;
 
-		// TODO: Calculate spirit point regeneration
-		// TODO: Calculate hp, mp regeneration
+		Int64 SpRegen = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_REGEN];
+		Bool IsSpRegenBonusEnabled = (
+			Character->Data.StyleInfo.LiveStyle.IsDancing ||
+			Character->Data.StyleInfo.LiveStyle.IsDancing2 ||
+			Character->Data.StyleInfo.LiveStyle.IsDancing3 ||
+			Character->Data.StyleInfo.LiveStyle.IsTransforming
+		);
+		if (IsSpRegenBonusEnabled) {
+			SpRegen += RTCalculateSPRegen(Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT]);
+		}
+		if (SpRegen > 0) {
+			RTCharacterAddSP(Runtime, Character, SpRegen);
+		}
+	
+		Int64 HpRegen = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_REGEN];
+		HpRegen *= 100 + Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_REGEN_UP] - Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_REGEN_DOWN];
+		HpRegen /= 100;
+		if (HpRegen > 0) {
+			RTCharacterAddHP(Runtime, Character, HpRegen, false);
+		}
+
+		Int64 MpRegen = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_REGEN];
+		if (MpRegen > 0) {
+			RTCharacterAddMP(Runtime, Character, MpRegen, false);
+		}
+
+		// TODO: Check if this is % value RUNTIME_ATTRIBUTE_HP_CURSE_RESIST,
+		Int64 HpDown = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURSE];
+		if (HpDown > 0) {
+			RTCharacterSubtractHP(Runtime, Character, HpDown, true);
+		}
 
 		RTCharacterUpdateBattleMode(Runtime, Character);
 	}
@@ -538,6 +570,7 @@ Bool RTCharacterMovementChange(
 	if (!RTCharacterIsAlive(Runtime, Character)) return false;
 	if (RTCharacterIsUnmovable(Runtime, Character)) return false;
 	if (!(Character->Movement.IsMoving)) return false;
+	assert(Character->Movement.WorldContext);
 
 	RTPositionRef WaypointA = &Character->Movement.Waypoints[0];
 	RTPositionRef WaypointB = &Character->Movement.Waypoints[1];
@@ -605,8 +638,8 @@ Bool RTCharacterMovementChange(
 	WaypointA->Y = PositionBeginY;
 	WaypointB->X = PositionCurrentX;
 	WaypointB->Y = PositionCurrentY;
-	Character->Movement.WaypointCount = 2;
 
+	Character->Movement.WaypointCount = 2;
 	Character->Movement.PositionCurrent.X = PositionBeginX;
 	Character->Movement.PositionCurrent.Y = PositionBeginY;
 	Character->Movement.PositionBegin.X = PositionBeginX;
@@ -689,6 +722,7 @@ Bool RTCharacterMovementEnd(
 	return true;
 }
 
+// TODO: Check if this function is correct
 Bool RTCharacterMovementChangeWaypoints(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
@@ -897,9 +931,9 @@ Bool RTCharacterBattleRankUp(
 	RTBattleStyleRankDataRef NextRankData = RTRuntimeGetBattleStyleRankData(Runtime, BattleStyleIndex, Character->Data.StyleInfo.Style.BattleRank + 1);
 	if (!NextRankData) return false;
 
-	if (RankData->ConditionSTR > Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_STR] ||
-		RankData->ConditionDEX > Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_DEX] ||
-		RankData->ConditionINT > Character->Attributes.Values[RUNTIME_ATTRIBUTE_STAT_INT]) {
+	if (RankData->ConditionSTR > Character->Attributes.Values[RUNTIME_ATTRIBUTE_STR] ||
+		RankData->ConditionDEX > Character->Attributes.Values[RUNTIME_ATTRIBUTE_DEX] ||
+		RankData->ConditionINT > Character->Attributes.Values[RUNTIME_ATTRIBUTE_INT]) {
 		return false;
 	}
 
@@ -1242,6 +1276,32 @@ Void RTCharacterAddHP(
 	RTCharacterSetHP(Runtime, Character, NewValue, IsPotion);
 }
 
+Void RTCharacterSubtractHP(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int64 HP,
+	Bool IsCurse
+) {
+	Int64 NewValue = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+	NewValue -= HP;
+	NewValue = MAX(NewValue, 0);
+	NewValue = MIN(NewValue, Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX]);
+	if (IsCurse) {
+		Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] = NewValue;
+		Character->Data.Info.CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+		Character->SyncMask.Info = true;
+
+		RTRuntimeBroadcastCharacterData(
+			Runtime,
+			Character,
+			NOTIFICATION_CHARACTER_DATA_TYPE_DAMAGE_CELL
+		);
+	}
+	else {
+		RTCharacterSetHP(Runtime, Character, NewValue, false);
+	}
+}
+
 Void RTCharacterSetMP(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
@@ -1402,7 +1462,7 @@ Void RTCharacterNotifyStatus(
 	NOTIFICATION_DATA_CHARACTER_STATUS* Notification = RTNotificationInit(CHARACTER_STATUS);
 	Notification->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
 	Notification->CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
-	Notification->CurrentShield = Character->Attributes.Values[RUNTIME_ATTRIBUTE_ABSORB_DAMAGE];
+	Notification->CurrentShield = Character->Attributes.Values[RUNTIME_ATTRIBUTE_DAMAGE_ABSORB];
 	Notification->BattleModeInfo = Character->Data.BattleModeInfo;
 	Notification->BuffInfo = Character->Data.BuffInfo.Info;
 

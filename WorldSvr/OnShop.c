@@ -335,7 +335,7 @@ CLIENT_PROCEDURE_BINDING(RECOVER_ITEM) {
     if (!RecoverySlot->Item.Serial) goto error;
 
     UInt64 RecoveryPrice = Character->Data.RecoveryInfo.Prices[Packet->RecoverySlotIndex];
-    if (Character->Data.Info.Alz< RecoveryPrice) goto error;
+    if (Character->Data.Info.Alz < RecoveryPrice) goto error;
 
     RecoverySlot->SlotIndex = Packet->InventorySlotIndex;
 
@@ -346,7 +346,7 @@ CLIENT_PROCEDURE_BINDING(RECOVER_ITEM) {
 
     RTCharacterUpdateQuestItemCounter(Runtime, Character, RecoverySlot->Item, RecoverySlot->ItemOptions);
 
-    Character->Data.Info.Alz-= RecoveryPrice;
+    Character->Data.Info.Alz -= RecoveryPrice;
     Character->SyncMask.Info = true;
     Character->SyncMask.InventoryInfo = true;
 

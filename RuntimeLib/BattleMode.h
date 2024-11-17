@@ -10,10 +10,10 @@ EXTERN_C_BEGIN
 struct _RTBattleModeInfo {
 	Int32 BattleModeDuration;
 	UInt8 BattleModeIndex;
-	UInt8 BattleModeUnknown1;
+	UInt8 BattleModeOverCharge;
 	UInt8 BattleModeStyleRank;
 	UInt8 AuraModeIndex;
-	UInt8 AuraModeUnknown1;
+	UInt8 AuraModeOverCharge;
 	UInt8 AuraModeStyleRank;
 	Int32 AuraModeDuration;
 };

@@ -165,6 +165,7 @@ Void RTWorldSpawnCharacterWithoutNotification(
     RTWorldChunkRef WorldChunk = RTWorldContextGetChunk(WorldContext, X, Y);
     RTWorldChunkInsert(WorldChunk, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_NONE);
     RTWorldContextAddReferenceCount(WorldContext, X, Y, 1);
+    RTWorldTileIncreaseCharacterCount(Runtime, WorldContext, Character->Movement.PositionTile.X, Character->Movement.PositionTile.Y);
 
     Character->Movement.WorldContext = WorldContext;
     Character->Movement.WorldChunk = WorldChunk;
@@ -202,6 +203,7 @@ Void RTWorldDespawnCharacter(
     UInt16 Y = Character->Movement.PositionCurrent.Y;
     RTWorldChunkRemove(Character->Movement.WorldChunk, Entity, Reason);
     RTWorldContextAddReferenceCount(WorldContext, X, Y, -1);
+    RTWorldTileDecreaseCharacterCount(Runtime, WorldContext, Character->Movement.PositionTile.X, Character->Movement.PositionTile.Y);
 
     Character->Movement.WorldContext = NULL;
     Character->Movement.Entity = kEntityIDNull;
@@ -254,11 +256,13 @@ Void RTWorldSpawnMob(
     RTMovementInitialize(
         Runtime,
         &Mob->Movement,
+        Mob->ID,
         X,
         Y,
         Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
-        CollisionMask
+        RUNTIME_WORLD_TILE_WALL | RUNTIME_WORLD_TILE_TOWN
     );
+    RTWorldTileIncreaseMobCount(Runtime, WorldContext, Mob->Movement.PositionTile.X, Mob->Movement.PositionTile.Y);
 
     Mob->ActiveSkill = &Mob->SpeciesData->DefaultSkill;
     Mob->IsDead = false;
@@ -302,6 +306,44 @@ Void RTWorldSpawnMob(
 
             RTDungeonUpdateTimer(WorldContext, RUNTIME_DUNGEON_TIMER_TARGET_EVENT_TYPE_SPAWN, Mob->ID.EntityIndex);
         }
+
+        RTDungeonImmuneControlDataRef ImmuneControl = (RTDungeonImmuneControlDataRef)DictionaryLookup(DungeonData->ImmuneControls, &MobIndex);
+        if (ImmuneControl) {
+            for (Int32 Index = 0; Index < ImmuneControl->ImmuneCount; Index += 1) {
+                RTImmuneDataRef ImmuneData = &ImmuneControl->ImmuneList[Index];
+                if (ImmuneData->CanAttack) continue; // TODO: Check if this case is necessary 
+
+                RTEntityID TargetID = {
+                    .EntityIndex = ImmuneData->TargetIndex,
+                    .WorldIndex = WorldContext->WorldData->WorldIndex,
+                    .EntityType = RUNTIME_ENTITY_TYPE_MOB
+                };
+
+                RTMobRef Target = RTWorldContextGetMob(WorldContext, TargetID);
+                if (!Target) continue;
+
+                if (ImmuneData->ActivationType == RUNTIME_DUNGEON_IMMUNE_ACTIVATION_TYPE_ALIVE) {
+                    Target->Attributes.Values[RUNTIME_ATTRIBUTE_EVASION_COMPLETE] += 1;
+                }
+                else {
+                    Target->Attributes.Values[RUNTIME_ATTRIBUTE_EVASION_COMPLETE] = MAX(
+                        Target->Attributes.Values[RUNTIME_ATTRIBUTE_EVASION_COMPLETE] - 1,
+                        0
+                    );
+                }
+            }
+        }
+
+        RTDungeonGateControlDataRef GateControl = (RTDungeonGateControlDataRef)DictionaryLookup(DungeonData->GateControls, &MobIndex);
+        if (GateControl) {
+            // assert(Mob->Spawn.IsMissionGate); TODO: Verify data quality
+    
+            if (!GateControl->CanAttack) {
+                for (Int32 Index = 0; Index < GateControl->CellCount; Index += 1) {
+                    RTWorldTileIncreaseImmunityCount(Runtime, WorldContext, GateControl->CellList[Index].X, GateControl->CellList[Index].Y);
+                }
+            }
+        }
     }
 
     RTMobOnEvent(Runtime, WorldContext, Mob, MOB_EVENT_SPAWN);
@@ -332,7 +374,62 @@ Void RTWorldCreateMob(
     CString Script,
     Timestamp Delay
 ) {
+    /*
+    Char MobScriptFileName[MAX_PATH] = { 0 };
+    if (ParseAttributeString(Archive, ChildIterator->Index, "Script", MobScriptFileName, MAX_PATH)) {
+        if (strlen(MobScriptFileName) > 0) {
+            CString MobScriptFilePath = PathCombineAll(ScriptDirectory, MobScriptFileName, NULL);
+            Mob->Script = RTScriptManagerLoadScript(Runtime->ScriptManager, MobScriptFilePath);
+        }
+    }
 
+    Mob->SpeciesData = &Runtime->MobData[Mob->Spawn.MobSpeciesIndex];
+    Mob->Spawn.Level = Mob->SpeciesData->Level;
+    Mob->IsInfiniteSpawn = true;
+    Mob->IsPermanentDeath = false;
+    Mob->RemainingSpawnCount = 0;
+
+    Index MemoryPoolIndex = 0;
+    RTMobRef Mob = (RTMobRef)MemoryPoolReserveNext(WorldContext->MobPool, &MemoryPoolIndex);
+    memcpy(Mob, TableMob, sizeof(struct _RTMob));
+
+    Mob->ID.EntityIndex = TableMob->ID.EntityIndex;
+    Mob->ID.WorldIndex = WorldContext->WorldData->WorldIndex;
+    Mob->ID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
+    Mob->IsSpawned = false;
+    Mob->RemainingFindCount = Mob->SpeciesData->FindCount;
+    Mob->RemainingSpawnCount = Mob->Spawn.SpawnCount;
+
+    if (Mob->Spawn.MobPatternIndex) {
+        Index MobPatternIndex = Mob->Spawn.MobPatternIndex;
+        RTMobPatternDataRef MobPatternData = (RTMobPatternDataRef)MemoryPoolFetch(Runtime->MobPatternDataPool, MobPatternIndex);
+        if (MobPatternData) {
+            Index PatternMemoryPoolIndex = 0;
+            Mob->Pattern = (RTMobPatternRef)MemoryPoolReserveNext(WorldContext->MobPatternPool, &PatternMemoryPoolIndex);
+            memset(Mob->Pattern, 0, sizeof(struct _RTMobPattern));
+            Mob->Pattern->Data = MobPatternData;
+            Mob->Pattern->ActionStates = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTMobActionState), RUNTIME_MOB_PATTERN_MAX_TRIGGER_GROUP_COUNT);
+            DictionaryInsert(WorldContext->EntityToMobPattern, &Mob->ID, &PatternMemoryPoolIndex, sizeof(Index));
+        }
+    }
+
+    DictionaryInsert(WorldContext->EntityToMob, &Mob->ID, &MemoryPoolIndex, sizeof(Index));
+
+    RTEntityID MobID = { 0 };
+    MobID.EntityIndex = TableMob->ID.EntityIndex;
+    MobID.WorldIndex = WorldContext->WorldData->WorldIndex;
+    MobID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
+
+    Index* MemoryPoolIndex = DictionaryLookup(WorldContext->EntityToMob, &MobID);
+    assert(MemoryPoolIndex);
+
+    RTMobRef Mob = (RTMobRef)MemoryPoolFetch(WorldContext->MobPool, *MemoryPoolIndex);
+    assert(Mob);
+
+    if (Mob->Spawn.SpawnDefault) {
+        RTWorldSpawnMob(Runtime, WorldContext, Mob);
+    }
+    */
 }
 
 RTMobRef RTWorldContextGetMob(
@@ -442,6 +539,7 @@ Void RTWorldDespawnMob(
     Int32 UpdateReason = RTEntityIsNull(Mob->EventDespawnLinkID) ? RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT : RUNTIME_WORLD_CHUNK_UPDATE_REASON_NONE;
     RTWorldChunkRemove(WorldChunk, Mob->ID, UpdateReason);
     RTMobOnEvent(Runtime, WorldContext, Mob, MOB_EVENT_DESPAWN);
+    RTWorldTileDecreaseMobCount(Runtime, WorldContext, Mob->Movement.PositionTile.X, Mob->Movement.PositionTile.Y);
 
     if (!RTEntityIsNull(Mob->EventDespawnLinkID)) {
         NOTIFICATION_DATA_MOBS_DESPAWN_BY_LINK_MOB* Notification = RTNotificationInit(MOBS_DESPAWN_BY_LINK_MOB);
@@ -508,6 +606,42 @@ Void RTWorldDespawnMob(
         if (DungeonData->TimerData.Active) {
             RTDungeonUpdateTimer(WorldContext, RUNTIME_DUNGEON_TIMER_TARGET_EVENT_TYPE_DESPAWN, Mob->ID.EntityIndex);
         }
+
+        RTDungeonImmuneControlDataRef ImmuneControl = (RTDungeonImmuneControlDataRef)DictionaryLookup(DungeonData->ImmuneControls, &MobIndex);
+        if (ImmuneControl) {
+            for (Int32 Index = 0; Index < ImmuneControl->ImmuneCount; Index += 1) {
+                RTImmuneDataRef ImmuneData = &ImmuneControl->ImmuneList[Index];
+                if (ImmuneData->CanAttack) continue; // TODO: Check if this case is necessary 
+
+                RTEntityID TargetID = {
+                    .EntityIndex = ImmuneData->TargetIndex,
+                    .WorldIndex = WorldContext->WorldData->WorldIndex,
+                    .EntityType = RUNTIME_ENTITY_TYPE_MOB
+                };
+
+                RTMobRef Target = RTWorldContextGetMob(WorldContext, TargetID);
+                if (!Target) continue;
+
+                if (ImmuneData->ActivationType == RUNTIME_DUNGEON_IMMUNE_ACTIVATION_TYPE_DEAD) {
+                    Target->Attributes.Values[RUNTIME_ATTRIBUTE_EVASION_COMPLETE] += 1;
+                }
+                else {
+                    Target->Attributes.Values[RUNTIME_ATTRIBUTE_EVASION_COMPLETE] = MAX(
+                        Target->Attributes.Values[RUNTIME_ATTRIBUTE_EVASION_COMPLETE] - 1,
+                        0
+                    );
+                }
+            }
+        }
+
+        RTDungeonGateControlDataRef GateControl = (RTDungeonGateControlDataRef)DictionaryLookup(DungeonData->GateControls, &MobIndex);
+        if (GateControl) {
+            if (!GateControl->CanAttack) {
+                for (Int32 Index = 0; Index < GateControl->CellCount; Index += 1) {
+                    RTWorldTileDecreaseImmunityCount(Runtime, WorldContext, GateControl->CellList[Index].X, GateControl->CellList[Index].Y);
+                }
+            }
+        }
     }
 
     DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(WorldContext->EntityToMob);
@@ -557,6 +691,7 @@ Void RTWorldRespawnMob(
         RTWorldChunkRef WorldChunk = Mob->Movement.WorldChunk;
         Int32 UpdateReason = RTEntityIsNull(Mob->EventDespawnLinkID) ? RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT : RUNTIME_WORLD_CHUNK_UPDATE_REASON_NONE;
         RTWorldChunkRemove(WorldChunk, Mob->ID, UpdateReason);
+        RTWorldTileDecreaseMobCount(Runtime, WorldContext, Mob->Movement.PositionTile.X, Mob->Movement.PositionTile.Y);
     }
     
     UInt32 CollisionMask = RUNTIME_WORLD_TILE_WALL | RUNTIME_WORLD_TILE_TOWN;
@@ -583,11 +718,13 @@ Void RTWorldRespawnMob(
     RTMovementInitialize(
         Runtime,
         &Mob->Movement,
+        Mob->ID,
         X,
         Y,
         Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
         CollisionMask
     );
+    RTWorldTileIncreaseMobCount(Runtime, WorldContext, Mob->Movement.PositionTile.X, Mob->Movement.PositionTile.Y);
 
     Mob->ActiveSkill = &Mob->SpeciesData->DefaultSkill;
     Mob->IsDead = false;
@@ -705,6 +842,97 @@ Void RTWorldDespawnItem(
     MemoryPoolRelease(WorldContext->ItemPool, Item->Index);
 }
 
+Bool RTWorldTileIsImmune(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef World,
+    Int32 X,
+    Int32 Y
+) {
+    assert(World);
+
+    if (X < 0 || X >= RUNTIME_WORLD_SIZE || Y < 0 || Y >= RUNTIME_WORLD_SIZE) return false;
+
+    return World->Tiles[Y + X * RUNTIME_WORLD_SIZE].ImmunityCount > 0;
+}
+
+Void RTWorldTileIncreaseImmunityCount(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef World,
+    Int32 X,
+    Int32 Y
+) {
+    assert(World);
+
+    if (X < 0 || X >= RUNTIME_WORLD_SIZE || Y < 0 || Y >= RUNTIME_WORLD_SIZE) return;
+
+    World->Tiles[Y + X * RUNTIME_WORLD_SIZE].ImmunityCount += 1;
+}
+
+Void RTWorldTileDecreaseImmunityCount(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef World,
+    Int32 X,
+    Int32 Y
+) {
+    assert(World);
+
+    if (X < 0 || X >= RUNTIME_WORLD_SIZE || Y < 0 || Y >= RUNTIME_WORLD_SIZE) return;
+
+    World->Tiles[Y + X * RUNTIME_WORLD_SIZE].ImmunityCount -= 1;
+}
+
+Void RTWorldTileIncreaseCharacterCount(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef World,
+    Int32 X,
+    Int32 Y
+) {
+    assert(World);
+
+    if (X < 0 || X >= RUNTIME_WORLD_SIZE || Y < 0 || Y >= RUNTIME_WORLD_SIZE) return;
+
+    World->Tiles[Y + X * RUNTIME_WORLD_SIZE].CharacterCount += 1;
+}
+
+Void RTWorldTileDecreaseCharacterCount(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef World,
+    Int32 X,
+    Int32 Y
+) {
+    assert(World);
+
+    if (X < 0 || X >= RUNTIME_WORLD_SIZE || Y < 0 || Y >= RUNTIME_WORLD_SIZE) return;
+
+    World->Tiles[Y + X * RUNTIME_WORLD_SIZE].CharacterCount -= 1;
+}
+
+Void RTWorldTileIncreaseMobCount(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef World,
+    Int32 X,
+    Int32 Y
+) {
+    assert(World);
+
+    if (X < 0 || X >= RUNTIME_WORLD_SIZE || Y < 0 || Y >= RUNTIME_WORLD_SIZE) return;
+
+    World->Tiles[Y + X * RUNTIME_WORLD_SIZE].MobCount += 1;
+}
+
+Void RTWorldTileDecreaseMobCount(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef World,
+    Int32 X,
+    Int32 Y
+) {
+    assert(World);
+
+    if (X < 0 || X >= RUNTIME_WORLD_SIZE || Y < 0 || Y >= RUNTIME_WORLD_SIZE) return;
+    
+    World->Tiles[Y + X * RUNTIME_WORLD_SIZE].MobCount -= 1;
+}
+
 Bool RTWorldIsTileColliding(
     RTRuntimeRef Runtime,
     RTWorldContextRef World,
@@ -712,13 +940,13 @@ Bool RTWorldIsTileColliding(
     Int32 Y,
     UInt32 CollisionMask
 ) {
+    assert(World);
+
     if (X < 0 || X >= RUNTIME_WORLD_SIZE || Y < 0 || Y >= RUNTIME_WORLD_SIZE) {
         return true;
     }
 
-    // TODO: Check if map orientation is correct!
-//    return (World->Tiles[X + Y * RUNTIME_WORLD_SIZE] & CollisionMask) > 0;
-    return (World->WorldData->Tiles[Y + X * RUNTIME_WORLD_SIZE] & CollisionMask) > 0;
+    return (World->Tiles[Y + X * RUNTIME_WORLD_SIZE].Serial & CollisionMask) > 0;
 }
 
 Bool RTWorldTraceMovement(

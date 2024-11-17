@@ -16,10 +16,32 @@ enum {
     RUNTIME_WORLD_TYPE_QUEST_DUNGEON,
 };
 
+struct _RTWorldTile {
+    union {
+        struct { UInt32 Serial; };
+        struct {
+            UInt32 IsWall : 1;
+            UInt32 IsSafeZone : 1;
+            UInt32 IsTownArea : 1;
+            UInt32 IsDamageCell : 1;
+            UInt32 IsOverAttack : 2;
+            UInt32 Padding1 : 2;
+            UInt32 ItemCount : 8;
+            UInt32 Padding2 : 4;
+            UInt32 ImmunityCount : 4;
+            UInt32 CharacterCount : 4;
+            UInt32 MobCount : 4;
+        };
+    };
+};
+typedef struct _RTWorldTile RTWorldTile;
+
 enum {
     RUNTIME_WORLD_TILE_NONE = 0b00000000,
     RUNTIME_WORLD_TILE_WALL = 0b00000001,
     RUNTIME_WORLD_TILE_TOWN = 0b00000110,
+    RUNTIME_WORLD_TILE_USER = 0x0F000000,
+    RUNTIME_WORLD_TILE_MOBS = 0xF0000000,
 };
 
 enum {
@@ -56,7 +78,7 @@ struct _RTWorldData {
     ArrayRef MobTable;
     ArrayRef MobScriptTable;
     struct _RTDropTable DropTable;
-    UInt32 Tiles[RUNTIME_WORLD_SIZE * RUNTIME_WORLD_SIZE];
+    RTWorldTile Tiles[RUNTIME_WORLD_SIZE * RUNTIME_WORLD_SIZE];
 };
 
 struct _RTWorldContext {
@@ -76,6 +98,7 @@ struct _RTWorldContext {
     struct _RTQuestUnitItemData MissionItems[RUNTIME_MAX_QUEST_COUNTER_COUNT];
     struct _RTQuestUnitMobData MissionMobs[RUNTIME_MAX_QUEST_COUNTER_COUNT];
     struct _RTWorldChunk Chunks[RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT];
+    RTWorldTile Tiles[RUNTIME_WORLD_SIZE * RUNTIME_WORLD_SIZE];
 
     Timestamp DungeonTimeout;
     Timestamp NextItemUpdateTimestamp;
@@ -215,6 +238,55 @@ Void RTWorldDespawnItem(
     RTRuntimeRef Runtime,
     RTWorldContextRef World,
     RTWorldItemRef Item
+);
+
+Bool RTWorldTileIsImmune(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef World,
+    Int32 X,
+    Int32 Y
+);
+
+Void RTWorldTileIncreaseImmunityCount(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef World,
+    Int32 X,
+    Int32 Y
+);
+
+Void RTWorldTileDecreaseImmunityCount(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef World,
+    Int32 X,
+    Int32 Y
+);
+
+Void RTWorldTileIncreaseCharacterCount(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef World,
+    Int32 X,
+    Int32 Y
+);
+
+Void RTWorldTileDecreaseCharacterCount(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef World,
+    Int32 X,
+    Int32 Y
+);
+
+Void RTWorldTileIncreaseMobCount(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef World,
+    Int32 X,
+    Int32 Y
+);
+
+Void RTWorldTileDecreaseMobCount(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef World,
+    Int32 X,
+    Int32 Y
 );
 
 Bool RTWorldIsTileColliding(

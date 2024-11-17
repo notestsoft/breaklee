@@ -13,7 +13,7 @@ enum {
     RUNTIME_BUFF_SLOT_TYPE_GM_BUFF,
     RUNTIME_BUFF_SLOT_TYPE_UNKNOWN_1,
     RUNTIME_BUFF_SLOT_TYPE_UNKNOWN_2,
-    RUNTIME_BUFF_SLOT_TYPE_FORCE_WING,
+    RUNTIME_BUFF_SLOT_TYPE_FORCE_WING, // BuffSlotIndex 13
     RUNTIME_BUFF_SLOT_TYPE_FIRE_PLACE,
 };
 
@@ -66,7 +66,13 @@ UInt32 RTCharacterApplyBuff(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     RTSkillSlotRef SkillSlot,
-    RTCharacterSkillDataRef SkillData
+    RTCharacterSkillDataRef SkillData,
+    Int32 BuffType
+);
+
+Void RTCharacterRemoveAllBuffs(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
 );
 
 Bool RTCharacterRemoveBuff(
@@ -75,8 +81,14 @@ Bool RTCharacterRemoveBuff(
     Int32 SkillIndex
 );
 
+Void RTMobUpdateBuffs(
+    RTRuntimeRef Runtime,
+    RTMobRef Mob
+);
+
 UInt32 RTMobApplyBuff(
     RTRuntimeRef Runtime,
+    RTCharacterRef Character,
     RTMobRef Mob,
     RTSkillSlotRef SkillSlot,
     RTCharacterSkillDataRef SkillData

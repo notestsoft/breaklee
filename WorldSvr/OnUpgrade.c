@@ -49,7 +49,7 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 	RTDataForceCodeCostRef ForceCodeCost = RTRuntimeDataForceCodeCostGet(Runtime->Context, CostGrade, FilledSlotCount);
 	if (!ForceCodeCost) goto error;
 
-	if (Character->Data.Info.Alz< ForceCodeCost->CurrencyCost) goto error;
+	if (Character->Data.Info.Alz < ForceCodeCost->CurrencyCost) goto error;
 
 	Bool IsOneHandedWeapon = (
 		ItemData->ItemType == RUNTIME_ITEM_TYPE_WEAPON_ONE_HAND ||
@@ -451,7 +451,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_LEVEL) {
 	if (TargetSlot->Item.UpgradeLevel < 15) goto error;
 	if (TargetSlot->Item.ExtremeLevel >= ExtremeUpgradeBaseGrade->ExtremeUpgradeMax) goto error;
 
-	if (Character->Data.Info.Alz< ExtremeUpgradeFormulaLevel->CurrencyPrice) {
+	if (Character->Data.Info.Alz < ExtremeUpgradeFormulaLevel->CurrencyPrice) {
 		S2C_DATA_UPGRADE_EXTREME_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPGRADE_EXTREME_LEVEL);
 		Response->Result = S2C_UPGRADE_EXTRENE_LEVEL_RESULT_INSUFFICIENT_CURRENCY;
 		Response->Currency = Character->Data.Info.Alz;
@@ -497,7 +497,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_LEVEL) {
 		}
 	}
 
-	Character->Data.Info.Alz-= ExtremeUpgradeFormulaLevel->CurrencyPrice;
+	Character->Data.Info.Alz -= ExtremeUpgradeFormulaLevel->CurrencyPrice;
 
 	for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
 		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index]);

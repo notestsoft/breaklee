@@ -9,13 +9,10 @@
 
 SCRIPT_STRUCTURE_BINDING(Mob, Mob->ID.Serial, number, mob_id)
 SCRIPT_STRUCTURE_BINDING(Mob, Mob->IsSpawned, boolean, mob_is_spawned)
-SCRIPT_STRUCTURE_BINDING(Mob, Mob->IsKilled, boolean, mob_is_killed)
 SCRIPT_STRUCTURE_BINDING(Mob, Mob->IsDead, boolean, mob_is_dead)
 SCRIPT_STRUCTURE_BINDING(Mob, Mob->IsInfiniteSpawn, boolean, mob_is_infinite_spawn)
 SCRIPT_STRUCTURE_BINDING(Mob, Mob->IsPermanentDeath, boolean, mob_is_permanent_dead)
 SCRIPT_STRUCTURE_BINDING(Mob, Mob->IsChasing, boolean, mob_is_chasing)
-SCRIPT_STRUCTURE_BINDING(Mob, Mob->IsWall, boolean, mob_is_on_wall)
-SCRIPT_STRUCTURE_BINDING(Mob, Mob->IsAttacked, boolean, mob_is_attacked)
 
 SCRIPT_STRUCTURE_BINDING(Mob, Mob->Movement.IsMoving, boolean, mob_is_moving)
 SCRIPT_STRUCTURE_BINDING(Mob, Mob->Movement.PositionBegin.X, number, mob_pos_begin_x)

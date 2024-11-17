@@ -2,6 +2,7 @@
 
 #include "Base.h"
 #include "BattleSystem.h"
+#include "Buff.h"
 #include "Entity.h"
 #include "Movement.h"
 #include "MobPatrol.h"
@@ -162,9 +163,6 @@ struct _RTMobSpawnData {
 	Int32 SpawnTriggerID;
 	Int32 KillTriggerID;
 	Int32 LootDelay;
-	Int32 TileCount;
-	UInt32 TileAttributes;
-	RTPosition Tiles[RUNTIME_MOB_MAX_TILE_COUNT];
 	Int32 EventProperty[RUNTIME_MOB_MAX_EVENT_COUNT];
 	Int32 EventMobs[RUNTIME_MOB_MAX_EVENT_COUNT];
 	Int32 EventInterval[RUNTIME_MOB_MAX_EVENT_COUNT];
@@ -177,22 +175,31 @@ struct _RTMobAggroData {
 	Int64 ReceivedDamage[RUNTIME_MEMORY_MAX_MOB_AGGRO_COUNT];
 };
 
+struct _RTMobBuffSlot {
+	Int32 SkillIndex;
+	Int32 SkillLevel;
+	UInt32 Duration;
+	Int32 BattleRank;
+	Int32 Rage;
+	Int32 SkillTranscendenceLevel;
+	Int32 SkillTranscendenceIndex;
+};
+
+struct _RTMobBuffData {
+	Int32 SlotCount;
+	struct _RTMobBuffSlot Slots[RUNTIME_MOB_MAX_BUFF_SLOT_COUNT];
+};
+
 struct _RTMob {
 	RTEntityID ID;
 	RTMobSpeciesDataRef SpeciesData;
 	RTEntityID DropOwner;
-	struct _RTMobPhaseData PhaseData;
-	Int32 Phase;
-	Int32 SubPhase;
 	Bool IsSpawned;
-	Bool IsKilled;
 	Bool IsDead;
 	Bool IsIdle;
 	Bool IsInfiniteSpawn;
 	Bool IsPermanentDeath;
 	Bool IsChasing;
-	Bool IsWall;
-	Bool IsAttacked;
 	Bool IsAttackingCharacter;
 	Bool IsTimerMob;
 	Int32 RemainingFindCount;
@@ -217,6 +224,8 @@ struct _RTMob {
 
 	Timestamp NextPhaseTimestamp;
 	Timestamp NextRegenTimestamp;
+	Timestamp BuffUpdateTimestamp;
+	Timestamp LastBuffUpdateTimestamp;
 	Int64 HPTriggerThreshold;
 	Int32 AggroTargetDistance;
 	Int32 LinkMobIndex;
@@ -227,7 +236,8 @@ struct _RTMob {
 
 	struct _RTMobSpawnData Spawn;
 	struct _RTMobAggroData Aggro;
-    struct _RTMovement Movement;
+	struct _RTMobBuffData Buffs;
+	struct _RTMovement Movement;
 	struct _RTBattleAttributes Attributes;
 	struct _RTMobPatrol Patrol;
 	
@@ -247,7 +257,8 @@ Void RTMobApplyDamage(
 	RTWorldContextRef World,
 	RTMobRef Mob,
 	RTEntityID Source,
-	Int64 Damage
+	Int64 Damage,
+	Timestamp Delay
 );
 
 Void RTMobUpdate(
@@ -289,6 +300,13 @@ Void RTMobCancelSpecialAction(
 );
 
 Void RTMobHeal(
+	RTRuntimeRef Runtime,
+	RTWorldContextRef WorldContext,
+	RTMobRef Mob,
+	Int64 Amount
+);
+
+Void RTMobCurse(
 	RTRuntimeRef Runtime,
 	RTWorldContextRef WorldContext,
 	RTMobRef Mob,

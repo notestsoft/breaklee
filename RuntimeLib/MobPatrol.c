@@ -83,14 +83,17 @@ Bool RTMobPatrolUpdate(
 
 		if (WaypointData->Type == RUNTIME_MOB_PATROL_TYPE_WARP) {
 			RTWorldChunkRemove(Mob->Movement.WorldChunk, Mob->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
+			RTWorldTileDecreaseMobCount(Runtime, WorldContext, Mob->Movement.PositionTile.X, Mob->Movement.PositionTile.Y);
 			RTMovementInitialize(
 				Runtime,
 				&Mob->Movement,
+				Mob->ID,
 				WaypointData->X,
 				WaypointData->Y,
 				Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
 				RUNTIME_WORLD_TILE_WALL | RUNTIME_WORLD_TILE_TOWN
 			);
+			RTWorldTileIncreaseMobCount(Runtime, WorldContext, Mob->Movement.PositionTile.X, Mob->Movement.PositionTile.Y);
 			Mob->Movement.WorldContext = WorldContext;
 			Mob->Movement.WorldChunk = RTWorldContextGetChunk(WorldContext, Mob->Movement.PositionCurrent.X, Mob->Movement.PositionCurrent.Y);
 			RTWorldChunkInsert(Mob->Movement.WorldChunk, Mob->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);

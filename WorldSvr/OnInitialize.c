@@ -512,7 +512,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         memcpy(Character->Data.BuffInfo.Slots, Memory, Length);
         Memory += Length;
     }
-
+    
     CStringCopySafe(Character->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->Character.Name);
 
     RTCharacterToggleAstralWeapon(Runtime, Character, false, false);
@@ -520,6 +520,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     RTMovementInitialize(
         Runtime,
         &Character->Movement,
+        Character->ID,
         Character->Data.Info.PositionX,
         Character->Data.Info.PositionY,
         (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
@@ -569,6 +570,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         RTMovementInitialize(
             Runtime,
             &Character->Movement,
+            Character->ID,
             Character->Data.Info.PositionX,
             Character->Data.Info.PositionY,
             (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],

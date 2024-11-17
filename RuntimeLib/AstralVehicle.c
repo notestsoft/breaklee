@@ -34,6 +34,8 @@ Void RTCharacterToggleAstralVehicle(
 	Character->Data.StyleInfo.ExtendedStyle.IsVehicleActive = IsActivation;
 	Character->SyncMask.StyleInfo = true;
 
+	RTCharacterInitializeAttributes(Runtime, Character);
+
 	NOTIFICATION_DATA_SKILL_TO_CHARACTER* Notification = RTNotificationInit(SKILL_TO_CHARACTER);
 	Notification->SkillIndex = SkillIndex;
 

@@ -128,14 +128,17 @@ Void RTMobPatternStartAction(
 		else if (TargetID.EntityType == RUNTIME_ENTITY_TYPE_MOB) {
 			RTMobRef Target = (RTMobRef)TargetContext;
 			RTWorldChunkRemove(Target->Movement.WorldChunk, TargetID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
+			RTWorldTileDecreaseMobCount(Runtime, WorldContext, Target->Movement.PositionTile.X, Target->Movement.PositionTile.Y);
 			RTMovementInitialize(
 				Runtime,
 				&Target->Movement,
+				Target->ID,
 				ActionState->ActionData->Parameters.WarpTarget.PositionX,
 				ActionState->ActionData->Parameters.WarpTarget.PositionY,
 				Target->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
 				RUNTIME_WORLD_TILE_WALL | RUNTIME_WORLD_TILE_TOWN
 			);
+			RTWorldTileIncreaseMobCount(Runtime, WorldContext, Target->Movement.PositionTile.X, Target->Movement.PositionTile.Y);
 			Target->Movement.WorldContext = WorldContext;
 			Target->Movement.WorldChunk = RTWorldContextGetChunk(WorldContext, Target->Movement.PositionCurrent.X, Target->Movement.PositionCurrent.Y);
 			RTWorldChunkInsert(Target->Movement.WorldChunk, TargetID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
@@ -147,17 +150,19 @@ Void RTMobPatternStartAction(
 
 	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_WARP_SELF) {
 		RTWorldChunkRemove(Mob->Movement.WorldChunk, Mob->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
+		RTWorldTileDecreaseMobCount(Runtime, WorldContext, Mob->Movement.PositionTile.X, Mob->Movement.PositionTile.Y);
 		RTMovementInitialize(
 			Runtime,
 			&Mob->Movement,
+			Mob->ID,
 			ActionState->ActionData->Parameters.WarpTarget.PositionX,
 			ActionState->ActionData->Parameters.WarpTarget.PositionY,
 			Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
 			RUNTIME_WORLD_TILE_WALL | RUNTIME_WORLD_TILE_TOWN
 		);
+		RTWorldTileIncreaseMobCount(Runtime, WorldContext, Mob->Movement.PositionTile.X, Mob->Movement.PositionTile.Y);
 		Mob->Movement.WorldContext = WorldContext;
 		Mob->Movement.WorldChunk = RTWorldContextGetChunk(WorldContext, Mob->Movement.PositionCurrent.X, Mob->Movement.PositionCurrent.Y);
-		RTWorldChunkInsert(Mob->Movement.WorldChunk, Mob->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
 	}
 
 	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_SPAWN_MOB) {
@@ -174,7 +179,8 @@ Void RTMobPatternStartAction(
 		RTMobApplyForceEffect(
 			Runtime,
 			Mob,
-			RUNTIME_FORCE_EFFECT_COMPLETE_EVASION,
+			kEntityIDNull,
+			RUNTIME_FORCE_EFFECT_EVASION_COMPLETE,
 			1,
 			RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 		);
@@ -226,7 +232,8 @@ Void RTMobPatternStartAction(
 			RTMobApplyForceEffect(
 				Runtime,
 				Target,
-				RUNTIME_FORCE_EFFECT_ALL_ATTACK_UP,
+				kEntityIDNull,
+				RUNTIME_FORCE_EFFECT_FINAL_ATTACK_UP_1,
 				ActionState->ActionData->Parameters.AttackUp.Value,
 				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 			);
@@ -236,7 +243,8 @@ Void RTMobPatternStartAction(
 			RTMobApplyForceEffect(
 				Runtime,
 				Target,
-				RUNTIME_FORCE_EFFECT_ALL_ATTACK_UP_PERCENT,
+				kEntityIDNull,
+				RUNTIME_FORCE_EFFECT_FINAL_ATTACK_UP_PERCENT,
 				ActionState->ActionData->Parameters.AttackUp.Value,
 				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 			);
@@ -258,7 +266,8 @@ Void RTMobPatternStartAction(
 			RTMobApplyForceEffect(
 				Runtime,
 				Target,
-				RUNTIME_FORCE_EFFECT_DEFENSE_UP,
+				kEntityIDNull,
+				RUNTIME_FORCE_EFFECT_DEFENSE_UP_1,
 				ActionState->ActionData->Parameters.DefenseUp.Value,
 				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 			);
@@ -268,6 +277,7 @@ Void RTMobPatternStartAction(
 			RTMobApplyForceEffect(
 				Runtime,
 				Target,
+				kEntityIDNull,
 				RUNTIME_FORCE_EFFECT_DEFENSE_UP_PERCENT,
 				ActionState->ActionData->Parameters.DefenseUp.Value,
 				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
@@ -338,7 +348,8 @@ Void RTMobPatternCancelAction(
 		RTMobCancelForceEffect(
 			Runtime,
 			Mob,
-			RUNTIME_FORCE_EFFECT_COMPLETE_EVASION,
+			kEntityIDNull,
+			RUNTIME_FORCE_EFFECT_EVASION_COMPLETE,
 			1,
 			RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 		);
@@ -391,7 +402,8 @@ Void RTMobPatternCancelAction(
 			RTMobCancelForceEffect(
 				Runtime,
 				Target,
-				RUNTIME_FORCE_EFFECT_ALL_ATTACK_UP,
+				kEntityIDNull,
+				RUNTIME_FORCE_EFFECT_FINAL_ATTACK_UP_1,
 				ActionState->ActionData->Parameters.AttackUp.Value,
 				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 			);
@@ -401,7 +413,8 @@ Void RTMobPatternCancelAction(
 			RTMobCancelForceEffect(
 				Runtime,
 				Target,
-				RUNTIME_FORCE_EFFECT_ALL_ATTACK_UP_PERCENT,
+				kEntityIDNull,
+				RUNTIME_FORCE_EFFECT_FINAL_ATTACK_UP_PERCENT,
 				ActionState->ActionData->Parameters.AttackUp.Value,
 				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 			);
@@ -423,7 +436,8 @@ Void RTMobPatternCancelAction(
 			RTMobCancelForceEffect(
 				Runtime,
 				Target,
-				RUNTIME_FORCE_EFFECT_DEFENSE_UP,
+				kEntityIDNull,
+				RUNTIME_FORCE_EFFECT_DEFENSE_UP_1,
 				ActionState->ActionData->Parameters.DefenseUp.Value,
 				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 			);
@@ -433,6 +447,7 @@ Void RTMobPatternCancelAction(
 			RTMobCancelForceEffect(
 				Runtime,
 				Target,
+				kEntityIDNull,
 				RUNTIME_FORCE_EFFECT_DEFENSE_UP_PERCENT,
 				ActionState->ActionData->Parameters.DefenseUp.Value,
 				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE

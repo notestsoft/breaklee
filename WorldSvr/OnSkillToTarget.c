@@ -8,18 +8,6 @@
 CLIENT_PROCEDURE_BINDING(SKILL_TO_TARGET) {
 	if (!Character) goto error;
 
-	S2C_DATA_SKILL_TO_TARGET_BUFF* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SKILL_TO_TARGET_BUFF);
-	Response->SkillIndex = Packet->SkillIndex;
-
-	S2C_DATA_NFY_SKILL_TO_TARGET_BUFF* Notification = PacketBufferInit(Socket->PacketBuffer, S2C, NFY_SKILL_TO_TARGET_BUFF);
-	Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
-	Notification->SkillIndex = Packet->SkillIndex;
-
-	/*
-	C2S_DATA_SKILL_TO_TARGET_WING_TARGET
-		S2C_DATA_SKILL_TO_CHARACTER_WING
-	*/
-
 	if (!RTCharacterIsAlive(Runtime, Character)) goto error;
 
 	RTMovementUpdateDeadReckoning(Runtime, &Character->Movement);
@@ -32,7 +20,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_TARGET) {
 
 	// TODO: Add SkillData validations
 	// TODO: Add skill cast time and cooldown checks
-	// TODO: Consume sp
+	// TODO: Consume SP
 
 	Int32 RequiredMP = RTCharacterCalculateRequiredMP(
 		Runtime,
@@ -47,9 +35,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_TARGET) {
 		goto error;
 	}
 
-	RTCharacterAddMP(Runtime, Character, -RequiredMP, false);
-
-	if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_BUFF) {
+	if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_BUFF || SkillData->SkillGroup == RUNTIME_SKILL_GROUP_DEBUFF) {
 		Int32 PacketLength = sizeof(C2S_DATA_SKILL_TO_TARGET) + sizeof(C2S_DATA_SKILL_TO_TARGET_BUFF);
 		if (Packet->Length < PacketLength) goto error;
 
@@ -58,19 +44,28 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_TARGET) {
 		if (Packet->Length != PacketLength) goto error;
 		if (SkillSlot->Index != PacketData->SlotIndex) goto error;
 
+		RTCharacterAddMP(Runtime, Character, -RequiredMP, false);
+
+		S2C_DATA_SKILL_TO_TARGET_BUFF* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SKILL_TO_TARGET_BUFF);
+		Response->SkillIndex = Packet->SkillIndex;
+
+		S2C_DATA_NFY_SKILL_TO_TARGET_BUFF* Notification = PacketBufferInit(Socket->PacketBuffer, S2C, NFY_SKILL_TO_TARGET_BUFF);
+		Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
+		Notification->SkillIndex = Packet->SkillIndex;
+
 		C2S_DATA_SKILL_TO_TARGET_BUFF_TARGET* PacketTargetData = (C2S_DATA_SKILL_TO_TARGET_BUFF_TARGET*)(&Packet->Data[0] + sizeof(C2S_DATA_SKILL_TO_TARGET_BUFF));
 		C2S_DATA_SKILL_TO_TARGET_BUFF_TAIL* PacketTailData = (C2S_DATA_SKILL_TO_TARGET_BUFF_TAIL*)((UInt8*)PacketTargetData + sizeof(C2S_DATA_SKILL_TO_TARGET_BUFF_TARGET) * PacketData->TargetCount);
 
 		Response->SkillLevel = SkillSlot->Level;
-		Response->BuffType = RUNTIME_BUFF_TYPE_SKILL;
+		Response->BuffType = 0;
 		Response->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
 		Response->CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 		Response->CurrentSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
 		Response->TargetCount = PacketData->TargetCount;
 
 		Notification->SkillLevel = SkillSlot->Level;
-		Notification->Unknown1 = 0; // Only takes 0 or 1, moves the slot to second row (penet potion slot)
-		Notification->BuffType = RUNTIME_BUFF_TYPE_SKILL;
+		Notification->Unknown1 = (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_DEBUFF) ? 1 : 0;
+		Notification->BuffType = 0;
 		Notification->Unknown2 = 0;
 		Notification->TargetCount = PacketData->TargetCount;
 		Notification->ItemID = 0;
@@ -99,41 +94,64 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_TARGET) {
 				RTCharacterRef Target = RTWorldManagerGetCharacter(Runtime->WorldManager, TargetID);
 				if (Target) {
 					ResponseTarget->TargetIndex = Target->CharacterIndex;
-					ResponseTarget->Result = RTCharacterApplyBuff(Runtime, Target, SkillSlot, SkillData);
+					ResponseTarget->Result = RTCharacterApplyBuff(Runtime, Target, SkillSlot, SkillData, RUNTIME_BUFF_SLOT_TYPE_SKILL);
+					ResponseTarget->Duration = Target->Attributes.Values[RUNTIME_ATTRIBUTE_DAMAGE_ABSORB];
 					NotificationTarget->TargetIndex = ResponseTarget->TargetIndex;
 					NotificationTarget->Result = ResponseTarget->Result;
+					NotificationTarget->Duration = Target->Attributes.Values[RUNTIME_ATTRIBUTE_DAMAGE_ABSORB];
 				}
 			}
 			else if (TargetIDType == RUNTIME_ENTITY_TYPE_MOB) {
 				RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Runtime, Character);
 				RTMobRef Target = RTWorldContextGetMob(WorldContext, TargetID);
 				if (Target) {
-					ResponseTarget->Result = RTMobApplyBuff(Runtime, Target, SkillSlot, SkillData);
+					ResponseTarget->TargetIndex = Target->ID.Serial;
+					ResponseTarget->Result = RTMobApplyBuff(Runtime, Character, Target, SkillSlot, SkillData);
+					ResponseTarget->Duration = Target->Attributes.Values[RUNTIME_ATTRIBUTE_DAMAGE_ABSORB];
 					NotificationTarget->Result = ResponseTarget->Result;
+					NotificationTarget->Duration = Target->Attributes.Values[RUNTIME_ATTRIBUTE_DAMAGE_ABSORB];
 				}
 			}
 			else {
 				goto error;
 			}
 		}
+
+		S2C_DATA_SKILL_TO_TARGET_BUFF_TAIL* ResponseTail = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_TO_TARGET_BUFF_TAIL);
+		S2C_DATA_NFY_SKILL_TO_TARGET_BUFF_TAIL* NotificationTail = PacketBufferAppendStruct(Socket->PacketBuffer, S2C_DATA_NFY_SKILL_TO_TARGET_BUFF_TAIL);
+
+		SocketSend(Socket, Connection, Response);
+
+		BroadcastToWorld(
+			Context,
+			RTRuntimeGetWorldByCharacter(Runtime, Character),
+			kEntityIDNull,
+			Character->Movement.PositionCurrent.X,
+			Character->Movement.PositionCurrent.Y,
+			Notification
+		);
+	}
+	else if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_WING) {
+		Int32 PacketLength = sizeof(C2S_DATA_SKILL_TO_TARGET) + sizeof(C2S_DATA_SKILL_TO_TARGET_WING);
+		if (Packet->Length < PacketLength) goto error;
+
+		C2S_DATA_SKILL_TO_TARGET_WING* PacketData = (C2S_DATA_SKILL_TO_TARGET_WING*)&Packet->Data[0];
+		if (SkillSlot->Index != PacketData->SlotIndex) goto error;
+
+		RTCharacterAddMP(Runtime, Character, -RequiredMP, false);
+		RTCharacterApplyBuff(Runtime, Character, SkillSlot, SkillData, RUNTIME_BUFF_SLOT_TYPE_FORCE_WING);
+
+		S2C_DATA_SKILL_TO_CHARACTER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SKILL_TO_CHARACTER);
+		Response->SkillIndex = Packet->SkillIndex;
+
+		S2C_DATA_SKILL_GROUP_WING* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_WING);
+		ResponseData->CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+		ResponseData->CurrentSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+		SocketSend(Socket, Connection, Response);
 	}
 	else {
 		goto error;
 	}
-
-	S2C_DATA_SKILL_TO_TARGET_BUFF_TAIL* ResponseTail = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_TO_TARGET_BUFF_TAIL);
-	S2C_DATA_NFY_SKILL_TO_TARGET_BUFF_TAIL* NotificationTail = PacketBufferAppendStruct(Socket->PacketBuffer, S2C_DATA_NFY_SKILL_TO_TARGET_BUFF_TAIL);
-
-	SocketSend(Socket, Connection, Response);
-
-	BroadcastToWorld(
-		Context,
-		RTRuntimeGetWorldByCharacter(Runtime, Character),
-		kEntityIDNull,
-		Character->Movement.PositionCurrent.X,
-		Character->Movement.PositionCurrent.Y,
-		Notification
-	);
 
 	return;
 

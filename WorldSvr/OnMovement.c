@@ -123,6 +123,7 @@ error:
 
 CLIENT_PROCEDURE_BINDING(MOVEMENT_WAYPOINTS) {
 	if (!Character) goto error;
+
 	Bool Success = RTCharacterMovementChangeWaypoints(
 		Runtime,
 		Character,

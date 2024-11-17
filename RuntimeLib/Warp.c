@@ -109,6 +109,7 @@ Bool RTRuntimeWarpCharacter(
             RTMovementInitialize(
                 Runtime,
                 &Character->Movement,
+                Character->ID,
                 WarpPositionX,
                 WarpPositionY,
                 Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
@@ -134,7 +135,7 @@ Bool RTRuntimeWarpCharacter(
             }
 
             RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
-
+            RTCharacterRemoveAllBuffs(Runtime, Character);
             RTCharacterSetHP(Runtime, Character, Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX], false);
             RTCharacterSetMP(Runtime, Character, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX], false);
             Character->Data.Info.PositionX = WarpPoint.X;
@@ -147,6 +148,7 @@ Bool RTRuntimeWarpCharacter(
             RTMovementInitialize(
                 Runtime,
                 &Character->Movement,
+                Character->ID,
                 WarpPoint.X,
                 WarpPoint.Y,
                 Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
@@ -176,6 +178,7 @@ Bool RTRuntimeWarpCharacter(
             RTMovementInitialize(
                 Runtime,
                 &Character->Movement,
+                Character->ID,
                 WarpPoint.X,
                 WarpPoint.Y,
                 Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
@@ -214,6 +217,7 @@ Bool RTRuntimeWarpCharacter(
             RTMovementInitialize(
                 Runtime,
                 &Character->Movement,
+                Character->ID,
                 WarpPoint.X,
                 WarpPoint.Y,
                 Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
@@ -249,6 +253,7 @@ Bool RTRuntimeWarpCharacter(
             RTMovementInitialize(
                 Runtime,
                 &Character->Movement,
+                Character->ID,
                 WarpPoint.X,
                 WarpPoint.Y,
                 Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
@@ -308,6 +313,7 @@ Bool RTRuntimeWarpCharacter(
             RTMovementInitialize(
                 Runtime,
                 &Character->Movement,
+                Character->ID,
                 WarpPoint.X,
                 WarpPoint.Y,
                 Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
@@ -350,6 +356,7 @@ Bool RTRuntimeWarpCharacter(
         RTMovementInitialize(
             Runtime,
             &Character->Movement,
+            Character->ID,
             WarpPositionX,
             WarpPositionY,
             Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
@@ -392,6 +399,7 @@ Bool RTRuntimeWarpCharacter(
         RTMovementInitialize(
             Runtime,
             &Character->Movement,
+            Character->ID,
             WarpPositionX,
             WarpPositionY,
             Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
@@ -414,7 +422,7 @@ Bool RTRuntimeWarpCharacter(
     assert(Warp->Index == WarpIndex);
 
     if (Character->Data.Info.Level < Warp->Level) return false;
-    if (Character->Data.Info.Alz< Warp->Fee) return false;
+    if (Character->Data.Info.Alz < Warp->Fee) return false;
 
     if (Warp->Type == RUNTIME_WARP_TYPE_GATE) {
         RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, Warp->TargetID);
@@ -437,6 +445,7 @@ Bool RTRuntimeWarpCharacter(
         RTMovementInitialize(
             Runtime,
             &Character->Movement,
+            Character->ID,
             WarpPoint.X,
             WarpPoint.Y,
             Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
@@ -479,6 +488,7 @@ Bool RTRuntimeWarpCharacter(
         RTMovementInitialize(
             Runtime,
             &Character->Movement,
+            Character->ID,
             WarpPoint.X,
             WarpPoint.Y,
             Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
@@ -516,7 +526,7 @@ Bool RTRuntimeWarpCharacter(
         RTWorldContextRef DungeonWorld = RTRuntimeOpenDungeon(Runtime, Character, WarpPoint.WorldIndex, DungeonData->DungeonIndex);
         if (!DungeonWorld) return false;
 
-        Character->Data.Info.Alz-= Warp->Fee;
+        Character->Data.Info.Alz -= Warp->Fee;
         Character->Data.Info.PositionX = WarpPoint.X;
         Character->Data.Info.PositionY = WarpPoint.Y;
         Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
@@ -527,6 +537,7 @@ Bool RTRuntimeWarpCharacter(
         RTMovementInitialize(
             Runtime,
             &Character->Movement,
+            Character->ID,
             WarpPoint.X,
             WarpPoint.Y,
             Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],

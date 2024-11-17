@@ -274,11 +274,12 @@ Void RTCharacterInitializeBattleMode(
 		if (SkillData) {
 			for (Int32 ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
 				RTSkillValueDataRef SkillValue = &SkillData->SkillValues[ValueIndex];
-				Int64 ForceValue = ((Int64)SkillValue->ForceEffectValue[0] * SkillLevel + SkillValue->ForceEffectValue[1] + SkillValue->ForceEffectValue[2]) / 10;
+				Int64 ForceValue = RTCalculateSkillValue(SkillValue, SkillLevel, Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]);
 
 				RTCharacterApplyForceEffect(
 					Runtime,
 					Character,
+					kEntityIDNull,
 					SkillValue->ForceEffectIndex,
 					ForceValue,
 					SkillValue->ValueType
@@ -293,11 +294,12 @@ Void RTCharacterInitializeBattleMode(
 		if (SkillData) {
 			for (Int32 ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
 				RTSkillValueDataRef SkillValue = &SkillData->SkillValues[ValueIndex];
-				Int64 ForceValue = ((Int64)SkillValue->ForceEffectValue[0] * SkillLevel + SkillValue->ForceEffectValue[1] + SkillValue->ForceEffectValue[2]) / 10;
+				Int64 ForceValue = RTCalculateSkillValue(SkillValue, SkillLevel, Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]);
 
 				RTCharacterApplyForceEffect(
 					Runtime,
 					Character,
+					kEntityIDNull,
 					SkillValue->ForceEffectIndex,
 					ForceValue,
 					SkillValue->ValueType

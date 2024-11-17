@@ -22,6 +22,7 @@ struct _RTMovement {
     RTPosition PositionBegin;
     RTPosition PositionCurrent;
     RTPosition PositionEnd;
+    RTPosition PositionTile;
     Float32 Base;
     Float32 Distance;
     Float32 Speed;
@@ -32,6 +33,7 @@ struct _RTMovement {
 Void RTMovementInitialize(
     RTRuntimeRef Runtime,
     RTMovementRef Movement,
+    RTEntityID Entity,
     Int32 X,
     Int32 Y,
     Int32 Speed,
