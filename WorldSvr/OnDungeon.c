@@ -247,3 +247,35 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_GATE_OPEN) {
 error:
 	SocketDisconnect(Socket, Connection);
 }
+
+CLIENT_PROCEDURE_BINDING(DUNGEON_PAUSE) {
+    if (!Character) goto error;
+
+    RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
+    if (World->WorldData->Type != RUNTIME_WORLD_TYPE_DUNGEON &&
+        World->WorldData->Type != RUNTIME_WORLD_TYPE_QUEST_DUNGEON) goto error;
+
+    S2C_DATA_DUNGEON_PAUSE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DUNGEON_PAUSE);
+    Response->Result = RTDungeonPause(World) ? 0 : 1;
+    SocketSend(Socket, Connection, Response);
+    return;
+
+error:
+    SocketDisconnect(Socket, Connection);
+}
+
+CLIENT_PROCEDURE_BINDING(DUNGEON_RESUME) {
+    if (!Character) goto error;
+
+    RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
+    if (World->WorldData->Type != RUNTIME_WORLD_TYPE_DUNGEON &&
+        World->WorldData->Type != RUNTIME_WORLD_TYPE_QUEST_DUNGEON) goto error;
+
+    S2C_DATA_DUNGEON_RESUME* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DUNGEON_RESUME);
+    Response->Result = RTDungeonResume(World) ? 0 : 1;
+    SocketSend(Socket, Connection, Response);
+    return;
+
+error:
+    SocketDisconnect(Socket, Connection);
+}

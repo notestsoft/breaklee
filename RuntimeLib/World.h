@@ -89,6 +89,7 @@ struct _RTWorldContext {
     RTEntityID Owner;
     RTEntityID Party;
     Bool Active;
+    Bool Paused;
     Bool Closed;
     Bool Cleared;
     Int32 Seed;
@@ -101,6 +102,7 @@ struct _RTWorldContext {
     RTWorldTile Tiles[RUNTIME_WORLD_SIZE * RUNTIME_WORLD_SIZE];
 
     Timestamp DungeonTimeout;
+    Timestamp PauseTimestamp;
     Timestamp NextItemUpdateTimestamp;
     Int32 PatternPartIndex;
     Int32 TimerIndex;

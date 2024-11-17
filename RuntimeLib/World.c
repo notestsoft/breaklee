@@ -70,6 +70,8 @@ Void RTWorldContextAddReferenceCount(
 Void RTWorldContextUpdate(
     RTWorldContextRef WorldContext
 ) {
+    if (WorldContext->Paused) return;
+
     if (WorldContext->WorldData->Type == RUNTIME_WORLD_TYPE_DUNGEON ||
         WorldContext->WorldData->Type == RUNTIME_WORLD_TYPE_QUEST_DUNGEON) {
         RTDungeonUpdate(WorldContext);

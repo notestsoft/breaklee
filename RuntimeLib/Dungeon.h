@@ -178,6 +178,14 @@ Bool RTDungeonUpdate(
 	RTWorldContextRef World
 );
 
+Bool RTDungeonPause(
+	RTWorldContextRef World
+);
+
+Bool RTDungeonResume(
+	RTWorldContextRef World
+);
+
 Bool RTDungeonEnd(
 	RTWorldContextRef World
 );

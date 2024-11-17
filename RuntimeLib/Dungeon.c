@@ -1,11 +1,11 @@
 #include "Runtime.h"
 #include "Dungeon.h"
-#include "World.h"
-#include "WorldManager.h"
 #include "Mob.h"
 #include "NotificationProtocol.h"
 #include "NotificationManager.h"
-
+#include "PartyManager.h"
+#include "World.h"
+#include "WorldManager.h"
 Bool RTDungeonIsPatternPartCompleted(
     RTRuntimeRef Runtime,
     RTWorldContextRef WorldContext,
@@ -154,6 +154,40 @@ Bool RTDungeonUpdate(
             World->TimerTimeout = UINT64_MAX;
         }
     }
+
+    return true;
+}
+
+Bool RTDungeonPause(
+    RTWorldContextRef World
+) {
+    RTRuntimeRef Runtime = World->WorldManager->Runtime;
+    RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, World->Party);
+    if (!Party) return false;
+    if (Party->MemberCount > 1) return false;
+    if (World->Paused) return false;
+
+    World->Paused = true;
+    World->PauseTimestamp = GetTimestampMs();
+
+    return true;
+}
+
+Bool RTDungeonResume(
+    RTWorldContextRef World
+) {
+    RTRuntimeRef Runtime = World->WorldManager->Runtime;
+    RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, World->Party);
+    if (!Party) return false;
+    if (Party->MemberCount > 1) return false;
+    if (!World->Paused) return false;
+
+
+    Timestamp ElapsedTime = GetTimestampMs() - World->PauseTimestamp;
+    World->DungeonTimeout += ElapsedTime;
+    World->NextItemUpdateTimestamp += ElapsedTime;
+    World->TimerTimeout += ElapsedTime;
+    World->Paused = false;
 
     return true;
 }
