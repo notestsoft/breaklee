@@ -611,7 +611,8 @@ Void RTRuntimeInitForceEffectFormulas(
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_ROOT_DURATION, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_ROOT_DURATION);
 
-    RUNTIME_FORCE_EFFECT_PETRIFY
+    
+
 
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_DAMAGE_ABSORB, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_DAMAGE_ABSORB);
