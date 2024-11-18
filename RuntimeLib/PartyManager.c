@@ -147,3 +147,34 @@ RTPartyRef RTPartyManagerGetParty(
 
     return (RTPartyRef)MemoryPoolFetch(PartyPool, PartyPoolIndex);
 }
+
+Bool RTPartyManagerRemoveMember(
+    RTPartyManagerRef PartyManager,
+    Index CharacterIndex
+) {
+    RTEntityID* PartyID = (RTEntityID*)DictionaryLookup(PartyManager->CharacterToPartyEntity, &CharacterIndex);
+    if (!PartyID) return NULL;
+
+    MemoryPoolRef PartyPool = PartyManager->PartyPool;
+    if (PartyID->WorldIndex == RUNTIME_PARTY_TYPE_SOLO_DUNGEON) {
+        PartyPool = PartyManager->SoloPartyPool;
+    }
+
+    Index PartyPoolIndex = PartyID->EntityIndex;
+    RTPartyRef Party = (RTPartyRef)MemoryPoolFetch(PartyPool, PartyPoolIndex);
+
+    for (Int32 Index = 0; Index < Party->MemberCount; Index += 1) {
+        if (Party->Members[Index].Info.CharacterIndex != CharacterIndex) continue;
+
+        Int32 TailLength = Party->MemberCount - Index - 1;
+        if (TailLength > 0) {
+            memmove(&Party->Members[Index], &Party->Members[Index + 1], sizeof(struct _RTPartySlot) * TailLength);
+        }
+
+        Party->MemberCount -= 1;
+        DictionaryRemove(PartyManager->CharacterToPartyEntity, &CharacterIndex);
+        return true;
+    }
+
+    return false;
+}

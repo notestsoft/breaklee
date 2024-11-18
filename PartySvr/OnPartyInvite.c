@@ -7,10 +7,11 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
 	RTPartySlotRef Source = &Packet->Source;
 	RTPartySlotRef Target = &Packet->Target;
 
-	Bool IsTargetInParty = DictionaryLookup(Context->PartyManager->CharacterToPartyEntity, &Target->Info.CharacterIndex) != NULL;
+	Index CharacterIndex = Target->Info.CharacterIndex;
+	Bool IsTargetInParty = DictionaryLookup(Context->PartyManager->CharacterToPartyEntity, &CharacterIndex) != NULL;
 	if (IsTargetInParty) goto error;
 
-	Bool HasTargetInvitation = DictionaryLookup(Context->PartyManager->CharacterToPartyInvite, &Target->Info.CharacterIndex) != NULL;
+	Bool HasTargetInvitation = DictionaryLookup(Context->PartyManager->CharacterToPartyInvite, &CharacterIndex) != NULL;
 	if (HasTargetInvitation) goto error;
 
 	Bool Created = false;
@@ -31,7 +32,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
 
 	Index PartyInvitationPoolIndex = 0;
 	RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolReserveNext(Context->PartyManager->PartyInvitationPool, &PartyInvitationPoolIndex);
-	DictionaryInsert(Context->PartyManager->CharacterToPartyInvite, &Target->Info.CharacterIndex, &PartyInvitationPoolIndex, sizeof(Index));
+	DictionaryInsert(Context->PartyManager->CharacterToPartyInvite, &CharacterIndex, &PartyInvitationPoolIndex, sizeof(Index));
 
 	Invitation->InviterCharacterIndex = Packet->Source.Info.CharacterIndex;
 	Invitation->PartyID = Party->ID;
@@ -70,7 +71,8 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_ACK) {
 	RTPartySlotRef Source = &Packet->Source;
 	RTPartySlotRef Target = &Packet->Target;
 
-	Index* PartyInvitationPoolIndex = DictionaryLookup(Context->PartyManager->CharacterToPartyInvite, &Target->Info.CharacterIndex);
+	Index CharacterIndex = Target->Info.CharacterIndex;
+	Index* PartyInvitationPoolIndex = DictionaryLookup(Context->PartyManager->CharacterToPartyInvite, &CharacterIndex);
 	if (!PartyInvitationPoolIndex) goto error;
 
 	RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolFetch(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);
@@ -85,7 +87,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_ACK) {
 	}
 	else if (Party->PartyType == RUNTIME_PARTY_TYPE_NORMAL) {
 		MemoryPoolRelease(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);
-		DictionaryRemove(Context->PartyManager->CharacterToPartyInvite, &Target->Info.CharacterIndex);
+		DictionaryRemove(Context->PartyManager->CharacterToPartyInvite, &CharacterIndex);
 		BroadcastDestroyParty(Server, Context, Server->IPCSocket, Party);
 		RTPartyManagerDestroyParty(Context->PartyManager, Party);
 	}

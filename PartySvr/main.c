@@ -80,7 +80,8 @@ Void ServerOnUpdate(
                 IPCSocketUnicast(Server->IPCSocket, Notification);
             }
 
-            Index* InvitedWorldIndex = (Index*)DictionaryLookup(Context->CharacterToWorldServer, &Invitation->Member.Info.CharacterIndex);
+            Index InvitedCharacterIndex = Invitation->Member.Info.CharacterIndex;
+            Index* InvitedWorldIndex = (Index*)DictionaryLookup(Context->CharacterToWorldServer, &InvitedCharacterIndex);
             if (InvitedWorldIndex) {
                 IPC_P2W_DATA_PARTY_INVITE_TIMEOUT* Notification = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, P2W, PARTY_INVITE_TIMEOUT);
                 Notification->Header.Source = Server->IPCSocket->NodeID;
@@ -94,7 +95,7 @@ Void ServerOnUpdate(
 
             if (Party->PartyType == RUNTIME_PARTY_TYPE_NORMAL && Party->MemberCount < 2) {
                 MemoryPoolRelease(Context->PartyManager->PartyInvitationPool, PartyInvitationPoolIndex);
-                DictionaryRemove(Context->PartyManager->CharacterToPartyInvite, &Invitation->Member.Info.CharacterIndex);
+                DictionaryRemove(Context->PartyManager->CharacterToPartyInvite, &InvitedCharacterIndex);
                 BroadcastDestroyParty(Server, Context, Server->IPCSocket, Party);
                 RTPartyManagerDestroyParty(Context->PartyManager, Party);
             }

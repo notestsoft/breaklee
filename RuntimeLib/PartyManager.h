@@ -55,4 +55,9 @@ RTPartyRef RTPartyManagerGetParty(
     RTEntityID PartyID
 );
 
+Bool RTPartyManagerRemoveMember(
+    RTPartyManagerRef PartyManager,
+    Index CharacterIndex
+);
+
 EXTERN_C_END

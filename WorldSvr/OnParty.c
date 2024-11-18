@@ -53,7 +53,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE_ACK) {
 	Notification->Result = Packet->Success ? 0 : 1;
 	Notification->WorldServerID = Packet->Target.Info.WorldServerIndex;
 	Notification->CharacterIndex = (UInt32)Packet->Target.Info.CharacterIndex;
-	Notification->CharacterType = 0;
+	Notification->CharacterType = 1;
 	Notification->Level = Packet->Target.Info.Level;
 	Notification->NameLength = Packet->Target.Info.NameLength;
 	CStringCopySafe(Notification->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->Target.Info.Name);
@@ -179,14 +179,46 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE_CANCEL) {
 CLIENT_PROCEDURE_BINDING(PARTY_LEAVE) {
 	if (!Character) goto error;
 
-	// TODO: Implementation missing
-
-	S2C_DATA_PARTY_LEAVE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_LEAVE);
-	SocketSend(Socket, Connection, Response);
+	IPC_W2P_DATA_PARTY_LEAVE* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2P, PARTY_LEAVE);
+	Request->Header.Source = Server->IPCSocket->NodeID;
+	Request->Header.SourceConnectionID = Client->Connection->ID;
+	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+	Request->Header.Target.Type = IPC_TYPE_PARTY;
+	Request->CharacterIndex = Character->CharacterIndex;
+	IPCSocketUnicast(Server->IPCSocket, Request);
 	return;
 
 error:
 	SocketDisconnect(Socket, Connection);
+}
+
+IPC_PROCEDURE_BINDING(P2W, PARTY_LEAVE) {
+	RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Packet->PartyID);
+	if (!Party) return;
+
+	for (Int32 Index = 0; Index < Party->MemberCount; Index += 1) {
+		RTPartySlotRef Slot = &Party->Members[Index];
+
+		ClientContextRef Client = ServerGetClientByIndex(Context, Slot->Info.CharacterIndex, NULL);
+		if (!Client) continue;
+
+		S2C_DATA_NFY_PARTY_LEAVE* Notification = PacketBufferInit(Client->Connection->PacketBuffer, S2C, NFY_PARTY_LEAVE);
+		Notification->CharacterIndex = Packet->CharacterIndex;
+		SocketSend(Context->ClientSocket, Client->Connection, Notification);
+	}
+}
+
+IPC_PROCEDURE_BINDING(P2W, PARTY_LEAVE_ACK) {
+	if (!ClientConnection || !Character) return;
+
+	if (Packet->Result) {
+		RTPartyManagerRemoveMember(Runtime->PartyManager, Character->CharacterIndex);
+		Character->PartyID = kEntityIDNull;
+	}
+
+	S2C_DATA_PARTY_LEAVE* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, PARTY_LEAVE);
+	Response->Result = Packet->Result;
+	SocketSend(Context->ClientSocket, ClientConnection, Response);
 }
 
 CLIENT_PROCEDURE_BINDING(PARTY_EXPEL_MEMBER) {
@@ -351,6 +383,7 @@ IPC_PROCEDURE_BINDING(P2W, CREATE_PARTY) {
 }
 
 IPC_PROCEDURE_BINDING(P2W, DESTROY_PARTY) {
+	// TODO: Cleanup Character->PartyID
 	RTPartyManagerDestroyPartyRemote(Runtime->PartyManager, &Packet->Party);
 }
 

@@ -510,6 +510,19 @@ IPC_PROTOCOL(P2W, PARTY_INVITE_TIMEOUT,
 	Bool IsCancel;
 )
 
+IPC_PROTOCOL(W2P, PARTY_LEAVE,
+	Index CharacterIndex;
+)
+
+IPC_PROTOCOL(P2W, PARTY_LEAVE,
+	RTEntityID PartyID;
+	Index CharacterIndex;
+)
+
+IPC_PROTOCOL(P2W, PARTY_LEAVE_ACK,
+	Int32 Result;
+)
+
 IPC_PROTOCOL(P2W, PARTY_INFO,
 	struct _RTParty Party;
 )

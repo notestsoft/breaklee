@@ -15,7 +15,8 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CONFIRM) {
 
     if (Packet->IsAccept) {
         RTPartySlotRef Member = RTPartyAddMember(Party, Invitation->Member.Info.CharacterIndex, kEntityIDNull);
-        DictionaryInsert(Context->PartyManager->CharacterToPartyEntity, &Invitation->Member.Info.CharacterIndex, &Party->ID, sizeof(struct _RTEntityID));
+        Index CharacterIndex = Invitation->Member.Info.CharacterIndex;
+        DictionaryInsert(Context->PartyManager->CharacterToPartyEntity, &CharacterIndex, &Party->ID, sizeof(struct _RTEntityID));
 
         Member->MemberID = Invitation->Member.MemberID;
         Member->Info.WorldServerIndex = Invitation->Member.Info.WorldServerIndex;
