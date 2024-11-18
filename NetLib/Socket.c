@@ -15,15 +15,6 @@ SocketConnectionRef SocketReserveConnection(
     IndexSetInsert(Socket->ConnectionIndices, ConnectionPoolIndex);
     memset(Connection, 0, sizeof(struct _SocketConnection));
     Connection->ConnectionPoolIndex = ConnectionPoolIndex;
-    Connection->PacketBuffer = PacketBufferCreate(
-        Socket->Allocator,
-        Socket->ProtocolIdentifier,
-        Socket->ProtocolVersion,
-        Socket->ProtocolExtension,
-        4,
-        Socket->WriteBufferSize,
-        Socket->Flags & SOCKET_FLAGS_CLIENT
-    );
     Connection->ReadBuffer = MemoryBufferCreate(Socket->Allocator, 4, Socket->ReadBufferSize);
     return Connection;
 }
@@ -32,7 +23,6 @@ Void SocketReleaseConnection(
     SocketRef Socket,
     SocketConnectionRef Connection
 ) {
-    PacketBufferDestroy(Connection->PacketBuffer);
     MemoryBufferDestroy(Connection->ReadBuffer);
     IndexSetRemove(Socket->ConnectionIndices, Connection->ConnectionPoolIndex);
     MemoryPoolRelease(Socket->ConnectionPool, Connection->ConnectionPoolIndex);
@@ -90,6 +80,8 @@ Bool SocketFetchReadBuffer(
                 SocketDisconnect(Socket, Connection);
                 break;
             }
+
+            Socket->PacketBufferIndex = 0;
 
             if (Socket->OnReceived) Socket->OnReceived(Socket, Connection, Packet);
             if (Socket->LogPackets) PacketLogBytes(Socket->ProtocolIdentifier, Socket->ProtocolVersion, Socket->ProtocolExtension, Packet);
@@ -263,6 +255,7 @@ SocketRef SocketCreate(
     Int32 ReadBufferSize,
     Int32 WriteBufferSize,
     Int32 MaxConnectionCount,
+    Int32 PacketBufferBacklogSize,
     Bool LogPackets,
     SocketConnectionCallback OnConnect,
     SocketConnectionCallback OnDisconnect,
@@ -297,7 +290,7 @@ SocketRef SocketCreate(
     Socket->NextConnectionID = 1;
     Socket->Timeout = 0;
     Socket->State = SOCKET_STATE_DISCONNECTED;
-    Socket->PacketBuffer = PacketBufferCreate(Allocator, ProtocolIdentifier, ProtocolVersion, ProtocolExtension, 4, WriteBufferSize, Flags & SOCKET_FLAGS_CLIENT);
+    Socket->PacketBufferBacklog = ArrayCreateEmpty(Allocator, sizeof(struct _PacketBuffer), PacketBufferBacklogSize);
     Socket->OnConnect = OnConnect;
     Socket->OnDisconnect = OnDisconnect;
     Socket->OnSend = OnSend;
@@ -306,17 +299,28 @@ SocketRef SocketCreate(
     Socket->ConnectionPool = MemoryPoolCreate(Allocator, sizeof(struct _SocketConnection), MaxConnectionCount);
     Socket->DeferredWriteRequests = ArrayCreateEmpty(Allocator, sizeof(struct _SocketConnectionWriteRequest*), 8);
     Socket->Userdata = Userdata;
+
+    for (Int32 Index = 0; Index < PacketBufferBacklogSize; Index += 1) {
+        PacketBufferRef PacketBuffer = (PacketBufferRef)ArrayAppendUninitializedElement(Socket->PacketBufferBacklog);
+        PacketBufferInitialize(PacketBuffer, Allocator, ProtocolIdentifier, ProtocolVersion, ProtocolExtension, 4, WriteBufferSize, Flags & SOCKET_FLAGS_CLIENT);
+    }
+
     return Socket;
 }
 
 Void SocketDestroy(
     SocketRef Socket
 ) {
+    for (Int32 Index = 0; Index < ArrayGetElementCount(Socket->PacketBufferBacklog); Index += 1) {
+        PacketBufferRef PacketBuffer = (PacketBufferRef)ArrayGetElementAtIndex(Socket->PacketBufferBacklog, Index);
+        PacketBufferFree(PacketBuffer);
+    }
+
     assert(Socket);
     uv_tcp_close_reset(&Socket->Handle, NULL);
     uv_loop_close(Socket->Loop);
     free(Socket->Loop);
-    PacketBufferDestroy(Socket->PacketBuffer);
+    ArrayDestroy(Socket->PacketBufferBacklog);
     IndexSetDestroy(Socket->ConnectionIndices);
     MemoryPoolDestroy(Socket->ConnectionPool);
     AllocatorDeallocate(Socket->Allocator, Socket);
@@ -394,6 +398,28 @@ Void SocketProcessDeferred(
     }
 
     ArrayRemoveAllElements(Socket->DeferredWriteRequests, true);
+}
+
+PacketBufferRef SocketGetNextPacketBuffer(
+    SocketRef Socket
+) {
+    if (Socket->PacketBufferIndex >= ArrayGetElementCount(Socket->PacketBufferBacklog)) {
+        PacketBufferRef PacketBuffer = (PacketBufferRef)ArrayAppendUninitializedElement(Socket->PacketBufferBacklog);
+        PacketBufferInitialize(
+            PacketBuffer, 
+            Socket->Allocator, 
+            Socket->ProtocolIdentifier, 
+            Socket->ProtocolVersion,
+            Socket->ProtocolExtension,
+            4, 
+            Socket->WriteBufferSize,
+            Socket->Flags & SOCKET_FLAGS_CLIENT
+        );
+    }
+
+    PacketBufferRef PacketBuffer = (PacketBufferRef)ArrayGetElementAtIndex(Socket->PacketBufferBacklog, Socket->PacketBufferIndex);
+    Socket->PacketBufferIndex += 1;
+    return PacketBuffer;
 }
 
 Void SocketSendRaw(
@@ -524,6 +550,7 @@ Void SocketUpdate(
     SocketRef Socket
 ) {
     uv_run(Socket->Loop, UV_RUN_NOWAIT);
+    Socket->PacketBufferIndex = 0;
 }
 
 Void SocketDisconnect(

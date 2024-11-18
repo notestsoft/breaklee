@@ -24,12 +24,14 @@ error:
 IPC_PROCEDURE_BINDING(D2A, GET_ITEM_LIST) {
 	if (!ClientConnection) return;
 
-	S2C_DATA_GET_ITEM_LIST* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, GET_ITEM_LIST);
+	PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Context->ClientSocket);
+
+	S2C_DATA_GET_ITEM_LIST* Response = PacketBufferInit(PacketBuffer, S2C, GET_ITEM_LIST);
 	Response->Result = Packet->Result;
 	Response->ItemCount = Packet->ItemCount;
 	
 	for (Int32 Index = 0; Index < Packet->ItemCount; Index += 1) {
-		S2C_DATA_GET_ITEM_LIST_INDEX* ResponseItem = PacketBufferAppendStruct(ClientConnection->PacketBuffer, S2C_DATA_GET_ITEM_LIST_INDEX);
+		S2C_DATA_GET_ITEM_LIST_INDEX* ResponseItem = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_GET_ITEM_LIST_INDEX);
 		ResponseItem->SlotIndex = Packet->Items[Index].SlotIndex;
 		ResponseItem->ItemID = Packet->Items[Index].ItemID;
 		ResponseItem->ItemOptions = Packet->Items[Index].ItemOptions;
@@ -64,7 +66,7 @@ error:
 IPC_PROCEDURE_BINDING(D2A, GET_ITEM_AVERAGE_PRICE) {
 	if (!ClientConnection) return;
 
-	S2C_DATA_GET_ITEM_AVERAGE_PRICE* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, GET_ITEM_AVERAGE_PRICE);
+	S2C_DATA_GET_ITEM_AVERAGE_PRICE* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, GET_ITEM_AVERAGE_PRICE);
 	Response->Price = Packet->Price;
 	SocketSend(Context->ClientSocket, ClientConnection, Response);
 }
@@ -89,7 +91,7 @@ error:
 IPC_PROCEDURE_BINDING(D2A, GET_ITEM_MINIMUM_PRICE) {
 	if (!ClientConnection) return;
 
-	S2C_DATA_GET_ITEM_MINIMUM_PRICE* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, GET_ITEM_MINIMUM_PRICE);
+	S2C_DATA_GET_ITEM_MINIMUM_PRICE* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, GET_ITEM_MINIMUM_PRICE);
 	Response->Result = 0;
 	Response->Price = Packet->Price;
 	SocketSend(Context->ClientSocket, ClientConnection, Response);

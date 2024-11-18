@@ -49,7 +49,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE_ACK) {
 	ClientContextRef SourceClient = ServerGetClientByIndex(Context, Packet->Source.Info.CharacterIndex, Packet->Source.Info.Name);
 	if (!SourceClient) goto error;
 
-	S2C_DATA_PARTY_INVITE* Notification = PacketBufferInit(SourceClient->Connection->PacketBuffer, S2C, PARTY_INVITE);
+	S2C_DATA_PARTY_INVITE* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, PARTY_INVITE);
 	Notification->Result = Packet->Success ? 0 : 1;
 	Notification->WorldServerID = Packet->Target.Info.WorldServerIndex;
 	Notification->CharacterIndex = (UInt32)Packet->Target.Info.CharacterIndex;
@@ -71,7 +71,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE) {
 	RTCharacterRef TargetCharacter = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Packet->Target.Info.CharacterIndex);
 	if (!TargetCharacter) goto error;
 
-	S2C_DATA_NFY_PARTY_INVITE* Notification = PacketBufferInit(TargetClient->Connection->PacketBuffer, S2C, NFY_PARTY_INVITE);
+	S2C_DATA_NFY_PARTY_INVITE* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, NFY_PARTY_INVITE);
 	Notification->WorldServerID = Packet->Source.Info.WorldServerIndex;
 	Notification->CharacterIndex = (UInt32)Packet->Source.Info.CharacterIndex;
 	Notification->CharacterType = 1;
@@ -145,7 +145,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE_CONFIRM) {
 	ClientContextRef SourceClient = ServerGetClientByIndex(Context, Packet->SourceCharacterIndex, NULL);
 	if (!SourceClient) return;
 
-	S2C_DATA_PARTY_INVITE_CONFIRM* Response = PacketBufferInit(SourceClient->Connection->PacketBuffer, S2C, PARTY_INVITE_CONFIRM);
+	S2C_DATA_PARTY_INVITE_CONFIRM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, PARTY_INVITE_CONFIRM);
 	Response->Result = Packet->Success ? 0 : 1;
 	SocketSend(Context->ClientSocket, SourceClient->Connection, Response);
 }
@@ -172,7 +172,7 @@ error:
 IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE_CANCEL) {
 	if (!ClientConnection) return;
 
-	S2C_DATA_PARTY_INVITE_CANCEL* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, PARTY_INVITE_CANCEL);
+	S2C_DATA_PARTY_INVITE_CANCEL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, PARTY_INVITE_CANCEL);
 	SocketSend(Context->ClientSocket, ClientConnection, Response);
 }
 
@@ -202,7 +202,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_LEAVE) {
 		ClientContextRef Client = ServerGetClientByIndex(Context, Slot->Info.CharacterIndex, NULL);
 		if (!Client) continue;
 
-		S2C_DATA_NFY_PARTY_LEAVE* Notification = PacketBufferInit(Client->Connection->PacketBuffer, S2C, NFY_PARTY_LEAVE);
+		S2C_DATA_NFY_PARTY_LEAVE* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, NFY_PARTY_LEAVE);
 		Notification->CharacterIndex = Packet->CharacterIndex;
 		SocketSend(Context->ClientSocket, Client->Connection, Notification);
 	}
@@ -216,7 +216,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_LEAVE_ACK) {
 		Character->PartyID = kEntityIDNull;
 	}
 
-	S2C_DATA_PARTY_LEAVE* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, PARTY_LEAVE);
+	S2C_DATA_PARTY_LEAVE* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, PARTY_LEAVE);
 	Response->Result = Packet->Result;
 	SocketSend(Context->ClientSocket, ClientConnection, Response);
 }
@@ -226,7 +226,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_EXPEL_MEMBER) {
 
 	// TODO: Implementation missing
 
-	S2C_DATA_PARTY_EXPEL_MEMBER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_EXPEL_MEMBER);
+	S2C_DATA_PARTY_EXPEL_MEMBER* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, PARTY_EXPEL_MEMBER);
 	SocketSend(Socket, Connection, Response);
 	return;
 
@@ -239,7 +239,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_CHANGE_LEADER) {
 
 	// TODO: Implementation missing
 
-	S2C_DATA_PARTY_CHANGE_LEADER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_CHANGE_LEADER);
+	S2C_DATA_PARTY_CHANGE_LEADER* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, PARTY_CHANGE_LEADER);
 	SocketSend(Socket, Connection, Response);
 	return;
 
@@ -252,7 +252,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_CHANGE_LOOTING_RULE) {
 
 	// TODO: Implementation missing
 
-	S2C_DATA_NFY_PARTY_CHANGE_LOOTING_RULE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_PARTY_CHANGE_LOOTING_RULE);
+	S2C_DATA_NFY_PARTY_CHANGE_LOOTING_RULE* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, NFY_PARTY_CHANGE_LOOTING_RULE);
 	SocketSend(Socket, Connection, Response);
 	return;
 
@@ -265,11 +265,11 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE_TIMEOUT) {
 	if (!TargetClient) return;
 
 	if (Packet->IsCancel) {
-		S2C_DATA_NFY_PARTY_INVITE_CANCEL* Notification = PacketBufferInit(TargetClient->Connection->PacketBuffer, S2C, NFY_PARTY_INVITE_CANCEL);
+		S2C_DATA_NFY_PARTY_INVITE_CANCEL* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, NFY_PARTY_INVITE_CANCEL);
 		SocketSend(Context->ClientSocket, TargetClient->Connection, Notification);
 	}
 	else {
-		S2C_DATA_NFY_PARTY_INVITE_TIMEOUT* Notification = PacketBufferInit(TargetClient->Connection->PacketBuffer, S2C, NFY_PARTY_INVITE_TIMEOUT);
+		S2C_DATA_NFY_PARTY_INVITE_TIMEOUT* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, NFY_PARTY_INVITE_TIMEOUT);
 		Notification->IsAccept = Packet->IsAccept;
 		SocketSend(Context->ClientSocket, TargetClient->Connection, Notification);
 	}
@@ -294,7 +294,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INFO) {
 			Character->PartyID = Packet->Party.ID;
 		}
 
-		S2C_DATA_NFY_PARTY_INFO* Notification = PacketBufferInit(Client->Connection->PacketBuffer, S2C, NFY_PARTY_INFO);
+		S2C_DATA_NFY_PARTY_INFO* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, NFY_PARTY_INFO);
 		Notification->Result = 0;
 		Notification->LeaderCharacterIndex = (UInt32)Packet->Party.LeaderCharacterIndex;
 		Notification->MemberCount = Packet->Party.MemberCount;
@@ -312,7 +312,7 @@ IPC_PROCEDURE_BINDING(P2W, CLIENT_CONNECT) {
 
 	Character->PartyID = Packet->PartyID;
 
-	S2C_DATA_NFY_PARTY_INIT* Notification = PacketBufferInit(ClientConnection->PacketBuffer, S2C, NFY_PARTY_INIT);
+	S2C_DATA_NFY_PARTY_INIT* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, NFY_PARTY_INIT);
 	Notification->Result = Packet->Result;
 	Notification->DungeonIndex = Packet->DungeonIndex;
 	Notification->Unknown1 = 0;
@@ -340,7 +340,7 @@ IPC_PROCEDURE_BINDING(P2W, CLIENT_CONNECT) {
 }
 
 IPC_PROCEDURE_BINDING(P2W, PARTY_DATA) {
-	S2C_DATA_NFY_PARTY_UPDATE* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_PARTY_UPDATE);
+	S2C_DATA_NFY_PARTY_UPDATE* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, NFY_PARTY_UPDATE);
 	Notification->MemberCount = Packet->MemberCount;
 
 	for (Int32 MemberIndex = 0; MemberIndex < Packet->MemberCount; MemberIndex += 1) {
@@ -394,7 +394,7 @@ Void SendPartyData(
 ) {
 	if (!Party) return;
 
-	S2C_DATA_NFY_PARTY_UPDATE* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_PARTY_UPDATE);
+	S2C_DATA_NFY_PARTY_UPDATE* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, NFY_PARTY_UPDATE);
 	Notification->MemberCount = Party->MemberCount;
 
 	for (Int32 MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {

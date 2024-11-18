@@ -25,7 +25,7 @@ IPC_PROCEDURE_BINDING(W2A, VERIFY_LINKS) {
 	Client->AccountID = Packet->AccountID;
 	Client->CharacterIndex = Packet->CharacterIndex;
 
-	S2C_DATA_AUTH_ACCOUNT* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, AUTH_ACCOUNT);
+	S2C_DATA_AUTH_ACCOUNT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, AUTH_ACCOUNT);
 	SocketSend(Context->ClientSocket, ClientConnection, Response);
 	SendEnvironmentNotification(Context, ClientConnection);
 

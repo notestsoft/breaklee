@@ -1194,9 +1194,10 @@ static Int32 PacketManagerAPI_Unicast(
     if (!lua_istable(State, 3)) return luaL_error(State, "Invalid argument for payload!");
     lua_pushvalue(State, 3);
     
-    Void* Packet = _PacketBufferInit(SocketConnection->PacketBuffer, false, 6, Command);
+    PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
+    Void* Packet = _PacketBufferInit(PacketBuffer, false, 6, Command);
 
-    if (!PacketLayoutEncode(PacketLayout, SocketConnection->PacketBuffer, State)) {
+    if (!PacketLayoutEncode(PacketLayout, PacketBuffer, State)) {
         lua_settop(State, StateStack);
         return luaL_error(State, "Failed to encode packet layout!");
     }

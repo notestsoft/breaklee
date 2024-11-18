@@ -32,7 +32,7 @@ CLIENT_PROCEDURE_BINDING(ATTACK_TO_MOB) {
 	RTMobApplyDamage(Runtime, World, Mob, Character->ID, Result.AppliedDamage, Result.Delay);
 	RTCharacterAddExp(Runtime, Character, Result.Exp);
 
-	S2C_DATA_ATTACK_TO_MOB* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ATTACK_TO_MOB);
+	S2C_DATA_ATTACK_TO_MOB* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, ATTACK_TO_MOB);
 	Response->Entity = Packet->Entity;
 	Response->EntityIDType = Packet->EntityIDType;
 	Response->AttackType = Result.AttackType;
@@ -54,14 +54,14 @@ CLIENT_PROCEDURE_BINDING(ATTACK_TO_MOB) {
 	// TODO: This should be calculated globally inside the mob logic when it dies by a bfx effect and no active attack!
 	if (Result.IsDead) {
 		if (RTCharacterIncrementQuestMobCounter(Runtime, Character, Mob->Spawn.MobSpeciesIndex)) {
-			S2C_DATA_NFY_QUEST_MOB_KILL* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_QUEST_MOB_KILL);
+			S2C_DATA_NFY_QUEST_MOB_KILL* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, NFY_QUEST_MOB_KILL);
 			Notification->MobSpeciesIndex = Mob->Spawn.MobSpeciesIndex;
 			Notification->SkillIndex = 0;
 			SocketSend(Socket, Connection, Notification);
 		}
 	}
 
-	S2C_DATA_NFY_ATTACK_TO_MOB* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_ATTACK_TO_MOB);
+	S2C_DATA_NFY_ATTACK_TO_MOB* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, NFY_ATTACK_TO_MOB);
 	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 	Notification->Mob = Response->Entity;
 	Notification->MobIDType = Response->EntityIDType;

@@ -199,7 +199,7 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 	ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->ItemSlotIndex);
 	assert(ItemSlot);
 
-	S2C_DATA_ADD_FORCE_SLOT_OPTION* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ADD_FORCE_SLOT_OPTION);
+	S2C_DATA_ADD_FORCE_SLOT_OPTION* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, ADD_FORCE_SLOT_OPTION);
 	Response->Result = HasError ? 0 : 1;
 	Response->ItemOptions = ItemSlot->ItemOptions;
 	SocketSend(Socket, Connection, Response);
@@ -385,12 +385,12 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 	Client->UpgradePoint = UpgradePoint;
 	Character->SyncMask.InventoryInfo = true;
 
-	S2C_DATA_UPDATE_UPGRADE_POINTS* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, UPDATE_UPGRADE_POINTS);
+	S2C_DATA_UPDATE_UPGRADE_POINTS* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, UPDATE_UPGRADE_POINTS);
 	Notification->UpgradePoint = Client->UpgradePoint;
 	Notification->Timestamp = (UInt32)GetTimestampMs() + 1000 * 60 * 60;
 	SocketSend(Socket, Connection, Notification);
 
-	S2C_DATA_UPGRADE_ITEM_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPGRADE_ITEM_LEVEL);
+	S2C_DATA_UPGRADE_ITEM_LEVEL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, UPGRADE_ITEM_LEVEL);
 	Response->Result = Result;
 	Response->ItemID = ItemSlot->Item.Serial;
 	Response->ItemOption = ItemSlot->ItemOptions;
@@ -441,7 +441,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_LEVEL) {
 	if (!ExtremeUpgradeFormulaLevel) goto error;
 
 	if (Packet->InventorySlotCount != ExtremeUpgradeFormulaLevel->RequiredCoreCount) {
-		S2C_DATA_UPGRADE_EXTREME_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPGRADE_EXTREME_LEVEL);
+		S2C_DATA_UPGRADE_EXTREME_LEVEL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, UPGRADE_EXTREME_LEVEL);
 		Response->Result = S2C_UPGRADE_EXTRENE_LEVEL_RESULT_INSUFFICIENT_CORES;
 		Response->Currency = Character->Data.Info.Alz;
 		SocketSend(Socket, Connection, Response);
@@ -452,7 +452,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_LEVEL) {
 	if (TargetSlot->Item.ExtremeLevel >= ExtremeUpgradeBaseGrade->ExtremeUpgradeMax) goto error;
 
 	if (Character->Data.Info.Alz < ExtremeUpgradeFormulaLevel->CurrencyPrice) {
-		S2C_DATA_UPGRADE_EXTREME_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPGRADE_EXTREME_LEVEL);
+		S2C_DATA_UPGRADE_EXTREME_LEVEL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, UPGRADE_EXTREME_LEVEL);
 		Response->Result = S2C_UPGRADE_EXTRENE_LEVEL_RESULT_INSUFFICIENT_CURRENCY;
 		Response->Currency = Character->Data.Info.Alz;
 		SocketSend(Socket, Connection, Response);
@@ -476,7 +476,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_LEVEL) {
 		CorePower += ExtremeUpgradeOption->ExtremeUpgradeOptionLevelList[0].OptionLevel;
 	}
 
-	S2C_DATA_UPGRADE_EXTREME_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPGRADE_EXTREME_LEVEL);
+	S2C_DATA_UPGRADE_EXTREME_LEVEL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, UPGRADE_EXTREME_LEVEL);
 
 	Int32 SuccessRate = 1000 * (ExtremeUpgradeFormulaLevel->ExtremeUpgradeFactor * CorePower) / (100 * ExtremeUpgradeFormulaLevel->BaseExtremeLevel);
 	Int32 RandomValue = RandomRange(&Client->DiceSeed, 0, 1000);
@@ -532,7 +532,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_REPAIR) {
 	if (SourceData->ItemType != RUNTIME_ITEM_TYPE_REPAIR_KIT) goto error;
 	if (!TargetSlot->Item.IsBroken) goto error;
 
-	S2C_DATA_UPGRADE_EXTREME_REPAIR* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPGRADE_EXTREME_REPAIR);
+	S2C_DATA_UPGRADE_EXTREME_REPAIR* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, UPGRADE_EXTREME_REPAIR);
 	Response->Result = S2C_UPGRADE_EXTREME_REPAIR_RESULT_ERROR;
 
 	UInt16 SourceItemSlotIndex = SourceSlot->SlotIndex;
@@ -703,12 +703,12 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_CHAOS_LEVEL) {
 	Client->UpgradePoint = UpgradePoint;
 	Character->SyncMask.InventoryInfo = true;
 
-	S2C_DATA_UPDATE_UPGRADE_POINTS* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, UPDATE_UPGRADE_POINTS);
+	S2C_DATA_UPDATE_UPGRADE_POINTS* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, UPDATE_UPGRADE_POINTS);
 	Notification->UpgradePoint = Client->UpgradePoint;
 	Notification->Timestamp = (UInt32)GetTimestampMs() + 1000 * 60 * 60;
 	SocketSend(Socket, Connection, Notification);
 
-	S2C_DATA_UPGRADE_CHAOS_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPGRADE_CHAOS_LEVEL);
+	S2C_DATA_UPGRADE_CHAOS_LEVEL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, UPGRADE_CHAOS_LEVEL);
 	Response->Result = Result;
 	Response->RemainingCoreCount = RemainingCoreCount;
 	Response->ConsumedSafeCount = ConsumedSafeCount;
@@ -837,7 +837,7 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_ITEM_LEVEL) {
 
 	Character->SyncMask.InventoryInfo = true;
 
-	S2C_DATA_DIVINE_UPGRADE_ITEM_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DIVINE_UPGRADE_ITEM_LEVEL);
+	S2C_DATA_DIVINE_UPGRADE_ITEM_LEVEL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, DIVINE_UPGRADE_ITEM_LEVEL);
 	Response->Result = Result;
 	Response->ResultLevel = ResultLevel;
 	Response->ConsumedSafeguardCount = ConsumedSafeCount;
@@ -847,7 +847,7 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_ITEM_LEVEL) {
 
 error:
 	{
-		S2C_DATA_DIVINE_UPGRADE_ITEM_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DIVINE_UPGRADE_ITEM_LEVEL);
+		S2C_DATA_DIVINE_UPGRADE_ITEM_LEVEL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, DIVINE_UPGRADE_ITEM_LEVEL);
 		Response->Result = RUNTIME_DIVINE_UPGRADE_RESULT_ERROR;
 		SocketSend(Socket, Connection, Response);
 	}
@@ -881,7 +881,7 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_SEAL) {
 		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SourceSlot->SlotIndex);
 		Character->SyncMask.InventoryInfo = true;
 
-		S2C_DATA_DIVINE_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DIVINE_UPGRADE_SEAL);
+		S2C_DATA_DIVINE_UPGRADE_SEAL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, DIVINE_UPGRADE_SEAL);
 		Response->Result = S2C_DIVINE_UPGRADE_SEAL_RESULT_UNSEAL;
 		Response->ResultSerial = TargetSlot->Item.Serial;
 		SocketSend(Socket, Connection, Response);
@@ -897,7 +897,7 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_SEAL) {
 		TargetSlot->Item.DivineLevel = 0;
 		Character->SyncMask.InventoryInfo = true;
 
-		S2C_DATA_DIVINE_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DIVINE_UPGRADE_SEAL);
+		S2C_DATA_DIVINE_UPGRADE_SEAL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, DIVINE_UPGRADE_SEAL);
 		Response->Result = S2C_DIVINE_UPGRADE_SEAL_RESULT_SEAL;
 		Response->ResultSerial = SourceItemOptions.Serial;
 		SocketSend(Socket, Connection, Response);
@@ -906,7 +906,7 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_SEAL) {
 
 error:
 	{
-		S2C_DATA_DIVINE_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DIVINE_UPGRADE_SEAL);
+		S2C_DATA_DIVINE_UPGRADE_SEAL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, DIVINE_UPGRADE_SEAL);
 		Response->Result = S2C_DIVINE_UPGRADE_SEAL_RESULT_ERROR;
 		SocketSend(Socket, Connection, Response);
 	}
@@ -932,7 +932,7 @@ CLIENT_PROCEDURE_BINDING(EXTREME_UPGRADE_SEAL) {
 
 	if (SourceData->ItemType != RUNTIME_ITEM_TYPE_EXTREME_SEAL_STONE) goto error;
 
-	S2C_DATA_EXTREME_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, EXTREME_UPGRADE_SEAL);
+	S2C_DATA_EXTREME_UPGRADE_SEAL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, EXTREME_UPGRADE_SEAL);
 	Response->IsUnsealing = SourceSlot->ItemOptions > 0;
 	if (Response->IsUnsealing) {
 		if (TargetSlot->Item.ExtremeLevel > 0) goto error;
@@ -1015,7 +1015,7 @@ CLIENT_PROCEDURE_BINDING(CHAOS_UPGRADE_SEAL) {
 		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SourceSlot->SlotIndex);
 		Character->SyncMask.InventoryInfo = true;
 
-		S2C_DATA_CHAOS_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHAOS_UPGRADE_SEAL);
+		S2C_DATA_CHAOS_UPGRADE_SEAL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, CHAOS_UPGRADE_SEAL);
 		Response->Result = S2C_CHAOS_UPGRADE_SEAL_RESULT_UNSEAL;
 		Response->ResultSerial = TargetSlot->Item.Serial;
 		SocketSend(Socket, Connection, Response);
@@ -1031,7 +1031,7 @@ CLIENT_PROCEDURE_BINDING(CHAOS_UPGRADE_SEAL) {
 		TargetSlot->Item.UpgradeLevel = 0;
 		Character->SyncMask.InventoryInfo = true;
 
-		S2C_DATA_CHAOS_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHAOS_UPGRADE_SEAL);
+		S2C_DATA_CHAOS_UPGRADE_SEAL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, CHAOS_UPGRADE_SEAL);
 		Response->Result = S2C_CHAOS_UPGRADE_SEAL_RESULT_SEAL;
 		Response->ResultSerial = SourceItemOptions.Serial;
 		SocketSend(Socket, Connection, Response);
@@ -1040,7 +1040,7 @@ CLIENT_PROCEDURE_BINDING(CHAOS_UPGRADE_SEAL) {
 
 error:
 	{
-		S2C_DATA_CHAOS_UPGRADE_SEAL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHAOS_UPGRADE_SEAL);
+		S2C_DATA_CHAOS_UPGRADE_SEAL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, CHAOS_UPGRADE_SEAL);
 		Response->Result = S2C_CHAOS_UPGRADE_SEAL_RESULT_ERROR;
 		SocketSend(Socket, Connection, Response);
 	}

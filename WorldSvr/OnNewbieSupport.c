@@ -6,7 +6,7 @@
 #include "Server.h"
 
 CLIENT_PROCEDURE_BINDING(TAKE_NEWBIE_REWARD) {
-	S2C_DATA_TAKE_NEWBIE_REWARD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, TAKE_NEWBIE_REWARD);
+	S2C_DATA_TAKE_NEWBIE_REWARD* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, TAKE_NEWBIE_REWARD);
 
 	if (!Character) goto error;
 

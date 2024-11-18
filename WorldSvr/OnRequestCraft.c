@@ -15,7 +15,7 @@ C2S_REQUEST_CRAFT_INVENTORY_SLOT InventorySlots[0];
 
 */
 CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_REGISTER) {
-	S2C_DATA_REQUEST_CRAFT_REGISTER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, REQUEST_CRAFT_REGISTER);
+	S2C_DATA_REQUEST_CRAFT_REGISTER* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, REQUEST_CRAFT_REGISTER);
 	Response->Result = 0;
 	SocketSend(Socket, Connection, Response);
 	return;
@@ -38,7 +38,7 @@ C2S_REQUEST_CRAFT_INVENTORY_SLOT InventorySlots[0];
 */
 
 CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_START) {
-	S2C_DATA_REQUEST_CRAFT_START* Response = PacketBufferInit(Connection->PacketBuffer, S2C, REQUEST_CRAFT_START);
+	S2C_DATA_REQUEST_CRAFT_START* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, REQUEST_CRAFT_START);
 	Response->Result = 0;
 	SocketSend(Socket, Connection, Response);
 	return;
@@ -58,7 +58,7 @@ C2S_REQUEST_CRAFT_INVENTORY_SLOT InventorySlots[0];
 )
 */
 CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_END) {
-	S2C_DATA_REQUEST_CRAFT_END* Response = PacketBufferInit(Connection->PacketBuffer, S2C, REQUEST_CRAFT_END);
+	S2C_DATA_REQUEST_CRAFT_END* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, REQUEST_CRAFT_END);
 	Response->Result = 0;
 	SocketSend(Socket, Connection, Response);
 	return;

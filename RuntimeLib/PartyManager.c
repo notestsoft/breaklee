@@ -153,7 +153,7 @@ Bool RTPartyManagerRemoveMember(
     Index CharacterIndex
 ) {
     RTEntityID* PartyID = (RTEntityID*)DictionaryLookup(PartyManager->CharacterToPartyEntity, &CharacterIndex);
-    if (!PartyID) return NULL;
+    if (!PartyID) return false;
 
     MemoryPoolRef PartyPool = PartyManager->PartyPool;
     if (PartyID->WorldIndex == RUNTIME_PARTY_TYPE_SOLO_DUNGEON) {

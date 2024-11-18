@@ -19,7 +19,7 @@ CLIENT_PROCEDURE_BINDING(AUTH_ACCOUNT) {
         Client->Flags |= CLIENT_FLAGS_AUTHORIZED;
     }
 
-    S2C_DATA_AUTH_ACCOUNT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, AUTH_ACCOUNT);
+    S2C_DATA_AUTH_ACCOUNT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, AUTH_ACCOUNT);
     Response->ServerStatus = ServerStatus;
     Response->Unknown1 = 3;
     SocketSend(Socket, Connection, Response);

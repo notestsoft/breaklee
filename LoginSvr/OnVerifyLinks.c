@@ -53,7 +53,7 @@ error:
 }
 
 IPC_PROCEDURE_BINDING(W2L, VERIFY_LINKS) {
-    S2C_DATA_VERIFY_LINKS* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, VERIFY_LINKS);
+    S2C_DATA_VERIFY_LINKS* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, VERIFY_LINKS);
     Response->WorldID = Packet->Header.Source.Index;
     Response->ServerID = Packet->Header.Source.Group;
     Response->Status = Packet->Status;
@@ -72,7 +72,7 @@ IPC_PROCEDURE_BINDING(W2L, WORLD_VERIFY_LINKS) {
     Client->AccountStatus = ACCOUNT_STATUS_NORMAL;
     Client->LoginStatus = LOGIN_STATUS_SUCCESS;
 
-    S2C_DATA_AUTH_TIMER* AuthTimerResponse = PacketBufferInit(ClientConnection->PacketBuffer, S2C, AUTH_TIMER);
+    S2C_DATA_AUTH_TIMER* AuthTimerResponse = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, AUTH_TIMER);
     AuthTimerResponse->Timeout = Context->Config.Login.AutoDisconnectDelay;
     SocketSend(Context->ClientSocket, ClientConnection, AuthTimerResponse);
 

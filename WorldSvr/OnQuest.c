@@ -6,7 +6,7 @@
 #include "Server.h"
 
 CLIENT_PROCEDURE_BINDING(QUEST_BEGIN) {
-	S2C_DATA_QUEST_BEGIN* Response = PacketBufferInit(Connection->PacketBuffer, S2C, QUEST_BEGIN);
+	S2C_DATA_QUEST_BEGIN* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, QUEST_BEGIN);
 	Response->Result = 0;
 
 	if (!Character) goto error;
@@ -27,7 +27,7 @@ error:
 }
 
 CLIENT_PROCEDURE_BINDING(QUEST_CLEAR) {
-	S2C_DATA_QUEST_CLEAR* Response = PacketBufferInit(Connection->PacketBuffer, S2C, QUEST_CLEAR);
+	S2C_DATA_QUEST_CLEAR* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, QUEST_CLEAR);
 	Response->Result = 0;
 
 	if (!Character) goto error;
@@ -68,7 +68,7 @@ error:
 }
 
 CLIENT_PROCEDURE_BINDING(QUEST_CANCEL) {
-	S2C_DATA_QUEST_CANCEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, QUEST_CANCEL);
+	S2C_DATA_QUEST_CANCEL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, QUEST_CANCEL);
 
 	if (!RTCharacterQuestCancel(Runtime, Character, Packet->QuestID, Packet->SlotID)) goto error;
 
@@ -100,7 +100,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_ACTION) {
 	RTQuestSlotRef QuestSlot = RTCharacterGetQuestSlot(Runtime, Character, Packet->SlotIndex);
 	if (!QuestSlot) goto error;
 
-	S2C_DATA_QUEST_ACTION* Response = PacketBufferInit(Connection->PacketBuffer, S2C, QUEST_ACTION);
+	S2C_DATA_QUEST_ACTION* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, QUEST_ACTION);
 	Response->QuestID = Packet->QuestID;
 	Response->NpcFlags = 0;
 
@@ -132,7 +132,7 @@ CLIENT_PROCEDURE_BINDING(UPDATE_QUEST_LIST) {
 CLIENT_PROCEDURE_BINDING(PARTY_QUEST_BEGIN) {
 	if (!Character) goto error;
 
-	S2C_DATA_PARTY_QUEST_BEGIN* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_QUEST_BEGIN);
+	S2C_DATA_PARTY_QUEST_BEGIN* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, PARTY_QUEST_BEGIN);
 
 	if (!RTCharacterPartyQuestBegin(Runtime, Character, Packet->QuestID, Packet->QuestSlotIndex, Packet->QuestItemSlotIndex)) {
 		Response->Result = 1;
@@ -141,7 +141,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_BEGIN) {
 	SocketSend(Socket, Connection, Response);
 
 	if (!Response->Result) {
-		S2C_DATA_NFY_PARTY_QUEST_BEGIN* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_PARTY_QUEST_BEGIN);
+		S2C_DATA_NFY_PARTY_QUEST_BEGIN* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, NFY_PARTY_QUEST_BEGIN);
 		Notification->QuestID = Packet->QuestID;
 		Notification->QuestSlotIndex = Packet->QuestSlotIndex;
 		BroadcastToParty(Context, Character->PartyID, Notification);
@@ -154,7 +154,7 @@ error:
 }
 
 CLIENT_PROCEDURE_BINDING(PARTY_QUEST_CLOSE) {
-	S2C_DATA_PARTY_QUEST_CLOSE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_QUEST_CLOSE);
+	S2C_DATA_PARTY_QUEST_CLOSE* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, PARTY_QUEST_CLOSE);
 	Response->Result = 1;
 
 	if (!Character) goto error;
@@ -215,13 +215,14 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_CLOSE) {
 	}
 
 	SocketSend(Socket, Connection, Response);
-
-	S2C_DATA_NFY_PARTY_QUEST_CLOSE* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_PARTY_QUEST_CLOSE);
+	
+	PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
+	S2C_DATA_NFY_PARTY_QUEST_CLOSE* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_PARTY_QUEST_CLOSE);
 	Notification->QuestID = Packet->QuestID;
 	Notification->QuestSlotIndex = Packet->QuestSlotIndex;
 
 	if (RewardItemSetID > 0) {
-		PacketBufferAppendValue(Context->ClientSocket->PacketBuffer, UInt16, RewardInventorySlotIndex);
+		PacketBufferAppendValue(PacketBuffer, UInt16, RewardInventorySlotIndex);
 	}
 
 	BroadcastToParty(Context, Character->PartyID, Notification);
@@ -256,7 +257,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_ACTION) {
 	RTQuestSlotRef QuestSlot = &Party->QuestSlot[Packet->QuestSlotIndex];
 	assert(QuestSlot);
 
-	S2C_DATA_PARTY_QUEST_ACTION* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_QUEST_ACTION);
+	S2C_DATA_PARTY_QUEST_ACTION* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, PARTY_QUEST_ACTION);
 	Response->QuestSlotIndex = Packet->QuestSlotIndex;
 	Response->QuestID = Packet->QuestID;
 	Response->NpcSetID = Packet->NpcSetID;
@@ -270,7 +271,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_ACTION) {
 
 	SocketSend(Socket, Connection, Response);
 
-	S2C_DATA_NFY_PARTY_QUEST_ACTION* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_PARTY_QUEST_ACTION);
+	S2C_DATA_NFY_PARTY_QUEST_ACTION* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, NFY_PARTY_QUEST_ACTION);
 	Notification->QuestSlotIndex = Response->QuestSlotIndex;
 	Notification->QuestID = Response->QuestID;
 	Notification->NpcFlags = Response->NpcFlags;
@@ -314,7 +315,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_LOOT_ITEM) {
 
 	RTWorldDespawnItem(Runtime, World, Item);
 
-	S2C_DATA_PARTY_QUEST_LOOT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PARTY_QUEST_LOOT_ITEM);
+	S2C_DATA_PARTY_QUEST_LOOT_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, PARTY_QUEST_LOOT_ITEM);
 	Response->Result = 1;
 	Response->ItemID = ItemSlot->Item.Serial;
 	Response->ItemOptions = ItemSlot->ItemOptions;
@@ -322,7 +323,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_LOOT_ITEM) {
 	Response->ItemDuration = ItemSlot->ItemDuration.Serial;
 	SocketSend(Socket, Connection, Response);
 
-	S2C_DATA_NFY_PARTY_QUEST_LOOT_ITEM* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_PARTY_QUEST_LOOT_ITEM);
+	S2C_DATA_NFY_PARTY_QUEST_LOOT_ITEM* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, NFY_PARTY_QUEST_LOOT_ITEM);
 	Notification->ItemID = ItemSlot->Item.Serial;
 	Notification->ItemOptions = ItemSlot->ItemOptions;
 	Notification->QuestItemSlotIndex = Packet->QuestItemSlotIndex;
@@ -346,7 +347,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_DELETE) {
 	RTCharacterQuestFlagSet(Character, Packet->QuestIndex);
 	RTCharacterQuestDeleteFlagSet(Character, Packet->QuestIndex);
 
-	S2C_DATA_QUEST_DELETE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, QUEST_DELETE);
+	S2C_DATA_QUEST_DELETE* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, QUEST_DELETE);
 	Response->QuestIndex = Packet->QuestIndex;
 	SocketSend(Socket, Connection, Response);
 
@@ -365,7 +366,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_RESTORE) {
 	RTCharacterQuestFlagClear(Character, Packet->QuestIndex);
 	RTCharacterQuestDeleteFlagClear(Character, Packet->QuestIndex);
 
-	S2C_DATA_QUEST_RESTORE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, QUEST_RESTORE);
+	S2C_DATA_QUEST_RESTORE* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, QUEST_RESTORE);
 	Response->QuestIndex = Packet->QuestIndex;
 	SocketSend(Socket, Connection, Response);
 

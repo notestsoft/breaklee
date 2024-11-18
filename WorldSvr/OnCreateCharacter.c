@@ -13,7 +13,7 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 		return;
 	}
 
-	S2C_DATA_CREATE_CHARACTER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CREATE_CHARACTER);
+	S2C_DATA_CREATE_CHARACTER* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, CREATE_CHARACTER);
 
 	if (!(Client->Flags & CLIENT_FLAGS_CHARACTER_INDEX_LOADED) || Client->AccountID < 1) {
 		SocketDisconnect(Socket, Connection);
@@ -164,7 +164,7 @@ IPC_PROCEDURE_BINDING(D2W, CREATE_CHARACTER) {
 		Client->Characters[Packet->CharacterSlotIndex] = Packet->Character;
 	}
 	
-	S2C_DATA_CREATE_CHARACTER* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, CREATE_CHARACTER);
+	S2C_DATA_CREATE_CHARACTER* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, CREATE_CHARACTER);
 	Response->CharacterIndex = Packet->Character.CharacterIndex;
 	Response->CharacterStatus = Packet->Status;
 	SocketSend(Context->ClientSocket, ClientConnection, Response);

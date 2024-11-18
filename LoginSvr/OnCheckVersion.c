@@ -8,7 +8,7 @@ CLIENT_PROCEDURE_BINDING(CHECK_VERSION) {
         return;
     }
 
-    S2C_DATA_CHECK_VERSION* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHECK_VERSION);
+    S2C_DATA_CHECK_VERSION* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, CHECK_VERSION);
 
     Info("Client Version: %d", Packet->ClientVersion);
 

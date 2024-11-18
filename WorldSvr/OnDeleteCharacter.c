@@ -24,7 +24,7 @@ CLIENT_PROCEDURE_BINDING(DELETE_CHARACTER) {
         return;
     }
 
-    S2C_DATA_DELETE_CHARACTER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DELETE_CHARACTER);
+    S2C_DATA_DELETE_CHARACTER* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, DELETE_CHARACTER);
     Response->CharacterStatus = S2C_CHARACTER_STATUS_DATA_CORRUPTED;
     Response->ForceGem = 0; // TODO: Add force gem amount to account
     SocketSend(Socket, Connection, Response);
@@ -46,7 +46,7 @@ IPC_PROCEDURE_BINDING(D2W, DELETE_CHARACTER) {
         break;
     }
 
-    S2C_DATA_DELETE_CHARACTER* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, DELETE_CHARACTER);
+    S2C_DATA_DELETE_CHARACTER* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, DELETE_CHARACTER);
     Response->CharacterStatus = (Packet->Success) ? S2C_CHARACTER_STATUS_SUCCESS : S2C_CHARACTER_STATUS_DATABASE_ERROR;
     Response->ForceGem = 0; // TODO: Add force gem amount to account
     SocketSend(Context->ClientSocket, ClientConnection, Response);

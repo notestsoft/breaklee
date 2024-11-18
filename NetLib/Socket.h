@@ -67,7 +67,8 @@ struct _Socket {
     Index NextConnectionID;
     Timestamp Timeout; 
     Int32 State;
-    PacketBufferRef PacketBuffer;
+    Int32 PacketBufferIndex;
+    ArrayRef PacketBufferBacklog;
     SocketConnectionCallback OnConnect;
     SocketConnectionCallback OnDisconnect;
     SocketPacketCallback OnSend;
@@ -89,7 +90,6 @@ struct _SocketConnection {
     Index ID;
     UInt32 Flags;
     struct _Keychain Keychain;
-    PacketBufferRef PacketBuffer; 
     MemoryRef RecvBuffer;
     Int32 RecvBufferLength;
     MemoryBufferRef ReadBuffer;
@@ -105,6 +105,7 @@ SocketRef SocketCreate(
     Int32 ReadBufferSize,
     Int32 WriteBufferSize,
     Int32 MaxConnectionCount,
+    Int32 PacketBufferBacklogSize,
     Bool LogPackets,
     SocketConnectionCallback OnConnect,
     SocketConnectionCallback OnDisconnect,
@@ -130,6 +131,10 @@ Void SocketListen(
 );
 
 Void SocketProcessDeferred(
+    SocketRef Socket
+);
+
+PacketBufferRef SocketGetNextPacketBuffer(
     SocketRef Socket
 );
 

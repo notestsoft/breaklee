@@ -8,7 +8,8 @@
 CLIENT_PROCEDURE_BINDING(GET_SERVER_ENVIRONMENT) {
 	if (!(Client->Flags & CLIENT_FLAGS_VERIFIED) || Client->AccountID < 1) goto error;
 
-	S2C_DATA_GET_SERVER_ENVIRONMENT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_SERVER_ENVIRONMENT);
+    PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
+	S2C_DATA_GET_SERVER_ENVIRONMENT* Response = PacketBufferInit(PacketBuffer, S2C, GET_SERVER_ENVIRONMENT);
 	Response->MaxLevel = Context->Config.Environment.MaxLevel;
 	Response->DummyEnabled = Context->Config.Environment.DummyEnabled;
 	Response->CashshopEnabled = Context->Config.Environment.CashshopEnabled;
@@ -45,22 +46,22 @@ CLIENT_PROCEDURE_BINDING(GET_SERVER_ENVIRONMENT) {
     Response->Unknown8 = 0;
     Response->UnknownCount = 3;
 
-    S2C_DATA_ENVIRONMENT_WORLD_RESTRICTION* ResponseWorldRestriction = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_ENVIRONMENT_WORLD_RESTRICTION);
+    S2C_DATA_ENVIRONMENT_WORLD_RESTRICTION* ResponseWorldRestriction = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_ENVIRONMENT_WORLD_RESTRICTION);
     ResponseWorldRestriction->Index = 1;
     ResponseWorldRestriction->StartIndex = 16;
     ResponseWorldRestriction->Count = 15;
 
-    ResponseWorldRestriction = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_ENVIRONMENT_WORLD_RESTRICTION);
+    ResponseWorldRestriction = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_ENVIRONMENT_WORLD_RESTRICTION);
     ResponseWorldRestriction->Index = 2;
     ResponseWorldRestriction->StartIndex = 109;
     ResponseWorldRestriction->Count = 110;
 
-    ResponseWorldRestriction = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_ENVIRONMENT_WORLD_RESTRICTION);
+    ResponseWorldRestriction = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_ENVIRONMENT_WORLD_RESTRICTION);
     ResponseWorldRestriction->Index = 3;
     ResponseWorldRestriction->StartIndex = 158;
     ResponseWorldRestriction->Count = 159;
 
-    S2C_DATA_ENVIRONMENT_TAIL* ResponseTail = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_ENVIRONMENT_TAIL);
+    S2C_DATA_ENVIRONMENT_TAIL* ResponseTail = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_ENVIRONMENT_TAIL);
     ResponseTail->Unknown20 = 5;
     ResponseTail->Unknown21 = 0;
     ResponseTail->Unknown22 = 0;

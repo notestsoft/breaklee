@@ -22,7 +22,8 @@ IPC_PROCEDURE_BINDING(M2L, GET_WORLD_LIST) {
             continue;
         }
 
-        S2C_DATA_SERVER_LIST* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, SERVER_LIST);
+        PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Context->ClientSocket);
+        S2C_DATA_SERVER_LIST* Notification = PacketBufferInit(PacketBuffer, S2C, SERVER_LIST);
         Notification->ServerCount = Packet->GroupCount;
 
         Index PacketOffset = sizeof(IPC_M2L_DATA_GET_WORLD_LIST);
@@ -30,7 +31,7 @@ IPC_PROCEDURE_BINDING(M2L, GET_WORLD_LIST) {
             IPC_M2L_DATA_SERVER_GROUP* Group = (IPC_M2L_DATA_SERVER_GROUP*)((UInt8*)Packet + PacketOffset);
             PacketOffset += sizeof(IPC_M2L_DATA_SERVER_GROUP);
 
-            S2C_DATA_LOGIN_SERVER_LIST_INDEX* NotificationGroup = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_LOGIN_SERVER_LIST_INDEX);
+            S2C_DATA_LOGIN_SERVER_LIST_INDEX* NotificationGroup = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_LOGIN_SERVER_LIST_INDEX);
             NotificationGroup->ServerID = Group->GroupIndex;
             NotificationGroup->WorldCount = Group->NodeCount;
             NotificationGroup->Language = Context->Config.Login.Language;
@@ -39,7 +40,7 @@ IPC_PROCEDURE_BINDING(M2L, GET_WORLD_LIST) {
                 IPC_M2L_DATA_SERVER_GROUP_NODE* Node = (IPC_M2L_DATA_SERVER_GROUP_NODE*)((UInt8*)Packet + PacketOffset);
                 PacketOffset += sizeof(IPC_M2L_DATA_SERVER_GROUP_NODE);
 
-                S2C_DATA_LOGIN_SERVER_LIST_WORLD* NotificationNode = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_LOGIN_SERVER_LIST_WORLD);
+                S2C_DATA_LOGIN_SERVER_LIST_WORLD* NotificationNode = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_LOGIN_SERVER_LIST_WORLD);
                 NotificationNode->ServerID = Group->GroupIndex;
                 NotificationNode->WorldID = Node->NodeIndex;
                 NotificationNode->PlayerCount = Node->PlayerCount;
@@ -50,12 +51,13 @@ IPC_PROCEDURE_BINDING(M2L, GET_WORLD_LIST) {
             }
 
             NotificationGroup->WorldCount += 1;
-            PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_LOGIN_SERVER_LIST_WORLD);
+            PacketBufferAppendStruct(PacketBuffer, S2C_DATA_LOGIN_SERVER_LIST_WORLD);
         }
 
         SocketSend(Context->ClientSocket, Connection, Notification);
 
-        S2C_DATA_UNKNOWN_124* Unknown124 = PacketBufferInit(Connection->PacketBuffer, S2C, UNKNOWN_124);
+        PacketBuffer = SocketGetNextPacketBuffer(Context->ClientSocket);
+        S2C_DATA_UNKNOWN_124* Unknown124 = PacketBufferInit(PacketBuffer, S2C, UNKNOWN_124);
         Unknown124->Unknown1 = 0;
         Unknown124->Unknown2[0] = 100;
         Unknown124->Unknown2[1] = 200;

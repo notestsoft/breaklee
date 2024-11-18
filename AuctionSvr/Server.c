@@ -8,7 +8,7 @@ Void SendEnvironmentNotification(
     ServerContextRef Context,
     SocketConnectionRef Connection
 ) {
-    S2C_DATA_SERVER_ENVIRONMENT* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, SERVER_ENVIRONMENT);
+    S2C_DATA_SERVER_ENVIRONMENT* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, SERVER_ENVIRONMENT);
     Notification->MaxSearchResultCount = Context->Config.Environment.MaxSearchResultCount;
     Notification->BuyListCooldown = Context->Config.Environment.BuyListCooldown;
     Notification->SellListCooldown = Context->Config.Environment.SellListCooldown;

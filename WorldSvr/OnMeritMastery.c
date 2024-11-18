@@ -40,7 +40,7 @@ CLIENT_PROCEDURE_BINDING(MERIT_MEDAL_EVALUATION) {
 		RandomRateOffset += GroupItem->Rate * 1000;
 	}
 
-	S2C_DATA_MERIT_MEDAL_EVALUATION* Response = PacketBufferInit(Connection->PacketBuffer, S2C, MERIT_MEDAL_EVALUATION);
+	S2C_DATA_MERIT_MEDAL_EVALUATION* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MERIT_MEDAL_EVALUATION);
 	Response->Success = 1;
 	Response->ItemID = ItemSlot->Item.Serial;
 	Response->ItemOptions = ItemSlot->ItemOptions;

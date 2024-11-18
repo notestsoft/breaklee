@@ -174,6 +174,7 @@ Int32 main(Int32 argc, CString* argv) {
         Config.NetLib.ReadBufferSize,
         Config.NetLib.WriteBufferSize,
         Config.Login.MaxConnectionCount,
+        Config.NetLib.PacketBufferBacklogSize,
         Config.NetLib.LogPackets,
         &ClientSocketOnConnect,
         &ClientSocketOnDisconnect

@@ -9,8 +9,8 @@ CLIENT_PROCEDURE_BINDING(ADD_ABILITY) {
 	if (!Character) goto error;
 
 	Int32 MaterialSlotCount = (Packet->Length - sizeof(C2S_DATA_ADD_ABILITY)) / sizeof(UInt16);
-
-	S2C_DATA_ADD_ABILITY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ADD_ABILITY);
+	
+	S2C_DATA_ADD_ABILITY* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, ADD_ABILITY);
 	Response->AbilityType = Packet->AbilityType;
 
 	switch (Packet->AbilityType) {
@@ -39,7 +39,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ABILITY) {
 
 	Int32 InventorySlotCount = (Packet->Length - sizeof(C2S_DATA_UPGRADE_ABILITY)) / sizeof(UInt16);
 
-	S2C_DATA_UPGRADE_ABILITY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UPGRADE_ABILITY);
+	S2C_DATA_UPGRADE_ABILITY* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, UPGRADE_ABILITY);
 	switch (Packet->AbilityType) {
 	case CSC_DATA_ABILITY_TYPE_ESSENCE:
 		Response->Result = RTCharacterUpgradeEssenceAbility(
@@ -82,7 +82,7 @@ error:
 CLIENT_PROCEDURE_BINDING(REMOVE_ABILITY) {
 	if (!Character) goto error;
 
-	S2C_DATA_REMOVE_ABILITY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, REMOVE_ABILITY); 
+	S2C_DATA_REMOVE_ABILITY* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, REMOVE_ABILITY);
 	switch (Packet->AbilityType) {
 		case CSC_DATA_ABILITY_TYPE_ESSENCE:
 		Response->Result = RTCharacterRemoveEssenceAbility(Runtime, Character, Packet->AbilityID);

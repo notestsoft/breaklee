@@ -24,12 +24,14 @@ error:
 IPC_PROCEDURE_BINDING(D2A, GET_BOOKMARK) {
 	if (!ClientConnection) return;
 
-	S2C_DATA_GET_BOOKMARK* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, GET_BOOKMARK);
+	PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Context->ClientSocket);
+
+	S2C_DATA_GET_BOOKMARK* Response = PacketBufferInit(PacketBuffer, S2C, GET_BOOKMARK);
 	Response->Result = Packet->Result;
 	Response->Count = Packet->Count;
 
 	for (Int32 Index = 0; Index < Packet->Count; Index += 1) {
-		S2C_DATA_GET_BOOKMARK_SLOT* ResponseSlot = PacketBufferAppendStruct(ClientConnection->PacketBuffer, S2C_DATA_GET_BOOKMARK_SLOT);
+		S2C_DATA_GET_BOOKMARK_SLOT* ResponseSlot = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_GET_BOOKMARK_SLOT);
 		ResponseSlot->SlotIndex = Packet->Slots[Index].SlotIndex;
 		ResponseSlot->CategoryIndex[0] = Packet->Slots[Index].CategoryIndex[0];
 		ResponseSlot->CategoryIndex[1] = Packet->Slots[Index].CategoryIndex[1];
@@ -72,7 +74,7 @@ error:
 IPC_PROCEDURE_BINDING(D2A, SET_BOOKMARK) {
 	if (!ClientConnection) return;
 
-	S2C_DATA_SET_BOOKMARK* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, SET_BOOKMARK);
+	S2C_DATA_SET_BOOKMARK* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, SET_BOOKMARK);
 	Response->Result = Packet->Result;
 	SocketSend(Context->ClientSocket, ClientConnection, Response);
 }
@@ -97,7 +99,7 @@ error:
 IPC_PROCEDURE_BINDING(D2A, DELETE_BOOKMARK) {
 	if (!ClientConnection) return;
 
-	S2C_DATA_DELETE_BOOKMARK* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, DELETE_BOOKMARK);
+	S2C_DATA_DELETE_BOOKMARK* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, DELETE_BOOKMARK);
 	Response->Result = Packet->Result;
 	SocketSend(Context->ClientSocket, ClientConnection, Response);
 }

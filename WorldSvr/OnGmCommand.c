@@ -15,7 +15,7 @@ CLIENT_PROCEDURE_BINDING(GM_COMMAND) {
 
     if (Packet->GmCommand == 7) {
         Int32 Index = 0;
-        S2C_DATA_NFY_CHARACTER_PARAMETERS* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_CHARACTER_PARAMETERS);
+        S2C_DATA_NFY_CHARACTER_PARAMETERS* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, NFY_CHARACTER_PARAMETERS);
         Notification->Exp = Character->Data.Info.Exp;
         Notification->Level = Character->Data.Info.Level;
         Notification->Str = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_STR];
@@ -132,7 +132,7 @@ CLIENT_PROCEDURE_BINDING(GM_COMMAND) {
         SocketSend(Socket, Connection, Notification);
     }
 
-    S2C_DATA_GM_COMMAND* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GM_COMMAND);
+    S2C_DATA_GM_COMMAND* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, GM_COMMAND);
     Response->Result = 0;
     Response->State = 0;
     SocketSend(Socket, Connection, Response);

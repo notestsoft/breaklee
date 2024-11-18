@@ -228,14 +228,14 @@ CLIENT_PROCEDURE_BINDING(PUSH_EQUIPMENT_ITEM) {
 
     RTCharacterInitializeAttributes(Runtime, Character);
 
-    S2C_DATA_PUSH_EQUIPMENT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PUSH_EQUIPMENT_ITEM);
+    S2C_DATA_PUSH_EQUIPMENT_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, PUSH_EQUIPMENT_ITEM);
     Response->Result = 1;
     SocketSend(Socket, Connection, Response);
     return;
 
 error:
     {
-        S2C_DATA_PUSH_EQUIPMENT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PUSH_EQUIPMENT_ITEM);
+        S2C_DATA_PUSH_EQUIPMENT_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, PUSH_EQUIPMENT_ITEM);
         Response->Result = 0;
         SocketSend(Socket, Connection, Response);
         return;
@@ -247,14 +247,14 @@ CLIENT_PROCEDURE_BINDING(LOCK_EQUIPMENT) {
 
     if (!RTCharacterEquipmentSetLocked(Runtime, Character, Packet->EquipmentSlotIndex, Packet->IsLocked)) goto error;
 
-    S2C_DATA_LOCK_EQUIPMENT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOCK_EQUIPMENT);
+    S2C_DATA_LOCK_EQUIPMENT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, LOCK_EQUIPMENT);
     Response->Success = 1;
     SocketSend(Socket, Connection, Response);
     return;
 
 error:
     {
-        S2C_DATA_LOCK_EQUIPMENT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOCK_EQUIPMENT);
+        S2C_DATA_LOCK_EQUIPMENT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, LOCK_EQUIPMENT);
         Response->Success = 0;
         SocketSend(Socket, Connection, Response);
     }
@@ -263,7 +263,7 @@ error:
 CLIENT_PROCEDURE_BINDING(MOVE_INVENTORY_ITEM) {
     if (!Character) goto error;
 
-    S2C_DATA_MOVE_INVENTORY_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, MOVE_INVENTORY_ITEM);
+    S2C_DATA_MOVE_INVENTORY_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MOVE_INVENTORY_ITEM);
     Response->Result = MoveInventoryItem(
         Runtime,
         Character,
@@ -294,7 +294,7 @@ CLIENT_PROCEDURE_BINDING(SWAP_INVENTORY_ITEM) {
     memcpy(&kEquipmentInfoBackup, &Character->Data.EquipmentInfo, sizeof(struct _RTCharacterEquipmentData));
     memcpy(&kInventoryInfoBackup, &Character->Data.InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
 
-    S2C_DATA_SWAP_INVENTORY_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SWAP_INVENTORY_ITEM);
+    S2C_DATA_SWAP_INVENTORY_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, SWAP_INVENTORY_ITEM);
 
     struct _RTItemSlot TempSlot = { 0 };
 
@@ -393,14 +393,14 @@ CLIENT_PROCEDURE_BINDING(SPLIT_INVENTORY) {
 
     Character->SyncMask.InventoryInfo = true;
 
-    S2C_DATA_SPLIT_INVENTORY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SPLIT_INVENTORY);
+    S2C_DATA_SPLIT_INVENTORY* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, SPLIT_INVENTORY);
     Response->Result = 0;
     SocketSend(Socket, Connection, Response);
     return;
 
 error:
     {
-        S2C_DATA_SPLIT_INVENTORY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SPLIT_INVENTORY);
+        S2C_DATA_SPLIT_INVENTORY* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, SPLIT_INVENTORY);
         Response->Result = 1;
         SocketSend(Socket, Connection, Response);
     }
@@ -463,14 +463,14 @@ CLIENT_PROCEDURE_BINDING(MERGE_INVENTORY) {
 
     Character->SyncMask.InventoryInfo = true;
 
-    S2C_DATA_MERGE_INVENTORY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, MERGE_INVENTORY);
+    S2C_DATA_MERGE_INVENTORY* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MERGE_INVENTORY);
     Response->Result = 0;
     SocketSend(Socket, Connection, Response);
     return;
 
 error:
     {
-        S2C_DATA_MERGE_INVENTORY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, MERGE_INVENTORY);
+        S2C_DATA_MERGE_INVENTORY* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MERGE_INVENTORY);
         Response->Result = 1;
         SocketSend(Socket, Connection, Response);
     }
@@ -518,14 +518,14 @@ CLIENT_PROCEDURE_BINDING(SORT_INVENTORY) {
 
     Character->SyncMask.InventoryInfo = true;
 
-    S2C_DATA_SORT_INVENTORY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SORT_INVENTORY);
+    S2C_DATA_SORT_INVENTORY* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, SORT_INVENTORY);
     Response->Success = 1;
     SocketSend(Socket, Connection, Response);
     return;
 
 error: 
     {
-        S2C_DATA_SORT_INVENTORY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SORT_INVENTORY);
+        S2C_DATA_SORT_INVENTORY* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, SORT_INVENTORY);
         Response->Success = 0;
         SocketSend(Socket, Connection, Response);
     }
@@ -537,7 +537,7 @@ CLIENT_PROCEDURE_BINDING(MOVE_INVENTORY_ITEM_LIST) {
         return;
     }
 
-    S2C_DATA_MOVE_INVENTORY_ITEM_LIST* Response = PacketBufferInit(Connection->PacketBuffer, S2C, MOVE_INVENTORY_ITEM_LIST);
+    S2C_DATA_MOVE_INVENTORY_ITEM_LIST* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MOVE_INVENTORY_ITEM_LIST);
     Response->Count = Packet->ItemCount;
 
     Int32 TailLength = Packet->ItemCount * sizeof(CSC_DATA_ITEM_SLOT_INDEX) * 2;
@@ -628,14 +628,14 @@ CLIENT_PROCEDURE_BINDING(DROP_INVENTORY_ITEM) {
         DropItem
     );
 
-    S2C_DATA_DROP_INVENTORY_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DROP_INVENTORY_ITEM);
+    S2C_DATA_DROP_INVENTORY_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, DROP_INVENTORY_ITEM);
     Response->Success = 1;
     SocketSend(Socket, Connection, Response);
     return;
 
 error:
     {
-        S2C_DATA_DROP_INVENTORY_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DROP_INVENTORY_ITEM);
+        S2C_DATA_DROP_INVENTORY_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, DROP_INVENTORY_ITEM);
         Response->Success = 0;
         SocketSend(Socket, Connection, Response);
     }
@@ -672,14 +672,14 @@ CLIENT_PROCEDURE_BINDING(SET_ITEM_PROTECTION) {
         Character->SyncMask.EquipmentInfo = true;
     }
 
-    S2C_DATA_SET_ITEM_PROTECTION* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SET_ITEM_PROTECTION);
+    S2C_DATA_SET_ITEM_PROTECTION* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, SET_ITEM_PROTECTION);
     Response->Success = 1;
     SocketSend(Socket, Connection, Response);
     return;
 
 error:
     {
-        S2C_DATA_SET_ITEM_PROTECTION* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SET_ITEM_PROTECTION);
+        S2C_DATA_SET_ITEM_PROTECTION* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, SET_ITEM_PROTECTION);
         Response->Success = 0;
         SocketSend(Socket, Connection, Response);
     }

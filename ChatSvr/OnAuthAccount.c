@@ -9,7 +9,7 @@ CLIENT_PROCEDURE_BINDING(AUTH_ACCOUNT) {
 	// TODO: Check if connection ip is same as worldsvr ip
 	Client->CharacterIndex = Packet->CharacterIndex;
 
-	S2C_DATA_AUTH_ACCOUNT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, AUTH_ACCOUNT);
+	S2C_DATA_AUTH_ACCOUNT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, AUTH_ACCOUNT);
 	Response->CharacterIndex = Client->CharacterIndex;
 	Response->GuildIndex = 0;
 	Response->Result = 0;

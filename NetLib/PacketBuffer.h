@@ -4,6 +4,15 @@
 
 EXTERN_C_BEGIN
 
+struct _PacketBuffer {
+    AllocatorRef Allocator;
+    MemoryBufferRef MemoryBuffer;
+    UInt16 ProtocolIdentifier;
+    UInt16 ProtocolVersion;
+    UInt16 ProtocolExtension;
+    Bool IsClient;
+};
+
 typedef struct _PacketBuffer *PacketBufferRef;
 
 PacketBufferRef PacketBufferCreate(
@@ -14,6 +23,21 @@ PacketBufferRef PacketBufferCreate(
     Index Alignment,
     Index Length,
     Bool IsClient
+);
+
+Void PacketBufferInitialize(
+    PacketBufferRef PacketBuffer,
+    AllocatorRef Allocator,
+    UInt16 ProtocolIdentifier,
+    UInt16 ProtocolVersion,
+    UInt16 ProtocolExtension,
+    Index Alignment,
+    Index Length,
+    Bool IsClient
+);
+
+Void PacketBufferFree(
+    PacketBufferRef PacketBuffer
 );
 
 Void PacketBufferDestroy(

@@ -30,7 +30,7 @@ error:
 IPC_PROCEDURE_BINDING(D2W, CREATE_SUBPASSWORD) {
 	if (!ClientConnection) return;
 
-	S2C_DATA_CREATE_SUBPASSWORD* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, CREATE_SUBPASSWORD);
+	S2C_DATA_CREATE_SUBPASSWORD* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, CREATE_SUBPASSWORD);
 	Response->Success = Packet->Success;
 	Response->IsChange = Packet->IsChange;
 	Response->Type = Packet->Type;
@@ -56,7 +56,7 @@ CLIENT_PROCEDURE_BINDING(DELETE_SUBPASSWORD) {
 
 error:
 	{
-		S2C_DATA_DELETE_SUBPASSWORD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DELETE_SUBPASSWORD);
+		S2C_DATA_DELETE_SUBPASSWORD* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, DELETE_SUBPASSWORD);
 		Response->Success = 0;
 		Response->Type = Packet->Type;
 		SocketSend(Socket, Connection, Response);
@@ -68,7 +68,7 @@ IPC_PROCEDURE_BINDING(D2W, DELETE_SUBPASSWORD) {
 
 	Client->Flags &= ~CLIENT_FLAGS_VERIFIED_SUBPASSWORD_DELETION;
 
-	S2C_DATA_DELETE_SUBPASSWORD* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, DELETE_SUBPASSWORD);
+	S2C_DATA_DELETE_SUBPASSWORD* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, DELETE_SUBPASSWORD);
 	Response->Success = Packet->Success;
 	Response->Type = Packet->Type;
 	SocketSend(Context->ClientSocket, ClientConnection, Response);
@@ -102,7 +102,7 @@ IPC_PROCEDURE_BINDING(D2W, VERIFY_DELETE_SUBPASSWORD) {
 		Client->Flags |= CLIENT_FLAGS_VERIFIED_SUBPASSWORD_DELETION;
 	}
 
-	S2C_DATA_VERIFY_DELETE_SUBPASSWORD* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, VERIFY_DELETE_SUBPASSWORD);
+	S2C_DATA_VERIFY_DELETE_SUBPASSWORD* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, VERIFY_DELETE_SUBPASSWORD);
 	Response->Success = Packet->Success;
 	Response->FailureCount = Packet->FailureCount;
 	Response->Type = Packet->Type;
@@ -128,7 +128,7 @@ error:
 IPC_PROCEDURE_BINDING(D2W, CHECK_SUBPASSWORD) {
 	if (!ClientConnection) return;
 
-	S2C_DATA_CHECK_SUBPASSWORD* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, CHECK_SUBPASSWORD);
+	S2C_DATA_CHECK_SUBPASSWORD* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, CHECK_SUBPASSWORD);
 	Response->IsVerificationRequired = Packet->IsVerificationRequired;
 	SocketSend(Context->ClientSocket, ClientConnection, Response);
 }

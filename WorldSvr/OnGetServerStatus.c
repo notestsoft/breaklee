@@ -33,7 +33,7 @@ IPC_PROCEDURE_BINDING(W2W, REQUEST_SERVER_STATUS) {
 IPC_PROCEDURE_BINDING(W2W, RESPONSE_SERVER_STATUS) {
 	if (!ClientConnection) return;
 
-	S2C_DATA_GET_SERVER_STATUS* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, GET_SERVER_STATUS);
+	S2C_DATA_GET_SERVER_STATUS* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, GET_SERVER_STATUS);
 	Response->Result = Packet->Status;
 	SocketSend(Context->ClientSocket, ClientConnection, Response);
 }

@@ -11,7 +11,7 @@ CLIENT_PROCEDURE_BINDING(FORCE_WING_GRADE_UP) {
 	Index PacketLength = sizeof(C2S_DATA_FORCE_WING_GRADE_UP) + sizeof(UInt16) * (Packet->InventorySlotCount);
 	if (Packet->Length < PacketLength) goto error;
 
-	S2C_DATA_FORCE_WING_GRADE_UP* Response = PacketBufferInit(Connection->PacketBuffer, S2C, FORCE_WING_GRADE_UP);
+	S2C_DATA_FORCE_WING_GRADE_UP* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, FORCE_WING_GRADE_UP);
 	Response->Success = false;
 
 	if (Character->Data.ForceWingInfo.Info.Grade < 1) goto error;
@@ -139,7 +139,7 @@ CLIENT_PROCEDURE_BINDING(FORCE_WING_LEVEL_UP) {
 	Index PacketLength = sizeof(C2S_DATA_FORCE_WING_LEVEL_UP) + sizeof(UInt16) * (Packet->InventorySlotCount1 + Packet->InventorySlotCount2);
 	if (Packet->Length < PacketLength) goto error;
 
-	S2C_DATA_FORCE_WING_LEVEL_UP* Response = PacketBufferInit(Connection->PacketBuffer, S2C, FORCE_WING_LEVEL_UP);
+	S2C_DATA_FORCE_WING_LEVEL_UP* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, FORCE_WING_LEVEL_UP);
 	Response->Success = RTCharacterForceWingLevelUp(
 		Runtime,
 		Character,
@@ -165,7 +165,7 @@ error:
 CLIENT_PROCEDURE_BINDING(SET_FORCEWING_PRESET_SLOT) {
 	if (!Character) goto error;
 
-	S2C_DATA_SET_FORCEWING_PRESET_SLOT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SET_FORCEWING_PRESET_SLOT);
+	S2C_DATA_SET_FORCEWING_PRESET_SLOT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, SET_FORCEWING_PRESET_SLOT);
 	if (!RTCharacterForceWingSetPresetTraining(Runtime, Character, Packet->PresetPageIndex, Packet->PresetSlotIndex, Packet->TrainingSlotIndex)) {
 		Response->Result = 1;
 	}
@@ -180,7 +180,7 @@ error:
 CLIENT_PROCEDURE_BINDING(ADD_FORCEWING_TRAINING_LEVEL) {
 	if (!Character) goto error;
 
-	S2C_DATA_ADD_FORCEWING_TRAINING_LEVEL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ADD_FORCEWING_TRAINING_LEVEL);
+	S2C_DATA_ADD_FORCEWING_TRAINING_LEVEL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, ADD_FORCEWING_TRAINING_LEVEL);
 	if (!RTCharacterForceWingAddTrainingLevel(Runtime, Character, Packet->PresetPageIndex, Packet->PresetSlotIndex, Packet->TrainingSlotIndex, Packet->AddedTrainingLevel, &Response->TrainingLevel)) {
 		Response->Result = 1;
 	}
@@ -198,7 +198,7 @@ error:
 CLIENT_PROCEDURE_BINDING(SET_ACTIVE_FORCEWING_PRESET) {
 	if (!Character) goto error;
 
-	S2C_DATA_SET_ACTIVE_FORCEWING_PRESET* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SET_ACTIVE_FORCEWING_PRESET);
+	S2C_DATA_SET_ACTIVE_FORCEWING_PRESET* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, SET_ACTIVE_FORCEWING_PRESET);
 	if (!RTCharacterForceWingSetActivePreset(Runtime, Character, Packet->PresetPageIndex)) {
 		Response->Result = 1;
 	}
@@ -213,7 +213,7 @@ error:
 CLIENT_PROCEDURE_BINDING(ROLL_FORCEWING_ARRIVAL_SKILL) {
 	if (!Character) goto error;
 
-	S2C_DATA_ROLL_FORCEWING_ARRIVAL_SKILL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ROLL_FORCEWING_ARRIVAL_SKILL);
+	S2C_DATA_ROLL_FORCEWING_ARRIVAL_SKILL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, ROLL_FORCEWING_ARRIVAL_SKILL);
 	if (!RTCharacterForceWingRollArrivalSkill(Runtime, Character, Packet->SkillSlotIndex, Packet->InventorySlotCount, &Packet->InventorySlotIndex[0])) {
 		Response->Result = 1;
 	}
@@ -235,7 +235,7 @@ error:
 CLIENT_PROCEDURE_BINDING(CHANGE_FORCEWING_ARRIVAL_SKILL) {
 	if (!Character) goto error;
 
-	S2C_DATA_CHANGE_FORCEWING_ARRIVAL_SKILL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CHANGE_FORCEWING_ARRIVAL_SKILL);
+	S2C_DATA_CHANGE_FORCEWING_ARRIVAL_SKILL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, CHANGE_FORCEWING_ARRIVAL_SKILL);
 	Response->Success = RTCharacterForceWingChangeArrivalSkill(Runtime, Character);
 	SocketSend(Socket, Connection, Response);
 	return;

@@ -25,7 +25,7 @@ CLIENT_PROCEDURE_BINDING(MOVEMENT_BEGIN) {
 	// TODO: Movement system is still not in sync with client!
 	//if (!Success) goto error;
 
-	S2C_DATA_MOVEMENT_BEGIN* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, MOVEMENT_BEGIN);
+	S2C_DATA_MOVEMENT_BEGIN* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MOVEMENT_BEGIN);
 	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 	Notification->TickCount = Character->Movement.TickCount;
 	Notification->PositionBegin.X = Packet->PositionBegin.X;
@@ -61,7 +61,7 @@ CLIENT_PROCEDURE_BINDING(MOVEMENT_END) {
 	// TODO: Movement system is still not in sync with client!
 	//if (!Success) goto error;
 
-	S2C_DATA_MOVEMENT_END* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, MOVEMENT_END);
+	S2C_DATA_MOVEMENT_END* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MOVEMENT_END);
 	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 	Notification->Position.X = Packet->Position.X;
 	Notification->Position.Y = Packet->Position.Y;
@@ -99,7 +99,7 @@ CLIENT_PROCEDURE_BINDING(MOVEMENT_CHANGE) {
 	// TODO: Movement system is still not in sync with client!
 	//if (!Success) goto error;
 
-	S2C_DATA_MOVEMENT_CHANGE* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, MOVEMENT_CHANGE);
+	S2C_DATA_MOVEMENT_CHANGE* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MOVEMENT_CHANGE);
 	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 	Notification->TickCount = Character->Movement.TickCount;
 	Notification->PositionBegin.X = Packet->PositionBegin.X;
@@ -164,7 +164,7 @@ CLIENT_PROCEDURE_BINDING(CHANGE_DIRECTION) {
 
     RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
 
-	S2C_DATA_CHANGE_DIRECTION* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, CHANGE_DIRECTION);
+	S2C_DATA_CHANGE_DIRECTION* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, CHANGE_DIRECTION);
 	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 	Notification->Direction = Packet->Direction;
 
@@ -201,7 +201,7 @@ CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_BEGIN) {
 	// TODO: Movement system is still not in sync with client!
 	//if (!Success) goto error;
 
-	S2C_DATA_KEY_MOVEMENT_BEGIN* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, KEY_MOVEMENT_BEGIN);
+	S2C_DATA_KEY_MOVEMENT_BEGIN* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, KEY_MOVEMENT_BEGIN);
 	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 	Notification->TickCount = Character->Movement.TickCount;
 	Notification->PositionStartX = Packet->PositionStartX;
@@ -237,7 +237,7 @@ CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_END) {
 	// TODO: Movement system is still not in sync with client!
 	//if (!Success) goto error;
 
-	S2C_DATA_KEY_MOVEMENT_END* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, KEY_MOVEMENT_END);
+	S2C_DATA_KEY_MOVEMENT_END* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, KEY_MOVEMENT_END);
 	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 	Notification->PositionCurrentX = Packet->PositionCurrentX;
 	Notification->PositionCurrentY = Packet->PositionCurrentY;
@@ -274,7 +274,7 @@ CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_CHANGE) {
 	// TODO: Movement system is still not in sync with client!
 	//if (!Success) goto error;
 
-	S2C_DATA_KEY_MOVEMENT_CHANGE* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, KEY_MOVEMENT_CHANGE);
+	S2C_DATA_KEY_MOVEMENT_CHANGE* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, KEY_MOVEMENT_CHANGE);
 	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
 	Notification->TickCount = Character->Movement.TickCount;
 	Notification->PositionStartX = Packet->PositionStartX;

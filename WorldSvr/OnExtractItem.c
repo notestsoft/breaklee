@@ -11,7 +11,8 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 		return;
 	}
 
-	S2C_DATA_EXTRACT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, EXTRACT_ITEM);
+	PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
+	S2C_DATA_EXTRACT_ITEM* Response = PacketBufferInit(PacketBuffer, S2C, EXTRACT_ITEM);
 	Response->ItemCount = 0;
 
 	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
@@ -110,7 +111,7 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 				Slot.SlotIndex = Character->Data.TemporaryInventoryInfo.Info.SlotCount;
 
 				if (RTInventorySetSlot(Runtime, &Character->Data.TemporaryInventoryInfo, &Slot)) {
-					S2C_EXTRACT_ITEM_SLOT_INDEX* ResponseItemSlot = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_EXTRACT_ITEM_SLOT_INDEX);
+					S2C_EXTRACT_ITEM_SLOT_INDEX* ResponseItemSlot = PacketBufferAppendStruct(PacketBuffer, S2C_EXTRACT_ITEM_SLOT_INDEX);
 					ResponseItemSlot->ItemID = Slot.Item.Serial;
 					ResponseItemSlot->ItemOption = Slot.ItemOptions;
 					ResponseItemSlot->InventorySlotIndex = RUNTIME_INVENTORY_TOTAL_SIZE + Slot.SlotIndex;
@@ -125,7 +126,7 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 					Slot.SlotIndex = Character->Data.TemporaryInventoryInfo.Info.SlotCount;
 
 					if (RTInventorySetSlot(Runtime, &Character->Data.TemporaryInventoryInfo, &Slot)) {
-						S2C_EXTRACT_ITEM_SLOT_INDEX* ResponseItemSlot = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_EXTRACT_ITEM_SLOT_INDEX);
+						S2C_EXTRACT_ITEM_SLOT_INDEX* ResponseItemSlot = PacketBufferAppendStruct(PacketBuffer, S2C_EXTRACT_ITEM_SLOT_INDEX);
 						ResponseItemSlot->ItemID = Slot.Item.Serial;
 						ResponseItemSlot->ItemOption = Slot.ItemOptions;
 						ResponseItemSlot->InventorySlotIndex = RUNTIME_INVENTORY_TOTAL_SIZE + Slot.SlotIndex;

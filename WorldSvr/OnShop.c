@@ -141,7 +141,7 @@ CLIENT_PROCEDURE_BINDING(BUY_ITEM) {
     Character->SyncMask.AbilityInfo = true;
     Character->SyncMask.InventoryInfo = true;
 
-    S2C_DATA_BUY_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, BUY_ITEM);
+    S2C_DATA_BUY_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, BUY_ITEM);
     Response->ItemID = ItemSlot.Item.Serial;
     Response->ItemOptions = ItemSlot.ItemOptions;
     SocketSend(Socket, Connection, Response);
@@ -198,7 +198,7 @@ CLIENT_PROCEDURE_BINDING(SELL_ITEM) {
         Character->SyncMask.InventoryInfo = true;
     }
 
-    S2C_DATA_SELL_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SELL_ITEM);
+    S2C_DATA_SELL_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, SELL_ITEM);
     Response->Currency = Character->Data.Info.Alz;
     SocketSend(Socket, Connection, Response);
     return;
@@ -210,13 +210,15 @@ error:
 CLIENT_PROCEDURE_BINDING(GET_SHOP_LIST) {
     if (!Character) goto error;
 
-    S2C_DATA_GET_SHOP_LIST* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_SHOP_LIST);
+    PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
+
+    S2C_DATA_GET_SHOP_LIST* Response = PacketBufferInit(PacketBuffer, S2C, GET_SHOP_LIST);
     Response->Count = Runtime->Context->ShopIndexCount;
     
     for (Int32 Index = 0; Index < Runtime->Context->ShopIndexCount; Index += 1) {
         RTDataShopIndexRef ShopIndex = &Runtime->Context->ShopIndexList[Index];
 
-        S2C_DATA_GET_SHOP_LIST_INDEX* ResponseIndex = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_GET_SHOP_LIST_INDEX);
+        S2C_DATA_GET_SHOP_LIST_INDEX* ResponseIndex = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_GET_SHOP_LIST_INDEX);
         ResponseIndex->WorldIndex = (UInt32)ShopIndex->WorldIndex;
         ResponseIndex->NpcIndex = ShopIndex->NpcIndex;
         ResponseIndex->ShopIndex = (UInt16)ShopIndex->ShopIndex;
@@ -236,14 +238,16 @@ CLIENT_PROCEDURE_BINDING(GET_SHOP_DATA) {
     RTDataShopPoolRef ShopPool = RTRuntimeDataShopPoolGet(Runtime->Context, Packet->ShopIndex);
     if (!ShopPool) goto error;
 
-    S2C_DATA_GET_SHOP_DATA* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_SHOP_DATA);
+    PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
+
+    S2C_DATA_GET_SHOP_DATA* Response = PacketBufferInit(PacketBuffer, S2C, GET_SHOP_DATA);
     Response->ShopIndex = ShopPool->ShopIndex;
     Response->Count = ShopPool->ShopItemCount;
 
     for (Int32 Index = 0; Index < ShopPool->ShopItemCount; Index += 1) {
         RTDataShopItemRef ShopItem = &ShopPool->ShopItemList[Index];
          
-        S2C_DATA_GET_SHOP_DATA_INDEX* ResponseItem = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_GET_SHOP_DATA_INDEX);
+        S2C_DATA_GET_SHOP_DATA_INDEX* ResponseItem = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_GET_SHOP_DATA_INDEX);
         ResponseItem->TabIndex = ShopItem->TabIndex;
         ResponseItem->SlotIndex = ShopItem->SlotIndex;
         ResponseItem->ItemID = ShopItem->ItemID;
@@ -278,13 +282,15 @@ error:
 CLIENT_PROCEDURE_BINDING(GET_SHOP_ITEM_PRICE_POOL) {
     if (!Character) goto error;
 
-    S2C_DATA_GET_SHOP_ITEM_PRICE_POOL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_SHOP_ITEM_PRICE_POOL);
+    PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
+
+    S2C_DATA_GET_SHOP_ITEM_PRICE_POOL* Response = PacketBufferInit(PacketBuffer, S2C, GET_SHOP_ITEM_PRICE_POOL);
     Response->Count = Runtime->Context->ShopPricePoolCount;
 
     for (Int32 Index = 0; Index < Runtime->Context->ShopPricePoolCount; Index += 1) {
         RTDataShopPricePoolRef ShopPrice = &Runtime->Context->ShopPricePoolList[Index];
 
-        S2C_DATA_GET_SHOP_ITEM_PRICE_POOL_INDEX* ResponsePrice = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_GET_SHOP_ITEM_PRICE_POOL_INDEX);
+        S2C_DATA_GET_SHOP_ITEM_PRICE_POOL_INDEX* ResponsePrice = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_GET_SHOP_ITEM_PRICE_POOL_INDEX);
         ResponsePrice->PoolIndex = ShopPrice->PoolIndex;
         ResponsePrice->ItemID.Serial = ShopPrice->ItemID;
         ResponsePrice->ItemOptions = ShopPrice->ItemOptions;
@@ -301,7 +307,9 @@ error:
 CLIENT_PROCEDURE_BINDING(GET_ITEM_RECOVERY_LIST) {
     if (!Character) goto error;
 
-    S2C_DATA_GET_ITEM_RECOVERY_LIST* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_ITEM_RECOVERY_LIST);
+    PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
+
+    S2C_DATA_GET_ITEM_RECOVERY_LIST* Response = PacketBufferInit(PacketBuffer, S2C, GET_ITEM_RECOVERY_LIST);
     Response->Count = Character->Data.RecoveryInfo.Info.SlotCount;
 
     for (Int32 Index = 0; Index < RUNTIME_CHARACTER_MAX_RECOVERY_SLOT_COUNT; Index += 1) {
@@ -310,7 +318,7 @@ CLIENT_PROCEDURE_BINDING(GET_ITEM_RECOVERY_LIST) {
 
         UInt64 RecoveryPrice = Character->Data.RecoveryInfo.Prices[Index];
 
-        S2C_ITEM_RECOVERY_LIST_SLOT* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_ITEM_RECOVERY_LIST_SLOT);
+        S2C_ITEM_RECOVERY_LIST_SLOT* ResponseData = PacketBufferAppendStruct(PacketBuffer, S2C_ITEM_RECOVERY_LIST_SLOT);
         ResponseData->ItemID = ItemSlot->Item.ID;
         ResponseData->ItemSerial = ItemSlot->Item.Serial;
         ResponseData->ItemOption = ItemSlot->ItemOptions;
@@ -350,7 +358,7 @@ CLIENT_PROCEDURE_BINDING(RECOVER_ITEM) {
     Character->SyncMask.Info = true;
     Character->SyncMask.InventoryInfo = true;
 
-    S2C_DATA_RECOVER_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, RECOVER_ITEM);
+    S2C_DATA_RECOVER_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, RECOVER_ITEM);
     Response->Result = 1; // TODO: Check Result types and remove disconnects
     SocketSend(Socket, Connection, Response);
     return;

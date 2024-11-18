@@ -44,7 +44,7 @@ CLIENT_PROCEDURE_BINDING(ADD_OVERLORD_MASTERY_SLOT) {
 	Character->Data.OverlordMasteryInfo.Info.Point -= MasteryValueLevel->RequiredMasteryPointCount;
 	Character->SyncMask.OverlordMasteryInfo = true;
 
-	S2C_DATA_ADD_OVERLORD_MASTERY_SLOT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ADD_OVERLORD_MASTERY_SLOT);
+	S2C_DATA_ADD_OVERLORD_MASTERY_SLOT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, ADD_OVERLORD_MASTERY_SLOT);
 	Response->MasteryIndex = Slot->MasteryIndex;
 	Response->Level = Slot->Level;
     SocketSend(Socket, Connection, Response);

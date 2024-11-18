@@ -23,7 +23,8 @@ error:
 IPC_PROCEDURE_BINDING(M2W, GET_WORLD_LIST) {
 	if (!ClientConnection) return;
 
-	S2C_DATA_GET_SERVER_LIST* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, GET_SERVER_LIST);
+	PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Context->ClientSocket);
+	S2C_DATA_GET_SERVER_LIST* Response = PacketBufferInit(PacketBuffer, S2C, GET_SERVER_LIST);
 	Response->WorldCount = Packet->NodeCount;
 
 	Char LocalHost[] = "127.0.0.1";
@@ -34,7 +35,7 @@ IPC_PROCEDURE_BINDING(M2W, GET_WORLD_LIST) {
 		IPC_M2L_DATA_SERVER_GROUP_NODE* Node = (IPC_M2L_DATA_SERVER_GROUP_NODE*)((UInt8*)Packet + PacketOffset);
 		PacketOffset += sizeof(IPC_M2L_DATA_SERVER_GROUP_NODE);
 
-		S2C_DATA_SERVER_LIST_WORLD* ResponseWorld = PacketBufferAppendStruct(ClientConnection->PacketBuffer, S2C_DATA_SERVER_LIST_WORLD);
+		S2C_DATA_SERVER_LIST_WORLD* ResponseWorld = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_SERVER_LIST_WORLD);
 		ResponseWorld->ServerID = Context->Config.WorldSvr.GroupIndex;
 		ResponseWorld->WorldID = Node->NodeIndex;
 		ResponseWorld->PlayerCount = Node->PlayerCount;
@@ -48,6 +49,6 @@ IPC_PROCEDURE_BINDING(M2W, GET_WORLD_LIST) {
 }
 
 CLIENT_PROCEDURE_BINDING(UNKNOWN_5383) {
-	S2C_DATA_UNKNOWN_5383* Response = PacketBufferInit(Connection->PacketBuffer, S2C, UNKNOWN_5383);
+	S2C_DATA_UNKNOWN_5383* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, UNKNOWN_5383);
 	SocketSend(Socket, Connection, Response);
 }

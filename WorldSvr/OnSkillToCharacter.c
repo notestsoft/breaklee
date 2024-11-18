@@ -18,10 +18,13 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		goto error;
 	}
 
+	PacketBufferRef ResponsePacketBuffer = SocketGetNextPacketBuffer(Socket);
+	PacketBufferRef NotificationPacketBuffer = SocketGetNextPacketBuffer(Socket);
+
 	RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, Packet->SkillIndex);
 	if (!SkillData) goto error;
 
-	S2C_DATA_SKILL_TO_CHARACTER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SKILL_TO_CHARACTER);
+	S2C_DATA_SKILL_TO_CHARACTER* Response = PacketBufferInit(ResponsePacketBuffer, S2C, SKILL_TO_CHARACTER);
 	Response->SkillIndex = Packet->SkillIndex;
 
 	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotBySlotIndex(Runtime, Character, Packet->SlotIndex);
@@ -53,7 +56,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		
 		C2S_DATA_SKILL_GROUP_MOVEMENT* PacketData = (C2S_DATA_SKILL_GROUP_MOVEMENT*)&Packet->Data[0];
 
-		S2C_DATA_SKILL_GROUP_MOVEMENT* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_MOVEMENT);
+		S2C_DATA_SKILL_GROUP_MOVEMENT* ResponseData = PacketBufferAppendStruct(ResponsePacketBuffer, S2C_DATA_SKILL_GROUP_MOVEMENT);
 		ResponseData->CharacterMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 
 		Int32 CharacterPositionError = RTCalculateDistance(
@@ -100,10 +103,10 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
 		SocketSend(Socket, Connection, Response);
 
-		S2C_DATA_NFY_SKILL_TO_CHARACTER* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_SKILL_TO_CHARACTER);
+		S2C_DATA_NFY_SKILL_TO_CHARACTER* Notification = PacketBufferInit(NotificationPacketBuffer, S2C, NFY_SKILL_TO_CHARACTER);
 		Notification->SkillIndex = Packet->SkillIndex;
 
-		S2C_DATA_NFY_SKILL_GROUP_MOVEMENT* NotificationData = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_SKILL_GROUP_MOVEMENT);
+		S2C_DATA_NFY_SKILL_GROUP_MOVEMENT* NotificationData = PacketBufferAppendStruct(NotificationPacketBuffer, S2C_DATA_NFY_SKILL_GROUP_MOVEMENT);
 		NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
 		NotificationData->Entity = Character->ID;
 		NotificationData->PositionEnd.X = Character->Movement.PositionEnd.X;
@@ -141,7 +144,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 			}
 		}
 		
-		S2C_DATA_SKILL_GROUP_ASTRAL* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_ASTRAL);
+		S2C_DATA_SKILL_GROUP_ASTRAL* ResponseData = PacketBufferAppendStruct(ResponsePacketBuffer, S2C_DATA_SKILL_GROUP_ASTRAL);
 		ResponseData->CurrentMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 		ResponseData->IsActivation = PacketData->IsActivation;
 		ResponseData->Unknown2 = PacketData->Unknown2;
@@ -161,7 +164,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 			RTCharacterCancelBattleMode(Runtime, Character);
 		}
 
-		S2C_DATA_SKILL_GROUP_BATTLE_MODE* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_SKILL_GROUP_BATTLE_MODE);
+		S2C_DATA_SKILL_GROUP_BATTLE_MODE* ResponseData = PacketBufferAppendStruct(ResponsePacketBuffer, S2C_DATA_SKILL_GROUP_BATTLE_MODE);
 		ResponseData->CurrentMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 		ResponseData->IsActivation = RTCharacterIsBattleModeActive(Runtime, Character);
 		SocketSend(Socket, Connection, Response);
@@ -183,8 +186,6 @@ error:
 CLIENT_PROCEDURE_BINDING(CANCEL_BATTLE_MODE_SYNERGY) {
 	if (!Character) goto error;
 
-	S2C_DATA_CANCEL_BATTLE_MODE_SYNERGY* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CANCEL_BATTLE_MODE_SYNERGY);
-	SocketSend(Socket, Connection, Response);
 	return;
 
 error:

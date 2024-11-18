@@ -19,7 +19,7 @@ CLIENT_PROCEDURE_BINDING(WARP) {
         Packet->SlotIndex
     );
 
-    S2C_DATA_WARP* Response = PacketBufferInit(Connection->PacketBuffer, S2C, WARP);
+    S2C_DATA_WARP* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, WARP);
     Response->Position.X = Character->Data.Info.PositionX;
     Response->Position.Y = Character->Data.Info.PositionY;
     Response->AccumulatedExp = Character->Data.Info.Exp;

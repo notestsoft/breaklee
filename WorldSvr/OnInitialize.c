@@ -9,12 +9,14 @@ Void SendEventList(
     ServerContextRef Context,
     ClientContextRef Client
 ) {
-    S2C_DATA_NFY_EVENT_LIST* EventList = PacketBufferInit(Client->Connection->PacketBuffer, S2C, NFY_EVENT_LIST);
+    PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Context->ClientSocket);
+
+    S2C_DATA_NFY_EVENT_LIST* EventList = PacketBufferInit(PacketBuffer, S2C, NFY_EVENT_LIST);
     EventList->Count = Context->Runtime->Context->EventCount;
 
     for (Index Index = 0; Index < Context->Runtime->Context->EventCount; Index += 1) {
         RTDataEventRef EventData = &Context->Runtime->Context->EventList[Index];
-        PacketBufferAppendValue(Client->Connection->PacketBuffer, UInt32, EventData->ID);
+        PacketBufferAppendValue(PacketBuffer, UInt32, EventData->ID);
     }
 
     SocketSend(Context->ClientSocket, Client->Connection, EventList);
@@ -24,16 +26,18 @@ Void SendEventInfo(
     ServerContextRef Context,
     ClientContextRef Client
 ) {
-    S2C_DATA_NFY_EVENT_INFO* EventInfo = PacketBufferInitExtended(Client->Connection->PacketBuffer, S2C, NFY_EVENT_INFO);
+    PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Context->ClientSocket);
+
+    S2C_DATA_NFY_EVENT_INFO* EventInfo = PacketBufferInitExtended(PacketBuffer, S2C, NFY_EVENT_INFO);
     EventInfo->HasEventInfo = (Context->Runtime->Context->EventCount > 0) ? 1 : 0;
 
-    S2C_DATA_NFY_EVENT_INFO_HEADER* EventInfoHeader = PacketBufferAppendStruct(Client->Connection->PacketBuffer, S2C_DATA_NFY_EVENT_INFO_HEADER);
+    S2C_DATA_NFY_EVENT_INFO_HEADER* EventInfoHeader = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_NFY_EVENT_INFO_HEADER);
     EventInfoHeader->EventCount = Context->Runtime->Context->EventCount;
 
     for (Int32 EventIndex = 0; EventIndex < Context->Runtime->Context->EventCount; EventIndex += 1) {
         RTDataEventRef EventData = &Context->Runtime->Context->EventList[EventIndex];
 
-        S2C_DATA_NFY_EVENT_INFO_EVENT* EventInfoEvent = PacketBufferAppendStruct(Client->Connection->PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT);
+        S2C_DATA_NFY_EVENT_INFO_EVENT* EventInfoEvent = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT);
         EventInfoEvent->EventIndex = EventData->ID;
         EventInfoEvent->EventType = EventData->Type;
         EventInfoEvent->EventFlags = EventData->UseFlags;
@@ -42,27 +46,27 @@ Void SendEventInfo(
         EventInfoEvent->EventUpdateTimestamp = 0;
         EventInfoEvent->WorldIndex = EventData->WorldIndex;
         EventInfoEvent->NpcIndex = EventData->NpcIndex;
-        PacketBufferAppendCString(Client->Connection->PacketBuffer, EventData->Description);
+        PacketBufferAppendCString(PacketBuffer, EventData->Description);
 
-        S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO* EventItemInfo = PacketBufferAppendStruct(Client->Connection->PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO);
+        S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO* EventItemInfo = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO);
         EventItemInfo->ItemCount = EventData->EventItemCount;
 
         for (Index ItemIndex = 0; ItemIndex < EventData->EventItemCount; ItemIndex += 1) {
             RTDataEventItemRef EventItem = &EventData->EventItemList[ItemIndex];
 
-            S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO_DATA* EventItemData = PacketBufferAppendStruct(Client->Connection->PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO_DATA);
+            S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO_DATA* EventItemData = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO_DATA);
             EventItemData->ItemID.Serial = EventItem->ItemID;
             EventItemData->ItemOptions = EventItem->ItemOptions;
             EventItemData->ExternalID = EventItem->ExternalID;
             EventItemData->TextureItemID = EventItem->TextureItemID;
-            PacketBufferAppendCString(Client->Connection->PacketBuffer, EventItem->Title);
-            PacketBufferAppendCString(Client->Connection->PacketBuffer, EventItem->Description);
+            PacketBufferAppendCString(PacketBuffer, EventItem->Title);
+            PacketBufferAppendCString(PacketBuffer, EventItem->Description);
         }
 
-        EventItemInfo = PacketBufferAppendStruct(Client->Connection->PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO);
+        EventItemInfo = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO);
         EventItemInfo->ItemCount = 0;
 
-        EventItemInfo = PacketBufferAppendStruct(Client->Connection->PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO);
+        EventItemInfo = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO);
         EventItemInfo->ItemCount = 0;
     }
 
@@ -580,7 +584,8 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     RTCharacterUpdateGiftBox(Runtime, Character);
 
-    S2C_DATA_INITIALIZE* Response = PacketBufferInitExtended(ClientConnection->PacketBuffer, S2C, INITIALIZE);
+    PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Context->ClientSocket);
+    S2C_DATA_INITIALIZE* Response = PacketBufferInitExtended(PacketBuffer, S2C, INITIALIZE);
     /* Server Info */
     Response->WorldType = (UInt32)Runtime->Environment.RawValue;
     Response->IsWarehousePasswordSet = Packet->Character.IsWarehousePasswordSet;
@@ -617,13 +622,13 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->CharacterStyleInfo = Character->Data.StyleInfo;
     memcpy(&Response->ResearchSupportInfo, &Character->Data.ResearchSupportInfo, sizeof(struct _RTCharacterResearchSupportInfo));
     Response->NameLength = strlen(Character->Name) + 1;
-    CString Name = (CString)PacketBufferAppend(ClientConnection->PacketBuffer, strlen(Character->Name));
+    CString Name = (CString)PacketBufferAppend(PacketBuffer, strlen(Character->Name));
     memcpy(Name, Character->Name, strlen(Character->Name));
 
     Response->EquipmentInfo = Character->Data.EquipmentInfo.Info;
     if (Character->Data.EquipmentInfo.Info.EquipmentSlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.EquipmentInfo.EquipmentSlots,
             sizeof(struct _RTItemSlot) * Character->Data.EquipmentInfo.Info.EquipmentSlotCount
         );
@@ -631,7 +636,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     if (Character->Data.EquipmentInfo.Info.InventorySlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.EquipmentInfo.InventorySlots,
             sizeof(struct _RTItemSlot) * Character->Data.EquipmentInfo.Info.InventorySlotCount
         );
@@ -639,7 +644,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     if (Character->Data.EquipmentInfo.Info.LinkSlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.EquipmentInfo.LinkSlots,
             sizeof(struct _RTEquipmentLinkSlot) * Character->Data.EquipmentInfo.Info.LinkSlotCount
         );
@@ -647,7 +652,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     if (Character->Data.EquipmentInfo.Info.LockSlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.EquipmentInfo.LockSlots,
             sizeof(struct _RTEquipmentLockSlot) * Character->Data.EquipmentInfo.Info.LockSlotCount
         );
@@ -656,7 +661,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->InventoryInfo = Character->Data.InventoryInfo.Info;
     if (Character->Data.InventoryInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.InventoryInfo.Slots,
             sizeof(struct _RTItemSlot) * Character->Data.InventoryInfo.Info.SlotCount
         );
@@ -665,7 +670,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->SkillSlotInfo = Character->Data.SkillSlotInfo.Info;
     if (Character->Data.SkillSlotInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.SkillSlotInfo.Slots,
             sizeof(struct _RTSkillSlot) * Character->Data.SkillSlotInfo.Info.SlotCount
         );
@@ -674,7 +679,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->QuickSlotInfo = Character->Data.QuickSlotInfo.Info;
     if (Character->Data.QuickSlotInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.QuickSlotInfo.Slots,
             sizeof(struct _RTQuickSlot) * Character->Data.QuickSlotInfo.Info.SlotCount
         );
@@ -683,7 +688,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->AbilityInfo = Character->Data.AbilityInfo.Info;
     if (Character->Data.AbilityInfo.Info.EssenceAbilityCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.AbilityInfo.EssenceAbilitySlots,
             sizeof(struct _RTEssenceAbilitySlot) * Character->Data.AbilityInfo.Info.EssenceAbilityCount
         );
@@ -691,7 +696,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     if (Character->Data.AbilityInfo.Info.BlendedAbilityCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.AbilityInfo.BlendedAbilitySlots,
             sizeof(struct _RTBlendedAbilitySlot) * Character->Data.AbilityInfo.Info.BlendedAbilityCount
         );
@@ -699,7 +704,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     if (Character->Data.AbilityInfo.Info.KarmaAbilityCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.AbilityInfo.KarmaAbilitySlots,
             sizeof(struct _RTKarmaAbilitySlot) * Character->Data.AbilityInfo.Info.KarmaAbilityCount
         );
@@ -708,7 +713,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->BlessingBeadInfo = Character->Data.BlessingBeadInfo.Info;
     if (Character->Data.BlessingBeadInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.BlessingBeadInfo.Slots,
             sizeof(struct _RTBlessingBeadSlot) * Character->Data.BlessingBeadInfo.Info.SlotCount
         );
@@ -717,7 +722,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->PremiumServiceInfo = Character->Data.PremiumServiceInfo.Info;
     if (Character->Data.PremiumServiceInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.PremiumServiceInfo.Slots,
             sizeof(struct _RTPremiumServiceSlot) * Character->Data.PremiumServiceInfo.Info.SlotCount
         );
@@ -736,7 +741,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
             NpcActionFlags |= 1 << Index;
         }
 
-        S2C_DATA_INITIALIZE_QUEST_INDEX* QuestResponse = PacketBufferAppendStruct(ClientConnection->PacketBuffer, S2C_DATA_INITIALIZE_QUEST_INDEX);
+        S2C_DATA_INITIALIZE_QUEST_INDEX* QuestResponse = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_INITIALIZE_QUEST_INDEX);
         QuestResponse->QuestIndex = QuestSlot->QuestIndex;
         QuestResponse->NpcActionFlags = NpcActionFlags;
         QuestResponse->DisplayNotice = QuestSlot->DisplayNotice;
@@ -745,14 +750,14 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
         Int32 CounterCount = Quest->MissionMobCount + Quest->MissionItemCount;
         for (Int32 CounterIndex = 0; CounterIndex < CounterCount; CounterIndex++) {
-            PacketBufferAppendValue(ClientConnection->PacketBuffer, UInt8, QuestSlot->Counter[CounterIndex]);
+            PacketBufferAppendValue(PacketBuffer, UInt8, QuestSlot->Counter[CounterIndex]);
         }
     }
 
     Response->DailyQuestInfo = Character->Data.DailyQuestInfo.Info;
     if (Character->Data.DailyQuestInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.DailyQuestInfo.Slots,
             sizeof(struct _RTDailyQuestSlot) * Character->Data.DailyQuestInfo.Info.SlotCount
         );
@@ -761,7 +766,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->MercenaryInfo = Character->Data.MercenaryInfo.Info;
     if (Character->Data.MercenaryInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.MercenaryInfo.Slots,
             sizeof(struct _RTMercenarySlot) * Character->Data.MercenaryInfo.Info.SlotCount
         );
@@ -770,7 +775,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->AppearanceInfo = Character->Data.AppearanceInfo.Info;
     if (Character->Data.AppearanceInfo.Info.EquipmentAppearanceCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.AppearanceInfo.EquipmentSlots,
             sizeof(struct _RTItemSlotAppearance) * Character->Data.AppearanceInfo.Info.EquipmentAppearanceCount
         );
@@ -778,7 +783,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     if (Character->Data.AppearanceInfo.Info.InventoryAppearanceCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.AppearanceInfo.InventorySlots,
             sizeof(struct _RTItemSlotAppearance) * Character->Data.AppearanceInfo.Info.InventoryAppearanceCount
         );
@@ -787,7 +792,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->AchievementInfo = Character->Data.AchievementInfo.Info;
     if (Character->Data.AchievementInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.AchievementInfo.Slots,
             sizeof(struct _RTAchievementSlot) * Character->Data.AchievementInfo.Info.SlotCount
         );
@@ -795,7 +800,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     if (Character->Data.AchievementInfo.Info.RewardSlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.AchievementInfo.RewardSlots,
             sizeof(struct _RTAchievementRewardSlot) * Character->Data.AchievementInfo.Info.RewardSlotCount
         );
@@ -804,7 +809,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->AchievementExtendedInfo = Character->Data.AchievementExtendedInfo.Info;
     if (Character->Data.AchievementExtendedInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.AchievementExtendedInfo.Slots,
             sizeof(struct _RTAchievementExtendedRewardSlot) * Character->Data.AchievementExtendedInfo.Info.SlotCount
         );
@@ -823,7 +828,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->VehicleInventoryInfo = Character->Data.VehicleInventoryInfo.Info;
     if (Character->Data.VehicleInventoryInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.VehicleInventoryInfo.Slots,
             sizeof(struct _RTItemSlot) * Character->Data.VehicleInventoryInfo.Info.SlotCount
         );
@@ -832,7 +837,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->GoldMeritMasteryInfo = Character->Data.GoldMeritMasteryInfo.Info;
     if (Character->Data.GoldMeritMasteryInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.GoldMeritMasteryInfo.Slots,
             sizeof(struct _RTGoldMeritMasterySlot) * Character->Data.GoldMeritMasteryInfo.Info.SlotCount
         );
@@ -841,7 +846,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->PlatinumMeritMasteryInfo = Character->Data.PlatinumMeritMasteryInfo.Info;
     if (Character->Data.PlatinumMeritMasteryInfo.Info.ExtendedMemorizeCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.PlatinumMeritMasteryInfo.ExtendedMemorizeSlots,
             sizeof(struct _RTPlatinumMeritExtendedMemorizeSlot) * Character->Data.PlatinumMeritMasteryInfo.Info.ExtendedMemorizeCount
         );
@@ -849,7 +854,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     if (Character->Data.PlatinumMeritMasteryInfo.Info.UnlockedSlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.PlatinumMeritMasteryInfo.UnlockedSlots,
             sizeof(struct _RTPlatinumMeritUnlockedSlot) * Character->Data.PlatinumMeritMasteryInfo.Info.UnlockedSlotCount
         );
@@ -857,7 +862,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     if (Character->Data.PlatinumMeritMasteryInfo.Info.MasterySlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.PlatinumMeritMasteryInfo.MasterySlots,
             sizeof(struct _RTPlatinumMeritMasterySlot) * Character->Data.PlatinumMeritMasteryInfo.Info.MasterySlotCount
         );
@@ -865,7 +870,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     if (Character->Data.PlatinumMeritMasteryInfo.Info.SpecialMasterySlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.PlatinumMeritMasteryInfo.SpecialMasterySlots,
             sizeof(struct _RTPlatinumMeritSpecialMasterySlot) * Character->Data.PlatinumMeritMasteryInfo.Info.SpecialMasterySlotCount
         );
@@ -874,7 +879,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->DiamondMeritMasteryInfo = Character->Data.DiamondMeritMasteryInfo.Info;
     if (Character->Data.DiamondMeritMasteryInfo.Info.ExtendedMemorizeCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.DiamondMeritMasteryInfo.ExtendedMemorizeSlots,
             sizeof(struct _RTPlatinumMeritExtendedMemorizeSlot) * Character->Data.DiamondMeritMasteryInfo.Info.ExtendedMemorizeCount
         );
@@ -882,7 +887,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     if (Character->Data.DiamondMeritMasteryInfo.Info.UnlockedSlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.DiamondMeritMasteryInfo.UnlockedSlots,
             sizeof(struct _RTPlatinumMeritUnlockedSlot) * Character->Data.DiamondMeritMasteryInfo.Info.UnlockedSlotCount
         );
@@ -890,7 +895,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     if (Character->Data.DiamondMeritMasteryInfo.Info.MasterySlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.DiamondMeritMasteryInfo.MasterySlots,
             sizeof(struct _RTPlatinumMeritMasterySlot) * Character->Data.DiamondMeritMasteryInfo.Info.MasterySlotCount
         );
@@ -898,7 +903,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     if (Character->Data.DiamondMeritMasteryInfo.Info.SpecialMasterySlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.DiamondMeritMasteryInfo.SpecialMasterySlots,
             sizeof(struct _RTPlatinumMeritSpecialMasterySlot) * Character->Data.DiamondMeritMasteryInfo.Info.SpecialMasterySlotCount
         );
@@ -907,7 +912,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->WarpServiceInfo = Character->Data.WarpServiceInfo.Info;
     if (Character->Data.WarpServiceInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.WarpServiceInfo.Slots,
             sizeof(struct _RTWarpServiceSlot) * Character->Data.WarpServiceInfo.Info.SlotCount
         );
@@ -916,7 +921,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->OverlordMasteryInfo = Character->Data.OverlordMasteryInfo.Info;
     if (Character->Data.OverlordMasteryInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.OverlordMasteryInfo.Slots,
             sizeof(struct _RTOverlordMasterySlot) * Character->Data.OverlordMasteryInfo.Info.SlotCount
         );
@@ -925,7 +930,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->HonorMedalInfo = Character->Data.HonorMedalInfo.Info;
     if (Character->Data.HonorMedalInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.HonorMedalInfo.Slots,
             sizeof(struct _RTHonorMedalSlot) * Character->Data.HonorMedalInfo.Info.SlotCount
         );
@@ -934,7 +939,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->ForceWingInfo = Character->Data.ForceWingInfo.Info;
     if (Character->Data.ForceWingInfo.Info.PresetSlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.ForceWingInfo.PresetSlots,
             sizeof(struct _RTForceWingPresetSlot) * Character->Data.ForceWingInfo.Info.PresetSlotCount
         );
@@ -942,7 +947,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     if (Character->Data.ForceWingInfo.Info.TrainingSlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.ForceWingInfo.TrainingSlots,
             sizeof(struct _RTForceWingTrainingSlot) * Character->Data.ForceWingInfo.Info.TrainingSlotCount
         );
@@ -951,7 +956,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->GiftBoxInfo = Character->Data.GiftboxInfo.Info;
     if (Character->Data.GiftboxInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.GiftboxInfo.Slots,
             sizeof(struct _RTGiftBoxSlot) * Character->Data.GiftboxInfo.Info.SlotCount
         );
@@ -960,7 +965,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->CollectionInfo = Character->Data.CollectionInfo.Info;
     if (Character->Data.CollectionInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.CollectionInfo.Slots,
             sizeof(struct _RTCollectionSlot) * Character->Data.CollectionInfo.Info.SlotCount
         );
@@ -969,7 +974,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->TransformInfo = Character->Data.TransformInfo.Info;
     if (Character->Data.TransformInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.TransformInfo.Slots,
             sizeof(struct _RTTransformSlot) * Character->Data.TransformInfo.Info.SlotCount
         );
@@ -978,7 +983,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->TranscendenceInfo = Character->Data.TranscendenceInfo.Info;
     if (Character->Data.TranscendenceInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.TranscendenceInfo.Slots,
             sizeof(struct _RTTranscendenceSlot) * Character->Data.TranscendenceInfo.Info.SlotCount
         );
@@ -989,7 +994,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->StellarMasteryInfo = Character->Data.StellarMasteryInfo.Info;
     if (Character->Data.StellarMasteryInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.StellarMasteryInfo.Slots,
             sizeof(struct _RTStellarMasterySlot) * Character->Data.StellarMasteryInfo.Info.SlotCount
         );
@@ -998,7 +1003,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->MythMasteryInfo = Character->Data.MythMasteryInfo.Info;
     if (Character->Data.MythMasteryInfo.Info.PropertySlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.MythMasteryInfo.Slots,
             sizeof(struct _RTMythMasterySlot) * Character->Data.MythMasteryInfo.Info.PropertySlotCount
         );
@@ -1007,7 +1012,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->NewbieSupportInfo = Character->Data.NewbieSupportInfo.Info;
     if (Character->Data.NewbieSupportInfo.Info.SlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.NewbieSupportInfo.Slots,
             sizeof(struct _RTNewbieSupportSlot) * Character->Data.NewbieSupportInfo.Info.SlotCount
         );
@@ -1016,7 +1021,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->EventPassInfo = Character->Data.EventPassInfo.Info;
     if (Character->Data.EventPassInfo.Info.MissionPageCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.EventPassInfo.MissionPages,
             sizeof(struct _RTEventPassMissionPage) * Character->Data.EventPassInfo.Info.MissionPageCount
         );
@@ -1024,7 +1029,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     if (Character->Data.EventPassInfo.Info.MissionSlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.EventPassInfo.MissionSlots,
             sizeof(struct _RTEventPassMissionSlot) * Character->Data.EventPassInfo.Info.MissionSlotCount
         );
@@ -1032,7 +1037,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     if (Character->Data.EventPassInfo.Info.RewardSlotCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.EventPassInfo.RewardSlots,
             sizeof(struct _RTEventPassRewardSlot) * Character->Data.EventPassInfo.Info.RewardSlotCount
         );
@@ -1074,7 +1079,7 @@ struct _RTCharacterCostumeInfo {
     Response->AnimaMasteryInfo = Character->Data.AnimaMasteryInfo.Info;
     if (Character->Data.AnimaMasteryInfo.Info.PresetCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.AnimaMasteryInfo.PresetData,
             sizeof(struct _RTAnimaMasteryPresetData) * Character->Data.AnimaMasteryInfo.Info.PresetCount
         );
@@ -1082,7 +1087,7 @@ struct _RTCharacterCostumeInfo {
 
     if (Character->Data.AnimaMasteryInfo.Info.StorageCount > 0) {
         PacketBufferAppendCopy(
-            ClientConnection->PacketBuffer,
+            PacketBuffer,
             Character->Data.AnimaMasteryInfo.CategoryData,
             sizeof(struct _RTAnimaMasteryCategoryData) * Character->Data.AnimaMasteryInfo.Info.StorageCount
         );

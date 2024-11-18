@@ -13,7 +13,7 @@ CLIENT_PROCEDURE_BINDING(STELLAR_LINK_IMPRINT_SLOT) {
 	memcpy(&kInventoryInfoBackup, &Character->Data.InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
 	memcpy(&kStellarMasteryInfoBackup, &Character->Data.StellarMasteryInfo, sizeof(struct _RTCharacterStellarMasteryInfo));
 
-	S2C_DATA_STELLAR_LINK_IMPRINT_SLOT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, STELLAR_LINK_IMPRINT_SLOT);
+	S2C_DATA_STELLAR_LINK_IMPRINT_SLOT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, STELLAR_LINK_IMPRINT_SLOT);
 	// TODO: send error codes instead of disconnecting
 
 	RTDataStellarGroupRef StellarGroup = RTRuntimeDataStellarGroupGet(Runtime->Context, Packet->GroupID);
@@ -112,7 +112,7 @@ CLIENT_PROCEDURE_BINDING(STELLAR_LINK_TRANSFORM_LINK) {
 	memcpy(&kInventoryInfoBackup, &Character->Data.InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
 	memcpy(&kStellarMasteryInfoBackup, &Character->Data.StellarMasteryInfo, sizeof(struct _RTCharacterStellarMasteryInfo));
 
-	S2C_DATA_STELLAR_LINK_IMPRINT_SLOT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, STELLAR_LINK_IMPRINT_SLOT);
+	S2C_DATA_STELLAR_LINK_IMPRINT_SLOT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, STELLAR_LINK_IMPRINT_SLOT);
 
 	// TODO: send error codes instead of disconnecting
 

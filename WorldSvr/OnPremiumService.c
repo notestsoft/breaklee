@@ -26,13 +26,15 @@ Void SendPremiumServiceList(
     SocketRef Socket,
     SocketConnectionRef Connection
 ) {
-    S2C_DATA_PREMIUM_BENEFIT_INFO_LIST* Response = PacketBufferInitExtended(Connection->PacketBuffer, S2C, PREMIUM_BENEFIT_INFO_LIST);
+    PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
+
+    S2C_DATA_PREMIUM_BENEFIT_INFO_LIST* Response = PacketBufferInitExtended(PacketBuffer, S2C, PREMIUM_BENEFIT_INFO_LIST);
     Response->Count = Context->Runtime->Context->PremiumServiceCount;
 
     for (Index Index = 0; Index < Context->Runtime->Context->PremiumServiceCount; Index += 1) {
         RTDataPremiumServiceRef PremiumService = &Context->Runtime->Context->PremiumServiceList[Index];
 
-        S2C_DATA_PREMIUM_BENEFIT_INFO* ResponseInfo = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_PREMIUM_BENEFIT_INFO);
+        S2C_DATA_PREMIUM_BENEFIT_INFO* ResponseInfo = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_PREMIUM_BENEFIT_INFO);
         ResponseInfo->ServiceID = PremiumService->ServiceID;
         ResponseInfo->Type = PremiumService->Type;
         ResponseInfo->XP = PremiumService->XP;
@@ -82,17 +84,17 @@ CLIENT_PROCEDURE_BINDING(PREMIUM_BENEFIT_INFO_LIST) {
 IPC_PROCEDURE_BINDING(D2W, GET_PREMIUM_SERVICE) {
 	if (!ClientConnection || !Client) return;
 
-    S2C_DATA_GET_PREMIUM_SERVICE* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, GET_PREMIUM_SERVICE);
+    S2C_DATA_GET_PREMIUM_SERVICE* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, GET_PREMIUM_SERVICE);
     Response->ServiceType = Packet->ServiceType;
     Response->ExpirationDate = Packet->ExpiredAt;
     SocketSend(Context->ClientSocket, ClientConnection, Response);
 
-	S2C_DATA_NFY_PREMIUM_SERVICE* Notification = PacketBufferInit(ClientConnection->PacketBuffer, S2C, NFY_PREMIUM_SERVICE);
+	S2C_DATA_NFY_PREMIUM_SERVICE* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, NFY_PREMIUM_SERVICE);
 	Notification->ServiceType = Packet->ServiceType;
 	Notification->ExpirationDate = Packet->ExpiredAt;
 	SocketSend(Context->ClientSocket, ClientConnection, Notification);
 
-	S2C_DATA_NFY_BUDDY_POINTS* UnknownNotification = PacketBufferInit(ClientConnection->PacketBuffer, S2C, NFY_BUDDY_POINTS);
+	S2C_DATA_NFY_BUDDY_POINTS* UnknownNotification = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, NFY_BUDDY_POINTS);
 	/*
 	UnknownNotification->Unknown1[0] = 4;
 	UnknownNotification->Unknown1[1] = 1;
@@ -107,7 +109,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_PREMIUM_SERVICE) {
 CLIENT_PROCEDURE_BINDING(PURCHASE_PREMIUM_SERVICE) {
     if (!Character) goto error;
 
-    S2C_DATA_PURCHASE_PREMIUM_SERVICE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, PURCHASE_PREMIUM_SERVICE);
+    S2C_DATA_PURCHASE_PREMIUM_SERVICE* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, PURCHASE_PREMIUM_SERVICE);
     Response->Result = 1;
     Response->ServiceType = Packet->ServiceType;
 

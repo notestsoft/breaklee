@@ -28,14 +28,16 @@ error:
 IPC_PROCEDURE_BINDING(D2A, SEARCH) {
     if (!ClientConnection) return;
 
-    S2C_DATA_SEARCH* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, SEARCH);
+    PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Context->ClientSocket);
+
+    S2C_DATA_SEARCH* Response = PacketBufferInit(PacketBuffer, S2C, SEARCH);
     Response->Unknown1 = 0;
     Response->Unknown2 = 1;
     Response->Unknown3 = 0;
     Response->ResultCount = Packet->ResultCount;
 
     for (Int32 Index = 0; Index < Packet->ResultCount; Index += 1) {
-        S2C_DATA_SEARCH_RESULT_SLOT* ResponseSlot = PacketBufferAppendStruct(ClientConnection->PacketBuffer, S2C_DATA_SEARCH_RESULT_SLOT);
+        S2C_DATA_SEARCH_RESULT_SLOT* ResponseSlot = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_SEARCH_RESULT_SLOT);
         ResponseSlot->SlotIndex = Index;
         ResponseSlot->ItemID = Packet->Results[Index].ItemID;
         ResponseSlot->ItemOptions = Packet->Results[Index].ItemOptions;
@@ -45,7 +47,7 @@ IPC_PROCEDURE_BINDING(D2A, SEARCH) {
         ResponseSlot->Price = Packet->Results[Index].Price;
         ResponseSlot->AccountID = Packet->Results[Index].AccountID;
         ResponseSlot->NameLength = strlen(Packet->Results[Index].CharacterName);
-        PacketBufferAppendCString(ClientConnection->PacketBuffer, Packet->Results[Index].CharacterName);
+        PacketBufferAppendCString(PacketBuffer, Packet->Results[Index].CharacterName);
     }
 
     SocketSend(Context->ClientSocket, ClientConnection, Response);

@@ -28,7 +28,7 @@ error:
 IPC_PROCEDURE_BINDING(D2W, SET_CHARACTER_SLOT_ORDER) {
 	if (!ClientConnection) return;
 
-	S2C_DATA_SET_CHARACTER_SLOT_ORDER* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, SET_CHARACTER_SLOT_ORDER);
+	S2C_DATA_SET_CHARACTER_SLOT_ORDER* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, SET_CHARACTER_SLOT_ORDER);
 	Response->Result = Packet->Result;
 	SocketSend(Context->ClientSocket, ClientConnection, Response);
 }

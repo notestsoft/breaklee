@@ -13,7 +13,7 @@ CLIENT_PROCEDURE_BINDING(SELECT_TARGET_CHARACTER) {
 
 	Character->TargetCharacterID = Target->ID;
 
-	S2C_DATA_SELECT_TARGET_CHARACTER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SELECT_TARGET_CHARACTER);
+	S2C_DATA_SELECT_TARGET_CHARACTER* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, SELECT_TARGET_CHARACTER);
 	Response->Unknown1 = 0;
 	Response->CurrentHP = Target->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
 	Response->MaxHP = Target->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
@@ -23,7 +23,7 @@ CLIENT_PROCEDURE_BINDING(SELECT_TARGET_CHARACTER) {
 
 error:
 	{
-		S2C_DATA_SELECT_TARGET_CHARACTER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SELECT_TARGET_CHARACTER);
+		S2C_DATA_SELECT_TARGET_CHARACTER* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, SELECT_TARGET_CHARACTER);
 		SocketSend(Socket, Connection, Response);
 	}
 }

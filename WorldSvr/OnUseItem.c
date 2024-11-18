@@ -8,7 +8,7 @@
 static struct _RTCharacterInventoryInfo kInventoryInfoBackup;
 
 CLIENT_PROCEDURE_BINDING(USE_ITEM) {
-	S2C_DATA_USE_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, USE_ITEM);
+	S2C_DATA_USE_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, USE_ITEM);
 	Response->Result = S2C_DATA_USE_ITEM_RESULT_FAILED;
 
 	if (!Character) goto error;
@@ -69,7 +69,7 @@ CLIENT_PROCEDURE_BINDING(CONVERT_ITEM) {
 	RTItemDataRef TargetItemData = RTRuntimeGetItemDataByIndex(Runtime, TargetItemSlot->Item.ID);
 	if (!TargetItemData) goto error;
 
-	S2C_DATA_CONVERT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CONVERT_ITEM);
+	S2C_DATA_CONVERT_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, CONVERT_ITEM);
 	Response->Result = RUNTIME_ITEM_USE_RESULT_FAILED;
 
 	if (SourceItemData->ItemType == RUNTIME_ITEM_TYPE_COATING_KIT) {
@@ -137,7 +137,7 @@ CLIENT_PROCEDURE_BINDING(CONVERT_ITEM) {
 
 error:
 	{
-		S2C_DATA_CONVERT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, CONVERT_ITEM);
+		S2C_DATA_CONVERT_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, CONVERT_ITEM);
 		Response->Result = 1;
 		SocketSend(Socket, Connection, Response);
 		return;
@@ -153,7 +153,9 @@ CLIENT_PROCEDURE_BINDING(MULTI_CONVERT_ITEM) {
 	if (Packet->Length != sizeof(C2S_DATA_MULTI_CONVERT_ITEM) + TailLength) goto error;
 	if (Packet->SourceItemCount < 1 || Packet->TargetItemCount < 1) goto error;
 
-	S2C_DATA_MULTI_CONVERT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, MULTI_CONVERT_ITEM);
+	PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
+
+	S2C_DATA_MULTI_CONVERT_ITEM* Response = PacketBufferInit(PacketBuffer, S2C, MULTI_CONVERT_ITEM);
 	Response->Result = RUNTIME_ITEM_USE_RESULT_FAILED;
 
 	UInt16* SourceInventorySlots = &Packet->SourceInventorySlots[0];
@@ -177,9 +179,6 @@ CLIENT_PROCEDURE_BINDING(MULTI_CONVERT_ITEM) {
 
 		RTItemDataRef TargetItemData = RTRuntimeGetItemDataByIndex(Runtime, TargetItemSlot->Item.ID);
 		if (!TargetItemData) goto error;
-
-		S2C_DATA_MULTI_CONVERT_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, MULTI_CONVERT_ITEM);
-		Response->Result = RUNTIME_ITEM_USE_RESULT_FAILED;
 
 		if (SourceItemData->ItemType == RUNTIME_ITEM_TYPE_COATING_KIT) {
 			if (TargetItemData->ItemType != RUNTIME_ITEM_TYPE_VEHICLE_BIKE) goto error;
@@ -229,7 +228,7 @@ CLIENT_PROCEDURE_BINDING(MULTI_CONVERT_ITEM) {
 		if (TargetItemSlot) {
 			Response->ResultSlotCount += 1;
 
-			S2C_MULTI_CONVERT_ITEM_SLOT_INDEX* ResponseSlot = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_MULTI_CONVERT_ITEM_SLOT_INDEX);
+			S2C_MULTI_CONVERT_ITEM_SLOT_INDEX* ResponseSlot = PacketBufferAppendStruct(PacketBuffer, S2C_MULTI_CONVERT_ITEM_SLOT_INDEX);
 			ResponseSlot->ItemID = TargetItemSlot->Item.Serial;
 			ResponseSlot->ItemOptions = TargetItemSlot->ItemOptions;
 			ResponseSlot->InventorySlotIndex = TargetItemSlot->SlotIndex;
@@ -246,7 +245,7 @@ error:
 }
 
 CLIENT_PROCEDURE_BINDING(USE_ITEM_SAVER) {
-	S2C_DATA_USE_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, USE_ITEM);
+	S2C_DATA_USE_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, USE_ITEM);
 	Response->Result = S2C_DATA_USE_ITEM_RESULT_FAILED;
 
 	Int32 PacketLength = sizeof(C2S_DATA_USE_ITEM_SAVER) + Packet->InventorySlotCount * sizeof(C2S_DATA_USE_ITEM_SAVER_INVENTORY_SLOT);

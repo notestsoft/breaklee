@@ -29,7 +29,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER_LIST) {
     memcpy(Client->Characters, Packet->Characters, sizeof(Packet->Characters));
     Client->Flags |= CLIENT_FLAGS_CHARACTER_INDEX_LOADED;
 
-    S2C_DATA_GET_CHARACTERS* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, GET_CHARACTERS);
+    S2C_DATA_GET_CHARACTERS* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, GET_CHARACTERS);
     Response->IsSubpasswordSet = Client->IsSubpasswordSet;
     Response->CanJoinBeginnerGuild = 0;
     Response->AccountInfo = Client->AccountInfo;

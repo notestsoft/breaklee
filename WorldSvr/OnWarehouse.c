@@ -10,14 +10,16 @@ static struct _RTCharacterWarehouseInfo kWarehouseInfoBackup;
 CLIENT_PROCEDURE_BINDING(GET_WAREHOUSE) {
 	if (!Character) goto error;
 
-	S2C_DATA_GET_WAREHOUSE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, GET_WAREHOUSE);
+	PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
+
+	S2C_DATA_GET_WAREHOUSE* Response = PacketBufferInit(PacketBuffer, S2C, GET_WAREHOUSE);
 	Response->Count = Character->Data.WarehouseInfo.Info.SlotCount;
 	Response->Currency = Character->Data.WarehouseInfo.Info.Currency;
 
 	for (Int32 Index = 0; Index < Character->Data.WarehouseInfo.Info.SlotCount; Index += 1) {
 		RTItemSlotRef ItemSlot = &Character->Data.WarehouseInfo.Slots[Index];
 		
-		S2C_DATA_GET_WAREHOUSE_SLOT_INDEX* ResponseSlot = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_GET_WAREHOUSE_SLOT_INDEX);
+		S2C_DATA_GET_WAREHOUSE_SLOT_INDEX* ResponseSlot = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_GET_WAREHOUSE_SLOT_INDEX);
 		ResponseSlot->Item.Serial = ItemSlot->Item.Serial;
 		ResponseSlot->Unknown1 = ItemSlot->ItemSerial;
 		ResponseSlot->ItemOptions = ItemSlot->ItemOptions;
@@ -33,7 +35,7 @@ error:
 }
 
 CLIENT_PROCEDURE_BINDING(WAREHOUSE_CURRENCY_DEPOSIT) {
-	S2C_DATA_WAREHOUSE_CURRENCY_DEPOSIT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, WAREHOUSE_CURRENCY_DEPOSIT);
+	S2C_DATA_WAREHOUSE_CURRENCY_DEPOSIT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, WAREHOUSE_CURRENCY_DEPOSIT);
 
 	Response->Result = 1;
 
@@ -136,14 +138,14 @@ CLIENT_PROCEDURE_BINDING(SORT_WAREHOUSE) {
 	memcpy(&Character->Data.WarehouseInfo, TempWarehouse, sizeof(struct _RTCharacterWarehouseInfo));
 	Character->SyncMask.WarehouseInfo = true;
 
-	S2C_DATA_SORT_WAREHOUSE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SORT_WAREHOUSE);
+	S2C_DATA_SORT_WAREHOUSE* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, SORT_WAREHOUSE);
 	Response->Success = 1;
 	SocketSend(Socket, Connection, Response);
 	return;
 
 error:
 	{
-		S2C_DATA_SORT_WAREHOUSE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, SORT_WAREHOUSE);
+		S2C_DATA_SORT_WAREHOUSE* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, SORT_WAREHOUSE);
 		Response->Success = 0;
 		SocketSend(Socket, Connection, Response);
 	}

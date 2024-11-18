@@ -65,7 +65,7 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_UNLOCK_SLOT) {
     RTCharacterAddHonorMedalSlot(Runtime, Character, Packet->CategoryIndex, Packet->GroupIndex, Packet->SlotIndex);
     Character->SyncMask.InventoryInfo = true;
 
-    S2C_DATA_HONOR_MEDAL_UNLOCK_SLOT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, HONOR_MEDAL_UNLOCK_SLOT);
+    S2C_DATA_HONOR_MEDAL_UNLOCK_SLOT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, HONOR_MEDAL_UNLOCK_SLOT);
     Response->CategoryIndex = Packet->CategoryIndex;
     Response->GroupIndex = Packet->GroupIndex;
     Response->SlotIndex = Packet->SlotIndex;
@@ -75,7 +75,7 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_UNLOCK_SLOT) {
 
 error:
     {
-        S2C_DATA_HONOR_MEDAL_UNLOCK_SLOT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, HONOR_MEDAL_UNLOCK_SLOT);
+        S2C_DATA_HONOR_MEDAL_UNLOCK_SLOT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, HONOR_MEDAL_UNLOCK_SLOT);
         Response->CategoryIndex = Packet->CategoryIndex;
         Response->GroupIndex = Packet->GroupIndex;
         Response->SlotIndex = Packet->SlotIndex;
@@ -123,7 +123,7 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_ROLL_SLOT) {
     Character->SyncMask.AbilityInfo = true;
     Character->SyncMask.HonorMedalInfo = true;
 
-    S2C_DATA_HONOR_MEDAL_ROLL_SLOT* Response = PacketBufferInit(Connection->PacketBuffer, S2C, HONOR_MEDAL_ROLL_SLOT);
+    S2C_DATA_HONOR_MEDAL_ROLL_SLOT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, HONOR_MEDAL_ROLL_SLOT);
     Response->CategoryIndex = Packet->CategoryIndex;
     Response->GroupIndex = Packet->GroupIndex;
     Response->SlotIndex = Packet->SlotIndex;
@@ -148,7 +148,7 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_SEALING) {
 
     if (ItemData->ItemType != RUNTIME_ITEM_TYPE_MEDAL_SEAL_STONE) goto error;
 
-    S2C_DATA_HONOR_MEDAL_SEALING* Response = PacketBufferInit(Connection->PacketBuffer, S2C, HONOR_MEDAL_SEALING);
+    S2C_DATA_HONOR_MEDAL_SEALING* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, HONOR_MEDAL_SEALING);
     Response->Result = S2C_CHAOS_HONOR_MEDAL_SEAL_RESULT_ERROR;
 
     Bool IsSealing = Packet->GroupIndex > 0;
@@ -220,7 +220,7 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_SEALING) {
 
 error:
     {
-        S2C_DATA_HONOR_MEDAL_SEALING* Response = PacketBufferInit(Connection->PacketBuffer, S2C, HONOR_MEDAL_SEALING);
+        S2C_DATA_HONOR_MEDAL_SEALING* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, HONOR_MEDAL_SEALING);
         Response->Result = S2C_CHAOS_HONOR_MEDAL_SEAL_RESULT_ERROR;
         SocketSend(Socket, Connection, Response);
     }

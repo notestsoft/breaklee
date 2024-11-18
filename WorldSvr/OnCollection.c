@@ -59,7 +59,7 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
     );
     assert(CharacterCollectionSlot);
 
-    S2C_DATA_REGISTER_COLLECTION_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, REGISTER_COLLECTION_ITEM);
+    S2C_DATA_REGISTER_COLLECTION_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, REGISTER_COLLECTION_ITEM);
     Response->TypeID = Packet->TypeID;
     Response->Unknown1 = Packet->Unknown1;
     Response->CollectionID = Packet->CollectionID;
@@ -246,7 +246,8 @@ error:
 }
 
 CLIENT_PROCEDURE_BINDING(RECEIVE_COLLECTION_REWARD) {
-    S2C_DATA_RECEIVE_COLLECTION_REWARD* Response = PacketBufferInit(Connection->PacketBuffer, S2C, RECEIVE_COLLECTION_REWARD);
+    PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
+    S2C_DATA_RECEIVE_COLLECTION_REWARD* Response = PacketBufferInit(PacketBuffer, S2C, RECEIVE_COLLECTION_REWARD);
 
     // TODO: Check packet bounds based on InventorySlotCount...
 
@@ -274,7 +275,7 @@ CLIENT_PROCEDURE_BINDING(RECEIVE_COLLECTION_REWARD) {
         Character->SyncMask.CollectionInfo = true;
 
         Response->RewardType = CollectionKindInfoDetail->RewardType;
-        S2C_DATA_RECEIVE_COLLECTION_REWARD_CURRENCY* ResponseData = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_RECEIVE_COLLECTION_REWARD_CURRENCY);
+        S2C_DATA_RECEIVE_COLLECTION_REWARD_CURRENCY* ResponseData = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_RECEIVE_COLLECTION_REWARD_CURRENCY);
         ResponseData->Currency = Character->Data.AccountInfo.ForceGem;
     }
     else if (CollectionKindInfoDetail->RewardType == RUNTIME_DATA_COLLECTION_REWARD_TYPE_ITEM) {
@@ -295,7 +296,7 @@ CLIENT_PROCEDURE_BINDING(RECEIVE_COLLECTION_REWARD) {
 
         Response->RewardType = CollectionKindInfoDetail->RewardType;
         Response->InventorySlotCount = 1;
-        S2C_DATA_RECEIVE_COLLECTION_REWARD_ITEM* Slot = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_RECEIVE_COLLECTION_REWARD_ITEM);
+        S2C_DATA_RECEIVE_COLLECTION_REWARD_ITEM* Slot = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_RECEIVE_COLLECTION_REWARD_ITEM);
         Slot->ItemID = ItemSlot.Item;
         Slot->ItemOptions = ItemSlot.ItemOptions;
         Slot->InventorySlotIndex = ItemSlot.SlotIndex;

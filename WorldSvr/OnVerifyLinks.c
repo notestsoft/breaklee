@@ -47,7 +47,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_LINKS) {
 
 error:
 	{
-		S2C_DATA_VERIFY_LINKS* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_LINKS);
+		S2C_DATA_VERIFY_LINKS* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, VERIFY_LINKS);
 		Response->ServerID = Packet->GroupIndex;
 		Response->WorldID = Packet->NodeIndex;
 		Response->Status = 0;
@@ -58,7 +58,7 @@ error:
 IPC_PROCEDURE_BINDING(L2W, WORLD_VERIFY_LINKS) {
 	if (!ClientConnection) return;
 
-	S2C_DATA_VERIFY_LINKS* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, VERIFY_LINKS);
+	S2C_DATA_VERIFY_LINKS* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, VERIFY_LINKS);
 	Response->ServerID = Context->Config.WorldSvr.GroupIndex;
 	Response->WorldID = Context->Config.WorldSvr.NodeIndex;
 	Response->Status = Packet->Success;
@@ -202,7 +202,7 @@ error:
 IPC_PROCEDURE_BINDING(W2W, RESPONSE_VERIFY_LINKS) {
 	if (!ClientConnection) return;
 
-	S2C_DATA_VERIFY_LINKS* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, VERIFY_LINKS);
+	S2C_DATA_VERIFY_LINKS* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, VERIFY_LINKS);
 	Response->ServerID = Packet->GroupIndex;
 	Response->WorldID = Packet->NodeIndex;
 	Response->Status = Packet->Status;
@@ -247,7 +247,7 @@ error:
 IPC_PROCEDURE_BINDING(A2W, DISCONNECT_CLIENT) {
 	if (!ClientConnection) return;
 
-	S2C_DATA_CLOSE_AUCTION_HOUSE* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, CLOSE_AUCTION_HOUSE);
+	S2C_DATA_CLOSE_AUCTION_HOUSE* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, CLOSE_AUCTION_HOUSE);
 	Response->Result = Packet->Result;
 	SocketSend(Context->ClientSocket, ClientConnection, Response);
 }

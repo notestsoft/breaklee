@@ -9,7 +9,7 @@ Void StartDisconnectTimer(
     UInt32 Timeout,
     UInt32 SystemMessage
 ) {
-    S2C_DATA_DISCONNECT_TIMER* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DISCONNECT_TIMER);
+    S2C_DATA_DISCONNECT_TIMER* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, DISCONNECT_TIMER);
     Response->Timeout = Timeout;
     Client->Flags |= CLIENT_FLAGS_CHECK_DISCONNECT_TIMER;
     Client->DisconnectTimestamp = GetTimestampMs() + Timeout;

@@ -1,15 +1,6 @@
 #include "PacketBuffer.h"
 #include "PacketSignature.h"
 
-struct _PacketBuffer {
-    AllocatorRef Allocator;
-    MemoryBufferRef MemoryBuffer;
-    UInt16 ProtocolIdentifier;
-    UInt16 ProtocolVersion;
-    UInt16 ProtocolExtension;
-    Bool IsClient;
-};
-
 PacketBufferRef PacketBufferCreate(
     AllocatorRef Allocator,
     UInt16 ProtocolIdentifier,
@@ -21,20 +12,38 @@ PacketBufferRef PacketBufferCreate(
 ) {
     PacketBufferRef PacketBuffer = (PacketBufferRef)AllocatorAllocate(Allocator, sizeof(struct _PacketBuffer));
     if (!PacketBuffer) Fatal("PacketBuffer allocation failed!");
-    
+    PacketBufferInitialize(PacketBuffer, Allocator, ProtocolIdentifier, ProtocolVersion, ProtocolExtension, Alignment, Length, IsClient);
+    return PacketBuffer;
+}
+
+Void PacketBufferInitialize(
+    PacketBufferRef PacketBuffer,
+    AllocatorRef Allocator,
+    UInt16 ProtocolIdentifier,
+    UInt16 ProtocolVersion,
+    UInt16 ProtocolExtension,
+    Index Alignment,
+    Index Length,
+    Bool IsClient
+) {
     PacketBuffer->Allocator = Allocator;
     PacketBuffer->MemoryBuffer = MemoryBufferCreate(Allocator, Alignment, Length);
     PacketBuffer->ProtocolIdentifier = ProtocolIdentifier;
     PacketBuffer->ProtocolVersion = ProtocolVersion;
     PacketBuffer->ProtocolExtension = ProtocolExtension;
     PacketBuffer->IsClient = IsClient;
-    return PacketBuffer;
+}
+
+Void PacketBufferFree(
+    PacketBufferRef PacketBuffer
+) {
+    MemoryBufferDestroy(PacketBuffer->MemoryBuffer);
 }
 
 Void PacketBufferDestroy(
     PacketBufferRef PacketBuffer
 ) {
-    MemoryBufferDestroy(PacketBuffer->MemoryBuffer);
+    PacketBufferFree(PacketBuffer);
     AllocatorDeallocate(PacketBuffer->Allocator, PacketBuffer);
 }
 

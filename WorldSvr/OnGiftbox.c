@@ -9,18 +9,19 @@ Void SendGiftBoxPricePoolList(
     ServerContextRef Context,
     ClientContextRef Client
 ) {
-    S2C_DATA_GIFTBOX_PRICE_POOL_LIST* Notification = PacketBufferInit(Client->Connection->PacketBuffer, S2C, GIFTBOX_PRICE_POOL_LIST);
+    PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Context->ClientSocket);
+    S2C_DATA_GIFTBOX_PRICE_POOL_LIST* Notification = PacketBufferInit(PacketBuffer, S2C, GIFTBOX_PRICE_POOL_LIST);
     Notification->Count = Context->Runtime->Context->GiftBoxPricePoolCount;
 
     for (Int32 PoolIndex = 0; PoolIndex < Context->Runtime->Context->GiftBoxPricePoolCount; PoolIndex += 1) {
         RTDataGiftBoxPricePoolRef PricePool = &Context->Runtime->Context->GiftBoxPricePoolList[PoolIndex];
 
-        S2C_DATA_GIFTBOX_PRICE_POOL* NotificationPool = PacketBufferAppendStruct(Client->Connection->PacketBuffer, S2C_DATA_GIFTBOX_PRICE_POOL);
+        S2C_DATA_GIFTBOX_PRICE_POOL* NotificationPool = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_GIFTBOX_PRICE_POOL);
         NotificationPool->SlotIndex = PricePool->Index;
         NotificationPool->PriceCount = PricePool->GiftBoxPricePoolValueCount;
 
         for (Int32 PriceIndex = 0; PriceIndex < PricePool->GiftBoxPricePoolValueCount; PriceIndex += 1) {
-            PacketBufferAppendValue(Client->Connection->PacketBuffer, Int32, PricePool->GiftBoxPricePoolValueList[PriceIndex].Price);
+            PacketBufferAppendValue(PacketBuffer, Int32, PricePool->GiftBoxPricePoolValueList[PriceIndex].Price);
         }
     }
 
@@ -30,11 +31,12 @@ Void SendGiftBoxPricePoolList(
 CLIENT_PROCEDURE_BINDING(OPEN_GIFTBOX_ROLL) {
     if (!Character) goto error;
 
-    S2C_DATA_OPEN_GIFTBOX_ROLL* Response = PacketBufferInit(Connection->PacketBuffer, S2C, OPEN_GIFTBOX_ROLL);
+    PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
+    S2C_DATA_OPEN_GIFTBOX_ROLL* Response = PacketBufferInit(PacketBuffer, S2C, OPEN_GIFTBOX_ROLL);
     if (RTCharacterRollGiftBox(Runtime, Character, Packet->SlotIndex)) {
         Response->Count = 1;
         
-        S2C_DATA_OPEN_GIFTBOX_ROLL_SLOT* ResponseSlot = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_OPEN_GIFTBOX_ROLL_SLOT);
+        S2C_DATA_OPEN_GIFTBOX_ROLL_SLOT* ResponseSlot = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_OPEN_GIFTBOX_ROLL_SLOT);
         ResponseSlot->SlotIndex = Packet->SlotIndex;
         ResponseSlot->ItemID = Character->Data.GiftboxInfo.RewardSlots[Packet->SlotIndex].ItemID.Serial;
         ResponseSlot->ItemOptions = Character->Data.GiftboxInfo.RewardSlots[Packet->SlotIndex].ItemOptions.Serial;
@@ -56,11 +58,13 @@ CLIENT_PROCEDURE_BINDING(OPEN_GIFTBOX_RECEIVE) {
     // TODO: Add support for multiple reward items
     if (Packet->Count != 1) goto error;
 
-    S2C_DATA_OPEN_GIFTBOX_RECEIVE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, OPEN_GIFTBOX_RECEIVE);
+    PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
+
+    S2C_DATA_OPEN_GIFTBOX_RECEIVE* Response = PacketBufferInit(PacketBuffer, S2C, OPEN_GIFTBOX_RECEIVE);
     if (RTCharacterReceiveGiftBox(Runtime, Character, Packet->SlotIndex, Packet->Data[0].InventorySlotIndex, Packet->Data[0].StackSize)) {
         Response->Count = 1;
 
-        S2C_DATA_OPEN_GIFTBOX_RECEIVE_SLOT* ResponseSlot = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_OPEN_GIFTBOX_RECEIVE_SLOT);
+        S2C_DATA_OPEN_GIFTBOX_RECEIVE_SLOT* ResponseSlot = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_OPEN_GIFTBOX_RECEIVE_SLOT);
         ResponseSlot->SlotIndex = Packet->SlotIndex;
 
         RTGiftBoxSlotRef GiftBoxSlot = RTCharacterGetGiftBox(Runtime, Character, Packet->SlotIndex);
@@ -71,7 +75,7 @@ CLIENT_PROCEDURE_BINDING(OPEN_GIFTBOX_RECEIVE) {
 
         RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->Data[0].InventorySlotIndex);
         if (ItemSlot) {
-            S2C_DATA_OPEN_GIFTBOX_RECEIVE_ITEMSLOT* ResponseItemSlot = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_OPEN_GIFTBOX_RECEIVE_ITEMSLOT);
+            S2C_DATA_OPEN_GIFTBOX_RECEIVE_ITEMSLOT* ResponseItemSlot = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_OPEN_GIFTBOX_RECEIVE_ITEMSLOT);
             ResponseSlot->ItemCount = 1;
             ResponseItemSlot->InventorySlotIndex = ItemSlot->SlotIndex;
             ResponseItemSlot->ItemID = ItemSlot->Item.Serial;

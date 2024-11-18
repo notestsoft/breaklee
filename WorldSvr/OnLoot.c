@@ -17,7 +17,7 @@ CLIENT_PROCEDURE_BINDING(LOOT_INVENTORY_ITEM) {
         Packet->InventorySlotIndex
     );
 
-    S2C_DATA_LOOT_INVENTORY_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOOT_INVENTORY_ITEM);
+    S2C_DATA_LOOT_INVENTORY_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, LOOT_INVENTORY_ITEM);
     Response->Result = Result.Result;
     Response->ItemID = Result.ItemID.Serial;
     Response->ItemOptions = Result.ItemOptions;
@@ -27,7 +27,7 @@ CLIENT_PROCEDURE_BINDING(LOOT_INVENTORY_ITEM) {
 
 error:
     {
-        S2C_DATA_LOOT_INVENTORY_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOOT_INVENTORY_ITEM);
+        S2C_DATA_LOOT_INVENTORY_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, LOOT_INVENTORY_ITEM);
         Response->Result = S2C_DATA_LOOT_RESULT_OWNERSHIP_ERROR;
         SocketSend(Socket, Connection, Response);
     }
@@ -41,7 +41,7 @@ CLIENT_PROCEDURE_BINDING(LOOT_CURRENCY_ITEM) {
     RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
     if (!World) goto error;
 
-    S2C_DATA_LOOT_CURRENCY_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOOT_CURRENCY_ITEM);
+    S2C_DATA_LOOT_CURRENCY_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, LOOT_CURRENCY_ITEM);
     Response->Result = S2C_DATA_LOOT_RESULT_SUCCESS;
 
     for (Int32 Index = 0; Index < Packet->Count; Index++) {
@@ -75,7 +75,9 @@ CLIENT_PROCEDURE_BINDING(LOOT_GROUP_ITEM) {
     Int32 PacketLength = sizeof(C2S_DATA_LOOT_GROUP_ITEM) + sizeof(C2S_DATA_LOOT_GROUP_ITEM_INDEX) * Packet->ItemCount;
     if (Packet->Length != PacketLength) goto error;
 
-    S2C_DATA_LOOT_GROUP_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOOT_GROUP_ITEM);
+    PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
+
+    S2C_DATA_LOOT_GROUP_ITEM* Response = PacketBufferInit(PacketBuffer, S2C, LOOT_GROUP_ITEM);
     Response->Result = 1;
     Response->ItemCount = 0;
 
@@ -95,7 +97,7 @@ CLIENT_PROCEDURE_BINDING(LOOT_GROUP_ITEM) {
             break;
         }
         
-        S2C_DATA_LOOT_GROUP_ITEM_INDEX* ResponseItem = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_LOOT_GROUP_ITEM_INDEX);
+        S2C_DATA_LOOT_GROUP_ITEM_INDEX* ResponseItem = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_LOOT_GROUP_ITEM_INDEX);
         ResponseItem->ItemID = Result.ItemID.Serial;
         ResponseItem->ItemOptions = Result.ItemOptions;
         ResponseItem->InventorySlotIndex = Result.InventorySlotIndex;
@@ -107,7 +109,7 @@ CLIENT_PROCEDURE_BINDING(LOOT_GROUP_ITEM) {
 
 error:
     {
-        S2C_DATA_LOOT_GROUP_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOOT_GROUP_ITEM);
+        S2C_DATA_LOOT_GROUP_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, LOOT_GROUP_ITEM);
         Response->Result = S2C_DATA_LOOT_RESULT_OWNERSHIP_ERROR;
         SocketSend(Socket, Connection, Response);
     }

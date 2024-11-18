@@ -5,7 +5,7 @@
 #include "Server.h"
 
 CLIENT_PROCEDURE_BINDING(DEINITIALIZE) {
-    S2C_DATA_DEINITIALIZE* Response = PacketBufferInit(Connection->PacketBuffer, S2C, DEINITIALIZE);
+    S2C_DATA_DEINITIALIZE* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, DEINITIALIZE);
     Response->Reason = Packet->Reason;
 
     // TODO: Save solo dungeon to party svr

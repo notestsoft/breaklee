@@ -7,14 +7,16 @@
 
 CLIENT_PROCEDURE_BINDING(ROLL_DICE) {
 	if (!Character) goto error;
+	
+	PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
 
-	S2C_DATA_NFY_USER_MESSAGE* Notification = PacketBufferInit(Context->ClientSocket->PacketBuffer, S2C, NFY_USER_MESSAGE);
+	S2C_DATA_NFY_USER_MESSAGE* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_USER_MESSAGE);
 	Notification->MessageType = 10;
 	Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
 	Notification->NameLength = strlen(Character->Name) + 1;
 	CStringCopySafe(Notification->Name, MAX_CHARACTER_NAME_LENGTH + 1, Character->Name);
 
-	S2C_DATA_NFY_USER_MESSAGE_ROLL_DICE* RollDice = PacketBufferAppendStruct(Context->ClientSocket->PacketBuffer, S2C_DATA_NFY_USER_MESSAGE_ROLL_DICE);
+	S2C_DATA_NFY_USER_MESSAGE_ROLL_DICE* RollDice = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_NFY_USER_MESSAGE_ROLL_DICE);
 	RollDice->Value = RandomRange(
 		&Client->DiceSeed,
 		Context->Config.WorldSvr.MinRollDiceValue,

@@ -80,6 +80,7 @@ SocketRef ServerCreateSocket(
     Int32 ReadBufferSize,
     Int32 WriteBufferSize,
     Int32 MaxConnectionCount,
+    Int32 PacketBufferBacklogSize,
     Bool LogPackets,
     ServerConnectionCallback OnConnect,
     ServerConnectionCallback OnDisconnect
@@ -95,6 +96,7 @@ SocketRef ServerCreateSocket(
         ReadBufferSize,
         WriteBufferSize,
         MaxConnectionCount,
+        PacketBufferBacklogSize,
         LogPackets,
         _ServerSocketOnConnect,
         _ServerSocketOnDisconnect,

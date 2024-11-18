@@ -16,7 +16,7 @@ CLIENT_PROCEDURE_BINDING(ADD_CHARACTER_STATS) {
 
     Bool Success = RTCharacterAddStats(Runtime, Character, (Int32*)Packet->StatDelta);
     
-    S2C_DATA_ADD_CHARACTER_STATS* Response = PacketBufferInit(Connection->PacketBuffer, S2C, ADD_CHARACTER_STATS);
+    S2C_DATA_ADD_CHARACTER_STATS* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, ADD_CHARACTER_STATS);
     Response->Result = Success ? 0 : 1;
     Response->Stat[RUNTIME_CHARACTER_STAT_STR] = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_STR];
     Response->Stat[RUNTIME_CHARACTER_STAT_DEX] = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_DEX];
@@ -86,7 +86,7 @@ CLIENT_PROCEDURE_BINDING(REMOVE_CHARACTER_STATS) {
         }
     }
 
-    S2C_DATA_REMOVE_CHARACTER_STATS* Response = PacketBufferInit(Connection->PacketBuffer, S2C, REMOVE_CHARACTER_STATS);
+    S2C_DATA_REMOVE_CHARACTER_STATS* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, REMOVE_CHARACTER_STATS);
     Response->Result = 0;
     Response->Stat[RUNTIME_CHARACTER_STAT_STR] = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_STR];
     Response->Stat[RUNTIME_CHARACTER_STAT_DEX] = Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_DEX];

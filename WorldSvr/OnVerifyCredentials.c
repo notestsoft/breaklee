@@ -26,7 +26,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_CREDENTIALS) {
 
 error: 
 	{
-		S2C_DATA_VERIFY_CREDENTIALS* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_CREDENTIALS);
+		S2C_DATA_VERIFY_CREDENTIALS* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, VERIFY_CREDENTIALS);
 		Response->Success = false;
 		SocketSend(Socket, Connection, Response);
 	}
@@ -39,7 +39,7 @@ IPC_PROCEDURE_BINDING(L2W, VERIFY_PASSWORD) {
 		Client->PasswordVerificationTimestamp = GetTimestampMs();
 	}
 
-	S2C_DATA_VERIFY_CREDENTIALS* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, VERIFY_CREDENTIALS);
+	S2C_DATA_VERIFY_CREDENTIALS* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, VERIFY_CREDENTIALS);
 	Response->Success = Packet->Success;
     SocketSend(Context->ClientSocket, ClientConnection, Response);
 }
@@ -68,7 +68,7 @@ IPC_PROCEDURE_BINDING(D2W, VERIFY_CREDENTIALS_SUBPASSWORD) {
 		Client->PasswordVerificationTimestamp = GetTimestampMs();
 	}
 
-	S2C_DATA_VERIFY_CREDENTIALS_SUBPASSWORD* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, VERIFY_CREDENTIALS_SUBPASSWORD);
+	S2C_DATA_VERIFY_CREDENTIALS_SUBPASSWORD* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, VERIFY_CREDENTIALS_SUBPASSWORD);
 	Response->Success = Packet->Success;
 	SocketSend(Context->ClientSocket, ClientConnection, Response);
 }
@@ -97,7 +97,7 @@ error:
 IPC_PROCEDURE_BINDING(D2W, VERIFY_SUBPASSWORD) {
 	if (!ClientConnection) return;
 
-	S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, VERIFY_SUBPASSWORD);
+	S2C_DATA_VERIFY_SUBPASSWORD* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, VERIFY_SUBPASSWORD);
 	Response->Success = Packet->Success;
 	Response->FailureCount = Packet->FailureCount;
 	Response->IsLocked = Packet->IsLocked;

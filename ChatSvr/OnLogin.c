@@ -8,7 +8,7 @@ CLIENT_PROCEDURE_BINDING(LOGIN) {
 
 	Client->WorldServerIndex = Packet->WorldServerIndex;
 
-	S2C_DATA_LOGIN* Response = PacketBufferInit(Connection->PacketBuffer, S2C, LOGIN);
+	S2C_DATA_LOGIN* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, LOGIN);
 	Response->Result = 0;
 	SocketSend(Socket, Connection, Response);
 	return;

@@ -8,7 +8,7 @@ CLIENT_PROCEDURE_BINDING(VERIFY_CAPTCHA) {
 		return;
 	}
 
-	S2C_DATA_VERIFY_CAPTCHA* Response = PacketBufferInit(Connection->PacketBuffer, S2C, VERIFY_CAPTCHA);
+	S2C_DATA_VERIFY_CAPTCHA* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, VERIFY_CAPTCHA);
 	if (Context->Config.Login.CaptchaVerificationEnabled) {
 		if (Client->Captcha) {
 			Response->Success = CStringIsEqual(Client->Captcha->Name, Packet->Captcha);

@@ -70,7 +70,7 @@ CLIENT_PROCEDURE_BINDING(AUCTION_HOUSE_REGISTER_ITEM) {
 
 error:
     {
-        S2C_DATA_AUCTION_HOUSE_REGISTER_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, AUCTION_HOUSE_REGISTER_ITEM);
+        S2C_DATA_AUCTION_HOUSE_REGISTER_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, AUCTION_HOUSE_REGISTER_ITEM);
         Response->Result = 179;
         Response->ExpirationDate = 0;
         SocketSend(Socket, Connection, Response);
@@ -80,7 +80,7 @@ error:
 IPC_PROCEDURE_BINDING(D2W, AUCTION_REGISTER_ITEM) {
     if (!ClientConnection) return;
 
-    S2C_DATA_AUCTION_HOUSE_REGISTER_ITEM* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, AUCTION_HOUSE_REGISTER_ITEM);
+    S2C_DATA_AUCTION_HOUSE_REGISTER_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, AUCTION_HOUSE_REGISTER_ITEM);
     Response->Result = Packet->Result;
     Response->ExpirationDate = Packet->ExpirationDate;
     SocketSend(Context->ClientSocket, ClientConnection, Response);
@@ -170,7 +170,7 @@ IPC_PROCEDURE_BINDING(D2W, AUCTION_UPDATE_ITEM) {
         Character->SyncMask.InventoryInfo = true;
     }
 
-    S2C_DATA_AUCTION_HOUSE_UPDATE_ITEM* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, AUCTION_HOUSE_UPDATE_ITEM);
+    S2C_DATA_AUCTION_HOUSE_UPDATE_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, AUCTION_HOUSE_UPDATE_ITEM);
     Response->Result = Packet->Result;
     Response->ExpirationDate = Packet->ExpirationDate;
     SocketSend(Context->ClientSocket, ClientConnection, Response);
@@ -217,7 +217,7 @@ IPC_PROCEDURE_BINDING(D2W, AUCTION_UNREGISTER_ITEM) {
         Character->SyncMask.InventoryInfo = true;
     }
 
-    S2C_DATA_AUCTION_HOUSE_UNREGISTER_ITEM* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, AUCTION_HOUSE_UNREGISTER_ITEM);
+    S2C_DATA_AUCTION_HOUSE_UNREGISTER_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, AUCTION_HOUSE_UNREGISTER_ITEM);
     Response->Result = Packet->Result;
     SocketSend(Context->ClientSocket, ClientConnection, Response);
 }
@@ -256,7 +256,7 @@ IPC_PROCEDURE_BINDING(D2W, AUCTION_PROCEED_ITEM) {
     Character->Data.Info.Alz += Packet->ReceivedAlz;
     Character->SyncMask.Info = true;
 
-    S2C_DATA_AUCTION_HOUSE_PROCEED_ITEM* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, AUCTION_HOUSE_PROCEED_ITEM);
+    S2C_DATA_AUCTION_HOUSE_PROCEED_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, AUCTION_HOUSE_PROCEED_ITEM);
     Response->Result = Packet->Result;
     Response->SoldItemCount = Packet->SoldItemCount;
     SocketSend(Context->ClientSocket, ClientConnection, Response);
@@ -295,7 +295,7 @@ CLIENT_PROCEDURE_BINDING(AUCTION_HOUSE_BUY_ITEM) {
 
 error:
     {
-        S2C_DATA_AUCTION_HOUSE_BUY_ITEM* Response = PacketBufferInit(Connection->PacketBuffer, S2C, AUCTION_HOUSE_BUY_ITEM);
+        S2C_DATA_AUCTION_HOUSE_BUY_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, AUCTION_HOUSE_BUY_ITEM);
         Response->Result = 1;
         SocketSend(Socket, Connection, Response);
     }
@@ -326,7 +326,7 @@ IPC_PROCEDURE_BINDING(D2W, AUCTION_BUY_ITEM) {
     Character->SyncMask.Info = true;
     Character->SyncMask.InventoryInfo = true;
 
-    S2C_DATA_AUCTION_HOUSE_BUY_ITEM* Response = PacketBufferInit(ClientConnection->PacketBuffer, S2C, AUCTION_HOUSE_BUY_ITEM);
+    S2C_DATA_AUCTION_HOUSE_BUY_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, AUCTION_HOUSE_BUY_ITEM);
     Response->Result = Packet->Result;
     SocketSend(Context->ClientSocket, ClientConnection, Response);
 }

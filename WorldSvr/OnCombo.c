@@ -9,7 +9,7 @@ CLIENT_PROCEDURE_BINDING(COMBO_SKILL_EVENT) {
 	if (!Character) goto error;
 
 	if (!RTCharacterIsAlive(Runtime, Character)) {
-		S2C_DATA_NFY_ERROR* Error = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_ERROR);
+		S2C_DATA_NFY_ERROR* Error = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, NFY_ERROR);
 		Error->ErrorCommand = Packet->Command;
 		Error->ErrorSubCommand = 0;
 		Error->ErrorCode = 15;
@@ -34,7 +34,7 @@ CLIENT_PROCEDURE_BINDING(COMBO_SKILL_EVENT) {
 
 	if (!Character->Data.StyleInfo.ExtendedStyle.IsComboActive) {
 		if (Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT] < SkillData->Sp) {
-			S2C_DATA_NFY_COMBO_SKILL_SET* Response = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_COMBO_SKILL_SET);
+			S2C_DATA_NFY_COMBO_SKILL_SET* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, NFY_COMBO_SKILL_SET);
 			Response->Result = S2C_DATA_COMBO_SKILL_SET_RESULT_FAILURE;
 			Response->CurrentMP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 			SocketSend(Socket, Connection, Response);
@@ -66,12 +66,12 @@ CLIENT_PROCEDURE_BINDING(COMBO_SKILL_EVENT) {
 		Character->SyncMask.StyleInfo = true;
 	}
 
-	S2C_DATA_NFY_COMBO_SKILL_SET* Response = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_COMBO_SKILL_SET);
+	S2C_DATA_NFY_COMBO_SKILL_SET* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, NFY_COMBO_SKILL_SET);
 	Response->Result = S2C_DATA_COMBO_SKILL_SET_RESULT_SUCCESS;
 	Response->CurrentMP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 	SocketSend(Socket, Connection, Response);
 
-	S2C_DATA_NFY_COMBO_SKILL_EVENT* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_COMBO_SKILL_EVENT);
+	S2C_DATA_NFY_COMBO_SKILL_EVENT* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, NFY_COMBO_SKILL_EVENT);
 	Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
 	Notification->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
 	BroadcastToWorld(
@@ -84,7 +84,7 @@ CLIENT_PROCEDURE_BINDING(COMBO_SKILL_EVENT) {
 	);
 
 	if (Character->Data.StyleInfo.ExtendedStyle.IsComboActive) {
-		S2C_DATA_NFY_CHARACTER_DATA* Notification = PacketBufferInit(Connection->PacketBuffer, S2C, NFY_CHARACTER_DATA);
+		S2C_DATA_NFY_CHARACTER_DATA* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, NFY_CHARACTER_DATA);
 		Notification->Type = S2C_DATA_CHARACTER_UPDATE_TYPE_SP_DECREASE;
 		Notification->SP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
 		SocketSend(Socket, Connection, Notification);
