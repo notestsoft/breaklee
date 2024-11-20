@@ -137,35 +137,29 @@ Void KeychainEncryptPacket(
         return;
     }
 
-    // TODO: Get rid of the malloc!
-    UInt8* Buffer = malloc(Length + 4);
-    memset(Buffer, 0, Length + 4);
-    assert(Buffer);
-    memcpy(Buffer, Packet, Length);
+    *((UInt32*)Packet) ^= 0x7AB38CF1;
 
-    *((UInt32*)Buffer) ^= 0x7AB38CF1;
-
-    UInt32 Token = *((UInt32*)Buffer);
+    UInt32 Token = *((UInt32*)Packet);
     Token &= 0x3FFF;
     Token *= 4;
     Token = *((UInt32*)&Keychain->Key[Token]);
 
     Int32 Index, Size = (Length - 4) / 4;
     for (Index = 4; Size > 0; Index += 4, Size--) {
-        UInt32 Value = *((UInt32*)&Buffer[Index]);
+        UInt32 Value = *((UInt32*)&Packet[Index]);
         Value ^= Token;
-        *((UInt32*)&Buffer[Index]) = Value;
+        *((UInt32*)&Packet[Index]) = Value;
 
         Value &= 0x3FFF;
         Value *= 4;
         Token = *((UInt32*)&Keychain->Key[Value]);
     }
 
-    Token &= Keychain->Mask[((Length - 4) & 3)];
-    *((UInt32*)&Buffer[Index]) ^= Token;
-
-    memcpy(Packet, Buffer, Length);
-    free(Buffer);
+    Int32 RemainingSize = ((Length - 4) & 3);
+    Token &= Keychain->Mask[RemainingSize];
+    for (Int32 Offset = 0; Offset < RemainingSize; Offset++) {
+        Packet[Index + Offset] ^= (UInt8)(Token >> (Offset * 8)) & 0xFF;
+    }
 }
 
 Void KeychainDecryptClientPacket(
