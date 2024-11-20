@@ -2712,6 +2712,7 @@ CLIENT_PROTOCOL(C2S, PARTY_CHANGE_LEADER, DEFAULT, 2023,
 
 CLIENT_PROTOCOL(S2C, PARTY_CHANGE_LEADER, DEFAULT, 2023,
     Int32 Result;
+    UInt32 CharacterIndex;
 )
 
 CLIENT_PROTOCOL(S2C, NFY_PARTY_CHANGE_LEADER, DEFAULT, 2024,
@@ -2736,9 +2737,9 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_PARTY_MEMBER_DATA,
     Int32 PositionY;
     Int16 MaxSP;
     Int16 CurrentSP;
-    Int32 Unknown2;
-    Int32 Unknown3;
-    UInt8 Unknown4[24];
+    Int32 SpiritRaiseCooldown;
+    Int32 HasBlessingBeadPlus;
+    UInt32 MercenaryDurations[RUNTIME_PARTY_MAX_MERCENARY_COUNT];
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_PARTY_UPDATE_MEMBER,
@@ -2794,7 +2795,6 @@ CLIENT_PROTOCOL(S2C, NFY_PARTY_INIT, DEFAULT, 2056,
     UInt32 DungeonIndex;
     UInt16 Unknown1;
     RTEntityID PartyID;
-    //RTEntityID PartyLeaderID;
     UInt32 PartyLeaderIndex;
     Int32 Unknown2;
     UInt8 Unknown3;

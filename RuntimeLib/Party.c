@@ -13,3 +13,14 @@ RTPartySlotRef RTPartyGetMember(
 
     return NULL;
 }
+
+Bool RTPartyChangeLeader(
+    RTPartyRef Party,
+    Index CharacterIndex
+) {
+    RTPartySlotRef PartySlot = RTPartyGetMember(Party, CharacterIndex);
+    if (!PartySlot) return false;
+
+    Party->LeaderCharacterIndex = CharacterIndex;
+    return true;
+}

@@ -167,7 +167,6 @@ Int32 main(Int32 argc, CString* argv) {
     ServerRun(Server);
 
     RTPartyManagerDestroy(ServerContext.PartyManager);
-    DiagnosticTeardown();
     
     return EXIT_SUCCESS;
 }

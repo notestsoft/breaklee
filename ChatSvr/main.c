@@ -136,7 +136,6 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
 #include "IPCCommands.h"
 
     ServerRun(Server);
-    DiagnosticTeardown();
     
     return EXIT_SUCCESS;
 }

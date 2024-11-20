@@ -1,11 +1,18 @@
+#include "Application.h"
 #include "Diagnostic.h"
 #include "String.h"
 #include "FileIO.h"
 #include "Util.h"
 
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #ifdef _WIN32
 #include <windows.h>
+#include <dbghelp.h>
 #else
+#include <execinfo.h>
 #include <pthread.h>
 #include <unistd.h>
 #ifdef __APPLE__
@@ -102,6 +109,72 @@ Void _DefaultDiagnosticHandler(
     }
 }
 
+
+Void _OnExitDefault(
+    Int32 Signal,
+    Void* Context
+) {
+    DiagnosticTeardown();
+}
+
+Void _OnCrashDefault(
+    Int32 Signal,
+    Void* Context
+) {
+    CString SignalDescription = "Unknown Signal";
+    switch (Signal) {
+    case SIGSEGV: SignalDescription = "SIGSEGV (Segmentation Fault)"; break;
+    case SIGABRT: SignalDescription = "SIGABRT (Aborted)"; break;
+    case SIGFPE:  SignalDescription = "SIGFPE (Floating Point Exception)"; break;
+    case SIGILL:  SignalDescription = "SIGILL (Illegal Instruction)"; break;
+    default: break;
+    }
+
+    Error("Caught signal: %s (%d)", SignalDescription, Signal);
+
+#ifdef _WIN32
+    Void* BackTrace[30];
+    HANDLE Process = GetCurrentProcess();
+    SymInitialize(Process, NULL, TRUE);
+
+    USHORT Frames = CaptureStackBackTrace(0, 30, BackTrace, NULL);
+    Error("Stack trace (%d frames):", Frames);
+
+    SYMBOL_INFO_PACKAGE SymbolInfo;
+    SYMBOL_INFO* Symbol = &SymbolInfo.si;
+    Symbol->MaxNameLen = MAX_SYM_NAME;
+    Symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+
+    for (USHORT Index = 0; Index < Frames; Index += 1) {
+        if (SymFromAddr(Process, (DWORD64)(BackTrace[Index]), 0, Symbol)) {
+            Error("%u: %s - 0x%0llX", Index, Symbol->Name, Symbol->Address);
+        }
+        else {
+            Error("%u: [unknown]", Index);
+        }
+    }
+
+    SymCleanup(Process);
+#else
+    Void* BackTrace[30];
+    Int32 Frames = backtrace(BackTrace, 30);
+    Error("Stack trace (%d frames):", Frames);
+
+    CString* Symbols = backtrace_symbols(BackTrace, Frames);
+    if (Symbols) {
+        for (Int32 Index = 0; Index < Frames; Index += 1) {
+            Error("%s", Symbols[Index]);
+        }
+
+        free(Symbols);
+    }
+#endif
+
+    DiagnosticTeardown();
+
+    exit(Signal);
+}
+
 Void DiagnosticSetup(
     FILE* Output,
     Int32 Level,
@@ -114,6 +187,9 @@ Void DiagnosticSetup(
     kDiagnosticEngine.Handler = (Handler) ? Handler : _DefaultDiagnosticHandler;
     kDiagnosticEngine.Context = Context;
     kDiagnosticEngine.Handle = NULL;
+
+    ApplicationRegisterExitCallback(_OnExitDefault, NULL);
+    ApplicationRegisterCrashCallback(_OnCrashDefault, NULL);
 }
 
 Void DiagnosticSetupLogFile(
@@ -139,11 +215,7 @@ Void DiagnosticSetupLogFile(
     }
 
     FILE* Output = fopen(FilePath, "w+");
-    kDiagnosticEngine.Output = (Output) ? Output : stdout;
-    kDiagnosticEngine.Error = (Output) ? Output : stderr;
-    kDiagnosticEngine.Level = Level;
-    kDiagnosticEngine.Handler = (Handler) ? Handler : _DefaultDiagnosticHandler;
-    kDiagnosticEngine.Context = Context;
+    DiagnosticSetup(Output, Level, Handler, Context);
     kDiagnosticEngine.Handle = Output;
 }
 

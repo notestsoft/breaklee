@@ -42,14 +42,21 @@ Bool ServerLoadMobData(
     CString ServerDirectory
 );
 
+Bool ServerLoadTerrainData(
+    RTRuntimeRef Runtime,
+    CString RuntimeDirectory,
+    CString ServerDirectory,
+    CString ScriptDirectory,
+    ArchiveRef TerrainArchive
+);
+
 Bool ServerLoadWorldData(
     RTRuntimeRef Runtime,
     CString RuntimeDirectory,
     CString ServerDirectory,
     CString ScriptDirectory,
-    ArchiveRef TerrainArchive,
     ArchiveRef MainArchive,
-    Bool LoadShops
+    ArchiveRef TempArchive
 );
 
 Bool ServerLoadSkillData(
@@ -59,19 +66,25 @@ Bool ServerLoadSkillData(
     ArchiveRef SkillArchive
 );
 
-Bool ServerLoadDungeonData(
+Bool ServerLoadQuestDungeonData(
     ServerContextRef Context,
     CString RuntimeDirectory,
     CString ServerDirectory,
-    ArchiveRef Cont1Archive,
-    ArchiveRef Cont2Archive,
-    ArchiveRef Cont3Archive
+    ArchiveRef Archive
+);
+
+Bool ServerLoadMissionDungeonData(
+    ServerContextRef Context,
+    CString RuntimeDirectory,
+    CString ServerDirectory,
+    ArchiveRef Archive
 );
 
 Bool ServerLoadWorldDropData(
     ServerContextRef Context,
     CString RuntimeDirectory,
-    CString ServerDirectory
+    CString ServerDirectory,
+    ArchiveRef TempArchive
 );
 
 Bool ServerLoadMobPatrolData(

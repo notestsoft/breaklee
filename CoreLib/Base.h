@@ -157,6 +157,14 @@ ATTRIBUTE_NORETURN void __unreachable(const char* message, const char* file, siz
 #define DIR_PATH(__A__, __B__) __A__/__B__
 #endif
 
+#if defined(_MSC_VER)
+#define FORCE_INLINE __forceinline
+#elif defined(__GNUC__) || defined(__clang__)
+#define FORCE_INLINE inline __attribute__((always_inline))
+#else
+#define FORCE_INLINE inline
+#endif
+
 typedef void Void;
 typedef bool Bool;
 typedef char Char;

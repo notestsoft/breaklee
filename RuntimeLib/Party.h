@@ -2,8 +2,9 @@
 
 #include "Base.h"
 #include "Constants.h"
-#include "Item.h"
 #include "Entity.h"
+#include "Item.h"
+#include "Mercenary.h"
 #include "Quest.h"
 
 EXTERN_C_BEGIN
@@ -18,11 +19,14 @@ enum {
 struct _RTPartyMemberInfo {
     UInt32 CharacterIndex;
     Int32 Level;
-    Int32 Unknown1;
-    Int32 Unknown2;
+    Int32 DungeonIndex;
+    UInt8 Unknown1;
+    UInt8 IsEliteDungeon;
+    UInt8 IsEventDungeon;
+    UInt8 Unknown2;
     UInt8 WorldServerIndex;
     UInt8 BattleStyleIndex;
-    Int32 IsOnline;
+    Int32 WorldIndex;
     UInt16 OverlordLevel;
     Int32 MythRebirth;
     Int32 MythHolyPower;
@@ -30,8 +34,8 @@ struct _RTPartyMemberInfo {
     UInt8 ForceWingGrade;
     UInt8 ForceWingLevel;
     UInt8 NameLength;
-    Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1];
-    UInt8 Unknown6[35];
+    Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH];
+    struct _RTMercenarySlot Mercenaries[RUNTIME_PARTY_MAX_MERCENARY_COUNT];
 };
 
 #pragma pack(pop)
@@ -51,7 +55,6 @@ struct _RTPartyInvitation {
 
 struct _RTParty {
 	RTEntityID ID;
-	RTEntityID LeaderID; // TODO: Remove
     Index LeaderCharacterIndex;
     Index WorldServerIndex;
 	Int32 PartyType;
@@ -193,6 +196,11 @@ Bool RTCharacterHasPartyQuestDungeon(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     Int32 DungeonID
+);
+
+Bool RTPartyChangeLeader(
+    RTPartyRef Party,
+    Index CharacterIndex
 );
 
 EXTERN_C_END

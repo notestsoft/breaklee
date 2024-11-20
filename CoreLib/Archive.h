@@ -5,13 +5,15 @@
 
 EXTERN_C_BEGIN
 
+#define ARCHIVE_MAX_NODE_DEPTH 8
+
 struct _ArchiveString {
-    Int64 Length;
+    Int32 Length;
     Char Data[0];
 };
 
 struct _ArchiveIterator {
-    Int64 Index;
+    Int32 Index;
 };
 
 typedef struct _Archive* ArchiveRef;
@@ -55,7 +57,7 @@ Bool ArchiveWriteToFileHandle(
     ArchiveRef Archive,
     FILE* File,
     Bool Prettify,
-    Int64 Indentation
+    Int32 Indentation
 );
 
 Bool ArchiveWriteToFile(
@@ -67,7 +69,7 @@ Bool ArchiveWriteToFile(
 Bool ArchiveParseFromSource(
     ArchiveRef Archive,
     CString Source,
-    Int64 Length,
+    Int32 Length,
     Bool IgnoreErrors
 );
 
@@ -76,57 +78,57 @@ Void ArchiveClear(
     Bool KeepCapacity
 );
 
-Int64 ArchiveAddNode(
+Int32 ArchiveAddNode(
     ArchiveRef Archive,
-    Int64 ParentIndex,
+    Int32 ParentIndex,
     CString Name,
-    Int64 NameLength
+    Int32 NameLength
 );
 
 ArchiveStringRef ArchiveNodeGetName(
     ArchiveRef Archive,
-    Int64 NodeIndex
+    Int32 NodeIndex
 );
 
-Int64 ArchiveNodeGetParent(
+Int32 ArchiveNodeGetParent(
     ArchiveRef Archive,
-    Int64 NodeIndex
+    Int32 NodeIndex
 );
 
-Int64 ArchiveNodeGetChildByPath(
+Int32 ArchiveNodeGetChildByPath(
     ArchiveRef Archive,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Path
 );
 
-Int64 ArchiveNodeAddAttribute(
+Int32 ArchiveNodeAddAttribute(
     ArchiveRef Archive,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
-    Int64 NameLength,
+    Int32 NameLength,
     CString Data,
-    Int64 DataLength
+    Int32 DataLength
 );
 
-Int64 ArchiveNodeGetAttributeByName(
+Int32 ArchiveNodeGetAttributeByName(
     ArchiveRef Archive,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name
 );
 
 ArchiveStringRef ArchiveAttributeGetName(
     ArchiveRef Archive,
-    Int64 AttributeIndex
+    Int32 AttributeIndex
 );
 
 ArchiveStringRef ArchiveAttributeGetData(
     ArchiveRef Archive,
-    Int64 AttributeIndex
+    Int32 AttributeIndex
 );
 
-Int64 ArchiveQueryNodeWithAttribute(
+Int32 ArchiveQueryNodeWithAttribute(
     ArchiveRef Archive,
-    Int64 ParentIndex,
+    Int32 ParentIndex,
     CString Query,
     CString AttributeName,
     CString AttributeValue
@@ -134,7 +136,7 @@ Int64 ArchiveQueryNodeWithAttribute(
 
 ArchiveIteratorRef ArchiveQueryNodeIteratorFirst(
     ArchiveRef Archive,
-    Int64 ParentIndex,
+    Int32 ParentIndex,
     CString Query
 );
 
@@ -145,13 +147,13 @@ ArchiveIteratorRef ArchiveQueryNodeIteratorNext(
 
 Int32 ArchiveQueryNodeCount(
     ArchiveRef Archive,
-    Int64 ParentIndex,
+    Int32 ParentIndex,
     CString Query
 );
 
 ArchiveIteratorRef ArchiveNodeIteratorFirst(
     ArchiveRef Archive,
-    Int64 ParentIndex
+    Int32 ParentIndex
 );
 
 ArchiveIteratorRef ArchiveNodeIteratorNext(
@@ -161,7 +163,7 @@ ArchiveIteratorRef ArchiveNodeIteratorNext(
 
 ArchiveIteratorRef ArchiveAttributeIteratorFirst(
     ArchiveRef Archive,
-    Int64 NodeIndex
+    Int32 NodeIndex
 );
 
 ArchiveIteratorRef ArchiveAttributeIteratorNext(

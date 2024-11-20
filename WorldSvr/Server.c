@@ -10,80 +10,69 @@ Void ServerLoadRuntimeData(
     ServerContextRef Context
 ) {
     AllocatorRef Allocator = AllocatorGetSystemDefault();
-    ArchiveRef MainArchive = ArchiveCreateEmpty(Allocator);
-    ArchiveRef Cont1Archive = ArchiveCreateEmpty(Allocator);
-    ArchiveRef Cont2Archive = ArchiveCreateEmpty(Allocator);
-    ArchiveRef Cont3Archive = ArchiveCreateEmpty(Allocator);
-    ArchiveRef QuestArchive = ArchiveCreateEmpty(Allocator);
-    ArchiveRef RankArchive = ArchiveCreateEmpty(Allocator);
-    ArchiveRef SkillArchive = ArchiveCreateEmpty(Allocator);
-    ArchiveRef TerrainArchive = ArchiveCreateEmpty(Allocator);
-
+    ArchiveRef Archive = ArchiveCreateEmpty(Allocator);    
+    ArchiveRef TempArchive = ArchiveCreateEmpty(Allocator);
     Bool Loaded = true;
-    Loaded &= ArchiveLoadFromFileEncryptedNoAlloc(
-        MainArchive,
-        PathCombineNoAlloc(Config.WorldSvr.RuntimeDataPath, "cabal.enc"),
-        true
-    );
-    Loaded &= ArchiveLoadFromFileEncryptedNoAlloc(
-        Cont1Archive,
-        PathCombineNoAlloc(Config.WorldSvr.RuntimeDataPath, "cont.enc"),
-        true
-    );
-    Loaded &= ArchiveLoadFromFileEncryptedNoAlloc(
-        Cont2Archive,
-        PathCombineNoAlloc(Config.WorldSvr.RuntimeDataPath, "cont2.enc"),
-        true
-    );
-    Loaded &= ArchiveLoadFromFileEncryptedNoAlloc(
-        Cont3Archive,
-        PathCombineNoAlloc(Config.WorldSvr.RuntimeDataPath, "cont3.enc"),
-        true
-    );
-    Loaded &= ArchiveLoadFromFileEncryptedNoAlloc(
-        QuestArchive,
-        PathCombineNoAlloc(Config.WorldSvr.RuntimeDataPath, "quest.enc"),
-        true
-    );
-    Loaded &= ArchiveLoadFromFileEncryptedNoAlloc(
-        RankArchive,
-        PathCombineNoAlloc(Config.WorldSvr.RuntimeDataPath, "rank.enc"),
-        true
-    );
-    Loaded &= ArchiveLoadFromFileEncryptedNoAlloc(
-        SkillArchive,
-        PathCombineNoAlloc(Config.WorldSvr.RuntimeDataPath, "skill.enc"),
-        true
-    );
-    Loaded &= ArchiveLoadFromFileEncryptedNoAlloc(
-        TerrainArchive,
-        PathCombineNoAlloc(Config.WorldSvr.RuntimeDataPath, "Terrain.enc"),
-        true
-    );
-    Loaded &= ServerLoadQuestData(Context->Runtime, QuestArchive);
+
+    Loaded &= ArchiveLoadFromFileEncryptedNoAlloc(Archive, PathCombineNoAlloc(Config.WorldSvr.RuntimeDataPath, "quest.enc"), true);
+    Loaded &= ServerLoadQuestData(Context->Runtime, Archive);
     if (!Loaded) Fatal("Failed to load runtime quest data!");
-    Loaded &= ServerLoadBattleStyleFormulaData(Context->Runtime, RankArchive);
+    ArchiveClear(Archive, true);
+
+    Loaded &= ArchiveLoadFromFileEncryptedNoAlloc(Archive, PathCombineNoAlloc(Config.WorldSvr.RuntimeDataPath, "rank.enc"), true);
+    Loaded &= ServerLoadBattleStyleFormulaData(Context->Runtime, Archive);
     if (!Loaded) Fatal("Failed to load runtime battle style formula data!");
+    Loaded &= ServerLoadCharacterTemplateData(Context, Archive);
+    if (!Loaded) Fatal("Failed to load character init data!");
+    ArchiveClear(Archive, true);
+
+    Loaded &= ArchiveLoadFromFileEncryptedNoAlloc(Archive, PathCombineNoAlloc(Config.WorldSvr.RuntimeDataPath, "Terrain.enc"), true);
+    Loaded &= ServerLoadTerrainData(Context->Runtime, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, Config.WorldSvr.ScriptDataPath, Archive);
+    if (!Loaded) Fatal("Failed to load terrain data!");
+    ArchiveClear(Archive, true);
+
+    Loaded &= ArchiveLoadFromFileEncryptedNoAlloc(Archive, PathCombineNoAlloc(Config.WorldSvr.RuntimeDataPath, "cabal.enc"), true);
+    Loaded &= ServerLoadWorldData(Context->Runtime, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, Config.WorldSvr.ScriptDataPath, Archive, TempArchive);
+    if (!Loaded) Fatal("Failed to load world data!");
+    ArchiveClear(Archive, true);
+
+    Loaded &= ArchiveLoadFromFileEncryptedNoAlloc(Archive, PathCombineNoAlloc(Config.WorldSvr.RuntimeDataPath, "skill.enc"), true);
+    Loaded &= ServerLoadSkillData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, Archive);
+    if (!Loaded) Fatal("Failed to load skill data!");
+    ArchiveClear(Archive, true);
+
+    Loaded &= ArchiveLoadFromFileEncryptedNoAlloc(Archive, PathCombineNoAlloc(Config.WorldSvr.RuntimeDataPath, "cont.enc"), true);
+    Loaded &= ServerLoadQuestDungeonData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, Archive);
+    if (!Loaded) Fatal("Failed to load quest dungeon data!");
+    ArchiveClear(Archive, true);
+
+    Loaded &= ArchiveLoadFromFileEncryptedNoAlloc(Archive, PathCombineNoAlloc(Config.WorldSvr.RuntimeDataPath, "cont2.enc"), true);
+    Loaded &= ServerLoadMissionDungeonData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, Archive);
+    if (!Loaded) Fatal("Failed to load mission dungeon data!");
+    ArchiveClear(Archive, true);
+
+    Loaded &= ArchiveLoadFromFileEncryptedNoAlloc(Archive, PathCombineNoAlloc(Config.WorldSvr.RuntimeDataPath, "cont3.enc"), true);
+    Loaded &= ServerLoadMissionDungeonData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, Archive);
+    if (!Loaded) Fatal("Failed to load mission dungeon data!");
+    ArchiveClear(Archive, true);
+
     Loaded &= ServerLoadItemData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
     if (!Loaded) Fatal("Failed to load runtime item data!");
+
     Loaded &= ServerLoadMobData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
     if (!Loaded) Fatal("Failed to load runtime mob data!");
-    Loaded &= ServerLoadWorldData(Context->Runtime, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, Config.WorldSvr.ScriptDataPath, TerrainArchive, MainArchive, true);
-    if (!Loaded) Fatal("Failed to load runtime world data!");
-    Loaded &= ServerLoadCharacterTemplateData(Context, RankArchive);
-    if (!Loaded) Fatal("Failed to load character init data!");
-    Loaded &= ServerLoadSkillData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, SkillArchive);
-    if (!Loaded) Fatal("Failed to load skill data!");
-    Loaded &= ServerLoadDungeonData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, Cont1Archive, Cont2Archive, Cont3Archive);
-    if (!Loaded) Fatal("Failed to load dungeon data!");
-    Loaded &= ServerLoadWorldDropData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
-    if (!Loaded) Fatal("Failed to load world drop data!");
+
     Loaded &= ServerLoadMobPatrolData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
     if (!Loaded) Fatal("Failed to load mob patrol data!"); 
+
     Loaded &= ServerLoadMobPatternData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
     if (!Loaded) Fatal("Failed to load mob pattern data!");
+
     Loaded &= ServerLoadOptionPoolData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
     if (!Loaded) Fatal("Failed to load option pool data!");
+
+    Loaded &= ServerLoadWorldDropData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, TempArchive);
+    if (!Loaded) Fatal("Failed to load world drop data!");
 
     /*
     IndexSetRef IndexSet = IndexSetCreate(AllocatorGetDefault(), 256);
@@ -102,13 +91,7 @@ Void ServerLoadRuntimeData(
     }
     IndexSetDestroy(IndexSet);
     */
-    ArchiveDestroy(MainArchive);
-    ArchiveDestroy(Cont1Archive);
-    ArchiveDestroy(Cont2Archive);
-    ArchiveDestroy(Cont3Archive);
-    ArchiveDestroy(QuestArchive);
-    ArchiveDestroy(RankArchive);
-    ArchiveDestroy(SkillArchive);
+    ArchiveDestroy(Archive);
 
     for (Index WorldIndex = 0; WorldIndex < Context->Runtime->WorldManager->MaxWorldDataCount; WorldIndex += 1) {
         if (!RTWorldDataExists(Context->Runtime->WorldManager, WorldIndex)) continue;

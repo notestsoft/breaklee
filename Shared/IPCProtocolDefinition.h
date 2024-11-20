@@ -523,6 +523,20 @@ IPC_PROTOCOL(P2W, PARTY_LEAVE_ACK,
 	Int32 Result;
 )
 
+IPC_PROTOCOL(W2P, PARTY_CHANGE_LEADER,
+	RTEntityID PartyID;
+	Index CharacterIndex;
+)
+
+IPC_PROTOCOL(P2W, PARTY_CHANGE_LEADER,
+	RTEntityID PartyID;
+	Index CharacterIndex;
+)
+
+IPC_PROTOCOL(P2W, PARTY_CHANGE_LEADER_ACK,
+	Int32 Result;
+)
+
 IPC_PROTOCOL(P2W, PARTY_INFO,
 	struct _RTParty Party;
 )

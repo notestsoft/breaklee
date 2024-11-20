@@ -8,9 +8,9 @@ EXTERN_C_BEGIN
 #pragma pack(push, 1)
 
 struct _RTMercenarySlot {
-    UInt32 SlotIndex;
-    UInt8 Unknown1;
-    UInt8 Unknown2;
+    UInt32 Index;
+    UInt8 Rank;
+    UInt8 Level;
 };
 
 struct _RTMercenaryInfo {

@@ -263,7 +263,6 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     ServerLoadScriptData(Config, &ServerContext);
     ServerRun(Server);
     RTRuntimeDestroy(ServerContext.Runtime);
-    DiagnosticTeardown();
-    
+
     return EXIT_SUCCESS;
 }

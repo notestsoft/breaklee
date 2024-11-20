@@ -222,7 +222,5 @@ Int32 main(Int32 argc, CString* argv) {
 
     ArrayDestroy(ServerContext.CaptchaInfoList);
 
-    DiagnosticTeardown();
-
     return EXIT_SUCCESS;
 }

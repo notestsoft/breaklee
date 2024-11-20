@@ -609,7 +609,7 @@ Void DatabaseHandleFlush(
 	DatabaseHandleRef Handle
 ) {
 	if (!Handle) return;
-	SQLFreeHandle(SQL_HANDLE_STMT, (SQLHSTMT)Handle);
+	SQLFreeHandle(SQL_HANDLE_STMT, (SQLHSTMT)Handle); // Is crashing after reconnect to db
 }
 
 Bool DatabaseCallProcedure(

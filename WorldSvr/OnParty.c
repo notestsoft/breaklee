@@ -19,11 +19,11 @@ CLIENT_PROCEDURE_BINDING(PARTY_INVITE) {
 	Request->Source.MemberID.Serial = Character->ID.Serial;
 	Request->Source.Info.CharacterIndex = Character->CharacterIndex;
 	Request->Source.Info.Level = Character->Data.Info.Level;
-	Request->Source.Info.Unknown1 = 0;
+	Request->Source.Info.DungeonIndex = Character->Data.Info.DungeonIndex;
 	Request->Source.Info.Unknown2 = 0;
 	Request->Source.Info.WorldServerIndex = Context->Config.WorldSvr.NodeIndex;
 	Request->Source.Info.BattleStyleIndex = BattleStyleIndex;
-	Request->Source.Info.IsOnline = 1;
+	Request->Source.Info.WorldIndex = Character->Data.Info.WorldIndex;
 	Request->Source.Info.OverlordLevel = Character->Data.OverlordMasteryInfo.Info.Level;
 	Request->Source.Info.MythRebirth = Character->Data.MythMasteryInfo.Info.Rebirth;
 	Request->Source.Info.MythHolyPower = Character->Data.MythMasteryInfo.Info.HolyPower;
@@ -31,12 +31,12 @@ CLIENT_PROCEDURE_BINDING(PARTY_INVITE) {
 	Request->Source.Info.ForceWingGrade = Character->Data.ForceWingInfo.Info.Grade;
 	Request->Source.Info.ForceWingLevel = Character->Data.ForceWingInfo.Info.Level;
 	Request->Source.Info.NameLength = strlen(Character->Name) + 1;
-	CStringCopySafe(Request->Source.Info.Name, MAX_CHARACTER_NAME_LENGTH + 1, Character->Name);
+	CStringCopySafe(Request->Source.Info.Name, MAX_CHARACTER_NAME_LENGTH, Character->Name);
 
 	Request->Target.Info.WorldServerIndex = Packet->WorldServerID;
 	Request->Target.Info.CharacterIndex = Packet->CharacterIndex;
 	Request->Target.Info.NameLength = Packet->NameLength;
-	CStringCopySafe(Request->Target.Info.Name, MAX_CHARACTER_NAME_LENGTH + 1, Packet->Name);
+	CStringCopySafe(Request->Target.Info.Name, MAX_CHARACTER_NAME_LENGTH, Packet->Name);
 
 	IPCSocketUnicast(Server->IPCSocket, Request);
 	return;
@@ -91,11 +91,11 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE) {
 	Response->Target = Packet->Target;
 	Response->Target.MemberID.Serial = TargetCharacter->ID.Serial;
 	Response->Target.Info.Level = TargetCharacter->Data.Info.Level;
-	Response->Target.Info.Unknown1 = 0;
+	Response->Target.Info.DungeonIndex = TargetCharacter->Data.Info.DungeonIndex;
 	Response->Target.Info.Unknown2 = 0;
 	Response->Target.Info.WorldServerIndex = Context->Config.WorldSvr.NodeIndex;
 	Response->Target.Info.BattleStyleIndex = BattleStyleIndex;
-	Response->Target.Info.IsOnline = 1;
+	Response->Target.Info.WorldIndex = TargetCharacter->Data.Info.WorldIndex;
 	Response->Target.Info.OverlordLevel = TargetCharacter->Data.OverlordMasteryInfo.Info.Level;
 	Response->Target.Info.MythRebirth = TargetCharacter->Data.MythMasteryInfo.Info.Rebirth;
 	Response->Target.Info.MythHolyPower = TargetCharacter->Data.MythMasteryInfo.Info.HolyPower;
@@ -144,6 +144,8 @@ error:
 IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE_CONFIRM) {
 	ClientContextRef SourceClient = ServerGetClientByIndex(Context, Packet->SourceCharacterIndex, NULL);
 	if (!SourceClient) return;
+
+	// TODO: Add member to PartyID lookup table
 
 	S2C_DATA_PARTY_INVITE_CONFIRM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, PARTY_INVITE_CONFIRM);
 	Response->Result = Packet->Success ? 0 : 1;
@@ -237,14 +239,55 @@ error:
 CLIENT_PROCEDURE_BINDING(PARTY_CHANGE_LEADER) {
 	if (!Character) goto error;
 
-	// TODO: Implementation missing
+	RTPartyRef Party = RTPartyManagerGetPartyByCharacter(Runtime->PartyManager, Character->CharacterIndex);
+	if (!Party) goto error;
 
-	S2C_DATA_PARTY_CHANGE_LEADER* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, PARTY_CHANGE_LEADER);
-	SocketSend(Socket, Connection, Response);
+	if (Party->LeaderCharacterIndex == Character->CharacterIndex) {
+		IPC_W2P_DATA_PARTY_CHANGE_LEADER* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2P, PARTY_CHANGE_LEADER);
+		Request->Header.Source = Server->IPCSocket->NodeID;
+		Request->Header.SourceConnectionID = Client->Connection->ID;
+		Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+		Request->Header.Target.Type = IPC_TYPE_PARTY;
+		Request->PartyID = Party->ID;
+		Request->CharacterIndex = Packet->CharacterIndex;
+		IPCSocketUnicast(Server->IPCSocket, Request);
+	}
+	else {
+		S2C_DATA_PARTY_CHANGE_LEADER* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, PARTY_CHANGE_LEADER);
+		Response->Result = 0;
+		SocketSend(Socket, Connection, Response);
+	}
+
 	return;
 
 error:
 	SocketDisconnect(Socket, Connection);
+}
+
+IPC_PROCEDURE_BINDING(P2W, PARTY_CHANGE_LEADER) {
+	RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Packet->PartyID);
+	if (!Party) return;
+
+	RTPartyChangeLeader(Party, Packet->CharacterIndex);
+
+	for (Int32 Index = 0; Index < Party->MemberCount; Index += 1) {
+		RTPartySlotRef Slot = &Party->Members[Index];
+
+		ClientContextRef Client = ServerGetClientByIndex(Context, Slot->Info.CharacterIndex, NULL);
+		if (!Client) continue;
+
+		S2C_DATA_NFY_PARTY_CHANGE_LEADER* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, NFY_PARTY_CHANGE_LEADER);
+		Notification->CharacterIndex = Packet->CharacterIndex;
+		SocketSend(Context->ClientSocket, Client->Connection, Notification);
+	}
+}
+
+IPC_PROCEDURE_BINDING(P2W, PARTY_CHANGE_LEADER_ACK) {
+	if (!ClientConnection || !Character) return;
+
+	S2C_DATA_PARTY_CHANGE_LEADER* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, PARTY_CHANGE_LEADER);
+	Response->Result = Packet->Result;
+	SocketSend(Context->ClientSocket, ClientConnection, Response);
 }
 
 CLIENT_PROCEDURE_BINDING(PARTY_CHANGE_LOOTING_RULE) {
@@ -406,11 +449,11 @@ Void SendPartyData(
 
 			MemberSlot->Info.CharacterIndex = Character->CharacterIndex;
 			MemberSlot->Info.Level = Character->Data.Info.Level;
-			MemberSlot->Info.Unknown1 = 0;
+			MemberSlot->Info.DungeonIndex = Character->Data.Info.DungeonIndex;
 			MemberSlot->Info.Unknown2 = 0;
 			MemberSlot->Info.WorldServerIndex = Context->Config.WorldSvr.NodeIndex;
 			MemberSlot->Info.BattleStyleIndex = BattleStyleIndex;
-			MemberSlot->Info.IsOnline = 1;
+			MemberSlot->Info.WorldIndex = Character->Data.Info.WorldIndex;
 			MemberSlot->Info.OverlordLevel = Character->Data.OverlordMasteryInfo.Info.Level;
 			MemberSlot->Info.MythRebirth = Character->Data.MythMasteryInfo.Info.Rebirth;
 			MemberSlot->Info.MythHolyPower = Character->Data.MythMasteryInfo.Info.HolyPower;
@@ -418,13 +461,14 @@ Void SendPartyData(
 			MemberSlot->Info.ForceWingGrade = Character->Data.ForceWingInfo.Info.Grade;
 			MemberSlot->Info.ForceWingLevel = Character->Data.ForceWingInfo.Info.Level;
 			MemberSlot->Info.NameLength = strlen(Character->Name) + 1;
-			CStringCopySafe(MemberSlot->Info.Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Character->Name);
+			CStringCopySafe(MemberSlot->Info.Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH, Character->Name);
 		}
 
 		S2C_DATA_PARTY_UPDATE_MEMBER* Member = &Notification->Members[MemberIndex];
 		Member->Info = MemberSlot->Info;
 
 		if (Character) {
+			Member->Data.WorldIndex = Character->Data.Info.WorldIndex;
 			Member->Data.MaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
 			Member->Data.CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
 			Member->Data.MaxMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX];
@@ -433,9 +477,9 @@ Void SendPartyData(
 			Member->Data.PositionY = Character->Movement.PositionCurrent.Y;
 			Member->Data.MaxSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX];
 			Member->Data.CurrentSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+			Member->Data.SpiritRaiseCooldown = Character->Data.CooldownInfo.Info.SpiritRaiseCooldown;
+			Member->Data.HasBlessingBeadPlus = false;
 		}
-
-		// TODO: Resolve all unknown fields...
 	}
 
 	for (Int32 Index = 0; Index < Party->MemberCount; Index += 1) {

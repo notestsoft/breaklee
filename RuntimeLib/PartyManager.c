@@ -50,7 +50,6 @@ RTPartyRef RTPartyManagerCreateParty(
     Party->ID.EntityIndex = (UInt16)PartyPoolIndex;
     Party->ID.WorldIndex = PartyType;
     Party->ID.EntityType = RUNTIME_ENTITY_TYPE_PARTY;
-    Party->LeaderID = CharacterID;
     Party->LeaderCharacterIndex = CharacterIndex;
     Party->PartyType = PartyType;
     RTPartyAddMember(Party, CharacterIndex, CharacterID);

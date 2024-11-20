@@ -76,7 +76,6 @@ struct _Server {
     SocketRef ClientSocket;
     IPCSocketRef IPCSocket;
     ServerUpdateCallback OnUpdate;
-    Bool IsRunning;
     Void* Userdata;
 };
 

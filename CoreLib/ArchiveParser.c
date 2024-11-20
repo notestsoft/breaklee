@@ -10,7 +10,7 @@ typedef enum {
 
 typedef struct {
     ArchiveRef Archive;
-    Int64 NodeIndex;
+    Int32 NodeIndex;
     Char* Start;
     Char* End;
     Char* Cursor;
@@ -31,7 +31,7 @@ static inline Void ParseNextToken(
     ParseState* State
 );
 
-static inline Bool CharacterIsSymbol(
+static FORCE_INLINE Bool CharacterIsSymbol(
     Char Character
 ) {
     switch (Character) {
@@ -49,7 +49,7 @@ static inline Bool CharacterIsSymbol(
     }
 }
 
-static inline Bool CharacterIsStartOfIdentifier(
+static FORCE_INLINE Bool CharacterIsStartOfIdentifier(
     Char Character
 ) {
     return (
@@ -59,7 +59,7 @@ static inline Bool CharacterIsStartOfIdentifier(
         );
 }
 
-static inline Bool CharacterIsContinuationOfIdentifier(
+static FORCE_INLINE Bool CharacterIsContinuationOfIdentifier(
     Char Character
 ) {
     return (
@@ -67,38 +67,27 @@ static inline Bool CharacterIsContinuationOfIdentifier(
         ('A' <= Character && Character <= 'Z') ||
         ('0' <= Character && Character <= '9') ||
         '_' == Character
-        );
+    );
 }
 
-static inline Bool CharacterIsWhitespace(
+static FORCE_INLINE Bool CharacterIsWhitespace(
     Char Character
 ) {
-    switch (Character) {
-    case 0x09:
-    case 0x20:
-        return true;
-
-    default:
-        return false;
-    }
+    return (Character == 0x09 || Character == 0x20);
 }
 
-static inline Bool CharacterIsLinebreak(
+static FORCE_INLINE Bool CharacterIsLinebreak(
     Char Character
 ) {
-    switch (Character) {
-    case 0x0A:
-    case 0x0B:
-    case 0x0C:
-    case '\r':
-        return true;
-
-    default:
-        return false;
-    }
+    return (
+        Character == 0x0A ||
+        Character == 0x0B ||
+        Character == 0x0C ||
+        Character == '\r'
+    );
 }
 
-static inline Void SkipUntilCharacter(
+static FORCE_INLINE Void SkipUntilCharacter(
     ParseState* State,
     Char Terminator
 ) {
@@ -120,7 +109,7 @@ static inline Void SkipUntilCharacter(
     ParseNextToken(State);
 }
 
-static inline Bool SkipSeparator(
+static FORCE_INLINE Bool SkipSeparator(
     ParseState* State
 ) {
     Char* Start = State->Cursor;
@@ -137,8 +126,8 @@ static inline Bool SkipSeparator(
     return Start != State->Cursor;
 }
 
-static inline Bool ConsumeToken(ParseState* State, Token token) {
-    if (State->Token == token) {
+static FORCE_INLINE Bool ConsumeToken(ParseState* State, Token Token) {
+    if (State->Token == Token) {
         State->Cursor = State->TokenEnd;
         ParseNextToken(State);
         return true;
@@ -195,7 +184,7 @@ end:
     }
 }
 
-static inline Bool TryParseAttribute(
+static FORCE_INLINE Bool TryParseAttribute(
     ParseState* State,
     Bool Append
 ) {
@@ -228,7 +217,7 @@ static inline Bool TryParseAttribute(
     if (!ConsumeToken(&CurrentState, '"')) goto error;
 
     CurrentState.NoLinebreak = NoLinebreak;
-
+    /*
     ParseState NextState = CurrentState;
     NextState.NoCascade = true;
     if (!TryParseAttribute(&NextState, false)) {
@@ -260,7 +249,7 @@ static inline Bool TryParseAttribute(
 
         CurrentState.NoLinebreak = NoLinebreak;
     }
-
+    */
     if (Append) {
         ArchiveNodeAddAttribute(
             CurrentState.Archive,
@@ -282,7 +271,7 @@ error:
 Bool ArchiveParseFromSource(
     ArchiveRef Archive,
     CString Source,
-    Int64 Length,
+    Int32 Length,
     Bool IgnoreErrors
 ) {
     ParseState State = { 0 };

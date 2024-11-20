@@ -1,6 +1,7 @@
 #pragma once
 
 #include <CoreLib/Allocator.h>
+#include <CoreLib/Application.h>
 #include <CoreLib/Archive.h>
 #include <CoreLib/Array.h>
 #include <CoreLib/BumpAllocator.h>

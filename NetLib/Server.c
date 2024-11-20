@@ -48,7 +48,6 @@ ServerRef ServerCreate(
         Server
     );
     Server->OnUpdate = OnUpdate;
-    Server->IsRunning = false;
     Server->Userdata = ServerContext;
     return Server;
 }
@@ -151,8 +150,6 @@ Void ServerSocketLoadScript(
 Void ServerRun(
 	ServerRef Server
 ) {
-    assert(!Server->IsRunning);
-    
     for (Int32 Index = 0; Index < ArrayGetElementCount(Server->Sockets); Index += 1) {
         ServerSocketContextRef SocketContext = (ServerSocketContextRef)ArrayGetElementAtIndex(Server->Sockets, Index);
         if (!(SocketContext->Socket->Flags & SOCKET_FLAGS_LISTENER)) continue;
@@ -160,8 +157,7 @@ Void ServerRun(
         SocketListen(SocketContext->Socket, SocketContext->SocketPort);
     }
 
-    Server->IsRunning = true;
-    while (Server->IsRunning) {
+    while (!ApplicationIsShuttingDown()) {
         if (Server->OnUpdate) Server->OnUpdate(Server, Server->Userdata);
         
         for (Int32 Index = 0; Index < ArrayGetElementCount(Server->Sockets); Index += 1) {

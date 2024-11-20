@@ -1,26 +1,31 @@
 #include "Archive.h"
 #include "Diagnostic.h"
+#include "Dictionary.h"
 #include "Encryption.h"
 #include "FileIO.h"
 #include "ParsePrimitives.h"
 
 struct _ArchiveMemory {
     UInt8* Memory;
-    Int64 Length;
+    Int32 Length;
+};
+
+struct _ArchiveNodeKey {
+    Int32 NameIndex;
+    Int32 ParentIndex;
 };
 
 struct _ArchiveNode {
-    Int64 Index;
-    Int64 NameIndex;
-    Int64 ParentIndex;
+    Int32 Index;
+    struct _ArchiveNodeKey Key;
     ArrayRef AttributeIndices;
 };
 
 struct _ArchiveAttribute {
-    Int64 Index;
-    Int64 NodeIndex;
-    Int64 NameIndex;
-    Int64 DataIndex;
+    Int32 Index;
+    Int32 NodeIndex;
+    Int32 NameIndex;
+    Int32 DataIndex;
 };
 
 struct _Archive {
@@ -29,11 +34,50 @@ struct _Archive {
     ArrayRef DataTable;
     ArrayRef Nodes;
     ArrayRef Attributes;
+    DictionaryRef NodeBuckets;
 };
 
 typedef struct _ArchiveMemory* ArchiveMemoryRef;
 typedef struct _ArchiveNode* ArchiveNodeRef;
 typedef struct _ArchiveAttribute* ArchiveAttributeRef;
+
+Bool _ArchiveNodeDictionaryKeyComparator(
+    Void* Lhs,
+    Void* Rhs
+) {
+    struct _ArchiveNodeKey* LhsKey = (struct _ArchiveNodeKey*)Lhs;
+    struct _ArchiveNodeKey* RhsKey = (struct _ArchiveNodeKey*)Rhs;
+    
+    return LhsKey->NameIndex == RhsKey->NameIndex && LhsKey->ParentIndex == RhsKey->ParentIndex;
+}
+
+UInt64 _ArchiveNodeDictionaryKeyHasher(
+    Void* Key
+) {
+    UInt64 Hash = 5381;
+    Hash = Hash * 33 + ((struct _ArchiveNodeKey*)Key)->NameIndex;
+    Hash = Hash * 33 + ((struct _ArchiveNodeKey*)Key)->ParentIndex;
+    return Hash;
+}
+
+Int32 _ArchiveNodeDictionaryKeySizeCallback(
+    Void* Key
+) {
+    return sizeof(struct _ArchiveNodeKey);
+}
+
+DictionaryRef ArchiveNodeDictionaryCreate(
+    AllocatorRef Allocator,
+    Index Capacity
+) {
+    return DictionaryCreate(
+        Allocator,
+        &_ArchiveNodeDictionaryKeyComparator,
+        &_ArchiveNodeDictionaryKeyHasher,
+        &_ArchiveNodeDictionaryKeySizeCallback,
+        Capacity
+    );
+}
 
 ArchiveRef ArchiveCreateEmpty(
     AllocatorRef Allocator
@@ -46,6 +90,7 @@ ArchiveRef ArchiveCreateEmpty(
     Archive->DataTable = ArrayCreateEmpty(Archive->Allocator, sizeof(UInt8), 0x1000);
     Archive->Nodes = ArrayCreateEmpty(Archive->Allocator, sizeof(struct _ArchiveNode), 0x10);
     Archive->Attributes = ArrayCreateEmpty(Archive->Allocator, sizeof(struct _ArchiveAttribute), 0x10);
+    Archive->NodeBuckets = ArchiveNodeDictionaryCreate(Archive->Allocator, 0x1000);
     return Archive;
 }
 
@@ -138,6 +183,13 @@ error:
 Void ArchiveDestroy(
     ArchiveRef Archive
 ) {
+    DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(Archive->NodeBuckets);
+    while (Iterator.Key) {
+        ArrayRef Bucket = (ArrayRef)DictionaryLookup(Archive->NodeBuckets, Iterator.Key);
+        ArrayDealloc(Bucket);
+        Iterator = DictionaryKeyIteratorNext(Iterator);
+    }
+
     for (Int32 Index = 0; Index < ArrayGetElementCount(Archive->Nodes); Index += 1) {
         ArchiveNodeRef Node = (ArchiveNodeRef)ArrayGetElementAtIndex(Archive->Nodes, Index);
         ArrayDestroy(Node->AttributeIndices);
@@ -147,15 +199,16 @@ Void ArchiveDestroy(
     ArrayDestroy(Archive->DataTable);
     ArrayDestroy(Archive->Nodes);
     ArrayDestroy(Archive->Attributes);
+    DictionaryDestroy(Archive->NodeBuckets);
     AllocatorDeallocate(Archive->Allocator, Archive);
 }
 
 static inline Bool ArchiveNodeWriteToFile(
     ArchiveRef Archive,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     FILE* File,
     Bool Prettify,
-    Int64 Indentation
+    Int32 Indentation
 ) {
     ArchiveStringRef NodeName = ArchiveNodeGetName(Archive, NodeIndex);
    
@@ -213,7 +266,7 @@ Bool ArchiveWriteToFileHandle(
     ArchiveRef Archive,
     FILE* File,
     Bool Prettify,
-    Int64 Indentation
+    Int32 Indentation
 ) {
     if (!File) goto error;
 
@@ -258,6 +311,14 @@ Void ArchiveClear(
     ArchiveRef Archive,
     Bool KeepCapacity
 ) {
+    DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(Archive->NodeBuckets);
+    while (Iterator.Key) {
+        ArrayRef Bucket = (ArrayRef)DictionaryLookup(Archive->NodeBuckets, Iterator.Key);
+        ArrayDealloc(Bucket);
+        Iterator = DictionaryKeyIteratorNext(Iterator);
+    }
+    DictionaryRemoveAll(Archive->NodeBuckets);
+
     for (Index Index = 0; Index < ArrayGetElementCount(Archive->Nodes); Index += 1) {
         ArchiveNodeRef Node = (ArchiveNodeRef)ArrayGetElementAtIndex(Archive->Nodes, Index);
         ArrayDestroy(Node->AttributeIndices);
@@ -271,21 +332,21 @@ Void ArchiveClear(
 
 static inline Bool ArchiveContainsNode(
     ArchiveRef Archive,
-    Int64 NodeIndex
+    Int32 NodeIndex
 ) {
     return 0 <= NodeIndex && NodeIndex < ArrayGetElementCount(Archive->Nodes);
 }
 
-static inline Int64 ArchiveAddName(
+static inline Int32 ArchiveAddName(
     ArchiveRef Archive,
     CString Name,
-    Int64 Length
+    Int32 Length
 ) {
-    Int64 Index = ArrayGetElementCount(Archive->NameTable);
+    Int32 Index = ArrayGetElementCount(Archive->NameTable);
     Bool IsZeroTerminated = Length > 0 && Name[Length - 1] == 0;
-    Int64 StringLength = IsZeroTerminated ? Length : Length + 1;
+    Int32 StringLength = IsZeroTerminated ? Length : Length + 1;
 
-    ArrayAppendMemory(Archive->NameTable, (UInt8*)&StringLength, sizeof(Int64));
+    ArrayAppendMemory(Archive->NameTable, (UInt8*)&StringLength, sizeof(Int32));
 
     if (Length > 0) {
         ArrayAppendMemory(Archive->NameTable, Name, Length);
@@ -299,10 +360,10 @@ static inline Int64 ArchiveAddName(
     return Index;
 }
 
-static inline Int64 ArchiveLookupName(
+static inline Int32 ArchiveLookupName(
     ArchiveRef Archive,
     CString Name,
-    Int64 Length
+    Int32 Length
 ) {
     if (ArrayGetElementCount(Archive->NameTable) < 1) return -1;
     
@@ -316,26 +377,26 @@ static inline Int64 ArchiveLookupName(
         if ((IsZeroTerminated && String->Length == Length) ||
             (!IsZeroTerminated && String->Length - 1 == Length)) {
             if (memcmp(Name, String->Data, MIN(String->Length, Length)) == 0) {
-                return (Int64)(Cursor - Start);
+                return (Int32)(Cursor - Start);
             }
         }
 
-        Cursor += sizeof(Int64) + String->Length;
+        Cursor += sizeof(Int32) + String->Length;
     }
 
     return -1;
 }
 
-static inline Int64 ArchiveAddData(
+static inline Int32 ArchiveAddData(
     ArchiveRef Archive,
     CString Data,
-    Int64 Length
+    Int32 Length
 ) {
-    Int64 Index = ArrayGetElementCount(Archive->DataTable);
+    Int32 Index = ArrayGetElementCount(Archive->DataTable);
     Bool IsZeroTerminated = Length > 0 && Data[Length - 1] == 0;
-    Int64 StringLength = IsZeroTerminated ? Length : Length + 1;
+    Int32 StringLength = IsZeroTerminated ? Length : Length + 1;
 
-    ArrayAppendMemory(Archive->DataTable, (UInt8*)&StringLength, sizeof(Int64));
+    ArrayAppendMemory(Archive->DataTable, (UInt8*)&StringLength, sizeof(Int32));
 
     if (Length > 0) {
         ArrayAppendMemory(Archive->DataTable, Data, Length);
@@ -349,48 +410,58 @@ static inline Int64 ArchiveAddData(
     return Index;
 }
 
-Int64 ArchiveAddNode(
+Int32 ArchiveAddNode(
     ArchiveRef Archive,
-    Int64 ParentIndex,
+    Int32 ParentIndex,
     CString Name,
-    Int64 NameLength
+    Int32 NameLength
 ) {
     assert(ParentIndex == -1 || ArchiveContainsNode(Archive, ParentIndex));
    
     ArchiveNodeRef Node = (ArchiveNodeRef)ArrayAppendUninitializedElement(Archive->Nodes);
     Node->Index = ArrayGetElementCount(Archive->Nodes) - 1;
-    Node->ParentIndex = ParentIndex;
-    Node->NameIndex = ArchiveLookupName(Archive, Name, NameLength);
-    if (Node->NameIndex < 0) {
-        Node->NameIndex = ArchiveAddName(Archive, Name, NameLength);
+    Node->Key.ParentIndex = ParentIndex;
+    Node->Key.NameIndex = ArchiveLookupName(Archive, Name, NameLength);
+    if (Node->Key.NameIndex < 0) {
+        Node->Key.NameIndex = ArchiveAddName(Archive, Name, NameLength);
+    }
+    assert(0 <= Node->Key.NameIndex);
+ 
+    Node->AttributeIndices = ArrayCreateEmpty(Archive->Allocator, sizeof(Int32), 64);
+
+    ArrayRef Bucket = (ArrayRef)DictionaryLookup(Archive->NodeBuckets, &Node->Key);
+    if (!Bucket) {
+        struct _Array NewBucket = { 0 };
+        ArrayInitializeEmpty(&NewBucket, Archive->Allocator, sizeof(Int32), 8);
+        DictionaryInsert(Archive->NodeBuckets, &Node->Key, &NewBucket, sizeof(struct _Array));
+        Bucket = (ArrayRef)DictionaryLookup(Archive->NodeBuckets, &Node->Key);
+        assert(Bucket);
     }
 
-    assert(0 <= Node->NameIndex);
-    
-    Node->AttributeIndices = ArrayCreateEmpty(Archive->Allocator, sizeof(Int64), 64);
+    ArrayAppendElement(Bucket, &Node->Index);
 
     return Node->Index;
 }
 
 ArchiveStringRef ArchiveNodeGetName(
     ArchiveRef Archive,
-    Int64 NodeIndex
+    Int32 NodeIndex
 ) {
     ArchiveNodeRef Node = (ArchiveNodeRef)ArrayGetElementAtIndex(Archive->Nodes, NodeIndex);
-    return (ArchiveStringRef)ArrayGetElementAtIndex(Archive->NameTable, Node->NameIndex);
+    return (ArchiveStringRef)ArrayGetElementAtIndex(Archive->NameTable, Node->Key.NameIndex);
 }
 
-Int64 ArchiveNodeGetParent(
+Int32 ArchiveNodeGetParent(
     ArchiveRef Archive,
-    Int64 NodeIndex
+    Int32 NodeIndex
 ) {
     ArchiveNodeRef Node = (ArchiveNodeRef)ArrayGetElementAtIndex(Archive->Nodes, NodeIndex);
-    return Node->ParentIndex;
+    return Node->Key.ParentIndex;
 }
 
-Int64 ArchiveNodeGetChildByPath(
+Int32 ArchiveNodeGetChildByPath(
     ArchiveRef Archive,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Path
 ) {
     CString Cursor = strchr(Path, '.');
@@ -404,7 +475,7 @@ Int64 ArchiveNodeGetChildByPath(
         return Iterator ? Iterator->Index : -1;
     }
 
-    Int64 Length = Cursor - Path;
+    Int32 Length = Cursor - Path;
     if (Length < 1) return -1;
 
     Char Name[64];
@@ -420,7 +491,7 @@ Int64 ArchiveNodeGetChildByPath(
 
     if (!Iterator) return -1;
 
-    Int64 Offset = Length + 1;
+    Int32 Offset = Length + 1;
     Length = (Int32)strlen(Path) - Offset;
     memcpy(Name, Path + Offset, Length);
     Name[Length] = '\0';
@@ -428,13 +499,13 @@ Int64 ArchiveNodeGetChildByPath(
     return ArchiveNodeGetChildByPath(Archive, Iterator->Index, Name);
 }
 
-Int64 _ArchiveNodeGetAttributeByNameWithLength(
+Int32 _ArchiveNodeGetAttributeByNameWithLength(
     ArchiveRef Archive,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
-    Int64 NameLength
+    Int32 NameLength
 ) {
-    Int64 NameIndex = ArchiveLookupName(Archive, Name, NameLength);
+    Int32 NameIndex = ArchiveLookupName(Archive, Name, NameLength);
     if (NameIndex < 0) return -1;
 
     ArchiveNodeRef Node = (ArchiveNodeRef)ArrayGetElementAtIndex(Archive->Nodes, NodeIndex);
@@ -455,13 +526,13 @@ Int64 _ArchiveNodeGetAttributeByNameWithLength(
     return -1;
 }
 
-Int64 ArchiveNodeAddAttribute(
+Int32 ArchiveNodeAddAttribute(
     ArchiveRef Archive,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
-    Int64 NameLength,
+    Int32 NameLength,
     CString Data,
-    Int64 DataLength
+    Int32 DataLength
 ) {
     assert(ArchiveContainsNode(Archive, NodeIndex));
 
@@ -483,9 +554,9 @@ Int64 ArchiveNodeAddAttribute(
     return Attribute->Index;
 }
 
-Int64 ArchiveNodeGetAttributeByName(
+Int32 ArchiveNodeGetAttributeByName(
     ArchiveRef Archive,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name
 ) {
     return _ArchiveNodeGetAttributeByNameWithLength(Archive, NodeIndex, Name, (Int32)strlen(Name));
@@ -493,7 +564,7 @@ Int64 ArchiveNodeGetAttributeByName(
 
 ArchiveStringRef ArchiveAttributeGetName(
     ArchiveRef Archive,
-    Int64 AttributeIndex
+    Int32 AttributeIndex
 ) {
     ArchiveAttributeRef Attribute = (ArchiveAttributeRef)ArrayGetElementAtIndex(
         Archive->Attributes, 
@@ -504,7 +575,7 @@ ArchiveStringRef ArchiveAttributeGetName(
 
 ArchiveStringRef ArchiveAttributeGetData(
     ArchiveRef Archive,
-    Int64 AttributeIndex
+    Int32 AttributeIndex
 ) {
     ArchiveAttributeRef Attribute = (ArchiveAttributeRef)ArrayGetElementAtIndex(
         Archive->Attributes,
@@ -513,17 +584,17 @@ ArchiveStringRef ArchiveAttributeGetData(
     return (ArchiveStringRef)ArrayGetElementAtIndex(Archive->DataTable, Attribute->DataIndex);
 }
 
-Int64 ArchiveQueryNodeWithAttribute(
+Int32 ArchiveQueryNodeWithAttribute(
     ArchiveRef Archive,
-    Int64 ParentIndex,
+    Int32 ParentIndex,
     CString Query,
     CString AttributeName,
     CString AttributeValue
 ) {
-    Int64 NodeIndex = ArchiveNodeGetChildByPath(Archive, ParentIndex, Query);
+    Int32 NodeIndex = ArchiveNodeGetChildByPath(Archive, ParentIndex, Query);
     if (NodeIndex < 0) return -1;
 
-    Int64 QueryIndex = ArchiveNodeGetParent(Archive, NodeIndex);
+    Int32 QueryIndex = ArchiveNodeGetParent(Archive, NodeIndex);
     CString SubQuery = strrchr(Query, '.');
     if (SubQuery) {
         SubQuery += 1;
@@ -548,17 +619,17 @@ Int64 ArchiveQueryNodeWithAttribute(
 
 ArchiveIteratorRef ArchiveQueryNodeIteratorSingleFirst(
     ArchiveRef Archive,
-    Int64 ParentIndex,
+    Int32 ParentIndex,
     CString Query
 ) {
-    Int64 NameIndex = ArchiveLookupName(Archive, Query, strlen(Query));
+    Int32 NameIndex = ArchiveLookupName(Archive, Query, strlen(Query));
     if (NameIndex < 0) return NULL;
 
-    for (Int32 Index = 0; Index < ArrayGetElementCount(Archive->Nodes); Index++) {
-        ArchiveNodeRef Node = (ArchiveNodeRef)ArrayGetElementAtIndex(Archive->Nodes, Index);
-        if (Node->NameIndex == NameIndex && Node->ParentIndex == ParentIndex) {
-            return (ArchiveIteratorRef)Node;
-        }
+    struct _ArchiveNodeKey Key = { .NameIndex = NameIndex, .ParentIndex = ParentIndex };
+    ArrayRef Bucket = DictionaryLookup(Archive->NodeBuckets, &Key);
+    if (Bucket && ArrayGetElementCount(Bucket) > 0) {
+        Int32 NodeIndex = *(Int32*)ArrayGetElementAtIndex(Bucket, 0);
+        return (ArchiveIteratorRef)ArrayGetElementAtIndex(Archive->Nodes, NodeIndex);
     }
 
     return NULL;
@@ -566,7 +637,7 @@ ArchiveIteratorRef ArchiveQueryNodeIteratorSingleFirst(
 
 ArchiveIteratorRef ArchiveQueryNodeIteratorFirst(
     ArchiveRef Archive,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Path
 ) {
     CString Cursor = strchr(Path, '.');
@@ -609,12 +680,19 @@ ArchiveIteratorRef ArchiveQueryNodeIteratorNext(
     assert(Iterator);
 
     ArchiveNodeRef Node = (ArchiveNodeRef)ArrayGetElementAtIndex(Archive->Nodes, Iterator->Index);
+    ArrayRef Bucket = DictionaryLookup(Archive->NodeBuckets, &Node->Key);
+    assert(Bucket);
 
-    for (Int64 Index = Iterator->Index + 1; Index < ArrayGetElementCount(Archive->Nodes); Index += 1) {
-        ArchiveNodeRef Next = (ArchiveNodeRef)ArrayGetElementAtIndex(Archive->Nodes, Index);
-        if (Next->NameIndex == Node->NameIndex && Next->ParentIndex == Node->ParentIndex) {
-            return (ArchiveIteratorRef)Next;
+    for (Int32 Index = 0; Index < ArrayGetElementCount(Bucket); Index += 1) {
+        Int32 NodeIndex = *(Int32*)ArrayGetElementAtIndex(Bucket, Index);
+        if (NodeIndex != Iterator->Index) continue;
+
+        if (Index + 1 < ArrayGetElementCount(Bucket)) {
+            NodeIndex = *(Int32*)ArrayGetElementAtIndex(Bucket, Index + 1);
+            return (ArchiveIteratorRef)ArrayGetElementAtIndex(Archive->Nodes, NodeIndex);
         }
+
+        return NULL;
     }
 
     return NULL;
@@ -622,7 +700,7 @@ ArchiveIteratorRef ArchiveQueryNodeIteratorNext(
 
 Int32 ArchiveQueryNodeCount(
     ArchiveRef Archive,
-    Int64 ParentIndex,
+    Int32 ParentIndex,
     CString Query
 ) {
     Int32 Result = 0;
@@ -637,11 +715,11 @@ Int32 ArchiveQueryNodeCount(
 
 ArchiveIteratorRef ArchiveNodeIteratorFirst(
     ArchiveRef Archive,
-    Int64 ParentIndex
+    Int32 ParentIndex
 ) {
     for (Int32 Index = 0; Index < ArrayGetElementCount(Archive->Nodes); Index++) {
         ArchiveNodeRef Node = (ArchiveNodeRef)ArrayGetElementAtIndex(Archive->Nodes, Index);
-        if (Node->ParentIndex == ParentIndex) {
+        if (Node->Key.ParentIndex == ParentIndex) {
             return (ArchiveIteratorRef)Node;
         }
     }
@@ -656,9 +734,9 @@ ArchiveIteratorRef ArchiveNodeIteratorNext(
     assert(Iterator);
 
     ArchiveNodeRef Node = (ArchiveNodeRef)ArrayGetElementAtIndex(Archive->Nodes, Iterator->Index);
-    for (Int64 Index = Iterator->Index + 1; Index < ArrayGetElementCount(Archive->Nodes); Index += 1) {
+    for (Int32 Index = Iterator->Index + 1; Index < ArrayGetElementCount(Archive->Nodes); Index += 1) {
         ArchiveNodeRef Next = (ArchiveNodeRef)ArrayGetElementAtIndex(Archive->Nodes, Index);
-        if (Next->ParentIndex == Node->ParentIndex) {
+        if (Next->Key.ParentIndex == Node->Key.ParentIndex) {
             return (ArchiveIteratorRef)Next;
         }
     }
@@ -668,7 +746,7 @@ ArchiveIteratorRef ArchiveNodeIteratorNext(
 
 ArchiveIteratorRef ArchiveAttributeIteratorFirst(
     ArchiveRef Archive,
-    Int64 NodeIndex
+    Int32 NodeIndex
 ) {
     ArchiveNodeRef Node = (ArchiveNodeRef)ArrayGetElementAtIndex(Archive->Nodes, NodeIndex);
 
@@ -692,13 +770,13 @@ ArchiveIteratorRef ArchiveAttributeIteratorNext(
         Attribute->NodeIndex
     );
 
-    Int64 FirstAttributeIndex = *(Int64*)ArrayGetElementAtIndex(Node->AttributeIndices, 0);
+    Int32 FirstAttributeIndex = *(Int32*)ArrayGetElementAtIndex(Node->AttributeIndices, 0);
     ArchiveAttributeRef FirstAttribute = (ArchiveAttributeRef)ArrayGetElementAtIndex(
         Archive->Attributes,
         FirstAttributeIndex
     );
 
-    Int64 NextIndex = (Int32)(Attribute - FirstAttribute) / sizeof(struct _ArchiveAttribute) + 1;
+    Int32 NextIndex = (Int32)(Attribute - FirstAttribute) / sizeof(struct _ArchiveAttribute) + 1;
 
     if (NextIndex >= ArrayGetElementCount(Node->AttributeIndices)) return NULL;
 

@@ -101,7 +101,6 @@ Int32 main(Int32 argc, CString* argv) {
     ServerRun(Server);
     ServerDestroy(Server);
     DatabaseDisconnect(ServerContext.Database);
-    DiagnosticTeardown();
 
     return EXIT_SUCCESS;
 }

@@ -1099,16 +1099,13 @@ error:
     return false;
 }
 
-Bool ServerLoadWorldData(
+Bool ServerLoadTerrainData(
     RTRuntimeRef Runtime,
     CString RuntimeDirectory,
     CString ServerDirectory,
     CString ScriptDirectory,
-    ArchiveRef TerrainArchive,
-    ArchiveRef MainArchive,
-    Bool LoadShops
+    ArchiveRef TerrainArchive
 ) {
-    ArchiveRef Archive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
 
     Int64 ParentIndex = ArchiveNodeGetChildByPath(TerrainArchive, -1, "Terrain.map");
     if (ParentIndex < 0) goto error;
@@ -1133,6 +1130,20 @@ Bool ServerLoadWorldData(
         Iterator = ArchiveQueryNodeIteratorNext(TerrainArchive, Iterator);
     }
 
+    return true;
+
+error:
+    return false;
+}
+
+Bool ServerLoadWorldData(
+    RTRuntimeRef Runtime,
+    CString RuntimeDirectory,
+    CString ServerDirectory,
+    CString ScriptDirectory,
+    ArchiveRef MainArchive,
+    ArchiveRef TempArchive
+) {
     Int32 HasMapCode = 0;
     Int32 GpsOrder = 0;
     Int32 WarAllowed = 0;
@@ -1147,17 +1158,17 @@ Bool ServerLoadWorldData(
             World->WorldIndex
         );
 
-        ArchiveClear(Archive, true);
+        ArchiveClear(TempArchive, true);
 
-        if (!ArchiveLoadFromFileEncryptedNoAlloc(Archive, WorldFilePath, false)) {
+        if (!ArchiveLoadFromFileEncryptedNoAlloc(TempArchive, WorldFilePath, false)) {
             Error("Loading world file %s failed!", WorldFilePath);
             continue;
         }
 
-        if (!ServerLoadWarpData(Runtime, Archive)) goto error;
+        if (!ServerLoadWarpData(Runtime, TempArchive)) goto error;
 
         Int64 NodeIndex = ArchiveQueryNodeWithAttribute(
-            Archive,
+            TempArchive,
             -1,
             "World.cabal_world.world",
             "id",
@@ -1167,21 +1178,21 @@ Bool ServerLoadWorldData(
         if (NodeIndex < 0) goto error;
 
         Index WorldIndex = 0;
-        if (!ParseAttributeIndex(Archive, NodeIndex, "id", &WorldIndex)) goto error;
+        if (!ParseAttributeIndex(TempArchive, NodeIndex, "id", &WorldIndex)) goto error;
         assert(WorldIndex == World->WorldIndex);
 
-        if (!ParseAttributeInt32(Archive, NodeIndex, "type", &World->Type)) goto error;
-        if (!ParseAttributeInt32(Archive, NodeIndex, "m_code", &HasMapCode)) goto error;
-        if (!ParseAttributeInt32(Archive, NodeIndex, "gpsorder", &World->MapCodeIndex)) goto error;
-        if (!ParseAttributeInt32(Archive, NodeIndex, "allowedwar", &WarAllowed)) goto error;
-        if (!ParseAttributeInt32(Archive, NodeIndex, "warcontrol", &WarControl)) goto error;
+        if (!ParseAttributeInt32(TempArchive, NodeIndex, "type", &World->Type)) goto error;
+        if (!ParseAttributeInt32(TempArchive, NodeIndex, "m_code", &HasMapCode)) goto error;
+        if (!ParseAttributeInt32(TempArchive, NodeIndex, "gpsorder", &World->MapCodeIndex)) goto error;
+        if (!ParseAttributeInt32(TempArchive, NodeIndex, "allowedwar", &WarAllowed)) goto error;
+        if (!ParseAttributeInt32(TempArchive, NodeIndex, "warcontrol", &WarControl)) goto error;
 
         if (HasMapCode) World->Flags |= RUNTIME_WORLD_FLAGS_HAS_MAPCODE;
         if (WarAllowed) World->Flags |= RUNTIME_WORLD_FLAGS_WAR_ALLOWED;
         if (WarControl) World->Flags |= RUNTIME_WORLD_FLAGS_WAR_CONTROL;
 
         Char MapFileName[MAX_PATH] = { 0 };
-        if (!ParseAttributeString(Archive, NodeIndex, "map_file", MapFileName, MAX_PATH)) goto error;
+        if (!ParseAttributeString(TempArchive, NodeIndex, "map_file", MapFileName, MAX_PATH)) goto error;
         if (strlen(MapFileName) > 0) {
             CString MapFilePath = PathCombineAll(RuntimeDirectory, "Map", MapFileName, NULL);
             Info("Loading map file: %s", MapFilePath);
@@ -1234,26 +1245,26 @@ Bool ServerLoadWorldData(
             free(MapData);
         }
 
-        ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, NodeIndex, "world_npc");
+        ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(TempArchive, NodeIndex, "world_npc");
         while (ChildIterator) {
             assert(Runtime->NpcCount < RUNTIME_MEMORY_MAX_NPC_COUNT);
 
             RTNpcRef Npc = &Runtime->Npcs[Runtime->NpcCount];
 
-            if (!ParseAttributeInt32(Archive, ChildIterator->Index, "id", &Npc->ID)) goto error;
-            if (!ParseAttributeInt32(Archive, ChildIterator->Index, "x", &Npc->X)) goto error;
-            if (!ParseAttributeInt32(Archive, ChildIterator->Index, "y", &Npc->Y)) goto error;
+            if (!ParseAttributeInt32(TempArchive, ChildIterator->Index, "id", &Npc->ID)) goto error;
+            if (!ParseAttributeInt32(TempArchive, ChildIterator->Index, "x", &Npc->X)) goto error;
+            if (!ParseAttributeInt32(TempArchive, ChildIterator->Index, "y", &Npc->Y)) goto error;
 
             Npc->WorldID = World->WorldIndex;
 
             Runtime->NpcCount += 1;
-            ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
+            ChildIterator = ArchiveQueryNodeIteratorNext(TempArchive, ChildIterator);
         }
 
         // Load Trainer Data
         // TODO: Move trainer data to server data
         {
-            ArchiveIteratorRef SkillIterator = ArchiveQueryNodeIteratorFirst(Archive, NodeIndex, "skill");
+            ArchiveIteratorRef SkillIterator = ArchiveQueryNodeIteratorFirst(TempArchive, NodeIndex, "skill");
             if (SkillIterator) {
                 assert(Runtime->TrainerDataCount < RUNTIME_MEMORY_MAX_TRAINER_DATA_COUNT);
 
@@ -1267,13 +1278,13 @@ Bool ServerLoadWorldData(
 
                     RTTrainerSkillDataRef SkillData = &TrainerData->Skills[TrainerData->SkillCount];
 
-                    if (!ParseAttributeInt32(Archive, SkillIterator->Index, "id", &SkillData->ID)) goto error;
-                    if (!ParseAttributeInt32(Archive, SkillIterator->Index, "slot_id", &SkillData->SlotID)) goto error;
-                    if (!ParseAttributeInt32(Archive, SkillIterator->Index, "level", &SkillData->Level)) goto error;
-                    if (!ParseAttributeInt32(Archive, SkillIterator->Index, "skill_book", &SkillData->SkillBookID)) goto error;
+                    if (!ParseAttributeInt32(TempArchive, SkillIterator->Index, "id", &SkillData->ID)) goto error;
+                    if (!ParseAttributeInt32(TempArchive, SkillIterator->Index, "slot_id", &SkillData->SlotID)) goto error;
+                    if (!ParseAttributeInt32(TempArchive, SkillIterator->Index, "level", &SkillData->Level)) goto error;
+                    if (!ParseAttributeInt32(TempArchive, SkillIterator->Index, "skill_book", &SkillData->SkillBookID)) goto error;
 
                     TrainerData->SkillCount += 1;
-                    SkillIterator = ArchiveQueryNodeIteratorNext(Archive, SkillIterator);
+                    SkillIterator = ArchiveQueryNodeIteratorNext(TempArchive, SkillIterator);
                 }
 
                 Runtime->TrainerDataCount += 1;
@@ -1288,17 +1299,17 @@ Bool ServerLoadWorldData(
         if (FileExists(WorldFilePath)) {
             Info("Loading world file: %s", WorldFilePath);
 
-            if (!ArchiveLoadFromFile(Archive, WorldFilePath, false)) goto error;
+            if (!ArchiveLoadFromFile(TempArchive, WorldFilePath, false)) goto error;
 
-            Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "World");
+            Int64 ParentIndex = ArchiveNodeGetChildByPath(TempArchive, -1, "World");
             if (ParentIndex < 0) goto error;
 
-            if (!ServerLoadWorldMobData(Runtime, RuntimeDirectory, ServerDirectory, ScriptDirectory, Archive, ParentIndex, World)) goto error;
-            if (!ServerLoadCommonDropData(Runtime, Archive, ParentIndex, World->DropTable.WorldDropPool, "CommonDropPool")) goto error;
-            if (!ServerLoadSpeciesDropData(Runtime, Archive, ParentIndex, World->DropTable.MobDropPool, "MobDropPool", false)) goto error;
-            if (!ServerLoadSpeciesDropData(Runtime, Archive, ParentIndex, World->DropTable.QuestDropPool, "QuestDropPool", true)) goto error;
+            if (!ServerLoadWorldMobData(Runtime, RuntimeDirectory, ServerDirectory, ScriptDirectory, TempArchive, ParentIndex, World)) goto error;
+            if (!ServerLoadCommonDropData(Runtime, TempArchive, ParentIndex, World->DropTable.WorldDropPool, "CommonDropPool")) goto error;
+            if (!ServerLoadSpeciesDropData(Runtime, TempArchive, ParentIndex, World->DropTable.MobDropPool, "MobDropPool", false)) goto error;
+            if (!ServerLoadSpeciesDropData(Runtime, TempArchive, ParentIndex, World->DropTable.QuestDropPool, "QuestDropPool", true)) goto error;
 
-            ArchiveClear(Archive, true);
+            ArchiveClear(TempArchive, true);
         }
     }
 
@@ -1322,7 +1333,6 @@ Bool ServerLoadWorldData(
         assert(WorldIndex == World->WorldIndex);
     }
 
-    ArchiveDestroy(Archive);
     return true;
 
 error:
@@ -1333,7 +1343,6 @@ error:
         ArrayDestroy(World->MobTable);
     }
 
-    ArchiveDestroy(Archive);
     return false;
 }
 
@@ -2222,49 +2231,34 @@ error:
     return false;
 }
 
-Bool ServerLoadDungeonData(
-    ServerContextRef Context,
-    CString RuntimeDirectory,
-    CString ServerDirectory,
-    ArchiveRef Cont1Archive,
-    ArchiveRef Cont2Archive,
-    ArchiveRef Cont3Archive
-) {
-    if (!ServerLoadQuestDungeonData(Context, RuntimeDirectory, ServerDirectory, Cont1Archive)) return false;
-    if (!ServerLoadMissionDungeonData(Context, RuntimeDirectory, ServerDirectory, Cont2Archive)) return false;
-    if (!ServerLoadMissionDungeonData(Context, RuntimeDirectory, ServerDirectory, Cont3Archive)) return false;
-
-    return true;
-}
-
 Bool ServerLoadWorldDropData(
     ServerContextRef Context,
     CString RuntimeDirectory,
-    CString ServerDirectory
+    CString ServerDirectory,
+    ArchiveRef TempArchive
 ) {
     RTRuntimeRef Runtime = Context->Runtime;
-    ArchiveRef Archive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
     CString DropFilePath = PathCombineAll(ServerDirectory, "World", "World_0.xml", NULL);
+
     if (FileExists(DropFilePath)) {
         Info("Loading world file: %s", DropFilePath);
 
-        if (!ArchiveLoadFromFile(Archive, DropFilePath, false)) goto error;
+        ArchiveClear(TempArchive, true);
+        if (!ArchiveLoadFromFile(TempArchive, DropFilePath, false)) goto error;
 
-        Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "World");
+        Int64 ParentIndex = ArchiveNodeGetChildByPath(TempArchive, -1, "World");
         if (ParentIndex < 0) goto error;
 
-        if (!ServerLoadCommonDropData(Runtime, Archive, ParentIndex, Runtime->DropTable.WorldDropPool, "CommonDropPool")) goto error;
-        if (!ServerLoadSpeciesDropData(Runtime, Archive, ParentIndex, Runtime->DropTable.MobDropPool, "MobDropPool", false)) goto error;
-        if (!ServerLoadSpeciesDropData(Runtime, Archive, ParentIndex, Runtime->DropTable.QuestDropPool, "QuestDropPool", true)) goto error;
+        if (!ServerLoadCommonDropData(Runtime, TempArchive, ParentIndex, Runtime->DropTable.WorldDropPool, "CommonDropPool")) goto error;
+        if (!ServerLoadSpeciesDropData(Runtime, TempArchive, ParentIndex, Runtime->DropTable.MobDropPool, "MobDropPool", false)) goto error;
+        if (!ServerLoadSpeciesDropData(Runtime, TempArchive, ParentIndex, Runtime->DropTable.QuestDropPool, "QuestDropPool", true)) goto error;
 
-        ArchiveClear(Archive, true);
+        ArchiveClear(TempArchive, true);
     }
 
-    ArchiveDestroy(Archive);
     return true;
 
 error:
-    ArchiveDestroy(Archive);
     return false;
 }
 
