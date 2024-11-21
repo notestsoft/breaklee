@@ -84,7 +84,6 @@ typedef struct _RTNpc* RTNpcRef;
 typedef struct _RTOptionPoolManager* RTOptionPoolManagerRef;
 typedef struct _RTPartyMemberInfo* RTPartyMemberInfoRef;
 typedef struct _RTPartyMemberData* RTPartyMemberDataRef;
-typedef struct _RTPartySlot* RTPartySlotRef;
 typedef struct _RTPartyInvitation* RTPartyInvitationRef;
 typedef struct _RTParty* RTPartyRef;
 typedef struct _RTPartyManager* RTPartyManagerRef;

@@ -176,7 +176,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 	S2C_DATA_NFY_SKILL_TO_MOB* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_SKILL_TO_MOB);
 	Notification->SkillIndex = Response->SkillIndex;
 	Notification->TargetCount = Response->TargetCount;
-	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
 	Notification->PositionSet.X = Character->Data.Info.PositionX;
 	Notification->PositionSet.Y = Character->Data.Info.PositionY;
 	Notification->CharacterHP = Response->CharacterHP;

@@ -25,8 +25,7 @@ Void RTPartyManagerDestroy(
 
 RTPartyRef RTPartyManagerCreateParty(
     RTPartyManagerRef PartyManager,
-    Index CharacterIndex,
-    RTEntityID CharacterID,
+    RTPartyMemberInfoRef Member,
     Int32 PartyType
 );
 
@@ -53,6 +52,12 @@ RTPartyRef RTPartyManagerGetPartyByCharacter(
 RTPartyRef RTPartyManagerGetParty(
     RTPartyManagerRef PartyManager,
     RTEntityID PartyID
+);
+
+Bool RTPartyManagerAddMember(
+    RTPartyManagerRef PartyManager,
+    RTPartyRef Party,
+    RTPartyMemberInfoRef Member
 );
 
 Bool RTPartyManagerRemoveMember(

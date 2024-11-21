@@ -5,11 +5,13 @@
 
 IPC_PROCEDURE_BINDING(W2P, CLIENT_CONNECT) {
     Index* CharacterWorldServerIndex = DictionaryLookup(Context->CharacterToWorldServer, &Packet->CharacterIndex);
-    if (CharacterWorldServerIndex) {
-        *CharacterWorldServerIndex = Packet->CharacterIndex;
+    if (!CharacterWorldServerIndex) {
+        DictionaryInsert(Context->CharacterToWorldServer, &Packet->CharacterIndex, &Packet->Header.Source.Index, sizeof(Index));
+        CharacterWorldServerIndex = DictionaryLookup(Context->CharacterToWorldServer, &Packet->CharacterIndex);
+        assert(CharacterWorldServerIndex);
     }
     else {
-        DictionaryInsert(Context->CharacterToWorldServer, &Packet->CharacterIndex, &Packet->Header.Source.Index, sizeof(Index));
+        *CharacterWorldServerIndex = Packet->Header.Source.Index;
     }
     
     IPC_P2W_DATA_CLIENT_CONNECT* Response = IPCPacketBufferInit(Connection->PacketBuffer, P2W, CLIENT_CONNECT);
@@ -19,6 +21,9 @@ IPC_PROCEDURE_BINDING(W2P, CLIENT_CONNECT) {
 
     RTPartyRef Party = RTPartyManagerGetPartyByCharacter(Context->PartyManager, Packet->CharacterIndex);
     if (Party) {
+        RTPartyMemberInfoRef Member = RTPartyGetMember(Party, Packet->CharacterIndex);
+        Member->WorldServerIndex = (CharacterWorldServerIndex) ? *CharacterWorldServerIndex : 0;
+
         Response->Result = 1;
         Response->DungeonIndex = 0;
         Response->PartyID = Party->ID;
@@ -27,7 +32,7 @@ IPC_PROCEDURE_BINDING(W2P, CLIENT_CONNECT) {
         Response->MemberCount = Party->MemberCount;
 
         for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
-            memcpy(&Response->Members[Index], &Party->Members[Index].Info, sizeof(struct _RTPartyMemberInfo));
+            memcpy(&Response->Members[Index], &Party->Members[Index], sizeof(struct _RTPartyMemberInfo));
         }
 
         Response->SoloDungeonIndex = 0;
@@ -35,6 +40,10 @@ IPC_PROCEDURE_BINDING(W2P, CLIENT_CONNECT) {
     }
   
     IPCSocketUnicast(Socket, Response);
+
+    if (Party) {
+        BroadcastPartyData(Server, Context, Server->IPCSocket, Party);
+    }
 }
 
 IPC_PROCEDURE_BINDING(W2P, CLIENT_DISCONNECT) {
@@ -47,7 +56,7 @@ IPC_PROCEDURE_BINDING(W2P, CLIENT_DISCONNECT) {
 
     Index OnlineMemberCount = 0;
     for (Index MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {
-        Index CharacterIndex = Party->Members[MemberIndex].Info.CharacterIndex;
+        Index CharacterIndex = Party->Members[MemberIndex].CharacterIndex;
         if (DictionaryLookup(Context->CharacterToWorldServer, &CharacterIndex)) {
             OnlineMemberCount += 1;
         }
@@ -57,5 +66,10 @@ IPC_PROCEDURE_BINDING(W2P, CLIENT_DISCONNECT) {
         // TODO: Notify world to close the dungeon instance
         BroadcastDestroyParty(Server, Context, Server->IPCSocket, Party);
         RTPartyManagerDestroyParty(Context->PartyManager, Party);
+    }
+    else {
+        RTPartyMemberInfoRef Member = RTPartyGetMember(Party, Packet->CharacterIndex);
+        Member->WorldServerIndex = 0;
+        BroadcastPartyData(Server, Context, Server->IPCSocket, Party);
     }
 }

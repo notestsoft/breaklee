@@ -38,18 +38,25 @@ struct _RTPartyMemberInfo {
     struct _RTMercenarySlot Mercenaries[RUNTIME_PARTY_MAX_MERCENARY_COUNT];
 };
 
-#pragma pack(pop)
-
-struct _RTPartySlot {
-	Int32 SlotIndex;
-    RTEntityID MemberID; // TODO: Remove
-    struct _RTPartyMemberInfo Info;
+struct _RTPartyMemberData {
+    Int32 WorldIndex;
+    Int64 MaxHP;
+    Int64 CurrentHP;
+    Int32 MaxMP;
+    Int32 CurrentMP;
+    Int32 PositionX;
+    Int32 PositionY;
+    Int16 MaxSP;
+    Int16 CurrentSP;
+    Int32 SpiritRaiseCooldown;
+    Int32 HasBlessingBeadPlus;
+    UInt32 MercenaryDurations[RUNTIME_PARTY_MAX_MERCENARY_COUNT];
 };
 
 struct _RTPartyInvitation {
     RTEntityID PartyID;
     Index InviterCharacterIndex;
-    struct _RTPartySlot Member;
+    struct _RTPartyMemberInfo Member;
     Timestamp InvitationTimestamp;
 };
 
@@ -59,10 +66,12 @@ struct _RTParty {
     Index WorldServerIndex;
 	Int32 PartyType;
 	Int32 MemberCount;
-	struct _RTPartySlot Members[RUNTIME_PARTY_MAX_MEMBER_COUNT];
+    struct _RTPartyMemberInfo Members[RUNTIME_PARTY_MAX_MEMBER_COUNT];
 	struct _RTItemSlot Inventory[RUNTIME_PARTY_MAX_INVENTORY_SLOT_COUNT];
 	struct _RTQuestSlot QuestSlot[RUNTIME_PARTY_MAX_QUEST_SLOT_COUNT];
 };
+
+#pragma pack(pop)
 
 Bool RTPartyIsSoloDungeon(
     RTEntityID PartyID
@@ -118,15 +127,9 @@ Bool RTCharacterPartyQuestAction(
     Int32 ActionSlotIndex
 );
 
-RTPartySlotRef RTPartyGetMember(
+RTPartyMemberInfoRef RTPartyGetMember(
     RTPartyRef Party,
     Index CharacterIndex
-);
-
-RTPartySlotRef RTPartyAddMember(
-    RTPartyRef Party,
-    Index CharacterIndex,
-    RTEntityID CharacterID
 );
 
 Void RTPartyQuestFlagClear(

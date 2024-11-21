@@ -26,7 +26,7 @@ CLIENT_PROCEDURE_BINDING(MOVEMENT_BEGIN) {
 	//if (!Success) goto error;
 
 	S2C_DATA_MOVEMENT_BEGIN* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MOVEMENT_BEGIN);
-	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
 	Notification->TickCount = Character->Movement.TickCount;
 	Notification->PositionBegin.X = Packet->PositionBegin.X;
 	Notification->PositionBegin.Y = Packet->PositionBegin.Y;
@@ -62,7 +62,7 @@ CLIENT_PROCEDURE_BINDING(MOVEMENT_END) {
 	//if (!Success) goto error;
 
 	S2C_DATA_MOVEMENT_END* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MOVEMENT_END);
-	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
 	Notification->Position.X = Packet->Position.X;
 	Notification->Position.Y = Packet->Position.Y;
 
@@ -100,7 +100,7 @@ CLIENT_PROCEDURE_BINDING(MOVEMENT_CHANGE) {
 	//if (!Success) goto error;
 
 	S2C_DATA_MOVEMENT_CHANGE* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MOVEMENT_CHANGE);
-	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
 	Notification->TickCount = Character->Movement.TickCount;
 	Notification->PositionBegin.X = Packet->PositionBegin.X;
 	Notification->PositionBegin.Y = Packet->PositionBegin.Y;
@@ -165,7 +165,7 @@ CLIENT_PROCEDURE_BINDING(CHANGE_DIRECTION) {
     RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
 
 	S2C_DATA_CHANGE_DIRECTION* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, CHANGE_DIRECTION);
-	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
 	Notification->Direction = Packet->Direction;
 
 	BroadcastToWorld(
@@ -202,7 +202,7 @@ CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_BEGIN) {
 	//if (!Success) goto error;
 
 	S2C_DATA_KEY_MOVEMENT_BEGIN* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, KEY_MOVEMENT_BEGIN);
-	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
 	Notification->TickCount = Character->Movement.TickCount;
 	Notification->PositionStartX = Packet->PositionStartX;
 	Notification->PositionStartY = Packet->PositionStartY;
@@ -238,7 +238,7 @@ CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_END) {
 	//if (!Success) goto error;
 
 	S2C_DATA_KEY_MOVEMENT_END* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, KEY_MOVEMENT_END);
-	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
 	Notification->PositionCurrentX = Packet->PositionCurrentX;
 	Notification->PositionCurrentY = Packet->PositionCurrentY;
 	BroadcastToWorld(
@@ -275,7 +275,7 @@ CLIENT_PROCEDURE_BINDING(KEY_MOVEMENT_CHANGE) {
 	//if (!Success) goto error;
 
 	S2C_DATA_KEY_MOVEMENT_CHANGE* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, KEY_MOVEMENT_CHANGE);
-	Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
+	Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
 	Notification->TickCount = Character->Movement.TickCount;
 	Notification->PositionStartX = Packet->PositionStartX;
 	Notification->PositionStartY = Packet->PositionStartY;

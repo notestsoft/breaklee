@@ -457,25 +457,25 @@ IPC_PROTOCOL(W2P, CLIENT_DISCONNECT,
 
 IPC_PROTOCOL(W2P, PARTY_INVITE,
 	UInt8 Result;
-	struct _RTPartySlot Source;
-	struct _RTPartySlot Target;
+	struct _RTPartyMemberInfo Source;
+	struct _RTPartyMemberInfo Target;
 )
 
 IPC_PROTOCOL(P2W, PARTY_INVITE,
-	struct _RTPartySlot Source;
-	struct _RTPartySlot Target;
+	struct _RTPartyMemberInfo Source;
+	struct _RTPartyMemberInfo Target;
 )
 
 IPC_PROTOCOL(W2P, PARTY_INVITE_ACK,
 	Bool Success;
-	struct _RTPartySlot Source;
-	struct _RTPartySlot Target;
+	struct _RTPartyMemberInfo Source;
+	struct _RTPartyMemberInfo Target;
 )
 
 IPC_PROTOCOL(P2W, PARTY_INVITE_ACK,
 	Bool Success;
-	struct _RTPartySlot Source;
-	struct _RTPartySlot Target;
+	struct _RTPartyMemberInfo Source;
+	struct _RTPartyMemberInfo Target;
 )
 
 IPC_PROTOCOL(W2P, PARTY_INVITE_CONFIRM,

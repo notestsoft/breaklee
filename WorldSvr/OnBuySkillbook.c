@@ -35,12 +35,7 @@ CLIENT_PROCEDURE_BINDING(BUY_SKILLBOOK) {
     ItemSlot.Item.ID = Skill->SkillBookID;
     ItemSlot.ItemOptions = Skill->Level;
 
-    Bool Success = RTInventorySetSlot(
-        Runtime,
-        &Character->Data.InventoryInfo,
-        &ItemSlot
-    );
-
+    Bool Success = RTInventorySetSlot(Runtime, &Character->Data.InventoryInfo, &ItemSlot);
     if (Success) {
         Character->Data.Info.Alz -= ItemData->BuyPrice;
     }

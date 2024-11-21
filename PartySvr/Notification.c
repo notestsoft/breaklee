@@ -82,7 +82,7 @@ Void BroadcastPartyData(
     Response->MemberCount = Party->MemberCount;
 
     for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
-        memcpy(&Response->MemberInfo[Index], &Party->Members[Index].Info, sizeof(struct _RTPartyMemberInfo));
+        memcpy(&Response->MemberInfo[Index], &Party->Members[Index], sizeof(struct _RTPartyMemberInfo));
     }
 
     IPCSocketBroadcast(Socket, Response);

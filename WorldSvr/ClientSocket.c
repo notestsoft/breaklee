@@ -28,23 +28,31 @@ Void ClientSocketOnDisconnect(
     ClientContextRef Client = (ClientContextRef)ConnectionContext;
     if (Client->CharacterIndex > 0) {
         RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Client->CharacterIndex);
-        RTCharacterUpdateBuffs(Context->Runtime, Character, true);
-        ServerSyncCharacter(Server, Context, Client, Character);
+        if (Character) {
+            RTCharacterUpdateBuffs(Context->Runtime, Character, true);
+            ServerSyncCharacter(Server, Context, Client, Character);
 
-        IPC_W2C_DATA_CLIENT_DISCONNECT* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2C, CLIENT_DISCONNECT);
-        Request->Header.Source = Server->IPCSocket->NodeID;
-        Request->Header.SourceConnectionID = Client->Connection->ID;
-        Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
-        Request->Header.Target.Type = IPC_TYPE_CHAT;
-        Request->CharacterIndex = Character->CharacterIndex;
-        IPCSocketUnicast(Server->IPCSocket, Request);
+            // TODO: @DungeonCleanUp Delete character dungeon instance and respawn to global world
+            RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Context->Runtime, Character);
+            RTWorldDespawnCharacter(WorldContext->WorldManager->Runtime, WorldContext, Character->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT);
+            RTWorldManagerDestroyCharacter(WorldContext->WorldManager, Client->CharacterIndex);
+        }
 
-        // TODO: @DungeonCleanUp Delete character dungeon instance and respawn to global world
-        RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Context->Runtime, Character);
-        RTWorldDespawnCharacter(WorldContext->WorldManager->Runtime, WorldContext, Character->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT);
-        RTWorldManagerDestroyCharacter(WorldContext->WorldManager, Client->CharacterIndex);
+        IPC_W2P_DATA_CLIENT_DISCONNECT* RequestParty = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2P, CLIENT_DISCONNECT);
+        RequestParty->Header.Source = Server->IPCSocket->NodeID;
+        RequestParty->Header.SourceConnectionID = Client->Connection->ID;
+        RequestParty->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+        RequestParty->Header.Target.Type = IPC_TYPE_PARTY;
+        RequestParty->CharacterIndex = Client->CharacterIndex;
+        IPCSocketUnicast(Server->IPCSocket, RequestParty);
 
-        Client->CharacterIndex = 0;
+        IPC_W2C_DATA_CLIENT_DISCONNECT* RequestChat = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2C, CLIENT_DISCONNECT);
+        RequestChat->Header.Source = Server->IPCSocket->NodeID;
+        RequestChat->Header.SourceConnectionID = Client->Connection->ID;
+        RequestChat->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+        RequestChat->Header.Target.Type = IPC_TYPE_CHAT;
+        RequestChat->CharacterIndex = Client->CharacterIndex;
+        IPCSocketUnicast(Server->IPCSocket, RequestChat);
     }
     
     if (Client->AccountID > 0) {

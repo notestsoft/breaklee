@@ -2727,24 +2727,9 @@ CLIENT_PROTOCOL(S2C, NFY_PARTY_INVITE_RULE, DEFAULT, 2026,
 // TODO: Add packet structure
 )
 
-CLIENT_PROTOCOL_STRUCT(S2C_DATA_PARTY_MEMBER_DATA,
-    Int32 WorldIndex;
-    Int64 MaxHP;
-    Int64 CurrentHP;
-    Int32 MaxMP;
-    Int32 CurrentMP;
-    Int32 PositionX;
-    Int32 PositionY;
-    Int16 MaxSP;
-    Int16 CurrentSP;
-    Int32 SpiritRaiseCooldown;
-    Int32 HasBlessingBeadPlus;
-    UInt32 MercenaryDurations[RUNTIME_PARTY_MAX_MERCENARY_COUNT];
-)
-
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_PARTY_UPDATE_MEMBER,
     struct _RTPartyMemberInfo Info;
-    S2C_DATA_PARTY_MEMBER_DATA Data;
+    struct _RTPartyMemberData Data;
 )
 
 CLIENT_PROTOCOL(S2C, NFY_PARTY_UPDATE, DEFAULT, 2028,

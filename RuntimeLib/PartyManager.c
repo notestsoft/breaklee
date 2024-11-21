@@ -31,36 +31,29 @@ Void RTPartyManagerDestroy(
     DictionaryDestroy(PartyManager->CharacterToPartyInvite);
     AllocatorDeallocate(PartyManager->Allocator, PartyManager);
 }
+
 // TODO: Solo dungeon party is not cleaned up always when the socket disconnects with a timeout (simulatable by halting on a breakpoint)
 RTPartyRef RTPartyManagerCreateParty(
     RTPartyManagerRef PartyManager,
-    Index CharacterIndex,
-    RTEntityID CharacterID,
+    RTPartyMemberInfoRef Member,
     Int32 PartyType
 ) {
-    assert(!DictionaryLookup(PartyManager->CharacterToPartyEntity, &CharacterIndex));
-
-    MemoryPoolRef PartyPool = PartyManager->PartyPool;
-    if (PartyType == RUNTIME_PARTY_TYPE_SOLO_DUNGEON) {
-        PartyPool = PartyManager->SoloPartyPool;
-    }
-
+    MemoryPoolRef PartyPool = (PartyType == RUNTIME_PARTY_TYPE_SOLO_DUNGEON) ? PartyManager->SoloPartyPool : PartyManager->PartyPool;
     Index PartyPoolIndex = 0;
     RTPartyRef Party = (RTPartyRef)MemoryPoolReserveNext(PartyPool, &PartyPoolIndex);
     Party->ID.EntityIndex = (UInt16)PartyPoolIndex;
     Party->ID.WorldIndex = PartyType;
     Party->ID.EntityType = RUNTIME_ENTITY_TYPE_PARTY;
-    Party->LeaderCharacterIndex = CharacterIndex;
+    Party->LeaderCharacterIndex = Member->CharacterIndex;
+    Party->WorldServerIndex = Member->WorldServerIndex;
     Party->PartyType = PartyType;
-    RTPartyAddMember(Party, CharacterIndex, CharacterID);
 
-    RTEntityID PartyID = { 0 };
-    PartyID.EntityIndex = (UInt16)PartyPoolIndex;
-    PartyID.WorldIndex = PartyType;
-    PartyID.EntityType = RUNTIME_ENTITY_TYPE_PARTY;
-    DictionaryInsert(PartyManager->CharacterToPartyEntity, &CharacterIndex, &PartyID, sizeof(struct _RTEntityID));
+    if (!RTPartyManagerAddMember(PartyManager, Party, Member)) {
+        MemoryPoolRelease(PartyPool, PartyPoolIndex);
+        return false;
+    }
 
-    return (RTPartyRef)MemoryPoolFetch(PartyPool, PartyPoolIndex);
+    return Party;
 }
 
 RTPartyRef RTPartyManagerCreatePartyRemote(
@@ -73,7 +66,7 @@ RTPartyRef RTPartyManagerCreatePartyRemote(
         memcpy(Party, RemoteParty, sizeof(struct _RTParty));
 
         for (Index MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {
-            Index CharacterIndex = RemoteParty->Members[MemberIndex].Info.CharacterIndex;
+            Index CharacterIndex = RemoteParty->Members[MemberIndex].CharacterIndex;
             assert(!DictionaryLookup(PartyManager->CharacterToPartyEntity, &CharacterIndex));
             DictionaryInsert(PartyManager->CharacterToPartyEntity, &CharacterIndex, &Party->ID, sizeof(struct _RTEntityID));
         }
@@ -91,7 +84,7 @@ Void RTPartyManagerDestroyParty(
     // TODO: Cleanup also all invitations to this party!!!
 
     for (Index MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {
-        Index CharacterIndex = Party->Members[MemberIndex].Info.CharacterIndex;
+        Index CharacterIndex = Party->Members[MemberIndex].CharacterIndex;
         DictionaryRemove(PartyManager->CharacterToPartyEntity, &CharacterIndex);
     }
 
@@ -147,6 +140,24 @@ RTPartyRef RTPartyManagerGetParty(
     return (RTPartyRef)MemoryPoolFetch(PartyPool, PartyPoolIndex);
 }
 
+Bool RTPartyManagerAddMember(
+    RTPartyManagerRef PartyManager,
+    RTPartyRef Party,
+    RTPartyMemberInfoRef Member
+) {
+    if (Party->MemberCount >= RUNTIME_PARTY_MAX_MEMBER_COUNT) return false;
+
+    Index CharacterIndex = Member->CharacterIndex;
+    if (DictionaryLookup(PartyManager->CharacterToPartyEntity, &CharacterIndex)) return false;
+
+    DictionaryInsert(PartyManager->CharacterToPartyEntity, &CharacterIndex, &Party->ID, sizeof(struct _RTEntityID));
+
+    memcpy(&Party->Members[Party->MemberCount], Member, sizeof(struct _RTPartyMemberInfo));
+    Party->MemberCount += 1;
+
+    return true;
+}
+
 Bool RTPartyManagerRemoveMember(
     RTPartyManagerRef PartyManager,
     Index CharacterIndex
@@ -163,11 +174,11 @@ Bool RTPartyManagerRemoveMember(
     RTPartyRef Party = (RTPartyRef)MemoryPoolFetch(PartyPool, PartyPoolIndex);
 
     for (Int32 Index = 0; Index < Party->MemberCount; Index += 1) {
-        if (Party->Members[Index].Info.CharacterIndex != CharacterIndex) continue;
+        if (Party->Members[Index].CharacterIndex != CharacterIndex) continue;
 
         Int32 TailLength = Party->MemberCount - Index - 1;
         if (TailLength > 0) {
-            memmove(&Party->Members[Index], &Party->Members[Index + 1], sizeof(struct _RTPartySlot) * TailLength);
+            memmove(&Party->Members[Index], &Party->Members[Index + 1], sizeof(struct _RTPartyMemberInfo) * TailLength);
         }
 
         Party->MemberCount -= 1;

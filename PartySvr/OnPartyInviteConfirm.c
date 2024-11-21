@@ -14,14 +14,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CONFIRM) {
     if (!Party) goto error;
 
     if (Packet->IsAccept) {
-        RTPartySlotRef Member = RTPartyAddMember(Party, Invitation->Member.Info.CharacterIndex, kEntityIDNull);
-        Index CharacterIndex = Invitation->Member.Info.CharacterIndex;
-        DictionaryInsert(Context->PartyManager->CharacterToPartyEntity, &CharacterIndex, &Party->ID, sizeof(struct _RTEntityID));
-
-        Member->MemberID = Invitation->Member.MemberID;
-        Member->Info.WorldServerIndex = Invitation->Member.Info.WorldServerIndex;
-        memcpy(&Member->Info, &Invitation->Member.Info, sizeof(struct _RTPartyMemberInfo));
-
+        Bool Success = RTPartyManagerAddMember(Context->PartyManager, Party, &Invitation->Member);
         BroadcastPartyInfo(Server, Context, Socket, Party);
     }
 

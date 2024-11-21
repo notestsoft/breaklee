@@ -4,10 +4,10 @@
 #include "Server.h"
 
 IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
-	RTPartySlotRef Source = &Packet->Source;
-	RTPartySlotRef Target = &Packet->Target;
+	RTPartyMemberInfoRef Source = &Packet->Source;
+	RTPartyMemberInfoRef Target = &Packet->Target;
 
-	Index CharacterIndex = Target->Info.CharacterIndex;
+	Index CharacterIndex = Target->CharacterIndex;
 	Bool IsTargetInParty = DictionaryLookup(Context->PartyManager->CharacterToPartyEntity, &CharacterIndex) != NULL;
 	if (IsTargetInParty) goto error;
 
@@ -15,29 +15,23 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
 	if (HasTargetInvitation) goto error;
 
 	Bool Created = false;
-	RTPartyRef Party = RTPartyManagerGetPartyByCharacter(Context->PartyManager, Source->Info.CharacterIndex);
+	RTPartyRef Party = RTPartyManagerGetPartyByCharacter(Context->PartyManager, Source->CharacterIndex);
 	if (!Party) {
-		Party = RTPartyManagerCreateParty(Context->PartyManager, Source->Info.CharacterIndex, kEntityIDNull, RUNTIME_PARTY_TYPE_NORMAL);
+		Party = RTPartyManagerCreateParty(Context->PartyManager, Source, RUNTIME_PARTY_TYPE_NORMAL);
 		if (!Party) goto error;
 		Created = true;
-
-		RTPartySlotRef Member = RTPartyGetMember(Party, Source->Info.CharacterIndex);
-		Member->MemberID = Packet->Source.MemberID;
-		Member->Info.WorldServerIndex = Packet->Source.Info.WorldServerIndex;
-		memcpy(&Member->Info, &Source->Info, sizeof(struct _RTPartyMemberInfo));
 	}
-
 	assert(Party);
+
 	if (Party->MemberCount >= RUNTIME_PARTY_MAX_MEMBER_COUNT) goto error;
 
 	Index PartyInvitationPoolIndex = 0;
 	RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolReserveNext(Context->PartyManager->PartyInvitationPool, &PartyInvitationPoolIndex);
 	DictionaryInsert(Context->PartyManager->CharacterToPartyInvite, &CharacterIndex, &PartyInvitationPoolIndex, sizeof(Index));
 
-	Invitation->InviterCharacterIndex = Packet->Source.Info.CharacterIndex;
+	Invitation->InviterCharacterIndex = Packet->Source.CharacterIndex;
 	Invitation->PartyID = Party->ID;
-	Invitation->Member.MemberID = Packet->Target.MemberID;
-	memcpy(&Invitation->Member.Info, &Target->Info, sizeof(struct _RTPartyMemberInfo));
+	memcpy(&Invitation->Member, Target, sizeof(struct _RTPartyMemberInfo));
 	Invitation->InvitationTimestamp = GetTimestampMs();
 
 	if (Created) {
@@ -48,7 +42,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
 	Request->Header.Source = Packet->Header.Source;
 	Request->Header.SourceConnectionID = Packet->Header.SourceConnectionID;
 	Request->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
-	Request->Header.Target.Index = (UInt32)Packet->Target.Info.WorldServerIndex;
+	Request->Header.Target.Index = (UInt32)Packet->Target.WorldServerIndex;
 	Request->Header.Target.Type = IPC_TYPE_WORLD;
 	Request->Source = Packet->Source;
 	Request->Target = Packet->Target;
@@ -68,22 +62,21 @@ error:
 }
 
 IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_ACK) {
-	RTPartySlotRef Source = &Packet->Source;
-	RTPartySlotRef Target = &Packet->Target;
+	RTPartyMemberInfoRef Source = &Packet->Source;
+	RTPartyMemberInfoRef Target = &Packet->Target;
 
-	Index CharacterIndex = Target->Info.CharacterIndex;
+	Index CharacterIndex = Target->CharacterIndex;
 	Index* PartyInvitationPoolIndex = DictionaryLookup(Context->PartyManager->CharacterToPartyInvite, &CharacterIndex);
 	if (!PartyInvitationPoolIndex) goto error;
 
 	RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolFetch(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);
 	if (!Invitation) goto error;
 
-	RTPartyRef Party = RTPartyManagerGetPartyByCharacter(Context->PartyManager, Source->Info.CharacterIndex);
+	RTPartyRef Party = RTPartyManagerGetPartyByCharacter(Context->PartyManager, Source->CharacterIndex);
 	if (!Party) goto error;
 
 	if (Packet->Success) {
-		Invitation->Member.MemberID = Packet->Target.MemberID;
-		memcpy(&Invitation->Member.Info, &Target->Info, sizeof(struct _RTPartyMemberInfo));
+		memcpy(&Invitation->Member, Target, sizeof(struct _RTPartyMemberInfo));
 	}
 	else if (Party->PartyType == RUNTIME_PARTY_TYPE_NORMAL) {
 		MemoryPoolRelease(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);
@@ -96,7 +89,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_ACK) {
 	Response->Header.Source = Packet->Header.Source;
 	Response->Header.SourceConnectionID = Packet->Header.SourceConnectionID;
 	Response->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
-	Response->Header.Target.Index = (UInt32)Packet->Source.Info.WorldServerIndex;
+	Response->Header.Target.Index = (UInt32)Packet->Source.WorldServerIndex;
 	Response->Header.Target.Type = IPC_TYPE_WORLD;
 	Response->Success = Packet->Success;
 	Response->Source = Packet->Source;
@@ -111,7 +104,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_ACK) {
 	Notification->MemberCount = Party->MemberCount;
 
 	for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
-		memcpy(&Notification->MemberInfo[Index], &Party->Members[Index].Info, sizeof(struct _RTPartyMemberInfo));
+		memcpy(&Notification->MemberInfo[Index], &Party->Members[Index], sizeof(struct _RTPartyMemberInfo));
 	}
 
 	IPCSocketBroadcast(Socket, Notification);
@@ -123,7 +116,7 @@ error:
 		Response->Header.Source = Packet->Header.Source;
 		Response->Header.SourceConnectionID = Packet->Header.SourceConnectionID;
 		Response->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
-		Response->Header.Target.Index = (UInt32)Packet->Source.Info.WorldServerIndex;
+		Response->Header.Target.Index = (UInt32)Packet->Source.WorldServerIndex;
 		Response->Header.Target.Type = IPC_TYPE_WORLD;
 		Response->Success = Packet->Success;
 		Response->Source = Packet->Source;

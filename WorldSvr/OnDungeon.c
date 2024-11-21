@@ -197,7 +197,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_END) {
     SocketSend(Socket, Connection, Response);
 
     S2C_DATA_NFY_QUEST_DUNGEON_END* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, NFY_QUEST_DUNGEON_END);
-    Notification->CharacterIndex = (UInt32)Client->CharacterIndex;
+    Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
     Notification->Result = Success ? 1 : 0;
     Notification->Unknown1 = 28;
     BroadcastToParty(Context, World->Party, Notification);

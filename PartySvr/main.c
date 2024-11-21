@@ -80,7 +80,7 @@ Void ServerOnUpdate(
                 IPCSocketUnicast(Server->IPCSocket, Notification);
             }
 
-            Index InvitedCharacterIndex = Invitation->Member.Info.CharacterIndex;
+            Index InvitedCharacterIndex = Invitation->Member.CharacterIndex;
             Index* InvitedWorldIndex = (Index*)DictionaryLookup(Context->CharacterToWorldServer, &InvitedCharacterIndex);
             if (InvitedWorldIndex) {
                 IPC_P2W_DATA_PARTY_INVITE_TIMEOUT* Notification = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, P2W, PARTY_INVITE_TIMEOUT);
@@ -88,7 +88,7 @@ Void ServerOnUpdate(
                 Notification->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
                 Notification->Header.Target.Index = (UInt32)*InvitedWorldIndex;
                 Notification->Header.Target.Type = IPC_TYPE_WORLD;
-                Notification->CharacterIndex = Invitation->Member.Info.CharacterIndex;
+                Notification->CharacterIndex = Invitation->Member.CharacterIndex;
                 Notification->IsAccept = false;
                 IPCSocketUnicast(Server->IPCSocket, Notification);
             }

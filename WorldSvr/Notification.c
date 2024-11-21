@@ -292,8 +292,8 @@ Void BroadcastToParty(
         if (!Party) return;
 
         for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
-            RTPartySlotRef PartySlot = &Party->Members[Index];
-            ClientContextRef Client = ServerGetClientByIndex(Context, PartySlot->Info.CharacterIndex, NULL);
+            RTPartyMemberInfoRef Member = &Party->Members[Index];
+            ClientContextRef Client = ServerGetClientByIndex(Context, Member->CharacterIndex, NULL);
             if (!Client) return;
 
             SocketSend(Context->ClientSocket, Client->Connection, Notification);

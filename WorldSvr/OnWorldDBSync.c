@@ -311,7 +311,7 @@ Void ServerSyncDB(
 		if (Client->CharacterIndex < 1) continue;
 
 		RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Client->CharacterIndex);
-		assert(Character);
+		if (!Character) continue;
 
 		Bool PerformSync = Force || (
 			Character->SyncMask.RawValue && 

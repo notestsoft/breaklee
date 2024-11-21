@@ -1,14 +1,14 @@
 #include "Party.h"
 
-RTPartySlotRef RTPartyGetMember(
+RTPartyMemberInfoRef RTPartyGetMember(
     RTPartyRef Party,
     Index CharacterIndex
 ) {
     for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
-        RTPartySlotRef PartySlot = &Party->Members[Index];
-        if (PartySlot->Info.CharacterIndex != CharacterIndex) continue;
+        RTPartyMemberInfoRef Member = &Party->Members[Index];
+        if (Member->CharacterIndex != CharacterIndex) continue;
 
-        return PartySlot;
+        return Member;
     }
 
     return NULL;
@@ -18,8 +18,8 @@ Bool RTPartyChangeLeader(
     RTPartyRef Party,
     Index CharacterIndex
 ) {
-    RTPartySlotRef PartySlot = RTPartyGetMember(Party, CharacterIndex);
-    if (!PartySlot) return false;
+    RTPartyMemberInfoRef Member = RTPartyGetMember(Party, CharacterIndex);
+    if (!Member) return false;
 
     Party->LeaderCharacterIndex = CharacterIndex;
     return true;

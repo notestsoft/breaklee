@@ -16,15 +16,15 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_LEAVE) {
 
     if (Response->Result) {
         for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
-            RTPartySlotRef Member = &Party->Members[Index];
+            RTPartyMemberInfoRef Member = &Party->Members[Index];
 
             IPC_P2W_DATA_PARTY_LEAVE* Response = IPCPacketBufferInit(Connection->PacketBuffer, P2W, PARTY_LEAVE);
             Response->Header.Source = Server->IPCSocket->NodeID;
             Response->Header.Target.Group = Context->Config.PartySvr.GroupIndex;
-            Response->Header.Target.Index = (UInt32)Member->Info.WorldServerIndex;
+            Response->Header.Target.Index = (UInt32)Member->WorldServerIndex;
             Response->Header.Target.Type = IPC_TYPE_WORLD;
             Response->PartyID = Party->ID;
-            Response->CharacterIndex = Member->Info.CharacterIndex;
+            Response->CharacterIndex = Member->CharacterIndex;
             IPCSocketUnicast(Socket, Response);
         }
     }

@@ -107,7 +107,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		Notification->SkillIndex = Packet->SkillIndex;
 
 		S2C_DATA_NFY_SKILL_GROUP_MOVEMENT* NotificationData = PacketBufferAppendStruct(NotificationPacketBuffer, S2C_DATA_NFY_SKILL_GROUP_MOVEMENT);
-		NotificationData->CharacterIndex = (UInt32)Client->CharacterIndex;
+		NotificationData->CharacterIndex = (UInt32)Character->CharacterIndex;
 		NotificationData->Entity = Character->ID;
 		NotificationData->PositionEnd.X = Character->Movement.PositionEnd.X;
 		NotificationData->PositionEnd.Y = Character->Movement.PositionEnd.Y;

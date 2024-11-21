@@ -38,8 +38,6 @@ CLIENT_PROCEDURE_BINDING(DEINITIALIZE) {
         }
 
         RTWorldManagerDestroyCharacter(WorldContext->WorldManager, Client->CharacterIndex);
-
-        Client->CharacterIndex = 0;
     }
 
     SocketSend(Socket, Connection, Response);

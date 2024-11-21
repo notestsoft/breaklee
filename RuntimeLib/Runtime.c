@@ -472,17 +472,29 @@ RTWorldContextRef RTRuntimeOpenDungeon(
     if (RTWorldContextPartyIsFull(Runtime->WorldManager)) return NULL;
 
     if (RTEntityIsNull(Character->PartyID)) {
-        RTPartyRef Party = RTPartyManagerCreateParty(
-            Runtime->PartyManager, 
-            Character->CharacterIndex, 
-            Character->ID, 
-            RUNTIME_PARTY_TYPE_SOLO_DUNGEON
-        );
+        struct _RTPartyMemberInfo Member = { 0 };
+        Member.CharacterIndex = Character->CharacterIndex;
+        Member.Level = Character->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL];
+        Member.DungeonIndex = Character->Data.Info.Level;
+        Member.IsEliteDungeon = false;
+        Member.IsEventDungeon = false;
+        Member.WorldServerIndex = 0;
+        Member.BattleStyleIndex = Character->Data.StyleInfo.Style.BattleStyle | (Character->Data.StyleInfo.Style.ExtendedBattleStyle << 3);
+        Member.WorldIndex = Character->Data.Info.WorldIndex;
+        Member.OverlordLevel = Character->Data.OverlordMasteryInfo.Info.Level;
+        Member.MythRebirth = Character->Data.MythMasteryInfo.Info.Rebirth;
+        Member.MythHolyPower = Character->Data.MythMasteryInfo.Info.HolyPower;
+        Member.MythLevel = Character->Data.MythMasteryInfo.Info.Level;
+        Member.ForceWingGrade = Character->Data.ForceWingInfo.Info.Grade;
+        Member.ForceWingLevel = Character->Data.ForceWingInfo.Info.Level;
+        Member.NameLength = strlen(Character->Name);
+        memcpy(Member.Name, Character->Name, Member.NameLength);
+        
+        RTPartyRef Party = RTPartyManagerCreateParty(Runtime->PartyManager, &Member, RUNTIME_PARTY_TYPE_SOLO_DUNGEON);
         Character->PartyID = Party->ID;
     }
 
-    RTWorldContextRef PartyWorld = RTWorldContextCreateParty(Runtime->WorldManager, WorldIndex, DungeonIndex, Character->PartyID);
-    return PartyWorld;
+    return RTWorldContextCreateParty(Runtime->WorldManager, WorldIndex, DungeonIndex, Character->PartyID);
 }
 
 Void RTRuntimeCloseDungeon(
@@ -508,7 +520,7 @@ Void RTRuntimeCloseDungeon(
         Bool IsDungeonActive = false;
 
         for (Int32 Index = 0; Index < Party->MemberCount; Index += 1) {
-            RTCharacterRef Member = RTWorldManagerGetCharacter(Runtime->WorldManager, Party->Members[Index].MemberID);
+            RTCharacterRef Member = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Party->Members[Index].CharacterIndex);
             if (!Member) continue;
             if (Member->Data.Info.WorldIndex == WorldContext->WorldData->WorldIndex &&
                 Member->Data.Info.DungeonIndex == WorldContext->DungeonIndex) {

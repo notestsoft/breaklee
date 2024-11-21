@@ -98,8 +98,8 @@ struct _ArchiveMobData {
     Int32 ResistCriticalDamage;
     Int32 ResistSuppression;
     Int32 ResistSilence;
+    Int32 ResistDiffDamage;
     Int32 ProportionalHPDmg;
-    Int32 O[1];
     Int32 IsWorldBoss;
     UInt8 K[3];
     Int32 L[6];
@@ -843,7 +843,6 @@ Bool ServerLoadMobData(
         MobData->SpecialSkill.Interval = ArchiveMobData->SpecialSkillInterval * 1000;
         MobData->AttackSignal = ArchiveMobData->AttackSignalValue;
         MobData->IsWorldBoss = ArchiveMobData->IsWorldBoss;
-//        MobData->CanAttack = ArchiveMobData->CanAttack;
         MobData->Exp = ArchiveMobData->Exp;
 
         Int32 Radius = (MobData->Scale + 1) >> 1;
@@ -882,10 +881,6 @@ Bool ServerLoadMobData(
 
         if (ArchiveMobData->D[2]) {
             Warn("Mob (%d) D[2]: %d", Index, ArchiveMobData->D[2]);
-        }
-
-        if (ArchiveMobData->O[0]) {
-            Warn("Mob (%d) O[0]: %d", Index, ArchiveMobData->O[0]);
         }
 
         if (ArchiveMobData->K[0]) {

@@ -213,7 +213,7 @@ Bool RTDungeonEnd(
         RTPartyRef Party = RTRuntimeGetParty(Runtime, World->Party);
         if (Party) {
             for (Int32 Index = 0; Index < Party->MemberCount; Index += 1) {
-                RTCharacterRef Character = RTWorldManagerGetCharacter(Runtime->WorldManager, Party->Members[Index].MemberID);
+                RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Party->Members[Index].CharacterIndex);
                 if (!Character) continue;
                 if (Character->Data.Info.WorldIndex != World->WorldData->WorldIndex) continue;
                 if (Character->Data.Info.DungeonIndex != DungeonData->DungeonIndex) continue;

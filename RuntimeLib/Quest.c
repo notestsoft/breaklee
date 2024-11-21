@@ -1021,20 +1021,3 @@ Bool RTCharacterHasPartyQuestDungeon(
 
 	return false;
 }
-
-RTPartySlotRef RTPartyAddMember(
-	RTPartyRef Party,
-	Index CharacterIndex,
-	RTEntityID CharacterID
-) {
-	assert(Party->MemberCount < RUNTIME_PARTY_MAX_MEMBER_COUNT);
-
-	RTPartySlotRef Slot = &Party->Members[Party->MemberCount];
-	memset(Slot, 0, sizeof(struct _RTPartySlot));
-	Slot->SlotIndex = Party->MemberCount;
-	Slot->Info.CharacterIndex = CharacterIndex;
-	Slot->MemberID = CharacterID;
-	CStringCopySafe(Slot->Info.Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, "test");
-	Party->MemberCount += 1;
-	return Slot;
-}
