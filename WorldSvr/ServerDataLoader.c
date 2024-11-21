@@ -984,14 +984,9 @@ Bool ServerLoadWorldMobData(
         }
 
         Mob->SpeciesData = &Runtime->MobData[Mob->Spawn.MobSpeciesIndex];
-        Mob->Spawn.Level = Mob->SpeciesData->Level;
         Mob->IsInfiniteSpawn = true;
         Mob->IsPermanentDeath = false;
         Mob->RemainingSpawnCount = 0;
-
-        if (Mob->Spawn.Level < 2) {
-            Mob->Spawn.Level = Mob->SpeciesData->Level;
-        }
 
         ChildIterator = ArchiveQueryNodeIteratorNext(Archive, ChildIterator);
     }
@@ -1806,6 +1801,25 @@ Bool ServerLoadDungeonMissionData(
         if (!ParseAttributeIndex(Archive, NodeIterator->Index, "id", &MobIndex))
             goto error;
 
+        Bool MobFound = false;
+        for (Int32 PatternPartIndex = 0; PatternPartIndex < DungeonData->PatternPartCount; PatternPartIndex += 1) {
+            RTMissionDungeonPatternPartDataRef PatternPartData = RTRuntimeGetPatternPartByID(
+                Runtime,
+                DungeonData->PatternPartIndices[PatternPartIndex]
+            );
+
+            for (Index Index = 0; Index < ArrayGetElementCount(PatternPartData->MobTable); Index += 1) {
+                RTMobRef Mob = (RTMobRef)ArrayGetElementAtIndex(PatternPartData->MobTable, Index);
+                if (Mob->ID.EntityIndex != MobIndex) continue;
+
+                Mob->Spawn.IsMissionGate = true;
+                MobFound = true;
+                break;
+            }
+
+            if (MobFound) break;
+        }
+
         RTDungeonGateControlDataRef GateControlData = DictionaryLookup(DungeonData->GateControls, &MobIndex);
         if (!GateControlData) {
             struct _RTDungeonGateControlData NewGateControlData = { 0 };
@@ -1949,10 +1963,6 @@ Bool ServerLoadPatternPartData(
             Mob->IsPermanentDeath = false;
             Mob->RemainingSpawnCount = 0;
 
-            if (Mob->Spawn.Level < 2) {
-                Mob->Spawn.Level = Mob->SpeciesData->Level;
-            }
-
             MobIterator = ArchiveQueryNodeIteratorNext(Archive, MobIterator);
         }
     }
@@ -2045,7 +2055,6 @@ Bool ServerLoadQuestDungeonData(
         DungeonData->DropTable.QuestDropPool = IndexDictionaryCreate(Runtime->Allocator, 8);
 
         if (!ServerLoadDungeonExtraData(Context, RuntimeDirectory, ServerDirectory, DungeonData)) goto error;
-        if (!ServerLoadDungeonMissionData(Context, RuntimeDirectory, ServerDirectory, DungeonData)) goto error;
 
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
     }
@@ -2091,6 +2100,23 @@ Bool ServerLoadQuestDungeonData(
         );
 
         if (!ServerLoadPatternPartData(Context, PatternPartFilePath)) goto error;
+
+        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+    }
+
+    ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.cabal_quest_dungeon");
+    if (ParentIndex < 0) goto error;
+
+    Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "dungeon");
+    while (Iterator) {
+        Index DungeonIndex = 0;
+        if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
+        assert(DictionaryLookup(Runtime->DungeonData, &DungeonIndex));
+
+        RTDungeonDataRef DungeonData = DictionaryLookup(Runtime->DungeonData, &DungeonIndex);
+        assert(DungeonData);
+
+        if (!ServerLoadDungeonMissionData(Context, RuntimeDirectory, ServerDirectory, DungeonData)) goto error;
 
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
     }
@@ -2186,7 +2212,6 @@ Bool ServerLoadMissionDungeonData(
         DungeonData->DropTable.QuestDropPool = IndexDictionaryCreate(Runtime->Allocator, 8);
 
         if (!ServerLoadDungeonExtraData(Context, RuntimeDirectory, ServerDirectory, DungeonData)) goto error;
-        if (!ServerLoadDungeonMissionData(Context, RuntimeDirectory, ServerDirectory, DungeonData)) goto error;
 
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
     }
@@ -2221,6 +2246,23 @@ Bool ServerLoadMissionDungeonData(
         );
 
         if (!ServerLoadPatternPartData(Context, PatternPartFilePath)) goto error;
+
+        Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
+    }
+    
+    ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.cabal_mission_dungeon");
+    if (ParentIndex < 0) goto error;
+
+    Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "dungeon");
+    while (Iterator) {
+        Index DungeonIndex = 0;
+        if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
+        assert(DictionaryLookup(Runtime->DungeonData, &DungeonIndex));
+
+        RTDungeonDataRef DungeonData = DictionaryLookup(Runtime->DungeonData, &DungeonIndex);
+        assert(DungeonData);
+
+        if (!ServerLoadDungeonMissionData(Context, RuntimeDirectory, ServerDirectory, DungeonData)) goto error;
 
         Iterator = ArchiveQueryNodeIteratorNext(Archive, Iterator);
     }

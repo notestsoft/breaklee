@@ -335,7 +335,7 @@ Void RTWorldChunkBroadcastMobsToCharacter(
         NotificationMob->MaxHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
         NotificationMob->CurrentHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
         NotificationMob->IsChasing = Mob->IsChasing;
-        NotificationMob->Level = Mob->Spawn.Level;
+        NotificationMob->Level = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL];
         NotificationMob->Nation = 0;
     }
     
@@ -426,7 +426,7 @@ Void RTWorldChunkNotify(
         NotificationMob->MaxHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
         NotificationMob->CurrentHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
         NotificationMob->IsChasing = Mob->IsChasing;
-        NotificationMob->Level = Mob->Spawn.Level;
+        NotificationMob->Level = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL];
         NotificationMob->Nation = 0;
         RTNotificationDispatchToNearby(Notification, WorldChunk);
     }

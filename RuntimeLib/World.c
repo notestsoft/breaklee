@@ -386,7 +386,6 @@ Void RTWorldCreateMob(
     }
 
     Mob->SpeciesData = &Runtime->MobData[Mob->Spawn.MobSpeciesIndex];
-    Mob->Spawn.Level = Mob->SpeciesData->Level;
     Mob->IsInfiniteSpawn = true;
     Mob->IsPermanentDeath = false;
     Mob->RemainingSpawnCount = 0;

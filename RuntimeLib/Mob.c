@@ -16,7 +16,7 @@ Void RTMobInit(
 	Mob->Attributes.Seed = (Int32)PlatformGetTickCount();
 	memset(Mob->Attributes.Values, 0, sizeof(Mob->Attributes.Values));
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_EXP] = Mob->SpeciesData->Exp;
-	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL] = Mob->Spawn.Level;
+	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL] = (Mob->Spawn.Level > 1) ? Mob->Spawn.Level : Mob->SpeciesData->Level;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED] = Mob->SpeciesData->MoveSpeed;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX] = Mob->SpeciesData->HP;
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] = Mob->SpeciesData->HP;
@@ -74,7 +74,7 @@ Bool RTMobCanMove(RTMobRef Mob) {
 }
 
 Bool RTMobCanAttack(RTMobRef Mob) {
-	return Mob->SpeciesData->CanAttack;
+	return Mob->SpeciesData->CanAttack && !Mob->Spawn.IsMissionGate;
 }
 
 Bool RTMobCanRespawn(RTMobRef Mob) {
@@ -499,7 +499,7 @@ Void _RTMobFindNearbyTargetProc(
 			Entity
 		);
 
-		Int32 LevelDifference = Character->Data.Info.Level - Arguments->Mob->Spawn.Level;
+		Int32 LevelDifference = Character->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL] - Arguments->Mob->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL];
 		if (Arguments->WorldContext->WorldData->Type == RUNTIME_WORLD_TYPE_GLOBAL &&
 			LevelDifference > RUNTIME_MOB_MAX_FIND_LEVEL_DIFFERENCE) {
 			return;

@@ -41,7 +41,8 @@ Bool RTCalculateDrop(
     Int32 Seed = (Int32)PlatformGetTickCount();
     Int32 DropRateValue = RandomRange(&World->Seed, 0, INT32_MAX);
     Int32 DropRateOffset = 0;
-    
+    Int32 Level = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL];
+
     if (World->DungeonIndex) {
         RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, World->DungeonIndex);
         assert(DungeonData);
@@ -53,7 +54,7 @@ Bool RTCalculateDrop(
         }
 
         DropPool = DungeonData->DropTable.WorldDropPool;
-        if (RTDropPoolRollItem(Runtime, DropRateValue, &DropRateOffset, DropPool, Mob->Spawn.Level, Result)) return true;
+        if (RTDropPoolRollItem(Runtime, DropRateValue, &DropRateOffset, DropPool, Level, Result)) return true;
     }
 
     Index DropPoolIndex = Mob->SpeciesData->MobSpeciesIndex;
@@ -63,7 +64,7 @@ Bool RTCalculateDrop(
     }
 
     DropPool = World->WorldData->DropTable.WorldDropPool;
-    if (RTDropPoolRollItem(Runtime, DropRateValue, &DropRateOffset, DropPool, Mob->Spawn.Level, Result)) return true;
+    if (RTDropPoolRollItem(Runtime, DropRateValue, &DropRateOffset, DropPool, Level, Result)) return true;
     
     DropPoolIndex = Mob->SpeciesData->MobSpeciesIndex;
     DropPool = (ArrayRef)DictionaryLookup(Runtime->DropTable.MobDropPool, &DropPoolIndex);
@@ -72,7 +73,7 @@ Bool RTCalculateDrop(
     }
 
     DropPool = Runtime->DropTable.WorldDropPool;
-    if (RTDropPoolRollItem(Runtime, DropRateValue, &DropRateOffset, DropPool, Mob->Spawn.Level, Result)) return true;
+    if (RTDropPoolRollItem(Runtime, DropRateValue, &DropRateOffset, DropPool, Level, Result)) return true;
 
     return false;
 }
@@ -91,10 +92,11 @@ Bool RTDropCurrency(
     MaxCurrencyDropRate += Character->Attributes.Values[RUNTIME_ATTRIBUTE_ALZ_BOMB_RATE];
     Int64 FinalCurrencyDropRate = INT16_MAX / MaxCurrencyDropRate * CurrencyDropRate;
     Int64 FinalCurrencyBombDropRate = INT16_MAX / MaxCurrencyDropRate * CurrencyBombDropRate;
+    Int32 Level = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL];
 
     Int64 DropRateValue = RandomRange(&World->Seed, 0, INT16_MAX);
     if (DropRateValue < FinalCurrencyDropRate) {
-        Int32 BaseDropAmount = MAX(1, Mob->Spawn.Level) * RUNTIME_DROP_BASE_CURRENCY_MULTIPLIER;
+        Int32 BaseDropAmount = MAX(1, Level) * RUNTIME_DROP_BASE_CURRENCY_MULTIPLIER;
 
         RTDropResult Drop = { 0 };
         Drop.ItemID.ID = RUNTIME_ITEM_ID_CURRENCY;
@@ -112,7 +114,7 @@ Bool RTDropCurrency(
     }
     else if (DropRateValue < FinalCurrencyDropRate + FinalCurrencyBombDropRate) {
         for (Int32 Index = 0; Index < RUNTIME_DROP_BASE_CURRENCY_BOMB_STACK_SIZE; Index += 1) {
-            Int32 BaseDropAmount = MAX(1, Mob->Spawn.Level) * RUNTIME_DROP_BASE_CURRENCY_BOMB_MULTIPLIER;
+            Int32 BaseDropAmount = MAX(1, Level) * RUNTIME_DROP_BASE_CURRENCY_BOMB_MULTIPLIER;
 
             RTDropResult Drop = { 0 };
             Drop.ItemID.ID = RUNTIME_ITEM_ID_CURRENCY;
