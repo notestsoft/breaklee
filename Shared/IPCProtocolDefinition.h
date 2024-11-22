@@ -488,6 +488,7 @@ IPC_PROTOCOL(W2P, PARTY_INVITE_CONFIRM,
 
 IPC_PROTOCOL(P2W, PARTY_INVITE_CONFIRM,
 	Bool Success;
+	RTEntityID PartyID;
 	Index SourceCharacterIndex;
 	UInt8 SourceNodeIndex;
 	Index TargetCharacterIndex;

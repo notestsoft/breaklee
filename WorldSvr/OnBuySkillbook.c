@@ -28,7 +28,7 @@ CLIENT_PROCEDURE_BINDING(BUY_SKILLBOOK) {
     RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, Skill->SkillBookID);
     assert(ItemData);
 
-    if (Character->Data.Info.Alz < ItemData->BuyPrice) goto error;
+    if (Character->Data.Info.Alz < ItemData->SellPrice) goto error;
     
     struct _RTItemSlot ItemSlot = { 0 };
     ItemSlot.SlotIndex = Packet->InventorySlotIndex;
@@ -37,7 +37,7 @@ CLIENT_PROCEDURE_BINDING(BUY_SKILLBOOK) {
 
     Bool Success = RTInventorySetSlot(Runtime, &Character->Data.InventoryInfo, &ItemSlot);
     if (Success) {
-        Character->Data.Info.Alz -= ItemData->BuyPrice;
+        Character->Data.Info.Alz -= ItemData->SellPrice;
     }
 
     S2C_DATA_BUY_SKILLBOOK* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, BUY_SKILLBOOK);

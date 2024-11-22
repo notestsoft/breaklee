@@ -507,6 +507,12 @@ Bool RTItemTypeIsProtectable(
 	UInt32 ItemType
 );
 
+Int64 RTItemCalculateSellPrice(
+	RTRuntimeRef Runtime,
+	RTItemDataRef ItemData,
+	RTItemSlotRef ItemSlot
+);
+
 RTItemHonorMedalSealData RTItemHonorMedalSealDecode(
 	RTRuntimeRef Runtime,
 	UInt64 Serial

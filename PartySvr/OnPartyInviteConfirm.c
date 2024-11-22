@@ -39,11 +39,12 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CONFIRM) {
     Response->Header.Source = Server->IPCSocket->NodeID;
     Response->Header.Target = Packet->Header.Source;
     Response->Header.TargetConnectionID = Packet->Header.SourceConnectionID;
+    Response->Success = Packet->IsAccept;
+    Response->PartyID = Party->ID;
     Response->SourceCharacterIndex = Packet->SourceCharacterIndex;
     Response->SourceNodeIndex = Packet->SourceNodeIndex;
     Response->TargetCharacterIndex = Packet->TargetCharacterIndex;
     Response->TargetNodeIndex = Packet->TargetNodeIndex;
-    Response->Success = Packet->IsAccept;
     IPCSocketUnicast(Socket, Response);
 
     BroadcastPartyData(Server, Context, Socket, Party);
@@ -55,11 +56,12 @@ error:
         Response->Header.Source = Server->IPCSocket->NodeID;
         Response->Header.Target = Packet->Header.Source;
         Response->Header.TargetConnectionID = Packet->Header.SourceConnectionID;
+        Response->Success = false;
+        Response->PartyID = kEntityIDNull;
         Response->SourceCharacterIndex = Packet->SourceCharacterIndex;
         Response->SourceNodeIndex = Packet->SourceNodeIndex;
         Response->TargetCharacterIndex = Packet->TargetCharacterIndex;
         Response->TargetNodeIndex = Packet->TargetNodeIndex;
-        Response->Success = false;
         IPCSocketUnicast(Socket, Response);
     }
 }

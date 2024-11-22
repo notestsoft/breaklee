@@ -45,6 +45,23 @@ Bool RTItemTypeIsProtectable(
 	}
 }
 
+Int64 RTItemCalculateSellPrice(
+	RTRuntimeRef Runtime,
+	RTItemDataRef ItemData,
+	RTItemSlotRef ItemSlot
+) {
+	// TODO: Calculate correct sell price
+
+	UInt64 ItemStackSizeMask = RTItemDataGetStackSizeMask(ItemData);
+	Int64 ItemStackSize = ItemSlot->ItemOptions & ItemStackSizeMask;
+
+	if (ItemSlot->Item.IsCharacterBinding) {
+		return 0;
+	}
+
+	return ItemData->SellPrice * ItemStackSize;
+}
+
 Bool RTCharacterCheckItemStatRequirements(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,

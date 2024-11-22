@@ -144,6 +144,9 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE_CONFIRM) {
 	if (!SourceClient) return;
 
 	// TODO: Add member to PartyID lookup table
+	if (Character && Packet->Success) {
+		Character->PartyID = Packet->PartyID;
+	}
 
 	S2C_DATA_PARTY_INVITE_CONFIRM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, PARTY_INVITE_CONFIRM);
 	Response->Result = Packet->Success ? 0 : 1;
@@ -414,7 +417,15 @@ IPC_PROCEDURE_BINDING(P2W, BROADCAST_TO_CHARACTER) {
 }
 
 IPC_PROCEDURE_BINDING(P2W, CREATE_PARTY) {
-	RTPartyManagerCreatePartyRemote(Runtime->PartyManager, &Packet->Party);
+	RTPartyRef Party = RTPartyManagerCreatePartyRemote(Runtime->PartyManager, &Packet->Party);
+	if (Party) {
+		for (Int32 Index = 0; Index < Party->MemberCount; Index += 1) {
+			RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Party->Members[Index].CharacterIndex);
+			if (!Character) continue;
+
+			Character->PartyID = Party->ID;
+		}
+	}
 }
 
 IPC_PROCEDURE_BINDING(P2W, DESTROY_PARTY) {

@@ -189,11 +189,14 @@ CLIENT_PROCEDURE_BINDING(SELL_ITEM) {
             RTCharacterUpdateQuestItemCounter(Runtime, Character, ItemSlot->Item, QuestItemOptions);
         }
 
-        RTCharacterAddRecoverySlot(Runtime, Character, ItemSlot, ItemData->SellPrice);
+
+        Int64 SellPrice = RTItemCalculateSellPrice(Runtime, ItemData, ItemSlot);
+
+        RTCharacterAddRecoverySlot(Runtime, Character, ItemSlot, SellPrice);
         RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlotIndex);
 
         // TODO: Calculate sell price based on upgrade level ...
-        Character->Data.Info.Alz += ItemData->SellPrice;
+        Character->Data.Info.Alz += SellPrice;
         Character->SyncMask.Info = true;
         Character->SyncMask.InventoryInfo = true;
     }

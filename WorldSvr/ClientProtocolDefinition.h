@@ -2604,9 +2604,11 @@ CLIENT_PROTOCOL(C2S, BUY_SKILLBOOK, DEFAULT, 2003,
 )
 
 CLIENT_PROTOCOL(S2C, BUY_SKILLBOOK, DEFAULT, 2003,
-    UInt32 Result;
-    UInt32 ItemID;
-    UInt32 Unknown3[6];
+    Int32 Result;
+    UInt64 ItemID;
+    UInt64 ItemSerial;
+    UInt64 ItemOptions;
+    UInt32 ItemDuration;
 )
 
 CLIENT_PROTOCOL(S2C, PARTY_QUEST_INFO, DEFAULT, 2004,

@@ -346,6 +346,11 @@ Void BroadcastToWorld(
     Int32 Y,
     Void *Packet
 ) {
+    if (!RTEntityIsNull(WorldContext->Party)) {
+        BroadcastToParty(Context, WorldContext->Party, Packet);
+        return;
+    }
+
     struct _BroadcastToWorldArguments Arguments = { 0 };
     Arguments.Context = Context;
     Arguments.Runtime = Context->Runtime;

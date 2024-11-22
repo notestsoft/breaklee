@@ -320,7 +320,7 @@ Bool RTRuntimeWarpCharacter(
                 RUNTIME_WORLD_TILE_WALL
             );
 
-            if (World->Closed) {
+            if (World->Closed || !World->Active) {
                 assert(Character->Data.Info.DungeonIndex != World->DungeonIndex);
                 RTRuntimeCloseDungeon(Runtime, Character);
             }
