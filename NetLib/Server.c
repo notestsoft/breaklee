@@ -103,6 +103,7 @@ SocketRef ServerCreateSocket(
         _ServerSocketOnReceived,
         SocketContext
     );
+    
     SocketContext->SocketHost = SocketHost;
     SocketContext->SocketPort = SocketPort;
     SocketContext->ConnectionContextPool = MemoryPoolCreate(Server->Allocator, ConnectionContextSize, MaxConnectionCount);

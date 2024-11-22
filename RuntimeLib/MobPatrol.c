@@ -90,7 +90,7 @@ Bool RTMobPatrolUpdate(
 				Mob->ID,
 				WaypointData->X,
 				WaypointData->Y,
-				Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+				(Int32)Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
 				RUNTIME_WORLD_TILE_WALL | RUNTIME_WORLD_TILE_TOWN
 			);
 			RTWorldTileIncreaseMobCount(Runtime, WorldContext, Mob->Movement.PositionTile.X, Mob->Movement.PositionTile.Y);

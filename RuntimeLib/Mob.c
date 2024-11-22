@@ -418,7 +418,7 @@ Void RTMobAttackTarget(
 		NotificationTarget->Result = Result.AttackType;
 		NotificationTarget->AppliedDamage = (UInt32)Result.AppliedDamage;
 		NotificationTarget->TargetHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-		NotificationTarget->TargetShield = Character->Attributes.Values[RUNTIME_ATTRIBUTE_DAMAGE_ABSORB];
+		NotificationTarget->TargetShield = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_DAMAGE_ABSORB];
 		memset(NotificationTarget->Unknown1, 0, 29);
 		RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
 	}
@@ -472,7 +472,7 @@ Void RTMobAttackTargetMob(
 		NotificationTarget->Result = Result.AttackType;
 		NotificationTarget->AppliedDamage = (UInt32)Result.AppliedDamage;
 		NotificationTarget->TargetHP = Target->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-		NotificationTarget->TargetShield = Target->Attributes.Values[RUNTIME_ATTRIBUTE_DAMAGE_ABSORB];
+		NotificationTarget->TargetShield = (UInt32)Target->Attributes.Values[RUNTIME_ATTRIBUTE_DAMAGE_ABSORB];
 		memset(NotificationTarget->Unknown1, 0, 29);
 		RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
 	}
@@ -499,7 +499,7 @@ Void _RTMobFindNearbyTargetProc(
 			Entity
 		);
 
-		Int32 LevelDifference = Character->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL] - Arguments->Mob->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL];
+		Int32 LevelDifference = (Int32)(Character->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL] - Arguments->Mob->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL]);
 		if (Arguments->WorldContext->WorldData->Type == RUNTIME_WORLD_TYPE_GLOBAL &&
 			LevelDifference > RUNTIME_MOB_MAX_FIND_LEVEL_DIFFERENCE) {
 			return;
@@ -868,7 +868,7 @@ Void RTMobUpdate(
 		Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED] = IsChasing ? Mob->SpeciesData->ChaseSpeed : Mob->SpeciesData->MoveSpeed;
 		Mob->IsChasing = IsChasing;
 
-		RTMovementSetSpeed(Runtime, &Mob->Movement, Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED]);
+		RTMovementSetSpeed(Runtime, &Mob->Movement, (Int32)Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED]);
 		Mob->Movement.PositionEnd.X = TargetPositionX;
 		Mob->Movement.PositionEnd.Y = TargetPositionY;
 
@@ -963,7 +963,7 @@ Void RTMobStartSpecialAction(
 	NOTIFICATION_DATA_MOB_PATTERN_SPECIAL_ACTION_MOB* NotificationTarget = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_MOB_PATTERN_SPECIAL_ACTION_MOB);
 	NotificationTarget->MobID = Mob->ID;
 	NotificationTarget->ActionIndex = Mob->SpecialActionIndex;
-	NotificationTarget->ActionElapsedTime = CurrentTimestamp - Mob->SpecialActionStartTimestamp;
+	NotificationTarget->ActionElapsedTime = (UInt32)(CurrentTimestamp - Mob->SpecialActionStartTimestamp);
 	RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
 }
 
@@ -985,7 +985,7 @@ Void RTMobCancelSpecialAction(
 	NOTIFICATION_DATA_MOB_PATTERN_SPECIAL_ACTION_MOB* NotificationTarget = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_MOB_PATTERN_SPECIAL_ACTION_MOB);
 	NotificationTarget->MobID = Mob->ID;
 	NotificationTarget->ActionIndex = Mob->SpecialActionIndex;
-	NotificationTarget->ActionElapsedTime = CurrentTimestamp - Mob->SpecialActionStartTimestamp;
+	NotificationTarget->ActionElapsedTime = (UInt32)(CurrentTimestamp - Mob->SpecialActionStartTimestamp);
 	RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
 }
 
@@ -1019,6 +1019,6 @@ Void RTMobCurse(
 	NOTIFICATION_DATA_MOB_SPECIAL_BUFF* Notification = RTNotificationInit(MOB_SPECIAL_BUFF);
 	Notification->MobID = Mob->ID;
 	Notification->CurrentHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-	Notification->ReceivedDamage = Amount;
+	Notification->ReceivedDamage = (UInt32)Amount;
 	RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
 }

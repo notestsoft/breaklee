@@ -55,84 +55,84 @@ Void ParseIndex(
 
 Bool ParseAttributeInt8(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int8* Result
 );
 
 Bool ParseAttributeInt16(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int16* Result
 );
 
 Bool ParseAttributeInt32(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int32* Result
 );
 
 Bool ParseAttributeInt64(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int64* Result
 );
 
 Bool ParseAttributeUInt8(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     UInt8* Result
 );
 
 Bool ParseAttributeUInt16(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     UInt16* Result
 );
 
 Bool ParseAttributeUInt32(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     UInt32* Result
 );
 
 Bool ParseAttributeUInt64(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     UInt64* Result
 );
 
 Bool ParseAttributeIndex(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Index* Result
 );
 
 Bool ParseAttributeFloat32(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Float32* Result
 );
 
 Bool ParseAttributeFloat64(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Float64* Result
 );
 
 Bool ParseAttributeInt32Array(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int32* Result,
     Int64 Count,
@@ -141,7 +141,7 @@ Bool ParseAttributeInt32Array(
 
 Int32 ParseAttributeInt32ArrayCounted(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int32* Result,
     Int64 Count,
@@ -150,7 +150,7 @@ Int32 ParseAttributeInt32ArrayCounted(
 
 Bool ParseAttributeUInt32Array(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     UInt32* Result,
     Int64 Count
@@ -158,7 +158,7 @@ Bool ParseAttributeUInt32Array(
 
 Int32 ParseAttributeUInt64ArrayCounted(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     UInt64* Result,
     Int64 Count,
@@ -167,7 +167,7 @@ Int32 ParseAttributeUInt64ArrayCounted(
 
 Int32 ParseAttributeInt32Array2D(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int32* Result,
     Int64 Count,
@@ -178,7 +178,7 @@ Int32 ParseAttributeInt32Array2D(
 
 Bool ParseAttributeCharArray(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Char* Result,
     Int64 Count,
@@ -187,7 +187,7 @@ Bool ParseAttributeCharArray(
 
 Int32 ParseAttributeCharArrayCounted(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Char* Result,
     Int64 Count,
@@ -196,7 +196,7 @@ Int32 ParseAttributeCharArrayCounted(
 
 Bool ParseAttributeString(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     CString Result,
     Int64 Length
@@ -204,77 +204,77 @@ Bool ParseAttributeString(
 
 Bool ParseAttributeInt8Equal(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int8 Value
 );
 
 Bool ParseAttributeInt16Equal(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int16 Value
 );
 
 Bool ParseAttributeInt32Equal(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int32 Value
 );
 
 Bool ParseAttributeInt64Equal(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int64 Value
 );
 
 Bool ParseAttributeUInt8Equal(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     UInt8 Value
 );
 
 Bool ParseAttributeUInt16Equal(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     UInt16 Value
 );
 
 Bool ParseAttributeUInt32Equal(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     UInt32 Value
 );
 
 Bool ParseAttributeUInt64Equal(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     UInt64 Value
 );
 
 Bool ParseAttributeIndexEqual(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Index Value
 );
 
 Bool ParseAttributeFloat32Equal(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Float32 Value
 );
 
 Bool ParseAttributeStringEqual(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     CString Value,
     Int64 Length

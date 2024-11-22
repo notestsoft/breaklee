@@ -41,7 +41,7 @@ Bool RTCalculateDrop(
     Int32 Seed = (Int32)PlatformGetTickCount();
     Int32 DropRateValue = RandomRange(&World->Seed, 0, INT32_MAX);
     Int32 DropRateOffset = 0;
-    Int32 Level = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL];
+    Int32 Level = (Int32)Mob->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL];
 
     if (World->DungeonIndex) {
         RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, World->DungeonIndex);
@@ -92,7 +92,7 @@ Bool RTDropCurrency(
     MaxCurrencyDropRate += Character->Attributes.Values[RUNTIME_ATTRIBUTE_ALZ_BOMB_RATE];
     Int64 FinalCurrencyDropRate = INT16_MAX / MaxCurrencyDropRate * CurrencyDropRate;
     Int64 FinalCurrencyBombDropRate = INT16_MAX / MaxCurrencyDropRate * CurrencyBombDropRate;
-    Int32 Level = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL];
+    Int32 Level = (Int32)Mob->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL];
 
     Int64 DropRateValue = RandomRange(&World->Seed, 0, INT16_MAX);
     if (DropRateValue < FinalCurrencyDropRate) {

@@ -134,7 +134,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 		ReceivedSkillExp += RTCharacterAddSkillExp(Runtime, Character, Result.SkillExp);
 
 		if (Character->Data.BattleModeInfo.Info.BattleModeIndex < 1 && Character->Data.BattleModeInfo.Info.AuraModeIndex < 1) {
-			Int32 SpReward = RTCalculateSPReward(Result.SkillExp, 0, RUNTIME_COMBO_TIMING_INVALID);
+			Int32 SpReward = RTCalculateSPReward((Int32)Result.SkillExp, 0, RUNTIME_COMBO_TIMING_INVALID);
 			RTCharacterAddSP(Runtime, Character, SpReward);
 		}
 
@@ -180,7 +180,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 	Notification->PositionSet.X = Character->Data.Info.PositionX;
 	Notification->PositionSet.Y = Character->Data.Info.PositionY;
 	Notification->CharacterHP = Response->CharacterHP;
-	Notification->Shield = Character->Attributes.Values[RUNTIME_ATTRIBUTE_ABSOLUTE_DAMAGE];
+	Notification->Shield = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_ABSOLUTE_DAMAGE];
 
 	for (Int32 Index = 0; Index < Response->TargetCount; Index++) {
 		S2C_DATA_SKILL_TO_MOB_TARGET* TargetResponse = &Response->Data[Index];

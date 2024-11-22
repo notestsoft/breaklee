@@ -4,7 +4,7 @@
 #include "Server.h"
 
 CLIENT_PROCEDURE_BINDING(LOGIN) {
-	if (!Client->Flags & CLIENT_FLAGS_CONNECTED) goto error;
+	if (!Client) goto error;
 
 	Client->WorldServerIndex = Packet->WorldServerIndex;
 

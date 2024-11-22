@@ -33,7 +33,7 @@ Void RTMobPatternInsertActionState(
 		WorldContext->WorldData->WorldIndex
 	);
 
-	Int32 StateCount = ArrayGetElementCount(MobPattern->ActionStates);
+	Int32 StateCount = (Int32)ArrayGetElementCount(MobPattern->ActionStates);
 	Int32 LowIndex = 0;
 	Int32 HighIndex = StateCount - 1;
 	Int32 InsertionIndex = StateCount;
@@ -53,6 +53,7 @@ Void RTMobPatternInsertActionState(
 		}
 	}
 
+    // TODO: Why is this overriding?
 	InsertionIndex = LowIndex;
 	struct _RTMobActionState ActionState = { 0 };
 	ActionState.TriggerData = TriggerData;
@@ -72,7 +73,6 @@ Void RTMobTriggerEnqueue(
 	RTMobTriggerDataRef TriggerData,
 	RTMobTriggerStateRef TriggerState
 ) {
-	Timestamp CurrentTimestamp = GetTimestampMs();
 	Int32 Seed = (Int32)PlatformGetTickCount();
 	for (Int32 Index = 0; Index < TriggerData->ActionGroupCount; Index += 1) {
 		RTMobPatternInsertActionState(
@@ -120,7 +120,7 @@ Void RTMobPatternStartAction(
 
 			NOTIFICATION_DATA_MOB_PATTERN_WARP_TARGET* Notification = RTNotificationInit(MOB_PATTERN_WARP_TARGET);
 			Notification->SourceIndex = Mob->ID.Serial;
-			Notification->TargetIndex = Target->CharacterIndex;
+			Notification->TargetIndex = (UInt32)Target->CharacterIndex;
 			Notification->PositionX = ActionState->ActionData->Parameters.WarpTarget.PositionX;
 			Notification->PositionY = ActionState->ActionData->Parameters.WarpTarget.PositionY;
 			RTNotificationDispatchToNearby(Notification, Target->Movement.WorldChunk);
@@ -135,7 +135,7 @@ Void RTMobPatternStartAction(
 				Target->ID,
 				ActionState->ActionData->Parameters.WarpTarget.PositionX,
 				ActionState->ActionData->Parameters.WarpTarget.PositionY,
-				Target->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+				(Int32)Target->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
 				RUNTIME_WORLD_TILE_WALL | RUNTIME_WORLD_TILE_TOWN
 			);
 			RTWorldTileIncreaseMobCount(Runtime, WorldContext, Target->Movement.PositionTile.X, Target->Movement.PositionTile.Y);
@@ -157,7 +157,7 @@ Void RTMobPatternStartAction(
 			Mob->ID,
 			ActionState->ActionData->Parameters.WarpTarget.PositionX,
 			ActionState->ActionData->Parameters.WarpTarget.PositionY,
-			Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+			(Int32)Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
 			RUNTIME_WORLD_TILE_WALL | RUNTIME_WORLD_TILE_TOWN
 		);
 		RTWorldTileIncreaseMobCount(Runtime, WorldContext, Mob->Movement.PositionTile.X, Mob->Movement.PositionTile.Y);
@@ -484,7 +484,6 @@ Void RTMobPatternStop(
 	RTMobRef Mob,
 	RTMobPatternRef MobPattern
 ) {
-	Timestamp CurrentTimestamp = GetTimestampMs();
 	for (Int32 Index = 0; Index < ArrayGetElementCount(MobPattern->ActionStates); Index += 1) {
 		RTMobActionStateRef ActionState = (RTMobActionStateRef)ArrayGetElementAtIndex(MobPattern->ActionStates, Index);
 		if (ActionState->IsRunning) {
@@ -511,7 +510,7 @@ Void RTMobPatternUpdate(
 ) {
 	assert(RTMobIsAlive(Mob));
 
-	Int32 Seed = PlatformGetTickCount();
+	Int32 Seed = (Int32)PlatformGetTickCount();
 	Timestamp CurrentTimestamp = GetTimestampMs();
 	for (Int32 Index = 0; Index < ArrayGetElementCount(MobPattern->ActionStates); Index += 1) {
 		RTMobActionStateRef ActionState = (RTMobActionStateRef)ArrayGetElementAtIndex(MobPattern->ActionStates, Index);

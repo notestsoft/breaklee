@@ -63,7 +63,7 @@ static inline Int64 _CalculateFinalMinDamage(
     Int64 DefenseRate,
 	Bool IsSword
 ) {
-	return MIN(100, IsSword ? MAX(80, MinDamage + 80) : 100);
+	return MIN(100, (IsSword ? MAX(80, MinDamage + 80) : 100));
 }
 
 static inline Int64 _CalculateFinalBlockRate(
@@ -84,8 +84,8 @@ static inline RTFinalBattleAttributes CalculateFinalBattleAttributes(
 	RTBattleAttributesRef Defender
 ) {
 	RTFinalBattleAttributes Result = { 0 };
-	Int32 AttackerLevel = MAX(1, Attacker->Values[RUNTIME_ATTRIBUTE_LEVEL]);
-	Int32 DefenderLevel = MAX(1, Defender->Values[RUNTIME_ATTRIBUTE_LEVEL]);
+	Int32 AttackerLevel = MAX(1, (Int32)Attacker->Values[RUNTIME_ATTRIBUTE_LEVEL]);
+	Int32 DefenderLevel = MAX(1, (Int32)Defender->Values[RUNTIME_ATTRIBUTE_LEVEL]);
 	
 	/*
 		RUNTIME_ATTRIBUTE_HP_CURRENT,
@@ -564,8 +564,8 @@ RTBattleResult RTCalculateNormalAttackResult(
 		Result.AttackType = RUNTIME_ATTACK_TYPE_PROTECT;
 	}
 
-	Int32 AttackerLevel = MAX(1, Attacker->Values[RUNTIME_ATTRIBUTE_LEVEL]);
-	Int32 DefenderLevel = MAX(1, Defender->Values[RUNTIME_ATTRIBUTE_LEVEL]);
+	Int32 AttackerLevel = MAX(1, (Int32)Attacker->Values[RUNTIME_ATTRIBUTE_LEVEL]);
+	Int32 DefenderLevel = MAX(1, (Int32)Defender->Values[RUNTIME_ATTRIBUTE_LEVEL]);
 	Int32 MinDamageRate = RandomRange(&Attacker->Seed, (Int32)Attributes.MinDamage, 100);
 
 	Result.TotalDamage = Attributes.Attack * MinDamageRate / 100;
@@ -642,7 +642,7 @@ RTBattleResult RTCalculateSkillAttackResult(
 ) {
 	Bool IsDefenderCharacter = false; // TODO: Add entity type to battle attributes
 
-	RTCharacterSkillValue SkillValue = RTCalculateSkillBasicValue(Skill, SkillLevel, Attacker->Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]);
+	RTCharacterSkillValue SkillValue = RTCalculateSkillBasicValue(Skill, SkillLevel, (Int32)Attacker->Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]);
 	Attacker->Values[RUNTIME_ATTRIBUTE_SWORD_SKILL_AMP] += SkillValue.SwordSkillAmp;
 	Attacker->Values[RUNTIME_ATTRIBUTE_MAGIC_SKILL_AMP] += SkillValue.MagicSkillAmp;
 	Attacker->Values[RUNTIME_ATTRIBUTE_ATTACK] += SkillValue.Attack;

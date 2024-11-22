@@ -342,7 +342,7 @@ static inline Int32 ArchiveAddName(
     CString Name,
     Int32 Length
 ) {
-    Int32 Index = ArrayGetElementCount(Archive->NameTable);
+    Int32 Index = (Int32)ArrayGetElementCount(Archive->NameTable);
     Bool IsZeroTerminated = Length > 0 && Name[Length - 1] == 0;
     Int32 StringLength = IsZeroTerminated ? Length : Length + 1;
 
@@ -392,7 +392,7 @@ static inline Int32 ArchiveAddData(
     CString Data,
     Int32 Length
 ) {
-    Int32 Index = ArrayGetElementCount(Archive->DataTable);
+    Int32 Index = (Int32)ArrayGetElementCount(Archive->DataTable);
     Bool IsZeroTerminated = Length > 0 && Data[Length - 1] == 0;
     Int32 StringLength = IsZeroTerminated ? Length : Length + 1;
 
@@ -419,7 +419,7 @@ Int32 ArchiveAddNode(
     assert(ParentIndex == -1 || ArchiveContainsNode(Archive, ParentIndex));
    
     ArchiveNodeRef Node = (ArchiveNodeRef)ArrayAppendUninitializedElement(Archive->Nodes);
-    Node->Index = ArrayGetElementCount(Archive->Nodes) - 1;
+    Node->Index = (Int32)ArrayGetElementCount(Archive->Nodes) - 1;
     Node->Key.ParentIndex = ParentIndex;
     Node->Key.NameIndex = ArchiveLookupName(Archive, Name, NameLength);
     if (Node->Key.NameIndex < 0) {
@@ -475,7 +475,7 @@ Int32 ArchiveNodeGetChildByPath(
         return Iterator ? Iterator->Index : -1;
     }
 
-    Int32 Length = Cursor - Path;
+    Int32 Length = (Int32)(Cursor - Path);
     if (Length < 1) return -1;
 
     Char Name[64];
@@ -537,7 +537,7 @@ Int32 ArchiveNodeAddAttribute(
     assert(ArchiveContainsNode(Archive, NodeIndex));
 
     ArchiveAttributeRef Attribute = (ArchiveAttributeRef)ArrayAppendUninitializedElement(Archive->Attributes);
-    Attribute->Index = ArrayGetElementCount(Archive->Attributes) - 1;
+    Attribute->Index = (Int32)ArrayGetElementCount(Archive->Attributes) - 1;
     Attribute->NodeIndex = NodeIndex;
     Attribute->NameIndex = ArchiveLookupName(Archive, Name, NameLength);
     if (Attribute->NameIndex < 0) {
@@ -622,7 +622,7 @@ ArchiveIteratorRef ArchiveQueryNodeIteratorSingleFirst(
     Int32 ParentIndex,
     CString Query
 ) {
-    Int32 NameIndex = ArchiveLookupName(Archive, Query, strlen(Query));
+    Int32 NameIndex = ArchiveLookupName(Archive, Query, (Int32)strlen(Query));
     if (NameIndex < 0) return NULL;
 
     struct _ArchiveNodeKey Key = { .NameIndex = NameIndex, .ParentIndex = ParentIndex };

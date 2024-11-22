@@ -16,7 +16,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_INVITE) {
 	Request->Header.Source = Server->IPCSocket->NodeID;
 	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
 	Request->Header.Target.Type = IPC_TYPE_PARTY;
-	Request->Source.CharacterIndex = Character->CharacterIndex;
+	Request->Source.CharacterIndex = (UInt32)Character->CharacterIndex;
 	Request->Source.Level = Character->Data.Info.Level;
 	Request->Source.DungeonIndex = Character->Data.Info.DungeonIndex;
 	Request->Source.Unknown2 = 0;
@@ -203,7 +203,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_LEAVE) {
 		if (!Client) continue;
 
 		S2C_DATA_NFY_PARTY_LEAVE* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, NFY_PARTY_LEAVE);
-		Notification->CharacterIndex = Packet->CharacterIndex;
+		Notification->CharacterIndex = (UInt32)Packet->CharacterIndex;
 		SocketSend(Context->ClientSocket, Client->Connection, Notification);
 	}
 }
@@ -275,7 +275,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_CHANGE_LEADER) {
 		if (!Client) continue;
 
 		S2C_DATA_NFY_PARTY_CHANGE_LEADER* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, NFY_PARTY_CHANGE_LEADER);
-		Notification->CharacterIndex = Packet->CharacterIndex;
+		Notification->CharacterIndex = (UInt32)Packet->CharacterIndex;
 		SocketSend(Context->ClientSocket, Client->Connection, Notification);
 	}
 }
@@ -329,7 +329,6 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INFO) {
 		ClientContextRef Client = ServerGetClientByIndex(Context, Member->CharacterIndex, NULL);
 		if (!Client) continue;
 
-		RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Client->CharacterIndex);
 		S2C_DATA_NFY_PARTY_INFO* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, NFY_PARTY_INFO);
 		Notification->Result = 0;
 		Notification->LeaderCharacterIndex = (UInt32)Packet->Party.LeaderCharacterIndex;
@@ -440,7 +439,7 @@ Void SendPartyData(
 		if (Character) {
 			UInt8 BattleStyleIndex = Character->Data.StyleInfo.Style.BattleStyle | (Character->Data.StyleInfo.Style.ExtendedBattleStyle << 3);
 
-			MemberInfo->CharacterIndex = Character->CharacterIndex;
+			MemberInfo->CharacterIndex = (UInt32)Character->CharacterIndex;
 			MemberInfo->Level = Character->Data.Info.Level;
 			MemberInfo->DungeonIndex = Character->Data.Info.DungeonIndex;
 			MemberInfo->Unknown2 = 0;

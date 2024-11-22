@@ -894,7 +894,7 @@ Bool PacketLayoutEncode(
             }
 
             PacketLayoutRef ChildLayout = PacketManagerGetLayoutByIndex(PacketLayout->Manager, PacketField->ChildIndex);
-            Index Count = luaL_len(State, -1);
+            lua_Integer Count = luaL_len(State, -1);
 
             lua_pushnil(State);
 

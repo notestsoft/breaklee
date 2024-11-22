@@ -473,8 +473,8 @@ RTWorldContextRef RTRuntimeOpenDungeon(
 
     if (RTEntityIsNull(Character->PartyID)) {
         struct _RTPartyMemberInfo Member = { 0 };
-        Member.CharacterIndex = Character->CharacterIndex;
-        Member.Level = Character->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL];
+        Member.CharacterIndex = (UInt32)Character->CharacterIndex;
+        Member.Level = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL];
         Member.DungeonIndex = Character->Data.Info.Level;
         Member.IsEliteDungeon = false;
         Member.IsEventDungeon = false;

@@ -429,11 +429,11 @@ RTDataUpgradeGradeChangeRef RTRuntimeDataUpgradeGradeChangeGet(
 // TODO: "MG" is not inside of forcecore_option so force controller weapons will not work!
 Bool ParseAttributeRTDataItemType(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     RTDataItemType* Result
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -509,11 +509,11 @@ error:
 
 Bool ParseAttributeRTDataItemTypeGrade(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     RTDataItemTypeGrade* Result
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -589,11 +589,11 @@ error:
 
 Bool ParseAttributeRTDataItemCategory(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     RTDataItemCategory* Result
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -641,11 +641,11 @@ error:
 
 Bool ParseAttributeRTDataItemGroup(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     RTDataItemGroup* Result
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);

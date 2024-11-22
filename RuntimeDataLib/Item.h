@@ -231,28 +231,28 @@ typedef UInt32 RTDataItemGroup;
 
 Bool ParseAttributeRTDataItemType(
 	ArchiveRef Object,
-	Int64 NodeIndex,
+	Int32 NodeIndex,
 	CString Name,
 	RTDataItemType* Result
 );
 
 Bool ParseAttributeRTDataItemTypeGrade(
 	ArchiveRef Object,
-	Int64 NodeIndex,
+	Int32 NodeIndex,
 	CString Name,
 	RTDataItemTypeGrade* Result
 );
 
 Bool ParseAttributeRTDataItemCategory(
 	ArchiveRef Object,
-	Int64 NodeIndex,
+	Int32 NodeIndex,
 	CString Name,
 	RTDataItemCategory* Result
 );
 
 Bool ParseAttributeRTDataItemGroup(
 	ArchiveRef Object,
-	Int64 NodeIndex,
+	Int32 NodeIndex,
 	CString Name,
 	RTDataItemGroup* Result
 );

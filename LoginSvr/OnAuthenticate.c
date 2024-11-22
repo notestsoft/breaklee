@@ -160,7 +160,7 @@ CLIENT_PROCEDURE_BINDING(AUTHENTICATE) {
         Response->LoginStatus = Client->LoginStatus;
         Response->AccountStatus = Client->AccountStatus;
 
-        S2C_DATA_AUTHENTICATE_EXTENSION_UNKNOWN_21* ResponseData = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_AUTHENTICATE_EXTENSION_UNKNOWN_21);
+        PacketBufferAppendStruct(PacketBuffer, S2C_DATA_AUTHENTICATE_EXTENSION_UNKNOWN_21);
         SocketSend(Socket, Connection, Response);
         return;
     }
@@ -174,7 +174,7 @@ CLIENT_PROCEDURE_BINDING(AUTHENTICATE) {
         Response->LoginStatus = Client->LoginStatus;
         Response->AccountStatus = Client->AccountStatus;
 
-        S2C_DATA_AUTHENTICATE_EXTENSION_UNKNOWN_25* ResponseData = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_AUTHENTICATE_EXTENSION_UNKNOWN_25);
+        PacketBufferAppendStruct(PacketBuffer, S2C_DATA_AUTHENTICATE_EXTENSION_UNKNOWN_25);
         SocketSend(Socket, Connection, Response);
         return;
     }
@@ -242,7 +242,7 @@ authenticate:
     }
 
     PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
-    S2C_DATA_AUTHENTICATE* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, AUTHENTICATE);
+    S2C_DATA_AUTHENTICATE* Response = PacketBufferInit(PacketBuffer, S2C, AUTHENTICATE);
     Response->KeepAlive = (Client->AccountStatus == ACCOUNT_STATUS_NORMAL) ? 1 : 0;
     Response->Unknown2 = -1;
     Response->LoginStatus = 0;

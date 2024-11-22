@@ -72,11 +72,11 @@ Void ParseIndex(
 
 Bool ParseAttributeInt8(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int8* Result
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -96,11 +96,11 @@ error:
 
 Bool ParseAttributeInt16(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int16* Result
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -120,11 +120,11 @@ error:
 
 Bool ParseAttributeInt32(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int32* Result
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -144,11 +144,11 @@ error:
 
 Bool ParseAttributeInt64(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int64* Result
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -168,11 +168,11 @@ error:
 
 Bool ParseAttributeUInt8(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     UInt8* Result
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -192,11 +192,11 @@ error:
 
 Bool ParseAttributeUInt16(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     UInt16* Result
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -216,11 +216,11 @@ error:
 
 Bool ParseAttributeUInt32(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     UInt32* Result
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -240,11 +240,11 @@ error:
 
 Bool ParseAttributeUInt64(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     UInt64* Result
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -264,11 +264,11 @@ error:
 
 Bool ParseAttributeIndex(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Index* Result
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -288,11 +288,11 @@ error:
 
 Bool ParseAttributeFloat32(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Float32* Result
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -312,11 +312,11 @@ error:
 
 Bool ParseAttributeFloat64(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Float64* Result
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -336,13 +336,13 @@ error:
 
 Bool ParseAttributeInt32Array(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int32* Result,
     Int64 Count,
     Char Separator
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -378,13 +378,13 @@ error:
 
 Int32 ParseAttributeInt32ArrayCounted(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int32* Result,
     Int64 Count,
     Char Separator
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -421,12 +421,12 @@ error:
 
 Bool ParseAttributeUInt32Array(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     UInt32* Result,
     Int64 Count
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -463,13 +463,13 @@ error:
 
 Int32 ParseAttributeUInt64ArrayCounted(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     UInt64* Result,
     Int64 Count,
     Char Separator
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -506,7 +506,7 @@ error:
 
 Int32 ParseAttributeInt32Array2D(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int32* Result,
     Int64 Count,
@@ -514,7 +514,7 @@ Int32 ParseAttributeInt32Array2D(
     Char Separator,
     Char GroupSeparator
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -560,13 +560,13 @@ error:
 // TODO: Check if Separator should be used
 Bool ParseAttributeCharArray(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Char* Result,
     Int64 Count,
     Char Separator
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -583,19 +583,18 @@ error:
 
 Int32 ParseAttributeCharArrayCounted(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Char* Result,
     Int64 Count,
     Char Separator
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
     if (!Data) goto error;
 
-//    Int64 Length = MIN(Count, Data->Length);
     Int64 Length = Data->Length;
     memcpy(Result, Data->Data, Length);
     if (Length > 0) Result[strlen(Result)] = '\0';
@@ -607,12 +606,12 @@ error:
 
 Bool ParseAttributeString(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     CString Result,
     Int64 Length
 ) {
-    Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
     if (AttributeIndex < 0) goto error;
 
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
@@ -629,7 +628,7 @@ error:
 
 Bool ParseAttributeInt8Equal(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int8 Value
 ) {
@@ -639,7 +638,7 @@ Bool ParseAttributeInt8Equal(
 
 Bool ParseAttributeInt16Equal(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int16 Value
 ) {
@@ -649,7 +648,7 @@ Bool ParseAttributeInt16Equal(
 
 Bool ParseAttributeInt32Equal(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int32 Value
 ) {
@@ -659,7 +658,7 @@ Bool ParseAttributeInt32Equal(
 
 Bool ParseAttributeInt64Equal(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int64 Value
 ) {
@@ -669,7 +668,7 @@ Bool ParseAttributeInt64Equal(
 
 Bool ParseAttributeUInt8Equal(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     UInt8 Value
 ) {
@@ -679,7 +678,7 @@ Bool ParseAttributeUInt8Equal(
 
 Bool ParseAttributeUInt16Equal(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     UInt16 Value
 ) {
@@ -689,7 +688,7 @@ Bool ParseAttributeUInt16Equal(
 
 Bool ParseAttributeUInt32Equal(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     UInt32 Value
 ) {
@@ -699,7 +698,7 @@ Bool ParseAttributeUInt32Equal(
 
 Bool ParseAttributeUInt64Equal(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     UInt64 Value
 ) {
@@ -709,7 +708,7 @@ Bool ParseAttributeUInt64Equal(
 
 Bool ParseAttributeIndexEqual(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Index Value
 ) {
@@ -719,7 +718,7 @@ Bool ParseAttributeIndexEqual(
 
 Bool ParseAttributeFloat32Equal(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Float32 Value
 ) {
@@ -729,7 +728,7 @@ Bool ParseAttributeFloat32Equal(
 
 Bool ParseAttributeStringEqual(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     CString Value,
     Int64 Length

@@ -145,7 +145,7 @@ Void RTCharacterUpdateBattleMode(
 
 		NOTIFICATION_DATA_CHARACTER_DATA* Notification = RTNotificationInit(CHARACTER_DATA);
 		Notification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_SP_DECREASE_EX;
-		Notification->SP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+		Notification->SP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
 		RTNotificationDispatchToCharacter(Notification, Character);
 	}
 }
@@ -274,7 +274,7 @@ Void RTCharacterInitializeBattleMode(
 		if (SkillData) {
 			for (Int32 ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
 				RTSkillValueDataRef SkillValue = &SkillData->SkillValues[ValueIndex];
-				Int64 ForceValue = RTCalculateSkillValue(SkillValue, SkillLevel, Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]);
+				Int64 ForceValue = RTCalculateSkillValue(SkillValue, SkillLevel, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]);
 
 				RTCharacterApplyForceEffect(
 					Runtime,
@@ -294,7 +294,7 @@ Void RTCharacterInitializeBattleMode(
 		if (SkillData) {
 			for (Int32 ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
 				RTSkillValueDataRef SkillValue = &SkillData->SkillValues[ValueIndex];
-				Int64 ForceValue = RTCalculateSkillValue(SkillValue, SkillLevel, Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]);
+				Int64 ForceValue = RTCalculateSkillValue(SkillValue, SkillLevel, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]);
 
 				RTCharacterApplyForceEffect(
 					Runtime,

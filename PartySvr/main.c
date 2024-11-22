@@ -59,7 +59,6 @@ Void ServerOnUpdate(
     
     DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(Context->PartyManager->CharacterToPartyInvite);
     while (Iterator.Key) {
-        Index CharacterIndex = *(Index*)Iterator.Key;
         Index PartyInvitationPoolIndex = *(Index*)Iterator.Value;
         Iterator = DictionaryKeyIteratorNext(Iterator);
 

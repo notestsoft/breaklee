@@ -52,10 +52,8 @@ set(SHARED_HEADERS_DIR ${PROJECT_SOURCE_DIR}/Shared)
 file(GLOB SHARED_HEADERS ${SHARED_HEADERS_DIR}/*.h)
 
 add_library(CoreLib STATIC ${CORE_LIB_HEADERS} ${CORE_LIB_SOURCES})
-target_link_libraries(CoreLib PRIVATE ${OpenSSL_LIBRARIES} ${zlib_LIBRARIES} ${libuv_LIBRARIES})
-target_include_directories(CoreLib PUBLIC ${OpenSSL_INCLUDE_DIR} ${zlib_INCLUDE_DIR} ${libuv_INCLUDE_DIR})
-target_link_libraries(CoreLib PRIVATE ${ODBC_LIBRARIES})
-target_include_directories(CoreLib PUBLIC ${ODBC_INCLUDE_DIRS})
+target_link_libraries(CoreLib PRIVATE ${OpenSSL_LIBRARIES} ${zlib_LIBRARIES} ${libuv_LIBRARIES} ${ODBC_LIBRARIES})
+target_include_directories(CoreLib PUBLIC ${OpenSSL_INCLUDE_DIR} ${zlib_INCLUDE_DIR} ${libuv_INCLUDE_DIR} ${ODBC_INCLUDE_DIRS})
 
 add_library(NetLib STATIC ${NET_LIB_HEADERS} ${NET_LIB_SOURCES})
 target_link_libraries(NetLib PRIVATE CoreLib lua::lua)
@@ -66,7 +64,7 @@ target_link_libraries(RuntimeDataLib PRIVATE CoreLib)
 target_include_directories(RuntimeDataLib PUBLIC ${PROJECT_SOURCE_DIR})
 
 add_library(RuntimeLib STATIC ${RUNTIME_LIB_HEADERS} ${RUNTIME_LIB_SOURCES})
-target_link_libraries(RuntimeLib PRIVATE CoreLib RuntimeDataLib ${LUA_LIBRARIES})
+target_link_libraries(RuntimeLib PRIVATE CoreLib RuntimeDataLib lua::lua)
 target_include_directories(RuntimeLib PUBLIC ${PROJECT_SOURCE_DIR} ${lua_INCLUDE_DIR})
 
 if(CONFIG_BUILD_TARGET_AUCTION_SVR)
@@ -117,7 +115,7 @@ if(CONFIG_BUILD_TARGET_LOGIN_SVR)
     file(GLOB LOGIN_SVR_SOURCES ${LOGIN_SVR_DIR}/*.c)
 
     add_executable(LoginSvr ${LOGIN_SVR_HEADERS} ${LOGIN_SVR_SOURCES} ${SHARED_HEADERS})
-    target_include_directories(LoginSvr PUBLIC ${PROJECT_SOURCE_DIR} ${OPENSSL_INCLUDE_DIR} ${SHARED_HEADERS_DIR} ${LUA_INCLUDE_DIR})
+    target_include_directories(LoginSvr PUBLIC ${PROJECT_SOURCE_DIR} ${OPENSSL_INCLUDE_DIR} ${SHARED_HEADERS_DIR})
     target_link_libraries(LoginSvr PRIVATE NetLib CoreLib)
 
     if(WIN32)

@@ -13,8 +13,8 @@ Int32 lua_RTCharacterSetBattleRank(lua_State* State) {
     RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
     lua_pop(State, 1);
 
-    Int32 BattleRank = luaL_checkinteger(State, 2);
-    RTCharacterSetBattleRank(Runtime, Character, BattleRank);
+    lua_Integer BattleRank = luaL_checkinteger(State, 2);
+    RTCharacterSetBattleRank(Runtime, Character, (Int32)BattleRank);
     return 0;
 }
 
@@ -110,8 +110,8 @@ Int32 lua_RTCharacterAddRage(lua_State* State) {
     RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
     lua_pop(State, 1);
 
-    Int32 Rage = luaL_checkinteger(State, 2);
-    RTCharacterAddRage(Runtime, Character, Rage);
+    lua_Integer Rage = luaL_checkinteger(State, 2);
+    RTCharacterAddRage(Runtime, Character, (Int32)Rage);
     return 0;
 }
 
@@ -124,8 +124,8 @@ Int32 lua_RTCharacterConsumeRage(lua_State* State) {
     RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
     lua_pop(State, 1);
 
-    Int32 Rage = luaL_checkinteger(State, 2);
-    RTCharacterConsumeRage(Runtime, Character, Rage);
+    lua_Integer Rage = luaL_checkinteger(State, 2);
+    RTCharacterConsumeRage(Runtime, Character, (Int32)Rage);
     return 0;
 }
 
@@ -138,7 +138,7 @@ Int32 lua_RTCharacterSetHP(lua_State* State) {
     RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
     lua_pop(State, 1);
 
-    Int64 Hp = luaL_checkinteger(State, 2);
+    lua_Integer Hp = luaL_checkinteger(State, 2);
     RTCharacterSetHP(Runtime, Character, Hp, false);
     return 0;
 }
@@ -152,7 +152,7 @@ Int32 lua_RTCharacterAddHP(lua_State* State) {
     RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
     lua_pop(State, 1);
 
-    Int64 Hp = luaL_checkinteger(State, 2);
+    lua_Integer Hp = luaL_checkinteger(State, 2);
     RTCharacterAddHP(Runtime, Character, Hp, false);
     return 0;
 }
@@ -166,8 +166,8 @@ Int32 lua_RTCharacterSetMP(lua_State* State) {
     RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
     lua_pop(State, 1);
 
-    Int32 Mp = luaL_checkinteger(State, 2);
-    RTCharacterSetMP(Runtime, Character, Mp, false);
+    lua_Integer Mp = luaL_checkinteger(State, 2);
+    RTCharacterSetMP(Runtime, Character, (Int32)Mp, false);
     return 0;
 }
 
@@ -180,8 +180,8 @@ Int32 lua_RTCharacterAddMP(lua_State* State) {
     RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
     lua_pop(State, 1);
 
-    Int32 Mp = luaL_checkinteger(State, 2);
-    RTCharacterAddMP(Runtime, Character, Mp, false);
+    lua_Integer Mp = luaL_checkinteger(State, 2);
+    RTCharacterAddMP(Runtime, Character, (Int32)Mp, false);
     return 0;
 }
 
@@ -194,8 +194,8 @@ Int32 lua_RTCharacterSetSP(lua_State* State) {
     RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
     lua_pop(State, 1);
 
-    Int32 Sp = luaL_checkinteger(State, 2);
-    RTCharacterSetSP(Runtime, Character, Sp);
+    lua_Integer Sp = luaL_checkinteger(State, 2);
+    RTCharacterSetSP(Runtime, Character, (Int32)Sp);
     return 0;
 }
 
@@ -208,8 +208,8 @@ Int32 lua_RTCharacterAddSP(lua_State* State) {
     RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
     lua_pop(State, 1);
 
-    Int32 Sp = luaL_checkinteger(State, 2);
-    RTCharacterAddSP(Runtime, Character, Sp);
+    lua_Integer Sp = luaL_checkinteger(State, 2);
+    RTCharacterAddSP(Runtime, Character, (Int32)Sp);
     return 0;
 }
 
@@ -222,8 +222,8 @@ Int32 lua_RTCharacterSetBP(lua_State* State) {
     RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
     lua_pop(State, 1);
 
-    Int32 Bp = luaL_checkinteger(State, 2);
-    RTCharacterSetBP(Runtime, Character, Bp);
+    lua_Integer Bp = luaL_checkinteger(State, 2);
+    RTCharacterSetBP(Runtime, Character, (Int32)Bp);
     return 0;
 }
 
@@ -236,8 +236,8 @@ Int32 lua_RTCharacterAddBP(lua_State* State) {
     RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
     lua_pop(State, 1);
 
-    Int32 Bp = luaL_checkinteger(State, 2);
-    RTCharacterAddBP(Runtime, Character, Bp);
+    lua_Integer Bp = luaL_checkinteger(State, 2);
+    RTCharacterAddBP(Runtime, Character, (Int32)Bp);
     return 0;
 }
 
@@ -250,8 +250,8 @@ Int32 lua_RTCharacterApplyDamage(lua_State* State) {
     RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
     lua_pop(State, 1);
 
-    Int32 Damage = luaL_checkinteger(State, 2);
-    RTCharacterApplyDamage(Runtime, Character, kEntityIDNull, Damage);
+    lua_Integer Damage = luaL_checkinteger(State, 2);
+    RTCharacterApplyDamage(Runtime, Character, kEntityIDNull, (Int32)Damage);
     return 0;
 }
 
@@ -280,15 +280,15 @@ Int32 lua_RTCharacterSpawnObject(lua_State* State) {
     RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
     lua_pop(State, 1);
 
-    Int32 EntityIndex = luaL_checkinteger(State, 2);
-    Int32 ObjectType = luaL_checkinteger(State, 3);
-    Int32 EntitySourceIndex = luaL_checkinteger(State, 4);
-    Int32 PositionX = luaL_checkinteger(State, 5);
-    Int32 PositionY = luaL_checkinteger(State, 6);
-    Int32 Hp = luaL_checkinteger(State, 7);
-    Int32 Nation = luaL_checkinteger(State, 8);
-    Int32 Status = luaL_checkinteger(State, 9);
-    Int32 NpcIndex = luaL_checkinteger(State, 10);
+    lua_Integer EntityIndex = luaL_checkinteger(State, 2);
+    lua_Integer ObjectType = luaL_checkinteger(State, 3);
+    lua_Integer EntitySourceIndex = luaL_checkinteger(State, 4);
+    lua_Integer PositionX = luaL_checkinteger(State, 5);
+    lua_Integer PositionY = luaL_checkinteger(State, 6);
+    lua_Integer Hp = luaL_checkinteger(State, 7);
+    lua_Integer Nation = luaL_checkinteger(State, 8);
+    lua_Integer Status = luaL_checkinteger(State, 9);
+    lua_Integer NpcIndex = luaL_checkinteger(State, 10);
 
     NOTIFICATION_DATA_OBJECTS_SPAWN* Notification = RTNotificationInit(OBJECTS_SPAWN);
     Notification->Count = 1;
@@ -305,7 +305,7 @@ Int32 lua_RTCharacterSpawnObject(lua_State* State) {
     NotificationObject->MaxHP = Hp;
     NotificationObject->Nation = Nation;
     NotificationObject->Status = Status;
-    NotificationObject->CharacterIndex = Character->CharacterIndex;
+    NotificationObject->CharacterIndex = (UInt32)Character->CharacterIndex;
     NotificationObject->NpcIndex = NpcIndex;
     RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
 

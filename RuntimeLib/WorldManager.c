@@ -3,10 +3,10 @@
 
 RTWorldManagerRef RTWorldManagerCreate(
     RTRuntimeRef Runtime,
-    Index MaxWorldDataCount,
-    Index MaxGlobalWorldContextCount,
-    Index MaxPartyWorldContextCount,
-    Index MaxCharacterCount
+    Int32 MaxWorldDataCount,
+    Int32 MaxGlobalWorldContextCount,
+    Int32 MaxPartyWorldContextCount,
+    Int32 MaxCharacterCount
 ) {
     RTWorldManagerRef WorldManager = (RTWorldManagerRef)AllocatorAllocate(Runtime->Allocator, sizeof(struct _RTWorldManager));
     if (!WorldManager) Fatal("Memory allocation failed");
@@ -380,10 +380,10 @@ Void RTWorldContextDestroyParty(
     DictionaryRemove(WorldManager->PartyToWorldContextPoolIndex, &Party);
 }
 
-Index RTWorldContextGetPartyInstanceCount(
+Int32 RTWorldContextGetPartyInstanceCount(
     RTWorldManagerRef WorldManager
 ) {
-    return MemoryPoolGetReservedBlockCount(WorldManager->PartyWorldContextPool);
+    return (Int32)MemoryPoolGetReservedBlockCount(WorldManager->PartyWorldContextPool);
 }
 
 RTCharacterRef RTWorldManagerCreateCharacter(

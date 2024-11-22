@@ -1,4 +1,4 @@
-﻿#include "ServerDataLoader.h"
+#include "ServerDataLoader.h"
 
 #pragma pack(push, 1)
 
@@ -159,7 +159,7 @@ CString GetBattleStyleIndexKeyAlt(Int32 BattleStyleIndex) {
 
 Bool ParseBattleStyleString(
     ArchiveRef Object,
-    Int64 NodeIndex,
+    Int32 NodeIndex,
     CString Name,
     Int32* Result
 ) {
@@ -206,7 +206,7 @@ Bool ServerLoadCharacterTemplateData(
     ArchiveRef RankArchive
 ) {
     ArchiveRef Archive = RankArchive;
-    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.char_init");
+    Int32 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.char_init");
     if (ParentIndex < 0) goto error;
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "init");
@@ -255,7 +255,7 @@ Bool ServerLoadBattleStyleFormulaData(
     RTRuntimeRef Runtime,
     ArchiveRef RankArchive
 ) {
-    Int64 ParentIndex = ArchiveNodeGetChildByPath(RankArchive, -1, "cabal.rankup");
+    Int32 ParentIndex = ArchiveNodeGetChildByPath(RankArchive, -1, "cabal.rankup");
     if (ParentIndex < 0) goto error;
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(RankArchive, ParentIndex, "class_formula");
@@ -447,7 +447,7 @@ Bool ServerLoadQuestData(
     RTRuntimeRef Runtime,
     ArchiveRef Archive
 ) {
-    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "quest.cabal_quest");
+    Int32 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "quest.cabal_quest");
     if (ParentIndex < 0) goto error;
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "quest");
@@ -640,7 +640,7 @@ Bool ServerLoadWarpData(
     RTRuntimeRef Runtime,
     ArchiveRef Archive
 ) {
-    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "World.warp_npc");
+    Int32 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "World.warp_npc");
     if (ParentIndex < 0) goto error;
 
     ArchiveIteratorRef WorldIterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "world");
@@ -691,7 +691,7 @@ CString GetItemDescription(
 ) {
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Messages, -1, "cabal_message.item_msg.msg");
     while (Iterator) {
-        Int64 AttributeIndex = ArchiveNodeGetAttributeByName(Messages, Iterator->Index, "id");
+        Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Messages, Iterator->Index, "id");
         if (AttributeIndex >= 0) {
             ArchiveStringRef String = ArchiveAttributeGetData(Messages, AttributeIndex);
             if (memcmp(String->Data, Name, String->Length) == 0) {
@@ -1097,7 +1097,7 @@ Bool ServerLoadTerrainData(
     ArchiveRef TerrainArchive
 ) {
 
-    Int64 ParentIndex = ArchiveNodeGetChildByPath(TerrainArchive, -1, "Terrain.map");
+    Int32 ParentIndex = ArchiveNodeGetChildByPath(TerrainArchive, -1, "Terrain.map");
     if (ParentIndex < 0) goto error;
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(TerrainArchive, ParentIndex, "map_index");
@@ -1157,7 +1157,7 @@ Bool ServerLoadWorldData(
 
         if (!ServerLoadWarpData(Runtime, TempArchive)) goto error;
 
-        Int64 NodeIndex = ArchiveQueryNodeWithAttribute(
+        Int32 NodeIndex = ArchiveQueryNodeWithAttribute(
             TempArchive,
             -1,
             "World.cabal_world.world",
@@ -1291,7 +1291,7 @@ Bool ServerLoadWorldData(
 
             if (!ArchiveLoadFromFile(TempArchive, WorldFilePath, false)) goto error;
 
-            Int64 ParentIndex = ArchiveNodeGetChildByPath(TempArchive, -1, "World");
+            Int32 ParentIndex = ArchiveNodeGetChildByPath(TempArchive, -1, "World");
             if (ParentIndex < 0) goto error;
 
             if (!ServerLoadWorldMobData(Runtime, RuntimeDirectory, ServerDirectory, ScriptDirectory, TempArchive, ParentIndex, World)) goto error;
@@ -1308,7 +1308,7 @@ Bool ServerLoadWorldData(
 
         RTWorldDataRef World = RTWorldDataGet(Runtime->WorldManager, WorldIndex);
 
-        Int64 NodeIndex = ArchiveQueryNodeWithAttribute(
+        Int32 NodeIndex = ArchiveQueryNodeWithAttribute(
             MainArchive,
             -1,
             "cabal.cabal_world.world",
@@ -1344,7 +1344,7 @@ Bool ServerLoadSkillData(
 ) {
     RTRuntimeRef Runtime = Context->Runtime;
     ArchiveRef Archive = SkillArchive;
-    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal_skill.new_skill_list");
+    Int32 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal_skill.new_skill_list");
     if (ParentIndex < 0) goto error;
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "skill_main");
@@ -1522,7 +1522,7 @@ Bool ServerLoadDungeonExtraData(
 
     if (ArchiveLoadFromFile(Archive, FilePath, false)) {
         Info("Loading dungeon data: %s", FilePath);
-        Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "Dungeon");
+        Int32 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "Dungeon");
         if (ParentIndex < 0) goto error;
 
         DungeonData->StartKillMobCount = ParseAttributeInt32ArrayCounted(
@@ -1739,7 +1739,7 @@ Bool ServerLoadDungeonMissionData(
         goto error;
     }
 
-    Int64 NodeIndex = ArchiveQueryNodeWithAttribute(
+    Int32 NodeIndex = ArchiveQueryNodeWithAttribute(
         Archive,
         -1,
         "World.cabal_world.world",
@@ -1748,7 +1748,7 @@ Bool ServerLoadDungeonMissionData(
     );
     if (NodeIndex < 0) goto error;
 
-    Int64 MissionNodeIndex = ArchiveQueryNodeWithAttribute(
+    Int32 MissionNodeIndex = ArchiveQueryNodeWithAttribute(
         Archive,
         NodeIndex,
         "mission",
@@ -1860,7 +1860,7 @@ Bool ServerLoadPatternPartData(
 
     if (ArchiveLoadFromFile(Archive, FilePath, false)) {
         Info("Loading pattern part data: %s", FilePath);
-        Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "PatternPart");
+        Int32 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "PatternPart");
         if (ParentIndex < 0) 
             goto error;
 
@@ -1979,7 +1979,7 @@ Bool ServerLoadQuestDungeonData(
     RTRuntimeRef Runtime = Context->Runtime;
     ArchiveRef TempArchive = ArchiveCreateEmpty(Runtime->Allocator);
 
-    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.cabal_quest_dungeon");
+    Int32 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.cabal_quest_dungeon");
     if (ParentIndex < 0) goto error;
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "dungeon");
@@ -2131,7 +2131,7 @@ Bool ServerLoadMissionDungeonData(
     ArchiveRef Archive
 ) {
     RTRuntimeRef Runtime = Context->Runtime;
-    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.cabal_mission_dungeon");
+    Int32 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "cabal.cabal_mission_dungeon");
     if (ParentIndex < 0) goto error;
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "dungeon");
@@ -2283,7 +2283,7 @@ Bool ServerLoadWorldDropData(
         ArchiveClear(TempArchive, true);
         if (!ArchiveLoadFromFile(TempArchive, DropFilePath, false)) goto error;
 
-        Int64 ParentIndex = ArchiveNodeGetChildByPath(TempArchive, -1, "World");
+        Int32 ParentIndex = ArchiveNodeGetChildByPath(TempArchive, -1, "World");
         if (ParentIndex < 0) goto error;
 
         if (!ServerLoadCommonDropData(Runtime, TempArchive, ParentIndex, Runtime->DropTable.WorldDropPool, "CommonDropPool")) goto error;
@@ -2311,7 +2311,7 @@ Bool ServerLoadMobPatrolData(
 
     if (!ArchiveLoadFromFile(Archive, FilePath, false)) goto error;
 
-    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "MobPatrolList");
+    Int32 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "MobPatrolList");
     if (ParentIndex < 0) goto error;
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "MobPatrol");
@@ -2327,7 +2327,7 @@ Bool ServerLoadMobPatrolData(
         CString PatternFilePath = PathCombineAll(ServerDirectory, FilePath, NULL);
         if (!ArchiveLoadFromFile(PatrolArchive, PatternFilePath, false)) goto error;
 
-        Int64 PatrolParentIndex = ArchiveNodeGetChildByPath(PatrolArchive, -1, "MobPatrol");
+        Int32 PatrolParentIndex = ArchiveNodeGetChildByPath(PatrolArchive, -1, "MobPatrol");
         if (PatrolParentIndex < 0) goto error;
 
         RTMobPatrolDataRef PatrolData = (RTMobPatrolDataRef)MemoryPoolReserve(Runtime->MobPatrolDataPool, PatrolIndex);
@@ -2392,7 +2392,7 @@ Bool ServerLoadMobPatternData(
 
     if (!ArchiveLoadFromFile(Archive, FilePath, false)) goto error;
 
-    Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "MobPatternList");
+    Int32 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "MobPatternList");
     if (ParentIndex < 0) goto error;
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "MobPattern");
@@ -2408,7 +2408,7 @@ Bool ServerLoadMobPatternData(
         CString PatternFilePath = PathCombineAll(ServerDirectory, FilePath, NULL);
         if (!ArchiveLoadFromFile(PatternArchive, PatternFilePath, false)) goto error;
 
-        Int64 PatternParentIndex = ArchiveNodeGetChildByPath(PatternArchive, -1, "MobPattern");
+        Int32 PatternParentIndex = ArchiveNodeGetChildByPath(PatternArchive, -1, "MobPattern");
         if (PatternParentIndex < 0) goto error;
 
         RTMobPatternDataRef PatternData = (RTMobPatternDataRef)MemoryPoolReserve(Runtime->MobPatternDataPool, PatternIndex);
@@ -2549,7 +2549,6 @@ Bool ServerLoadOptionPoolData(
     CString RuntimeDirectory,
     CString ServerDirectory
 ) {
-    RTRuntimeRef Runtime = Context->Runtime;
     ArchiveRef Archive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
     CString FilePath = PathCombineAll(ServerDirectory, "Loot", "OptionPool.xml", NULL);
     if (FileExists(FilePath)) {
@@ -2557,7 +2556,7 @@ Bool ServerLoadOptionPoolData(
 
         if (!ArchiveLoadFromFile(Archive, FilePath, false)) goto error;
 
-        Int64 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "OptionPool");
+        Int32 ParentIndex = ArchiveNodeGetChildByPath(Archive, -1, "OptionPool");
         if (ParentIndex < 0) goto error;
 
         ArchiveIteratorRef PoolIterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "Pool");

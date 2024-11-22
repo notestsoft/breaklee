@@ -6,8 +6,8 @@
 #include "IPCProcedures.h"
 
 CLIENT_PROCEDURE_BINDING(AUTH_ACCOUNT) {
-	if (!Client->Flags & CLIENT_FLAGS_CONNECTED) goto error;
-
+    if (!Client) goto error;
+    
 	Client->WorldServerIndex = Packet->WorldServerIndex;
 	Client->AccountID = -1;
 	Client->CharacterIndex = Packet->CharacterIndex;

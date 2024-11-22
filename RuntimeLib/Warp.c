@@ -112,7 +112,7 @@ Bool RTRuntimeWarpCharacter(
                 Character->ID,
                 WarpPositionX,
                 WarpPositionY,
-                Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+                (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
                 RUNTIME_WORLD_TILE_WALL
             );
 
@@ -151,7 +151,7 @@ Bool RTRuntimeWarpCharacter(
                 Character->ID,
                 WarpPoint.X,
                 WarpPoint.Y,
-                Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+                (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
                 RUNTIME_WORLD_TILE_WALL
             );
 
@@ -181,7 +181,7 @@ Bool RTRuntimeWarpCharacter(
                 Character->ID,
                 WarpPoint.X,
                 WarpPoint.Y,
-                Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+                (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
                 RUNTIME_WORLD_TILE_WALL
             );
 
@@ -220,7 +220,7 @@ Bool RTRuntimeWarpCharacter(
                 Character->ID,
                 WarpPoint.X,
                 WarpPoint.Y,
-                Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+                (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
                 RUNTIME_WORLD_TILE_WALL
             );
 
@@ -256,7 +256,7 @@ Bool RTRuntimeWarpCharacter(
                 Character->ID,
                 WarpPoint.X,
                 WarpPoint.Y,
-                Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+                (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
                 RUNTIME_WORLD_TILE_WALL
             );
 
@@ -316,7 +316,7 @@ Bool RTRuntimeWarpCharacter(
                 Character->ID,
                 WarpPoint.X,
                 WarpPoint.Y,
-                Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+                (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
                 RUNTIME_WORLD_TILE_WALL
             );
 
@@ -359,7 +359,7 @@ Bool RTRuntimeWarpCharacter(
             Character->ID,
             WarpPositionX,
             WarpPositionY,
-            Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+            (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
             RUNTIME_WORLD_TILE_WALL
         );
 
@@ -402,7 +402,7 @@ Bool RTRuntimeWarpCharacter(
             Character->ID,
             WarpPositionX,
             WarpPositionY,
-            Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+            (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
             RUNTIME_WORLD_TILE_WALL
         );
 
@@ -448,7 +448,7 @@ Bool RTRuntimeWarpCharacter(
             Character->ID,
             WarpPoint.X,
             WarpPoint.Y,
-            Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+            (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
             RUNTIME_WORLD_TILE_WALL
         );
 
@@ -491,7 +491,7 @@ Bool RTRuntimeWarpCharacter(
             Character->ID,
             WarpPoint.X,
             WarpPoint.Y,
-            Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+            (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
             RUNTIME_WORLD_TILE_WALL
         );
 
@@ -540,7 +540,7 @@ Bool RTRuntimeWarpCharacter(
             Character->ID,
             WarpPoint.X,
             WarpPoint.Y,
-            Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+            (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
             RUNTIME_WORLD_TILE_WALL
         );
 

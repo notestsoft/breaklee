@@ -133,7 +133,8 @@ Void RTStellarMasteryRollForceEffect(
 		GetStellarForceValueChance,
 		StellarForceValue
 	);
-
+    if (!StellarForceValue) return;
+    
 	RTDataStellarForcePoolRef StellarForcePool = RTRuntimeDataStellarForcePoolGet(Runtime->Context, StellarForceValue->StellarForcePoolID);
 
 	RTDataStellarForceEffectRef StellarForceEffect = NULL;
@@ -143,7 +144,8 @@ Void RTStellarMasteryRollForceEffect(
 		GetStellarForceEffectChance,
 		StellarForceEffect
 	);
-	
+    if (!StellarForceEffect) return;
+
 	MasterySlot->ForceEffect = StellarForceEffect->ForceEffectID;
 	MasterySlot->ForceValue = StellarForceEffect->Value;
 	MasterySlot->ForceValueType = StellarForceEffect->ValueType;
@@ -155,15 +157,14 @@ Void RTStellarMasteryRollLinkGrade(
 	RTStellarMasterySlotRef MasterySlot
 ) {
 	RTDataStellarLinkPoolRef StellarLinkPool = RTRuntimeDataStellarLinkPoolGet(Runtime->Context, StellarLineGrade->Grade);
-
 	RTDataStellarLinkRef StellarLink = NULL;
-
 	ROLL_POOL(
 		StellarLinkPool->StellarLinkList,
 		StellarLinkPool->StellarLinkCount,
 		GetStellarLinkChance,
 		StellarLink
 	);
+    if (!StellarLink) return;
 
 	MasterySlot->LinkGrade = StellarLink->Grade;
 }

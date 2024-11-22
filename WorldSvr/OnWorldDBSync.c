@@ -19,7 +19,7 @@ Void ServerSyncCharacter(
 	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
 	Request->Header.Target.Type = IPC_TYPE_MASTERDB;
 	Request->AccountID = Client->AccountID;
-	Request->CharacterIndex = Client->CharacterIndex;
+	Request->CharacterIndex = (UInt32)Client->CharacterIndex;
 	Request->SyncMask = Character->SyncMask;
 
 	if (Character->SyncMask.AccountInfo) {

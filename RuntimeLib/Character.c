@@ -168,7 +168,7 @@ Void RTCharacterInitializeSkillStats(
 		
 		for (Int32 ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
 			RTSkillValueDataRef SkillValue = &SkillData->SkillValues[ValueIndex];
-			Int64 ForceValue = RTCalculateSkillValue(SkillValue, SkillSlot->Level, Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]);
+			Int64 ForceValue = RTCalculateSkillValue(SkillValue, SkillSlot->Level, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]);
 
 			RTCharacterApplyForceEffect(
 				Runtime,
@@ -377,7 +377,7 @@ Void RTCharacterInitializeAttributes(
 ) {
 	memset(Character->Attributes.Values, 0, sizeof(Character->Attributes.Values));
 
-	Character->Attributes.Seed = PlatformGetTickCount();
+	Character->Attributes.Seed = (Int32)PlatformGetTickCount();
 	RTCharacterInitializeConstantAttributes(Runtime, Character);
     RTCharacterInitializeBattleStyleLevel(Runtime, Character);
 	RTCharacterInitializeBattleStyleClass(Runtime, Character);
@@ -449,7 +449,7 @@ Void RTCharacterUpdate(
 	if (Character->RegenUpdateTimestamp <= CurrentTimestamp) {
 		Character->RegenUpdateTimestamp = CurrentTimestamp + RUNTIME_REGENERATION_INTERVAL;
 
-		Int64 SpRegen = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_REGEN];
+		Int32 SpRegen = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_REGEN];
 		Bool IsSpRegenBonusEnabled = (
 			Character->Data.StyleInfo.LiveStyle.IsDancing ||
 			Character->Data.StyleInfo.LiveStyle.IsDancing2 ||
@@ -457,7 +457,7 @@ Void RTCharacterUpdate(
 			Character->Data.StyleInfo.LiveStyle.IsTransforming
 		);
 		if (IsSpRegenBonusEnabled) {
-			SpRegen += RTCalculateSPRegen(Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT]);
+			SpRegen += RTCalculateSPRegen((Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT]);
 		}
 		if (SpRegen > 0) {
 			RTCharacterAddSP(Runtime, Character, SpRegen);
@@ -470,7 +470,7 @@ Void RTCharacterUpdate(
 			RTCharacterAddHP(Runtime, Character, HpRegen, false);
 		}
 
-		Int64 MpRegen = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_REGEN];
+		Int32 MpRegen = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_REGEN];
 		if (MpRegen > 0) {
 			RTCharacterAddMP(Runtime, Character, MpRegen, false);
 		}
@@ -873,47 +873,42 @@ Void RTCharacterSetBattleRank(
 	Int32 BattleRank
 ) {
 	Int32 BattleStyleIndex = Character->Data.StyleInfo.Style.BattleStyle | (Character->Data.StyleInfo.Style.ExtendedBattleStyle << 3);
-	Int32 LevelDiff = BattleRank - Character->Data.StyleInfo.Style.BattleRank;
 	for (Int32 NextRank = Character->Data.StyleInfo.Style.BattleRank + 1; NextRank <= BattleRank; NextRank += 1) {
 		RTBattleStyleRankDataRef NextRankData = RTRuntimeGetBattleStyleRankData(Runtime, BattleStyleIndex, Character->Data.StyleInfo.Style.BattleRank + 1);
-		if (NextRankData) {
-			if (NextRankData->SkillSlot[0] > 0 && NextRankData->SkillIndex[0] > 0) {
-				RTCharacterAddSkillSlot(
-					Runtime,
-					Character,
-					NextRankData->SkillSlot[0],
-					1,
-					NextRankData->SkillIndex[0]
-				);
+        if (!NextRankData) break;
 
-				Character->SyncMask.SkillSlotInfo = true;
-			}
+        if (NextRankData->SkillSlot[0] > 0 && NextRankData->SkillIndex[0] > 0) {
+            RTCharacterAddSkillSlot(
+                Runtime,
+                Character,
+                NextRankData->SkillSlot[0],
+                1,
+                NextRankData->SkillIndex[0]
+            );
 
-			if (NextRankData->SkillSlot[1] > 0 && NextRankData->SkillIndex[1] > 0) {
-				RTCharacterAddSkillSlot(
-					Runtime,
-					Character,
-					NextRankData->SkillSlot[1],
-					1,
-					NextRankData->SkillIndex[1]
-				);
+            Character->SyncMask.SkillSlotInfo = true;
+        }
 
-				Character->SyncMask.SkillSlotInfo = true;
-			}
-		}
+        if (NextRankData->SkillSlot[1] > 0 && NextRankData->SkillIndex[1] > 0) {
+            RTCharacterAddSkillSlot(
+                Runtime,
+                Character,
+                NextRankData->SkillSlot[1],
+                1,
+                NextRankData->SkillIndex[1]
+            );
 
-		{
-			NOTIFICATION_DATA_CHARACTER_BATTLE_RANK_UP* Notification = RTNotificationInit(CHARACTER_BATTLE_RANK_UP);
-			Notification->Level = NextRankData->Level;
-			RTNotificationDispatchToCharacter(Notification, Character);
-		}
+            Character->SyncMask.SkillSlotInfo = true;
+        }
 
-		{
-			NOTIFICATION_DATA_CHARACTER_EVENT* Notification = RTNotificationInit(CHARACTER_EVENT);
-			Notification->Type = NOTIFICATION_CHARACTER_EVENT_TYPE_RANK_UP;
-			Notification->CharacterIndex = (UInt32)Character->CharacterIndex;
-			RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
-		}
+        NOTIFICATION_DATA_CHARACTER_BATTLE_RANK_UP* RankUpNotification = RTNotificationInit(CHARACTER_BATTLE_RANK_UP);
+        RankUpNotification->Level = NextRankData->Level;
+        RTNotificationDispatchToCharacter(RankUpNotification, Character);
+
+        NOTIFICATION_DATA_CHARACTER_EVENT* CharacterEventNotification = RTNotificationInit(CHARACTER_EVENT);
+        CharacterEventNotification->Type = NOTIFICATION_CHARACTER_EVENT_TYPE_RANK_UP;
+        CharacterEventNotification->CharacterIndex = (UInt32)Character->CharacterIndex;
+        RTNotificationDispatchToNearby(CharacterEventNotification, Character->Movement.WorldChunk);
 	}
 
 	Character->Data.StyleInfo.Style.BattleRank = BattleRank;
@@ -1008,7 +1003,7 @@ Void RTCharacterAddExp(
 		Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_PNT] += LevelDiff * 5;
 		Character->SyncMask.Info = true;
 
-		for (Index Index = 0; Index < LevelDiff; Index += 1) {
+		for (Int32 Index = 0; Index < LevelDiff; Index += 1) {
 			NOTIFICATION_DATA_CHARACTER_DATA* Notification = RTNotificationInit(CHARACTER_DATA);
 			Notification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_LEVEL;
 			Notification->Level = CurrentLevel + Index + 1;
@@ -1461,7 +1456,7 @@ Void RTCharacterNotifyStatus(
 ) {
 	NOTIFICATION_DATA_CHARACTER_STATUS* Notification = RTNotificationInit(CHARACTER_STATUS);
 	Notification->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-	Notification->CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+	Notification->CurrentMP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 	Notification->CurrentShield = Character->Attributes.Values[RUNTIME_ATTRIBUTE_DAMAGE_ABSORB];
 	Notification->BattleModeInfo = Character->Data.BattleModeInfo;
 	Notification->BuffInfo = Character->Data.BuffInfo.Info;

@@ -14,8 +14,6 @@ enum {
 
 #endif
 
-// TODO: Reduce memory usage soon...
-
 RUNTIME_DATA_FILE_BEGIN(Collection.enc)
 
 RUNTIME_DATA_TYPE_BEGIN(CollectionQuest, "Collection.Collection_open.collection_quest")

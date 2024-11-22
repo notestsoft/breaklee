@@ -8,10 +8,10 @@ EXTERN_C_BEGIN
 struct _RTWorldManager {
     AllocatorRef Allocator;
     RTRuntimeRef Runtime;
-    Index MaxWorldDataCount;
-    Index MaxGlobalWorldContextCount;
-    Index MaxPartyWorldContextCount;
-    Index MaxCharacterCount;
+    Int32 MaxWorldDataCount;
+    Int32 MaxGlobalWorldContextCount;
+    Int32 MaxPartyWorldContextCount;
+    Int32 MaxCharacterCount;
     MemoryPoolRef WorldDataPool;
     MemoryPoolRef GlobalWorldContextPool;
     MemoryPoolRef PartyWorldContextPool;
@@ -23,10 +23,10 @@ struct _RTWorldManager {
 
 RTWorldManagerRef RTWorldManagerCreate(
     RTRuntimeRef Runtime,
-    Index MaxWorldDataCount,
-    Index MaxGlobalWorldContextCount,
-    Index MaxPartyWorldContextCount,
-    Index MaxCharacterCount
+    Int32 MaxWorldDataCount,
+    Int32 MaxGlobalWorldContextCount,
+    Int32 MaxPartyWorldContextCount,
+    Int32 MaxCharacterCount
 );
 
 Void RTWorldManagerDestroy(
@@ -99,7 +99,7 @@ Void RTWorldContextDestroyParty(
     RTEntityID Party
 );
 
-Index RTWorldContextGetPartyInstanceCount(
+Int32 RTWorldContextGetPartyInstanceCount(
     RTWorldManagerRef WorldManager
 );
 

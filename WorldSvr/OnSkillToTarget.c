@@ -65,8 +65,8 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_TARGET) {
 		Response->SkillLevel = SkillSlot->Level;
 		Response->BuffType = 0;
 		Response->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-		Response->CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
-		Response->CurrentSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+		Response->CurrentMP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+		Response->CurrentSP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
 		Response->TargetCount = PacketData->TargetCount;
 
 		Notification->SkillLevel = SkillSlot->Level;
@@ -99,7 +99,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_TARGET) {
 			if (TargetIDType == RUNTIME_ENTITY_TYPE_CHARACTER) {
 				RTCharacterRef Target = RTWorldManagerGetCharacter(Runtime->WorldManager, TargetID);
 				if (Target) {
-					ResponseTarget->TargetIndex = Target->CharacterIndex;
+					ResponseTarget->TargetIndex = (UInt32)Target->CharacterIndex;
 					ResponseTarget->Result = RTCharacterApplyBuff(Runtime, Target, SkillSlot, SkillData, RUNTIME_BUFF_SLOT_TYPE_SKILL);
 					ResponseTarget->Duration = Target->Attributes.Values[RUNTIME_ATTRIBUTE_DAMAGE_ABSORB];
 					NotificationTarget->TargetIndex = ResponseTarget->TargetIndex;
@@ -156,8 +156,8 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_TARGET) {
 		Response->SkillIndex = Packet->SkillIndex;
 
 		S2C_DATA_SKILL_GROUP_WING* ResponseData = PacketBufferAppendStruct(ResponsePacketBuffer, S2C_DATA_SKILL_GROUP_WING);
-		ResponseData->CurrentMP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
-		ResponseData->CurrentSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+		ResponseData->CurrentMP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+		ResponseData->CurrentSP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
 		SocketSend(Socket, Connection, Response);
 	}
 	else {

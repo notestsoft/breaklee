@@ -25,7 +25,6 @@ CLIENT_PROCEDURE_BINDING(AUCTION_HOUSE_REGISTER_ITEM) {
     }
 
     UInt64 ItemStackSizeMask = RTItemDataGetStackSizeMask(FirstItemData);
-    Int64 ItemStackSize = FirstItemSlot->ItemOptions & ItemStackSizeMask;
     UInt64 ItemOptions = FirstItemSlot->ItemOptions & ~ItemStackSizeMask;
 
     RTDataMarketListItemRef MarketListItem = RTRuntimeDataMarketListItemGet(Runtime->Context, FirstItemSlot->Item.ID, ItemOptions);
@@ -38,7 +37,7 @@ CLIENT_PROCEDURE_BINDING(AUCTION_HOUSE_REGISTER_ITEM) {
     Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
     Request->Header.Target.Type = IPC_TYPE_MASTERDB;
     Request->AccountID = Client->AccountID;
-    Request->CharacterIndex = Client->CharacterIndex;
+    Request->CharacterIndex = (UInt32)Client->CharacterIndex;
     Request->SlotIndex = Packet->SlotIndex;
     Request->ItemCount = Packet->ItemCount;
     Request->ItemPrice = Packet->ItemPrice;
@@ -98,7 +97,7 @@ CLIENT_PROCEDURE_BINDING(AUCTION_HOUSE_UPDATE_ITEM) {
     Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
     Request->Header.Target.Type = IPC_TYPE_MASTERDB;
     Request->AccountID = Client->AccountID;
-    Request->CharacterIndex = Client->CharacterIndex;
+    Request->CharacterIndex = (UInt32)Client->CharacterIndex;
     Request->SlotIndex = Packet->SlotIndex;
     Request->ItemCount = Packet->ItemCount;
     Request->ItemPriceType = Packet->ItemPriceType;
@@ -122,7 +121,7 @@ CLIENT_PROCEDURE_BINDING(AUCTION_HOUSE_UPDATE_ITEM) {
 
         RTItemSlotRef FirstItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[0]);
         RTItemDataRef FirstItemData = (FirstItemSlot) ? RTRuntimeGetItemDataByIndex(Runtime, FirstItemSlot->Item.ID) : NULL;
-        if (!FirstItemSlot) goto error;
+        if (!FirstItemSlot || !FirstItemData) goto error;
 
         for (Int32 Index = 1; Index < Packet->InventorySlotCount; Index += 1) {
             RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index]);
@@ -279,7 +278,7 @@ CLIENT_PROCEDURE_BINDING(AUCTION_HOUSE_BUY_ITEM) {
     Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
     Request->Header.Target.Type = IPC_TYPE_MASTERDB;
     Request->AccountID = Client->AccountID;
-    Request->CharacterIndex = Character->CharacterIndex;
+    Request->CharacterIndex = (UInt32)Character->CharacterIndex;
     Request->ItemAccountID = Packet->AccountID;
     Request->Unknown1 = Packet->Unknown1;
     Request->ItemID = Packet->ItemID;
