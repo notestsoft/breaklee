@@ -46,7 +46,6 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER_LIST) {
 		assert(CharacterSlotIndex < MAX_CHARACTER_COUNT);
 		Response->Characters[CharacterSlotIndex] = CharacterInfo;
 	}
-	DatabaseHandleFlush(Context->Database, Handle);
 
     IPCSocketUnicast(Socket, Response);
     return;

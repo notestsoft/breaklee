@@ -63,6 +63,7 @@ IPC_PROCEDURE_BINDING(W2D, CREATE_CHARACTER) {
 		);
 
 		IPC_DATA_CHARACTER_INFO CharacterInfo = { 0 };
+		Bool Success = false;
 		if (DatabaseHandleReadNext(
 			Context->Database,
 			Handle,
@@ -91,8 +92,9 @@ IPC_PROCEDURE_BINDING(W2D, CREATE_CHARACTER) {
 			DB_PARAM_END
 		)) {
 			Response->Character = CharacterInfo;
+			Success = true;
 		}
-		DatabaseHandleFlush(Context->Database, Handle);
+		if (Success) DatabaseHandleFlush(Context->Database, Handle);
 	}
 	else if (!Response->Status) {
 		Response->Status = CREATE_CHARACTER_STATUS_DBERROR;
