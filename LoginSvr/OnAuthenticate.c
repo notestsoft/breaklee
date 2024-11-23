@@ -287,7 +287,6 @@ authenticate:
         assert(ServerIndex < MAX_SERVER_COUNT);
         ServerIndex += 1;
     }
-    DatabaseHandleFlush(Context->Database, Handle);
 
     SocketSend(Socket, Connection, Response);
 

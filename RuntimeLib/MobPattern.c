@@ -6,6 +6,18 @@
 #include "NotificationManager.h"
 #include "World.h"
 
+RTMobPatternSpawnDataRef RTMobPatternDataGetSpawnData(
+	RTMobPatternDataRef MobPatternData,
+	Int32 LinkMobIndex
+) {
+	for (Int32 Index = 0; Index < ArrayGetElementCount(MobPatternData->MobPool); Index += 1) {
+		RTMobPatternSpawnDataRef SpawnData = (RTMobPatternSpawnDataRef)ArrayGetElementAtIndex(MobPatternData->MobPool, Index);
+		if (SpawnData->Index == LinkMobIndex) return SpawnData;
+	}
+
+	return NULL;
+}
+
 Void RTMobPatternCancelAction(
 	RTRuntimeRef Runtime,
 	RTWorldContextRef WorldContext,
@@ -166,7 +178,27 @@ Void RTMobPatternStartAction(
 	}
 
 	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_SPAWN_MOB) {
+		Int32 LinkMobIndex = ActionState->ActionData->Parameters.LinkMobSpawn.LinkMobIndex;
+		RTMobPatternSpawnDataRef SpawnData = RTMobPatternDataGetSpawnData(MobPattern->Data, LinkMobIndex);
+		assert(SpawnData);
 
+		// TODO: Check if it should create a new mob or respawn the previously spawned one
+		RTWorldCreateMob(
+			Runtime,
+			WorldContext,
+			Mob,
+			LinkMobIndex,
+			SpawnData->MobSpeciesIndex,
+			SpawnData->AreaX,
+			SpawnData->AreaY,
+			SpawnData->AreaWidth,
+			SpawnData->AreaHeight,
+			SpawnData->Interval,
+			SpawnData->Count,
+			SpawnData->MobPatternIndex,
+			SpawnData->Script,
+			0
+		);
 	}
 
 	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_HEAL_TARGET) {
@@ -205,7 +237,7 @@ Void RTMobPatternStartAction(
 		}
 	}
 
-	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_DESPAWN_MOB) {
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_DESPAWN_LINK_MOB) {
 
 	}
 
@@ -282,6 +314,21 @@ Void RTMobPatternStartAction(
 				ActionState->ActionData->Parameters.DefenseUp.Value,
 				RUNTIME_FORCE_VALUE_TYPE_ADDITIVE
 			);
+		}
+	}
+
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_DESPAWN_MOB) {
+		if (ActionState->ActionData->Parameters.MobDespawn.MobIndex < 0) {
+			RTWorldDespawnMob(Runtime, WorldContext, Mob);
+		}
+		else {
+			RTEntityID TargetID = {
+				.EntityIndex = ActionState->ActionData->Parameters.MobDespawn.MobIndex,
+				.WorldIndex = WorldContext->WorldData->WorldIndex,
+				.EntityType = RUNTIME_ENTITY_TYPE_MOB,
+			};
+			RTMobRef Target = RTWorldContextGetMob(WorldContext, TargetID);
+			if (Target) RTWorldDespawnMob(Runtime, WorldContext, Target);
 		}
 	}
 
@@ -374,7 +421,7 @@ Void RTMobPatternCancelAction(
 		}
 	}
 
-	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_DESPAWN_MOB) {
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_DESPAWN_LINK_MOB) {
 
 	}
 
@@ -455,6 +502,10 @@ Void RTMobPatternCancelAction(
 		}
 	}
 
+	if (ActionState->ActionData->Type == RUNTIME_MOB_ACTION_TYPE_DESPAWN_MOB) {
+
+	}
+
 end:
 	// TODO: Perform Runtime Cancellation
 	RTMobPatternActionFinished(Runtime, WorldContext, Mob, MobPattern, ActionState->ActionGroupData->Index);
@@ -496,6 +547,8 @@ Void RTMobPatternStop(
 	MobPattern->SpawnTimestamp = 0;
 	MobPattern->EventTriggerMask = 0;
 	ArrayRemoveAllElements(MobPattern->ActionStates, true);
+	ArrayRemoveAllElements(MobPattern->LinkMobs, true);
+
 	for (Int32 TriggerIndex = 0; TriggerIndex < MobPattern->Data->TriggerCount; TriggerIndex += 1) {
 		RTMobTriggerStateRef TriggerState = &MobPattern->TriggerStates[TriggerIndex];
 		TriggerState->IsRunning = false;

@@ -11,10 +11,17 @@ enum {
     RUNTIME_BUFF_SLOT_TYPE_SKILL,
     RUNTIME_BUFF_SLOT_TYPE_POTION,
     RUNTIME_BUFF_SLOT_TYPE_GM_BUFF,
-    RUNTIME_BUFF_SLOT_TYPE_UNKNOWN_1,
+    RUNTIME_BUFF_SLOT_TYPE_FORCE_CALIBUR_BUFF,
     RUNTIME_BUFF_SLOT_TYPE_UNKNOWN_2,
     RUNTIME_BUFF_SLOT_TYPE_FORCE_WING, // BuffSlotIndex 13
     RUNTIME_BUFF_SLOT_TYPE_FIRE_PLACE,
+
+    RUNTIME_BUFF_SLOT_TYPE_COUNT,
+};
+
+struct _RTBfxSlot {
+    UInt8 BfxIndex;
+    UInt32 Duration;
 };
 
 struct _RTBuffSlot {
@@ -31,7 +38,7 @@ struct _RTBuffInfo {
     Int8 SkillBuffCount;
     Int8 PotionBuffCount;
     Int8 GmBuffCount;
-    Int8 UnknownBuffCount1;
+    Int8 ForceCaliburBuffCount;
     Int8 UnknownBuffCount2;
     Int8 ForceWingBuffCount;
     Int8 FirePlaceBuffCount;

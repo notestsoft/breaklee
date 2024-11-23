@@ -129,6 +129,11 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 		}
 
 		RTMobApplyDamage(Runtime, World, Mob, Character->ID, Result.AppliedDamage, Result.Delay);
+
+		if (Mob->Pattern && (Result.AttackType == RUNTIME_ATTACK_TYPE_NORMAL || Result.AttackType == RUNTIME_ATTACK_TYPE_CRITICAL)) {
+			RTMobPatternSkillReceived(Runtime, World, Mob, Mob->Pattern, SkillData->SkillID);
+		}
+
 		RTCharacterAddExp(Runtime, Character, Result.Exp);
 
 		ReceivedSkillExp += RTCharacterAddSkillExp(Runtime, Character, Result.SkillExp);

@@ -506,7 +506,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         Packet->Character.BuffInfo.SkillBuffCount +
         Packet->Character.BuffInfo.PotionBuffCount +
         Packet->Character.BuffInfo.GmBuffCount +
-        Packet->Character.BuffInfo.UnknownBuffCount1 +
+        Packet->Character.BuffInfo.ForceCaliburBuffCount +
         Packet->Character.BuffInfo.UnknownBuffCount2 +
         Packet->Character.BuffInfo.ForceWingBuffCount +
         Packet->Character.BuffInfo.FirePlaceBuffCount

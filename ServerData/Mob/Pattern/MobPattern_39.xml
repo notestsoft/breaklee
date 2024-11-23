@@ -28,4 +28,5 @@
 			<MobAction Index="4" Type="2" Parameters="87:135" Duration="1000" TargetType="5" TargetParameters="" Loop="0" LoopDelay="100000" Priority="0"/>
 		</MobActionGroup>
 	</MobTriggerGroup>
+	<MobPool/>
 </MobPattern>

@@ -2383,7 +2383,8 @@ error:
 Bool ServerLoadMobPatternData(
     ServerContextRef Context,
     CString RuntimeDirectory,
-    CString ServerDirectory
+    CString ServerDirectory,
+    CString ScriptDirectory
 ) {
     RTRuntimeRef Runtime = Context->Runtime;
     ArchiveRef Archive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
@@ -2492,41 +2493,48 @@ Bool ServerLoadMobPatternData(
             RTMobPatternSpawnDataRef MobSpawn = (RTMobPatternSpawnDataRef)ArrayAppendUninitializedElement(PatternData->MobPool);
             memset(MobSpawn, 0, sizeof(struct _RTMobPatternSpawnData));
 
-            if (!ParseAttributeInt32(Archive, MobIterator->Index, "MobIndex", &MobSpawn->Index)) {
+            if (!ParseAttributeInt32(PatternArchive, MobIterator->Index, "MobIndex", &MobSpawn->Index)) {
                 Error("Loading '%s' in '%s' failed!", "MobIndex", FilePath);
                 goto error;
             }
 
-            if (!ParseAttributeInt32(Archive, MobIterator->Index, "SpeciesIndex", &MobSpawn->MobSpeciesIndex)) {
+            if (!ParseAttributeInt32(PatternArchive, MobIterator->Index, "SpeciesIndex", &MobSpawn->MobSpeciesIndex)) {
                 Error("Loading '%s' in '%s' failed!", "SpeciesIndex", FilePath);
                 goto error;
             }
 
-            ParseAttributeInt32(Archive, MobIterator->Index, "X", &MobSpawn->AreaX);
-            ParseAttributeInt32(Archive, MobIterator->Index, "Y", &MobSpawn->AreaY);
+            ParseAttributeInt32(PatternArchive, MobIterator->Index, "X", &MobSpawn->AreaX);
+            ParseAttributeInt32(PatternArchive, MobIterator->Index, "Y", &MobSpawn->AreaY);
 
-            if (!ParseAttributeInt32(Archive, MobIterator->Index, "Width", &MobSpawn->AreaWidth)) {
+            if (!ParseAttributeInt32(PatternArchive, MobIterator->Index, "Width", &MobSpawn->AreaWidth)) {
                 Error("Loading '%s' in '%s' failed!", "Width", FilePath);
                 goto error;
             }
 
-            if (!ParseAttributeInt32(Archive, MobIterator->Index, "Height", &MobSpawn->AreaHeight)) {
+            if (!ParseAttributeInt32(PatternArchive, MobIterator->Index, "Height", &MobSpawn->AreaHeight)) {
                 Error("Loading '%s' in '%s' failed!", "Height", FilePath);
                 goto error;
             }
 
-            if (!ParseAttributeInt32(Archive, MobIterator->Index, "SpawnInterval", &MobSpawn->Interval)) {
+            if (!ParseAttributeInt32(PatternArchive, MobIterator->Index, "SpawnInterval", &MobSpawn->Interval)) {
                 Error("Loading '%s' in '%s' failed!", "SpawnInterval", FilePath);
                 goto error;
             }
 
-            if (!ParseAttributeInt32(Archive, MobIterator->Index, "SpawnCount", &MobSpawn->Count)) {
+            if (!ParseAttributeInt32(PatternArchive, MobIterator->Index, "SpawnCount", &MobSpawn->Count)) {
                 Error("Loading '%s' in '%s' failed!", "SpawnCount", FilePath);
                 goto error;
             }
 
-            ParseAttributeInt32(Archive, MobIterator->Index, "MobPatternIndex", &MobSpawn->MobPatternIndex);
-            ParseAttributeString(Archive, MobIterator->Index, "Script", MobSpawn->Script, MAX_PATH);
+            ParseAttributeInt32(PatternArchive, MobIterator->Index, "MobPatternIndex", &MobSpawn->MobPatternIndex);
+
+            Char MobScriptFileName[MAX_PATH] = { 0 };
+            if (ParseAttributeString(PatternArchive, MobIterator->Index, "Script", MobScriptFileName, MAX_PATH)) {
+                if (strlen(MobScriptFileName) > 0) {
+                    CString MobScriptFilePath = PathCombineAll(ScriptDirectory, MobScriptFileName, NULL);
+                    MobSpawn->Script = RTScriptManagerLoadScript(Runtime->ScriptManager, MobScriptFilePath);
+                }
+            }
 
             MobIterator = ArchiveQueryNodeIteratorNext(PatternArchive, MobIterator);
         }

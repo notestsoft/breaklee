@@ -96,7 +96,8 @@ Bool ServerLoadMobPatrolData(
 Bool ServerLoadMobPatternData(
     ServerContextRef Context,
     CString RuntimeDirectory,
-    CString ServerDirectory
+    CString ServerDirectory,
+    CString ScriptDirectory
 );
 
 Bool ServerLoadOptionPoolData(

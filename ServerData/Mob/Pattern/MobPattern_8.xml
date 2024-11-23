@@ -32,7 +32,7 @@
 	</MobTriggerGroup>
 	<MobTriggerGroup Index="7" Type="5" Parameters="5:1">
 		<MobActionGroup Index="7" Delay="3000">
-			<MobAction Index="1" Type="3" Parameters="16" Duration="1000" TargetType="" TargetParameters="" Loop="0" LoopDelay="100000" Priority="2"/>
+			<MobAction Index="1" Type="3" Parameters="1" Duration="1000" TargetType="" TargetParameters="" Loop="0" LoopDelay="100000" Priority="2"/>
 		</MobActionGroup>
 	</MobTriggerGroup>
 	<MobTriggerGroup Index="8" Type="1" Parameters="600000">
@@ -45,4 +45,7 @@
 			<MobAction Index="1" Type="12" Parameters="16" Duration="3500" TargetType="" TargetParameters="" Loop="0" LoopDelay="100000" Priority="1"/>
 		</MobActionGroup>
 	</MobTriggerGroup>
+	<MobPool>
+		<Mob MobIndex="1" SpeciesIndex="1161" X="176" Y="78" Width="3" Height="3" SpawnInterval="100" SpawnCount="5" MobPatternIndex="0" Script=""/>
+	</MobPool>
 </MobPattern>

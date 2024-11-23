@@ -100,7 +100,6 @@ struct _RTWorldContext {
     struct _RTQuestUnitMobData MissionMobs[RUNTIME_MAX_QUEST_COUNTER_COUNT];
     struct _RTWorldChunk Chunks[RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT];
     RTWorldTile Tiles[RUNTIME_WORLD_SIZE * RUNTIME_WORLD_SIZE];
-
     Timestamp DungeonTimeout;
     Timestamp PauseTimestamp;
     Timestamp NextItemUpdateTimestamp;
@@ -108,6 +107,7 @@ struct _RTWorldContext {
     Int32 TimerIndex;
     Int32 TimerItemCount;
     Timestamp TimerTimeout;
+    Int32 NextMobEntityIndex;
     MemoryPoolRef MobPool;
     MemoryPoolRef MobPatternPool;
     MemoryPoolRef ItemPool;
@@ -166,6 +166,8 @@ Void RTWorldSpawnMob(
 Void RTWorldCreateMob(
     RTRuntimeRef Runtime,
     RTWorldContextRef WorldContext,
+    RTMobRef LinkMob,
+    Int32 LinkMobIndex,
     Int32 MobSpeciesIndex,
     Int32 AreaX,
     Int32 AreaY,
@@ -174,7 +176,7 @@ Void RTWorldCreateMob(
     Int32 Interval,
     Int32 Count,
     Int32 MobPatternIndex,
-    CString Script,
+    RTScriptRef Script,
     Timestamp Delay
 );
 

@@ -195,6 +195,7 @@ RTWorldContextRef RTWorldContextCreateGlobal(
     WorldContext->TimerIndex = -1;
     WorldContext->TimerItemCount = 0;
     WorldContext->TimerTimeout = UINT64_MAX;
+    WorldContext->NextMobEntityIndex = 0;
     WorldContext->MobPool = MemoryPoolCreate(WorldManager->Allocator, sizeof(struct _RTMob), RUNTIME_MEMORY_MAX_MOB_COUNT);
     WorldContext->MobPatternPool = MemoryPoolCreate(WorldManager->Allocator, sizeof(struct _RTMobPattern), RUNTIME_MEMORY_MAX_MOB_COUNT);
     WorldContext->ItemPool = MemoryPoolCreate(WorldManager->Allocator, sizeof(struct _RTWorldItem), RUNTIME_MEMORY_MAX_ITEM_COUNT);
@@ -253,6 +254,7 @@ Void RTWorldContextDestroyGlobal(
         Index MemoryPoolIndex = *(Index*)DictionaryLookup(WorldContext->EntityToMobPattern, Iterator.Key);
         RTMobPatternRef MobPattern = (RTMobPatternRef)MemoryPoolFetch(WorldContext->MobPatternPool, MemoryPoolIndex);
         ArrayDestroy(MobPattern->ActionStates);
+        ArrayDestroy(MobPattern->LinkMobs);
         Iterator = DictionaryKeyIteratorNext(Iterator);
     }
 
@@ -295,6 +297,7 @@ RTWorldContextRef RTWorldContextCreateParty(
     WorldContext->TimerIndex = -1;
     WorldContext->TimerItemCount = 0;
     WorldContext->TimerTimeout = UINT64_MAX;
+    WorldContext->NextMobEntityIndex = 0;
     WorldContext->MobPool = MemoryPoolCreate(WorldManager->Allocator, sizeof(struct _RTMob), RUNTIME_MEMORY_MAX_MOB_COUNT);
     WorldContext->MobPatternPool = MemoryPoolCreate(WorldManager->Allocator, sizeof(struct _RTMobPattern), RUNTIME_MEMORY_MAX_MOB_COUNT);
     WorldContext->ItemPool = MemoryPoolCreate(WorldManager->Allocator, sizeof(struct _RTWorldItem), RUNTIME_MEMORY_MAX_ITEM_COUNT);

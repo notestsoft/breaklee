@@ -65,7 +65,7 @@ Void ServerLoadRuntimeData(
     Loaded &= ServerLoadMobPatrolData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
     if (!Loaded) Fatal("Failed to load mob patrol data!"); 
 
-    Loaded &= ServerLoadMobPatternData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
+    Loaded &= ServerLoadMobPatternData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath, Config.WorldSvr.ScriptDataPath);
     if (!Loaded) Fatal("Failed to load mob pattern data!");
 
     Loaded &= ServerLoadOptionPoolData(Context, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);

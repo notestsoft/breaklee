@@ -64,7 +64,6 @@ typedef struct _RTItemSlotAppearance* RTItemSlotAppearanceRef;
 typedef struct _RTMobSpawnData* RTMobSpawnDataRef;
 typedef struct _RTMobSkillData* RTMobSkillDataRef;
 typedef struct _RTMobSpeciesData* RTMobSpeciesDataRef;
-typedef struct _RTMobScript* RTMobScriptRef;
 typedef struct _RTMobBuffSlot* RTMobBuffSlotRef;
 typedef struct _RTMob* RTMobRef;
 typedef struct _RTMobActionData* RTMobActionDataRef;

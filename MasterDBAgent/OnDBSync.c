@@ -331,7 +331,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 				Info->SkillBuffCount +
 				Info->PotionBuffCount +
 				Info->GmBuffCount +
-				Info->UnknownBuffCount1 +
+				Info->ForceCaliburBuffCount +
 				Info->UnknownBuffCount2 +
 				Info->ForceWingBuffCount +
 				Info->FirePlaceBuffCount
@@ -345,7 +345,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 				DB_INPUT_UINT8(Info->SkillBuffCount),
 				DB_INPUT_UINT8(Info->PotionBuffCount),
 				DB_INPUT_UINT8(Info->GmBuffCount),
-				DB_INPUT_UINT8(Info->UnknownBuffCount1),
+				DB_INPUT_UINT8(Info->ForceCaliburBuffCount),
 				DB_INPUT_UINT8(Info->UnknownBuffCount2),
 				DB_INPUT_UINT8(Info->ForceWingBuffCount),
 				DB_INPUT_UINT8(Info->FirePlaceBuffCount),

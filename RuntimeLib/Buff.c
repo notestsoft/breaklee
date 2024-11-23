@@ -14,7 +14,7 @@ Int32 RTCharacterGetBuffSlotIndexBuffType(
          &Character->Data.BuffInfo.Info.SkillBuffCount,
          &Character->Data.BuffInfo.Info.PotionBuffCount,
          &Character->Data.BuffInfo.Info.GmBuffCount,
-         &Character->Data.BuffInfo.Info.UnknownBuffCount1,
+         &Character->Data.BuffInfo.Info.ForceCaliburBuffCount,
          &Character->Data.BuffInfo.Info.UnknownBuffCount2,
          &Character->Data.BuffInfo.Info.ForceWingBuffCount,
          &Character->Data.BuffInfo.Info.FirePlaceBuffCount
@@ -58,7 +58,7 @@ Int32 RTCharacterGetGroupedBuffSlotIndex(
         &Character->Data.BuffInfo.Info.SkillBuffCount,
         &Character->Data.BuffInfo.Info.PotionBuffCount,
         &Character->Data.BuffInfo.Info.GmBuffCount,
-        &Character->Data.BuffInfo.Info.UnknownBuffCount1,
+        &Character->Data.BuffInfo.Info.ForceCaliburBuffCount,
         &Character->Data.BuffInfo.Info.UnknownBuffCount2,
         &Character->Data.BuffInfo.Info.ForceWingBuffCount,
         &Character->Data.BuffInfo.Info.FirePlaceBuffCount
@@ -86,7 +86,7 @@ RTBuffSlotRef RTCharacterInsertBuffSlot(
         &Character->Data.BuffInfo.Info.SkillBuffCount,
         &Character->Data.BuffInfo.Info.PotionBuffCount,
         &Character->Data.BuffInfo.Info.GmBuffCount,
-        &Character->Data.BuffInfo.Info.UnknownBuffCount1,
+        &Character->Data.BuffInfo.Info.ForceCaliburBuffCount,
         &Character->Data.BuffInfo.Info.UnknownBuffCount2,
         &Character->Data.BuffInfo.Info.ForceWingBuffCount,
         &Character->Data.BuffInfo.Info.FirePlaceBuffCount
@@ -127,7 +127,7 @@ Void RTCharacterRemoveBuffSlot(
          &Character->Data.BuffInfo.Info.SkillBuffCount,
          &Character->Data.BuffInfo.Info.PotionBuffCount,
          &Character->Data.BuffInfo.Info.GmBuffCount,
-         &Character->Data.BuffInfo.Info.UnknownBuffCount1,
+         &Character->Data.BuffInfo.Info.ForceCaliburBuffCount,
          &Character->Data.BuffInfo.Info.UnknownBuffCount2,
          &Character->Data.BuffInfo.Info.ForceWingBuffCount,
          &Character->Data.BuffInfo.Info.FirePlaceBuffCount
@@ -165,7 +165,7 @@ Void RTCharacterInitializeBuffs(
         Character->Data.BuffInfo.Info.SkillBuffCount +
         Character->Data.BuffInfo.Info.PotionBuffCount +
         Character->Data.BuffInfo.Info.GmBuffCount +
-        Character->Data.BuffInfo.Info.UnknownBuffCount1 +
+        Character->Data.BuffInfo.Info.ForceCaliburBuffCount +
         Character->Data.BuffInfo.Info.UnknownBuffCount2 +
         Character->Data.BuffInfo.Info.ForceWingBuffCount +
         Character->Data.BuffInfo.Info.FirePlaceBuffCount
@@ -219,7 +219,7 @@ Void RTCharacterUpdateBuffs(
             Character->Data.BuffInfo.Info.SkillBuffCount +
             Character->Data.BuffInfo.Info.PotionBuffCount +
             Character->Data.BuffInfo.Info.GmBuffCount +
-            Character->Data.BuffInfo.Info.UnknownBuffCount1 +
+            Character->Data.BuffInfo.Info.ForceCaliburBuffCount +
             Character->Data.BuffInfo.Info.UnknownBuffCount2 +
             Character->Data.BuffInfo.Info.ForceWingBuffCount +
             Character->Data.BuffInfo.Info.FirePlaceBuffCount
@@ -306,7 +306,7 @@ Void RTCharacterRemoveAllBuffs(
         Character->Data.BuffInfo.Info.SkillBuffCount +
         Character->Data.BuffInfo.Info.PotionBuffCount +
         Character->Data.BuffInfo.Info.GmBuffCount +
-        Character->Data.BuffInfo.Info.UnknownBuffCount1 +
+        Character->Data.BuffInfo.Info.ForceCaliburBuffCount +
         Character->Data.BuffInfo.Info.UnknownBuffCount2 +
         Character->Data.BuffInfo.Info.ForceWingBuffCount +
         Character->Data.BuffInfo.Info.FirePlaceBuffCount
@@ -327,7 +327,7 @@ Void RTCharacterRemoveAllBuffs(
     Character->Data.BuffInfo.Info.SkillBuffCount = 0;
     Character->Data.BuffInfo.Info.PotionBuffCount = 0;
     Character->Data.BuffInfo.Info.GmBuffCount = 0;
-    Character->Data.BuffInfo.Info.UnknownBuffCount1 = 0;
+    Character->Data.BuffInfo.Info.ForceCaliburBuffCount = 0;
     Character->Data.BuffInfo.Info.UnknownBuffCount2 = 0;
     Character->Data.BuffInfo.Info.ForceWingBuffCount = 0;
     Character->Data.BuffInfo.Info.FirePlaceBuffCount = 0;
@@ -504,6 +504,11 @@ UInt32 RTMobApplyBuff(
 
     Timestamp ExpirationTimestamp = GetTimestampMs() + BuffSlot->Duration;
     Mob->BuffUpdateTimestamp = MIN(Mob->BuffUpdateTimestamp, ExpirationTimestamp);
+
+    if (Mob->Pattern) {
+        assert(Mob->Movement.WorldChunk->WorldContext);
+        RTMobPatternSkillReceived(Runtime, Mob->Movement.WorldChunk->WorldContext, Mob, Mob->Pattern, SkillData->SkillID);
+    }
 
     return 1;
 }

@@ -10,6 +10,48 @@
 #define NOTIFICATION_PROTOCOL(__NAME__, __COMMAND__, __BODY__)
 #endif
 
+// 1 - Dead not revivable
+// 5 - Dead revivable
+// 7 - Pause game for 5 sec
+// 8 - Disconnected error
+// 9 - Disconnected error
+// 12 - The item doesnt exist
+// 13 - The dungeon is full
+// 14 - Skill activation not enough mp
+// 15 - Dead revivable
+// 17 - Not enough sp to switch to aura mode
+// 19 - Server maintenance
+// 20 - Time limit system cannot start the dungeon
+// 21 - Mission war lobby closed
+// 22 - Insufficient mission battle alz for fee
+// 23 - Mission battle conditions not met
+// 24 - Mission battle closed
+// 27 - Channel is only for pc safe
+// 28 - You cannot receive reward for now
+// 31 - Warping character to other position
+// 32 - Able to enter dungeon if characters are in same party
+// 33 - Unable to enter dungeon in trade channel (force closing windows)
+// 34 - Unable to enter dungeon (force closing windows)
+// 35 - Skill cooldown
+// 36 - Vital gear only in nation war
+// 38 - Open select server screen
+// 44 - Force disconnect client
+// 45 - Cannot use warp in pvp
+// 47 - Force disconnect client
+// 49 - Unable to enter dungeon
+// 64 - Insufficient sp
+// 65 - Only for 2FA users
+// 69 - Rankings are being calculated | entry will open at midnight
+// 70 - Insufficient sp for battle mode
+// 71 - Gps warp only for premium (opens premium shop dialog)
+// 80 - Force close client
+// 82 - Cannot enter dungeon due to force wing level
+// 83 - Cannot enter dungeon due to force wing level
+// 86 - Cannot use skill while silence or other
+// 88 - Failed to enter war due to combat power
+// 89 - Only bringer can use this skill
+// 90 - Only guardians can use this skill
+// 91 - Skill only in ingres proelium
 
 NOTIFICATION_PROTOCOL(ERROR_CODE, 7,
     UInt16 ErrorCommand;
@@ -83,6 +125,11 @@ NOTIFICATION_PROTOCOL_STRUCT(CHARACTERS_SPAWN_BALOON_SLOT,
     UInt8 SlotIndex;
 )
 
+NOTIFICATION_PROTOCOL_STRUCT(CHARACTERS_SPAWN_BFX_SLOT,
+    UInt8 BfxIndex;
+    UInt32 Duration;
+)
+
 NOTIFICATION_PROTOCOL_STRUCT(CHARACTERS_SPAWN_INDEX,
     UInt32 CharacterIndex;
     RTEntityID Entity;
@@ -95,10 +142,9 @@ NOTIFICATION_PROTOCOL_STRUCT(CHARACTERS_SPAWN_INDEX,
     UInt8 ForceWingLevel;
     UInt64 MaxHP;
     UInt64 CurrentHP;
+    UInt64 CurrentShield;
     Int32 MaxRage;
     Int32 CurrentRage;
-    UInt32 Unknown1;
-    UInt32 Unknown2;
     UInt32 MovementSpeed;
     UInt16 PositionBeginX;
     UInt16 PositionBeginY;
@@ -117,8 +163,7 @@ NOTIFICATION_PROTOCOL_STRUCT(CHARACTERS_SPAWN_INDEX,
     UInt8 IsInvisible;
     UInt8 IsPersonalShop;
     UInt32 GuildIndex;
-    UInt16 Unknown6;
-    UInt16 Unknown7;
+    Int32 GuildColor;
     struct {
         UInt8 Unknown8 : 1;
         UInt8 Unknown9 : 1;
@@ -128,14 +173,13 @@ NOTIFICATION_PROTOCOL_STRUCT(CHARACTERS_SPAWN_INDEX,
         UInt8 HasBlessingBeadBaloon : 1;
         UInt8 HasItemBallon : 1;
     };
-    UInt8 ActiveBuffCount;
-    UInt8 DebuffCount;
-    UInt8 GmBuffCount;
-    UInt8 PassiveBuffCount;
+    Int8 SkillBuffCount;
+    Int8 GmBuffCount;
+    Int8 ForceCaliburBuffCount;
+    Int8 FirePlaceBuffCount;
+    Int32 BfxCount;
     UInt8 IsBringer;
-    UInt32 Unknown12;
-    UInt16 Unknown13;
-    UInt16 Unknown14;
+    UInt32 EventNameColor;
     UInt16 DisplayTitle;
     UInt16 EventTitle;
     UInt16 WarTitle;

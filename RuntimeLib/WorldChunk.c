@@ -6,6 +6,136 @@
 #include "NotificationProtocol.h"
 #include "NotificationManager.h"
 
+Void RTNotificationAppendCharacterSpawnIndex(
+    RTRuntimeRef Runtime,
+    NOTIFICATION_DATA_CHARACTERS_SPAWN* Notification,
+    RTCharacterRef Character
+) {
+    NOTIFICATION_DATA_CHARACTERS_SPAWN_INDEX* NotificationCharacter = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_INDEX);
+    NotificationCharacter->CharacterIndex = (UInt32)Character->CharacterIndex;
+    NotificationCharacter->Entity = Character->ID;
+    NotificationCharacter->Level = Character->Data.Info.Level;
+    NotificationCharacter->OverlordLevel = Character->Data.OverlordMasteryInfo.Info.Level;
+    NotificationCharacter->HolyPower = Character->Data.MythMasteryInfo.Info.HolyPower;
+    NotificationCharacter->Rebirth = Character->Data.MythMasteryInfo.Info.Rebirth;
+    NotificationCharacter->MythLevel = Character->Data.MythMasteryInfo.Info.Level;
+    NotificationCharacter->ForceWingGrade = Character->Data.ForceWingInfo.Info.Grade;
+    NotificationCharacter->ForceWingLevel = Character->Data.ForceWingInfo.Info.Level;
+    NotificationCharacter->MaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
+    NotificationCharacter->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+    NotificationCharacter->CurrentShield = Character->Attributes.Values[RUNTIME_ATTRIBUTE_DAMAGE_ABSORB];
+    NotificationCharacter->MaxRage = Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX];
+    NotificationCharacter->CurrentRage = Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT];
+    NotificationCharacter->MovementSpeed = Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED];
+    NotificationCharacter->PositionBeginX = Character->Movement.PositionBegin.X;
+    NotificationCharacter->PositionBeginY = Character->Movement.PositionBegin.Y;
+    NotificationCharacter->PositionEndX = Character->Movement.PositionEnd.X;
+    NotificationCharacter->PositionEndY = Character->Movement.PositionEnd.Y;
+    NotificationCharacter->PKState = Character->Data.Info.PKState.RawValue;
+    NotificationCharacter->Nation = Character->Data.StyleInfo.Nation;
+    NotificationCharacter->Unknown3 = Character->Data.StyleInfo.Unknown2;
+    NotificationCharacter->CharacterStyle = Character->Data.StyleInfo.Style.RawValue;
+    NotificationCharacter->CharacterLiveStyle = Character->Data.StyleInfo.LiveStyle.RawValue;
+    NotificationCharacter->ActiveAuraSkillIndex = RTCharacterGetAuraModeSkillIndex(Runtime, Character, Character->Data.BattleModeInfo.Info.AuraModeIndex);
+    NotificationCharacter->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
+    NotificationCharacter->IsDead = RTCharacterIsAlive(Runtime, Character) ? 0 : 1;
+    NotificationCharacter->EquipmentSlotCount = Character->Data.EquipmentInfo.Info.EquipmentSlotCount;
+    NotificationCharacter->CostumeSlotCount = RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT;
+    NotificationCharacter->IsInvisible = false;
+    NotificationCharacter->IsPersonalShop = false;
+    NotificationCharacter->GuildIndex = 0;
+    NotificationCharacter->GuildColor = 0;
+    NotificationCharacter->Unknown8 = 0;
+    NotificationCharacter->Unknown9 = 0;
+    NotificationCharacter->Unknown10 = 0;
+    NotificationCharacter->HasPetInfo = 0;
+    NotificationCharacter->PetCount = 0;
+    NotificationCharacter->HasBlessingBeadBaloon = 0;
+    NotificationCharacter->HasItemBallon = 0;
+    NotificationCharacter->SkillBuffCount = Character->Data.BuffInfo.Info.SkillBuffCount;
+    NotificationCharacter->GmBuffCount = Character->Data.BuffInfo.Info.GmBuffCount;
+    NotificationCharacter->ForceCaliburBuffCount = Character->Data.BuffInfo.Info.ForceCaliburBuffCount;
+    NotificationCharacter->FirePlaceBuffCount = Character->Data.BuffInfo.Info.FirePlaceBuffCount;
+    NotificationCharacter->IsBringer = 0;
+    NotificationCharacter->DisplayTitle = Character->Data.AchievementInfo.Info.DisplayTitle;
+    NotificationCharacter->EventTitle = Character->Data.AchievementInfo.Info.EventTitle;
+    //NotificationCharacter->WarTitle = Character->Data.AchievementInfo.Info.WarTitle;
+    //NotificationCharacter->AbilityTitle = Character->Data.AchievementInfo.Info.GuildTitle;
+
+    //NotificationCharacter->BfxCount = 1;
+    //NotificationCharacter->EventNameColor = 0xC0000000;
+    //NotificationCharacter->EventTitle = 11063;
+
+    NotificationCharacter->NameLength = strlen(Character->Name) + 1;
+    RTNotificationAppendCString(Notification, Character->Name);
+
+    NOTIFICATION_DATA_CHARACTERS_SPAWN_GUILD* Guild = (NOTIFICATION_DATA_CHARACTERS_SPAWN_GUILD*)&NotificationCharacter->Name[NotificationCharacter->NameLength];
+    Guild->GuildNameLength = 0;
+
+    for (Int32 EquipmentIndex = 0; EquipmentIndex < Character->Data.EquipmentInfo.Info.EquipmentSlotCount; EquipmentIndex += 1) {
+        RTItemSlotRef ItemSlot = &Character->Data.EquipmentInfo.EquipmentSlots[EquipmentIndex];
+
+        NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* NotificationSlot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
+        NotificationSlot->EquipmentSlotIndex = ItemSlot->SlotIndex;
+        NotificationSlot->ItemID = ItemSlot->Item.Serial;
+        NotificationSlot->ItemOptions = ItemSlot->ItemOptions;
+        NotificationSlot->ItemDuration = ItemSlot->ItemDuration.Serial;
+    }
+
+    for (Int32 Index = 0; Index < RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT; Index += 1) {
+        NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* Slot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
+        Slot->EquipmentSlotIndex = Index;
+    }
+
+    // S2C_DATA_CHARACTERS_SPAWN_PERSONAL_SHOP_MESSAGE PersonalShopMessage[IsPersonalShop];
+    // S2C_DATA_CHARACTERS_SPAWN_PERSONAL_SHOP_INFO PersonalShopInfo[IsPersonalShop];
+    // S2C_DATA_CHARACTERS_SPAWN_BUFF_SLOT Buffs[ActiveBuffCount + DebuffCount + GmBuffCount + PassiveBuffCount];
+    for (Int32 Index = 0; Index < Character->Data.BuffInfo.Info.SkillBuffCount; Index += 1) {
+        RTBuffSlotRef BuffSlot = &Character->Data.BuffInfo.Slots[Index];
+    
+        NOTIFICATION_DATA_CHARACTERS_SPAWN_BUFF_SLOT* NotificationBuff = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_BUFF_SLOT);
+        NotificationBuff->SkillIndex = BuffSlot->SkillIndex;
+        NotificationBuff->SkillLevel = BuffSlot->SkillLevel;
+    }
+    
+    Int8 BuffSlotCounts[] = {
+         Character->Data.BuffInfo.Info.SkillBuffCount,
+         Character->Data.BuffInfo.Info.PotionBuffCount,
+         Character->Data.BuffInfo.Info.GmBuffCount,
+         Character->Data.BuffInfo.Info.ForceCaliburBuffCount,
+         Character->Data.BuffInfo.Info.UnknownBuffCount2,
+         Character->Data.BuffInfo.Info.ForceWingBuffCount,
+         Character->Data.BuffInfo.Info.FirePlaceBuffCount
+    };
+    Int32 BuffSlotOffset = 0;
+    for (Int32 BuffType = 0; BuffType < RUNTIME_BUFF_SLOT_TYPE_COUNT; BuffType += 1) {
+        if (BuffType == RUNTIME_BUFF_SLOT_TYPE_POTION ||
+            BuffType == RUNTIME_BUFF_SLOT_TYPE_UNKNOWN_2 ||
+            BuffType == RUNTIME_BUFF_SLOT_TYPE_FORCE_WING) {
+            BuffSlotOffset += BuffSlotCounts[BuffType];
+            continue;
+        }
+
+        for (Int32 Index = BuffSlotOffset; Index < BuffSlotOffset + BuffSlotCounts[BuffType]; Index += 1) {
+            RTBuffSlotRef BuffSlot = &Character->Data.BuffInfo.Slots[Index];
+
+            NOTIFICATION_DATA_CHARACTERS_SPAWN_BUFF_SLOT* NotificationBuff = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_BUFF_SLOT);
+            NotificationBuff->SkillIndex = BuffSlot->SkillIndex;
+            NotificationBuff->SkillLevel = BuffSlot->SkillLevel;
+        }
+
+        BuffSlotOffset += BuffSlotCounts[BuffType];
+    }
+    
+    //NOTIFICATION_DATA_CHARACTERS_SPAWN_BFX_SLOT* BfxSlot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_BFX_SLOT);
+    //BfxSlot->BfxIndex = 8;
+    //BfxSlot->Duration = 10000;
+
+    // S2C_DATA_CHARACTERS_SPAWN_PET_SLOT Pets[PetCount];
+    // S2C_DATA_CHARACTERS_SPAWN_BALOON_SLOT ItemBaloon[HasItemBaloon];
+}
+
+
 Void RTWorldChunkBroadcastCharactersToCharacter(
     RTWorldChunkRef WorldChunk,
     RTEntityID Entity
@@ -121,49 +251,7 @@ Void RTWorldChunkUpdate(
     NOTIFICATION_DATA_CHARACTERS_SPAWN* Notification = RTNotificationInit(CHARACTERS_SPAWN);
     Notification->SpawnType = NOTIFICATION_SPAWN_TYPE_MOVE;
     Notification->Count = 1;
-
-    NOTIFICATION_DATA_CHARACTERS_SPAWN_INDEX* NotificationCharacter = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_INDEX);
-    NotificationCharacter->CharacterIndex = (UInt32)Character->CharacterIndex;
-    NotificationCharacter->Entity = Character->ID;
-    NotificationCharacter->Level = Character->Data.Info.Level;
-    NotificationCharacter->OverlordLevel = Character->Data.OverlordMasteryInfo.Info.Level;
-    NotificationCharacter->ForceWingGrade = Character->Data.ForceWingInfo.Info.Grade;
-    NotificationCharacter->ForceWingLevel = Character->Data.ForceWingInfo.Info.Level;
-    NotificationCharacter->MaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
-    NotificationCharacter->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-    NotificationCharacter->MovementSpeed = (UInt32)(Character->Movement.Speed * RUNTIME_MOVEMENT_SPEED_SCALE);
-    NotificationCharacter->PositionBeginX = Character->Movement.PositionBegin.X;
-    NotificationCharacter->PositionBeginY = Character->Movement.PositionBegin.Y;
-    NotificationCharacter->PositionEndX = Character->Movement.PositionEnd.X;
-    NotificationCharacter->PositionEndY = Character->Movement.PositionEnd.Y;
-    NotificationCharacter->Nation = Character->Data.StyleInfo.Nation;
-    NotificationCharacter->CharacterStyle = Character->Data.StyleInfo.Style.RawValue;
-    NotificationCharacter->CharacterLiveStyle = Character->Data.StyleInfo.LiveStyle.RawValue;
-    NotificationCharacter->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
-    NotificationCharacter->IsDead = RTCharacterIsAlive(Runtime, Character) ? 0 : 1;
-    NotificationCharacter->EquipmentSlotCount = Character->Data.EquipmentInfo.Info.EquipmentSlotCount;
-    NotificationCharacter->NameLength = strlen(Character->Name) + 1;
-    RTNotificationAppendCString(Notification, Character->Name);
-    
-    NOTIFICATION_DATA_CHARACTERS_SPAWN_GUILD* Guild = (NOTIFICATION_DATA_CHARACTERS_SPAWN_GUILD*)&NotificationCharacter->Name[NotificationCharacter->NameLength];
-    Guild->GuildNameLength = 0;
-
-    for (Index EquipmentIndex = 0; EquipmentIndex < Character->Data.EquipmentInfo.Info.EquipmentSlotCount; EquipmentIndex += 1) {
-        RTItemSlotRef ItemSlot = &Character->Data.EquipmentInfo.EquipmentSlots[EquipmentIndex];
-
-        NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* NotificationSlot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
-        NotificationSlot->EquipmentSlotIndex = ItemSlot->SlotIndex;
-        NotificationSlot->ItemID = ItemSlot->Item.Serial;
-        NotificationSlot->ItemOptions = ItemSlot->ItemOptions;
-        NotificationSlot->ItemDuration = ItemSlot->ItemDuration.Serial;
-    }
-
-    // TODO: This is a placeholder for costumes add them after adding the costume system
-    NotificationCharacter->CostumeSlotCount = RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT;
-    for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT; Index += 1) {
-        NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* Slot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
-        Slot->EquipmentSlotIndex = Index;
-    }
+    RTNotificationAppendCharacterSpawnIndex(Runtime, Notification, Character);
 
     for (Int32 DeltaChunkX = NewBeginX; DeltaChunkX <= NewEndX; DeltaChunkX += 1) {
         for (Int32 DeltaChunkY = NewBeginY; DeltaChunkY <= NewEndY; DeltaChunkY += 1) {
@@ -208,7 +296,7 @@ Void RTWorldChunkBroadcastNearbyCharactersToCharacter(
     for (Int32 DeltaChunkX = StartChunkX; DeltaChunkX <= EndChunkX; DeltaChunkX += 1) {
         for (Int32 DeltaChunkY = StartChunkY; DeltaChunkY <= EndChunkY; DeltaChunkY += 1) {
             Index WorldChunkIndex = (Index)DeltaChunkX + DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
-            assert(WorldChunkIndex < RUNTIME_WORLD_CHUNK_COUNT* RUNTIME_WORLD_CHUNK_COUNT);
+            assert(WorldChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT);
 
             RTWorldChunkRef NearbyWorldChunk = &WorldChunk->WorldContext->Chunks[WorldChunkIndex];
             RTWorldChunkBroadcastCharactersToCharacter(NearbyWorldChunk, Entity);
@@ -233,53 +321,10 @@ Void RTWorldChunkBroadcastCharactersToCharacter(
     for (Index EntityIndex = 0; EntityIndex < ArrayGetElementCount(WorldChunk->Characters); EntityIndex += 1) {
         RTEntityID CharacterEntity = *(RTEntityID*)ArrayGetElementAtIndex(WorldChunk->Characters, EntityIndex);
         if (RTEntityIsEqual(Entity, CharacterEntity)) continue;
-    
-        Notification->Count += 1;
         
         RTCharacterRef Character = RTWorldManagerGetCharacter(Runtime->WorldManager, CharacterEntity);
-    
-        NOTIFICATION_DATA_CHARACTERS_SPAWN_INDEX* NotificationCharacter = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_INDEX);
-        NotificationCharacter->CharacterIndex = (UInt32)Character->CharacterIndex;
-        NotificationCharacter->Entity = Character->ID;
-        NotificationCharacter->Level = Character->Data.Info.Level;
-        NotificationCharacter->OverlordLevel = Character->Data.OverlordMasteryInfo.Info.Level;
-        NotificationCharacter->ForceWingGrade = Character->Data.ForceWingInfo.Info.Grade;
-        NotificationCharacter->ForceWingLevel = Character->Data.ForceWingInfo.Info.Level;
-        NotificationCharacter->MaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
-        NotificationCharacter->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-        NotificationCharacter->MovementSpeed = (UInt32)(Character->Movement.Speed * RUNTIME_MOVEMENT_SPEED_SCALE);
-        NotificationCharacter->PositionBeginX = Character->Movement.PositionBegin.X;
-        NotificationCharacter->PositionBeginY = Character->Movement.PositionBegin.Y;
-        NotificationCharacter->PositionEndX = Character->Movement.PositionEnd.X;
-        NotificationCharacter->PositionEndY = Character->Movement.PositionEnd.Y;
-        NotificationCharacter->Nation = Character->Data.StyleInfo.Nation;
-        NotificationCharacter->CharacterStyle = Character->Data.StyleInfo.Style.RawValue;
-        NotificationCharacter->CharacterLiveStyle = Character->Data.StyleInfo.LiveStyle.RawValue;
-        NotificationCharacter->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
-        NotificationCharacter->IsDead = RTCharacterIsAlive(Runtime, Character) ? 0 : 1;
-        NotificationCharacter->EquipmentSlotCount = Character->Data.EquipmentInfo.Info.EquipmentSlotCount;
-        NotificationCharacter->NameLength = strlen(Character->Name) + 1;
-        RTNotificationAppendCString(Notification, Character->Name);
-        
-        NOTIFICATION_DATA_CHARACTERS_SPAWN_GUILD* Guild = (NOTIFICATION_DATA_CHARACTERS_SPAWN_GUILD*)&NotificationCharacter->Name[NotificationCharacter->NameLength];
-        Guild->GuildNameLength = 0;
-
-        for (Index EquipmentIndex = 0; EquipmentIndex < Character->Data.EquipmentInfo.Info.EquipmentSlotCount; EquipmentIndex += 1) {
-            RTItemSlotRef ItemSlot = &Character->Data.EquipmentInfo.EquipmentSlots[EquipmentIndex];
-
-            NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* NotificationSlot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
-            NotificationSlot->EquipmentSlotIndex = ItemSlot->SlotIndex;
-            NotificationSlot->ItemID = ItemSlot->Item.Serial;
-            NotificationSlot->ItemOptions = ItemSlot->ItemOptions;
-            NotificationSlot->ItemDuration = ItemSlot->ItemDuration.Serial;
-        }
-
-        // TODO: This is a placeholder for costumes add them after adding the costume system
-        NotificationCharacter->CostumeSlotCount = RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT;
-        for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT; Index += 1) {
-            NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* Slot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
-            Slot->EquipmentSlotIndex = Index;
-        }
+        RTNotificationAppendCharacterSpawnIndex(Runtime, Notification, Character);
+        Notification->Count += 1;
     }
 
     if (Notification->Count > 0) {
@@ -537,50 +582,7 @@ Void RTWorldChunkNotify(
         
         RTCharacterRef Character = RTWorldManagerGetCharacter(Runtime->WorldManager, Entity);
         assert(Character);
-        
-        NOTIFICATION_DATA_CHARACTERS_SPAWN_INDEX* NotificationCharacter = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_INDEX);
-        NotificationCharacter->CharacterIndex = (UInt32)Character->CharacterIndex;
-        NotificationCharacter->Entity = Character->ID;
-        NotificationCharacter->Level = Character->Data.Info.Level;
-        NotificationCharacter->OverlordLevel = Character->Data.OverlordMasteryInfo.Info.Level;
-        NotificationCharacter->ForceWingGrade = Character->Data.ForceWingInfo.Info.Grade;
-        NotificationCharacter->ForceWingLevel = Character->Data.ForceWingInfo.Info.Level;
-        NotificationCharacter->MaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
-        NotificationCharacter->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
-        NotificationCharacter->MovementSpeed = (UInt32)(Character->Movement.Speed * RUNTIME_MOVEMENT_SPEED_SCALE);
-        NotificationCharacter->PositionBeginX = Character->Movement.PositionBegin.X;
-        NotificationCharacter->PositionBeginY = Character->Movement.PositionBegin.Y;
-        NotificationCharacter->PositionEndX = Character->Movement.PositionEnd.X;
-        NotificationCharacter->PositionEndY = Character->Movement.PositionEnd.Y;
-        NotificationCharacter->Nation = Character->Data.StyleInfo.Nation;
-        NotificationCharacter->CharacterStyle = Character->Data.StyleInfo.Style.RawValue;
-        NotificationCharacter->CharacterLiveStyle = Character->Data.StyleInfo.LiveStyle.RawValue;
-        NotificationCharacter->CharacterExtendedStyle = Character->Data.StyleInfo.ExtendedStyle.RawValue;
-        NotificationCharacter->IsDead = RTCharacterIsAlive(Runtime, Character) ? 0 : 1;
-        NotificationCharacter->EquipmentSlotCount = Character->Data.EquipmentInfo.Info.EquipmentSlotCount;
-        NotificationCharacter->NameLength = strlen(Character->Name) + 1;
-        RTNotificationAppendCString(Notification, Character->Name);
-        
-        NOTIFICATION_DATA_CHARACTERS_SPAWN_GUILD* Guild = (NOTIFICATION_DATA_CHARACTERS_SPAWN_GUILD*)&NotificationCharacter->Name[NotificationCharacter->NameLength];
-        Guild->GuildNameLength = 0;
-
-        for (Index EquipmentIndex = 0; EquipmentIndex < Character->Data.EquipmentInfo.Info.EquipmentSlotCount; EquipmentIndex += 1) {
-            RTItemSlotRef ItemSlot = &Character->Data.EquipmentInfo.EquipmentSlots[EquipmentIndex];
-
-            NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* NotificationSlot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
-            NotificationSlot->EquipmentSlotIndex = ItemSlot->SlotIndex;
-            NotificationSlot->ItemID = ItemSlot->Item.Serial;
-            NotificationSlot->ItemOptions = ItemSlot->ItemOptions;
-            NotificationSlot->ItemDuration = ItemSlot->ItemDuration.Serial;
-        }
-
-        // TODO: This is a placeholder for costumes add them after adding the costume system
-        NotificationCharacter->CostumeSlotCount = RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT;
-        for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT; Index += 1) {
-            NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* Slot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
-            Slot->EquipmentSlotIndex = Index;
-        }
-
+        RTNotificationAppendCharacterSpawnIndex(Runtime, Notification, Character);
         RTNotificationDispatchToNearby(Notification, WorldChunk);
 
         RTWorldChunkBroadcastNearbyCharactersToCharacter(WorldChunk, Entity);

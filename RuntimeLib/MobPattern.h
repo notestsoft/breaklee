@@ -37,14 +37,14 @@ enum {
 	RUNTIME_MOB_ACTION_TYPE_SPECIAL_ACTION = 9,
 	RUNTIME_MOB_ACTION_TYPE_ATTACK_1 = 10,
 	RUNTIME_MOB_ACTION_TYPE_CANCEL_ACTION = 11,
-	RUNTIME_MOB_ACTION_TYPE_DESPAWN_MOB = 12,
+	RUNTIME_MOB_ACTION_TYPE_DESPAWN_LINK_MOB = 12,
 	RUNTIME_MOB_ACTION_TYPE_RESPAWN_SELF = 13,
 	RUNTIME_MOB_ACTION_TYPE_SOCIAL_ACTION = 14,
 	RUNTIME_MOB_ACTION_TYPE_ATTACK_2 = 15,
 	RUNTIME_MOB_ACTION_TYPE_ATTACK_UP_TARGET = 16,
 	RUNTIME_MOB_ACTION_TYPE_DEFENSE_UP_TARGET = 17,
 	RUNTIME_MOB_ACTION_TYPE_UNKNOWN_18 = 18,
-	RUNTIME_MOB_ACTION_TYPE_UNKNOWN_19 = 19,
+	RUNTIME_MOB_ACTION_TYPE_DESPAWN_MOB = 19,
 	RUNTIME_MOB_ACTION_TYPE_UNKNOWN_20 = 20,
 };
 
@@ -73,6 +73,7 @@ union _RTMobActionParameters {
 	struct { Int32 ActionIndex; } SocialAction;
 	struct { Int32 WorldType; Int32 MobIndex; Int32 ValueType; Int32 Value; } AttackUp;
 	struct { Int32 WorldType; Int32 MobIndex; Int32 ValueType; Int32 Value; } DefenseUp;
+	struct { Int32 MobIndex; } MobDespawn;
 	struct { Int32 Values[RUNTIME_MOB_PATTERN_MAX_PARAMETER_COUNT]; } Memory;
 };
 typedef union _RTMobActionParameters RTMobActionParameters;
@@ -129,7 +130,7 @@ struct _RTMobPatternSpawnData {
 	Int32 Interval;
 	Int32 Count;
 	Int32 MobPatternIndex;
-	Char Script[MAX_PATH];
+	RTScriptRef Script;
 };
 
 struct _RTMobPatternData {
@@ -161,7 +162,7 @@ struct _RTMobPattern {
 	Timestamp SpawnTimestamp;
 	struct _RTMobTriggerState TriggerStates[RUNTIME_MOB_PATTERN_MAX_TRIGGER_GROUP_COUNT];
 	ArrayRef ActionStates;
-	// TODO: Add link mobs
+	ArrayRef LinkMobs;
 };
 
 Void RTMobPatternSpawn(

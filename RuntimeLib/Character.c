@@ -1465,7 +1465,7 @@ Void RTCharacterNotifyStatus(
 		Character->Data.BuffInfo.Info.SkillBuffCount +
 		Character->Data.BuffInfo.Info.PotionBuffCount +
 		Character->Data.BuffInfo.Info.GmBuffCount +
-		Character->Data.BuffInfo.Info.UnknownBuffCount1 +
+		Character->Data.BuffInfo.Info.ForceCaliburBuffCount +
 		Character->Data.BuffInfo.Info.UnknownBuffCount2 +
 		Character->Data.BuffInfo.Info.ForceWingBuffCount +
 		Character->Data.BuffInfo.Info.FirePlaceBuffCount

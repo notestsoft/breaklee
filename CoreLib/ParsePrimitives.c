@@ -82,7 +82,7 @@ Bool ParseAttributeInt8(
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
     if (!Data) goto error;
 
-    if (Data->Length < 1) {
+    if (Data->Length < 1 || strlen(Data->Data) < 1) {
         *Result = -1;
         return true;
     }
@@ -106,7 +106,7 @@ Bool ParseAttributeInt16(
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
     if (!Data) goto error;
 
-    if (Data->Length < 1) {
+    if (Data->Length < 1 || strlen(Data->Data) < 1) {
         *Result = -1;
         return true;
     }
@@ -130,7 +130,7 @@ Bool ParseAttributeInt32(
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
     if (!Data) goto error;
 
-    if (Data->Length < 1) {
+    if (Data->Length < 1 || strlen(Data->Data) < 1) {
         *Result = -1;
         return true;
     }
@@ -154,7 +154,7 @@ Bool ParseAttributeInt64(
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
     if (!Data) goto error;
 
-    if (Data->Length < 1) {
+    if (Data->Length < 1 || strlen(Data->Data) < 1) {
         *Result = -1;
         return true;
     }
@@ -178,7 +178,7 @@ Bool ParseAttributeUInt8(
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
     if (!Data) goto error;
 
-    if (Data->Length < 1) {
+    if (Data->Length < 1 || strlen(Data->Data) < 1) {
         *Result = UINT32_MAX;
         return true;
     }
@@ -202,7 +202,7 @@ Bool ParseAttributeUInt16(
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
     if (!Data) goto error;
 
-    if (Data->Length < 1) {
+    if (Data->Length < 1 || strlen(Data->Data) < 1) {
         *Result = UINT32_MAX;
         return true;
     }
@@ -226,7 +226,7 @@ Bool ParseAttributeUInt32(
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
     if (!Data) goto error;
 
-    if (Data->Length < 1) {
+    if (Data->Length < 1 || strlen(Data->Data) < 1) {
         *Result = UINT32_MAX;
         return true;
     }
@@ -250,7 +250,7 @@ Bool ParseAttributeUInt64(
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
     if (!Data) goto error;
 
-    if (Data->Length < 1) {
+    if (Data->Length < 1 || strlen(Data->Data) < 1) {
         *Result = -1;
         return true;
     }
@@ -274,7 +274,7 @@ Bool ParseAttributeIndex(
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
     if (!Data) goto error;
 
-    if (Data->Length < 1) {
+    if (Data->Length < 1 || strlen(Data->Data) < 1) {
         *Result = -1;
         return true;
     }
@@ -298,7 +298,7 @@ Bool ParseAttributeFloat32(
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
     if (!Data) goto error;
 
-    if (Data->Length < 1) {
+    if (Data->Length < 1 || strlen(Data->Data) < 1) {
         *Result = -1;
         return true;
     }
@@ -322,7 +322,7 @@ Bool ParseAttributeFloat64(
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
     if (!Data) goto error;
 
-    if (Data->Length < 1) {
+    if (Data->Length < 1 || strlen(Data->Data) < 1) {
         *Result = 0.0;
         return true;
     }
@@ -350,7 +350,7 @@ Bool ParseAttributeInt32Array(
 
     memset(Result, 0, sizeof(Int32) * Count);
 
-    if (Data->Length < 1) {
+    if (Data->Length < 1 || strlen(Data->Data) < 1) {
         return true;
     }
 
@@ -392,8 +392,8 @@ Int32 ParseAttributeInt32ArrayCounted(
 
     memset(Result, 0, sizeof(Int32) * Count);
 
-    if (Data->Length < 1) {
-        return true;
+    if (Data->Length < 1 || strlen(Data->Data) < 1) {
+        return 0;
     }
 
     Int32 Index = 0;
@@ -434,7 +434,7 @@ Bool ParseAttributeUInt32Array(
 
     memset(Result, 0, sizeof(UInt32) * Count);
 
-    if (Data->Length < 1) {
+    if (Data->Length < 1 || strlen(Data->Data) < 1) {
         return true;
     }
 
@@ -477,8 +477,8 @@ Int32 ParseAttributeUInt64ArrayCounted(
 
     memset(Result, 0, sizeof(UInt64) * Count);
 
-    if (Data->Length < 1) {
-        return true;
+    if (Data->Length < 1 || strlen(Data->Data) < 1) {
+        return 0;
     }
 
     Int32 Index = 0;
@@ -522,8 +522,8 @@ Int32 ParseAttributeInt32Array2D(
 
     memset(Result, 0, sizeof(Int32) * Count * GroupCount);
 
-    if (Data->Length < 1) {
-        return true;
+    if (Data->Length < 1 || strlen(Data->Data) < 1) {
+        return 0;
     }
 
     Int64 Index = 0;

@@ -294,7 +294,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_UINT8, &Response->Character.BuffInfo.SkillBuffCount,
         DB_TYPE_UINT8, &Response->Character.BuffInfo.PotionBuffCount,
         DB_TYPE_UINT8, &Response->Character.BuffInfo.GmBuffCount,
-        DB_TYPE_UINT8, &Response->Character.BuffInfo.UnknownBuffCount1,
+        DB_TYPE_UINT8, &Response->Character.BuffInfo.ForceCaliburBuffCount,
         DB_TYPE_UINT8, &Response->Character.BuffInfo.UnknownBuffCount2,
         DB_TYPE_UINT8, &Response->Character.BuffInfo.ForceWingBuffCount,
         DB_TYPE_UINT8, &Response->Character.BuffInfo.FirePlaceBuffCount,
@@ -430,7 +430,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         Response->Character.BuffInfo.SkillBuffCount +
         Response->Character.BuffInfo.PotionBuffCount +
         Response->Character.BuffInfo.GmBuffCount +
-        Response->Character.BuffInfo.UnknownBuffCount1 +
+        Response->Character.BuffInfo.ForceCaliburBuffCount +
         Response->Character.BuffInfo.UnknownBuffCount2 +
         Response->Character.BuffInfo.ForceWingBuffCount +
         Response->Character.BuffInfo.FirePlaceBuffCount

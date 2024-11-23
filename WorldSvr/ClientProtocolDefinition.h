@@ -228,7 +228,8 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     S2C_DATA_INITIALIZE_SERVER_ADDRESS PartyServerAddress;
     UInt16 UnknownPort;
     struct _RTCharacterStyleInfo CharacterStyleInfo;
-    UInt8 Unknown14[281];
+    UInt8 Unknown14[25];
+    UInt8 UnknownTempInventory[256];
     struct _RTEquipmentInfo EquipmentInfo;
     struct _RTInventoryInfo InventoryInfo;
     struct _RTVehicleInventoryInfo VehicleInventoryInfo;

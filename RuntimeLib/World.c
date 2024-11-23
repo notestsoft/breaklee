@@ -238,11 +238,17 @@ Void RTWorldSpawnMob(
     Int32 X = Mob->Spawn.AreaX;
     Int32 Y = Mob->Spawn.AreaY;
 
+    if (X < 0 || Y < 0) {
+        RTMobRef Target = RTWorldContextGetMob(WorldContext, Mob->LinkEntityID);
+        X = Target->Movement.PositionCurrent.X;
+        Y = Target->Movement.PositionCurrent.Y;
+    }
+
     if (!Mob->Spawn.IsMissionGate && (Mob->Spawn.AreaWidth > 1 || Mob->Spawn.AreaHeight > 1)) {
         Int32 RemainingRandomCount = 3;
         while (RemainingRandomCount >= 0) {
-            Int32 RandomX = RandomRange(&WorldContext->Seed, Mob->Spawn.AreaX, Mob->Spawn.AreaX + Mob->Spawn.AreaWidth);
-            Int32 RandomY = RandomRange(&WorldContext->Seed, Mob->Spawn.AreaY, Mob->Spawn.AreaY + Mob->Spawn.AreaHeight);
+            Int32 RandomX = RandomRange(&WorldContext->Seed, X, X + Mob->Spawn.AreaWidth);
+            Int32 RandomY = RandomRange(&WorldContext->Seed, Y, Y + Mob->Spawn.AreaHeight);
 
             if (!RTWorldIsTileColliding(Runtime, WorldContext, RandomX, RandomY, CollisionMask)) {
                 X = RandomX;
@@ -365,6 +371,8 @@ Void RTWorldSpawnMob(
 Void RTWorldCreateMob(
     RTRuntimeRef Runtime,
     RTWorldContextRef WorldContext,
+    RTMobRef LinkMob,
+    Int32 LinkMobIndex,
     Int32 MobSpeciesIndex,
     Int32 AreaX,
     Int32 AreaY,
@@ -373,64 +381,60 @@ Void RTWorldCreateMob(
     Int32 Interval,
     Int32 Count,
     Int32 MobPatternIndex,
-    CString Script,
+    RTScriptRef Script,
     Timestamp Delay
 ) {
-    /*
-    Char MobScriptFileName[MAX_PATH] = { 0 };
-    if (ParseAttributeString(Archive, ChildIterator->Index, "Script", MobScriptFileName, MAX_PATH)) {
-        if (strlen(MobScriptFileName) > 0) {
-            CString MobScriptFilePath = PathCombineAll(ScriptDirectory, MobScriptFileName, NULL);
-            Mob->Script = RTScriptManagerLoadScript(Runtime->ScriptManager, MobScriptFilePath);
+    assert(MobSpeciesIndex < Runtime->MobDataCount);
+    assert(AreaX >= 0 || (AreaX < 0 && LinkMob && !RTEntityIsNull(LinkMob->ID)));
+    assert(AreaY >= 0 || (AreaY < 0 && LinkMob && !RTEntityIsNull(LinkMob->ID)));
+
+    for (Int32 SpawnIndex = 0; SpawnIndex < Count; SpawnIndex += 1) {
+        Index MemoryPoolIndex = 0;
+        RTMobRef Mob = (RTMobRef)MemoryPoolReserveNext(WorldContext->MobPool, &MemoryPoolIndex);
+        Mob->ID.EntityIndex = WorldContext->NextMobEntityIndex;
+        Mob->ID.WorldIndex = WorldContext->WorldData->WorldIndex;
+        Mob->ID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
+        Mob->SpeciesData = &Runtime->MobData[MobSpeciesIndex];
+        Mob->RemainingFindCount = Mob->SpeciesData->FindCount;
+        Mob->RemainingSpawnCount = Count;
+        Mob->IsAttackingCharacter = true;
+        Mob->LinkMobIndex = LinkMobIndex;
+        Mob->LinkEntityID = (LinkMob) ? LinkMob->ID : kEntityIDNull;
+        Mob->Spawn.MobSpeciesIndex = MobSpeciesIndex;
+        Mob->Spawn.MobPatternIndex = MobPatternIndex;
+        Mob->Spawn.AreaX = AreaX;
+        Mob->Spawn.AreaY = AreaY;
+        Mob->Spawn.AreaWidth = AreaWidth;
+        Mob->Spawn.AreaHeight = AreaHeight;
+        Mob->Spawn.SpawnInterval = Interval;
+        Mob->Spawn.SpawnCount = 1;
+        Mob->Script = Script;
+
+        if (LinkMob) {
+            assert(LinkMob->Pattern);
+            ArrayAppendElement(LinkMob->Pattern->LinkMobs, &Mob->ID);
         }
-    }
 
-    Mob->SpeciesData = &Runtime->MobData[Mob->Spawn.MobSpeciesIndex];
-    Mob->IsInfiniteSpawn = true;
-    Mob->IsPermanentDeath = false;
-    Mob->RemainingSpawnCount = 0;
-
-    Index MemoryPoolIndex = 0;
-    RTMobRef Mob = (RTMobRef)MemoryPoolReserveNext(WorldContext->MobPool, &MemoryPoolIndex);
-    memcpy(Mob, TableMob, sizeof(struct _RTMob));
-
-    Mob->ID.EntityIndex = TableMob->ID.EntityIndex;
-    Mob->ID.WorldIndex = WorldContext->WorldData->WorldIndex;
-    Mob->ID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
-    Mob->IsSpawned = false;
-    Mob->RemainingFindCount = Mob->SpeciesData->FindCount;
-    Mob->RemainingSpawnCount = Mob->Spawn.SpawnCount;
-
-    if (Mob->Spawn.MobPatternIndex) {
-        Index MobPatternIndex = Mob->Spawn.MobPatternIndex;
-        RTMobPatternDataRef MobPatternData = (RTMobPatternDataRef)MemoryPoolFetch(Runtime->MobPatternDataPool, MobPatternIndex);
-        if (MobPatternData) {
-            Index PatternMemoryPoolIndex = 0;
-            Mob->Pattern = (RTMobPatternRef)MemoryPoolReserveNext(WorldContext->MobPatternPool, &PatternMemoryPoolIndex);
-            memset(Mob->Pattern, 0, sizeof(struct _RTMobPattern));
-            Mob->Pattern->Data = MobPatternData;
-            Mob->Pattern->ActionStates = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTMobActionState), RUNTIME_MOB_PATTERN_MAX_TRIGGER_GROUP_COUNT);
-            DictionaryInsert(WorldContext->EntityToMobPattern, &Mob->ID, &PatternMemoryPoolIndex, sizeof(Index));
+        if (Mob->Spawn.MobPatternIndex) {
+            Index MobPatternIndex = Mob->Spawn.MobPatternIndex;
+            RTMobPatternDataRef MobPatternData = (RTMobPatternDataRef)MemoryPoolFetch(Runtime->MobPatternDataPool, MobPatternIndex);
+            if (MobPatternData) {
+                Index PatternMemoryPoolIndex = 0;
+                Mob->Pattern = (RTMobPatternRef)MemoryPoolReserveNext(WorldContext->MobPatternPool, &PatternMemoryPoolIndex);
+                memset(Mob->Pattern, 0, sizeof(struct _RTMobPattern));
+                Mob->Pattern->Data = MobPatternData;
+                Mob->Pattern->ActionStates = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTMobActionState), RUNTIME_MOB_PATTERN_MAX_TRIGGER_GROUP_COUNT);
+                Mob->Pattern->LinkMobs = ArrayCreateEmpty(Runtime->Allocator, sizeof(RTEntityID), 8);
+                DictionaryInsert(WorldContext->EntityToMobPattern, &Mob->ID, &PatternMemoryPoolIndex, sizeof(Index));
+            }
         }
+
+        DictionaryInsert(WorldContext->EntityToMob, &Mob->ID, &MemoryPoolIndex, sizeof(Index));
+
+        WorldContext->NextMobEntityIndex += 1;
+
+        RTWorldSpawnMobEvent(Runtime, WorldContext, Mob, Delay);
     }
-
-    DictionaryInsert(WorldContext->EntityToMob, &Mob->ID, &MemoryPoolIndex, sizeof(Index));
-
-    RTEntityID MobID = { 0 };
-    MobID.EntityIndex = TableMob->ID.EntityIndex;
-    MobID.WorldIndex = WorldContext->WorldData->WorldIndex;
-    MobID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
-
-    Index* MemoryPoolIndex = DictionaryLookup(WorldContext->EntityToMob, &MobID);
-    assert(MemoryPoolIndex);
-
-    RTMobRef Mob = (RTMobRef)MemoryPoolFetch(WorldContext->MobPool, *MemoryPoolIndex);
-    assert(Mob);
-
-    if (Mob->Spawn.SpawnDefault) {
-        RTWorldSpawnMob(Runtime, WorldContext, Mob);
-    }
-    */
 }
 
 RTMobRef RTWorldContextGetMob(
@@ -470,7 +474,19 @@ Void RTWorldDespawnMob(
     if (!Mob->IsSpawned) 
         return;
 
-    if (Mob->Pattern) RTMobPatternStop(Runtime, WorldContext, Mob, Mob->Pattern);
+    if (Mob->Pattern) {
+        for (Int32 Index = 0; Index < ArrayGetElementCount(Mob->Pattern->LinkMobs); Index += 1) {
+            RTEntityID LinkMobID = *(RTEntityID*)ArrayGetElementAtIndex(Mob->Pattern->LinkMobs, Index);
+            RTMobRef LinkMob = RTWorldContextGetMob(WorldContext, LinkMobID);
+            assert(LinkMob);
+        
+            if (RTMobIsAlive(LinkMob)) {
+                RTWorldDespawnMobEvent(Runtime, WorldContext, LinkMob, 0);
+            }
+        }
+
+        RTMobPatternStop(Runtime, WorldContext, Mob, Mob->Pattern);
+    }
 
     // TODO: This should be evaluated inside the mob it self!
     if (!RTEntityIsNull(Mob->DropOwner) && Mob->DropOwner.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) { // TODO: Why do we check here if the mob has a drop owner?
@@ -680,6 +696,7 @@ Void RTWorldRespawnMob(
 
             Index MemoryPoolIndex = *(Index*)DictionaryLookup(WorldContext->EntityToMobPattern, &Mob->ID);
             ArrayDestroy(Mob->Pattern->ActionStates);
+            ArrayDestroy(Mob->Pattern->LinkMobs);
             MemoryPoolRelease(WorldContext->MobPatternPool, MemoryPoolIndex);
             DictionaryRemove(WorldContext->EntityToMobPattern, &Mob->ID);
             Mob->Pattern = NULL;
@@ -1061,6 +1078,8 @@ Void RTWorldSetMobTable(
     DictionaryRemoveAll(WorldContext->EntityToMob);
     DictionaryRemoveAll(WorldContext->EntityToMobPattern);
 
+    WorldContext->NextMobEntityIndex = 0;
+
     for (Index MobIndex = 0; MobIndex < ArrayGetElementCount(MobTable); MobIndex += 1) {
         RTMobRef TableMob = (RTMobRef)ArrayGetElementAtIndex(MobTable, MobIndex);
 
@@ -1075,6 +1094,8 @@ Void RTWorldSetMobTable(
         Mob->RemainingFindCount = Mob->SpeciesData->FindCount;
         Mob->RemainingSpawnCount = Mob->Spawn.SpawnCount;
 
+        WorldContext->NextMobEntityIndex = MAX(WorldContext->NextMobEntityIndex, TableMob->ID.EntityIndex + 1);
+
         if (Mob->Spawn.MobPatternIndex) {
             Index MobPatternIndex = Mob->Spawn.MobPatternIndex;
             RTMobPatternDataRef MobPatternData = (RTMobPatternDataRef)MemoryPoolFetch(Runtime->MobPatternDataPool, MobPatternIndex);
@@ -1084,6 +1105,7 @@ Void RTWorldSetMobTable(
                 memset(Mob->Pattern, 0, sizeof(struct _RTMobPattern));
                 Mob->Pattern->Data = MobPatternData;
                 Mob->Pattern->ActionStates = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTMobActionState), RUNTIME_MOB_PATTERN_MAX_TRIGGER_GROUP_COUNT);
+                Mob->Pattern->LinkMobs = ArrayCreateEmpty(Runtime->Allocator, sizeof(RTEntityID), 8);
                 DictionaryInsert(WorldContext->EntityToMobPattern, &Mob->ID, &PatternMemoryPoolIndex, sizeof(Index));
             }
         }
