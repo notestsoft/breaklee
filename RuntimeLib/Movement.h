@@ -18,7 +18,7 @@ struct _RTMovement {
     Bool IsDeadReckoning;
     Int32 WaypointIndex;
     Int32 WaypointCount;
-    RTPosition Waypoints[RUNTIME_MOVEMENT_MAX_WAYPOINT_COUNT];
+    RTPosition Waypoints[RUNTIME_MOVEMENT_MAX_WAYPOINT_COUNT]; // TODO: Add support for dynamic waypoint speeds
     RTPosition PositionBegin;
     RTPosition PositionCurrent;
     RTPosition PositionEnd;

@@ -114,17 +114,32 @@ Void ServerLoadScriptData(
     if (!File) return;
 
     Char ScriptDirective[32] = { 0 };
-    Char ScriptFileName[256] = { 0 };
+    Char Argument1[256] = { 0 };
+    Char Argument2[256] = { 0 };
 
-    while (fscanf(File, "%31s %255s", ScriptDirective, ScriptFileName) == 2) {
-        CString ScriptFilePath = PathCombineNoAlloc(Config.WorldSvr.ScriptDataPath, ScriptFileName);
-        if (!FileExists(ScriptFilePath)) {
-            Error("Error loading ScriptRegistry");
-            break;
-        }
-
+    while (fscanf(File, "%31s %255s", ScriptDirective, Argument1) == 2) {
         if (strcmp(ScriptDirective, "AddNetworkScript") == 0) {
+            CString ScriptFilePath = PathCombineNoAlloc(Config.WorldSvr.ScriptDataPath, Argument1);
+            if (!FileExists(ScriptFilePath)) {
+                Error("Error loading ScriptRegistry");
+                break;
+            }
+
             ServerSocketLoadScript(Context->Server, Context->ClientSocket, ScriptFilePath);
+        }
+        else if (strcmp(ScriptDirective, "AddItemScript") == 0) {
+            fscanf(File, " %255s", Argument2);
+            UInt64 ItemID = 0;
+            ParseUInt64(Argument1, &ItemID);
+
+            CString ScriptFilePath = PathCombineNoAlloc(Config.WorldSvr.ScriptDataPath, Argument2);
+            if (!FileExists(ScriptFilePath)) {
+                Error("Error loading ScriptRegistry");
+                break;
+            }
+
+            RTScriptRef Script = RTScriptManagerLoadScript(Context->Runtime->ScriptManager, ScriptFilePath);
+            DictionaryInsert(Context->ItemScriptRegistry, &ItemID, &Script, sizeof(RTScriptRef));
         }
         else if (strcmp(ScriptDirective, "AddRuntimeScript") == 0) {
             Error("AddRuntimeScript is not supported yet!");

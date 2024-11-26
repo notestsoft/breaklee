@@ -2,6 +2,40 @@
 #include "SkillSlot.h"
 #include "Runtime.h"
 
+Int32 RTCharacterGetEmptySkillSlotIndex(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+	Int32 SkillSlotIndex = -1;
+	Int32 SkillSlotIndices[RUNTIME_CHARACTER_MAX_SKILL_SLOT_COUNT] = { 0 };
+	Int32 SkillSlotOffset = 0;
+	Int32 MaxSkillSlotIndex = -1;
+
+	for (Int32 Index = 0; Index < Character->Data.SkillSlotInfo.Info.SlotCount; Index += 1) {
+		SkillSlotIndices[SkillSlotOffset++] = Character->Data.SkillSlotInfo.Slots[Index].Index;
+		MaxSkillSlotIndex = MAX(MaxSkillSlotIndex, Character->Data.SkillSlotInfo.Slots[Index].Index);
+	}
+
+	// Quick and dirty bubble sort
+	for (Int32 i = 0; i < SkillSlotOffset - 1; i++) {
+		for (Int32 j = 0; j < SkillSlotOffset - i - 1; j++) {
+			if (SkillSlotIndices[j] > SkillSlotIndices[j + 1]) {
+				UInt16 temp = SkillSlotIndices[j];
+				SkillSlotIndices[j] = SkillSlotIndices[j + 1];
+				SkillSlotIndices[j + 1] = temp;
+			}
+		}
+	}
+
+	for (Int32 Index = 0; Index < MAX(0, Character->Data.SkillSlotInfo.Info.SlotCount - 1); Index += 1) {
+		if (ABS(SkillSlotIndices[Index] - SkillSlotIndices[Index + 1]) > 1) {
+			return SkillSlotIndices[Index] + 1;
+		}
+	}
+
+	return MaxSkillSlotIndex + 1;
+}
+
 // TODO: Add check for slot count limit based on skill rank!!
 RTSkillSlotRef RTCharacterAddSkillSlot(
 	RTRuntimeRef Runtime,

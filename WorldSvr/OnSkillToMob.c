@@ -34,7 +34,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 
 	// TODO: Calculate timing of combo skill
 
-	if (Packet->TargetCount < 1 || (Packet->TargetCount > 1 && !SkillData->Multi)) goto error;
+	if (Packet->TargetCount < 1) goto error;
 
 	Int32 RequiredMP = RTCharacterCalculateRequiredMP(
 		Runtime,
@@ -90,7 +90,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 		TargetResponse->EntityIDType = Target->EntityIDType;
 
 		RTMobRef Mob = RTWorldContextGetMob(World, Target->Entity);
-		if (!Mob || Mob->IsDead) {
+		if (!Mob || Mob->IsDead || Index >= SkillData->MaxTarget) {
 			TargetResponse->AttackType = RUNTIME_ATTACK_TYPE_MISS;
 			continue;
 		}

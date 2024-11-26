@@ -169,6 +169,8 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     ServerContext.Runtime->Config.NewbieSupportTimeout = Config.WorldSvr.NewbieSupportTimeout;
     ServerContext.Runtime->Config.MinHonorPoint = Config.Environment.MinHonorPoint;
     ServerContext.Runtime->Config.MaxHonorPoint = Config.Environment.MaxHonorPoint;
+    ServerContext.Runtime->Config.ScriptFilePath = Config.WorldSvr.ScriptDataPath;
+    ServerContext.ItemScriptRegistry = IndexDictionaryCreate(Allocator, 8);
 
     IPCNodeID NodeID = kIPCNodeIDNull;
     NodeID.Group = Config.WorldSvr.GroupIndex;
@@ -262,6 +264,14 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     ServerLoadRuntimeData(Config, &ServerContext);
     ServerLoadScriptData(Config, &ServerContext);
     ServerRun(Server);
+
+    DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(ServerContext.ItemScriptRegistry);
+    while (Iterator.Key) {
+        RTScriptRef Script = (RTScriptRef)DictionaryLookup(ServerContext.ItemScriptRegistry, Iterator.Key);
+        RTScriptManagerUnloadScript(ServerContext.Runtime->ScriptManager, Script);
+        Iterator = DictionaryKeyIteratorNext(Iterator);
+    }
+
     RTRuntimeDestroy(ServerContext.Runtime);
 
     return EXIT_SUCCESS;

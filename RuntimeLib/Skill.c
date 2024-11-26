@@ -64,7 +64,7 @@ Bool RTCheckSkillTargetDistance(
 	};
 
 	Int32 ErrorTolerance = 2;
-	Int32 MaxDistance = (Skill->RangeType == RUNTIME_SKILL_RANGE_TYPE_RECT) ? Skill->Range - 1 : Skill->Reach;
+	Int32 MaxDistance = (Skill->RangeType == RUNTIME_SKILL_RANGE_TYPE_RECT) ? Skill->Range - 1 : Skill->MaxReach;
 	MaxDistance += ErrorTolerance;
 
 	for (Int32 Index = 0; Index < 9; Index++) {

@@ -3,6 +3,7 @@
 #include "Runtime.h"
 #include "NotificationProtocol.h"
 #include "NotificationManager.h"
+#include "WorldManager.h"
 
 Int32 lua_RTCharacterSetBattleRank(lua_State* State) {
     lua_getfield(State, 1, "_Runtime");
@@ -312,6 +313,77 @@ Int32 lua_RTCharacterSpawnObject(lua_State* State) {
     return 0;
 }
 
+Int32 lua_RTCharacterSpawnMob(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_Integer MobSpeciesIndex = luaL_checkinteger(State, 2);
+    lua_Integer X = luaL_checkinteger(State, 3);
+    lua_Integer Y = luaL_checkinteger(State, 4);
+    lua_Integer Interval = luaL_checkinteger(State, 5);
+    lua_Integer Count = luaL_checkinteger(State, 6);
+    lua_Integer MobPatternIndex = luaL_checkinteger(State, 7);
+    CString MobScriptFileName = luaL_checkstring(State, 8);
+    lua_Integer Delay = luaL_checkinteger(State, 9);
+
+    if (X < 0 || Y < 0) {
+        X = Character->Movement.PositionCurrent.X;
+        Y = Character->Movement.PositionCurrent.Y;
+    }
+
+    RTScriptRef MobScript = NULL;
+    if (strlen(MobScriptFileName) > 0) {
+        CString MobScriptFilePath = PathCombineNoAlloc(Runtime->Config.ScriptFilePath, MobScriptFileName);
+        MobScript = RTScriptManagerLoadScript(Runtime->ScriptManager, MobScriptFilePath);
+    }
+
+    RTWorldCreateMob(
+        Runtime,
+        RTRuntimeGetWorldByCharacter(Runtime, Character),
+        NULL,
+        0,
+        MobSpeciesIndex,
+        X,
+        Y,
+        0,
+        0,
+        Interval,
+        Count,
+        MobPatternIndex,
+        MobScript,
+        Delay
+    );
+
+    return 0;
+}
+
+Int32 lua_RTCharacterAddSkillSlot(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_Integer SkillIndex = luaL_checkinteger(State, 2);
+    lua_Integer SkillLevel = luaL_checkinteger(State, 3);
+    lua_Integer SkillSlotIndex = luaL_checkinteger(State, 4);
+
+    if (SkillSlotIndex < 0) {
+        SkillSlotIndex = RTCharacterGetEmptySkillSlotIndex(Runtime, Character);
+    }
+
+    RTCharacterAddSkillSlot(Runtime, Character, SkillIndex, SkillLevel, SkillSlotIndex);
+
+    return 0;
+}
+
 Void RTScriptBindCharacterAPI(
 	RTScriptRef Script
 ) {
@@ -338,6 +410,8 @@ Void RTScriptBindCharacterAPI(
         "ApplyDamage", lua_RTCharacterApplyDamage,
         "DisconnectWorld", lua_RTCharacterDisconnectWorld,
         "SpawnObject", lua_RTCharacterSpawnObject,
+        "SpawnMob", lua_RTCharacterSpawnMob,
+        "AddSkillSlot", lua_RTCharacterAddSkillSlot,
         NULL
     );
 }

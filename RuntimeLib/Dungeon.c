@@ -79,6 +79,7 @@ Bool RTDungeonStart(
     assert(DungeonData);
 
     WorldContext->PatternPartIndex = -1;
+    WorldContext->DungeonStartTimestamp = GetTimestampMs();
     WorldContext->DungeonTimeout = GetTimestampMs() + DungeonData->MissionTimeout * 1000;
     WorldContext->TimerIndex = -1;
     WorldContext->TimerTimeout = UINT64_MAX;

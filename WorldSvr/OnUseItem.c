@@ -18,31 +18,39 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM) {
 		RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
 		if (!ItemData) goto error;
 
-		if (Character->Data.Info.Level < ItemData->MinLevel) goto error;
-
-		PacketLogBytes(
-			Socket->ProtocolIdentifier,
-			Socket->ProtocolVersion,
-			Socket->ProtocolExtension,
-			Packet
-		);
-
-		Info("Use Item ItemType: %d", ItemData->ItemType);
-		// TODO: Check if it is a general option of an item that it been consumed from the inventory
-		// TODO: CHeck if Packet->Data length is matching the expected payload length
-
-		#define RUNTIME_ITEM_PROCEDURE(__NAME__, __TYPE__, __INTERNAL__)	\
-		if (ItemData->ItemType == __TYPE__) {								\
-		if ((__INTERNAL__)) goto error;										\
-			Response->Result = __NAME__(									\
-				Runtime,													\
-				Character,													\
-				ItemSlot,													\
-				ItemData,													\
-				&Packet->Data[0]										    \
-			);																\
+		Index ItemScriptKey = ItemSlot->Item.Serial & RUNTIME_ITEM_MASK_INDEX;
+		RTScriptRef ItemScript = *(RTScriptRef*)DictionaryLookup(Context->ItemScriptRegistry, &ItemScriptKey);
+		if (ItemScript) {
+			Response->Result = S2C_DATA_USE_ITEM_RESULT_SUCCESS;
+			RTScriptCallOnEvent(ItemScript, Runtime, Character);
 		}
-		#include <RuntimeLib/ItemProcDefinition.h>
+		else {
+			if (Character->Data.Info.Level < ItemData->MinLevel) goto error;
+
+			PacketLogBytes(
+				Socket->ProtocolIdentifier,
+				Socket->ProtocolVersion,
+				Socket->ProtocolExtension,
+				Packet
+			);
+
+			Info("Use Item ItemType: %d", ItemData->ItemType);
+			// TODO: Check if it is a general option of an item that it been consumed from the inventory
+			// TODO: CHeck if Packet->Data length is matching the expected payload length
+
+			#define RUNTIME_ITEM_PROCEDURE(__NAME__, __TYPE__, __INTERNAL__)	\
+			if (ItemData->ItemType == __TYPE__) {								\
+			if ((__INTERNAL__)) goto error;										\
+				Response->Result = __NAME__(									\
+					Runtime,													\
+					Character,													\
+					ItemSlot,													\
+					ItemData,													\
+					&Packet->Data[0]										    \
+				);																\
+			}
+			#include <RuntimeLib/ItemProcDefinition.h>
+		}
 	}
 
 	SocketSend(Socket, Connection, Response);

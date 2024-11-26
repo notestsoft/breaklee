@@ -2,15 +2,19 @@
 #include "Mob.h"
 #include "Runtime.h"
 #include "Script.h"
+#include "NotificationManager.h"
+#include "NotificationProtocol.h"
 #include "WorldAPI.h"
 
 static Int32 _DebugWorldSpawnMob(lua_State* State);
 static Int32 _DebugWorldDespawnMob(lua_State* State);
 static Int32 _DebugWorldSpawnItem(lua_State* State);
+static Int32 _DebugMobSetPosition(lua_State* State);
 
 struct _RTScript {
-    Char FilePath[MAX_PATH];
     Index PoolIndex;
+    Char FilePath[MAX_PATH];
+    FileEventRef FileEvent;
     lua_State* State;
 };
 
@@ -69,6 +73,7 @@ Void RTScriptManagerDestroy(
     while (Iterator.Key) {
         Index MemoryPoolIndex = *(Index*)Iterator.Value;
         RTScriptRef Script = MemoryPoolFetch(ScriptManager->ScriptPool, MemoryPoolIndex);
+        if (Script->FileEvent) FileEventDestroy(Script->FileEvent);
         lua_close(Script->State);
         Iterator = DictionaryKeyIteratorNext(Iterator);
     }
@@ -76,6 +81,52 @@ Void RTScriptManagerDestroy(
     DictionaryDestroy(ScriptManager->ScriptTable);
     MemoryPoolDestroy(ScriptManager->ScriptPool);
     AllocatorDeallocate(ScriptManager->Allocator, ScriptManager);
+}
+
+Void _OnScriptFileChanged(
+    CString FileName,
+    Void* UserData
+) {
+    RTScriptRef Script = (RTScriptRef)UserData;
+    lua_State* OldState = Script->State;
+    lua_State* NewState = luaL_newstate();
+    if (!NewState) {
+        Error("Lua: State creation failed!");
+        return;
+    }
+
+    Script->State = NewState;
+
+    luaL_openlibs(Script->State);
+    RTScriptBindMobAPI(Script);
+    RTScriptBindCharacterAPI(Script);
+    RTScriptBindWorldAPI(Script);
+
+    lua_pushcfunction(Script->State, _DebugWorldSpawnMob);
+    lua_setglobal(Script->State, "world_spawn_mob");
+
+    lua_pushcfunction(Script->State, _DebugWorldDespawnMob);
+    lua_setglobal(Script->State, "world_despawn_mob");
+
+    lua_pushcfunction(Script->State, _DebugWorldSpawnItem);
+    lua_setglobal(Script->State, "world_spawn_item");
+
+    lua_pushcfunction(Script->State, _DebugMobSetPosition);
+    lua_setglobal(Script->State, "mob_set_pos");
+
+    if (luaL_loadfile(Script->State, Script->FilePath) != LUA_OK) {
+        Error("Lua: %s", lua_tostring(Script->State, -1));
+        lua_close(Script->State);
+        Script->State = OldState;
+        return;
+    }
+
+    if (lua_pcall(Script->State, 0, 0, 0) != LUA_OK) {
+        Error("Lua: %s", lua_tostring(Script->State, -1));
+        lua_close(Script->State);
+        Script->State = OldState;
+        return;
+    }
 }
 
 RTScriptRef RTScriptManagerLoadScript(
@@ -109,8 +160,13 @@ RTScriptRef RTScriptManagerLoadScript(
     lua_pushcfunction(Script->State, _DebugWorldSpawnItem);
     lua_setglobal(Script->State, "world_spawn_item");
 
+    lua_pushcfunction(Script->State, _DebugMobSetPosition);
+    lua_setglobal(Script->State, "mob_set_pos");
+
     if (luaL_loadfile(Script->State, FilePath) != LUA_OK) Fatal("Lua: %s", lua_tostring(Script->State, -1));
     if (lua_pcall(Script->State, 0, 0, 0) != LUA_OK) Fatal("Lua: %s", lua_tostring(Script->State, -1));
+
+    Script->FileEvent = FileEventCreate(Script->FilePath, _OnScriptFileChanged, Script);
 
     return Script;
 }
@@ -119,6 +175,7 @@ Void RTScriptManagerUnloadScript(
     RTScriptManagerRef ScriptManager,
     RTScriptRef Script
 ) {
+    if (Script->FileEvent) FileEventDestroy(Script->FileEvent); 
     lua_close(Script->State);
     DictionaryRemove(ScriptManager->ScriptTable, Script->FilePath);
     MemoryPoolRelease(ScriptManager->ScriptPool, Script->PoolIndex);
@@ -331,6 +388,53 @@ static Int32 _DebugWorldSpawnItem(
     Drop.ItemID.Serial = ItemID;
     Drop.ItemOptions = ItemOptions;
     RTWorldSpawnItem(Runtime, WorldContext, *(RTEntityID*)(&EntityID), X, Y, Drop);
+
+    return 0;
+}
+
+static Int32 _DebugMobSetPosition(
+    lua_State* State
+) {
+    RTRuntimeRef Runtime = lua_touserdata(State, 1);
+    RTMobRef Mob = lua_touserdata(State, 2);
+    Int32 X = (Int32)lua_tointeger(State, 3);
+    Int32 Y = (Int32)lua_tointeger(State, 4);
+
+    if (Mob->Movement.IsMoving) {
+        RTMovementEndDeadReckoning(Runtime, &Mob->Movement);
+
+        if (Mob->IsChasing) {
+            NOTIFICATION_DATA_MOB_CHASE_END* Notification = RTNotificationInit(MOB_CHASE_END);
+            Notification->Entity = Mob->ID;
+            Notification->PositionCurrentX = Mob->Movement.PositionCurrent.X;
+            Notification->PositionCurrentY = Mob->Movement.PositionCurrent.Y;
+            RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
+        }
+        else {
+            NOTIFICATION_DATA_MOB_MOVE_END* Notification = RTNotificationInit(MOB_MOVE_END);
+            Notification->Entity = Mob->ID;
+            Notification->PositionCurrentX = Mob->Movement.PositionCurrent.X;
+            Notification->PositionCurrentY = Mob->Movement.PositionCurrent.Y;
+            RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
+        }
+    }
+
+    RTMovementSetSpeed(Runtime, &Mob->Movement, (Int32)Mob->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED]);
+    Mob->Movement.PositionEnd.X = X;
+    Mob->Movement.PositionEnd.Y = Y;
+
+    Bool PathFound = RTMovementFindPath(
+        Runtime,
+        Mob->Movement.WorldContext,
+        &Mob->Movement
+    );
+
+    if (!PathFound) {
+        Mob->Movement.PositionEnd.X = Mob->Movement.Waypoints[1].X;
+        Mob->Movement.PositionEnd.Y = Mob->Movement.Waypoints[1].Y;
+    }
+
+    RTMovementStartDeadReckoning(Runtime, &Mob->Movement);
 
     return 0;
 }

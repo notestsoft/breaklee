@@ -10,7 +10,6 @@ CLIENT_PROCEDURE_BINDING(GM_COMMAND) {
     if (Character->Data.StyleInfo.Nation != 3) goto error;
 
     if (Packet->Command == 4) {
-
     }
 
     if (Packet->GmCommand == 7) {

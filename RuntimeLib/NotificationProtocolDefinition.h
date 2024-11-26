@@ -574,6 +574,33 @@ NOTIFICATION_PROTOCOL(BUFF_BY_OBJECT, 935,
     UInt8 TargetCount;
 )
 
+NOTIFICATION_PROTOCOL_STRUCT(MOB_PATTERN_ATTACK_TARGET,
+    Int32 TargetEntityType;
+    UInt32 TargetIndex;
+    UInt8 IsDead;
+    UInt8 AttackType;
+    Int32 AppliedDamage;
+    Int64 CurrentHP;
+    Int64 CurrentShield;
+    Int32 Unknown1;
+    Int32 AdditionalDamage;
+    Int32 BfxIndex;
+    UInt32 BfxDuration;
+    UInt8 Data[0];
+)
+
+NOTIFICATION_PROTOCOL(MOB_PATTERN_ATTACK, 938,
+    UInt32 SourceIndex;
+    Int32 AttackIndex;
+    Int32 X;
+    Int32 Y;
+    UInt8 Unknown1;
+    Int64 CurrentHP;
+    Int64 ReflectDamage;
+    Int64 Unknown3;
+    Int16 TargetCount;
+)
+
 NOTIFICATION_PROTOCOL_STRUCT(MOB_DESPAWN_BY_LINK_MOB_INDEX,
     RTEntityID MobID;
     Int16 Reason;

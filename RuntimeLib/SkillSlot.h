@@ -24,6 +24,11 @@ struct _RTCharacterSkillSlotInfo {
 
 #pragma pack(pop)
 
+Int32 RTCharacterGetEmptySkillSlotIndex(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
 RTSkillSlotRef RTCharacterAddSkillSlot(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,

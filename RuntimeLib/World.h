@@ -100,6 +100,7 @@ struct _RTWorldContext {
     struct _RTQuestUnitMobData MissionMobs[RUNTIME_MAX_QUEST_COUNTER_COUNT];
     struct _RTWorldChunk Chunks[RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT];
     RTWorldTile Tiles[RUNTIME_WORLD_SIZE * RUNTIME_WORLD_SIZE];
+    Timestamp DungeonStartTimestamp;
     Timestamp DungeonTimeout;
     Timestamp PauseTimestamp;
     Timestamp NextItemUpdateTimestamp;

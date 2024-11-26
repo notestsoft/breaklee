@@ -372,8 +372,8 @@ Void RTWorldChunkBroadcastMobsToCharacter(
 
         NOTIFICATION_DATA_MOBS_SPAWN_INDEX* NotificationMob = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_MOBS_SPAWN_INDEX);
         NotificationMob->Entity = MobEntity;
-        NotificationMob->PositionBeginX = Mob->Movement.PositionBegin.X;
-        NotificationMob->PositionBeginY = Mob->Movement.PositionBegin.Y;
+        NotificationMob->PositionBeginX = Mob->Movement.PositionCurrent.X;
+        NotificationMob->PositionBeginY = Mob->Movement.PositionCurrent.Y;
         NotificationMob->PositionEndX = Mob->Movement.PositionEnd.X;
         NotificationMob->PositionEndY = Mob->Movement.PositionEnd.Y;
         NotificationMob->MobSpeciesIndex = Mob->SpeciesData->MobSpeciesIndex;

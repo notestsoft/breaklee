@@ -23,6 +23,7 @@ struct _ServerContext {
     ServerConfig Config;
     RTRuntimeRef Runtime;
     Timestamp UserListBroadcastTimestamp;
+    DictionaryRef ItemScriptRegistry;
 };
 typedef struct _ServerContext* ServerContextRef;
 

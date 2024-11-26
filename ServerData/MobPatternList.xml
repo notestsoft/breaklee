@@ -1,6 +1,6 @@
 <MobPatternList>
 	<MobPattern Index="1" FilePath="Mob/Pattern/MobPattern_1.xml"/>
-	<MobPattern Index="2" FilePath="Mob/Pattern/MobPattern_2.xml"/>
+	<MobPattern Index="2" FilePath="Mob/Pattern/MobPattern_XXX.xml"/>
 	<MobPattern Index="3" FilePath="Mob/Pattern/MobPattern_3.xml"/>
 	<MobPattern Index="4" FilePath="Mob/Pattern/MobPattern_4.xml"/>
 	<MobPattern Index="5" FilePath="Mob/Pattern/MobPattern_5.xml"/>

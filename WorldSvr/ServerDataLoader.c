@@ -21,7 +21,8 @@ struct _ArchiveItemData {
     Int32 MinOverlordLevel;
     Int32 LimitClass;
     Int32 MinHonorRank;
-    UInt8 Unknown1[20];
+    Int32 SellPrice1;
+    UInt8 Unknown1[16];
     Float32 InventoryRotation1;
     UInt8 UnknownB;
     Int32 BuyPrice;
@@ -43,7 +44,7 @@ struct _ArchiveItemData {
     Int16 CooltimeID;
     Int16 MaxStackSize;
     Int32 ExtendedOptions[6];
-    Int32 Unknown6;
+    Int32 MinMythLevel;
 };
 
 struct _ArchiveMobData {
@@ -1366,8 +1367,8 @@ Bool ServerLoadSkillData(
         if (AttributeIterator) {
             if (!ParseAttributeInt32(Archive, AttributeIterator->Index, "target", &SkillData->Target)) goto error;
             if (!ParseAttributeInt32(Archive, AttributeIterator->Index, "max_target", &SkillData->MaxTarget)) goto error;
-            if (!ParseAttributeInt32(Archive, AttributeIterator->Index, "reach", &SkillData->Reach)) goto error;
-            if (!ParseAttributeInt32(Archive, AttributeIterator->Index, "mreach", &SkillData->MReach)) goto error;
+            if (!ParseAttributeInt32(Archive, AttributeIterator->Index, "reach", &SkillData->MaxReach)) goto error;
+            if (!ParseAttributeInt32(Archive, AttributeIterator->Index, "mreach", &SkillData->MinReach)) goto error;
             if (!ParseAttributeInt32(Archive, AttributeIterator->Index, "range", &SkillData->Range)) goto error;
             if (!ParseAttributeInt32(Archive, AttributeIterator->Index, "range_type", &SkillData->RangeType)) goto error;
 

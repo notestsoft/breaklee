@@ -687,3 +687,20 @@ RTBattleResult RTCalculateSkillAttackResult(
 
 	return Result;
 }
+
+// NOTE: Shield is only updating its value if attack type is RUNTIME_ATTACK_TYPE_MISS
+RTBattleResult RTCalculateMobAttackResult(
+	RTRuntimeRef Runtime,
+	RTWorldContextRef WorldContext,
+	RTDataMobAttackDataRef AttackData,
+	RTDataMobSkillRef SkillData,
+	Int32 PhysicalAttackMin,
+	Int32 PhysicalAttackMax,
+	RTBattleAttributesRef Attacker,
+	RTBattleAttributesRef Defender,
+	RTMovementRef AttackerMovement,
+	RTMovementRef DefenderMovement
+) {
+	RTBattleResult Result = { 0 };
+	return Result;
+}

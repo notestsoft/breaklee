@@ -112,8 +112,8 @@ enum {
 };
 
 enum {
-	RUNTIME_SKILL_RANGE_TYPE_RECT,
-	RUNTIME_SKILL_RANGE_TYPE_LINE,
+	RUNTIME_SKILL_RANGE_TYPE_RECT = 0,
+	RUNTIME_SKILL_RANGE_TYPE_LINE = 1,
 };
 
 enum {
@@ -171,8 +171,8 @@ struct _RTCharacterSkillData {
 	Int32 Element;
 	Int32 Target;
 	Int32 MaxTarget;
-	Int32 Reach;
-	Int32 MReach;
+	Int32 MaxReach;
+	Int32 MinReach;
 	Int32 Range;
 	Int32 RangeType;
 	Int32 GripCalc;

@@ -279,6 +279,12 @@ Bool RTMobIsImmune(
 	RTMobRef Mob
 );
 
+RTEntityID RTMobGetMaxAggroTarget(
+	RTRuntimeRef Runtime,
+	RTWorldContextRef WorldContext,
+	RTMobRef Mob
+);
+
 Void RTMobOnEvent(
 	RTRuntimeRef Runtime,
 	RTWorldContextRef World,

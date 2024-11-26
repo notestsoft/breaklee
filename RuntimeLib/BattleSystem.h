@@ -460,4 +460,17 @@ RTBattleResult RTCalculateSkillAttackResult(
 	RTMovementRef DefenderMovement
 );
 
+RTBattleResult RTCalculateMobAttackResult(
+	RTRuntimeRef Runtime,
+	RTWorldContextRef WorldContext,
+	RTDataMobAttackDataRef AttackData,
+	RTDataMobSkillRef SkillData,
+	Int32 PhysicalAttackMin,
+	Int32 PhysicalAttackMax,
+	RTBattleAttributesRef Attacker,
+	RTBattleAttributesRef Defender,
+	RTMovementRef AttackerMovement,
+	RTMovementRef DefenderMovement
+);
+
 EXTERN_C_END
