@@ -18,7 +18,7 @@ CLIENT_PROCEDURE_BINDING(AUCTION_HOUSE_REGISTER_ITEM) {
     RTItemDataRef FirstItemData = (FirstItemSlot) ? RTRuntimeGetItemDataByIndex(Runtime, FirstItemSlot->Item.ID) : NULL;
     if (!FirstItemSlot) goto error;
 
-    for (Int32 Index = 1; Index < Packet->ItemCount; Index += 1) {
+    for (Int Index = 1; Index < Packet->ItemCount; Index += 1) {
         RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index]);
         if (FirstItemSlot->Item.Serial != ItemSlot->Item.Serial ||
             FirstItemSlot->ItemOptions != ItemSlot->ItemOptions) goto error;
@@ -48,7 +48,7 @@ CLIENT_PROCEDURE_BINDING(AUCTION_HOUSE_REGISTER_ITEM) {
     Request->CategoryIndex[4] = 0; // TODO: Add special category handling for category 4 and 5 based on item upgrade level and epic option
     Request->ExpirationTime = Context->Config.Environment.AuctionExpirationTime;
 
-    for (Int32 Index = 0; Index < Packet->ItemCount; Index += 1) {
+    for (Int Index = 0; Index < Packet->ItemCount; Index += 1) {
         struct _RTItemSlot ItemSlot = { 0 };
         RTInventoryRemoveSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index], &ItemSlot);
         IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &ItemSlot, sizeof(struct _RTItemSlot));
@@ -123,14 +123,14 @@ CLIENT_PROCEDURE_BINDING(AUCTION_HOUSE_UPDATE_ITEM) {
         RTItemDataRef FirstItemData = (FirstItemSlot) ? RTRuntimeGetItemDataByIndex(Runtime, FirstItemSlot->Item.ID) : NULL;
         if (!FirstItemSlot || !FirstItemData) goto error;
 
-        for (Int32 Index = 1; Index < Packet->InventorySlotCount; Index += 1) {
+        for (Int Index = 1; Index < Packet->InventorySlotCount; Index += 1) {
             RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index]);
             if (FirstItemSlot->Item.Serial != ItemSlot->Item.Serial ||
                 FirstItemSlot->ItemOptions != ItemSlot->ItemOptions) goto error;
         }
 
         RequestData->InventorySlotCount = Packet->InventorySlotCount;
-        for (Int32 Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
+        for (Int Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
             struct _RTItemSlot ItemSlot = { 0 };
             RTInventoryRemoveSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index], &ItemSlot);
             IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &ItemSlot, sizeof(struct _RTItemSlot));
@@ -158,7 +158,7 @@ IPC_PROCEDURE_BINDING(D2W, AUCTION_UPDATE_ITEM) {
 
     if (Packet->Result == 0 && Packet->IsDecrease) {
         IPC_D2W_DATA_AUCTION_UPDATE_ITEM_DECREASE* PacketPayload = (IPC_D2W_DATA_AUCTION_UPDATE_ITEM_DECREASE*)&Packet->Data[0];
-        for (Int32 Index = 0; Index < PacketPayload->InventorySlotCount; Index += 1) {
+        for (Int Index = 0; Index < PacketPayload->InventorySlotCount; Index += 1) {
             PacketPayload->ItemSlot.SlotIndex = PacketPayload->InventorySlotIndex[Index];
             if (!RTInventorySetSlot(Runtime, &Character->Data.InventoryInfo, &PacketPayload->ItemSlot)) {
                 PacketPayload->ItemSlot.SlotIndex = RTInventoryGetNextFreeSlotIndex(Runtime, &Character->Data.TemporaryInventoryInfo);
@@ -205,7 +205,7 @@ IPC_PROCEDURE_BINDING(D2W, AUCTION_UNREGISTER_ITEM) {
     if (!ClientConnection || !Character) return;
 
     if (Packet->Result == 0) {
-        for (Int32 Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
+        for (Int Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
             Packet->ItemSlot.SlotIndex = Packet->InventorySlotIndex[Index];
             if (!RTInventorySetSlot(Runtime, &Character->Data.InventoryInfo, &Packet->ItemSlot)) {
                 Packet->ItemSlot.SlotIndex = RTInventoryGetNextFreeSlotIndex(Runtime, &Character->Data.TemporaryInventoryInfo);
@@ -311,7 +311,7 @@ IPC_PROCEDURE_BINDING(D2W, AUCTION_BUY_ITEM) {
         Character->Data.AccountInfo.ForceGem -= TotalPrice;
     }
     
-    for (Int32 Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
+    for (Int Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
         struct _RTItemSlot ItemSlot = {
             .Item.Serial = Packet->ItemID,
             .ItemOptions = Packet->ItemOptions,

@@ -7,7 +7,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
 	RTPartyMemberInfoRef Source = &Packet->Source;
 	RTPartyMemberInfoRef Target = &Packet->Target;
 
-	Index CharacterIndex = Target->CharacterIndex;
+	UInt32 CharacterIndex = Target->CharacterIndex;
 	Bool IsTargetInParty = DictionaryLookup(Context->PartyManager->CharacterToPartyEntity, &CharacterIndex) != NULL;
 	if (IsTargetInParty) goto error;
 
@@ -25,9 +25,9 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE) {
 
 	if (Party->MemberCount >= RUNTIME_PARTY_MAX_MEMBER_COUNT) goto error;
 
-	Index PartyInvitationPoolIndex = 0;
+	Int PartyInvitationPoolIndex = 0;
 	RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolReserveNext(Context->PartyManager->PartyInvitationPool, &PartyInvitationPoolIndex);
-	DictionaryInsert(Context->PartyManager->CharacterToPartyInvite, &CharacterIndex, &PartyInvitationPoolIndex, sizeof(Index));
+	DictionaryInsert(Context->PartyManager->CharacterToPartyInvite, &CharacterIndex, &PartyInvitationPoolIndex, sizeof(Int));
 
 	Invitation->InviterCharacterIndex = Packet->Source.CharacterIndex;
 	Invitation->PartyID = Party->ID;
@@ -65,8 +65,8 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_ACK) {
 	RTPartyMemberInfoRef Source = &Packet->Source;
 	RTPartyMemberInfoRef Target = &Packet->Target;
 
-	Index CharacterIndex = Target->CharacterIndex;
-	Index* PartyInvitationPoolIndex = DictionaryLookup(Context->PartyManager->CharacterToPartyInvite, &CharacterIndex);
+	UInt32 CharacterIndex = Target->CharacterIndex;
+	Int* PartyInvitationPoolIndex = DictionaryLookup(Context->PartyManager->CharacterToPartyInvite, &CharacterIndex);
 	if (!PartyInvitationPoolIndex) goto error;
 
 	RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolFetch(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);
@@ -103,7 +103,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_ACK) {
 	Notification->Header.Target.Type = IPC_TYPE_WORLD;
 	Notification->MemberCount = Party->MemberCount;
 
-	for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
+	for (Int Index = 0; Index < Party->MemberCount; Index += 1) {
 		memcpy(&Notification->MemberInfo[Index], &Party->Members[Index], sizeof(struct _RTPartyMemberInfo));
 	}
 

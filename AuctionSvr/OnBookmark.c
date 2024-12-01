@@ -30,7 +30,7 @@ IPC_PROCEDURE_BINDING(D2A, GET_BOOKMARK) {
 	Response->Result = Packet->Result;
 	Response->Count = Packet->Count;
 
-	for (Int32 Index = 0; Index < Packet->Count; Index += 1) {
+	for (Int Index = 0; Index < Packet->Count; Index += 1) {
 		S2C_DATA_GET_BOOKMARK_SLOT* ResponseSlot = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_GET_BOOKMARK_SLOT);
 		ResponseSlot->SlotIndex = Packet->Slots[Index].SlotIndex;
 		ResponseSlot->CategoryIndex[0] = Packet->Slots[Index].CategoryIndex[0];

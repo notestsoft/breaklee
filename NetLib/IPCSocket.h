@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base.h"
+#include "IPCNodeID.h"
 #include "IPCPacketBuffer.h"
 
 EXTERN_C_BEGIN
@@ -35,20 +36,9 @@ enum {
     IPC_ROUTE_TYPE_BROADCAST = 1,
 };
 
-struct _IPCNodeID {
-    union {
-        struct { UInt32 Index; UInt16 Group; UInt16 Type; };
-
-        UInt64 Serial;
-    };
-};
-typedef struct _IPCNodeID IPCNodeID;
-
-static const IPCNodeID kIPCNodeIDNull = { 0 };
-
 struct _IPCNodeContext {
     IPCNodeID NodeID;
-    Index ConnectionID;
+    Int ConnectionID;
 };
 typedef struct _IPCNodeContext* IPCNodeContextRef;
 
@@ -58,9 +48,9 @@ struct _IPCPacket {
     UInt16 SubCommand;
     UInt8 RouteType;
     IPCNodeID Source;
-    Index SourceConnectionID;
+    Int SourceConnectionID;
     IPCNodeID Target;
-    Index TargetConnectionID;
+    Int TargetConnectionID;
     // UInt8 Data[0];
 };
 typedef struct _IPCPacket* IPCPacketRef;
@@ -119,7 +109,7 @@ struct _IPCSocket {
     Int32 ReadBufferSize;
     Int32 WriteBufferSize;
     Int32 MaxConnectionCount;
-    Index NextConnectionID;
+    Int NextConnectionID;
     CString Host;
     UInt16 Port;
     Timestamp Timeout;
@@ -137,12 +127,12 @@ struct _IPCSocket {
 
 struct _IPCSocketConnection {
     IPCSocketRef Socket;
-    Index ConnectionPoolIndex;
+    Int ConnectionPoolIndex;
     uv_tcp_t HandleMemory;
     uv_tcp_t* Handle;
     uv_connect_t* ConnectRequest; 
     Char AddressIP[INET6_ADDRSTRLEN];
-    Index ID;
+    Int ID;
     UInt32 Flags;
     IPCPacketBufferRef PacketBuffer;
     MemoryRef RecvBuffer;
@@ -173,7 +163,7 @@ Void IPCSocketDestroy(
 
 Void IPCSocketRegisterCommandCallback(
     IPCSocketRef Socket,
-    Index Command,
+    Int Command,
     IPCSocketCommandCallback Callback
 );
 
@@ -202,13 +192,13 @@ Void IPCSocketDisconnect(
     IPCSocketConnectionRef Connection
 );
 
-Index IPCSocketGetConnectionCount(
+Int IPCSocketGetConnectionCount(
     IPCSocketRef Socket
 );
 
 IPCSocketConnectionRef IPCSocketGetConnection(
     IPCSocketRef Socket,
-    Index ConnectionID
+    Int ConnectionID
 );
 
 IPCSocketConnectionIteratorRef IPCSocketGetConnectionIterator(

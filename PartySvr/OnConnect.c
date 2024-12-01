@@ -4,9 +4,9 @@
 #include "Server.h"
 
 IPC_PROCEDURE_BINDING(W2P, CLIENT_CONNECT) {
-    Index* CharacterWorldServerIndex = DictionaryLookup(Context->CharacterToWorldServer, &Packet->CharacterIndex);
+    Int* CharacterWorldServerIndex = DictionaryLookup(Context->CharacterToWorldServer, &Packet->CharacterIndex);
     if (!CharacterWorldServerIndex) {
-        DictionaryInsert(Context->CharacterToWorldServer, &Packet->CharacterIndex, &Packet->Header.Source.Index, sizeof(Index));
+        DictionaryInsert(Context->CharacterToWorldServer, &Packet->CharacterIndex, &Packet->Header.Source.Index, sizeof(Int));
         CharacterWorldServerIndex = DictionaryLookup(Context->CharacterToWorldServer, &Packet->CharacterIndex);
         assert(CharacterWorldServerIndex);
     }
@@ -31,7 +31,7 @@ IPC_PROCEDURE_BINDING(W2P, CLIENT_CONNECT) {
         Response->WorldServerIndex = Party->WorldServerIndex;
         Response->MemberCount = Party->MemberCount;
 
-        for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
+        for (Int Index = 0; Index < Party->MemberCount; Index += 1) {
             memcpy(&Response->Members[Index], &Party->Members[Index], sizeof(struct _RTPartyMemberInfo));
         }
 
@@ -54,9 +54,9 @@ IPC_PROCEDURE_BINDING(W2P, CLIENT_DISCONNECT) {
     RTPartyRef Party = RTPartyManagerGetPartyByCharacter(Context->PartyManager, Packet->CharacterIndex);
     if (!Party) return;
 
-    Index OnlineMemberCount = 0;
-    for (Index MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {
-        Index CharacterIndex = Party->Members[MemberIndex].CharacterIndex;
+    Int OnlineMemberCount = 0;
+    for (Int MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {
+        UInt32 CharacterIndex = Party->Members[MemberIndex].CharacterIndex;
         if (DictionaryLookup(Context->CharacterToWorldServer, &CharacterIndex)) {
             OnlineMemberCount += 1;
         }

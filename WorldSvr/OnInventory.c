@@ -88,7 +88,7 @@ Bool MoveInventoryItem(
         }
     }
     else if (DestinationStorageType == STORAGE_TYPE_VEHICLE_INVENTORY) {
-        RTItemSlotRef VehicleSlot = RTEquipmentGetSlot(Runtime, &Character->Data.EquipmentInfo, EQUIPMENT_SLOT_INDEX_VEHICLE);
+        RTItemSlotRef VehicleSlot = RTEquipmentGetSlot(Runtime, &Character->Data.EquipmentInfo, RUNTIME_EQUIPMENT_SLOT_INDEX_VEHICLE);
         if (!VehicleSlot) goto error;
 
         RTItemDataRef VehicleData = RTRuntimeGetItemDataByIndex(Runtime, VehicleSlot->Item.ID);
@@ -369,7 +369,7 @@ CLIENT_PROCEDURE_BINDING(SPLIT_INVENTORY) {
     Int64 TotalStackSize = Packet->StackSize * Packet->SplitInventorySlotCount;
     if (ItemStackSize < TotalStackSize) goto error;
 
-    for (Int32 Index = 0; Index < Packet->SplitInventorySlotCount; Index += 1) {
+    for (Int Index = 0; Index < Packet->SplitInventorySlotCount; Index += 1) {
         if (!RTInventoryIsSlotEmpty(Runtime, &Character->Data.InventoryInfo, Packet->SplitInventorySlotIndex[Index])) goto error;
     }
 
@@ -377,7 +377,7 @@ CLIENT_PROCEDURE_BINDING(SPLIT_INVENTORY) {
     TargetSlot.ItemOptions &= ~ItemStackSizeMask;
     TargetSlot.ItemOptions |= Packet->StackSize & ItemStackSizeMask;
 
-    for (Int32 Index = 0; Index < Packet->SplitInventorySlotCount; Index += 1) {
+    for (Int Index = 0; Index < Packet->SplitInventorySlotCount; Index += 1) {
         TargetSlot.SlotIndex = Packet->SplitInventorySlotIndex[Index];
         RTInventorySetSlot(Runtime, &Character->Data.InventoryInfo, &TargetSlot);
     }
@@ -424,7 +424,7 @@ CLIENT_PROCEDURE_BINDING(MERGE_INVENTORY) {
     UInt64 ItemStackSizeMask = RTItemDataGetStackSizeMask(FirstItemData);
     Int64 TotalStackSize = 0;
 
-    for (Int32 Index = 0; Index < Packet->MergeInventorySlotCount; Index += 1) {
+    for (Int Index = 0; Index < Packet->MergeInventorySlotCount; Index += 1) {
         RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->MergeInventorySlotIndex[Index]);
         if (ItemSlot->Item.Serial != FirstItemSlot->Item.Serial) goto error;
         if (ItemSlot->ItemDuration.Serial != FirstItemSlot->ItemDuration.Serial) goto error;
@@ -436,7 +436,7 @@ CLIENT_PROCEDURE_BINDING(MERGE_INVENTORY) {
     C2S_DATA_MERGE_INVENTORY_SLOT_RESULT* ResultInventorySlotIndex = (C2S_DATA_MERGE_INVENTORY_SLOT_RESULT*)&Packet->MergeInventorySlotIndex[Packet->MergeInventorySlotCount];
 
     Int64 ResultStackSize = 0;
-    for (Int32 Index = 0; Index < Packet->ResultInventorySlotCount; Index += 1) {
+    for (Int Index = 0; Index < Packet->ResultInventorySlotCount; Index += 1) {
         C2S_DATA_MERGE_INVENTORY_SLOT_RESULT ResultInventorySlot = ResultInventorySlotIndex[Index];
         if (ResultInventorySlot.StackSize > ItemStackSizeMask) goto error;
 
@@ -449,11 +449,11 @@ CLIENT_PROCEDURE_BINDING(MERGE_INVENTORY) {
 
     struct _RTItemSlot ItemSlot = *FirstItemSlot;
 
-    for (Int32 Index = 0; Index < Packet->MergeInventorySlotCount; Index += 1) {
+    for (Int Index = 0; Index < Packet->MergeInventorySlotCount; Index += 1) {
         RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, Packet->MergeInventorySlotIndex[Index]);
     }
 
-    for (Int32 Index = 0; Index < Packet->ResultInventorySlotCount; Index += 1) {
+    for (Int Index = 0; Index < Packet->ResultInventorySlotCount; Index += 1) {
         C2S_DATA_MERGE_INVENTORY_SLOT_RESULT ResultInventorySlot = ResultInventorySlotIndex[Index];
         ItemSlot.ItemOptions &= ~ItemStackSizeMask;
         ItemSlot.ItemOptions |= ResultInventorySlot.StackSize & ItemStackSizeMask;
@@ -488,22 +488,22 @@ CLIENT_PROCEDURE_BINDING(SORT_INVENTORY) {
 
     Bool InventoryOccupancyMask[RUNTIME_INVENTORY_TOTAL_SIZE] = { 0 };
     memset(InventoryOccupancyMask, 0, sizeof(Bool) * RUNTIME_INVENTORY_TOTAL_SIZE);
-    for (Int32 Index = 0; Index < Character->Data.InventoryInfo.Info.SlotCount; Index += 1) {
+    for (Int Index = 0; Index < Character->Data.InventoryInfo.Info.SlotCount; Index += 1) {
         InventoryOccupancyMask[Character->Data.InventoryInfo.Slots[Index].SlotIndex] = true;
     }
 
-    for (Int32 Index = 0; Index < Packet->Count; Index += 1) {
+    for (Int Index = 0; Index < Packet->Count; Index += 1) {
         InventoryOccupancyMask[Packet->InventorySlots[Index]] = false;
     }
 
-    for (Int32 Index = 0; Index < Packet->Count; Index += 1) {
+    for (Int Index = 0; Index < Packet->Count; Index += 1) {
         Int32 SlotIndex = RTInventoryGetSlotIndex(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlots[Index]);
         if (SlotIndex < 0) goto error;
 
         RTItemSlotRef Slot = &TempInventory->Slots[SlotIndex];
 
         Bool Found = false;
-        for (Int32 SlotIndex = 0; SlotIndex < RUNTIME_INVENTORY_TOTAL_SIZE; SlotIndex += 1) {
+        for (Int SlotIndex = 0; SlotIndex < RUNTIME_INVENTORY_TOTAL_SIZE; SlotIndex += 1) {
             if (!InventoryOccupancyMask[SlotIndex]) {
                 InventoryOccupancyMask[SlotIndex] = true;
                 Slot->SlotIndex = SlotIndex;
@@ -546,7 +546,7 @@ CLIENT_PROCEDURE_BINDING(MOVE_INVENTORY_ITEM_LIST) {
     CSC_DATA_ITEM_SLOT_INDEX* Source = (CSC_DATA_ITEM_SLOT_INDEX*)(&Packet->Data[0]);
     CSC_DATA_ITEM_SLOT_INDEX* Destination = (CSC_DATA_ITEM_SLOT_INDEX*)(&Packet->Data[0] + Packet->ItemCount * sizeof(CSC_DATA_ITEM_SLOT_INDEX));
 
-    for (Int32 Index = 0; Index < Packet->ItemCount; Index += 1) {
+    for (Int Index = 0; Index < Packet->ItemCount; Index += 1) {
         if (Source[Index].StorageType != STORAGE_TYPE_INVENTORY) goto error;
         if (Destination[Index].StorageType != STORAGE_TYPE_INVENTORY) goto error;
 

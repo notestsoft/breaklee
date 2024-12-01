@@ -8,7 +8,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_DATA) {
     RTPartyRef Party = RTPartyManagerGetPartyByCharacter(Context->PartyManager, Packet->MemberInfo.CharacterIndex);
     if (!Party) return;
 
-    for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
+    for (Int Index = 0; Index < Party->MemberCount; Index += 1) {
         if (Party->Members[Index].CharacterIndex != Packet->MemberInfo.CharacterIndex) continue;
 
         memcpy(&Party->Members[Index], &Packet->MemberInfo, sizeof(struct _RTPartyMemberInfo));

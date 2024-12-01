@@ -96,12 +96,12 @@ Void RTCharacterApplyItemUpgradeForceEffect(
 	RTDataUpgradeItemBasicRef UpgradeItemBasic = RTRuntimeDataUpgradeItemBasicGet(Runtime->Context, ItemType);
 	RTDataUpgradeItemBasicGradeRef UpgradeItemBasicGrade = (UpgradeItemBasic) ? RTRuntimeDataUpgradeItemBasicGradeGet(UpgradeItemBasic, ItemData->ItemGrade) : NULL;
 	if (UpgradeItemBasicGrade) {
-		for (Int32 Index = 0; Index < UpgradeItemBasicGrade->UpgradeItemBasicGradeValueCount; Index += 1) {
+		for (Int Index = 0; Index < UpgradeItemBasicGrade->UpgradeItemBasicGradeValueCount; Index += 1) {
 			RTDataUpgradeItemBasicGradeValueRef Value = &UpgradeItemBasicGrade->UpgradeItemBasicGradeValueList[Index];
 			if (Value->ForceID == FilterForceEffectIndex) continue;
 
 			Int32 ForceValue = 0;
-			for (Int32 Level = 0; Level < MIN(ItemUpgradeLevel, RUNTIME_ENCHANT_UPGRADE_BASIC_LEVEL_LIMIT); Level += 1) {
+			for (Int Level = 0; Level < MIN(ItemUpgradeLevel, RUNTIME_ENCHANT_UPGRADE_BASIC_LEVEL_LIMIT); Level += 1) {
 				Int32 SlopeMultiplier = MAX(0, MIN(RUNTIME_ENCHANT_SLOPE_MULTIPLIER_LIMIT, ((Int32)Level / RUNTIME_ENCHANT_SLOPE_DIVIDER)));
 				ForceValue += Value->ForceValueFormula[0] + Value->ForceValueFormula[1] * SlopeMultiplier;
 			}
@@ -120,12 +120,12 @@ Void RTCharacterApplyItemUpgradeForceEffect(
 	RTDataUpgradeItemRef UpgradeItem = RTRuntimeDataUpgradeItemGet(Runtime->Context, ItemData->ItemType);
 	RTDataUpgradeItemGradeRef UpgradeItemGrade = (UpgradeItem) ? RTRuntimeDataUpgradeItemGradeGet(UpgradeItem, ItemData->ItemGrade) : NULL;
 	if (UpgradeItemGrade) {
-		for (Int32 Index = 0; Index < UpgradeItemGrade->UpgradeItemGradeValueCount; Index += 1) {
+		for (Int Index = 0; Index < UpgradeItemGrade->UpgradeItemGradeValueCount; Index += 1) {
 			RTDataUpgradeItemGradeValueRef Value = &UpgradeItemGrade->UpgradeItemGradeValueList[Index];
 			if (ItemUpgradeLevel < Value->ApplyLevel) continue;
 
 			Int32 ForceValue = Value->ForceValueFormula[2];
-			for (Int32 Level = 0; Level < (ItemUpgradeLevel - Value->ApplyLevel + 1); Level += 1) {
+			for (Int Level = 0; Level < (ItemUpgradeLevel - Value->ApplyLevel + 1); Level += 1) {
 				Int32 SlopeMultiplier = Level + 1;
 				ForceValue += Value->ForceValueFormula[0] + Value->ForceValueFormula[1] * SlopeMultiplier;
 			}
@@ -152,13 +152,13 @@ Void RTCharacterApplyItemForceOptionEffect(
 
 	Int32 ForceSlotOffset = 0;
 
-	if (ItemData->MasterGrade) {
+	if (ItemData->MasterGrade > 0) {
 		RTItemOptionSlot MasterSlot = ItemOptions.Equipment.Slots[0];
 
 		RTDataMasterItemRef MasterItem = RTRuntimeDataMasterItemGet(Runtime->Context, ItemData->MasterGrade);
 		if (MasterItem) {
 			RTDataMasterItemOptionRef MasterItemOption = RTRuntimeDataMasterItemOptionGet(MasterItem, MasterSlot.MasterIndex);
-			for (Int32 Index = 0; Index < MasterItemOption->MasterItemOptionValueCount; Index += 1) {
+			for (Int Index = 0; Index < MasterItemOption->MasterItemOptionValueCount; Index += 1) {
 				RTDataMasterItemOptionValueRef MasterItemOptionValue = &MasterItemOption->MasterItemOptionValueList[Index];
 
 				RTCharacterApplyForceEffect(
@@ -178,7 +178,7 @@ Void RTCharacterApplyItemForceOptionEffect(
 	// TODO: Check unique items
 	// <unique_item	item_index="3343"	>
 
-	for (Int32 Index = ForceSlotOffset; Index < RUNTIME_ITEM_MAX_OPTION_COUNT; Index += 1) {
+	for (Int Index = ForceSlotOffset; Index < RUNTIME_ITEM_MAX_OPTION_COUNT; Index += 1) {
 		RTItemOptionSlot Slot = ItemOptions.Equipment.Slots[Index];
 		if (Slot.Serial < 1) continue;
 
@@ -205,7 +205,7 @@ Void RTCharacterApplyItemForceOptionEffect(
 		}
 	}
 
-	if (ItemOptions.Equipment.ExtraForceIndex) {
+	if (ItemOptions.Equipment.ExtraForceIndex > 0) {
 		RTDataForceCodeFormula Formula = RTRuntimeDataForceCodeFormulaGet(
 			Runtime->Context,
 			ItemData->ItemType,
@@ -242,7 +242,7 @@ Void RTCharacterApplyItemExtremeLevelEffect(
 
 		RTDataExtremeUpgradeValueRef ExtremeUpgradeValue = NULL;
 		RTDataExtremeUpgradeBaseGradeRef ExtremeUpgradeBaseGrade = NULL;
-		for (Index Index = 0; Index < Runtime->Context->ExtremeUpgradeBaseCount; Index += 1) {
+		for (Int Index = 0; Index < Runtime->Context->ExtremeUpgradeBaseCount; Index += 1) {
 			RTDataExtremeUpgradeBaseRef ExtremeUpgradeBase = &Runtime->Context->ExtremeUpgradeBaseList[Index];
 			if (ExtremeUpgradeBase->Type != TargetItemType) continue;
 
@@ -254,7 +254,7 @@ Void RTCharacterApplyItemExtremeLevelEffect(
 		}
 
 		if (ExtremeUpgradeValue) {
-			for (Int32 Index = 0; Index < ExtremeUpgradeValue->ExtremeUpgradeValueOptionCount; Index += 1) {
+			for (Int Index = 0; Index < ExtremeUpgradeValue->ExtremeUpgradeValueOptionCount; Index += 1) {
 				RTDataExtremeUpgradeValueOptionRef ExtremeUpgradeValueOption = &ExtremeUpgradeValue->ExtremeUpgradeValueOptionList[Index];
 				RTCharacterApplyForceEffect(
 					Runtime,
@@ -278,7 +278,7 @@ Void RTCharacterApplyItemChaosLevelEffect(
 	RTDataChaosUpgradeItemListRef UpgradeMain = RTRuntimeDataChaosUpgradeItemListGet(Runtime->Context, ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX);
 	RTDataChaosUpgradeGroupValueRef UpgradeGroupValue = (UpgradeMain) ? RTRuntimeDataChaosUpgradeGroupValueGet(Runtime->Context, UpgradeMain->Group) : NULL;
 	if (UpgradeGroupValue) {
-		for (Int32 Index = 0; Index < UpgradeGroupValue->ChaosUpgradeGroupValueLevelCount; Index += 1) {
+		for (Int Index = 0; Index < UpgradeGroupValue->ChaosUpgradeGroupValueLevelCount; Index += 1) {
 			RTDataChaosUpgradeGroupValueLevelRef UpgradeGroupValueLevel = &UpgradeGroupValue->ChaosUpgradeGroupValueLevelList[Index];
 			if (UpgradeGroupValueLevel->Level != ItemSlot->Item.UpgradeLevel) continue;
 
@@ -304,7 +304,7 @@ Void RTCharacterApplyItemDivineLevelEffect(
 		RTDataDivineUpgradeMainRef DivineUpgradeMain = RTRuntimeDataDivineUpgradeMainGet(Runtime->Context, ItemData->ItemGrade, ItemData->ItemType);
 		RTDataDivineUpgradeGroupValueRef DivineUpgradeGroupValue = (DivineUpgradeMain) ? RTRuntimeDataDivineUpgradeGroupValueGet(Runtime->Context, DivineUpgradeMain->Group) : NULL;
 		if (DivineUpgradeGroupValue) {
-			for (Int32 Index = 0; Index < DivineUpgradeGroupValue->DivineUpgradeGroupValueLevelCount; Index += 1) {
+			for (Int Index = 0; Index < DivineUpgradeGroupValue->DivineUpgradeGroupValueLevelCount; Index += 1) {
 				RTDataDivineUpgradeGroupValueLevelRef DivineUpgradeGroupValueLevel = &DivineUpgradeGroupValue->DivineUpgradeGroupValueLevelList[Index];
 				if (DivineUpgradeGroupValueLevel->Level != ItemSlot->Item.DivineLevel) continue;
 
@@ -328,7 +328,7 @@ RTItemHonorMedalSealData RTItemHonorMedalSealDecode(
 	RTItemHonorMedalSealData Data = { 0 };
 	Data.Group = (Serial >> 60) & 0xF;
 
-	for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_HONOR_MEDAL_SEAL_SLOT_COUNT; Index += 1) {
+	for (Int Index = 0; Index < RUNTIME_CHARACTER_MAX_HONOR_MEDAL_SEAL_SLOT_COUNT; Index += 1) {
 		UInt8 Option = (Serial >> (Index * 6)) & 0b111111;
 		RTDataHonorMedalSealRef Seal = RTRuntimeDataHonorMedalSealGet(Runtime->Context, Option);
 		if (!Seal) continue;
@@ -345,7 +345,7 @@ UInt64 RTItemHonorMedalSealEncode(
 ) {
 	UInt64 Serial = 0;
 
-	for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_HONOR_MEDAL_SEAL_SLOT_COUNT; Index += 1) {
+	for (Int Index = 0; Index < RUNTIME_CHARACTER_MAX_HONOR_MEDAL_SEAL_SLOT_COUNT; Index += 1) {
 		RTDataHonorMedalSealRef Seal = RTRuntimeDataHonorMedalSealGetByForceID(Runtime->Context, Data.ForceEffectIndex[Index]);
 		if (!Seal) continue;
 
@@ -363,7 +363,7 @@ RTItemForceOptionData RTItemForceOptionDecode(
 	RTItemOptions Options = { 0 };
 	Options.Serial = Serial;
 
-	for (Int32 Index = 0; Index < RUNTIME_ITEM_MAX_OPTION_COUNT; Index += 1) {
+	for (Int Index = 0; Index < RUNTIME_ITEM_MAX_OPTION_COUNT; Index += 1) {
 		RTItemOptionSlot Slot = Options.Equipment.Slots[Index];
 		if (Slot.IsEpic) {
 			assert(Data.EpicSlotCount < RUNTIME_ITEM_MAX_OPTION_COUNT);
@@ -371,7 +371,7 @@ RTItemForceOptionData RTItemForceOptionDecode(
 			Data.EpicSlotCount += 1;
 		}
 		else {
-			for (Int32 Offset = 0; Offset < Slot.ForceLevel; Offset += 1) {
+			for (Int Offset = 0; Offset < Slot.ForceLevel; Offset += 1) {
 				assert(Data.FilledForceSlotCount < RUNTIME_ITEM_MAX_OPTION_COUNT);
 				Data.ForceSlots[Data.FilledForceSlotCount] = Slot.ForceIndex;
 				Data.FilledForceSlotCount += 1;
@@ -389,10 +389,10 @@ Int32 RTItemForceOptionRemoveForceIndex(
 ) {
 	Int32 Count = 0;
 
-	for (Int32 Index = 0; Index < Data->FilledForceSlotCount; Index += 1) {
+	for (Int Index = 0; Index < Data->FilledForceSlotCount; Index += 1) {
 		if (Data->ForceSlots[Index] != ForceIndex) continue;
 
-		for (Int32 MoveIndex = Index; MoveIndex < Data->FilledForceSlotCount - 1; MoveIndex += 1) {
+		for (Int MoveIndex = Index; MoveIndex < Data->FilledForceSlotCount - 1; MoveIndex += 1) {
 			Data->ForceSlots[MoveIndex] = Data->ForceSlots[MoveIndex + 1];
 		}
 
@@ -408,7 +408,7 @@ Bool RTItemForceOptionInsertForceIndex(
 	RTItemForceOptionData* Data,
 	UInt8 ForceIndex
 ) {
-	for (Int32 Index = 0; Index < Data->FilledForceSlotCount; Index += 1) {
+	for (Int Index = 0; Index < Data->FilledForceSlotCount; Index += 1) {
 		if (Data->ForceSlots[Index] != ForceIndex) continue;
 
 		if (Data->FilledForceSlotCount >= RUNTIME_ITEM_MAX_OPTION_COUNT) {
@@ -439,7 +439,7 @@ UInt64 RTItemForceOptionEncode(
 	Options.Equipment.SlotCount = Data.ForceSlotCount;
 
 	Int32 NextSlotIndex = 0;
-	for (Int32 Index = 0; Index < Data.EpicSlotCount; Index += 1) {
+	for (Int Index = 0; Index < Data.EpicSlotCount; Index += 1) {
 		RTItemOptionSlot Slot = Data.EpicSlots[Index];
 		if (Slot.Serial > 0) {
 			assert(NextSlotIndex < RUNTIME_ITEM_MAX_OPTION_COUNT);
@@ -448,7 +448,7 @@ UInt64 RTItemForceOptionEncode(
 		}
 	}
 
-	for (Int32 Index = 0; Index < Data.FilledForceSlotCount; Index += 1) {
+	for (Int Index = 0; Index < Data.FilledForceSlotCount; Index += 1) {
 		UInt8 ForceIndex = Data.ForceSlots[Index];
 		if (NextSlotIndex > 0 &&
 			!Options.Equipment.Slots[NextSlotIndex - 1].IsEpic &&
@@ -545,7 +545,7 @@ Int32 RTItemUseInternal(
 Int32 RTItemOptionFirstEpicSlotIndex(
 	RTItemOptions* Options
 ) {
-	for (Int32 Index = 0; Index < RUNTIME_ITEM_MAX_OPTION_COUNT; Index += 1) {
+	for (Int Index = 0; Index < RUNTIME_ITEM_MAX_OPTION_COUNT; Index += 1) {
 		if (Options->Equipment.Slots[Index].IsEpic) return Index;
 	}
 
@@ -555,7 +555,7 @@ Int32 RTItemOptionFirstEpicSlotIndex(
 Int32 RTItemOptionLastEmptySlotIndex(
 	RTItemOptions* Options
 ) {
-	for (Int32 Index = RUNTIME_ITEM_MAX_OPTION_COUNT - 1; Index >= 0; Index -= 1) {
+	for (Int Index = RUNTIME_ITEM_MAX_OPTION_COUNT - 1; Index >= 0; Index -= 1) {
 		UInt8 Value = *((UInt8*)&Options->Equipment.Slots[Index]);
 		if (!Value) return Index;
 	}
@@ -566,7 +566,7 @@ Int32 RTItemOptionLastEmptySlotIndex(
 Bool RTItemOptionHasEpic(
 	RTItemOptions Options
 ) {
-	for (Int32 Index = 0; Index < RUNTIME_ITEM_MAX_OPTION_COUNT; Index += 1) {
+	for (Int Index = 0; Index < RUNTIME_ITEM_MAX_OPTION_COUNT; Index += 1) {
 		if (Options.Equipment.Slots[Index].IsEpic) return true;
 	}
 
@@ -576,7 +576,7 @@ Bool RTItemOptionHasEpic(
 RTItemOptionSlot RTItemOptionGetLastFilledForceSlot(
 	RTItemOptions Options
 ) {
-	for (Int32 Index = RUNTIME_ITEM_MAX_OPTION_COUNT - 1; Index >= 0; Index -= 1) {
+	for (Int Index = RUNTIME_ITEM_MAX_OPTION_COUNT - 1; Index >= 0; Index -= 1) {
 		RTItemOptionSlot Slot = Options.Equipment.Slots[Index];
 		if (Slot.IsEpic) continue;
 		if (Slot.ForceIndex < 1) continue;
@@ -594,7 +594,7 @@ Int32 RTItemOptionGetForceSlotCount(
 ) {
 	Int32 Count = 0;
 
-	for (Int32 Index = 0; Index < RUNTIME_ITEM_MAX_OPTION_COUNT; Index += 1) {
+	for (Int Index = 0; Index < RUNTIME_ITEM_MAX_OPTION_COUNT; Index += 1) {
 		RTItemOptionSlot Slot = Options.Equipment.Slots[Index];
 		if (Slot.IsEpic) continue;
 		if (Slot.ForceIndex != ForceIndex) continue;
@@ -621,7 +621,7 @@ Int32 RTItemOptionGetFilledSlotCount(
 ) {
 	Int32 FilledSlotCount = 0;
 
-	for (Int32 Index = RUNTIME_ITEM_MAX_OPTION_COUNT - 1; Index >= 0; Index -= 1) {
+	for (Int Index = RUNTIME_ITEM_MAX_OPTION_COUNT - 1; Index >= 0; Index -= 1) {
 		if (Options.Equipment.Slots[Index].IsEpic) continue;
 		if (Options.Equipment.Slots[Index].ForceIndex < 1) continue;
 
@@ -637,7 +637,7 @@ Bool RTItemOptionPushSlots(
 	Int32 LastEmptySlotIndex = RTItemOptionLastEmptySlotIndex(Options);
 	if (LastEmptySlotIndex < 0) return false;
 
-	for (Int32 Index = LastEmptySlotIndex - 1; Index >= 0; Index -= 1) {
+	for (Int Index = LastEmptySlotIndex - 1; Index >= 0; Index -= 1) {
 		Options->Equipment.Slots[Index + 1] = Options->Equipment.Slots[Index];
 	}
 
@@ -648,7 +648,7 @@ Bool RTItemOptionPushSlots(
 
 Void RTItemOptionClearForceSlot(
 	RTItemOptions* Options,
-	Int32 Index
+	Int Index
 ) {
 	assert(Index < RUNTIME_ITEM_MAX_OPTION_COUNT);
 
@@ -656,7 +656,7 @@ Void RTItemOptionClearForceSlot(
 	if (Data.ForceSlots[Index] > 0) {
 		Data.ForceSlots[Index] = 0;
 
-		for (Int32 Offset = Index + 1; Offset < Data.FilledForceSlotCount; Offset += 1) {
+		for (Int Offset = Index + 1; Offset < Data.FilledForceSlotCount; Offset += 1) {
 			Data.ForceSlots[Offset - 1] = Data.ForceSlots[Offset];
 		}
 
@@ -672,7 +672,7 @@ Void RTItemOptionClearSecondForceSlot(
 	if (Data.FilledForceSlotCount > 1) {
 		Data.ForceSlots[1] = 0;
 
-		for (Int32 Offset = 2; Offset < Data.FilledForceSlotCount; Offset += 1) {
+		for (Int Offset = 2; Offset < Data.FilledForceSlotCount; Offset += 1) {
 			Data.ForceSlots[Offset - 1] = Data.ForceSlots[Offset];
 		}
 
@@ -698,7 +698,7 @@ Bool RTItemOptionAppendSlot(
 		if (Data.FilledForceSlotCount + 1 > MIN(Data.ForceSlotCount, RUNTIME_ITEM_MAX_OPTION_COUNT)) return false;
 
 		if (!RTItemForceOptionInsertForceIndex(&Data, Slot.ForceIndex)) {
-			for (Int32 Index = Data.FilledForceSlotCount; Index < Data.FilledForceSlotCount + 1; Index += 1) {
+			for (Int Index = Data.FilledForceSlotCount; Index < Data.FilledForceSlotCount + 1; Index += 1) {
 				Data.ForceSlots[Index] = Slot.ForceIndex;
 			}
 
@@ -709,7 +709,7 @@ Bool RTItemOptionAppendSlot(
 		RTItemForceOptionData TargetData = Data;
 		TargetData.FilledForceSlotCount = 0;
 
-		for (Int32 Index = 0; Index < Data.ForceSlotCount; Index += 1) {
+		for (Int Index = 0; Index < Data.ForceSlotCount; Index += 1) {
 			if (Slot.ForceLevel < 2 &&
 				Data.ForceSlots[Index].ForceIndex == Slot.ForceIndex &&
 				Data.ForceSlots[Index].ForceLevel + Slot.ForceLevel < 0b111) {
@@ -729,7 +729,7 @@ Bool RTItemOptionAppendSlot(
 		if (IsExtended && TargetData.FilledForceSlotCount >= Data.ForceSlotCount && Data.ForceSlots.) {
 			RTItemOptionSlot Slot = Data.ForceSlots[FilledIndex];
 
-			for (Int32 Index = FilledIndex - 1; Index >= 0; Index -= 1) {
+			for (Int Index = FilledIndex - 1; Index >= 0; Index -= 1) {
 				Data.ForceSlots[Index + 1] = Data.ForceSlots[Index];
 			}
 
@@ -1325,7 +1325,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpicConverter) {
 	if (!OptionPool) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
 	Int32 MaxRandomValue = 0;
-	for (Int32 Index = 0; Index < OptionPool->EpicOptionPoolValueCount; Index += 1) {
+	for (Int Index = 0; Index < OptionPool->EpicOptionPoolValueCount; Index += 1) {
 		MaxRandomValue += OptionPool->EpicOptionPoolValueList[Index].Rate;
 	}
 
@@ -1334,7 +1334,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpicConverter) {
 	Int32 RateOffset = 0;
 	Bool Success = false;
 
-	for (Int32 Index = 0; Index < OptionPool->EpicOptionPoolValueCount; Index += 1) {
+	for (Int Index = 0; Index < OptionPool->EpicOptionPoolValueCount; Index += 1) {
 		RTDataEpicOptionPoolValueRef OptionPoolValue = &OptionPool->EpicOptionPoolValueList[Index];
 
 		if (RandomValue <= OptionPoolValue->Rate + RateOffset) {
@@ -1453,13 +1453,13 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemEpicBooster) {
 		if (!EpicBoostMasterRate) return RUNTIME_ITEM_USE_RESULT_FAILED;
 
 		Int32 ResultGrade = 0;
-		for (Int32 Index = 0; Index < MasterItem->MasterItemOptionCount; Index += 1) {
+		for (Int Index = 0; Index < MasterItem->MasterItemOptionCount; Index += 1) {
 			RTDataMasterItemOptionRef ResultItemOption = &MasterItem->MasterItemOptionList[Index];
 			if (MasterItemOption->BoostCount != ResultItemOption->BoostCount + 1) continue;
 			if (MasterItemOption->MasterItemOptionValueCount != ResultItemOption->MasterItemOptionValueCount) continue;
 
 			Bool IsEqual = true;
-			for (Int32 ValueIndex = 0; ValueIndex < ResultItemOption->MasterItemOptionValueCount; ValueIndex += 1) {
+			for (Int ValueIndex = 0; ValueIndex < ResultItemOption->MasterItemOptionValueCount; ValueIndex += 1) {
 				if (MasterItemOption->MasterItemOptionValueList[ValueIndex].ForceEffectIndex != ResultItemOption->MasterItemOptionValueList[ValueIndex].ForceEffectIndex) {
 					IsEqual = false;
 					break;
@@ -1523,7 +1523,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
 	UInt64 TotalStackSize = 0;
 	UInt64 Amount = ItemSlot->ItemOptions >> 16;
 
-	for (Index Index = 0; Index < Data->InventoryItemCount; Index += 1) {
+	for (Int Index = 0; Index < Data->InventoryItemCount; Index += 1) {
 		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Data->InventorySlotIndex[Index]);
 		if (!ItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
 		if (Amount != ItemSlot->ItemOptions >> 16) return RUNTIME_ITEM_USE_RESULT_FAILED;
@@ -1589,7 +1589,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
 	}
 
 	Int32 RemainingStackSize = Data->RegisteredStackSize;
-	for (Index Index = 0; Index < Data->InventoryItemCount; Index += 1) {
+	for (Int Index = 0; Index < Data->InventoryItemCount; Index += 1) {
 		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Data->InventorySlotIndex[Index]);
 
 		Int64 ItemStackSize = ItemSlot->ItemOptions & 0xFFFF;
@@ -1670,7 +1670,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemLotto) {
 	Int32 RandomRateOffset = 0;
 
 	// TODO: Option[0] = Item1, Option[1] = Maybe Perfect Drop?, Option[2] = ?, Option[3] = ?, Option[4] = Item2, ...
-	for (Int32 Index = 0; Index < ItemPool->LotteryItemPoolItemCount; Index += 1) {
+	for (Int Index = 0; Index < ItemPool->LotteryItemPoolItemCount; Index += 1) {
 		RTDataLotteryItemPoolItemRef Item = &ItemPool->LotteryItemPoolItemList[Index];
 		if (RandomRate <= Item->Rate + RandomRateOffset || Index + 1 == ItemPool->LotteryItemPoolItemCount) {
 			struct _RTItemSlot CreatedItemSlot = { 0 };

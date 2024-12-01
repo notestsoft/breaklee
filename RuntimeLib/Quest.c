@@ -94,7 +94,7 @@ Void RTCharacterDungeonQuestFlagClear(
 
 Void RTCharacterDungeonQuestFlagSet(
 	RTCharacterRef Character,
-	Index DungeonIndex
+	Int64 DungeonIndex
 ) {
 	Bool IsMissionDungeon = DungeonIndex >= RUNTIME_CHARACTER_QUEST_DUNGEON_FLAG_LIMIT;
 	Int32 FlagIndex = DungeonIndex % RUNTIME_CHARACTER_QUEST_DUNGEON_FLAG_LIMIT;
@@ -142,7 +142,7 @@ RTQuestSlotRef RTCharacterGetQuestSlot(
 	RTCharacterRef Character,
 	Int32 QuestSlotIndex
 ) {
-	for (Int32 SlotIndex = 0; SlotIndex < Character->Data.QuestInfo.Info.SlotCount; SlotIndex += 1) {
+	for (Int SlotIndex = 0; SlotIndex < Character->Data.QuestInfo.Info.SlotCount; SlotIndex += 1) {
 		RTQuestSlotRef QuestSlot = &Character->Data.QuestInfo.Slots[SlotIndex];
 		if (QuestSlot->SlotIndex == QuestSlotIndex) return QuestSlot;
 	}
@@ -155,7 +155,7 @@ Void RTCharacterRemoveQuestSlot(
 	RTCharacterRef Character,
 	Int32 QuestSlotIndex
 ) {
-	for (Int32 SlotIndex = 0; SlotIndex < Character->Data.QuestInfo.Info.SlotCount; SlotIndex += 1) {
+	for (Int SlotIndex = 0; SlotIndex < Character->Data.QuestInfo.Info.SlotCount; SlotIndex += 1) {
 		RTQuestSlotRef QuestSlot = &Character->Data.QuestInfo.Slots[SlotIndex];
 		if (QuestSlot->SlotIndex != QuestSlotIndex) continue;
 
@@ -260,7 +260,7 @@ Bool RTCharacterQuestClear(
 	if (QuestSlot->NpcActionIndex < 0 || QuestSlot->NpcActionIndex >= Quest->NpcSet.Count) return false;
 
 	RTQuestNpcDataRef QuestNpc = NULL;
-	for (Int32 Index = 0; Index < Quest->NpcSet.Count; Index += 1) {
+	for (Int Index = 0; Index < Quest->NpcSet.Count; Index += 1) {
 		if (Quest->NpcSet.Npcs[Index].NpcActionOrder != QuestSlot->NpcActionIndex) continue;
 
 		QuestNpc = &Quest->NpcSet.Npcs[Index];
@@ -284,7 +284,7 @@ Bool RTCharacterQuestClear(
 
 	Int32 SlotOffset = 0;
 	Int32 CounterIndex = 0;
-	for (Int32 Index = 0; Index < Quest->MissionMobCount; Index += 1) {
+	for (Int Index = 0; Index < Quest->MissionMobCount; Index += 1) {
 		if (QuestSlot->Counter[CounterIndex] < Quest->MissionMobs[Index].Value[1]) return false;
 
 		CounterIndex += 1;
@@ -293,17 +293,17 @@ Bool RTCharacterQuestClear(
 	if (SlotOffset + Quest->MissionItemCount > SlotCount) return false;
 
 	Int32 ItemCounter[RUNTIME_MAX_QUEST_COUNTER_COUNT] = { 0 };
-	for (Int32 Index = 0; Index < Quest->MissionItemCount; Index += 1) {
+	for (Int Index = 0; Index < Quest->MissionItemCount; Index += 1) {
 		RTQuestMissionDataRef MissionData = &Quest->MissionItems[Index];
 		ItemCounter[Index] = MissionData->Value[2];
 	}
 
-	for (Int32 Index = 0; Index < Quest->MissionItemCount; Index += 1) {
+	for (Int Index = 0; Index < Quest->MissionItemCount; Index += 1) {
 		UInt16 InventorySlotIndex = SlotIndex[SlotOffset + Index];
 		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, InventorySlotIndex);
 		if (!ItemSlot) return false;
 
-		for (Int32 MissionIndex = 0; MissionIndex < Quest->MissionItemCount; MissionIndex += 1) {
+		for (Int MissionIndex = 0; MissionIndex < Quest->MissionItemCount; MissionIndex += 1) {
 			RTQuestMissionDataRef MissionData = &Quest->MissionItems[MissionIndex];
 			if (MissionData->Value[0] != (ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX)) continue;
 
@@ -315,11 +315,11 @@ Bool RTCharacterQuestClear(
 		}
 	}
 
-	for (Int32 Index = 0; Index < Quest->MissionItemCount; Index += 1) {
+	for (Int Index = 0; Index < Quest->MissionItemCount; Index += 1) {
 		if (ItemCounter[Index] > 0) return false;
 	}
 	
-	for (Int32 Index = 0; Index < Quest->MissionItemCount; Index += 1) {
+	for (Int Index = 0; Index < Quest->MissionItemCount; Index += 1) {
 		UInt16 InventorySlotIndex = SlotIndex[SlotOffset + Index];
 		Bool Success = RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, InventorySlotIndex);
 		assert(Success);
@@ -327,7 +327,7 @@ Bool RTCharacterQuestClear(
 
 	SlotOffset += Quest->MissionItemCount;
 
-	for (Int32 Index = 0; Index < Quest->MissionDungeonCount; Index++) {
+	for (Int Index = 0; Index < Quest->MissionDungeonCount; Index++) {
 		RTQuestMissionDataRef MissionData = &Quest->MissionDungeons[Index];
 		if (!RTCharacterDungeonQuestFlagIsSet(Character, MissionData->Value[0])) return false;
 	}
@@ -504,17 +504,17 @@ Bool RTCharacterSetQuestDisplayNotice(
 Bool RTCharacterIncrementQuestMobCounter(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
-	Index MobSpeciesIndex
+	Int64 MobSpeciesIndex
 ) {
 	Bool Result = false;
 
-	for (Int32 SlotIndex = 0; SlotIndex < Character->Data.QuestInfo.Info.SlotCount; SlotIndex += 1) {
+	for (Int SlotIndex = 0; SlotIndex < Character->Data.QuestInfo.Info.SlotCount; SlotIndex += 1) {
 		RTQuestSlotRef QuestSlot = &Character->Data.QuestInfo.Slots[SlotIndex];
 		RTQuestDataRef Quest = RTRuntimeGetQuestByIndex(Runtime, QuestSlot->QuestIndex);
 		if (!Quest) continue;
 
 		Int32 QuestCounterIndex = 0;
-		for (Int32 MissionIndex = 0; MissionIndex < Quest->MissionMobCount; MissionIndex += 1) {
+		for (Int MissionIndex = 0; MissionIndex < Quest->MissionMobCount; MissionIndex += 1) {
 			RTQuestMissionDataRef Mission = &Quest->MissionMobs[MissionIndex];
 			if (MobSpeciesIndex == Mission->Value[0]) {
 				Character->Data.QuestInfo.Slots[SlotIndex].Counter[QuestCounterIndex] = MIN(
@@ -548,13 +548,13 @@ Bool RTCharacterUpdateQuestItemCounter(
 ) {
 	Bool Result = false;
 
-	for (Int32 SlotIndex = 0; SlotIndex < Character->Data.QuestInfo.Info.SlotCount; SlotIndex += 1) {
+	for (Int SlotIndex = 0; SlotIndex < Character->Data.QuestInfo.Info.SlotCount; SlotIndex += 1) {
 		RTQuestSlotRef QuestSlot = &Character->Data.QuestInfo.Slots[SlotIndex];
 		RTQuestDataRef Quest = RTRuntimeGetQuestByIndex(Runtime, QuestSlot->QuestIndex);
 		if (!Quest) continue;
 
 		Int32 QuestCounterIndex = Quest->MissionMobCount;
-		for (Int32 MissionIndex = 0; MissionIndex < Quest->MissionItemCount; MissionIndex += 1) {
+		for (Int MissionIndex = 0; MissionIndex < Quest->MissionItemCount; MissionIndex += 1) {
 			RTQuestMissionDataRef Mission = &Quest->MissionItems[MissionIndex];
 			if (Mission->Value[0] == Item.ID && Mission->Value[1] == RTQuestItemGetOptions(ItemOptions)) {
 				QuestSlot->Counter[QuestCounterIndex + MissionIndex] = RTQuestItemGetCount(ItemOptions);
@@ -577,13 +577,13 @@ Bool RTCharacterHasQuestItemCounter(
 ) {
 	UInt64 QuestItemOptions = RTQuestItemGetOptions(ItemOptions);
 
-	for (Int32 SlotIndex = 0; SlotIndex < Character->Data.QuestInfo.Info.SlotCount; SlotIndex += 1) {
+	for (Int SlotIndex = 0; SlotIndex < Character->Data.QuestInfo.Info.SlotCount; SlotIndex += 1) {
 		RTQuestSlotRef QuestSlot = &Character->Data.QuestInfo.Slots[SlotIndex];
 		RTQuestDataRef Quest = RTRuntimeGetQuestByIndex(Runtime, QuestSlot->QuestIndex);
 		if (!Quest) continue;
 
 		Int32 QuestCounterIndex = Quest->MissionMobCount;
-		for (Int32 MissionIndex = 0; MissionIndex < Quest->MissionItemCount; MissionIndex += 1) {
+		for (Int MissionIndex = 0; MissionIndex < Quest->MissionItemCount; MissionIndex += 1) {
 			RTQuestMissionDataRef Mission = &Quest->MissionItems[MissionIndex];
 			if (Mission->Value[0] == (Item.ID & RUNTIME_ITEM_MASK_INDEX) && Mission->Value[1] == QuestItemOptions) {
 				return QuestSlot->Counter[QuestCounterIndex + MissionIndex] < Quest->MissionItems[MissionIndex].Value[2];
@@ -601,12 +601,12 @@ Bool RTCharacterHasQuestDungeon(
 	RTCharacterRef Character,
 	Int32 DungeonID
 ) {
-	for (Int32 SlotIndex = 0; SlotIndex < Character->Data.QuestInfo.Info.SlotCount; SlotIndex += 1) {
+	for (Int SlotIndex = 0; SlotIndex < Character->Data.QuestInfo.Info.SlotCount; SlotIndex += 1) {
 		RTQuestSlotRef QuestSlot = &Character->Data.QuestInfo.Slots[SlotIndex];
 		RTQuestDataRef Quest = RTRuntimeGetQuestByIndex(Runtime, QuestSlot->QuestIndex);
 		if (!Quest) continue;
 
-		for (Int32 Index = 0; Index < Quest->DungeonIndexCount; Index += 1) {
+		for (Int Index = 0; Index < Quest->DungeonIndexCount; Index += 1) {
 			if (Quest->DungeonIndex[Index] == DungeonID) {
 				return true;
 			}
@@ -750,14 +750,14 @@ Bool RTCharacterPartyQuestClear(
 	}
 
 	Int32 CounterIndex = 0;
-	for (Int32 Index = 0; Index < Quest->MissionMobCount; Index += 1) {
+	for (Int Index = 0; Index < Quest->MissionMobCount; Index += 1) {
 		if (QuestSlot->Counter[CounterIndex] < Quest->MissionMobs[Index].Value[1]) return false;
 
 		CounterIndex += 1;
 	}
 
 	// TODO: Rewind if any error happens!
-	for (Int32 Index = 0; Index < Quest->MissionItemCount; Index += 1) {
+	for (Int Index = 0; Index < Quest->MissionItemCount; Index += 1) {
 		RTQuestMissionDataRef MissionData = &Quest->MissionItems[Index];
 
 		UInt16 InventorySlotIndex = InventorySlotIndices[Index];
@@ -778,7 +778,7 @@ Bool RTCharacterPartyQuestClear(
 	}
 
 	// TODO: Add dungeon counter check!!!
-	for (Int32 Index = 0; Index < Quest->MissionDungeonCount; Index++) {
+	for (Int Index = 0; Index < Quest->MissionDungeonCount; Index++) {
 
 	}
 
@@ -921,7 +921,7 @@ Bool RTCharacterPartyQuestAction(
 Bool RTPartyIncrementQuestMobCounter(
 	RTRuntimeRef Runtime,
 	RTEntityID PartyID,
-	Index MobSpeciesIndex
+	Int64 MobSpeciesIndex
 ) {
 	if (RTEntityIsNull(PartyID)) return false;
 
@@ -929,7 +929,7 @@ Bool RTPartyIncrementQuestMobCounter(
 	assert(Party);
 
 	Bool Result = false;
-	for (Int32 SlotIndex = 0; SlotIndex < RUNTIME_PARTY_MAX_QUEST_SLOT_COUNT; SlotIndex += 1) {
+	for (Int SlotIndex = 0; SlotIndex < RUNTIME_PARTY_MAX_QUEST_SLOT_COUNT; SlotIndex += 1) {
 		RTQuestSlotRef QuestSlot = &Party->QuestSlot[SlotIndex];
 		if (!QuestSlot->QuestIndex) continue;
 
@@ -938,7 +938,7 @@ Bool RTPartyIncrementQuestMobCounter(
 
 		Int32 QuestCounterIndex = 0;
 
-		for (Int32 MissionIndex = 0; MissionIndex < Quest->MissionMobCount; MissionIndex += 1) {
+		for (Int MissionIndex = 0; MissionIndex < Quest->MissionMobCount; MissionIndex += 1) {
 			RTQuestMissionDataRef Mission = &Quest->MissionMobs[MissionIndex];
 			if (MobSpeciesIndex == Mission->Value[0]) {
 				QuestSlot->Counter[QuestCounterIndex] = MIN(
@@ -971,7 +971,7 @@ Bool RTPartyHasQuestItemCounter(
 ) {
 	UInt64 QuestItemOptions = RTQuestItemGetOptions(ItemOptions);
 
-	for (Int32 SlotIndex = 0; SlotIndex < RUNTIME_PARTY_MAX_QUEST_SLOT_COUNT; SlotIndex += 1) {
+	for (Int SlotIndex = 0; SlotIndex < RUNTIME_PARTY_MAX_QUEST_SLOT_COUNT; SlotIndex += 1) {
 		RTQuestSlotRef QuestSlot = &Party->QuestSlot[SlotIndex];
 		if (!QuestSlot->QuestIndex) continue;
 
@@ -979,7 +979,7 @@ Bool RTPartyHasQuestItemCounter(
 		if (!Quest) return false;
 
 		Int32 QuestCounterIndex = Quest->MissionMobCount;
-		for (Int32 MissionIndex = 0; MissionIndex < Quest->MissionItemCount; MissionIndex += 1) {
+		for (Int MissionIndex = 0; MissionIndex < Quest->MissionItemCount; MissionIndex += 1) {
 			if (QuestSlot->Counter[QuestCounterIndex] >= Quest->MissionItems[MissionIndex].Value[2]) {
 				continue;
 			}
@@ -1001,7 +1001,7 @@ Bool RTCharacterHasPartyQuestDungeon(
 	RTCharacterRef Character,
 	Int32 DungeonID
 ) {
-	for (Int32 SlotIndex = 0; SlotIndex < RUNTIME_PARTY_MAX_QUEST_SLOT_COUNT; SlotIndex += 1) {
+	for (Int SlotIndex = 0; SlotIndex < RUNTIME_PARTY_MAX_QUEST_SLOT_COUNT; SlotIndex += 1) {
 		RTQuestSlotRef QuestSlot = &Character->Data.QuestInfo.Slots[SlotIndex];
 		if (!QuestSlot->QuestIndex) continue;
 
@@ -1010,7 +1010,7 @@ Bool RTCharacterHasPartyQuestDungeon(
 
 		Int32 QuestCounterIndex = Quest->MissionMobCount + Quest->MissionItemCount;
 
-		for (Int32 MissionIndex = 0; MissionIndex < Quest->MissionDungeonCount; MissionIndex += 1) {
+		for (Int MissionIndex = 0; MissionIndex < Quest->MissionDungeonCount; MissionIndex += 1) {
 			if (Quest->MissionDungeons[MissionIndex].Value[0] == DungeonID && QuestSlot->Counter[QuestCounterIndex] < 1) {
 				return true;
 			}

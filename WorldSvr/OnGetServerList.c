@@ -30,8 +30,8 @@ IPC_PROCEDURE_BINDING(M2W, GET_WORLD_LIST) {
 	Char LocalHost[] = "127.0.0.1";
 	Bool IsLocalHost = strcmp(ClientConnection->AddressIP, LocalHost) == 0;
 	
-	Index PacketOffset = sizeof(IPC_M2W_DATA_GET_WORLD_LIST);
-	for (Index Index = 0; Index < Packet->NodeCount; Index += 1) {
+	Int PacketOffset = sizeof(IPC_M2W_DATA_GET_WORLD_LIST);
+	for (Int Index = 0; Index < Packet->NodeCount; Index += 1) {
 		IPC_M2L_DATA_SERVER_GROUP_NODE* Node = (IPC_M2L_DATA_SERVER_GROUP_NODE*)((UInt8*)Packet + PacketOffset);
 		PacketOffset += sizeof(IPC_M2L_DATA_SERVER_GROUP_NODE);
 

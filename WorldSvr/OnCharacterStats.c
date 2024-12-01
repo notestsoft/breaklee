@@ -56,7 +56,7 @@ CLIENT_PROCEDURE_BINDING(REMOVE_CHARACTER_STATS) {
         RUNTIME_ITEM_POTION_STAT_TYPE_INT,
     };
     Int32 SlotIndex = 0;
-    for (Int32 Index = 0; Index < 3; Index += 1) {
+    for (Int Index = 0; Index < 3; Index += 1) {
         if (Packet->StatFlag[Index]) {
             Int32 StatIndex = StatIndices[Index];
             Int32 InventorySlotIndex = Packet->InventorySlots[SlotIndex];

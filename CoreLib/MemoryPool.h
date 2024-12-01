@@ -10,23 +10,23 @@ typedef struct _MemoryPool *MemoryPoolRef;
 
 MemoryPoolRef MemoryPoolCreate(
     AllocatorRef Allocator,
-    Index BlockSize,
-    Index BlockCount
+    Int BlockSize,
+    Int BlockCount
 );
 
 Void MemoryPoolDestroy(
     MemoryPoolRef MemoryPool
 );
 
-Index MemoryPoolGetBlockSize(
+Int MemoryPoolGetBlockSize(
     MemoryPoolRef MemoryPool
 );
 
-Index MemoryPoolGetBlockCount(
+Int MemoryPoolGetBlockCount(
     MemoryPoolRef MemoryPool
 );
 
-Index MemoryPoolGetReservedBlockCount(
+Int MemoryPoolGetReservedBlockCount(
     MemoryPoolRef MemoryPool
 );
 
@@ -36,7 +36,7 @@ Bool MemoryPoolIsFull(
 
 Bool MemoryPoolIsReserved(
     MemoryPoolRef MemoryPool,
-    Index BlockIndex
+    Int BlockIndex
 );
 
 Void MemoryPoolClear(
@@ -45,22 +45,22 @@ Void MemoryPoolClear(
 
 Void *MemoryPoolReserve(
     MemoryPoolRef MemoryPool,
-    Index BlockIndex
+    Int BlockIndex
 );
 
 Void *MemoryPoolReserveNext(
     MemoryPoolRef MemoryPool,
-    Index *OutBlockIndex
+    Int *OutBlockIndex
 );
 
 Void *MemoryPoolFetch(
     MemoryPoolRef MemoryPool,
-    Index BlockIndex
+    Int BlockIndex
 );
 
 Void MemoryPoolRelease(
     MemoryPoolRef MemoryPool,
-    Index BlockIndex
+    Int BlockIndex
 );
 
 EXTERN_C_END

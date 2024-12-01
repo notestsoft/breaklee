@@ -4,24 +4,24 @@
 
 struct _MemoryPool {
     AllocatorRef Allocator;
-    Index BlockSize;
-    Index BlockSizeAligned;
-    Index BlockCount;
-    Index ReservedBlockCount;
+    Int BlockSize;
+    Int BlockSizeAligned;
+    Int BlockCount;
+    Int ReservedBlockCount;
     Bool *BlockFlags;
     Void *BlockMemory;
 };
 
 MemoryPoolRef MemoryPoolCreate(
     AllocatorRef Allocator,
-    Index BlockSize,
-    Index BlockCount
+    Int BlockSize,
+    Int BlockCount
 ) {
-    Index MemoryPoolSize = NextPowerOfTwo(sizeof(struct _MemoryPool));
-    Index BlockFlagsSize = NextPowerOfTwo(BlockCount * sizeof(Bool));
-    Index BlockSizeAligned = NextPowerOfTwo(BlockSize);
-    Index BlockMemorySize = BlockCount * BlockSizeAligned;
-    Index TotalSize = MemoryPoolSize + BlockFlagsSize + BlockMemorySize;
+    Int MemoryPoolSize = NextPowerOfTwo(sizeof(struct _MemoryPool));
+    Int BlockFlagsSize = NextPowerOfTwo(BlockCount * sizeof(Bool));
+    Int BlockSizeAligned = NextPowerOfTwo(BlockSize);
+    Int BlockMemorySize = BlockCount * BlockSizeAligned;
+    Int TotalSize = MemoryPoolSize + BlockFlagsSize + BlockMemorySize;
     MemoryPoolRef MemoryPool = (MemoryPoolRef)AllocatorAllocate(Allocator, TotalSize);
     if (!MemoryPool) Fatal("MemoryPool allocation failed!");
     
@@ -42,21 +42,21 @@ Void MemoryPoolDestroy(
     AllocatorDeallocate(MemoryPool->Allocator, MemoryPool);
 }
 
-Index MemoryPoolGetBlockSize(
+Int MemoryPoolGetBlockSize(
     MemoryPoolRef MemoryPool
 ) {
     assert(MemoryPool);
     return MemoryPool->BlockSize;
 }
 
-Index MemoryPoolGetBlockCount(
+Int MemoryPoolGetBlockCount(
     MemoryPoolRef MemoryPool
 ) {
     assert(MemoryPool);
     return MemoryPool->BlockCount;
 }
 
-Index MemoryPoolGetReservedBlockCount(
+Int MemoryPoolGetReservedBlockCount(
     MemoryPoolRef MemoryPool
 ) {
     return MemoryPool->ReservedBlockCount;
@@ -70,7 +70,7 @@ Bool MemoryPoolIsFull(
 
 Bool MemoryPoolIsReserved(
     MemoryPoolRef MemoryPool,
-    Index BlockIndex
+    Int BlockIndex
 ) {
     assert(MemoryPool);
     assert(BlockIndex < MemoryPool->BlockCount);
@@ -81,13 +81,13 @@ Void MemoryPoolClear(
     MemoryPoolRef MemoryPool
 ) {
     MemoryPool->ReservedBlockCount = 0;
-    Index BlockFlagsSize = NextPowerOfTwo(MemoryPool->BlockCount * sizeof(Bool));
+    Int BlockFlagsSize = NextPowerOfTwo(MemoryPool->BlockCount * sizeof(Bool));
     memset(MemoryPool->BlockFlags, 0, BlockFlagsSize);
 }
 
 Void *MemoryPoolReserve(
     MemoryPoolRef MemoryPool,
-    Index BlockIndex
+    Int BlockIndex
 ) {
     assert(MemoryPool);
     assert(BlockIndex < MemoryPool->BlockCount);
@@ -101,11 +101,11 @@ Void *MemoryPoolReserve(
 
 Void *MemoryPoolReserveNext(
     MemoryPoolRef MemoryPool,
-    Index *OutBlockIndex
+    Int *OutBlockIndex
 ) {
     assert(MemoryPool);
     
-    for (Index BlockIndex = 0; BlockIndex < MemoryPool->BlockCount; BlockIndex += 1) {
+    for (Int BlockIndex = 0; BlockIndex < MemoryPool->BlockCount; BlockIndex += 1) {
         if (!MemoryPool->BlockFlags[BlockIndex]) {
             *OutBlockIndex = BlockIndex;
             return MemoryPoolReserve(MemoryPool, BlockIndex);
@@ -118,7 +118,7 @@ Void *MemoryPoolReserveNext(
 
 Void *MemoryPoolFetch(
     MemoryPoolRef MemoryPool,
-    Index BlockIndex
+    Int BlockIndex
 ) {
     assert(MemoryPool);
     assert(BlockIndex < MemoryPool->BlockCount);
@@ -128,7 +128,7 @@ Void *MemoryPoolFetch(
 
 Void MemoryPoolRelease(
     MemoryPoolRef MemoryPool,
-    Index BlockIndex
+    Int BlockIndex
 ) {
     assert(MemoryPool);
     assert(BlockIndex < MemoryPool->BlockCount);

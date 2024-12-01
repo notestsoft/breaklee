@@ -13,7 +13,7 @@ struct _ArchiveString {
 };
 
 struct _ArchiveIterator {
-    Int32 Index;
+    Int Index;
 };
 
 typedef struct _Archive* ArchiveRef;

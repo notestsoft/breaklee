@@ -11,12 +11,12 @@ Void RTCharacterInitializeAnimaMastery(
 
     RTAnimaMasteryPresetDataRef PresetData = &Character->Data.AnimaMasteryInfo.PresetData[Character->Data.PresetInfo.ActiveAnimaMasteryPresetIndex];
 
-    for (Int32 Index = 0; Index < RUNTIME_MAX_ANIMA_MASTERY_CATEGORY_COUNT; Index += 1) {
+    for (Int Index = 0; Index < RUNTIME_MAX_ANIMA_MASTERY_CATEGORY_COUNT; Index += 1) {
         RTAnimaMasteryPresetSlot PresetSlot = PresetData->CategoryOrder[Index];
         RTAnimaMasteryCategoryDataRef CategoryData = RTCharacterAnimaMasteryGetCategoryData(Runtime, Character, PresetSlot.StorageIndex, PresetSlot.CategoryIndex);
         if (!CategoryData) continue;
 
-        for (Int32 SlotIndex = 0; SlotIndex < RUNTIME_MAX_ANIMA_MASTERY_SLOT_COUNT; SlotIndex += 1) {
+        for (Int SlotIndex = 0; SlotIndex < RUNTIME_MAX_ANIMA_MASTERY_SLOT_COUNT; SlotIndex += 1) {
             UInt8 ForceEffectOrder = CategoryData->MasterySlots[SlotIndex];
             if (ForceEffectOrder < 1) break;
 
@@ -75,7 +75,7 @@ UInt8 RTCharacterAnimaMasteryTrainSlot(
 
         if (Price->RequiredItemID > 0 && Price->RequiredItemCount > 0) {
             Int32 ConsumableItemCount = 0;
-            for (Int32 Index = 0; Index < MaterialSlotCount; Index += 1) {
+            for (Int Index = 0; Index < MaterialSlotCount; Index += 1) {
                 RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index]);
                 if (!ItemSlot) return 0;
 
@@ -97,7 +97,7 @@ UInt8 RTCharacterAnimaMasteryTrainSlot(
 
         if (Price->RequiredItemID > 0 && Price->RequiredItemCount > 0) {
             Int32 RemainingItemCount = Price->RequiredItemCount;
-            for (Int32 Index = 0; Index < MaterialSlotCount; Index += 1) {
+            for (Int Index = 0; Index < MaterialSlotCount; Index += 1) {
                 RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index]);
                 RTItemDataRef ItemData = (ItemSlot) ? RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID) : NULL;
                 if (!ItemSlot || !ItemData) return 0;
@@ -121,7 +121,7 @@ UInt8 RTCharacterAnimaMasteryTrainSlot(
     }
 
     Int32 ForceEffectCount = 0;
-    for (Int32 Index = 0; Index < Runtime->Context->AnimaMasteryValueCount; Index += 1) {
+    for (Int Index = 0; Index < Runtime->Context->AnimaMasteryValueCount; Index += 1) {
         if (Runtime->Context->AnimaMasteryValueList[Index].CategoryIndex != CategoryIndex) continue;
 
         ForceEffectCount += 1;
@@ -131,7 +131,7 @@ UInt8 RTCharacterAnimaMasteryTrainSlot(
     Int32 RandomRate = RandomRange(&Seed, 0, ForceEffectCount * 1000);
     Int32 RandomRateOffset = 0;
     Int32 ForceEffectOrder = 0;
-    for (Int32 Index = 0; Index < Runtime->Context->AnimaMasteryValueCount; Index += 1) {
+    for (Int Index = 0; Index < Runtime->Context->AnimaMasteryValueCount; Index += 1) {
         if (Runtime->Context->AnimaMasteryValueList[Index].CategoryIndex != CategoryIndex) continue;
 
         RandomRateOffset += 1000;
@@ -233,7 +233,7 @@ RTAnimaMasteryCategoryDataRef RTCharacterAnimaMasteryGetCategoryData(
     if (StorageIndex < 0 || StorageIndex >= RUNTIME_MAX_ANIMA_MASTERY_STORAGE_COUNT) return NULL;
     if (CategoryIndex < 0 || CategoryIndex >= RUNTIME_MAX_ANIMA_MASTERY_CATEGORY_COUNT) return NULL;
     
-    for (Int32 Index = 0; Index < Character->Data.AnimaMasteryInfo.Info.StorageCount; Index += 1) {
+    for (Int Index = 0; Index < Character->Data.AnimaMasteryInfo.Info.StorageCount; Index += 1) {
         RTAnimaMasteryCategoryDataRef CategoryData = &Character->Data.AnimaMasteryInfo.CategoryData[Index];
         if (CategoryData->CategoryIndex != CategoryIndex || CategoryData->StorageIndex != StorageIndex) continue;
 
@@ -243,7 +243,7 @@ RTAnimaMasteryCategoryDataRef RTCharacterAnimaMasteryGetCategoryData(
     assert(Character->Data.AnimaMasteryInfo.Info.StorageCount < RUNTIME_MAX_ANIMA_MASTERY_STORAGE_COUNT * RUNTIME_MAX_ANIMA_MASTERY_CATEGORY_COUNT);
 
     Int32 InsertionIndex = -1;
-    for (Int32 Index = 0; Index < Character->Data.AnimaMasteryInfo.Info.StorageCount; Index += 1) {
+    for (Int Index = 0; Index < Character->Data.AnimaMasteryInfo.Info.StorageCount; Index += 1) {
         RTAnimaMasteryCategoryDataRef CategoryData = &Character->Data.AnimaMasteryInfo.CategoryData[Index];
         if (CategoryData->StorageIndex < StorageIndex) continue;
         if (CategoryData->CategoryIndex < CategoryIndex) continue;

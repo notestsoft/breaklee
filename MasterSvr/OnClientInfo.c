@@ -2,7 +2,7 @@
 #include "IPCProcedures.h"
 
 IPC_PROCEDURE_BINDING(N2M, CLIENT_CONNECT) {
-	Index ClientIndex = Packet->AccountID;
+	Int ClientIndex = Packet->AccountID;
 	ClientInfoRef ClientInfo = (ClientInfoRef)DictionaryLookup(Context->ClientInfoTable, &ClientIndex);
 	if (!ClientInfo) {
 		struct _ClientInfo Info = { 0 };
@@ -27,13 +27,13 @@ IPC_PROCEDURE_BINDING(N2M, CLIENT_CONNECT) {
 
 IPC_PROCEDURE_BINDING(N2M, CLIENT_DISCONNECT) {
 	Bool IsOnline = false;
-	Index ClientIndex = Packet->AccountID;
+	Int ClientIndex = Packet->AccountID;
 	ClientInfoRef ClientInfo = (ClientInfoRef)DictionaryLookup(Context->ClientInfoTable, &ClientIndex);
 	if (ClientInfo) {
 		assert(ConnectionContext->NodeID.Type < IPC_TYPE_COUNT);
 		ClientInfo->NodeConnectionCount[ConnectionContext->NodeID.Type] -= 1;
 
-		for (Int32 Index = 0; Index < IPC_TYPE_COUNT; Index += 1) {
+		for (Int Index = 0; Index < IPC_TYPE_COUNT; Index += 1) {
 			if (ClientInfo->NodeConnectionCount[Index] > 0) {
 				IsOnline = true;
 				break;

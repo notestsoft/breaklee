@@ -13,15 +13,13 @@ IPC_PROCEDURE_BINDING(L2M, GET_WORLD_LIST) {
 
     DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(Socket->NodeTable);
     while (Iterator.Key) {
-        IPCNodeID Node = { 0 };
-        Node.Serial = *(Index*)Iterator.Key;
+        IPCNodeID Node = *(IPCNodeID*)Iterator.Key;
         Iterator = DictionaryKeyIteratorNext(Iterator);
 
         if (Node.Type != IPC_TYPE_WORLD) continue;
         if (Node.Group != Server->IPCSocket->NodeID.Group) continue;
 
-        Index WorldIndex = Node.Serial;
-        WorldInfoRef WorldInfo = (WorldInfoRef)DictionaryLookup(Context->WorldInfoTable, &WorldIndex);
+        WorldInfoRef WorldInfo = (WorldInfoRef)DictionaryLookup(Context->WorldInfoTable, &Node);
         if (!WorldInfo) continue;
 
         IPC_M2L_DATA_SERVER_GROUP_NODE* ServerGroupNode = IPCPacketBufferAppendStruct(Connection->PacketBuffer, IPC_M2L_DATA_SERVER_GROUP_NODE);
@@ -46,15 +44,13 @@ IPC_PROCEDURE_BINDING(W2M, GET_WORLD_LIST) {
 
     DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(Socket->NodeTable);
     while (Iterator.Key) {
-        IPCNodeID Node = { 0 };
-        Node.Serial = *(Index*)Iterator.Key;
+        IPCNodeID Node = *(IPCNodeID*)Iterator.Key;
         Iterator = DictionaryKeyIteratorNext(Iterator);
 
         if (Node.Type != IPC_TYPE_WORLD) continue;
         if (Node.Group != Context->Config.MasterSvr.GroupIndex) continue;
 
-        Index WorldIndex = Node.Serial;
-        WorldInfoRef WorldInfo = (WorldInfoRef)DictionaryLookup(Context->WorldInfoTable, &WorldIndex);
+        WorldInfoRef WorldInfo = (WorldInfoRef)DictionaryLookup(Context->WorldInfoTable, &Node);
         if (!WorldInfo) continue;
 
         IPC_M2W_DATA_SERVER_GROUP_NODE* ServerGroupNode = IPCPacketBufferAppendStruct(Connection->PacketBuffer, IPC_M2W_DATA_SERVER_GROUP_NODE);

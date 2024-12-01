@@ -14,7 +14,7 @@ Void SendEventList(
     S2C_DATA_NFY_EVENT_LIST* EventList = PacketBufferInit(PacketBuffer, S2C, NFY_EVENT_LIST);
     EventList->Count = Context->Runtime->Context->EventCount;
 
-    for (Index Index = 0; Index < Context->Runtime->Context->EventCount; Index += 1) {
+    for (Int Index = 0; Index < Context->Runtime->Context->EventCount; Index += 1) {
         RTDataEventRef EventData = &Context->Runtime->Context->EventList[Index];
         PacketBufferAppendValue(PacketBuffer, UInt32, EventData->ID);
     }
@@ -34,7 +34,7 @@ Void SendEventInfo(
     S2C_DATA_NFY_EVENT_INFO_HEADER* EventInfoHeader = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_NFY_EVENT_INFO_HEADER);
     EventInfoHeader->EventCount = Context->Runtime->Context->EventCount;
 
-    for (Int32 EventIndex = 0; EventIndex < Context->Runtime->Context->EventCount; EventIndex += 1) {
+    for (Int EventIndex = 0; EventIndex < Context->Runtime->Context->EventCount; EventIndex += 1) {
         RTDataEventRef EventData = &Context->Runtime->Context->EventList[EventIndex];
 
         S2C_DATA_NFY_EVENT_INFO_EVENT* EventInfoEvent = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT);
@@ -51,7 +51,7 @@ Void SendEventInfo(
         S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO* EventItemInfo = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO);
         EventItemInfo->ItemCount = EventData->EventItemCount;
 
-        for (Index ItemIndex = 0; ItemIndex < EventData->EventItemCount; ItemIndex += 1) {
+        for (Int ItemIndex = 0; ItemIndex < EventData->EventItemCount; ItemIndex += 1) {
             RTDataEventItemRef EventItem = &EventData->EventItemList[ItemIndex];
 
             S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO_DATA* EventItemData = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_NFY_EVENT_INFO_EVENT_ITEM_INFO_DATA);
@@ -729,7 +729,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     }
 
     Response->QuestInfo = Character->Data.QuestInfo.Info;
-    for (Int32 Index = 0; Index < Character->Data.QuestInfo.Info.SlotCount; Index += 1) {
+    for (Int Index = 0; Index < Character->Data.QuestInfo.Info.SlotCount; Index += 1) {
         RTQuestSlotRef QuestSlot = &Character->Data.QuestInfo.Slots[Index];
         if (!QuestSlot->QuestIndex) continue;
 
@@ -737,7 +737,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         assert(Quest);
 
         UInt16 NpcActionFlags = 0;
-        for (Int32 Index = 0; Index < QuestSlot->NpcActionIndex; Index += 1) {
+        for (Int Index = 0; Index < QuestSlot->NpcActionIndex; Index += 1) {
             NpcActionFlags |= 1 << Index;
         }
 
@@ -749,7 +749,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         QuestResponse->QuestSlotIndex = QuestSlot->SlotIndex;
 
         Int32 CounterCount = Quest->MissionMobCount + Quest->MissionItemCount;
-        for (Int32 CounterIndex = 0; CounterIndex < CounterCount; CounterIndex++) {
+        for (Int CounterIndex = 0; CounterIndex < CounterCount; CounterIndex++) {
             PacketBufferAppendValue(PacketBuffer, UInt8, QuestSlot->Counter[CounterIndex]);
         }
     }

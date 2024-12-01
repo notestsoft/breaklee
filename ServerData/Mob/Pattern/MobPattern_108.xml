@@ -2,12 +2,12 @@
 <MobPattern Index="108">
 	<MobTriggerGroup Index="1" Type="1" Parameters="3000">
 		<MobActionGroup Index="1" Delay="">
-			<MobAction Index="1" Type="10" Parameters="434" Duration="3233" TargetType="1" TargetParameters="" Loop="1" LoopDelay="3000" Priority="0"/>
+			<MobAction Index="1" Type="10" Parameters="434:8733:6633:7141" Duration="3233" TargetType="1" TargetParameters="" Loop="1" LoopDelay="3000" Priority="0"/>
 		</MobActionGroup>
 	</MobTriggerGroup>
 	<MobTriggerGroup Index="2" Type="1" Parameters="6000">
 		<MobActionGroup Index="2" Delay="">
-			<MobAction Index="1" Type="10" Parameters="435" Duration="3000" TargetType="1" TargetParameters="" Loop="1" LoopDelay="6000" Priority="0"/>
+			<MobAction Index="1" Type="10" Parameters="435:8733:7133:7841" Duration="3000" TargetType="1" TargetParameters="" Loop="1" LoopDelay="6000" Priority="0"/>
 		</MobActionGroup>
 	</MobTriggerGroup>
 	<MobTriggerGroup Index="3" Type="1" Parameters="29000">
@@ -17,7 +17,7 @@
 	</MobTriggerGroup>
 	<MobTriggerGroup Index="4" Type="5" Parameters="3:0">
 		<MobActionGroup Index="4" Delay="500">
-			<MobAction Index="1" Type="10" Parameters="436" Duration="2000" TargetType="1" TargetParameters="" Loop="0" LoopDelay="100000" Priority="5"/>
+			<MobAction Index="1" Type="10" Parameters="436:9042:9366:10097" Duration="2000" TargetType="1" TargetParameters="" Loop="0" LoopDelay="100000" Priority="5"/>
 		</MobActionGroup>
 	</MobTriggerGroup>
 	<MobTriggerGroup Index="5" Type="1" Parameters="45000">
@@ -27,7 +27,7 @@
 	</MobTriggerGroup>
 	<MobTriggerGroup Index="6" Type="5" Parameters="5:0">
 		<MobActionGroup Index="6" Delay="1500">
-			<MobAction Index="1" Type="10" Parameters="437" Duration="4000" TargetType="5" TargetParameters="" Loop="0" LoopDelay="100000" Priority="5"/>
+			<MobAction Index="1" Type="10" Parameters="437:0:0:0" Duration="4000" TargetType="5" TargetParameters="" Loop="0" LoopDelay="100000" Priority="5"/>
 		</MobActionGroup>
 	</MobTriggerGroup>
 	<MobTriggerGroup Index="7" Type="1" Parameters="60000">

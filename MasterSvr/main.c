@@ -48,7 +48,7 @@ Int32 main(Int32 argc, CString* argv) {
     AllocatorRef Allocator = AllocatorGetSystemDefault();
     struct _ServerContext ServerContext = { 0 };
     ServerContext.Config = Config;
-    ServerContext.WorldInfoTable = IndexDictionaryCreate(Allocator, Config.MasterSvr.MaxWorldCount);
+    ServerContext.WorldInfoTable = IPCNodeIDDictionaryCreate(Allocator, Config.MasterSvr.MaxWorldCount);
     ServerContext.ClientInfoTable = IndexDictionaryCreate(Allocator, 4096);
 
     IPCNodeID NodeID = kIPCNodeIDNull;

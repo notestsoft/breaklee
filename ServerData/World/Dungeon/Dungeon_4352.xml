@@ -964,28 +964,28 @@
 		<Trigger Type="1" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="321"/>
 	</TriggerGroup>
 	<TriggerGroup Index="316">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="432,433,434,435,436,437,438,439" NpcIndex="-1" ActionGroupIndex="355"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="432,433,434,435,436,437,438" NpcIndex="-1" ActionGroupIndex="355"/>
 	</TriggerGroup>
 	<TriggerGroup Index="317">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="432,433,434,435,436,437,438,439" NpcIndex="-1" ActionGroupIndex="356"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="432,433,434,435,436,437,438" NpcIndex="-1" ActionGroupIndex="356"/>
 	</TriggerGroup>
 	<TriggerGroup Index="318">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="432,433,434,435,436,437,438,439" NpcIndex="-1" ActionGroupIndex="357"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="432,433,434,435,436,437,438" NpcIndex="-1" ActionGroupIndex="357"/>
 	</TriggerGroup>
 	<TriggerGroup Index="319">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="432,433,434,435,436,437,438,439" NpcIndex="-1" ActionGroupIndex="358"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="432,433,434,435,436,437,438" NpcIndex="-1" ActionGroupIndex="358"/>
 	</TriggerGroup>
 	<TriggerGroup Index="320">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="432,433,434,435,436,437,438,439" NpcIndex="-1" ActionGroupIndex="359"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="432,433,434,435,436,437,438" NpcIndex="-1" ActionGroupIndex="359"/>
 	</TriggerGroup>
 	<TriggerGroup Index="321">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="432,433,434,435,436,437,438,439" NpcIndex="-1" ActionGroupIndex="360"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="432,433,434,435,436,437,438" NpcIndex="-1" ActionGroupIndex="360"/>
 	</TriggerGroup>
 	<TriggerGroup Index="322">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="432,433,434,435,436,437,438,439" NpcIndex="-1" ActionGroupIndex="361"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="432,433,434,435,436,437,438" NpcIndex="-1" ActionGroupIndex="361"/>
 	</TriggerGroup>
 	<TriggerGroup Index="323">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="432,433,434,435,436,437,438,439" NpcIndex="-1" ActionGroupIndex="362"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="432,433,434,435,436,437,438" NpcIndex="-1" ActionGroupIndex="362"/>
 	</TriggerGroup>
 	<TriggerGroup Index="324">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="365"/>

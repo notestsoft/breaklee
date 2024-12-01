@@ -8,9 +8,9 @@ EXTERN_C_BEGIN
 
 struct _Array {
     AllocatorRef Allocator;
-    Index Size;
-    Index Count;
-    Index Capacity;
+    Int Size;
+    Int Count;
+    Int Capacity;
     UInt8* Memory;
 };
 
@@ -23,22 +23,22 @@ typedef Bool (*ArrayPredicate)(
 
 ArrayRef ArrayCreate(
     AllocatorRef Allocator,
-    Index Size,
+    Int Size,
     MemoryRef Memory, 
-    Index Count
+    Int Count
 );
 
 ArrayRef ArrayCreateEmpty(
     AllocatorRef Allocator,
-    Index Size,
-    Index Capacity
+    Int Size,
+    Int Capacity
 );
 
 Void ArrayInitializeEmpty(
     ArrayRef Array,
     AllocatorRef Allocator,
-    Index Size,
-    Index Capacity
+    Int Size,
+    Int Capacity
 );
 
 Void ArrayDealloc(
@@ -49,22 +49,22 @@ Void ArrayDestroy(
     ArrayRef Array
 );
 
-Index ArrayGetElementSize(
+Int ArrayGetElementSize(
     ArrayRef Array
 );
 
-Index ArrayGetElementCount(
+Int ArrayGetElementCount(
     ArrayRef Array
 );
 
 MemoryRef ArrayGetElementAtIndex(
     ArrayRef Array, 
-    Index Index
+    Int Index
 );
 
 Void ArrayCopyElementAtIndex(
     ArrayRef Array, 
-    Index Index, 
+    Int Index, 
     MemoryRef Memory
 );
 
@@ -85,23 +85,23 @@ Void ArrayAppendArray(
 Void ArrayAppendMemory(
     ArrayRef Array, 
     MemoryRef Memory, 
-    Index Count
+    Int Count
 );
 
 MemoryRef ArrayAppendUninitializedMemory(
     ArrayRef Array, 
-    Index Count
+    Int Count
 );
 
 Void ArrayInsertElementAtIndex(
     ArrayRef Array, 
-    Index Index, 
+    Int Index,
     MemoryRef Memory
 );
 
 Void ArraySetElementAtIndex(
     ArrayRef Array, 
-    Index Index, 
+    Int Index,
     MemoryRef Memory
 );
 
@@ -112,7 +112,7 @@ Void ArrayRemoveElement(
 
 Void ArrayRemoveElementAtIndex(
     ArrayRef Array, 
-    Index Index
+    Int Index
 );
 
 Bool ArrayContainsElement(
@@ -120,7 +120,7 @@ Bool ArrayContainsElement(
     Void* Element
 );
 
-Index ArrayGetElementIndexInMemoryBounds(
+Int32 ArrayGetElementIndexInMemoryBounds(
     ArrayRef Array,
     MemoryRef Offset
 );
@@ -139,7 +139,7 @@ Bool ArrayGetIndexOfElement(
     ArrayRef Array,
     ArrayPredicate Predicate, 
     MemoryRef Element,
-    Index *OutIndex
+    Int *OutIndex
 );
 
 EXTERN_C_END

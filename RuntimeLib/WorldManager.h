@@ -39,44 +39,44 @@ Void RTWorldManagerUpdate(
 
 RTWorldDataRef RTWorldDataCreate(
     RTWorldManagerRef WorldManager,
-    Index WorldIndex
+    Int WorldIndex
 );
 
 Bool RTWorldDataExists(
     RTWorldManagerRef WorldManager,
-    Index WorldIndex
+    Int WorldIndex
 );
 
 RTWorldDataRef RTWorldDataGet(
     RTWorldManagerRef WorldManager,
-    Index WorldIndex
+    Int WorldIndex
 );
 
 RTWorldContextRef RTWorldContextGet(
     RTWorldManagerRef WorldManager,
-    Index WorldIndex,
-    Index WorldInstanceIndex
+    Int WorldIndex,
+    Int WorldInstanceIndex
 );
 
 RTWorldContextRef RTWorldContextCreateGlobal(
     RTWorldManagerRef WorldManager,
-    Index WorldIndex
+    Int WorldIndex
 );
 
 RTWorldContextRef RTWorldContextGetGlobal(
     RTWorldManagerRef WorldManager,
-    Index WorldIndex
+    Int WorldIndex
 );
 
 Void RTWorldContextDestroyGlobal(
     RTWorldManagerRef WorldManager,
-    Index WorldIndex
+    Int WorldIndex
 );
 
 RTWorldContextRef RTWorldContextCreateParty(
     RTWorldManagerRef WorldManager,
-    Index WorldIndex,
-    Index DungeonIndex,
+    Int WorldIndex,
+    Int64 DungeonIndex,
     RTEntityID Party
 );
 
@@ -99,13 +99,13 @@ Void RTWorldContextDestroyParty(
     RTEntityID Party
 );
 
-Int32 RTWorldContextGetPartyInstanceCount(
+Int RTWorldContextGetPartyInstanceCount(
     RTWorldManagerRef WorldManager
 );
 
 RTCharacterRef RTWorldManagerCreateCharacter(
     RTWorldManagerRef WorldManager,
-    Index CharacterIndex
+    UInt32 CharacterIndex
 );
 
 Bool RTWorldManagerCharacterPoolIsFull(
@@ -124,12 +124,12 @@ RTCharacterRef RTWorldManagerGetCharacter(
 
 RTCharacterRef RTWorldManagerGetCharacterByIndex(
     RTWorldManagerRef WorldManager,
-    Index CharacterIndex
+    UInt32 CharacterIndex
 );
 
 Void RTWorldManagerDestroyCharacter(
     RTWorldManagerRef WorldManager,
-    Index CharacterIndex
+    UInt32 CharacterIndex
 );
 
 EXTERN_C_END

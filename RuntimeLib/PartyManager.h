@@ -16,7 +16,7 @@ struct _RTPartyManager {
 
 RTPartyManagerRef RTPartyManagerCreate(
     AllocatorRef Allocator,
-    Index MaxPartyCount
+    Int MaxPartyCount
 );
 
 Void RTPartyManagerDestroy(
@@ -46,7 +46,7 @@ Void RTPartyManagerDestroyPartyRemote(
 
 RTPartyRef RTPartyManagerGetPartyByCharacter(
     RTPartyManagerRef PartyManager,
-    Index CharacterIndex
+    UInt32 CharacterIndex
 );
 
 RTPartyRef RTPartyManagerGetParty(
@@ -62,7 +62,7 @@ Bool RTPartyManagerAddMember(
 
 Bool RTPartyManagerRemoveMember(
     RTPartyManagerRef PartyManager,
-    Index CharacterIndex
+    UInt32 CharacterIndex
 );
 
 EXTERN_C_END

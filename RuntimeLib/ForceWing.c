@@ -20,7 +20,7 @@ Bool RTCharacterEnableForceWing(
 	Character->Data.ForceWingInfo.Info.Level = GradeInfoData->MinLevel;
 	Character->Data.ForceWingInfo.Info.PresetEnabled[0] = true;
 
-	for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT; Index += 1) {
+	for (Int Index = 0; Index < RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT; Index += 1) {
 		Character->Data.ForceWingInfo.Info.PresetTrainingPointCount[Index] += RUNTIME_CHARACTER_FORCE_WING_LEVEL_TRAINING_POINT_COUNT;
 	}
 
@@ -139,7 +139,7 @@ Bool RTCharacterForceWingLevelUp(
 	Character->Data.ForceWingInfo.Info.Exp -= GradeLevelData->Exp;
 	Character->Data.ForceWingInfo.Info.Level += 1;
 
-	for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT; Index += 1) {
+	for (Int Index = 0; Index < RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT; Index += 1) {
 		Character->Data.ForceWingInfo.Info.PresetTrainingPointCount[Index] += RUNTIME_CHARACTER_FORCE_WING_LEVEL_TRAINING_POINT_COUNT;
 	}
 
@@ -204,7 +204,7 @@ Bool RTCharacterForceWingSetPresetTraining(
 ) {
 	if (!RTCharacterForceWingTrainingIsUnlocked(Runtime, Character, PresetPageIndex, PresetSlotIndex, TrainingSlotIndex)) return false;
 
-	for (Index Index = 0; Index < Character->Data.ForceWingInfo.Info.TrainingSlotCount; Index += 1) {
+	for (Int Index = 0; Index < Character->Data.ForceWingInfo.Info.TrainingSlotCount; Index += 1) {
 		RTForceWingTrainingSlotRef TrainingSlot = &Character->Data.ForceWingInfo.TrainingSlots[Index];
 		if (TrainingSlot->PresetPageIndex != PresetPageIndex) continue;
 		if (TrainingSlot->SlotIndex != PresetSlotIndex) continue;
@@ -232,7 +232,7 @@ RTForceWingPresetSlotRef RTCharacterForceWingGetPresetSlot(
 	Int32 PresetSlotIndex,
 	Int32 TrainingSlotIndex
 ) {
-	for (Index Index = 0; Index < Character->Data.ForceWingInfo.Info.PresetSlotCount; Index += 1) {
+	for (Int Index = 0; Index < Character->Data.ForceWingInfo.Info.PresetSlotCount; Index += 1) {
 		RTForceWingPresetSlotRef PresetSlot = &Character->Data.ForceWingInfo.PresetSlots[Index];
 		if (PresetSlot->PresetPageIndex != PresetPageIndex) continue;
 		if (PresetSlot->SlotIndex != PresetSlotIndex) continue;
@@ -266,7 +266,7 @@ Bool RTCharacterForceWingAddTrainingLevel(
 	Int32 RequiredTrainingPointCount = 0;
 	Int32 CurrentTrainingLevel = (PresetSlot) ? PresetSlot->TrainingLevel : 1;
 	*TargetTrainingLevel = CurrentTrainingLevel + AddedTrainingLevelCount;
-	for (Int32 TrainingLevel = CurrentTrainingLevel + 1; TrainingLevel <= *TargetTrainingLevel; TrainingLevel += 1) {
+	for (Int TrainingLevel = CurrentTrainingLevel + 1; TrainingLevel <= *TargetTrainingLevel; TrainingLevel += 1) {
 		RTDataForceWingTrainingAbilityDetailInfoRef TrainingLevelData = RTRuntimeDataForceWingTrainingAbilityDetailInfoGet(TrainingAbilityDetailData, TrainingLevel);
 		if (!TrainingLevelData) return false;
 
@@ -319,23 +319,23 @@ Bool RTCharacterForceWingRollArrivalSkill(
 	RTForceWingArrivalSkillSlotRef RestoreSkillSlot = &Character->Data.ForceWingInfo.Info.ArrivalSkillRestoreSlot;
 
 	Int32 Seed = (Int32)PlatformGetTickCount();
-	for (Index SkillIndex = 0; SkillIndex < RUNTIME_CHARACTER_MAX_FORCE_WING_ARRIVAL_SKILL_COUNT; SkillIndex += 1) {
+	for (Int SkillIndex = 0; SkillIndex < RUNTIME_CHARACTER_MAX_FORCE_WING_ARRIVAL_SKILL_COUNT; SkillIndex += 1) {
 		RTForceWingArrivalSkillSlotRef ArrivalSkillSlot = &Character->Data.ForceWingInfo.Info.ArrivalSkillSlots[SkillIndex];
 		if (ArrivalSkillSlot->SlotIndex != SkillSlotIndex) continue;
 
 		memcpy(RestoreSkillSlot, ArrivalSkillSlot, sizeof(struct _RTForceWingArrivalSkillSlot));
 
-		for (Index GroupIndex = 0; GroupIndex < RUNTIME_CHARACTER_MAX_FORCE_WING_ARRIVAL_STATS_COUNT; GroupIndex += 1) {
+		for (Int GroupIndex = 0; GroupIndex < RUNTIME_CHARACTER_MAX_FORCE_WING_ARRIVAL_STATS_COUNT; GroupIndex += 1) {
 			Int32 DropRateLimit = RUNTIME_CHARACTER_MAX_FORCE_WING_ARRIVAL_STATS_RATE;
 			Int32 DropRate = RandomRange(&Seed, 0, DropRateLimit);
 			Int32 DropRateOffset = 0;
 			Bool Found = false;
 
 			RTDataForceWingSkillGroupRef SkillGroupData = RTRuntimeDataForceWingSkillGroupGet(Runtime->Context, ForceCodeGroups[GroupIndex]);
-			for (Int32 SkillGroupDetailIndex = 0; SkillGroupDetailIndex < SkillGroupData->ForceWingSkillGroupDetailCount; SkillGroupDetailIndex += 1) {
+			for (Int SkillGroupDetailIndex = 0; SkillGroupDetailIndex < SkillGroupData->ForceWingSkillGroupDetailCount; SkillGroupDetailIndex += 1) {
 				RTDataForceWingSkillGroupDetailRef SkillGroupDetailData = &SkillGroupData->ForceWingSkillGroupDetailList[SkillGroupDetailIndex];
 
-				for (Int32 SkillGroupDetailOptionIndex = 0; SkillGroupDetailOptionIndex < SkillGroupDetailData->ForceWingSkillGroupDetailOptionCount; SkillGroupDetailOptionIndex += 1) {
+				for (Int SkillGroupDetailOptionIndex = 0; SkillGroupDetailOptionIndex < SkillGroupDetailData->ForceWingSkillGroupDetailOptionCount; SkillGroupDetailOptionIndex += 1) {
 					RTDataForceWingSkillGroupDetailOptionRef SkillGroupDetailOptionData = &SkillGroupDetailData->ForceWingSkillGroupDetailOptionList[SkillGroupDetailOptionIndex];
 
 					if (DropRate < SkillGroupDetailOptionData->Rate + DropRateOffset) {
@@ -378,7 +378,7 @@ Bool RTCharacterForceWingChangeArrivalSkill(
 
 	RTForceWingArrivalSkillSlotRef RestoreSkillSlot = &Character->Data.ForceWingInfo.Info.ArrivalSkillRestoreSlot;
 
-	for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_FORCE_WING_ARRIVAL_SKILL_COUNT; Index += 1) {
+	for (Int Index = 0; Index < RUNTIME_CHARACTER_MAX_FORCE_WING_ARRIVAL_SKILL_COUNT; Index += 1) {
 		RTForceWingArrivalSkillSlotRef ArrivalSkillSlot = &Character->Data.ForceWingInfo.Info.ArrivalSkillSlots[Index];
 		if (ArrivalSkillSlot->SlotIndex != RestoreSkillSlot->SlotIndex) continue;
 

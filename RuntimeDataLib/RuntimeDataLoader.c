@@ -54,7 +54,7 @@ RTRuntimeDataContextRef RTRuntimeDataContextCreate(
 Void RTRuntimeDataContextDestroy(
 	RTRuntimeDataContextRef Context
 ) {
-    for (Int32 Index = 0; Index < ArrayGetElementCount(Context->FileEvents); Index += 1) {
+    for (Int Index = 0; Index < ArrayGetElementCount(Context->FileEvents); Index += 1) {
         FileEventRef Event = *(FileEventRef*)ArrayGetElementAtIndex(Context->FileEvents, Index);
         FileEventDestroy(Event);
     }
@@ -100,12 +100,12 @@ Bool RTRuntimeDataContextLoad(
         CString Query = __QUERY__; \
         CString PropertyQuery = NULL; \
         Context->CONCAT(__NAME__, Count) = ArchiveQueryNodeCount(Archive, -1, Query); \
-        Index MemorySize = MAX(1, sizeof(struct CONCAT(_RTData, __NAME__)) * Context->CONCAT(__NAME__, Count)); \
-        Trace("Data %s memory size: %llu total: %.3f KB", #__NAME__, MemorySize, (Float32)MemorySize / 1000); \
+        Int MemorySize = MAX(1, sizeof(struct CONCAT(_RTData, __NAME__)) * Context->CONCAT(__NAME__, Count)); \
+        Trace("Data %s memory size: %llu total: %.3f KB", #__NAME__, (UInt64)MemorySize, (Float32)MemorySize / 1000); \
         Context->CONCAT(__NAME__, List) = (CONCAT(RTData, __NAME__ ## Ref))(AllocatorAllocate(Context->Allocator, MemorySize)); \
         Iterator = ArchiveQueryNodeIteratorFirst(Archive, -1, Query); \
         if (!Iterator) Error("Element not found for query: %s\n", Query); \
-        Int32 IteratorIndex = 0; \
+        Int IteratorIndex = 0; \
         while (Iterator) { \
             assert(IteratorIndex < Context->CONCAT(__NAME__, Count)); \
             CONCAT(RTData, __NAME__ ## Ref) Data = &Context->CONCAT(__NAME__, List)[IteratorIndex]; \
@@ -133,9 +133,9 @@ Bool RTRuntimeDataContextLoad(
                 CString Query = __QUERY__; \
                 ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, Query); \
                 Data->CONCAT(__NAME__, Count) = ArchiveQueryNodeCount(Archive, Iterator->Index, Query); \
-                Index MemorySize = MAX(1, sizeof(struct CONCAT(_RTData, __NAME__)) * Data->CONCAT(__NAME__, Count)); \
+                Int MemorySize = MAX(1, sizeof(struct CONCAT(_RTData, __NAME__)) * Data->CONCAT(__NAME__, Count)); \
                 Data->CONCAT(__NAME__, List) = (CONCAT(RTData, __NAME__ ## Ref))(AllocatorAllocate(Context->Allocator, MemorySize)); \
-                Int32 ChildIteratorIndex = 0; \
+                Int ChildIteratorIndex = 0; \
                 while (ChildIterator) { \
                     ArchiveIteratorRef Iterator = ChildIterator; \
                     assert(ChildIteratorIndex < Data->CONCAT(__NAME__, Count)); \
@@ -173,7 +173,7 @@ CONCAT(RTData, __NAME__ ## Ref) CONCAT(RTRuntimeData, __NAME__ ## Get)( \
 	RTRuntimeDataContextRef Context, \
 	__TYPE__ __FIELD__ \
 ) { \
-    for (Int32 _Index = 0; _Index < Context->CONCAT(__NAME__, Count); _Index++) { \
+    for (Int _Index = 0; _Index < Context->CONCAT(__NAME__, Count); _Index++) { \
         CONCAT(RTData, __NAME__ ## Ref) Data = &Context->CONCAT(__NAME__, List)[_Index]; \
         if (Data->__FIELD__ == __FIELD__) { \
             return Data; \
@@ -188,7 +188,7 @@ CONCAT(RTData, __NAME__ ## Ref) CONCAT(RTRuntimeData ## __NAME__, Get ## __SUFFI
 	RTRuntimeDataContextRef Context, \
 	__TYPE__ __FIELD__ \
 ) { \
-    for (Int32 _Index = 0; _Index < Context->CONCAT(__NAME__, Count); _Index++) { \
+    for (Int _Index = 0; _Index < Context->CONCAT(__NAME__, Count); _Index++) { \
         CONCAT(RTData, __NAME__ ## Ref) Data = &Context->CONCAT(__NAME__, List)[_Index]; \
         if (Data->__FIELD__ == __FIELD__) { \
             return Data; \
@@ -203,7 +203,7 @@ CONCAT(RTData, __NAME__ ## Ref) CONCAT(RTRuntimeData, __NAME__ ## Get)(			      
 	CONCAT(RTData, __PARENT__ ## Ref) Parent,										    \
 	__TYPE__ __FIELD__															        \
 ) {                                                                                     \
-    for (Int32 _Index = 0; _Index < Parent->CONCAT(__NAME__, Count); _Index++) {        \
+    for (Int _Index = 0; _Index < Parent->CONCAT(__NAME__, Count); _Index++) {        \
         CONCAT(RTData, __NAME__ ## Ref) Data = &Parent->CONCAT(__NAME__, List)[_Index]; \
         if (Data->__FIELD__ == __FIELD__) {                                             \
             return Data;                                                                \
@@ -226,7 +226,7 @@ CONCAT(RTData, __NAME__ ## Ref) CONCAT(RTRuntimeData, __NAME__ ## Get)(						\
 	RTRuntimeDataContextRef Context,														\
 	__TYPE__ Value																            \
 ) {                                                                                         \
-    for (Int32 _Index = 0; _Index < Context->CONCAT(__NAME__, Count); _Index++) {           \
+    for (Int _Index = 0; _Index < Context->CONCAT(__NAME__, Count); _Index++) {           \
         CONCAT(RTData, __NAME__ ## Ref) Data = &Context->CONCAT(__NAME__, List)[_Index];    \
         if (Data->__LOWER_FIELD__ <= Value && Value <= Data->__UPPER_FIELD__) {             \
             return Data;                                                                    \
@@ -243,7 +243,7 @@ RTDataAnimaMasteryValueRef RTRuntimeDataAnimaMasteryValueGet(
     Int32 CategoryIndex,
     Int32 ForceEffectOrder
 ) {
-    for (Int32 Index = 0; Index < Context->AnimaMasteryValueCount; Index += 1) {
+    for (Int Index = 0; Index < Context->AnimaMasteryValueCount; Index += 1) {
         RTDataAnimaMasteryValueRef Value = &Context->AnimaMasteryValueList[Index];
         if (Value->CategoryIndex != CategoryIndex) continue;
         if (Value->ForceEffectOrder != ForceEffectOrder) continue;
@@ -259,7 +259,7 @@ Int32 RTRuntimeDataCharacterRankUpConditionGet(
     Int32 Rank,
     Int32 BattleStyleIndex
 ) {
-    for (Int32 RankIndex = 0; RankIndex < Context->CharacterRankUpConditionCount; RankIndex += 1) {
+    for (Int RankIndex = 0; RankIndex < Context->CharacterRankUpConditionCount; RankIndex += 1) {
         if (Context->CharacterRankUpConditionList[RankIndex].Rank != Rank) continue;
 
         assert(Context->CharacterRankUpConditionList[RankIndex].ConditionCount == 1);
@@ -305,7 +305,7 @@ RTDataUpgradeItemGradeRef RTRuntimeDataUpgradeItemGradeGet(
     RTDataUpgradeItemRef UpgradeItem,
     Int32 Grade
 ) {
-    for (Int32 Index = 0; Index < UpgradeItem->UpgradeItemGradeCount; Index += 1) {
+    for (Int Index = 0; Index < UpgradeItem->UpgradeItemGradeCount; Index += 1) {
         RTDataUpgradeItemGradeRef UpgradeItemGrade = &UpgradeItem->UpgradeItemGradeList[Index];
         if (UpgradeItemGrade->MinGrade <= Grade && Grade <= UpgradeItemGrade->MaxGrade) {
             return UpgradeItemGrade;
@@ -319,7 +319,7 @@ RTDataUpgradeItemBasicGradeRef RTRuntimeDataUpgradeItemBasicGradeGet(
     RTDataUpgradeItemBasicRef UpgradeItem,
     Int32 Grade
 ) {
-    for (Int32 Index = 0; Index < UpgradeItem->UpgradeItemBasicGradeCount; Index += 1) {
+    for (Int Index = 0; Index < UpgradeItem->UpgradeItemBasicGradeCount; Index += 1) {
         RTDataUpgradeItemBasicGradeRef UpgradeItemGrade = &UpgradeItem->UpgradeItemBasicGradeList[Index];
         if (UpgradeItemGrade->MinGrade <= Grade && Grade <= UpgradeItemGrade->MaxGrade) {
             return UpgradeItemGrade;
@@ -334,7 +334,7 @@ RTDataNewbieSupportCategoryRewardRef RTRuntimeDataNewbieSupportCategoryRewardGet
     Int32 ConditionValue1,
     Int32 ConditionValue2
 ) {
-    for (Int32 Index = 0; Index < Category->NewbieSupportCategoryRewardCount; Index += 1) {
+    for (Int Index = 0; Index < Category->NewbieSupportCategoryRewardCount; Index += 1) {
         RTDataNewbieSupportCategoryRewardRef Reward = &Category->NewbieSupportCategoryRewardList[Index];
         if (Reward->ConditionValue1 == ConditionValue1 && Reward->ConditionValue2 == ConditionValue2) {
             return Reward;
@@ -349,7 +349,7 @@ RTDataDivineUpgradeMainRef RTRuntimeDataDivineUpgradeMainGet(
     Int32 ItemGrade,
     Int32 ItemType
 ) {
-    for (Int32 Index = 0; Index < Context->DivineUpgradeMainCount; Index += 1) {
+    for (Int Index = 0; Index < Context->DivineUpgradeMainCount; Index += 1) {
         RTDataDivineUpgradeMainRef Main = &Context->DivineUpgradeMainList[Index];
         if ((Main->ItemGrade == ItemGrade || Main->ItemGrade < 0) && Main->ItemType == ItemType) return Main;
     }
@@ -362,7 +362,7 @@ RTDataDummySkillRef RTRuntimeDataDummySkillGet(
     Int32 Case,
     Int32 Property
 ) {
-    for (Int32 Index = 0; Index < Context->DummySkillCount; Index += 1) {
+    for (Int Index = 0; Index < Context->DummySkillCount; Index += 1) {
         RTDataDummySkillRef DummySkill = &Context->DummySkillList[Index];
         if (DummySkill->Case != Case) continue;
         if (DummySkill->Property != Property) continue;
@@ -378,7 +378,7 @@ RTDataForceCoreBaseRef RTRuntimeDataForceCoreBaseGet(
     Int32 ItemGrade,
     Int32 ItemType
 ) {
-    for (Int32 Index = 0; Index < Context->ForceCoreBaseCount; Index += 1) {
+    for (Int Index = 0; Index < Context->ForceCoreBaseCount; Index += 1) {
         RTDataForceCoreBaseRef Main = &Context->ForceCoreBaseList[Index];
         if ((Main->ItemGrade == ItemGrade || Main->ItemGrade < 0) && Main->ItemType == ItemType) return Main;
     }
@@ -391,7 +391,7 @@ RTDataForceCodeCostRef RTRuntimeDataForceCodeCostGet(
     Int32 CostGrade,
     Int32 FilledSlotCount
 ) {
-    for (Int32 Index = 0; Index < Context->ForceCodeCostCount; Index += 1) {
+    for (Int Index = 0; Index < Context->ForceCodeCostCount; Index += 1) {
         RTDataForceCodeCostRef Cost = &Context->ForceCodeCostList[Index];
         if (Cost->CostGrade == CostGrade && Cost->FilledSlotCount == FilledSlotCount) return Cost;
     }
@@ -405,7 +405,7 @@ RTDataForceCodeRateRef RTRuntimeDataForceCodeRateGet(
     Int32 FilledSlotCount,
     Int32 ItemUpgradeLevel
 ) {
-    for (Int32 Index = 0; Index < Context->ForceCodeRateCount; Index += 1) {
+    for (Int Index = 0; Index < Context->ForceCodeRateCount; Index += 1) {
         RTDataForceCodeRateRef Rate = &Context->ForceCodeRateList[Index];
         if (Rate->ItemType == ItemType && Rate->FilledSlotCount == FilledSlotCount && Rate->ItemUpgradeLevel == ItemUpgradeLevel) return Rate;
     }
@@ -418,7 +418,7 @@ RTDataUpgradeGradeChangeRef RTRuntimeDataUpgradeGradeChangeGet(
     Int32 ItemType,
     Int32 ItemGrade
 ) {
-    for (Int32 Index = 0; Index < Context->UpgradeGradeChangeCount; Index += 1) {
+    for (Int Index = 0; Index < Context->UpgradeGradeChangeCount; Index += 1) {
         RTDataUpgradeGradeChangeRef Change = &Context->UpgradeGradeChangeList[Index];
         if (Change->ItemType == ItemType && Change->ItemGrade == ItemGrade) return Change;
     }
@@ -496,7 +496,7 @@ Bool ParseAttributeRTDataItemType(
     };
 
     Int32 Count = sizeof(Dictionary) / sizeof(Dictionary[0]);
-    for (Int32 Index = 0; Index < Count; Index += 1) {
+    for (Int Index = 0; Index < Count; Index += 1) {
         if (strcmp(Data->Data, Dictionary[Index].Key) == 0) {
             *Result = Dictionary[Index].Value;
             return true;
@@ -576,7 +576,7 @@ Bool ParseAttributeRTDataItemTypeGrade(
     };
 
     Int32 Count = sizeof(Dictionary) / sizeof(Dictionary[0]);
-    for (Int32 Index = 0; Index < Count; Index += 1) {
+    for (Int Index = 0; Index < Count; Index += 1) {
         if (strcmp(Data->Data, Dictionary[Index].Key) == 0) {
             *Result = Dictionary[Index].Value;
             return true;
@@ -713,7 +713,7 @@ RTDataForceCodeFormula RTRuntimeDataForceCodeFormulaGet(
     if (!ForceCoreBase) return Formula;
 
     Int32 ForceEffectIndex = 0;
-    for (Int32 Index = 0; Index < ForceCoreBase->ForceCoreBaseCodeCount; Index += 1) {
+    for (Int Index = 0; Index < ForceCoreBase->ForceCoreBaseCodeCount; Index += 1) {
         if (ForceCoreBase->ForceCoreBaseCodeList[Index].ForceIndex != ForceIndex) continue;
 
         ForceEffectIndex = ForceCoreBase->ForceCoreBaseCodeList[Index].ForceEffectIndex;
@@ -737,7 +737,7 @@ RTDataForceCodeFormula RTRuntimeDataForceCodeFormulaGet(
     );
 
     if (IsEquipment && IsEpic) {
-        for (Int32 Index = 0; Index < Context->EpicCodeEquipmentCount; Index += 1) {
+        for (Int Index = 0; Index < Context->EpicCodeEquipmentCount; Index += 1) {
             RTDataEpicCodeEquipmentRef EpicCode = &Context->EpicCodeEquipmentList[Index];
             if (EpicCode->ForceEffectIndex != ForceEffectIndex) continue;
             if (EpicCode->ForceLevel != ForceLevel) continue;
@@ -786,7 +786,7 @@ RTDataForceCodeFormula RTRuntimeDataForceCodeFormulaGet(
     }
 
     if (IsEquipment && IsExtended) {
-        for (Int32 Index = 0; Index < Context->ExtendedForceCodeEquipmentCount; Index += 1) {
+        for (Int Index = 0; Index < Context->ExtendedForceCodeEquipmentCount; Index += 1) {
             RTDataExtendedForceCodeEquipmentRef ForceCode = &Context->ExtendedForceCodeEquipmentList[Index];
             if (ForceCode->ForceEffectIndex != ForceEffectIndex) continue;
             if (ForceCode->ForceLevel != ForceLevel) continue;
@@ -822,7 +822,7 @@ RTDataForceCodeFormula RTRuntimeDataForceCodeFormulaGet(
     }
 
     if (IsEquipment) {
-        for (Int32 Index = 0; Index < Context->ForceCodeEquipmentCount; Index += 1) {
+        for (Int Index = 0; Index < Context->ForceCodeEquipmentCount; Index += 1) {
             RTDataForceCodeEquipmentRef ForceCode = &Context->ForceCodeEquipmentList[Index];
             if (ForceCode->ForceEffectIndex != ForceEffectIndex) continue;
             if (ForceCode->ForceLevel != ForceLevel) continue;
@@ -859,7 +859,7 @@ RTDataForceCodeFormula RTRuntimeDataForceCodeFormulaGet(
 
     Bool IsAccessory = !IsEquipment;
     if (IsAccessory && IsEpic) {
-        for (Int32 Index = 0; Index < Context->EpicCodeAccessoryCount; Index += 1) {
+        for (Int Index = 0; Index < Context->EpicCodeAccessoryCount; Index += 1) {
             RTDataEpicCodeAccessoryRef EpicCode = &Context->EpicCodeAccessoryList[Index];
             if (EpicCode->ForceEffectIndex != ForceEffectIndex) continue;
             if (EpicCode->ForceLevel != ForceLevel) continue;
@@ -898,7 +898,7 @@ RTDataForceCodeFormula RTRuntimeDataForceCodeFormulaGet(
                 ItemType == RUNTIME_ITEM_TYPE_EARRING ||
                 ItemType == RUNTIME_ITEM_TYPE_RING) {
                 assert(0 < ItemGrade && ItemGrade < 15);
-                if (ItemUniqueGrade) {
+                if (ItemUniqueGrade > 0) {
                     Formula.ForceValue = EpicCode->UniqueAccessoryForceValueGrades[ItemGrade - 1];
                 }
                 else {
@@ -928,7 +928,7 @@ RTDataForceCodeFormula RTRuntimeDataForceCodeFormulaGet(
     }
 
     if (IsAccessory && IsExtended) {
-        for (Int32 Index = 0; Index < Context->ExtendedForceCodeAccessoryCount; Index += 1) {
+        for (Int Index = 0; Index < Context->ExtendedForceCodeAccessoryCount; Index += 1) {
             RTDataExtendedForceCodeAccessoryRef ForceCode = &Context->ExtendedForceCodeAccessoryList[Index];
             if (ForceCode->ForceEffectIndex != ForceEffectIndex) continue;
             if (ForceCode->ForceLevel != ForceLevel) continue;
@@ -996,7 +996,7 @@ RTDataForceCodeFormula RTRuntimeDataForceCodeFormulaGet(
     }
 
     if (IsAccessory) {
-        for (Int32 Index = 0; Index < Context->ForceCodeAccessoryCount; Index += 1) {
+        for (Int Index = 0; Index < Context->ForceCodeAccessoryCount; Index += 1) {
             RTDataForceCodeAccessoryRef ForceCode = &Context->ForceCodeAccessoryList[Index];
             if (ForceCode->ForceEffectIndex != ForceEffectIndex) continue;
             if (ForceCode->ForceLevel != ForceLevel) continue;
@@ -1072,7 +1072,7 @@ RTDataShopIndexRef RTRuntimeDataShopIndexGet(
     Int32 WorldIndex,
     Int32 NpcIndex
 ) {
-    for (Int32 Index = 0; Index < Context->ShopIndexCount; Index += 1) {
+    for (Int Index = 0; Index < Context->ShopIndexCount; Index += 1) {
         RTDataShopIndexRef ShopIndex = &Context->ShopIndexList[Index];
         if (ShopIndex->WorldIndex != WorldIndex) continue;
         if (ShopIndex->NpcIndex != NpcIndex) continue;
@@ -1088,7 +1088,7 @@ RTDataShopItemRef RTRuntimeDataShopItemGet(
     Int32 TabIndex,
     Int32 SlotIndex
 ) {
-    for (Int32 Index = 0; Index < ShopPool->ShopItemCount; Index += 1) {
+    for (Int Index = 0; Index < ShopPool->ShopItemCount; Index += 1) {
         RTDataShopItemRef ShopItem = &ShopPool->ShopItemList[Index];
         if (ShopItem->TabIndex != TabIndex) continue;
         if (ShopItem->SlotIndex != SlotIndex) continue;
@@ -1103,9 +1103,9 @@ RTDataMarketCategoryMainGroupRef RTRuntimeDataMarketCategoryMainGroupGetByCatego
     RTRuntimeDataContextRef Context,
     Int32 Category2
 ) {
-    for (Int32 GroupIndex = 0; GroupIndex < Context->MarketCategoryMainGroupCount; GroupIndex += 1) {
+    for (Int GroupIndex = 0; GroupIndex < Context->MarketCategoryMainGroupCount; GroupIndex += 1) {
         RTDataMarketCategoryMainGroupRef Group = &Context->MarketCategoryMainGroupList[GroupIndex];
-        for (Int32 SubGroupIndex = 0; SubGroupIndex < Group->MarketCategorySubGroupCount; SubGroupIndex += 1) {
+        for (Int SubGroupIndex = 0; SubGroupIndex < Group->MarketCategorySubGroupCount; SubGroupIndex += 1) {
             RTDataMarketCategorySubGroupRef SubGroup = &Group->MarketCategorySubGroupList[SubGroupIndex];
             if (SubGroup->Category2 == Category2) return Group;
         }
@@ -1119,7 +1119,7 @@ RTDataMarketListItemRef RTRuntimeDataMarketListItemGet(
     UInt64 ItemID,
     UInt64 ItemOptions
 ) {
-    for (Int32 Index = 0; Index < Context->MarketListItemCount; Index += 1) {
+    for (Int Index = 0; Index < Context->MarketListItemCount; Index += 1) {
         RTDataMarketListItemRef Item = &Context->MarketListItemList[Index];
         if (Item->ItemID == ItemID && Item->ItemOptions == ItemOptions) return Item;
     }

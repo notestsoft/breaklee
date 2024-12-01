@@ -72,7 +72,7 @@ Void RTNotificationAppendCharacterSpawnIndex(
     NOTIFICATION_DATA_CHARACTERS_SPAWN_GUILD* Guild = (NOTIFICATION_DATA_CHARACTERS_SPAWN_GUILD*)&NotificationCharacter->Name[NotificationCharacter->NameLength];
     Guild->GuildNameLength = 0;
 
-    for (Int32 EquipmentIndex = 0; EquipmentIndex < Character->Data.EquipmentInfo.Info.EquipmentSlotCount; EquipmentIndex += 1) {
+    for (Int EquipmentIndex = 0; EquipmentIndex < Character->Data.EquipmentInfo.Info.EquipmentSlotCount; EquipmentIndex += 1) {
         RTItemSlotRef ItemSlot = &Character->Data.EquipmentInfo.EquipmentSlots[EquipmentIndex];
 
         NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* NotificationSlot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
@@ -82,7 +82,7 @@ Void RTNotificationAppendCharacterSpawnIndex(
         NotificationSlot->ItemDuration = ItemSlot->ItemDuration.Serial;
     }
 
-    for (Int32 Index = 0; Index < RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT; Index += 1) {
+    for (Int Index = 0; Index < RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT; Index += 1) {
         NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* Slot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
         Slot->EquipmentSlotIndex = Index;
     }
@@ -90,7 +90,7 @@ Void RTNotificationAppendCharacterSpawnIndex(
     // S2C_DATA_CHARACTERS_SPAWN_PERSONAL_SHOP_MESSAGE PersonalShopMessage[IsPersonalShop];
     // S2C_DATA_CHARACTERS_SPAWN_PERSONAL_SHOP_INFO PersonalShopInfo[IsPersonalShop];
     // S2C_DATA_CHARACTERS_SPAWN_BUFF_SLOT Buffs[ActiveBuffCount + DebuffCount + GmBuffCount + PassiveBuffCount];
-    for (Int32 Index = 0; Index < Character->Data.BuffInfo.Info.SkillBuffCount; Index += 1) {
+    for (Int Index = 0; Index < Character->Data.BuffInfo.Info.SkillBuffCount; Index += 1) {
         RTBuffSlotRef BuffSlot = &Character->Data.BuffInfo.Slots[Index];
     
         NOTIFICATION_DATA_CHARACTERS_SPAWN_BUFF_SLOT* NotificationBuff = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_BUFF_SLOT);
@@ -107,8 +107,8 @@ Void RTNotificationAppendCharacterSpawnIndex(
          Character->Data.BuffInfo.Info.ForceWingBuffCount,
          Character->Data.BuffInfo.Info.FirePlaceBuffCount
     };
-    Int32 BuffSlotOffset = 0;
-    for (Int32 BuffType = 0; BuffType < RUNTIME_BUFF_SLOT_TYPE_COUNT; BuffType += 1) {
+    Int BuffSlotOffset = 0;
+    for (Int BuffType = 0; BuffType < RUNTIME_BUFF_SLOT_TYPE_COUNT; BuffType += 1) {
         if (BuffType == RUNTIME_BUFF_SLOT_TYPE_POTION ||
             BuffType == RUNTIME_BUFF_SLOT_TYPE_UNKNOWN_2 ||
             BuffType == RUNTIME_BUFF_SLOT_TYPE_FORCE_WING) {
@@ -116,7 +116,7 @@ Void RTNotificationAppendCharacterSpawnIndex(
             continue;
         }
 
-        for (Int32 Index = BuffSlotOffset; Index < BuffSlotOffset + BuffSlotCounts[BuffType]; Index += 1) {
+        for (Int Index = BuffSlotOffset; Index < BuffSlotOffset + BuffSlotCounts[BuffType]; Index += 1) {
             RTBuffSlotRef BuffSlot = &Character->Data.BuffInfo.Slots[Index];
 
             NOTIFICATION_DATA_CHARACTERS_SPAWN_BUFF_SLOT* NotificationBuff = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_BUFF_SLOT);
@@ -155,10 +155,10 @@ Void RTWorldChunkInitialize(
 	RTRuntimeRef Runtime,
     RTWorldContextRef WorldContext,
 	RTWorldChunkRef Chunk,
-    Index WorldIndex,
-    Index WorldInstanceIndex,
-    Int32 ChunkX,
-    Int32 ChunkY
+    Int WorldIndex,
+    Int WorldInstanceIndex,
+    Int ChunkX,
+    Int ChunkY
 ) {
     Chunk->Runtime = Runtime;
     Chunk->WorldContext = WorldContext;
@@ -253,11 +253,11 @@ Void RTWorldChunkUpdate(
     Notification->Count = 1;
     RTNotificationAppendCharacterSpawnIndex(Runtime, Notification, Character);
 
-    for (Int32 DeltaChunkX = NewBeginX; DeltaChunkX <= NewEndX; DeltaChunkX += 1) {
-        for (Int32 DeltaChunkY = NewBeginY; DeltaChunkY <= NewEndY; DeltaChunkY += 1) {
+    for (Int DeltaChunkX = NewBeginX; DeltaChunkX <= NewEndX; DeltaChunkX += 1) {
+        for (Int DeltaChunkY = NewBeginY; DeltaChunkY <= NewEndY; DeltaChunkY += 1) {
             if (DeltaChunkX >= OldBeginX && DeltaChunkX <= OldEndX && DeltaChunkY >= OldBeginY && DeltaChunkY <= OldEndY) continue;
-            
-            Index WorldChunkIndex = (Index)DeltaChunkX + DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
+
+            Int WorldChunkIndex = DeltaChunkX + DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
             assert(WorldChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT);
         
             RTWorldChunkRef NearbyWorldChunk = &WorldChunk->WorldContext->Chunks[WorldChunkIndex];
@@ -293,9 +293,9 @@ Void RTWorldChunkBroadcastNearbyCharactersToCharacter(
     Int32 EndChunkX = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, WorldChunk->ChunkX + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
     Int32 EndChunkY = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, WorldChunk->ChunkY + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
 
-    for (Int32 DeltaChunkX = StartChunkX; DeltaChunkX <= EndChunkX; DeltaChunkX += 1) {
-        for (Int32 DeltaChunkY = StartChunkY; DeltaChunkY <= EndChunkY; DeltaChunkY += 1) {
-            Index WorldChunkIndex = (Index)DeltaChunkX + DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
+    for (Int DeltaChunkX = StartChunkX; DeltaChunkX <= EndChunkX; DeltaChunkX += 1) {
+        for (Int DeltaChunkY = StartChunkY; DeltaChunkY <= EndChunkY; DeltaChunkY += 1) {
+            Int WorldChunkIndex = (Int)DeltaChunkX + DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
             assert(WorldChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT);
 
             RTWorldChunkRef NearbyWorldChunk = &WorldChunk->WorldContext->Chunks[WorldChunkIndex];
@@ -318,7 +318,7 @@ Void RTWorldChunkBroadcastCharactersToCharacter(
     Notification->SpawnType = NOTIFICATION_SPAWN_TYPE_LIST;
     Notification->Count = 0;
     
-    for (Index EntityIndex = 0; EntityIndex < ArrayGetElementCount(WorldChunk->Characters); EntityIndex += 1) {
+    for (Int EntityIndex = 0; EntityIndex < ArrayGetElementCount(WorldChunk->Characters); EntityIndex += 1) {
         RTEntityID CharacterEntity = *(RTEntityID*)ArrayGetElementAtIndex(WorldChunk->Characters, EntityIndex);
         if (RTEntityIsEqual(Entity, CharacterEntity)) continue;
         
@@ -341,9 +341,9 @@ Void RTWorldChunkBroadcastNearbyMobsToCharacter(
     Int32 EndChunkX = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, WorldChunk->ChunkX + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
     Int32 EndChunkY = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, WorldChunk->ChunkY + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
 
-    for (Int32 DeltaChunkX = StartChunkX; DeltaChunkX <= EndChunkX; DeltaChunkX += 1) {
-        for (Int32 DeltaChunkY = StartChunkY; DeltaChunkY <= EndChunkY; DeltaChunkY += 1) {
-            Index WorldChunkIndex = (Index)DeltaChunkX + DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
+    for (Int DeltaChunkX = StartChunkX; DeltaChunkX <= EndChunkX; DeltaChunkX += 1) {
+        for (Int DeltaChunkY = StartChunkY; DeltaChunkY <= EndChunkY; DeltaChunkY += 1) {
+            Int WorldChunkIndex = DeltaChunkX + DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
             assert(WorldChunkIndex < RUNTIME_WORLD_CHUNK_COUNT* RUNTIME_WORLD_CHUNK_COUNT);
 
             RTWorldChunkRef NearbyWorldChunk = &WorldChunk->WorldContext->Chunks[WorldChunkIndex];
@@ -365,7 +365,7 @@ Void RTWorldChunkBroadcastMobsToCharacter(
     NOTIFICATION_DATA_MOBS_SPAWN* Notification = RTNotificationInit(MOBS_SPAWN);
     Notification->Count = ArrayGetElementCount(WorldChunk->Mobs);
     
-    for (Index Index = 0; Index < ArrayGetElementCount(WorldChunk->Mobs); Index += 1) {
+    for (Int Index = 0; Index < ArrayGetElementCount(WorldChunk->Mobs); Index += 1) {
         RTEntityID MobEntity = *(RTEntityID*)ArrayGetElementAtIndex(WorldChunk->Mobs, Index);
         RTMobRef Mob = RTWorldContextGetMob(WorldChunk->WorldContext, MobEntity);
         assert(Mob);
@@ -398,9 +398,9 @@ Void RTWorldChunkBroadcastNearbyItemsToCharacter(
     Int32 EndChunkX = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, WorldChunk->ChunkX + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
     Int32 EndChunkY = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, WorldChunk->ChunkY + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
 
-    for (Int32 DeltaChunkX = StartChunkX; DeltaChunkX <= EndChunkX; DeltaChunkX += 1) {
-        for (Int32 DeltaChunkY = StartChunkY; DeltaChunkY <= EndChunkY; DeltaChunkY += 1) {
-            Index WorldChunkIndex = (Index)DeltaChunkX + DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
+    for (Int DeltaChunkX = StartChunkX; DeltaChunkX <= EndChunkX; DeltaChunkX += 1) {
+        for (Int DeltaChunkY = StartChunkY; DeltaChunkY <= EndChunkY; DeltaChunkY += 1) {
+            Int WorldChunkIndex = DeltaChunkX + DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
             assert(WorldChunkIndex < RUNTIME_WORLD_CHUNK_COUNT* RUNTIME_WORLD_CHUNK_COUNT);
 
             RTWorldChunkRef NearbyWorldChunk = &WorldChunk->WorldContext->Chunks[WorldChunkIndex];
@@ -422,7 +422,7 @@ Void RTWorldChunkBroadcastItemsToCharacter(
     NOTIFICATION_DATA_ITEMS_SPAWN* Notification = RTNotificationInit(ITEMS_SPAWN);
     Notification->Count = ArrayGetElementCount(WorldChunk->Items);
     
-    for (Index Index = 0; Index < ArrayGetElementCount(WorldChunk->Items); Index += 1) {
+    for (Int Index = 0; Index < ArrayGetElementCount(WorldChunk->Items); Index += 1) {
         RTEntityID ItemEntity = *(RTEntityID*)ArrayGetElementAtIndex(WorldChunk->Items, Index);
         RTWorldItemRef Item = RTWorldContextGetItem(WorldChunk->WorldContext, ItemEntity);
         assert(Item);

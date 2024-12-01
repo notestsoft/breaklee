@@ -27,7 +27,7 @@ struct _Database {
 
 struct _Buffer {
     Bool Buffered;
-    Index Length;
+    Int Length;
 
     union {
         UInt8*  Buffer;
@@ -94,7 +94,7 @@ const struct _DatabaseTypeMapping kDatabaseTypeMapping[] = {
 static inline struct _DatabaseTypeMapping DatabaseTypeGetMapping(
 	Int32 Type
 ) {
-	for (Int32 Index = 0; Index < sizeof(kDatabaseTypeMapping) / sizeof(kDatabaseTypeMapping[0]); ++Index) {
+	for (Int Index = 0; Index < sizeof(kDatabaseTypeMapping) / sizeof(kDatabaseTypeMapping[0]); ++Index) {
 		if (kDatabaseTypeMapping[Index].Type == Type) {
 			return kDatabaseTypeMapping[Index];
 		}
@@ -466,7 +466,7 @@ entry:
 		return NULL;
 	}
 
-	for (Int32 ParameterIndex = 0; ParameterIndex < ParameterCount; ++ParameterIndex) {
+	for (Int ParameterIndex = 0; ParameterIndex < ParameterCount; ++ParameterIndex) {
 		Trace("Binding Parameter %d: Value=%p, Length=%d", ParameterIndex + 1, ParameterValues[ParameterIndex], ParameterLengths[ParameterIndex]);
 
 		ParameterOutLengths[ParameterIndex] = ParameterLengths[ParameterIndex];

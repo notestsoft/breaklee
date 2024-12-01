@@ -15,7 +15,7 @@ struct _RTTrainerSkillData {
 };
 
 struct _RTTrainerData {
-    Int32 Index;
+    Int Index;
     Int64 WorldID;
     Int32 NpcID;
     Int32 SkillCount;

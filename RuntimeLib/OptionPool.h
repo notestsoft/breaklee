@@ -15,21 +15,21 @@ Void RTOptionPoolManagerDestroy(
 
 Void RTOptionPoolManagerAddItemLevel(
     RTOptionPoolManagerRef OptionPoolManager,
-    Index PoolIndex,
+    Int PoolIndex,
     Int32 Level,
     Float64 Rate
 );
 
 Void RTOptionPoolManagerAddEpicLevel(
     RTOptionPoolManagerRef OptionPoolManager,
-    Index PoolIndex,
+    Int PoolIndex,
     Int32 Level,
     Float64 Rate
 );
 
 Void RTOptionPoolManagerAddEpicOption(
     RTOptionPoolManagerRef OptionPoolManager,
-    Index PoolIndex,
+    Int PoolIndex,
     Int32 ItemType,
     Int32 Level,
     Int32 ForceIndex,
@@ -38,21 +38,21 @@ Void RTOptionPoolManagerAddEpicOption(
 
 Void RTOptionPoolManagerAddForceSlot(
     RTOptionPoolManagerRef OptionPoolManager,
-    Index PoolIndex,
+    Int PoolIndex,
     Int32 Count,
     Float64 Rate
 );
 
 Void RTOptionPoolManagerAddForceOptionSlot(
     RTOptionPoolManagerRef OptionPoolManager,
-    Index PoolIndex,
+    Int PoolIndex,
     Int32 Count,
     Float64 Rate
 );
 
 Void RTOptionPoolManagerAddForceOption(
     RTOptionPoolManagerRef OptionPoolManager,
-    Index PoolIndex,
+    Int PoolIndex,
     Int32 ItemType,
     Int32 ForceIndex,
     Float64 Rate
@@ -61,7 +61,7 @@ Void RTOptionPoolManagerAddForceOption(
 Void RTOptionPoolManagerCalculateOptions(
     RTRuntimeRef Runtime,
     RTOptionPoolManagerRef OptionPoolManager,
-    Index OptionPoolIndex,
+    Int OptionPoolIndex,
     RTDropResultRef DropResult
 );
 

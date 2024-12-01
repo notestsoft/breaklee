@@ -18,7 +18,7 @@ Int32 RTItemUpgradeNormal(
     if (!UpgradeRateValue) return RUNTIME_UPGRADE_RESULT_ERROR;
 
     Int32 TotalRate = 0;
-    for (Int32 Index = 0; Index < RUNTIME_DATA_UPGRADE_RATE_VALUE_COUNT; Index += 1) {
+    for (Int Index = 0; Index < RUNTIME_DATA_UPGRADE_RATE_VALUE_COUNT; Index += 1) {
         TotalRate += UpgradeRateValue->Rates[Index];
     }
 
@@ -101,7 +101,7 @@ Int32 RTItemUpgradeChaos(
     if (!UpgradeRateValue) return RUNTIME_CHAOS_UPGRADE_RESULT_ERROR;
 
     Int32 TotalRate = 0;
-    for (Int32 Index = 0; Index < RUNTIME_DATA_UPGRADE_RATE_VALUE_COUNT; Index += 1) {
+    for (Int Index = 0; Index < RUNTIME_DATA_UPGRADE_RATE_VALUE_COUNT; Index += 1) {
         TotalRate += UpgradeRateValue->Rates[Index];
     }
 
@@ -127,7 +127,7 @@ Int32 RTItemUpgradeChaos(
         // TODO: Calculate the item upgrade level based point addition
         *UpgradePoint += Item->Item.UpgradeLevel * 100;
 
-        if (UpgradeMain->CheckLevel) {
+        if (UpgradeMain->CheckLevel > 0) {
             Item->Item.UpgradeLevel = 0;
             return RUNTIME_CHAOS_UPGRADE_RESULT_DESTROYED_SEAL;
         } else {
@@ -191,7 +191,7 @@ Int32 RTItemUpgradeDivine(
     if (!UpgradeRateValue) return RUNTIME_DIVINE_UPGRADE_RESULT_ERROR;
 
     Int32 TotalRate = 0;
-    for (Int32 Index = 0; Index < RUNTIME_DATA_UPGRADE_RATE_VALUE_COUNT; Index += 1) {
+    for (Int Index = 0; Index < RUNTIME_DATA_UPGRADE_RATE_VALUE_COUNT; Index += 1) {
         TotalRate += UpgradeRateValue->Rates[Index];
     }
 

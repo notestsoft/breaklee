@@ -42,7 +42,7 @@ enum {
 
 struct _RTNpc {
     Int32 ID;
-    Index WorldID;
+    Int WorldID;
     UInt32 Type;
     Int32 X;
     Int32 Y;

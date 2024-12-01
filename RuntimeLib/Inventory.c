@@ -11,7 +11,7 @@ Int32 RTInventoryGetNextFreeSlotIndex(
 	RTRuntimeRef Runtime,
 	RTCharacterInventoryInfoRef Inventory
 ) {
-	for (Int32 Index = 0; Index < Inventory->Info.SlotCount - 1; Index += 1) {
+	for (Int Index = 0; Index < Inventory->Info.SlotCount - 1; Index += 1) {
 		RTItemSlotRef InventorySlot = &Inventory->Slots[Index];
 		RTItemSlotRef NextInventorySlot = &Inventory->Slots[Index + 1];
 		Int32 SlotOffset = NextInventorySlot->SlotIndex - InventorySlot->SlotIndex;
@@ -27,8 +27,8 @@ Void RTInventorySort(
 	RTRuntimeRef Runtime,
 	RTCharacterInventoryInfoRef Inventory
 ) {
-	for (Int32 Offset = 1; Offset < Inventory->Info.SlotCount; Offset += 1) {
-		Int32 Index = Offset;
+	for (Int Offset = 1; Offset < Inventory->Info.SlotCount; Offset += 1) {
+		Int Index = Offset;
 		while (Index > 0 && Inventory->Slots[Index].SlotIndex <= Inventory->Slots[Index - 1].SlotIndex) {
 			struct _RTItemSlot TempSlot = Inventory->Slots[Index];
 			Inventory->Slots[Index] = Inventory->Slots[Index - 1];
@@ -47,7 +47,7 @@ Bool RTInventoryInsertSlot(
 		return false;
 
 	Int32 InsertionIndex = -1;
-	for (Int32 Offset = 0; Offset < Inventory->Info.SlotCount; Offset += 1) {
+	for (Int Offset = 0; Offset < Inventory->Info.SlotCount; Offset += 1) {
 		if (Inventory->Slots[Offset].SlotIndex < Slot->SlotIndex) continue;
 
 		InsertionIndex = Offset;
@@ -57,7 +57,7 @@ Bool RTInventoryInsertSlot(
 		}
 
 		Int32 SlotIndex = Slot->SlotIndex + 1;
-		for (Int32 Index = Offset; Index < Inventory->Info.SlotCount - 1; Index += 1) {
+		for (Int Index = Offset; Index < Inventory->Info.SlotCount - 1; Index += 1) {
 			Inventory->Slots[Index].SlotIndex = SlotIndex;
 
 			SlotIndex += 1;
@@ -100,7 +100,7 @@ Int32 RTInventoryGetSlotIndex(
 	RTCharacterInventoryInfoRef Inventory,
 	Int32 SlotIndex
 ) {
-	for (Int32 Index = 0; Index < Inventory->Info.SlotCount; Index += 1) {
+	for (Int Index = 0; Index < Inventory->Info.SlotCount; Index += 1) {
 		RTItemSlotRef Slot = &Inventory->Slots[Index];
 		if (Slot->SlotIndex == SlotIndex) {
 			return Index;
@@ -115,7 +115,7 @@ RTItemSlotRef RTInventoryGetSlot(
 	RTCharacterInventoryInfoRef Inventory,
 	Int32 SlotIndex
 ) {
-	Int32 Index = RTInventoryGetSlotIndex(Runtime, Inventory, SlotIndex);
+	Int Index = RTInventoryGetSlotIndex(Runtime, Inventory, SlotIndex);
 	if (Index < 0) return NULL;
 	return &Inventory->Slots[Index];
 }
@@ -293,7 +293,7 @@ Void RTInventoryFindItems(
 
 	*Count = 0;
 
-	for (Int32 Index = 0; Index < Inventory->Info.SlotCount; Index++) {
+	for (Int Index = 0; Index < Inventory->Info.SlotCount; Index++) {
 		RTItemSlotRef InventorySlot = &Inventory->Slots[Index];
 		if (InventorySlot->Item.ID == ItemID) {
 			memcpy(&Results[*Count], InventorySlot, sizeof(struct _RTItemSlot));
@@ -315,7 +315,7 @@ Bool RTInventoryCanConsumeStackableItems(
 	UInt16* InventorySlotIndex
 ) {
 	Int64 ConsumableItemCount = 0;
-	for (Index Index = 0; Index < InventorySlotCount; Index += 1) {
+	for (Int Index = 0; Index < InventorySlotCount; Index += 1) {
 		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, Inventory, InventorySlotIndex[Index]);
 		if (!ItemSlot) return false;
 		if (ItemSlot->Item.ID != RequiredItemID) return false;
@@ -335,7 +335,7 @@ Void RTInventoryConsumeStackableItems(
 	UInt16* InventorySlotIndex
 ) {
 	Int64 RemainingItemCount = RequiredItemCount;
-	for (Index Index = 0; Index < InventorySlotCount; Index += 1) {
+	for (Int Index = 0; Index < InventorySlotCount; Index += 1) {
 		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, Inventory, InventorySlotIndex[Index]);
 		assert(ItemSlot);
 		assert(ItemSlot->Item.ID == RequiredItemID);

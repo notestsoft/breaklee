@@ -9,14 +9,14 @@ struct _Allocator {
 
 MemoryRef _AllocatorMalloc(
     AllocatorMode Mode,
-    Index Capacity,
+    Int Capacity,
     MemoryRef Memory,
     MemoryRef Context
 );
 
 MemoryRef _AllocatorNull(
     AllocatorMode Mode,
-    Index Capacity,
+    Int Capacity,
     MemoryRef Memory,
     MemoryRef Context
 );
@@ -28,7 +28,7 @@ AllocatorRef _AllocatorGetDefault(
 MemoryRef _AllocatorInvokeCallback(
     AllocatorRef Allocator,
     AllocatorMode Mode,
-    Index Capacity,
+    Int Capacity,
     MemoryRef Memory
 );
 
@@ -90,7 +90,7 @@ Void AllocatorDestroy(
 
 MemoryRef AllocatorAllocate(
     AllocatorRef Allocator,
-    Index Capacity
+    Int Capacity
 ) {
     return _AllocatorInvokeCallback(Allocator, AllocatorModeAllocate, Capacity, NULL);
 }
@@ -98,7 +98,7 @@ MemoryRef AllocatorAllocate(
 MemoryRef AllocatorReallocate(
     AllocatorRef Allocator,
     MemoryRef Memory,
-    Index Capacity
+    Int Capacity
 ) {
     return _AllocatorInvokeCallback(Allocator, AllocatorModeReallocate, Capacity, Memory);
 }
@@ -112,7 +112,7 @@ MemoryRef AllocatorDeallocate(
 
 MemoryRef _AllocatorMalloc(
     AllocatorMode Mode,
-    Index Capacity,
+    Int Capacity,
     MemoryRef Memory,
     MemoryRef Context
 ) {
@@ -137,7 +137,7 @@ MemoryRef _AllocatorMalloc(
 
 MemoryRef _AllocatorNull(
     AllocatorMode Mode,
-    Index Capacity,
+    Int Capacity,
     MemoryRef Memory,
     MemoryRef Context
 ) {
@@ -161,7 +161,7 @@ AllocatorRef _AllocatorGetDefault(
 MemoryRef _AllocatorInvokeCallback(
     AllocatorRef Allocator,
     AllocatorMode Mode,
-    Index Capacity,
+    Int Capacity,
     MemoryRef Memory
 ) {
     Allocator = _AllocatorGetDefault(Allocator);

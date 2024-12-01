@@ -6,7 +6,7 @@ Int32 RTVehicleInventoryGetSlotIndex(
 	RTCharacterVehicleInventoryInfoRef Inventory,
 	Int32 SlotIndex
 ) {
-	for (Int32 Index = 0; Index < Inventory->Info.SlotCount; Index += 1) {
+	for (Int Index = 0; Index < Inventory->Info.SlotCount; Index += 1) {
 		RTItemSlotRef Slot = &Inventory->Slots[Index];
 		if (Slot->SlotIndex == SlotIndex) {
 			return Index;
@@ -21,7 +21,7 @@ RTItemSlotRef RTVehicleInventoryGetSlot(
 	RTCharacterVehicleInventoryInfoRef Inventory,
 	Int32 SlotIndex
 ) {
-	Int32 Index = RTVehicleInventoryGetSlotIndex(Runtime, Inventory, SlotIndex);
+	Int Index = RTVehicleInventoryGetSlotIndex(Runtime, Inventory, SlotIndex);
 	if (Index < 0) return NULL;
 	return &Inventory->Slots[Index];
 }

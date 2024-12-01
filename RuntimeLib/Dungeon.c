@@ -15,7 +15,7 @@ Bool RTDungeonIsPatternPartCompleted(
 
     // TODO: Check mission items
 
-    for (Int32 Index = 0; Index < WorldContext->MissionMobCount; Index += 1) {
+    for (Int Index = 0; Index < WorldContext->MissionMobCount; Index += 1) {
         if (WorldContext->MissionMobs[Index].Count < WorldContext->MissionMobs[Index].MaxCount) {
             return false;
         }
@@ -59,7 +59,7 @@ Bool RTDungeonStartNextPatternPart(
     WorldContext->MissionMobCount = PatternPartData->MissionMobCount;
     memcpy(WorldContext->MissionMobs, PatternPartData->MissionMobs, sizeof(struct _RTQuestUnitMobData) * RUNTIME_MAX_QUEST_COUNTER_COUNT);
 
-    for (Int32 Index = 0; Index < WorldContext->MissionMobCount; Index++) {
+    for (Int Index = 0; Index < WorldContext->MissionMobCount; Index++) {
         WorldContext->MissionMobs[Index].Count = 0;
     }
     
@@ -103,7 +103,7 @@ Bool RTDungeonStart(
 
     // RTDungeonStartNextTimer(WorldContext);
 
-    for (Int32 Index = 0; Index < DungeonData->StartKillMobCount; Index += 1) {
+    for (Int Index = 0; Index < DungeonData->StartKillMobCount; Index += 1) {
         RTEntityID MobID = { 0 };
         MobID.EntityIndex = DungeonData->StartKillMobList[Index];
         MobID.WorldIndex = WorldContext->WorldData->WorldIndex;
@@ -183,7 +183,6 @@ Bool RTDungeonResume(
     if (Party->MemberCount > 1) return false;
     if (!World->Paused) return false;
 
-
     Timestamp ElapsedTime = GetTimestampMs() - World->PauseTimestamp;
     World->DungeonTimeout += ElapsedTime;
     World->NextItemUpdateTimestamp += ElapsedTime;
@@ -213,7 +212,7 @@ Bool RTDungeonEnd(
 
         RTPartyRef Party = RTRuntimeGetParty(Runtime, World->Party);
         if (Party) {
-            for (Int32 Index = 0; Index < Party->MemberCount; Index += 1) {
+            for (Int Index = 0; Index < Party->MemberCount; Index += 1) {
                 RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Party->Members[Index].CharacterIndex);
                 if (!Character) continue;
                 if (Character->Data.Info.WorldIndex != World->WorldData->WorldIndex) continue;
@@ -243,20 +242,33 @@ Bool RTDungeonFail(
     return true;
 }
 
+Bool RTWorldContextCheckMobState(
+    RTWorldContextRef WorldContext,
+    Int32 MobIndex,
+    Bool IsAlive
+) {
+    RTEntityID MobID = { 0 };
+    MobID.EntityIndex = MobIndex;
+    MobID.WorldIndex = WorldContext->WorldData->WorldIndex;
+    MobID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
+
+    RTMobRef Mob = RTWorldContextGetMob(WorldContext, MobID);
+    if (!Mob) return false;
+
+    if (IsAlive != RTMobIsAlive(Mob)) return false;
+    if (!IsAlive && !Mob->IsDead) return false;
+
+    return true;
+}
+
 Bool RTWorldContextCheckMobListState(
     RTWorldContextRef WorldContext,
     Int32 MobIndexCount,
     Int32* MobIndexList,
     Bool IsAlive
 ) {
-    for (Int32 Index = 0; Index < MobIndexCount; Index += 1) {
-        RTEntityID MobID = { 0 };
-        MobID.EntityIndex = MobIndexList[Index];
-        MobID.WorldIndex = WorldContext->WorldData->WorldIndex;
-        MobID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
-
-        RTMobRef Mob = RTWorldContextGetMob(WorldContext, MobID);
-        if (!Mob || RTMobIsAlive(Mob) != IsAlive) return false;
+    for (Int Index = 0; Index < MobIndexCount; Index += 1) {
+        if (!RTWorldContextCheckMobState(WorldContext, MobIndexList[Index], IsAlive)) return false;
     }
 
     return true;
@@ -265,7 +277,7 @@ Bool RTWorldContextCheckMobListState(
 Bool RTDungeonTriggerEvent(
     RTWorldContextRef World,
     RTEntityID TriggerSource,
-    Index TriggerIndex
+    Int EventTriggerIndex
 ) {
     assert(
         World->WorldData->Type == RUNTIME_WORLD_TYPE_DUNGEON ||
@@ -278,20 +290,28 @@ Bool RTDungeonTriggerEvent(
     // TODO: Assign a dungeon data pointer to the WorldContext so it doesn't have to be looked up on runtime
     assert(DungeonData);
 
-    ArrayRef TriggerGroup = (ArrayRef)DictionaryLookup(DungeonData->TriggerGroups, &TriggerIndex);
+    ArrayRef TriggerGroup = (ArrayRef)DictionaryLookup(DungeonData->TriggerGroups, &EventTriggerIndex);
     assert(TriggerGroup);
 
-    for (Int32 TriggerIndex = 0; TriggerIndex < ArrayGetElementCount(TriggerGroup); TriggerIndex += 1) {
+    for (Int TriggerIndex = 0; TriggerIndex < ArrayGetElementCount(TriggerGroup); TriggerIndex += 1) {
         RTDungeonTriggerDataRef TriggerData = (RTDungeonTriggerDataRef)ArrayGetElementAtIndex(TriggerGroup, TriggerIndex);
+        
+        Trace("TriggerEvent(Index=%d)", EventTriggerIndex);
+        for (Int Offset = 0; Offset < TriggerData->LiveMobCount; Offset++)
+            Trace("CheckLiveMob(%d, %d)", TriggerData->LiveMobIndexList[Offset], RTWorldContextCheckMobState(World, TriggerData->LiveMobIndexList[Offset], true));
+
+        for (Int Offset = 0; Offset < TriggerData->DeadMobCount; Offset++)
+            Trace("CheckDeadMob(%d, %d)", TriggerData->DeadMobIndexList[Offset], RTWorldContextCheckMobState(World, TriggerData->DeadMobIndexList[Offset], false));
+
         if (TriggerData->Type > 0 && !RTWorldContextCheckMobListState(World, TriggerData->LiveMobCount, TriggerData->LiveMobIndexList, true)) continue;
         if (TriggerData->Type > 1 && !RTWorldContextCheckMobListState(World, TriggerData->DeadMobCount, TriggerData->DeadMobIndexList, false)) continue;
         // TODO: Evaluate TriggerData->NpcIndex
 
-        Index ActionGroupIndex = TriggerData->ActionGroupIndex;
+        Int ActionGroupIndex = TriggerData->ActionGroupIndex;
         ArrayRef ActionGroup = (ArrayRef)DictionaryLookup(DungeonData->ActionGroups, &ActionGroupIndex);
         assert(ActionGroup);
 
-        for (Int32 ActionIndex = 0; ActionIndex < ArrayGetElementCount(ActionGroup); ActionIndex += 1) {
+        for (Int ActionIndex = 0; ActionIndex < ArrayGetElementCount(ActionGroup); ActionIndex += 1) {
             RTDungeonTriggerActionDataRef ActionData = (RTDungeonTriggerActionDataRef)ArrayGetElementAtIndex(ActionGroup, ActionIndex);
 
             if (ActionData->TargetAction == RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_EVENT_CALL) {
@@ -333,6 +353,11 @@ Bool RTDungeonTriggerEvent(
             if (ActionData->TargetAction == RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_DELETE) {
                 Mob->IsPermanentDeath = true;
                 RTWorldDespawnMobEvent(Runtime, World, Mob, ActionData->Delay);
+                Triggered = true;
+            }
+
+            if (ActionData->TargetAction == RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_SOFT_DELETE) {
+                Mob->IsPermanentDeath = true;
                 Triggered = true;
             }
 

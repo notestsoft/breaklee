@@ -6,8 +6,8 @@ PacketBufferRef PacketBufferCreate(
     UInt16 ProtocolIdentifier,
     UInt16 ProtocolVersion,
     UInt16 ProtocolExtension,
-    Index Alignment,
-    Index Length,
+    Int Alignment,
+    Int Length,
     Bool IsClient
 ) {
     PacketBufferRef PacketBuffer = (PacketBufferRef)AllocatorAllocate(Allocator, sizeof(struct _PacketBuffer));
@@ -22,8 +22,8 @@ Void PacketBufferInitialize(
     UInt16 ProtocolIdentifier,
     UInt16 ProtocolVersion,
     UInt16 ProtocolExtension,
-    Index Alignment,
-    Index Length,
+    Int Alignment,
+    Int Length,
     Bool IsClient
 ) {
     PacketBuffer->Allocator = Allocator;
@@ -124,7 +124,7 @@ Void* PacketBufferInitFromFile(
 
 Void* PacketBufferAppend(
     PacketBufferRef PacketBuffer,
-    Index Length
+    Int Length
 ) {
     Void* Packet = MemoryBufferGetMemory(PacketBuffer->MemoryBuffer, 0);
 
@@ -152,7 +152,7 @@ Void* PacketBufferAppend(
 Void* PacketBufferAppendCopy(
     PacketBufferRef PacketBuffer,
     Void* Source,
-    Index Length
+    Int Length
 ) {
     if (Length < 1) return NULL;
     Void* Memory = PacketBufferAppend(PacketBuffer, Length);
@@ -164,7 +164,7 @@ CString PacketBufferAppendCString(
     PacketBufferRef PacketBuffer,
     CString Value
 ) {
-    return (CString)PacketBufferAppendCopy(PacketBuffer, (Void*)Value, (Index)strlen(Value) + 1);
+    return (CString)PacketBufferAppendCopy(PacketBuffer, (Void*)Value, (Int)strlen(Value) + 1);
 }
 
 Int32 PacketGetLength(
@@ -213,7 +213,7 @@ Void PacketLogBytes(
 
     fprintf(stdout, "Packet Size: %d\n", Length);
 
-    for (Int32 Index = 0; Index < Length; Index += 1) {
+    for (Int Index = 0; Index < Length; Index += 1) {
         fprintf(stdout, "%02hhX ", Buffer[Index]);
     }
 

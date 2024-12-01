@@ -5,9 +5,9 @@
 
 Void _ArrayReserveCapacity(
     ArrayRef Array,
-    Index NewCapacity
+    Int NewCapacity
 ) {
-    Index Capacity = MAX(Array->Capacity, ARRAY_MIN_CAPACITY);
+    Int Capacity = MAX(Array->Capacity, ARRAY_MIN_CAPACITY);
     while (Capacity < NewCapacity) {
         Capacity <<= 1;
     }
@@ -23,9 +23,9 @@ Void _ArrayReserveCapacity(
 
 ArrayRef ArrayCreate(
     AllocatorRef Allocator,
-    Index Size,
+    Int Size,
     MemoryRef Memory, 
-    Index Count
+    Int Count
 ) {
     ArrayRef Array = ArrayCreateEmpty(Allocator, Size, Count);
     memcpy(Array->Memory, Memory, Size * Count);
@@ -34,8 +34,8 @@ ArrayRef ArrayCreate(
 
 ArrayRef ArrayCreateEmpty(
     AllocatorRef Allocator,
-    Index Size,
-    Index Capacity
+    Int Size,
+    Int Capacity
 ) {
     ArrayRef Array = AllocatorAllocate(Allocator, sizeof(struct _Array));
     if (!Array) Fatal("Memory allocation failed!");
@@ -46,8 +46,8 @@ ArrayRef ArrayCreateEmpty(
 Void ArrayInitializeEmpty(
     ArrayRef Array,
     AllocatorRef Allocator,
-    Index Size,
-    Index Capacity
+    Int Size,
+    Int Capacity
 ) {
     Array->Allocator = Allocator;
     Array->Size = Size;
@@ -70,13 +70,13 @@ Void ArrayDestroy(
     AllocatorDeallocate(Array->Allocator, Array);
 }
 
-Index ArrayGetElementSize(
+Int ArrayGetElementSize(
     ArrayRef Array
 ) {
     return Array->Size;
 }
 
-Index ArrayGetElementCount(
+Int ArrayGetElementCount(
     ArrayRef Array
 ) {
     return Array->Count;
@@ -84,7 +84,7 @@ Index ArrayGetElementCount(
 
 MemoryRef ArrayGetElementAtIndex(
     ArrayRef Array, 
-    Index Index
+    Int Index
 ) {
     assert(Index < Array->Count);
     return Array->Memory + Array->Size * Index;
@@ -92,7 +92,7 @@ MemoryRef ArrayGetElementAtIndex(
 
 Void ArrayCopyElementAtIndex(
     ArrayRef Array, 
-    Index Index, 
+    Int Index,
     MemoryRef Memory
 ) {
     assert(Index < Array->Count);
@@ -132,7 +132,7 @@ Void ArrayAppendArray(
 Void ArrayAppendMemory(
     ArrayRef Array, 
     MemoryRef Memory, 
-    Index Count
+    Int Count
 ) {
     assert(Count % Array->Size == 0);
 
@@ -144,20 +144,20 @@ Void ArrayAppendMemory(
 
 MemoryRef ArrayAppendUninitializedMemory(
     ArrayRef Array, 
-    Index Count
+    Int Count
 ) {
     assert(Count % Array->Size == 0);
 
     _ArrayReserveCapacity(Array, Array->Count + Count);
 
-    Int64 Index = Array->Count;
+    Int Index = Array->Count;
     Array->Count += Count / Array->Size;
     return ArrayGetElementAtIndex(Array, Index);
 }
 
 Void ArrayInsertElementAtIndex(
     ArrayRef Array, 
-    Index ElementIndex,
+    Int ElementIndex,
     MemoryRef Memory
 ) {
     if (ElementIndex == Array->Count) {
@@ -168,7 +168,7 @@ Void ArrayInsertElementAtIndex(
     assert(ElementIndex < Array->Count);
     _ArrayReserveCapacity(Array, Array->Count + 1);
 
-    Index TailLength = Array->Count - ElementIndex;
+    Int32 TailLength = Array->Count - ElementIndex;
     if (TailLength > 0) {
         UInt8* Source = Array->Memory + Array->Size * ElementIndex;
         UInt8* Destination = Array->Memory + Array->Size * (ElementIndex + 1);
@@ -181,7 +181,7 @@ Void ArrayInsertElementAtIndex(
 
 Void ArraySetElementAtIndex(
     ArrayRef Array, 
-    Index Index, 
+    Int Index, 
     MemoryRef Memory
 ) {
     assert(Index < Array->Count);
@@ -192,7 +192,7 @@ Void ArrayRemoveElement(
     ArrayRef Array,
     Void* Element
 ) {
-    for (Index Index = 0; Index < Array->Count; Index += 1) {
+    for (Int Index = 0; Index < Array->Count; Index += 1) {
         Void* Other = ArrayGetElementAtIndex(Array, Index);
         if (!memcmp(Element, Other, Array->Size)) {
             ArrayRemoveElementAtIndex(Array, Index);
@@ -203,11 +203,11 @@ Void ArrayRemoveElement(
 
 Void ArrayRemoveElementAtIndex(
     ArrayRef Array, 
-    Index ElementIndex
+    Int ElementIndex
 ) {
     assert(ElementIndex < Array->Count);
 
-    Index TailLength = Array->Count - ElementIndex - 1;
+    Int TailLength = Array->Count - ElementIndex - 1;
     if (TailLength > 0) {
         UInt8* Source = ArrayGetElementAtIndex(Array, ElementIndex + 1);
         UInt8* Destination = ArrayGetElementAtIndex(Array, ElementIndex);
@@ -221,7 +221,7 @@ Bool ArrayContainsElement(
     ArrayRef Array,
     Void* Element
 ) {
-    for (Index Index = 0; Index < Array->Count; Index += 1) {
+    for (Int Index = 0; Index < Array->Count; Index += 1) {
         Void* Other = ArrayGetElementAtIndex(Array, Index);
         if (!memcmp(Element, Other, Array->Size)) {
             return true;
@@ -231,20 +231,20 @@ Bool ArrayContainsElement(
     return false;
 }
 
-Index ArrayGetElementIndexInMemoryBounds(
+Int32 ArrayGetElementIndexInMemoryBounds(
     ArrayRef Array,
     MemoryRef Offset
 ) {
     assert(Array->Memory <= (UInt8*)Offset);
     assert((UInt8*)Offset < Array->Memory + Array->Size * Array->Count);
-    return (Int64)((UInt8*)Offset - (UInt8*)Array->Memory) / Array->Size;
+    return (Int)((UInt8*)Offset - (UInt8*)Array->Memory) / Array->Size;
 }
 
 Void ArrayRemoveElementInMemoryBounds(
     ArrayRef Array, 
     MemoryRef Offset
 ) {
-    Int64 Index = ArrayGetElementIndexInMemoryBounds(Array, Offset);
+    Int Index = ArrayGetElementIndexInMemoryBounds(Array, Offset);
     ArrayRemoveElementAtIndex(Array, Index);
 }
 
@@ -255,7 +255,7 @@ Void ArrayRemoveAllElements(
     Array->Count = 0;
 
     if (!KeepCapacity) {
-        Index Capacity = MIN(ARRAY_MIN_CAPACITY, Array->Capacity);
+        Int Capacity = MIN(ARRAY_MIN_CAPACITY, Array->Capacity);
         UInt8* Memory = realloc(Array->Memory, Capacity);
         if (!Memory) Fatal("Memory allocation failed!");
         Array->Capacity = Capacity;
@@ -267,9 +267,9 @@ Bool ArrayGetIndexOfElement(
     ArrayRef Array,
     ArrayPredicate Predicate, 
     MemoryRef Element,
-    Index *OutIndex
+    Int *OutIndex
 ) {
-    for (Int64 Index = 0; Index < Array->Count; Index += 1) {
+    for (Int Index = 0; Index < Array->Count; Index += 1) {
         MemoryRef Lhs = ArrayGetElementAtIndex(Array, Index);
         if (Predicate(Lhs, Element)) {
             *OutIndex = Index;

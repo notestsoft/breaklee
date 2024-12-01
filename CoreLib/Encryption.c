@@ -33,7 +33,7 @@ Bool InflateDecryptBuffer(
     if (!Output) goto error;
 
     Bool First = true;
-    Int32 Index = sizeof(Int32);
+    Int Index = sizeof(Int32);
     static UInt8 In[ARCHIVE_CHUNK_SIZE];
     static UInt8 Out[ARCHIVE_CHUNK_SIZE];
 

@@ -73,7 +73,7 @@ Void RTCharacterInitializeBattleStyleClass(
 	};
 
 	Int32 ClassFormulaIndexCount = sizeof(ClassFormulaIndices) / sizeof(ClassFormulaIndices[0]);
-	for (Int32 Index = 0; Index < ClassFormulaIndexCount; Index++) {
+	for (Int Index = 0; Index < ClassFormulaIndexCount; Index++) {
 		Character->Attributes.Values[ClassFormulaIndices[Index].AttributeIndex] += (
 			(Int64)Character->Data.StyleInfo.Style.BattleRank * ClassFormulaIndices[Index].Values[0] + ClassFormulaIndices[Index].Values[1]
 		);
@@ -114,10 +114,10 @@ Void RTCharacterInitializeBattleStyleStats(
 		RUNTIME_ATTRIBUTE_INT,
 	};
 	Int32 StatsIndexCount = sizeof(StatsIndices) / sizeof(StatsIndices[0]);
-	for (Int32 Index = 0; Index < StatsFormulaIndexCount; Index++) {
+	for (Int Index = 0; Index < StatsFormulaIndexCount; Index++) {
 		Int32 AttributeValue = 0;
 
-		for (Int32 StatsIndex = 0; StatsIndex < StatsIndexCount; StatsIndex++) {
+		for (Int StatsIndex = 0; StatsIndex < StatsIndexCount; StatsIndex++) {
 			if (StatsFormulaIndices[Index].Values[StatsIndex] > 0) {
 				RTBattleStyleSlopeDataRef SlopeData = RTRuntimeGetBattleStyleSlopeData(
 					Runtime,
@@ -139,7 +139,7 @@ Void RTCharacterInitializeEquipment(
 ) {
 	// TODO: Apply equipment preset slots
 
-    for (Int32 Index = 0; Index < Character->Data.EquipmentInfo.Info.EquipmentSlotCount; Index += 1) {
+    for (Int Index = 0; Index < Character->Data.EquipmentInfo.Info.EquipmentSlotCount; Index += 1) {
         RTItemSlotRef ItemSlot = &Character->Data.EquipmentInfo.EquipmentSlots[Index];
         RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
 		if (ItemData->MinLevel > Character->Data.Info.Level) continue;
@@ -157,7 +157,7 @@ Void RTCharacterInitializeSkillStats(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 ) {
-	for (Int32 Index = 0; Index < Character->Data.SkillSlotInfo.Info.SlotCount; Index += 1) {
+	for (Int Index = 0; Index < Character->Data.SkillSlotInfo.Info.SlotCount; Index += 1) {
 		RTSkillSlotRef SkillSlot = &Character->Data.SkillSlotInfo.Slots[Index];
 		assert(SkillSlot);
 
@@ -166,7 +166,7 @@ Void RTCharacterInitializeSkillStats(
 
 		if (SkillData->SkillGroup != RUNTIME_SKILL_GROUP_PASSIVE) continue;
 		
-		for (Int32 ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
+		for (Int ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
 			RTSkillValueDataRef SkillValue = &SkillData->SkillValues[ValueIndex];
 			Int64 ForceValue = RTCalculateSkillValue(SkillValue, SkillSlot->Level, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]);
 
@@ -186,7 +186,7 @@ Void RTCharacterInitializeEssenceAbilities(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 ) {
-    for (Int32 Index = 0; Index < Character->Data.AbilityInfo.Info.EssenceAbilityCount; Index += 1) {
+    for (Int Index = 0; Index < Character->Data.AbilityInfo.Info.EssenceAbilityCount; Index += 1) {
 		RTEssenceAbilitySlotRef AbilitySlot = &Character->Data.AbilityInfo.EssenceAbilitySlots[Index];
 
 		RTDataPassiveAbilityValueRef AbilityValue = RTRuntimeDataPassiveAbilityValueGet(
@@ -223,7 +223,7 @@ Void RTCharacterInitializeKarmaAbilities(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 ) {
-	for (Int32 Index = 0; Index < Character->Data.AbilityInfo.Info.KarmaAbilityCount; Index += 1) {
+	for (Int Index = 0; Index < Character->Data.AbilityInfo.Info.KarmaAbilityCount; Index += 1) {
 		RTKarmaAbilitySlotRef AbilitySlot = &Character->Data.AbilityInfo.KarmaAbilitySlots[Index];
 
 		RTDataKarmaAbilityValueRef AbilityValue = RTRuntimeDataKarmaAbilityValueGet(
@@ -295,14 +295,14 @@ Void RTCharacterInitializeOverlordMastery(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 ) {
-	for (Int32 Index = 0; Index < Character->Data.OverlordMasteryInfo.Info.SlotCount; Index += 1) {
+	for (Int Index = 0; Index < Character->Data.OverlordMasteryInfo.Info.SlotCount; Index += 1) {
 		RTOverlordMasterySlotRef MasterySlot = &Character->Data.OverlordMasteryInfo.Slots[Index];
 		RTDataOverlordMasteryValueRef MasteryValue = RTRuntimeDataOverlordMasteryValueGet(Runtime->Context, MasterySlot->MasteryIndex);
 
 		// TODO: ValueType refers to numeric or percentage ...
 
 		Bool Found = false;
-		for (Int32 LevelIndex = 0; LevelIndex < MasteryValue->OverlordMasteryValueLevelCount; LevelIndex += 1) {
+		for (Int LevelIndex = 0; LevelIndex < MasteryValue->OverlordMasteryValueLevelCount; LevelIndex += 1) {
 			if (MasteryValue->OverlordMasteryValueLevelList[LevelIndex].MasteryLevel == MasterySlot->Level) {
 				RTCharacterApplyForceEffect(
 					Runtime,
@@ -873,7 +873,7 @@ Void RTCharacterSetBattleRank(
 	Int32 BattleRank
 ) {
 	Int32 BattleStyleIndex = Character->Data.StyleInfo.Style.BattleStyle | (Character->Data.StyleInfo.Style.ExtendedBattleStyle << 3);
-	for (Int32 NextRank = Character->Data.StyleInfo.Style.BattleRank + 1; NextRank <= BattleRank; NextRank += 1) {
+	for (Int NextRank = Character->Data.StyleInfo.Style.BattleRank + 1; NextRank <= BattleRank; NextRank += 1) {
 		RTBattleStyleRankDataRef NextRankData = RTRuntimeGetBattleStyleRankData(Runtime, BattleStyleIndex, Character->Data.StyleInfo.Style.BattleRank + 1);
         if (!NextRankData) break;
 
@@ -1003,7 +1003,7 @@ Void RTCharacterAddExp(
 		Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_PNT] += LevelDiff * 5;
 		Character->SyncMask.Info = true;
 
-		for (Int32 Index = 0; Index < LevelDiff; Index += 1) {
+		for (Int Index = 0; Index < LevelDiff; Index += 1) {
 			NOTIFICATION_DATA_CHARACTER_DATA* Notification = RTNotificationInit(CHARACTER_DATA);
 			Notification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_LEVEL;
 			Notification->Level = CurrentLevel + Index + 1;
@@ -1087,13 +1087,13 @@ Int32 RTCharacterAddSkillExp(
 	Int32 SkillLevelDiff = FinalSkillLevel - CurrentSkillLevel;
 	Int32 ReceivedSkillExp = FinalSkillExp - CurrentSkillExp;
 
-	Character->Data.Info.SkillExp = FinalSkillExp % SkillRankData->SkillLevelExp;
-	Character->Data.Info.SkillLevel += SkillLevelDiff;
-	Character->Data.Info.SkillPoint += SkillLevelDiff;
-	Character->SyncMask.Info = true;
- 
-    {
-        NOTIFICATION_DATA_CHARACTER_SKILL_MASTERY_UPDATE* Notification = RTNotificationInit(CHARACTER_SKILL_MASTERY_UPDATE);
+    if (SkillLevelDiff > 0 || ReceivedSkillExp > 0) {
+		Character->Data.Info.SkillExp = FinalSkillExp % SkillRankData->SkillLevelExp;
+		Character->Data.Info.SkillLevel += SkillLevelDiff;
+		Character->Data.Info.SkillPoint += SkillLevelDiff;
+		Character->SyncMask.Info = true;
+		
+		NOTIFICATION_DATA_CHARACTER_SKILL_MASTERY_UPDATE* Notification = RTNotificationInit(CHARACTER_SKILL_MASTERY_UPDATE);
         Notification->SkillRank = Character->Data.Info.SkillRank;
         Notification->SkillLevel = Character->Data.Info.SkillLevel;
         Notification->SkillLevelMax = SkillLevelMax;

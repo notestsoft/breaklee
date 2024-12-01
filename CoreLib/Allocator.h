@@ -13,7 +13,7 @@ typedef enum {
 
 typedef void *(*AllocatorCallback)(
     AllocatorMode Mode, 
-    Index Capacity, 
+    Int Capacity, 
     MemoryRef Memory, 
     MemoryRef Context
 );
@@ -43,13 +43,13 @@ Void AllocatorDestroy(
 
 MemoryRef AllocatorAllocate(
     AllocatorRef Allocator, 
-    Index Capacity
+    Int Capacity
 );
 
 MemoryRef AllocatorReallocate(
     AllocatorRef Allocator, 
     MemoryRef Memory,
-    Index Capacity
+    Int Capacity
 );
 
 MemoryRef AllocatorDeallocate(

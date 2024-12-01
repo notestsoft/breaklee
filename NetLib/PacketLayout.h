@@ -41,7 +41,7 @@ Int32 PacketManagerHandle(
     PacketManagerRef PacketManager,
     SocketRef Socket,
     SocketConnectionRef SocketConnection,
-    Index Command,
+    Int Command,
     UInt8* Buffer,
     Int32 Length
 );

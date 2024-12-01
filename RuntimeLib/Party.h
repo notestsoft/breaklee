@@ -55,15 +55,15 @@ struct _RTPartyMemberData {
 
 struct _RTPartyInvitation {
     RTEntityID PartyID;
-    Index InviterCharacterIndex;
+    Int InviterCharacterIndex;
     struct _RTPartyMemberInfo Member;
     Timestamp InvitationTimestamp;
 };
 
 struct _RTParty {
 	RTEntityID ID;
-    Index LeaderCharacterIndex;
-    Index WorldServerIndex;
+    Int LeaderCharacterIndex;
+    Int WorldServerIndex;
 	Int32 PartyType;
 	Int32 MemberCount;
     struct _RTPartyMemberInfo Members[RUNTIME_PARTY_MAX_MEMBER_COUNT];
@@ -129,7 +129,7 @@ Bool RTCharacterPartyQuestAction(
 
 RTPartyMemberInfoRef RTPartyGetMember(
     RTPartyRef Party,
-    Index CharacterIndex
+    UInt32 CharacterIndex
 );
 
 Void RTPartyQuestFlagClear(
@@ -185,7 +185,7 @@ Bool RTCharacterPartyQuestAction(
 Bool RTPartyIncrementQuestMobCounter(
     RTRuntimeRef Runtime,
     RTEntityID PartyID,
-    Index MobSpeciesIndex
+    Int64 MobSpeciesIndex
 );
 
 Bool RTPartyHasQuestItemCounter(
@@ -203,7 +203,7 @@ Bool RTCharacterHasPartyQuestDungeon(
 
 Bool RTPartyChangeLeader(
     RTPartyRef Party,
-    Index CharacterIndex
+    UInt32 CharacterIndex
 );
 
 EXTERN_C_END

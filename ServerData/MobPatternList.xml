@@ -1,6 +1,6 @@
 <MobPatternList>
 	<MobPattern Index="1" FilePath="Mob/Pattern/MobPattern_1.xml"/>
-	<MobPattern Index="2" FilePath="Mob/Pattern/MobPattern_XXX.xml"/>
+	<MobPattern Index="2" FilePath="Mob/Pattern/MobPattern_2.xml"/>
 	<MobPattern Index="3" FilePath="Mob/Pattern/MobPattern_3.xml"/>
 	<MobPattern Index="4" FilePath="Mob/Pattern/MobPattern_4.xml"/>
 	<MobPattern Index="5" FilePath="Mob/Pattern/MobPattern_5.xml"/>
@@ -793,4 +793,6 @@
 	<MobPattern Index="810" FilePath="Mob/Pattern/MobPattern_810.xml"/>
 	<MobPattern Index="811" FilePath="Mob/Pattern/MobPattern_811.xml"/>
 	<MobPattern Index="812" FilePath="Mob/Pattern/MobPattern_812.xml"/>
+	<MobPattern Index="813" FilePath="Mob/Pattern/MobPattern_test.xml"/>
+    
 </MobPatternList>

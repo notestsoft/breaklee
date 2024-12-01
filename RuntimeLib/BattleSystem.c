@@ -601,7 +601,7 @@ RTBattleResult RTCalculateNormalAttackResult(
 		Result.AppliedDamage = MIN(Result.TotalDamage, Defender->Values[RUNTIME_ATTRIBUTE_HP_CURRENT]);
 	}
 
-	if (Attributes.AbsoluteDamage) {
+	if (Attributes.AbsoluteDamage > 0) {
 		Result.AppliedDamage = MIN(Result.AppliedDamage, Attributes.AbsoluteDamage);
 	}
 

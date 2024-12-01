@@ -64,7 +64,7 @@ struct _Socket {
     Int32 ReadBufferSize;
     Int32 WriteBufferSize;
     Int32 MaxConnectionCount;
-    Index NextConnectionID;
+    Int NextConnectionID;
     Timestamp Timeout; 
     Int32 State;
     Int32 PacketBufferIndex;
@@ -81,13 +81,13 @@ struct _Socket {
 
 struct _SocketConnection {
     SocketRef Socket;
-    Index ConnectionPoolIndex;
+    Int ConnectionPoolIndex;
     uv_tcp_t HandleMemory;
     uv_tcp_t* Handle;
     uv_connect_t* ConnectRequest;
     SocketAddress Address;
     Char AddressIP[MAX_ADDRESSIP_LENGTH];
-    Index ID;
+    Int ID;
     UInt32 Flags;
     struct _Keychain Keychain;
     MemoryRef RecvBuffer;
@@ -179,13 +179,13 @@ Void SocketDisconnect(
     SocketConnectionRef Connection
 );
 
-Index SocketGetConnectionCount(
+Int SocketGetConnectionCount(
     SocketRef Socket
 );
 
 SocketConnectionRef SocketGetConnection(
     SocketRef Socket,
-    Index ConnectionID
+    Int ConnectionID
 );
 
 Void SocketConnectionKeychainSeed(

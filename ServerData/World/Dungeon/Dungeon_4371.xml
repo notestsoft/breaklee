@@ -4,28 +4,28 @@
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="1"/>
 	</TriggerGroup>
 	<TriggerGroup Index="2">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="10,11,12,6,7,8,9" NpcIndex="-1" ActionGroupIndex="2"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="5,6,7,8,9,10,11" NpcIndex="-1" ActionGroupIndex="2"/>
 	</TriggerGroup>
 	<TriggerGroup Index="3">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="10,11,12,5,7,8,9" NpcIndex="-1" ActionGroupIndex="3"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="5,6,7,8,9,10,11" NpcIndex="-1" ActionGroupIndex="3"/>
 	</TriggerGroup>
 	<TriggerGroup Index="4">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="10,11,12,5,6,8,9" NpcIndex="-1" ActionGroupIndex="4"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="5,6,7,8,9,10,11" NpcIndex="-1" ActionGroupIndex="4"/>
 	</TriggerGroup>
 	<TriggerGroup Index="5">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="10,11,12,5,6,7,9" NpcIndex="-1" ActionGroupIndex="5"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="5,6,7,8,9,10,11" NpcIndex="-1" ActionGroupIndex="5"/>
 	</TriggerGroup>
 	<TriggerGroup Index="6">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="10,11,12,5,6,7,8" NpcIndex="-1" ActionGroupIndex="6"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="5,6,7,8,9,10,11" NpcIndex="-1" ActionGroupIndex="6"/>
 	</TriggerGroup>
 	<TriggerGroup Index="7">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="11,12,5,6,7,8,9" NpcIndex="-1" ActionGroupIndex="7"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="5,6,7,8,9,10,11" NpcIndex="-1" ActionGroupIndex="7"/>
 	</TriggerGroup>
 	<TriggerGroup Index="8">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="10,12,5,6,7,8,9" NpcIndex="-1" ActionGroupIndex="8"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="5,6,7,8,9,10,11" NpcIndex="-1" ActionGroupIndex="8"/>
 	</TriggerGroup>
 	<TriggerGroup Index="9">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="10,11,5,6,7,8,9" NpcIndex="-1" ActionGroupIndex="9"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="5,6,7,8,9,10,11" NpcIndex="-1" ActionGroupIndex="9"/>
 	</TriggerGroup>
 	<TriggerGroup Index="10">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="10"/>

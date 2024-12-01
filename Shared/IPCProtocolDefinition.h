@@ -185,14 +185,14 @@ IPC_PROTOCOL(W2D, AUTHENTICATE,
 	Int32 AccountID;
 	UInt8 NodeIndex;
 	UInt8 GroupIndex;
-	Index LinkConnectionID;
+	Int LinkConnectionID;
 )
 
 IPC_PROTOCOL(D2W, AUTHENTICATE,
 	Int32 AccountID;
 	UInt8 NodeIndex;
 	UInt8 GroupIndex;
-	Index LinkConnectionID;
+	Int LinkConnectionID;
 	Bool Success;
 	Bool IsSubpasswordSet;
 	struct _RTCharacterAccountInfo AccountInfo;
@@ -421,7 +421,7 @@ IPC_PROTOCOL(W2W, RESPONSE_SERVER_STATUS,
 )
 
 IPC_PROTOCOL_STRUCT(IPC_DATA_PARTY_INVITE_MEMBER,
-	Index CharacterIndex;
+	UInt32 CharacterIndex;
 	RTEntityID CharacterID;
 	UInt8 NodeIndex;
 	UInt8 CharacterType;
@@ -436,14 +436,14 @@ IPC_PROTOCOL_STRUCT(IPC_DATA_PARTY_INVITE_MEMBER,
 )
 
 IPC_PROTOCOL(W2P, CLIENT_CONNECT,
-	Index CharacterIndex;
+	UInt32 CharacterIndex;
 )
 
 IPC_PROTOCOL(P2W, CLIENT_CONNECT,
 	Int32 Result;
 	UInt32 DungeonIndex;
 	RTEntityID PartyID;
-	Index PartyLeaderIndex;
+	Int PartyLeaderIndex;
 	UInt8 WorldServerIndex;
 	Int32 MemberCount;
 	struct _RTPartyMemberInfo Members[RUNTIME_PARTY_MAX_MEMBER_COUNT];
@@ -452,7 +452,7 @@ IPC_PROTOCOL(P2W, CLIENT_CONNECT,
 )
 
 IPC_PROTOCOL(W2P, CLIENT_DISCONNECT,
-	Index CharacterIndex;
+	UInt32 CharacterIndex;
 )
 
 IPC_PROTOCOL(W2P, PARTY_INVITE,
@@ -480,25 +480,25 @@ IPC_PROTOCOL(P2W, PARTY_INVITE_ACK,
 
 IPC_PROTOCOL(W2P, PARTY_INVITE_CONFIRM,
 	Bool IsAccept;
-	Index SourceCharacterIndex;
+	Int SourceCharacterIndex;
 	UInt8 SourceNodeIndex;
-	Index TargetCharacterIndex;
+	Int TargetCharacterIndex;
 	UInt8 TargetNodeIndex;
 )
 
 IPC_PROTOCOL(P2W, PARTY_INVITE_CONFIRM,
 	Bool Success;
 	RTEntityID PartyID;
-	Index SourceCharacterIndex;
+	Int SourceCharacterIndex;
 	UInt8 SourceNodeIndex;
-	Index TargetCharacterIndex;
+	Int TargetCharacterIndex;
 	UInt8 TargetNodeIndex;
 )
 
 IPC_PROTOCOL(W2P, PARTY_INVITE_CANCEL,
-	Index SourceCharacterIndex;
+	Int SourceCharacterIndex;
 	UInt8 SourceNodeIndex;
-	Index TargetCharacterIndex;
+	Int TargetCharacterIndex;
 	UInt8 TargetNodeIndex;
 )
 
@@ -506,18 +506,18 @@ IPC_PROTOCOL(P2W, PARTY_INVITE_CANCEL,
 )
 
 IPC_PROTOCOL(P2W, PARTY_INVITE_TIMEOUT,
-	Index CharacterIndex;
+	UInt32 CharacterIndex;
 	Int32 IsAccept;
 	Bool IsCancel;
 )
 
 IPC_PROTOCOL(W2P, PARTY_LEAVE,
-	Index CharacterIndex;
+	UInt32 CharacterIndex;
 )
 
 IPC_PROTOCOL(P2W, PARTY_LEAVE,
 	RTEntityID PartyID;
-	Index CharacterIndex;
+	UInt32 CharacterIndex;
 )
 
 IPC_PROTOCOL(P2W, PARTY_LEAVE_ACK,
@@ -526,12 +526,12 @@ IPC_PROTOCOL(P2W, PARTY_LEAVE_ACK,
 
 IPC_PROTOCOL(W2P, PARTY_CHANGE_LEADER,
 	RTEntityID PartyID;
-	Index CharacterIndex;
+	UInt32 CharacterIndex;
 )
 
 IPC_PROTOCOL(P2W, PARTY_CHANGE_LEADER,
 	RTEntityID PartyID;
-	Index CharacterIndex;
+	UInt32 CharacterIndex;
 )
 
 IPC_PROTOCOL(P2W, PARTY_CHANGE_LEADER_ACK,
@@ -558,7 +558,7 @@ IPC_PROTOCOL(W2P, BROADCAST_TO_PARTY,
 )
 
 IPC_PROTOCOL(P2W, BROADCAST_TO_CHARACTER,
-	Index CharacterIndex;
+	UInt32 CharacterIndex;
 	Int32 Length;
 	UInt8 Data[0];
 )
@@ -816,11 +816,11 @@ IPC_PROTOCOL(D2W, AUCTION_PROCEED_ITEM,
 )
 
 IPC_PROTOCOL(W2C, CLIENT_CONNECT,
-	Index CharacterIndex;
+	UInt32 CharacterIndex;
 )
 
 IPC_PROTOCOL(W2C, CLIENT_DISCONNECT,
-	Index CharacterIndex;
+	UInt32 CharacterIndex;
 )
 
 #undef IPC_PROTOCOL_ENUM

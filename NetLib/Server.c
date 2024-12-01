@@ -55,7 +55,7 @@ ServerRef ServerCreate(
 Void ServerDestroy(
     ServerRef Server
 ) {
-    for (Index Index = 0; Index < ArrayGetElementCount(Server->Sockets); Index += 1) {
+    for (Int Index = 0; Index < ArrayGetElementCount(Server->Sockets); Index += 1) {
         ServerSocketContextRef SocketContext = (ServerSocketContextRef)ArrayGetElementAtIndex(Server->Sockets, Index);
         SocketDestroy(SocketContext->Socket);
         MemoryPoolDestroy(SocketContext->ConnectionContextPool);
@@ -72,7 +72,7 @@ SocketRef ServerCreateSocket(
     UInt32 SocketFlags,
     CString SocketHost,
     UInt16 SocketPort,
-    Index ConnectionContextSize,
+    Int ConnectionContextSize,
     UInt16 ProtocolIdentifier,
     UInt16 ProtocolVersion,
     UInt16 ProtocolExtension,
@@ -131,7 +131,7 @@ SocketRef ServerCreateSocket(
 Void ServerSocketRegisterPacketCallback(
     ServerRef Server,
     SocketRef Socket,
-    Index Command,
+    Int Command,
     ServerPacketCallback Callback
 ) {
     ServerSocketContextRef SocketContext = (ServerSocketContextRef)Socket->Userdata;
@@ -151,7 +151,7 @@ Void ServerSocketLoadScript(
 Void ServerRun(
 	ServerRef Server
 ) {
-    for (Int32 Index = 0; Index < ArrayGetElementCount(Server->Sockets); Index += 1) {
+    for (Int Index = 0; Index < ArrayGetElementCount(Server->Sockets); Index += 1) {
         ServerSocketContextRef SocketContext = (ServerSocketContextRef)ArrayGetElementAtIndex(Server->Sockets, Index);
         if (!(SocketContext->Socket->Flags & SOCKET_FLAGS_LISTENER)) continue;
         
@@ -161,7 +161,7 @@ Void ServerRun(
     while (!ApplicationIsShuttingDown()) {
         if (Server->OnUpdate) Server->OnUpdate(Server, Server->Userdata);
         
-        for (Int32 Index = 0; Index < ArrayGetElementCount(Server->Sockets); Index += 1) {
+        for (Int Index = 0; Index < ArrayGetElementCount(Server->Sockets); Index += 1) {
             ServerSocketContextRef SocketContext = (ServerSocketContextRef)ArrayGetElementAtIndex(Server->Sockets, Index);
             
             Bool IsListener = (SocketContext->Socket->Flags & SOCKET_FLAGS_LISTENER);
@@ -217,13 +217,12 @@ Void _ServerSocketOnReceived(
     Void *Packet
 ) {
     ServerSocketContextRef SocketContext = (ServerSocketContextRef)Socket->Userdata;
-    Index Command = (Index)SocketContext->PacketGetCommand(
+    Int Command = (Int)SocketContext->PacketGetCommand(
         Socket->ProtocolIdentifier,
         Socket->ProtocolVersion,
         Socket->ProtocolExtension,
         Packet
     );
-    Trace("_ServerSocketOnReceived(%d)", (Int32)Command);
 
     Int32 PacketLength = SocketContext->PacketGetLength(
         Socket->ProtocolIdentifier,

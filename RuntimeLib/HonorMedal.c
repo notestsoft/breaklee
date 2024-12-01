@@ -12,7 +12,7 @@ Int32 RTRuntimeGetHonorMedalMaxScore(
     if (!Category) return 0;
 
     Int32 Score = 0;
-    for (Index Index = 0; Index < Category->HonorMedalScoreMedalCount; Index += 1) {
+    for (Int Index = 0; Index < Category->HonorMedalScoreMedalCount; Index += 1) {
         Score = MAX(Score, Category->HonorMedalScoreMedalList[Index].AccumulatedRequiredScore);
     }
 
@@ -65,7 +65,7 @@ Int32 RTCharacterGetHonorMedalGrade(
     if (!Category) return 0;
 
     Int32 Grade = 0;
-    for (Index Index = 0; Index < Category->HonorMedalScoreMedalCount; Index += 1) {
+    for (Int Index = 0; Index < Category->HonorMedalScoreMedalCount; Index += 1) {
         Grade = MAX(Grade, Category->HonorMedalScoreMedalList[Index].Grade);
 
         if (Category->HonorMedalScoreMedalList[Index].AccumulatedRequiredScore > Character->Data.HonorMedalInfo.Info.Score) break;
@@ -142,7 +142,7 @@ RTHonorMedalSlotRef RTCharacterGetHonorMedalSlot(
     Int32 GroupIndex,
     Int32 SlotIndex
 ) {
-    for (Index Index = 0; Index < Character->Data.HonorMedalInfo.Info.SlotCount; Index += 1) {
+    for (Int Index = 0; Index < Character->Data.HonorMedalInfo.Info.SlotCount; Index += 1) {
         RTHonorMedalSlotRef Slot = &Character->Data.HonorMedalInfo.Slots[Index];
         if (Slot->CategoryIndex != CategoryIndex) continue;
         if (Slot->GroupIndex != GroupIndex) continue;

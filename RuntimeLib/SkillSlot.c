@@ -11,14 +11,14 @@ Int32 RTCharacterGetEmptySkillSlotIndex(
 	Int32 SkillSlotOffset = 0;
 	Int32 MaxSkillSlotIndex = -1;
 
-	for (Int32 Index = 0; Index < Character->Data.SkillSlotInfo.Info.SlotCount; Index += 1) {
+	for (Int Index = 0; Index < Character->Data.SkillSlotInfo.Info.SlotCount; Index += 1) {
 		SkillSlotIndices[SkillSlotOffset++] = Character->Data.SkillSlotInfo.Slots[Index].Index;
 		MaxSkillSlotIndex = MAX(MaxSkillSlotIndex, Character->Data.SkillSlotInfo.Slots[Index].Index);
 	}
 
 	// Quick and dirty bubble sort
-	for (Int32 i = 0; i < SkillSlotOffset - 1; i++) {
-		for (Int32 j = 0; j < SkillSlotOffset - i - 1; j++) {
+	for (Int i = 0; i < SkillSlotOffset - 1; i++) {
+		for (Int j = 0; j < SkillSlotOffset - i - 1; j++) {
 			if (SkillSlotIndices[j] > SkillSlotIndices[j + 1]) {
 				UInt16 temp = SkillSlotIndices[j];
 				SkillSlotIndices[j] = SkillSlotIndices[j + 1];
@@ -27,7 +27,7 @@ Int32 RTCharacterGetEmptySkillSlotIndex(
 		}
 	}
 
-	for (Int32 Index = 0; Index < MAX(0, Character->Data.SkillSlotInfo.Info.SlotCount - 1); Index += 1) {
+	for (Int Index = 0; Index < MAX(0, Character->Data.SkillSlotInfo.Info.SlotCount - 1); Index += 1) {
 		if (ABS(SkillSlotIndices[Index] - SkillSlotIndices[Index + 1]) > 1) {
 			return SkillSlotIndices[Index] + 1;
 		}
@@ -61,7 +61,7 @@ RTSkillSlotRef RTCharacterGetSkillSlotBySkillIndex(
 	RTCharacterRef Character,
 	Int32 SkillIndex
 ) {
-	for (Int32 Index = 0; Index < Character->Data.SkillSlotInfo.Info.SlotCount; Index += 1) {
+	for (Int Index = 0; Index < Character->Data.SkillSlotInfo.Info.SlotCount; Index += 1) {
 		if (Character->Data.SkillSlotInfo.Slots[Index].ID == SkillIndex) {
 			return &Character->Data.SkillSlotInfo.Slots[Index];
 		}
@@ -75,7 +75,7 @@ RTSkillSlotRef RTCharacterGetSkillSlotBySlotIndex(
 	RTCharacterRef Character,
 	Int32 SlotIndex
 ) {
-	for (Int32 Index = 0; Index < Character->Data.SkillSlotInfo.Info.SlotCount; Index += 1) {
+	for (Int Index = 0; Index < Character->Data.SkillSlotInfo.Info.SlotCount; Index += 1) {
 		if (Character->Data.SkillSlotInfo.Slots[Index].Index == SlotIndex) {
 			return &Character->Data.SkillSlotInfo.Slots[Index];
 		}
@@ -90,7 +90,7 @@ Void RTCharacterRemoveSkillSlot(
 	Int32 SkillID,
 	Int32 SlotIndex
 ) {
-	for (Int32 Index = 0; Index < Character->Data.SkillSlotInfo.Info.SlotCount; Index += 1) {
+	for (Int Index = 0; Index < Character->Data.SkillSlotInfo.Info.SlotCount; Index += 1) {
 		if (Character->Data.SkillSlotInfo.Slots[Index].Index == SlotIndex) {
 			Int32 TailLength = Character->Data.SkillSlotInfo.Info.SlotCount - Index - 1;
 			if (TailLength > 0) {
@@ -132,7 +132,7 @@ Bool RTCharacterChangeSkillLevel(
 	Int64 RequiredCurrencyAlz = 0;
 
 	if (TargetSkillLevel > 0) {
-		for (Int32 NextLevel = CurrentSkillLevel + Increment; NextLevel <= Sign * TargetSkillLevel; NextLevel += Increment) {
+		for (Int NextLevel = CurrentSkillLevel + Increment; NextLevel <= Sign * TargetSkillLevel; NextLevel += Increment) {
 			RTSkillLevelDataRef SkillLevelData = RTRuntimeGetSkillLevelDataByID(Runtime, SkillID, NextLevel);
 			if (!SkillLevelData) return false;
 

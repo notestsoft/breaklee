@@ -16,13 +16,13 @@ struct _ArchiveNodeKey {
 };
 
 struct _ArchiveNode {
-    Int32 Index;
+    Int Index;
     struct _ArchiveNodeKey Key;
     ArrayRef AttributeIndices;
 };
 
 struct _ArchiveAttribute {
-    Int32 Index;
+    Int Index;
     Int32 NodeIndex;
     Int32 NameIndex;
     Int32 DataIndex;
@@ -68,7 +68,7 @@ Int32 _ArchiveNodeDictionaryKeySizeCallback(
 
 DictionaryRef ArchiveNodeDictionaryCreate(
     AllocatorRef Allocator,
-    Index Capacity
+    Int Capacity
 ) {
     return DictionaryCreate(
         Allocator,
@@ -190,7 +190,7 @@ Void ArchiveDestroy(
         Iterator = DictionaryKeyIteratorNext(Iterator);
     }
 
-    for (Int32 Index = 0; Index < ArrayGetElementCount(Archive->Nodes); Index += 1) {
+    for (Int Index = 0; Index < ArrayGetElementCount(Archive->Nodes); Index += 1) {
         ArchiveNodeRef Node = (ArchiveNodeRef)ArrayGetElementAtIndex(Archive->Nodes, Index);
         ArrayDestroy(Node->AttributeIndices);
     }
@@ -213,7 +213,7 @@ static inline Bool ArchiveNodeWriteToFile(
     ArchiveStringRef NodeName = ArchiveNodeGetName(Archive, NodeIndex);
    
     if (Prettify)
-        for (Int32 Index = 0; Index < Indentation * 4; Index++)
+        for (Int Index = 0; Index < Indentation * 4; Index++)
             fprintf(File, " ");
 
     fprintf(File, "<%.*s", (Int32)NodeName->Length, NodeName->Data);
@@ -251,7 +251,7 @@ static inline Bool ArchiveNodeWriteToFile(
     }
 
     if (Prettify)
-        for (Int32 Index = 0; Index < Indentation * 4; Index++)
+        for (Int Index = 0; Index < Indentation * 4; Index++)
             fprintf(File, " ");
 
     fprintf(File, "</%.*s>", (Int32)NodeName->Length, NodeName->Data);
@@ -319,7 +319,7 @@ Void ArchiveClear(
     }
     DictionaryRemoveAll(Archive->NodeBuckets);
 
-    for (Index Index = 0; Index < ArrayGetElementCount(Archive->Nodes); Index += 1) {
+    for (Int Index = 0; Index < ArrayGetElementCount(Archive->Nodes); Index += 1) {
         ArchiveNodeRef Node = (ArchiveNodeRef)ArrayGetElementAtIndex(Archive->Nodes, Index);
         ArrayDestroy(Node->AttributeIndices);
     }
@@ -342,7 +342,7 @@ static inline Int32 ArchiveAddName(
     CString Name,
     Int32 Length
 ) {
-    Int32 Index = (Int32)ArrayGetElementCount(Archive->NameTable);
+    Int Index = (Int32)ArrayGetElementCount(Archive->NameTable);
     Bool IsZeroTerminated = Length > 0 && Name[Length - 1] == 0;
     Int32 StringLength = IsZeroTerminated ? Length : Length + 1;
 
@@ -392,7 +392,7 @@ static inline Int32 ArchiveAddData(
     CString Data,
     Int32 Length
 ) {
-    Int32 Index = (Int32)ArrayGetElementCount(Archive->DataTable);
+    Int Index = (Int32)ArrayGetElementCount(Archive->DataTable);
     Bool IsZeroTerminated = Length > 0 && Data[Length - 1] == 0;
     Int32 StringLength = IsZeroTerminated ? Length : Length + 1;
 
@@ -510,7 +510,7 @@ Int32 _ArchiveNodeGetAttributeByNameWithLength(
 
     ArchiveNodeRef Node = (ArchiveNodeRef)ArrayGetElementAtIndex(Archive->Nodes, NodeIndex);
 
-    for (Int32 Index = 0; Index < ArrayGetElementCount(Node->AttributeIndices); Index++) {
+    for (Int Index = 0; Index < ArrayGetElementCount(Node->AttributeIndices); Index++) {
         Int32 AttributeIndex = *(Int32*)ArrayGetElementAtIndex(Node->AttributeIndices, Index);
 
         ArchiveAttributeRef Attribute = (ArchiveAttributeRef)ArrayGetElementAtIndex(
@@ -683,7 +683,7 @@ ArchiveIteratorRef ArchiveQueryNodeIteratorNext(
     ArrayRef Bucket = DictionaryLookup(Archive->NodeBuckets, &Node->Key);
     assert(Bucket);
 
-    for (Int32 Index = 0; Index < ArrayGetElementCount(Bucket); Index += 1) {
+    for (Int Index = 0; Index < ArrayGetElementCount(Bucket); Index += 1) {
         Int32 NodeIndex = *(Int32*)ArrayGetElementAtIndex(Bucket, Index);
         if (NodeIndex != Iterator->Index) continue;
 
@@ -717,7 +717,7 @@ ArchiveIteratorRef ArchiveNodeIteratorFirst(
     ArchiveRef Archive,
     Int32 ParentIndex
 ) {
-    for (Int32 Index = 0; Index < ArrayGetElementCount(Archive->Nodes); Index++) {
+    for (Int Index = 0; Index < ArrayGetElementCount(Archive->Nodes); Index++) {
         ArchiveNodeRef Node = (ArchiveNodeRef)ArrayGetElementAtIndex(Archive->Nodes, Index);
         if (Node->Key.ParentIndex == ParentIndex) {
             return (ArchiveIteratorRef)Node;
@@ -734,7 +734,7 @@ ArchiveIteratorRef ArchiveNodeIteratorNext(
     assert(Iterator);
 
     ArchiveNodeRef Node = (ArchiveNodeRef)ArrayGetElementAtIndex(Archive->Nodes, Iterator->Index);
-    for (Int32 Index = Iterator->Index + 1; Index < ArrayGetElementCount(Archive->Nodes); Index += 1) {
+    for (Int Index = Iterator->Index + 1; Index < ArrayGetElementCount(Archive->Nodes); Index += 1) {
         ArchiveNodeRef Next = (ArchiveNodeRef)ArrayGetElementAtIndex(Archive->Nodes, Index);
         if (Next->Key.ParentIndex == Node->Key.ParentIndex) {
             return (ArchiveIteratorRef)Next;

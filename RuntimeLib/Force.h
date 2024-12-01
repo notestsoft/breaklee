@@ -301,9 +301,9 @@ typedef Void (*RTForceEffectFormulaCallback)(
 );
 
 struct _RTForceEffectFormula {
-    Index ForceEffectIndex;
-    Index AttributeCount;
-	Index AttributeIndices[RUNTIME_MAX_FORCE_EFFECT_ATTRIBUTE_COUNT];
+	Int ForceEffectIndex;
+	Int AttributeCount;
+	Int AttributeIndices[RUNTIME_MAX_FORCE_EFFECT_ATTRIBUTE_COUNT];
 	RTForceEffectFormulaCallback OnApply;
     RTForceEffectFormulaCallback OnCancel;
 };
@@ -318,36 +318,36 @@ Void RTCharacterApplyForceEffect(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
 	RTEntityID Source,
-	Index ForceEffectIndex,
+	Int ForceEffectIndex,
 	Int64 ForceValue,
-	Int32 ForceValueType
+	Int ForceValueType
 );
 
 Void RTCharacterCancelForceEffect(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
 	RTEntityID Source,
-	Index ForceEffectIndex,
+	Int ForceEffectIndex,
 	Int64 ForceValue,
-	Int32 ForceValueType
+	Int ForceValueType
 );
 
 Void RTMobApplyForceEffect(
 	RTRuntimeRef Runtime,
 	RTMobRef Mob,
 	RTEntityID Source,
-	Index ForceEffectIndex,
+	Int ForceEffectIndex,
 	Int64 ForceValue,
-	Int32 ForceValueType
+	Int ForceValueType
 );
 
 Void RTMobCancelForceEffect(
 	RTRuntimeRef Runtime,
 	RTMobRef Mob,
 	RTEntityID Source,
-	Index ForceEffectIndex,
+	Int ForceEffectIndex,
 	Int64 ForceValue,
-	Int32 ForceValueType
+	Int ForceValueType
 );
 
 EXTERN_C_END

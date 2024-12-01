@@ -48,19 +48,19 @@ const CString kScriptPrelude =
 ;
 
 struct _PacketField {
-    Index Index;
-    Index Type;
-    Index Length;
-    Index ChildIndex;
-    Int64 CountIndex;
-    Index StackOffset;
-    Int64 ArrayIndex;
+    Int Index;
+    Int Type;
+    Int Length;
+    Int ChildIndex;
+    Int CountIndex;
+    Int StackOffset;
+    Int ArrayIndex;
     Char Name[MAX_PATH];
 };
 
 struct _PacketLayout {
     PacketManagerRef Manager;
-    Index Index;
+    Int Index;
     Bool IsIntrinsic;
     Char Name[MAX_PATH];
     ArrayRef Fields;
@@ -68,9 +68,9 @@ struct _PacketLayout {
 };
 
 struct _PacketHandler {
-    Index Command;
-    Index LayoutIndex;
-    Int32 Handler;
+    Int Command;
+    Int LayoutIndex;
+    Int Handler;
     Char LayoutName[MAX_PATH];
 };
 
@@ -94,8 +94,8 @@ Void PacketLayoutWriteZero(
 Bool PacketLayoutParse(
     PacketLayoutRef PacketLayout,
     UInt8* Buffer,
-    Int32* OutOffset,
-    Int32 Length,
+    Int* OutOffset,
+    Int Length,
     lua_State* State
 );
 
@@ -115,7 +115,7 @@ Void PacketManagerRegisterIntrinsics(
         { "u64", PacketLayoutAddUInt64 }
     };
 
-    for (Int32 Index = 0; Index < sizeof(Intrinsics) / sizeof(Intrinsics[0]); Index++) {
+    for (Int Index = 0; Index < sizeof(Intrinsics) / sizeof(Intrinsics[0]); Index++) {
         PacketLayoutRef PacketLayout = PacketManagerRegisterLayout(PacketManager, Intrinsics[Index].Name);
         PacketLayout->IsIntrinsic = true;
         Intrinsics[Index].Callback(PacketLayout, "$0");
@@ -152,7 +152,7 @@ Void PacketManagerDestroy(
 ) {
     lua_close(PacketManager->State);
 
-    for (Index Index = 0; Index < ArrayGetElementCount(PacketManager->PacketLayouts); Index += 1) {
+    for (Int Index = 0; Index < ArrayGetElementCount(PacketManager->PacketLayouts); Index += 1) {
         PacketLayoutRef PacketLayout = (PacketLayoutRef)ArrayGetElementAtIndex(PacketManager->PacketLayouts, Index);
         DictionaryDestroy(PacketLayout->NameToField);
         ArrayDestroy(PacketLayout->Fields);
@@ -178,7 +178,7 @@ PacketLayoutRef PacketManagerRegisterLayout(
 ) {
     if (DictionaryLookup(PacketManager->NameToPacketLayout, Name)) Fatal("Packet layout with name '%s' already registered!", Name);
     
-    Index PacketLayoutIndex = ArrayGetElementCount(PacketManager->PacketLayouts);
+    Int PacketLayoutIndex = ArrayGetElementCount(PacketManager->PacketLayouts);
     PacketLayoutRef PacketLayout = (PacketLayoutRef)ArrayAppendUninitializedElement(PacketManager->PacketLayouts);
     memset(PacketLayout, 0, sizeof(struct _PacketLayout));
     PacketLayout->Manager = PacketManager;
@@ -187,16 +187,16 @@ PacketLayoutRef PacketManagerRegisterLayout(
     PacketLayout->Fields = ArrayCreateEmpty(PacketManager->Allocator, sizeof(struct _PacketField), 8);
     PacketLayout->NameToField = CStringDictionaryCreate(PacketManager->Allocator, 8);
     
-    DictionaryInsert(PacketManager->NameToPacketLayout, Name, &PacketLayoutIndex, sizeof(Index));
+    DictionaryInsert(PacketManager->NameToPacketLayout, Name, &PacketLayoutIndex, sizeof(Int));
     
     return PacketLayout;
 }
 
-Index PacketManagerGetLayoutIndex(
+Int PacketManagerGetLayoutIndex(
     PacketManagerRef PacketManager,
     CString Name
 ) {
-    Index* PacketLayoutIndex = DictionaryLookup(PacketManager->NameToPacketLayout, Name);
+    Int* PacketLayoutIndex = DictionaryLookup(PacketManager->NameToPacketLayout, Name);
     if (!PacketLayoutIndex) return UINT64_MAX;
 
     return *PacketLayoutIndex;
@@ -204,7 +204,7 @@ Index PacketManagerGetLayoutIndex(
 
 PacketLayoutRef PacketManagerGetLayoutByIndex(
     PacketManagerRef PacketManager,
-    Index Index
+    Int Index
 ) {
     assert(Index < ArrayGetElementCount(PacketManager->PacketLayouts));
     return (PacketLayoutRef)ArrayGetElementAtIndex(PacketManager->PacketLayouts, Index);
@@ -214,7 +214,7 @@ PacketLayoutRef PacketManagerGetLayout(
     PacketManagerRef PacketManager,
     CString Name
 ) {
-    Index Index = PacketManagerGetLayoutIndex(PacketManager, Name);
+    Int Index = PacketManagerGetLayoutIndex(PacketManager, Name);
     if (Index == UINT64_MAX) return NULL;
 
     return PacketManagerGetLayoutByIndex(PacketManager, Index);
@@ -224,7 +224,7 @@ Int32 PacketManagerHandle(
     PacketManagerRef PacketManager,
     SocketRef Socket,
     SocketConnectionRef SocketConnection,
-    Index Command,
+    Int Command,
     UInt8* Buffer,
     Int32 Length
 ) {
@@ -234,7 +234,7 @@ Int32 PacketManagerHandle(
     PacketLayoutRef PacketLayout = PacketManagerGetLayoutByIndex(PacketManager, PacketHandler->LayoutIndex);
     if (!PacketLayout) return 0;
     
-    Int32 StateStack = lua_gettop(PacketManager->State);
+    Int StateStack = lua_gettop(PacketManager->State);
 
     lua_pushlightuserdata(PacketManager->State, Socket);
     lua_setglobal(PacketManager->State, PACKET_MANAGER_GLOBAL_SOCKET_NAME);
@@ -244,16 +244,16 @@ Int32 PacketManagerHandle(
 
     lua_rawgeti(PacketManager->State, LUA_REGISTRYINDEX, PacketHandler->Handler);
 
-    Int32 Offset = 0;
+    Int Offset = 0;
     Bool Success = PacketLayoutParse(PacketLayout, Buffer, &Offset, Length, PacketManager->State);
     if (!Success) {
         lua_settop(PacketManager->State, StateStack);
         return -1;
     }
 
-    Int32 ArgumentCount = 1;
-    Int32 ReturnValueCount = 0;
-    Int32 Result = lua_pcall(PacketManager->State, ArgumentCount, ReturnValueCount, 0);
+    Int ArgumentCount = 1;
+    Int ReturnValueCount = 0;
+    Int Result = lua_pcall(PacketManager->State, ArgumentCount, ReturnValueCount, 0);
     if (Result != LUA_OK) {
         CString Message = (CString)lua_tostring(PacketManager->State, -1);
         Error("Lua error: %s", Message);
@@ -266,11 +266,11 @@ Int32 PacketManagerHandle(
     return 1;
 }
 
-Index PacketLayoutGetSize(
+Int PacketLayoutGetSize(
     PacketLayoutRef PacketLayout
 );
 
-Index PacketFieldGetSize(
+Int PacketFieldGetSize(
     PacketLayoutRef PacketLayout,
     PacketFieldRef PacketField
 ) {
@@ -300,12 +300,12 @@ Index PacketFieldGetSize(
     }
 }
 
-Index PacketLayoutGetSize(
+Int PacketLayoutGetSize(
     PacketLayoutRef PacketLayout
 ) {
-    Index Size = 0;
+    Int Size = 0;
     
-    for (Index Index = 0; Index < ArrayGetElementCount(PacketLayout->Fields); Index += 1) {
+    for (Int Index = 0; Index < ArrayGetElementCount(PacketLayout->Fields); Index += 1) {
         PacketFieldRef PacketField = (PacketFieldRef)ArrayGetElementAtIndex(PacketLayout->Fields, Index);
         Size += PacketFieldGetSize(PacketLayout, PacketField);
     }
@@ -316,9 +316,9 @@ Index PacketLayoutGetSize(
 PacketFieldRef PacketLayoutAddField(
     PacketLayoutRef PacketLayout,
     CString Name,
-    Index Type,
-    Index Length,
-    Index ChildIndex,
+    Int Type,
+    Int Length,
+    Int ChildIndex,
     Int64 CountIndex
 ) {
     if (DictionaryLookup(PacketLayout->NameToField, Name)) {
@@ -326,7 +326,7 @@ PacketFieldRef PacketLayoutAddField(
         return NULL;
     }
     
-    Index PacketFieldIndex = ArrayGetElementCount(PacketLayout->Fields);
+    Int PacketFieldIndex = ArrayGetElementCount(PacketLayout->Fields);
     PacketFieldRef PacketField = (PacketFieldRef)ArrayAppendUninitializedElement(PacketLayout->Fields);
     memset(PacketField, 0, sizeof(struct _PacketField));
     PacketField->Index = PacketFieldIndex;
@@ -338,7 +338,7 @@ PacketFieldRef PacketLayoutAddField(
     PacketField->StackOffset = 0;
     PacketField->ArrayIndex = -1;
 
-    DictionaryInsert(PacketLayout->NameToField, Name, &PacketFieldIndex, sizeof(Index));
+    DictionaryInsert(PacketLayout->NameToField, Name, &PacketFieldIndex, sizeof(Int));
     return PacketField;
 }
 
@@ -425,7 +425,7 @@ Void PacketLayoutAddDynamicCharacters(
     CString Name,
     CString CountName
 ) {
-    Index* CountIndex = DictionaryLookup(PacketLayout->NameToField, CountName);
+    Int* CountIndex = DictionaryLookup(PacketLayout->NameToField, CountName);
     if (!CountIndex) Fatal("Packet field named '%s' not found!", CountName);
 
     PacketFieldRef CountField = (PacketFieldRef)ArrayGetElementAtIndex(PacketLayout->Fields, *CountIndex);
@@ -452,7 +452,7 @@ Void PacketLayoutAddStaticArray(
     CString ChildName,
     Int32 Count
 ) {
-    Index ChildIndex = PacketManagerGetLayoutIndex(PacketLayout->Manager, ChildName);
+    Int ChildIndex = PacketManagerGetLayoutIndex(PacketLayout->Manager, ChildName);
     if (ChildIndex == UINT64_MAX) Fatal("Packet layout named '%s' not found!", ChildName);
 
     PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_STATIC_ARRAY, Count, ChildIndex, 0);
@@ -464,10 +464,10 @@ Void PacketLayoutAddDynamicArray(
     CString ChildName,
     CString CountName
 ) {
-    Index ChildIndex = PacketManagerGetLayoutIndex(PacketLayout->Manager, ChildName);
+    Int ChildIndex = PacketManagerGetLayoutIndex(PacketLayout->Manager, ChildName);
     if (ChildIndex == UINT64_MAX) Fatal("Packet layout named '%s' not found!", ChildName);
 
-    Index* CountIndex = DictionaryLookup(PacketLayout->NameToField, CountName);
+    Int* CountIndex = DictionaryLookup(PacketLayout->NameToField, CountName);
     if (!CountIndex) Fatal("Packet field named '%s' not found!", ChildName);
     
     PacketFieldRef CountField = (PacketFieldRef)ArrayGetElementAtIndex(PacketLayout->Fields, *CountIndex);
@@ -613,7 +613,7 @@ Void PacketFieldWriteZero(
 
     if (PacketField->Type == PACKET_FIELD_TYPE_STATIC_ARRAY) {
         PacketLayoutRef ChildLayout = (PacketLayoutRef)ArrayGetElementAtIndex(PacketLayout->Fields, PacketField->ChildIndex);
-        Index ChildSize = PacketLayoutGetSize(ChildLayout);
+        Int ChildSize = PacketLayoutGetSize(ChildLayout);
         PacketBufferAppend(PacketBuffer, PacketField->Length * ChildSize);
     }
 
@@ -625,7 +625,7 @@ Void PacketLayoutWriteZero(
     PacketLayoutRef PacketLayout,
     PacketBufferRef PacketBuffer
 ) {
-    for (Index Index = 0; Index < ArrayGetElementCount(PacketLayout->Fields); Index += 1) {
+    for (Int Index = 0; Index < ArrayGetElementCount(PacketLayout->Fields); Index += 1) {
         PacketFieldRef PacketField = (PacketFieldRef)ArrayGetElementAtIndex(PacketLayout->Fields, Index);
         PacketFieldWriteZero(PacketLayout, PacketField, PacketBuffer);
     }
@@ -634,13 +634,13 @@ Void PacketLayoutWriteZero(
 Bool PacketLayoutParse(
     PacketLayoutRef PacketLayout,
     UInt8* Buffer,
-    Int32* OutOffset,
-    Int32 Length,
+    Int* OutOffset,
+    Int Length,
     lua_State* State
 ) {
     lua_newtable(State);
 
-    for (Index Index = 0; Index < ArrayGetElementCount(PacketLayout->Fields); Index += 1) {
+    for (Int Index = 0; Index < ArrayGetElementCount(PacketLayout->Fields); Index += 1) {
         PacketFieldRef PacketField = (PacketFieldRef)ArrayGetElementAtIndex(PacketLayout->Fields, Index);
         PacketField->StackOffset = *OutOffset;
         
@@ -707,7 +707,7 @@ Bool PacketLayoutParse(
             PacketLayoutRef Child = PacketManagerGetLayoutByIndex(PacketLayout->Manager, PacketField->ChildIndex);
            
             lua_createtable(State, (Int32)PacketField->Length, 0);
-            for (Int32 ChildIndex = 0; ChildIndex < PacketField->Length; ChildIndex += 1) {
+            for (Int ChildIndex = 0; ChildIndex < PacketField->Length; ChildIndex += 1) {
                 lua_pushinteger(State, ChildIndex + 1);
                 if (!PacketLayoutParse(Child, Buffer, OutOffset, Length, State)) return false;
 
@@ -724,7 +724,7 @@ Bool PacketLayoutParse(
             Int32 Count = (Int32)PacketFieldReadPrimitive(CountField, Buffer);
             
             lua_createtable(State, Count, 0);
-            for (Int32 ChildIndex = 0; ChildIndex < Count; ChildIndex += 1) {
+            for (Int ChildIndex = 0; ChildIndex < Count; ChildIndex += 1) {
                 lua_pushinteger(State, ChildIndex + 1);
                 if (!PacketLayoutParse(Child, Buffer, OutOffset, Length, State)) return false;
 
@@ -768,7 +768,7 @@ Bool PacketLayoutEncode(
         return false;
     }
 
-    for (Int32 FieldIndex = 0; FieldIndex < ArrayGetElementCount(PacketLayout->Fields); FieldIndex += 1) {
+    for (Int FieldIndex = 0; FieldIndex < ArrayGetElementCount(PacketLayout->Fields); FieldIndex += 1) {
         PacketFieldRef PacketField = (PacketFieldRef)ArrayGetElementAtIndex(PacketLayout->Fields, FieldIndex);
 
         if (PacketField->ArrayIndex >= 0) {
@@ -858,11 +858,11 @@ Bool PacketLayoutEncode(
             }
 
             PacketLayoutRef ChildLayout = PacketManagerGetLayoutByIndex(PacketLayout->Manager, PacketField->ChildIndex);
-            Index Count = PacketField->Length;
+            Int Count = PacketField->Length;
 
             lua_pushnil(State);
 
-            Index Offset = 0;
+            Int Offset = 0;
             while (lua_next(State, -2) != 0) {
                 if (Offset >= PacketField->Length) {
                     lua_pop(State, 2);
@@ -878,7 +878,7 @@ Bool PacketLayoutEncode(
                 Offset += 1;
             }
 
-            for (Index Index = Offset; Index < Count; Index += 1) {
+            for (Int Index = Offset; Index < Count; Index += 1) {
                 PacketLayoutWriteZero(ChildLayout, PacketBuffer);
             }
 
@@ -898,7 +898,7 @@ Bool PacketLayoutEncode(
 
             lua_pushnil(State);
 
-            Index Offset = 0;
+            Int Offset = 0;
             while (lua_next(State, -2) != 0) {
                 if (!PacketLayoutEncode(ChildLayout, PacketBuffer, State)) {
                     lua_pop(State, 2);
@@ -1138,7 +1138,7 @@ static Int32 PacketManagerAPI_RegisterPacketHandler(
     if (!PacketManager) return 0;
 
     if (!lua_isinteger(State, 1)) return luaL_error(State, "Invalid argument for command!");
-    Index Command = (Index)lua_tointeger(State, 1);
+    Int Command = (Int)lua_tointeger(State, 1);
 
     if (!lua_isstring(State, 2)) return luaL_error(State, "Invalid argument for handler!");
     CString Name = (CString)lua_tostring(State, 2);
@@ -1151,7 +1151,7 @@ static Int32 PacketManagerAPI_RegisterPacketHandler(
         return luaL_error(State, "Handler for command %d already registered!", Command);
     }
     
-    Index LayoutIndex = PacketManagerGetLayoutIndex(PacketManager, Name);
+    Int LayoutIndex = PacketManagerGetLayoutIndex(PacketManager, Name);
     if (LayoutIndex == UINT64_MAX) {
         return luaL_error(State, "Layout named %s not found!", Name);
     }
@@ -1183,7 +1183,7 @@ static Int32 PacketManagerAPI_Unicast(
     if (!SocketConnection) return 0;
 
     if (!lua_isinteger(State, 1)) return luaL_error(State, "Invalid argument for command!");
-    Index Command = (Index)lua_tointeger(State, 1);
+    Int Command = (Int)lua_tointeger(State, 1);
 
     if (!lua_isstring(State, 2)) return luaL_error(State, "Invalid argument for layout!");
     CString Name = (CString)lua_tostring(State, 2);

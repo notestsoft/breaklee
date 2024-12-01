@@ -25,7 +25,7 @@ typedef struct _ServerContext* ServerContextRef;
 struct _ClientContext {
     SocketConnectionRef Connection;
     UInt32 Flags;
-    Index CharacterIndex;
+    UInt32 CharacterIndex;
     Char CharacterName[MAX_CHARACTER_NAME_LENGTH + 1];
 };
 typedef struct _ClientContext* ClientContextRef;

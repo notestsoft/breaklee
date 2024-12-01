@@ -63,11 +63,11 @@ Void ParseUInt64(
     *Result = (UInt64)strtoull(Value, NULL, 0);
 }
 
-Void ParseIndex(
+Void ParseInt(
     CString Value,
-    Index* Result
+    Int* Result
 ) {
-    *Result = (Index)strtoull(Value, NULL, 0);
+    *Result = (Int)strtoll(Value, NULL, 0);
 }
 
 Bool ParseAttributeInt8(
@@ -160,6 +160,30 @@ Bool ParseAttributeInt64(
     }
 
     ParseInt64(Data->Data, Result);
+    return true;
+
+error:
+    return false;
+}
+
+Bool ParseAttributeInt(
+    ArchiveRef Object,
+    Int32 NodeIndex,
+    CString Name,
+    Int* Result
+) {
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    if (AttributeIndex < 0) goto error;
+
+    ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
+    if (!Data) goto error;
+
+    if (Data->Length < 1 || strlen(Data->Data) < 1) {
+        *Result = -1;
+        return true;
+    }
+
+    ParseInt(Data->Data, Result);
     return true;
 
 error:
@@ -262,30 +286,6 @@ error:
     return false;
 }
 
-Bool ParseAttributeIndex(
-    ArchiveRef Object,
-    Int32 NodeIndex,
-    CString Name,
-    Index* Result
-) {
-    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
-    if (AttributeIndex < 0) goto error;
-
-    ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
-    if (!Data) goto error;
-
-    if (Data->Length < 1 || strlen(Data->Data) < 1) {
-        *Result = -1;
-        return true;
-    }
-
-    ParseIndex(Data->Data, Result);
-    return true;
-
-error:
-    return false;
-}
-
 Bool ParseAttributeFloat32(
     ArchiveRef Object,
     Int32 NodeIndex,
@@ -354,7 +354,7 @@ Bool ParseAttributeInt32Array(
         return true;
     }
 
-    Int32 Index = 0;
+    Int Index = 0;
     Char* Cursor = Data->Data;
     while (Cursor < Data->Data + Data->Length && Index < Count) {
         if (*Cursor == '\0') break;
@@ -396,7 +396,7 @@ Int32 ParseAttributeInt32ArrayCounted(
         return 0;
     }
 
-    Int32 Index = 0;
+    Int Index = 0;
     Char* Cursor = Data->Data;
     while (Cursor < Data->Data + Data->Length) {
         if (*Cursor == '\0') break;
@@ -438,7 +438,7 @@ Bool ParseAttributeUInt32Array(
         return true;
     }
 
-    Int32 Index = 0;
+    Int Index = 0;
     Char* Cursor = Data->Data;
     while (Cursor < Data->Data + Data->Length) {
         if (*Cursor == '\0') break;
@@ -481,7 +481,7 @@ Int32 ParseAttributeUInt64ArrayCounted(
         return 0;
     }
 
-    Int32 Index = 0;
+    Int Index = 0;
     Char* Cursor = Data->Data;
     while (Cursor < Data->Data + Data->Length) {
         if (*Cursor == '\0') break;
@@ -704,16 +704,6 @@ Bool ParseAttributeUInt64Equal(
 ) {
     UInt64 Result = 0;
     return ParseAttributeUInt64(Object, NodeIndex, Name, &Result) && Result == Value;
-}
-
-Bool ParseAttributeIndexEqual(
-    ArchiveRef Object,
-    Int32 NodeIndex,
-    CString Name,
-    Index Value
-) {
-    Index Result = 0;
-    return ParseAttributeIndex(Object, NodeIndex, Name, &Result) && Result == Value;
 }
 
 Bool ParseAttributeFloat32Equal(

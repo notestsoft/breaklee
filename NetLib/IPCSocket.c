@@ -76,8 +76,8 @@ Void IPCSocketOnDisconnect(
 ) {
     IPCNodeContextRef NodeContext = (IPCNodeContextRef)Connection->Userdata;
 
-    if (NodeContext->NodeID.Serial) {
-        DictionaryRemove(Socket->NodeTable, &NodeContext->NodeID.Serial);
+    if (!IPCNodeIDIsNull(NodeContext->NodeID)) {
+        DictionaryRemove(Socket->NodeTable, &NodeContext->NodeID);
     }
 
     MemoryPoolRelease(Socket->ConnectionContextPool, Connection->ConnectionPoolIndex);
@@ -97,12 +97,12 @@ Void IPCSocketOnReceived(
         if (Packet->Source.Group != Socket->NodeID.Group) goto error;
 
         NodeContext->NodeID = Packet->Source;
-        DictionaryInsert(Socket->NodeTable, &Packet->Source.Serial, &Connection->ID, sizeof(Index));
+        DictionaryInsert(Socket->NodeTable, &Packet->Source, &Connection->ID, sizeof(Int));
     }
 
     if (Packet->Command == IPC_COMMAND_ROUTE) {
-        if (Packet->Target.Serial == Socket->NodeID.Serial) {
-            Index Command = Packet->SubCommand;
+        if (IPCNodeIDIsEqual(Packet->Target, Socket->NodeID)) {
+            Int Command = Packet->SubCommand;
             IPCSocketCommandCallback* CommandCallback = (IPCSocketCommandCallback*)DictionaryLookup(Socket->CommandRegistry, &Command);
             if (CommandCallback) (*CommandCallback)(
                 Socket,
@@ -111,7 +111,7 @@ Void IPCSocketOnReceived(
             );
         }
         else if (Packet->RouteType == IPC_ROUTE_TYPE_UNICAST) {
-            Index* TargetConnectionID = DictionaryLookup(Socket->NodeTable, &Packet->Target.Serial);
+            Int* TargetConnectionID = DictionaryLookup(Socket->NodeTable, &Packet->Target);
             if (!TargetConnectionID) return;
 
             IPCSocketConnectionRef TargetConnection = IPCSocketGetConnection(Socket, *TargetConnectionID);
@@ -126,7 +126,7 @@ Void IPCSocketOnReceived(
                 if (!TargetConnection->Userdata) goto next;
 
                 IPCNodeContextRef NodeContext = (IPCNodeContextRef)TargetConnection->Userdata;
-                if (NodeContext->NodeID.Serial < 1) goto next;
+                if (IPCNodeIDIsNull(NodeContext->NodeID)) goto next;
                 if (NodeContext->NodeID.Type != Packet->Target.Type) goto next;
                 if (NodeContext->NodeID.Group != Packet->Target.Group) goto next;
 
@@ -152,7 +152,7 @@ Void AllocateRecvBuffer(
 ) {
     IPCSocketConnectionRef Connection = (IPCSocketConnectionRef)Handle->data;
     MemoryRef RecvBuffer = Connection->RecvBuffer;
-    Index RecvBufferLength = Connection->RecvBufferLength;
+    Int RecvBufferLength = Connection->RecvBufferLength;
     if (RecvBuffer) SuggestedSize = MAX(SuggestedSize, RecvBufferLength);
 
     if (!RecvBuffer) {
@@ -351,7 +351,7 @@ IPCSocketRef IPCSocketCreate(
     Socket->ConnectionPool = MemoryPoolCreate(Allocator, sizeof(struct _IPCSocketConnection), MaxConnectionCount);
     Socket->ConnectionContextPool = MemoryPoolCreate(Allocator, sizeof(struct _IPCNodeContext), MaxConnectionCount);
     Socket->CommandRegistry = IndexDictionaryCreate(Allocator, 8);
-    Socket->NodeTable = IndexDictionaryCreate(Allocator, MaxConnectionCount);
+    Socket->NodeTable = IPCNodeIDDictionaryCreate(Allocator, 8);
     Socket->Userdata = Userdata;
 
     if (Host) {
@@ -381,7 +381,7 @@ Void IPCSocketDestroy(
 
 Void IPCSocketRegisterCommandCallback(
     IPCSocketRef Socket,
-    Index Command,
+    Int Command,
     IPCSocketCommandCallback Callback
 ) {
     assert(!DictionaryLookup(Socket->CommandRegistry, &Command));
@@ -391,7 +391,7 @@ Void IPCSocketRegisterCommandCallback(
 IPCSocketConnectionRef IPCSocketReserveConnection(
     IPCSocketRef Socket
 ) {
-    Index ConnectionPoolIndex = 0;
+    Int ConnectionPoolIndex = 0;
     IPCSocketConnectionRef Connection = (IPCSocketConnectionRef)MemoryPoolReserveNext(Socket->ConnectionPool, &ConnectionPoolIndex);
     IndexSetInsert(Socket->ConnectionIndices, ConnectionPoolIndex);
     memset(Connection, 0, sizeof(struct _IPCSocketConnection));
@@ -509,7 +509,7 @@ Void IPCSocketUnicast(
     IPCPacket->RouteType = IPC_ROUTE_TYPE_UNICAST;
 
     Bool IsHost = Socket->Host == NULL;
-    Index* ConnectionID = DictionaryLookup(Socket->NodeTable, &IPCPacket->Target.Serial);
+    Int* ConnectionID = DictionaryLookup(Socket->NodeTable, &IPCPacket->Target);
     if (ConnectionID) {
         IPCSocketConnectionRef Connection = IPCSocketGetConnection(Socket, *ConnectionID);
         if (Connection) {
@@ -520,7 +520,7 @@ Void IPCSocketUnicast(
     else if (!IsHost) {
         IndexSetIteratorRef Iterator = IndexSetGetIterator(Socket->ConnectionIndices);
         while (Iterator) {
-            Index ConnectionPoolIndex = Iterator->Value;
+            Int ConnectionPoolIndex = Iterator->Value;
             Iterator = IndexSetIteratorNext(Socket->ConnectionIndices, Iterator);
 
             IPCSocketConnectionRef Connection = (IPCSocketConnectionRef)MemoryPoolFetch(Socket->ConnectionPool, ConnectionPoolIndex);
@@ -543,7 +543,7 @@ Void IPCSocketBroadcast(
 
     IndexSetIteratorRef Iterator = IndexSetGetIterator(Socket->ConnectionIndices);
     while (Iterator) {
-        Index ConnectionPoolIndex = Iterator->Value;
+        Int ConnectionPoolIndex = Iterator->Value;
         Iterator = IndexSetIteratorNext(Socket->ConnectionIndices, Iterator);
 
         IPCSocketConnectionRef Connection = (IPCSocketConnectionRef)MemoryPoolFetch(Socket->ConnectionPool, ConnectionPoolIndex);
@@ -593,7 +593,7 @@ Void IPCSocketDisconnect(
     uv_close((uv_handle_t*)Connection->Handle, OnClose);
 }
 
-Index IPCSocketGetConnectionCount(
+Int IPCSocketGetConnectionCount(
     IPCSocketRef Socket
 ) {
     return IndexSetGetElementCount(Socket->ConnectionIndices);
@@ -601,11 +601,11 @@ Index IPCSocketGetConnectionCount(
 
 IPCSocketConnectionRef IPCSocketGetConnection(
     IPCSocketRef Socket,
-    Index ConnectionID
+    Int ConnectionID
 ) {
     IndexSetIteratorRef Iterator = IndexSetGetIterator(Socket->ConnectionIndices);
     while (Iterator) {
-        Index ConnectionPoolIndex = Iterator->Value;
+        Int ConnectionPoolIndex = Iterator->Value;
         Iterator = IndexSetIteratorNext(Socket->ConnectionIndices, Iterator);
 
         IPCSocketConnectionRef Connection = (IPCSocketConnectionRef)MemoryPoolFetch(Socket->ConnectionPool, ConnectionPoolIndex);

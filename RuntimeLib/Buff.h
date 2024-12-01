@@ -19,6 +19,20 @@ enum {
     RUNTIME_BUFF_SLOT_TYPE_COUNT,
 };
 
+enum {
+    RUNTIME_BFX_TYPE_NONE           = 0,
+    RUNTIME_BFX_TYPE_DOWN           = 1,
+    RUNTIME_BFX_TYPE_KNOCK_BACK     = 2,
+    RUNTIME_BFX_TYPE_STUN           = 3,
+    RUNTIME_BFX_TYPE_SUPPRESSION    = 4,
+    RUNTIME_BFX_TYPE_ROOT           = 5,
+    RUNTIME_BFX_TYPE_SILENCE        = 6,
+    RUNTIME_BFX_TYPE_FLUIDIZATION   = 7,
+    RUNTIME_BFX_TYPE_PETRIFICATION  = 8,
+
+    RUNTIME_BFX_TYPE_COUNT = 8,
+};
+
 struct _RTBfxSlot {
     UInt8 BfxIndex;
     UInt32 Duration;

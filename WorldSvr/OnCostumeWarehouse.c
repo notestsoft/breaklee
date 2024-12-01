@@ -14,7 +14,7 @@ CLIENT_PROCEDURE_BINDING(COSTUME_WAREHOUSE_LIST) {
 		Response->IsActive = 1;
 		Response->ItemCount = Runtime->Context->CostumeWarehousePriceCount;
 
-		for (Int32 Index = 0; Index < Runtime->Context->CostumeWarehousePriceCount; Index += 1) {
+		for (Int Index = 0; Index < Runtime->Context->CostumeWarehousePriceCount; Index += 1) {
 			RTDataCostumeWarehousePriceRef Item = &Runtime->Context->CostumeWarehousePriceList[Index];
 
 			S2C_DATA_COSTUME_WAREHOUSE_ITEM* ResponseItem = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_COSTUME_WAREHOUSE_ITEM);

@@ -67,7 +67,7 @@ Void RTOptionPoolManagerDestroy(
 
 RTOptionPoolRef RTOptionPoolManagerGetOptionPool(
     RTOptionPoolManagerRef OptionPoolManager,
-    Index PoolIndex
+    Int PoolIndex
 ) {
     RTOptionPoolRef OptionPool = (RTOptionPoolRef)DictionaryLookup(OptionPoolManager->OptionPool, &PoolIndex);
     if (OptionPool) return OptionPool;
@@ -86,7 +86,7 @@ RTOptionPoolRef RTOptionPoolManagerGetOptionPool(
 
 Void RTOptionPoolManagerAddItemLevel(
     RTOptionPoolManagerRef OptionPoolManager,
-    Index PoolIndex,
+    Int PoolIndex,
     Int32 Level,
     Float64 Rate
 ) {
@@ -98,7 +98,7 @@ Void RTOptionPoolManagerAddItemLevel(
 
 Void RTOptionPoolManagerAddEpicLevel(
     RTOptionPoolManagerRef OptionPoolManager,
-    Index PoolIndex,
+    Int PoolIndex,
     Int32 Level,
     Float64 Rate
 ) {
@@ -110,14 +110,14 @@ Void RTOptionPoolManagerAddEpicLevel(
 
 Void RTOptionPoolManagerAddEpicOption(
     RTOptionPoolManagerRef OptionPoolManager,
-    Index PoolIndex,
+    Int PoolIndex,
     Int32 ItemType,
     Int32 Level,
     Int32 ForceIndex,
     Float64 Rate
 ) {
     RTOptionPoolRef OptionPool = RTOptionPoolManagerGetOptionPool(OptionPoolManager, PoolIndex);
-    Index OptionIndex = (Index)Level << 32 | (Index)ItemType;
+    Int OptionIndex = (Int)Level << 16 | (Int)ItemType;
     ArrayRef EpicOptions = (ArrayRef)DictionaryLookup(OptionPool->EpicOptions, &OptionIndex);
     if (!EpicOptions) {
         struct _Array EpicOptionsMemory = { 0 };
@@ -134,7 +134,7 @@ Void RTOptionPoolManagerAddEpicOption(
 
 Void RTOptionPoolManagerAddForceSlot(
     RTOptionPoolManagerRef OptionPoolManager,
-    Index PoolIndex,
+    Int PoolIndex,
     Int32 Count,
     Float64 Rate
 ) {
@@ -146,7 +146,7 @@ Void RTOptionPoolManagerAddForceSlot(
 
 Void RTOptionPoolManagerAddForceOptionSlot(
     RTOptionPoolManagerRef OptionPoolManager,
-    Index PoolIndex,
+    Int PoolIndex,
     Int32 Count,
     Float64 Rate
 ) {
@@ -158,13 +158,13 @@ Void RTOptionPoolManagerAddForceOptionSlot(
 
 Void RTOptionPoolManagerAddForceOption(
     RTOptionPoolManagerRef OptionPoolManager,
-    Index PoolIndex,
+    Int PoolIndex,
     Int32 ItemType,
     Int32 ForceIndex,
     Float64 Rate
 ) {
     RTOptionPoolRef OptionPool = RTOptionPoolManagerGetOptionPool(OptionPoolManager, PoolIndex);
-    Index OptionIndex = (Index)ItemType;
+    Int OptionIndex = ItemType;
     ArrayRef ForceOptions = DictionaryLookup(OptionPool->ForceOptions, &OptionIndex);
     if (!ForceOptions) {
         struct _Array ForceOptionsMemory = { 0 };
@@ -186,7 +186,7 @@ RTOptionPoolValueRef RTCalculateOptionPoolValue(
     Int32 RateValue = RandomRange(Seed, 0, INT32_MAX);
     Int32 RateOffset = 0;
 
-    for (Int32 Index = 0; Index < ArrayGetElementCount(ValuePool); Index += 1) {
+    for (Int Index = 0; Index < ArrayGetElementCount(ValuePool); Index += 1) {
         RTOptionPoolValueRef Value = (RTOptionPoolValueRef)ArrayGetElementAtIndex(ValuePool, Index);
         if (RateValue <= RateOffset + Value->Rate) {
             return Value;
@@ -201,7 +201,7 @@ RTOptionPoolValueRef RTCalculateOptionPoolValue(
 Void RTOptionPoolManagerCalculateOptions(
     RTRuntimeRef Runtime,
     RTOptionPoolManagerRef OptionPoolManager,
-    Index OptionPoolIndex,
+    Int OptionPoolIndex,
     RTDropResultRef DropResult
 ) {
     if (OptionPoolIndex < 1) return;
@@ -220,7 +220,7 @@ Void RTOptionPoolManagerCalculateOptions(
 
     RTOptionPoolValueRef EpicLevelValue = RTCalculateOptionPoolValue(OptionPool->EpicLevels, &Seed);
     if (EpicLevelValue && EpicLevelValue->Value > 0) {
-        Index OptionIndex = (Index)EpicLevelValue->Value << 32 | (Index)ItemData->ItemType;
+        Int OptionIndex = EpicLevelValue->Value << 16 | ItemData->ItemType;
         ArrayRef EpicOptions = (ArrayRef)DictionaryLookup(OptionPool->EpicOptions, &OptionIndex);
         RTOptionPoolValueRef EpicOptionValue = RTCalculateOptionPoolValue(EpicOptions, &Seed);
         if (EpicOptionValue && EpicOptionValue->Value > 0) {
@@ -240,8 +240,8 @@ Void RTOptionPoolManagerCalculateOptions(
 
     RTOptionPoolValueRef ForceOptionSlotValue = RTCalculateOptionPoolValue(OptionPool->ForceOptionSlots, &Seed);
     if (ForceOptionSlotValue) {
-        for (Int32 SlotIndex = 0; SlotIndex < ForceOptionSlotValue->Value; SlotIndex += 1) {
-            Index OptionIndex = (Index)ItemData->ItemType;
+        for (Int SlotIndex = 0; SlotIndex < ForceOptionSlotValue->Value; SlotIndex += 1) {
+            Int OptionIndex = ItemData->ItemType;
             ArrayRef ForceOptions = (ArrayRef)DictionaryLookup(OptionPool->ForceOptions, &OptionIndex);
             RTOptionPoolValueRef ForceOptionValue = RTCalculateOptionPoolValue(ForceOptions, &Seed);
             if (ForceOptionValue && ForceOptionValue->Value > 0) {

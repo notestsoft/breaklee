@@ -23,7 +23,7 @@ typedef struct _DictionaryBucket* DictionaryBucketRef;
 struct _DictionaryKeyIterator {
     DictionaryRef Dictionary;
     DictionaryBucketRef Bucket;
-    Index BucketIndex;
+    Int BucketIndex;
     Void* Key;
     Void* Value;
 };
@@ -34,17 +34,17 @@ DictionaryRef DictionaryCreate(
     DictionaryKeyComparator Comparator, 
     DictionaryKeyHasher Hasher,
     DictionaryKeySizeCallback KeySizeCallback, 
-    Index Capacity
+    Int Capacity
 );
 
 DictionaryRef CStringDictionaryCreate(
     AllocatorRef Allocator, 
-    Index Capacity
+    Int Capacity
 );
 
 DictionaryRef IndexDictionaryCreate(
     AllocatorRef Allocator, 
-    Index Capacity
+    Int Capacity
 );
 
 Void DictionaryDestroy(

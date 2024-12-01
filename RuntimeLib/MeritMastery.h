@@ -8,7 +8,7 @@ EXTERN_C_BEGIN
 #pragma pack(push, 1)
 
 struct _RTGoldMeritMasterySlot {
-    Int32 Index;
+    Int Index;
     Int32 Level;
 };
 
@@ -34,14 +34,14 @@ struct _RTPlatinumMeritUnlockedSlot {
 
 struct _RTPlatinumMeritMasterySlot {
     Int8 MemorizeIndex;
-    Int32 Index;
+    Int Index;
     Int32 Level;
 };
 
 struct _RTPlatinumMeritSpecialMasterySlot {
     Int8 MemorizeIndex;
     Int32 Category;
-    Int32 Index;
+    Int Index;
     Int32 Grade;
 };
 
@@ -78,14 +78,14 @@ struct _RTDiamondMeritUnlockedSlot {
 
 struct _RTDiamondMeritMasterySlot {
     Int8 MemorizeIndex;
-    Int32 Index;
+    Int Index;
     Int32 Level;
 };
 
 struct _RTDiamondMeritSpecialMasterySlot {
     Int8 MemorizeIndex;
     Int32 Category;
-    Int32 Index;
+    Int Index;
     Int32 Grade;
 };
 

@@ -108,7 +108,7 @@ RTItemSlotRef RTEquipmentGetSlot(
 ) {
     if (SlotIndex < 0 || SlotIndex > RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT) return NULL;
 
-    for (Int32 Index = 0; Index < Equipment->Info.EquipmentSlotCount; Index += 1) {
+    for (Int Index = 0; Index < Equipment->Info.EquipmentSlotCount; Index += 1) {
         RTItemSlotRef Slot = &Equipment->EquipmentSlots[Index];
         if (Slot->SlotIndex == SlotIndex) return Slot;
     }
@@ -156,7 +156,7 @@ Bool RTEquipmentClearSlot(
     Info("RTEquipmentClearSlot(%d)", SlotIndex);
     if (SlotIndex < 0 || SlotIndex > RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT) return false;
 
-    for (Int32 Index = 0; Index < Equipment->Info.EquipmentSlotCount; Index += 1) {
+    for (Int Index = 0; Index < Equipment->Info.EquipmentSlotCount; Index += 1) {
         RTItemSlotRef Slot = &Equipment->EquipmentSlots[Index];
         if (Slot->SlotIndex == SlotIndex) {
             {
@@ -205,7 +205,7 @@ Int32 RTCharacterFindNextEquipmentSlotIndex(
     UInt32 ItemType
 ) {
     Int32 BattleStyleIndex = Character->Data.StyleInfo.Style.BattleStyle | (Character->Data.StyleInfo.Style.ExtendedBattleStyle << 3);
-    for (Int32 SlotIndex = NextSlotIndex; SlotIndex < RUNTIME_MAX_EQUIPMENT_SLOT_INDEX_COUNT; SlotIndex += 1) {
+    for (Int SlotIndex = NextSlotIndex; SlotIndex < RUNTIME_MAX_EQUIPMENT_SLOT_INDEX_COUNT; SlotIndex += 1) {
         if (RTEquipmentSlotIndexMatchItemType(BattleStyleIndex, SlotIndex, ItemType) && !RTCharacterEquipmentIsLocked(Runtime, Character, SlotIndex)) {
             return SlotIndex;
         }
@@ -221,7 +221,7 @@ Bool RTCharacterEquipmentIsLocked(
 ) {
     if (SlotIndex < 0 || SlotIndex > RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT) return false;
 
-    for (Int32 Index = 0; Index < Character->Data.EquipmentInfo.Info.LockSlotCount; Index += 1) {
+    for (Int Index = 0; Index < Character->Data.EquipmentInfo.Info.LockSlotCount; Index += 1) {
         RTEquipmentLockSlotRef LockSlot = &Character->Data.EquipmentInfo.LockSlots[Index];
         if (LockSlot->SlotIndex != SlotIndex) continue;
 
@@ -240,7 +240,7 @@ Bool RTCharacterEquipmentSetLocked(
     if (SlotIndex < 0 || SlotIndex > RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT) return false;
 
     Int32 LockSlotIndex = -1;
-    for (Int32 Index = 0; Index < Character->Data.EquipmentInfo.Info.LockSlotCount; Index += 1) {
+    for (Int Index = 0; Index < Character->Data.EquipmentInfo.Info.LockSlotCount; Index += 1) {
         RTEquipmentLockSlotRef LockSlot = &Character->Data.EquipmentInfo.LockSlots[Index];
         if (LockSlot->SlotIndex != SlotIndex) continue;
 

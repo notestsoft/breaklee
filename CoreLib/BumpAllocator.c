@@ -8,16 +8,16 @@ const Int32 kBumpAllocatorDefaultPageCapacity = 0xFFFF;
 
 struct _BumpAllocatorPage {
     struct _BumpAllocatorPage *Next;
-    Index Size;
-    Index Capacity;
-    Index Index;
+    Int Size;
+    Int Capacity;
+    Int Index;
     UInt8 *Memory;
 };
 
 struct _BumpAllocatorContext {
     AllocatorRef Allocator;
-    Index Alignment;
-    Index PageHeaderSize;
+    Int Alignment;
+    Int PageHeaderSize;
     struct _BumpAllocatorPage *FirstPage;
     struct _BumpAllocatorPage *CurrentPage;
 };
@@ -26,7 +26,7 @@ struct _BumpAllocatorContext {
 
 Void *_AllocatorBump(
     AllocatorMode Mode,
-    Index Capacity,
+    Int Capacity,
     Void *Memory,
     Void *Context
 );
@@ -45,7 +45,7 @@ AllocatorRef BumpAllocatorCreate(
 
 Void *_AllocatorBump(
     AllocatorMode Mode,
-    Index Capacity,
+    Int Capacity,
     Void *Memory,
     Void *Context
 ) {
@@ -55,7 +55,7 @@ Void *_AllocatorBump(
     switch (Mode) {
     case AllocatorModeAllocate: {
         if (BumpContext->FirstPage == NULL) {
-            Index MemoryCapacity = MAX(kBumpAllocatorDefaultPageCapacity, (Int32)Capacity + BumpContext->PageHeaderSize);
+            Int MemoryCapacity = MAX(kBumpAllocatorDefaultPageCapacity, (Int32)Capacity + BumpContext->PageHeaderSize);
             MemoryCapacity = Align(MemoryCapacity, BumpContext->Alignment);
             struct _BumpAllocatorPage* Page = AllocatorAllocate(BumpContext->Allocator, MemoryCapacity);
             Page->Size = MemoryCapacity;
@@ -67,7 +67,7 @@ Void *_AllocatorBump(
             BumpContext->CurrentPage = Page;
         }
         else if (BumpContext->CurrentPage->Index + Capacity > BumpContext->CurrentPage->Capacity) {
-            Index MemoryCapacity = MAX(kBumpAllocatorDefaultPageCapacity, Capacity + BumpContext->PageHeaderSize);
+            Int MemoryCapacity = MAX(kBumpAllocatorDefaultPageCapacity, Capacity + BumpContext->PageHeaderSize);
             MemoryCapacity = Align(MemoryCapacity, BumpContext->Alignment);
             struct _BumpAllocatorPage* Page = AllocatorAllocate(BumpContext->Allocator, MemoryCapacity);
             Page->Size = MemoryCapacity;

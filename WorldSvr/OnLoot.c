@@ -44,7 +44,7 @@ CLIENT_PROCEDURE_BINDING(LOOT_CURRENCY_ITEM) {
     S2C_DATA_LOOT_CURRENCY_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, LOOT_CURRENCY_ITEM);
     Response->Result = S2C_DATA_LOOT_RESULT_SUCCESS;
 
-    for (Int32 Index = 0; Index < Packet->Count; Index++) {
+    for (Int Index = 0; Index < Packet->Count; Index++) {
         C2S_DATA_LOOT_CURRENCY_ITEM_INDEX* ItemIndex = &Packet->Data[Index];
         RTWorldItemRef Item = RTWorldGetItem(Runtime, World, ItemIndex->Entity, ItemIndex->UniqueKey);
         if (!Item) continue; // NOTE: Is it fine to just continue here?
@@ -81,7 +81,7 @@ CLIENT_PROCEDURE_BINDING(LOOT_GROUP_ITEM) {
     Response->Result = 1;
     Response->ItemCount = 0;
 
-    for (Int32 Index = 0; Index < Packet->ItemCount; Index += 1) {
+    for (Int Index = 0; Index < Packet->ItemCount; Index += 1) {
         RTLootResult Result = RTCharacterLootItem(
             Runtime,
             Character,

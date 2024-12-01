@@ -215,7 +215,7 @@ Int32 main(Int32 argc, CString* argv) {
     ServerDestroy(Server);
     DatabaseDisconnect(ServerContext.Database);
 
-    for (Index Index = 0; Index < ArrayGetElementCount(ServerContext.CaptchaInfoList); Index += 1) {
+    for (Int Index = 0; Index < ArrayGetElementCount(ServerContext.CaptchaInfoList); Index += 1) {
         CaptchaInfoRef Captcha = (CaptchaInfoRef)ArrayGetElementAtIndex(ServerContext.CaptchaInfoList, Index);
         free(Captcha->Data);
     }

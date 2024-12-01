@@ -6,7 +6,7 @@ Bool RTCharacterTransformIsLocked(
     RTCharacterRef Character,
     Int32 TransformIndex
 ) {
-    for (Int32 Index = 0; Index < Character->Data.TransformInfo.Info.SlotCount; Index += 1) {
+    for (Int Index = 0; Index < Character->Data.TransformInfo.Info.SlotCount; Index += 1) {
         if (Character->Data.TransformInfo.Slots[Index].TransformIndex == TransformIndex) return false;
     }
 

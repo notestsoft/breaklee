@@ -272,7 +272,7 @@ Void RTCharacterInitializeBattleMode(
 		RTCharacterSkillDataRef SkillData = RTCharacterGetAuraModeSkillData(Runtime, Character, Character->Data.BattleModeInfo.Info.AuraModeIndex);
 		Int32 SkillLevel = RTCharacterGetAuraModeSkillLevel(Runtime, Character, Character->Data.BattleModeInfo.Info.AuraModeIndex);
 		if (SkillData) {
-			for (Int32 ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
+			for (Int ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
 				RTSkillValueDataRef SkillValue = &SkillData->SkillValues[ValueIndex];
 				Int64 ForceValue = RTCalculateSkillValue(SkillValue, SkillLevel, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]);
 
@@ -292,7 +292,7 @@ Void RTCharacterInitializeBattleMode(
 		RTCharacterSkillDataRef SkillData = RTCharacterGetBattleModeSkillData(Runtime, Character, Character->Data.BattleModeInfo.Info.BattleModeIndex);
 		Int32 SkillLevel = RTCharacterGetBattleModeSkillLevel(Runtime, Character, Character->Data.BattleModeInfo.Info.BattleModeIndex);
 		if (SkillData) {
-			for (Int32 ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
+			for (Int ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
 				RTSkillValueDataRef SkillValue = &SkillData->SkillValues[ValueIndex];
 				Int64 ForceValue = RTCalculateSkillValue(SkillValue, SkillLevel, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]);
 

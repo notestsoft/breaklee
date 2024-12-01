@@ -39,7 +39,7 @@ struct _RTCharacterGiftboxInfo {
 RTGiftBoxSlotRef RTCharacterGetGiftBox(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    Int32 Index
+    Int Index
 );
 
 Void RTCharacterUpdateGiftBox(
@@ -50,13 +50,13 @@ Void RTCharacterUpdateGiftBox(
 Bool RTCharacterRollGiftBox(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    Int32 Index
+    Int Index
 );
 
 Bool RTCharacterReceiveGiftBox(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    Int32 Index,
+    Int Index,
     Int32 InventorySlotIndex,
     Int32 StackSize
 );

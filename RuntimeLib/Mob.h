@@ -37,6 +37,17 @@ enum {
 };
 
 enum {
+	RUNTIME_MOB_ATTACK_TARGET_TYPE_NONE					= 0,
+	RUNTIME_MOB_ATTACK_TARGET_TYPE_ENEMY_1				= 1,
+	RUNTIME_MOB_ATTACK_TARGET_TYPE_ENEMY_2				= 2,
+	RUNTIME_MOB_ATTACK_TARGET_TYPE_ENEMY_DEFERRED		= 4,
+	RUNTIME_MOB_ATTACK_TARGET_TYPE_SELF					= 5,
+	RUNTIME_MOB_ATTACK_TARGET_TYPE_ENEMY_FIX_POSITION	= 6,
+	RUNTIME_MOB_ATTACK_TARGET_TYPE_TARGET				= 8,
+	RUNTIME_MOB_ATTACK_TARGET_TYPE_MISSION_GATE			= 11,
+};
+
+enum {
 	RUNTIME_MOB_PHASE_NONE,
 	RUNTIME_MOB_PHASE_MOVE,
 	RUNTIME_MOB_PHASE_FIND_PASSIVE,
@@ -130,10 +141,14 @@ struct _RTMobSpeciesData {
 	struct _RTMobSkillData DefaultSkill;
 	struct _RTMobSkillData SpecialSkill;
 	Int32 AttackSignal;
-	Int32 IsWorldBoss;
+	Int32 BossType;
 	Int32 CanAttack;
 	Int32 CanMove;
-	UInt64 Exp;
+	Int32 Exp;
+	Int32 AttackCountAmp;
+	Int32 AggroPattern;
+	Int32 ResistDiffDamage;
+	Int32 Flee;
 };
 
 struct _RTMobPhaseData {
@@ -146,8 +161,8 @@ struct _RTMobPhaseData {
 };
 
 struct _RTMobSpawnData {
-	Index PatternPartIndex;
-	Index MobSpeciesIndex;
+	Int32 PatternPartIndex;
+	Int32 MobSpeciesIndex;
 	Int32 MobPatrolIndex;
 	Int32 MobPatternIndex;
 	Int32 AreaX;
@@ -303,6 +318,18 @@ Void RTMobCancelSpecialAction(
 	RTRuntimeRef Runtime,
 	RTWorldContextRef WorldContext,
 	RTMobRef Mob
+);
+
+Void RTMobAttack(
+	RTRuntimeRef Runtime,
+	RTWorldContextRef WorldContext,
+	RTMobRef Mob,
+	Int32 AttackIndex,
+	Int64 AttackRate,
+	Int64 PhysicalAttackMin,
+	Int64 PhysicalAttackMax,
+	Int32 TargetType,
+	Int32 TargetIndex
 );
 
 Void RTMobHeal(

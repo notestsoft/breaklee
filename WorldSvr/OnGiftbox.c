@@ -13,14 +13,14 @@ Void SendGiftBoxPricePoolList(
     S2C_DATA_GIFTBOX_PRICE_POOL_LIST* Notification = PacketBufferInit(PacketBuffer, S2C, GIFTBOX_PRICE_POOL_LIST);
     Notification->Count = Context->Runtime->Context->GiftBoxPricePoolCount;
 
-    for (Int32 PoolIndex = 0; PoolIndex < Context->Runtime->Context->GiftBoxPricePoolCount; PoolIndex += 1) {
+    for (Int PoolIndex = 0; PoolIndex < Context->Runtime->Context->GiftBoxPricePoolCount; PoolIndex += 1) {
         RTDataGiftBoxPricePoolRef PricePool = &Context->Runtime->Context->GiftBoxPricePoolList[PoolIndex];
 
         S2C_DATA_GIFTBOX_PRICE_POOL* NotificationPool = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_GIFTBOX_PRICE_POOL);
         NotificationPool->SlotIndex = PricePool->Index;
         NotificationPool->PriceCount = PricePool->GiftBoxPricePoolValueCount;
 
-        for (Int32 PriceIndex = 0; PriceIndex < PricePool->GiftBoxPricePoolValueCount; PriceIndex += 1) {
+        for (Int PriceIndex = 0; PriceIndex < PricePool->GiftBoxPricePoolValueCount; PriceIndex += 1) {
             PacketBufferAppendValue(PacketBuffer, Int32, PricePool->GiftBoxPricePoolValueList[PriceIndex].Price);
         }
     }

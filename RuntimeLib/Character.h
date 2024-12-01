@@ -201,10 +201,10 @@ struct _RTCharacter {
     RTEntityID ID;
     RTEntityID PartyID;
     RTEntityID TargetCharacterID;
-    Index CharacterIndex;
+    UInt32 CharacterIndex;
     Int32 DungeonEntryItemSlotIndex;
 
-//    Int32 Index;
+//    Int Index;
 //    Timestamp CreationDate;
     Char Name[RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1];
 

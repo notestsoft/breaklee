@@ -10,7 +10,7 @@ EXTERN_C_BEGIN
 
 RTScriptManagerRef RTScriptManagerCreate(
     RTRuntimeRef Runtime,
-    Index MaxScriptCount
+    Int MaxScriptCount
 );
 
 Void RTScriptManagerDestroy(

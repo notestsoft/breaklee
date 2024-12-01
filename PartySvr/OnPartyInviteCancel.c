@@ -4,7 +4,7 @@
 #include "Server.h"
 
 IPC_PROCEDURE_BINDING(W2P, PARTY_INVITE_CANCEL) {
-    Index* PartyInvitationPoolIndex = DictionaryLookup(Context->PartyManager->CharacterToPartyInvite, &Packet->TargetCharacterIndex);
+    Int* PartyInvitationPoolIndex = DictionaryLookup(Context->PartyManager->CharacterToPartyInvite, &Packet->TargetCharacterIndex);
     if (!PartyInvitationPoolIndex) goto error;
 
     RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolFetch(Context->PartyManager->PartyInvitationPool, *PartyInvitationPoolIndex);

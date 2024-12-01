@@ -16,9 +16,9 @@
 
 static Char kRandomKeyTable[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-Index Align(
-    Index Value,
-    Index Alignment
+UInt Align(
+    UInt Value,
+    UInt Alignment
 ) {
     assert(IsPowerOfTwo(Alignment));
 
@@ -26,12 +26,12 @@ Index Align(
 }
 
 Bool IsPowerOfTwo(
-    Index Value
+    UInt Value
 ) {
     return (Value & (Value - 1)) == 0;
 }
 
-Index NextPowerOfTwo(Index Value) {
+UInt NextPowerOfTwo(UInt Value) {
     Value--;
     Value |= Value >> 1;
     Value |= Value >> 2;
@@ -106,7 +106,7 @@ Void GenerateRandomKey(
 ) {
     srand((UInt32)time(NULL));
 
-    for (Int32 Index = 0; Index < Length; Index++) {
+    for (Int Index = 0; Index < Length; Index++) {
         Buffer[Index] = kRandomKeyTable[rand() % (sizeof(kRandomKeyTable) - 1)];
     }
 }
@@ -340,15 +340,15 @@ Void ReadConfigUInt64(
     ParseUInt64(Buffer, Result);
 }
 
-Void ReadConfigIndex(
+Void ReadConfigInt(
     CString FilePath,
     CString KeyPath,
     CString Default,
-    Index* Result
+    Int* Result
 ) {
     Char Buffer[MAX_PATH] = { 0 };
     ReadConfigString(FilePath, KeyPath, Default, Buffer, MAX_PATH);
-    ParseIndex(Buffer, Result);
+    ParseInt(Buffer, Result);
 }
 
 Timestamp PlatformGetTickCount() {

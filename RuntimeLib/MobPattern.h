@@ -59,7 +59,6 @@ enum {
 	RUNTIME_MOB_PATTERN_VALUE_TYPE_PERCENT = 2,
 };
 
-
 union _RTMobActionParameters {
 	struct { Int32 PositionX; Int32 PositionY; } WarpTarget;
 	struct { Int32 PositionX; Int32 PositionY; } WarpSelf;
@@ -67,7 +66,7 @@ union _RTMobActionParameters {
 	struct { Int32 WorldType; Int32 MobIndex; Int32 ValueType; Int32 Value; } Heal;
 	struct { Int32 Unknown1; } EvasionSelf;
 	struct { Int32 ActionIndex; Int32 Unknown1; } SpecialAction;
-	struct { Int32 AttackIndex; } Attack;
+	struct { Int32 AttackIndex; Int32 AttackRate; Int32 PhysicalAttackMin; Int32 PhysicalAttackMax; } Attack;
 	struct { Int32 ActionIndex; Int32 ActionFinished; } CancelAction;
 	struct { Int32 LinkMobIndex; } LinkMobDespawn;
 	struct { Int32 ActionIndex; } SocialAction;

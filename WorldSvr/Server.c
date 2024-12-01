@@ -77,7 +77,7 @@ Void ServerLoadRuntimeData(
     /*
     IndexSetRef IndexSet = IndexSetCreate(AllocatorGetDefault(), 256);
 
-    for (Int32 Index = 0; Index < Context->Runtime->ItemDataCount; Index++) {
+    for (Int Index = 0; Index < Context->Runtime->ItemDataCount; Index++) {
         RTItemDataRef ItemData = &Context->Runtime->ItemData[Index];
         if (ItemData.) {
             IndexSetInsert(IndexSet, ItemData->ItemType);
@@ -93,7 +93,7 @@ Void ServerLoadRuntimeData(
     */
     ArchiveDestroy(Archive);
 
-    for (Index WorldIndex = 0; WorldIndex < Context->Runtime->WorldManager->MaxWorldDataCount; WorldIndex += 1) {
+    for (Int WorldIndex = 0; WorldIndex < Context->Runtime->WorldManager->MaxWorldDataCount; WorldIndex += 1) {
         if (!RTWorldDataExists(Context->Runtime->WorldManager, WorldIndex)) continue;
 
         RTWorldContextRef WorldContext = RTWorldContextCreateGlobal(Context->Runtime->WorldManager, WorldIndex);
@@ -197,7 +197,7 @@ ClientContextRef ServerGetClientByEntity(
 
 ClientContextRef ServerGetClientByIndex(
     ServerContextRef Context,
-    Index CharacterIndex,
+    UInt32 CharacterIndex,
     CString CharacterName
 ) {
     SocketConnectionIteratorRef Iterator = SocketGetConnectionIterator(Context->ClientSocket);

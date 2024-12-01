@@ -19,14 +19,14 @@ CLIENT_PROCEDURE_BINDING(CHECK_DUNGEON_PLAYTIME) {
     Response->InstanceCount = RTWorldContextGetPartyInstanceCount(Runtime->WorldManager);
     Response->IsAccessible = Response->InstanceCount < Response->MaxInstanceCount;
 
-    if (DungeonData->IsElite) {
+    if (DungeonData->IsElite > 0) {
         Response->MaxEliteEntryCount = 1;
         Response->EliteEntryCount = 0;
     }
 
     RTDataDungeonTimeRef DungeonTimeData = RTRuntimeDataDungeonTimeGet(Runtime->Context, DungeonGroupData->DungeonGroup);
     if (DungeonTimeData) {
-        for (Int32 Index = 0; Index < DungeonTimeData->DungeonPlayTimeCount; Index += 1) {
+        for (Int Index = 0; Index < DungeonTimeData->DungeonPlayTimeCount; Index += 1) {
             RTDataDungeonPlayTimeRef DungeonPlayTimeData = &DungeonTimeData->DungeonPlayTimeList[Index];
             Response->WeekdayPlaytimeInSeconds[DungeonPlayTimeData->DayOfWeek] = DungeonPlayTimeData->PlayTime;
         }
@@ -146,7 +146,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_SPAWN) {
         //       because a party member could have had already started it!
 
         // TODO: Find a way to check if the character was already spawned into the dungeon before
-        if (DungeonData->RemoveItem) {
+        if (DungeonData->RemoveItem > 0) {
             // TODO: The inventory slot should also be checked inside the warp command
             RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Character->DungeonEntryItemSlotIndex);
             if (!ItemSlot) goto error;
@@ -220,7 +220,8 @@ CLIENT_PROCEDURE_BINDING(ATTACK_BOSS_MOB) {
 
     // TODO: Find out what this field means and map it in new data format!
     //if (Mob->SpeciesData->Boss == 2) {
-        RTWorldDespawnMob(Runtime, World, Mob);
+    Mob->IsPermanentDeath = true;
+    RTWorldDespawnMob(Runtime, World, Mob);
     //}
     //else {
     //    goto error;

@@ -114,7 +114,7 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 	IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, EquipmentData.LockSlots, sizeof(struct _RTEquipmentLockSlot) * EquipmentData.Info.LockSlotCount);
 
 	struct _RTCharacterInventoryInfo InventoryData = { 0 };
-	for (Int32 Index = 0; Index < CharacterTemplate->CharacterTemplateInventorySlotCount; Index += 1) {
+	for (Int Index = 0; Index < CharacterTemplate->CharacterTemplateInventorySlotCount; Index += 1) {
 		RTDataCharacterTemplateInventorySlotRef TemplateInventorySlot = &CharacterTemplate->CharacterTemplateInventorySlotList[Index];
 
 		struct _RTItemSlot ItemSlot = {
@@ -128,7 +128,7 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 	IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, InventoryData.Slots, sizeof(struct _RTItemSlot) * InventoryData.Info.SlotCount);
 
 	struct _RTCharacterSkillSlotInfo SkillSlotData = { 0 };
-	for (Int32 Index = 0; Index < CharacterTemplate->CharacterTemplateSkillSlotCount; Index += 1) {
+	for (Int Index = 0; Index < CharacterTemplate->CharacterTemplateSkillSlotCount; Index += 1) {
 		RTDataCharacterTemplateSkillSlotRef TemplateSkillSlot = &CharacterTemplate->CharacterTemplateSkillSlotList[Index];
 		RTSkillSlotRef CharacterSkillSlot = &SkillSlotData.Slots[SkillSlotData.Info.SlotCount];
 		CharacterSkillSlot->ID = TemplateSkillSlot->SkillIndex;
@@ -140,7 +140,7 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 	IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, SkillSlotData.Slots, sizeof(struct _RTSkillSlot) * SkillSlotData.Info.SlotCount);
 
 	struct _RTCharacterQuickSlotInfo QuickSlotData = { 0 };
-	for (Int32 Index = 0; Index < CharacterTemplate->CharacterTemplateQuickSlotCount; Index += 1) {
+	for (Int Index = 0; Index < CharacterTemplate->CharacterTemplateQuickSlotCount; Index += 1) {
 		RTDataCharacterTemplateQuickSlotRef TemplateQuickSlot = &CharacterTemplate->CharacterTemplateQuickSlotList[Index];
 		RTQuickSlotRef CharacterQuickSlot = &QuickSlotData.Slots[QuickSlotData.Info.SlotCount];
 		CharacterQuickSlot->SkillIndex = TemplateQuickSlot->SkillIndex;

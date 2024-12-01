@@ -10,36 +10,36 @@ typedef struct _MemoryBuffer *MemoryBufferRef;
 
 MemoryBufferRef MemoryBufferCreate(
     AllocatorRef Allocator,
-    Index Alignment,
-    Index Length
+    Int Alignment,
+    Int Length
 );
 
 Void MemoryBufferDestroy(
     MemoryBufferRef MemoryBuffer
 );
 
-Index MemoryBufferGetWriteOffset(
+Int MemoryBufferGetWriteOffset(
     MemoryBufferRef MemoryBuffer
 );
 
-Index MemoryBufferGetFreeSize(
+Int MemoryBufferGetFreeSize(
     MemoryBufferRef MemoryBuffer
 );
 
 UInt8* MemoryBufferGetMemory(
     MemoryBufferRef MemoryBuffer,
-    Index Offset
+    Int Offset
 );
 
 Void MemoryBufferPopFront(
     MemoryBufferRef MemoryBuffer,
-    Index Length
+    Int Length
 );
 
 Void MemoryBufferRemove(
     MemoryBufferRef MemoryBuffer,
-    Index Offset,
-    Index Length
+    Int Offset,
+    Int Length
 );
 
 Void MemoryBufferClear(
@@ -48,17 +48,17 @@ Void MemoryBufferClear(
 
 UInt8* MemoryBufferAppend(
     MemoryBufferRef MemoryBuffer,
-    Index Length
+    Int Length
 );
 
 UInt8* MemoryBufferAppendCopy(
     MemoryBufferRef MemoryBuffer,
     Void* Source,
-    Index Length
+    Int Length
 );
 
 #define MemoryBufferAppendCString(MemoryBuffer, __STRING__) \
-((CString)MemoryBufferAppendCopy(MemoryBuffer, (Void*)__STRING__, (Index)strlen(__STRING__) + 1))
+((CString)MemoryBufferAppendCopy(MemoryBuffer, (Void*)__STRING__, (Int)strlen(__STRING__) + 1))
 
 #define MemoryBufferAppendValue(MemoryBuffer, __TYPE__, __VALUE__) \
 *((__TYPE__*)MemoryBufferAppend(MemoryBuffer, sizeof(__TYPE__))) = __VALUE__
@@ -66,24 +66,24 @@ UInt8* MemoryBufferAppendCopy(
 #define MemoryBufferAppendStruct(MemoryBuffer, __TYPE__) \
 (__TYPE__*)MemoryBufferAppend(MemoryBuffer, sizeof(__TYPE__))
 
-Index MemoryBufferGetReadOffset(
+Int MemoryBufferGetReadOffset(
     MemoryBufferRef MemoryBuffer
 );
 
 Void MemoryBufferSetReadOffset(
     MemoryBufferRef MemoryBuffer,
-    Index Offset
+    Int Offset
 );
 
 UInt8* MemoryBufferReadBytes(
     MemoryBufferRef MemoryBuffer,
-    Index Length
+    Int Length
 );
 
 Void MemoryBufferReadBytesCopy(
     MemoryBufferRef MemoryBuffer,
     Void* Destination,
-    Index Length
+    Int Length
 );
 
 #define MemoryBufferReadValue(MemoryBuffer, __TYPE__, __VALUE__) \

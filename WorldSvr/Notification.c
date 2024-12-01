@@ -27,10 +27,6 @@ NOTIFICATION_PROCEDURE_BINDING(OBJECTS_DESPAWN) {
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTERS_SPAWN) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace(
-        "CharactersSpawn -> Character(%lld)",
-        Character->CharacterIndex
-    );
 
     if (!RTEntityIsNull(Character->PartyID)) {
         RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
@@ -40,9 +36,6 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTERS_SPAWN) {
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_DESPAWN) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("CharactersDespawn -> Character(%lld)",
-        Character->CharacterIndex
-    );
 
     if (!RTEntityIsNull(Character->PartyID)) {
         RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
@@ -52,16 +45,10 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTER_DESPAWN) {
 
 NOTIFICATION_PROCEDURE_BINDING(MOBS_SPAWN) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("MobSpawn -> Character(%lld)",
-        Character->CharacterIndex
-    );
 }
 
 NOTIFICATION_PROCEDURE_BINDING(MOBS_DESPAWN) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("MobsDespawn -> Character(%lld)",
-        Character->CharacterIndex
-    );
 }
 
 NOTIFICATION_PROCEDURE_BINDING(MOBS_DESPAWN_LIST) {
@@ -70,24 +57,18 @@ NOTIFICATION_PROCEDURE_BINDING(MOBS_DESPAWN_LIST) {
 
 NOTIFICATION_PROCEDURE_BINDING(ITEMS_SPAWN) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("ItemsSpawn -> Character(%lld)",
-        Character->CharacterIndex
-    );
 }
 
 NOTIFICATION_PROCEDURE_BINDING(ITEMS_DESPAWN) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("ItemsDespawn");
 }
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_ITEM_EQUIP) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("CharacterItemEquip");
 }
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_ITEM_UNEQUIP) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("CharacterItemUnequip");
 }
 
 NOTIFICATION_PROCEDURE_BINDING(MOB_MOVE_BEGIN) {
@@ -116,16 +97,10 @@ NOTIFICATION_PROCEDURE_BINDING(ATTACK_TO_MOB) {
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_BATTLE_RANK_UP) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("CharacterBattleRankUp -> Character(%lld)",
-        Character->CharacterIndex
-    );
 }
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_DATA) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("CharacterData -> Character(%lld)",
-        Character->CharacterIndex
-    );
 
     if (!RTEntityIsNull(Character->PartyID)) {
         RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
@@ -135,9 +110,6 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTER_DATA) {
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_EVENT) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("CharacterEvent -> Character(%lld)",
-        Character->CharacterIndex
-    );
 
     if (!RTEntityIsNull(Character->PartyID)) {
         RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
@@ -184,9 +156,6 @@ NOTIFICATION_PROCEDURE_BINDING(CHANGE_GENDER) {
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_SKILL_MASTERY_UPDATE) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("CharacterSkillMasteryUpdate -> Character(%lld)",
-        Character->CharacterIndex
-    );
 
     if (!RTEntityIsNull(Character->PartyID)) {
         RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
@@ -196,9 +165,6 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTER_SKILL_MASTERY_UPDATE) {
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_FORCE_WING_GRADE) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("CharacterForceWingGrade -> Character(%lld)",
-        Character->CharacterIndex
-    );
 
     if (!RTEntityIsNull(Character->PartyID)) {
         RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
@@ -208,9 +174,6 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTER_FORCE_WING_GRADE) {
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_FORCE_WING_UPDATE) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("CharacterForceWingUpdate -> Character(%lld)",
-        Character->CharacterIndex
-    );
 
     if (!RTEntityIsNull(Character->PartyID)) {
         RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
@@ -220,9 +183,6 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTER_FORCE_WING_UPDATE) {
 
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_FORCE_WING_EXP) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
-    Trace("CharacterForceWingExp -> Character(%lld)",
-        Character->CharacterIndex
-    );
 
     if (!RTEntityIsNull(Character->PartyID)) {
         RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Character->PartyID);
@@ -295,7 +255,7 @@ Void BroadcastToParty(
         RTPartyRef Party = RTPartyManagerGetParty(Context->Runtime->PartyManager, PartyID);
         if (!Party) return;
 
-        for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
+        for (Int Index = 0; Index < Party->MemberCount; Index += 1) {
             RTPartyMemberInfoRef Member = &Party->Members[Index];
             ClientContextRef Client = ServerGetClientByIndex(Context, Member->CharacterIndex, NULL);
             if (!Client) return;

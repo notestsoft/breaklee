@@ -51,7 +51,7 @@ enum {
 };
 
 struct _RTWorldItem {
-    Index Index;
+    Int Index;
     RTEntityID ID;
     UInt64 ItemOptions;
     UInt32 ItemSourceIndex;
@@ -67,7 +67,7 @@ struct _RTWorldItem {
 };
 
 struct _RTWorldData {
-    Index WorldIndex;
+    Int WorldIndex;
     Int32 Type;
     Int32 DeadWarpIndex;
     Int32 ReturnWarpIndex;
@@ -84,8 +84,8 @@ struct _RTWorldData {
 struct _RTWorldContext {
     RTWorldManagerRef WorldManager;
     RTWorldDataRef WorldData;
-    Index WorldPoolIndex;
-    Index DungeonIndex;
+    Int32 WorldPoolIndex;
+    Int32 DungeonIndex;
     RTEntityID Owner;
     RTEntityID Party;
     Bool Active;
@@ -318,7 +318,7 @@ Bool RTWorldTraceMovement(
 Void RTWorldIncrementQuestMobCounter(
     RTRuntimeRef Runtime,
     RTWorldContextRef World,
-    Index MobSpeciesIndex
+    Int64 MobSpeciesIndex
 );
 
 Void RTWorldSetMobTable(

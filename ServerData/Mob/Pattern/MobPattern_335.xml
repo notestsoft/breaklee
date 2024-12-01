@@ -2,7 +2,7 @@
 <MobPattern Index="335">
 	<MobTriggerGroup Index="1" Type="1" Parameters="10">
 		<MobActionGroup Index="1" Delay="">
-			<MobAction Index="1" Type="10" Parameters="664" Duration="300" TargetType="11" TargetParameters="" Loop="1" LoopDelay="300" Priority="0"/>
+			<MobAction Index="1" Type="10" Parameters="664:20000:426:426" Duration="300" TargetType="11" TargetParameters="" Loop="1" LoopDelay="300" Priority="0"/>
 		</MobActionGroup>
 	</MobTriggerGroup>
 	<MobPool/>

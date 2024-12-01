@@ -11,8 +11,8 @@ struct _IndexMemoryPool {
 
 IndexMemoryPoolRef IndexMemoryPoolCreate(
     AllocatorRef Allocator,
-    Index BlockSize,
-    Index BlockCount
+    Int BlockSize,
+    Int BlockCount
 ) {
     IndexMemoryPoolRef IndexMemoryPool = (IndexMemoryPoolRef)AllocatorAllocate(Allocator, sizeof(struct _IndexMemoryPool));
     if (!IndexMemoryPool) Fatal("Memory allocation failed!");
@@ -31,13 +31,13 @@ Void IndexMemoryPoolDestroy(
     AllocatorDeallocate(IndexMemoryPool->Allocator, IndexMemoryPool);
 }
 
-Index IndexMemoryPoolGetBlockSize(
+Int IndexMemoryPoolGetBlockSize(
     IndexMemoryPoolRef IndexMemoryPool
 ) {
     return MemoryPoolGetBlockSize(IndexMemoryPool->MemoryPool);
 }
 
-Index IndexMemoryPoolGetBlockCount(
+Int IndexMemoryPoolGetBlockCount(
     IndexMemoryPoolRef IndexMemoryPool
 ) {
     return MemoryPoolGetBlockCount(IndexMemoryPool->MemoryPool);
@@ -51,40 +51,39 @@ Bool IndexMemoryPoolIsFull(
 
 Bool IndexMemoryPoolIsReserved(
     IndexMemoryPoolRef IndexMemoryPool,
-    Index KeyIndex
+    Int KeyIndex
 ) {
     return DictionaryContains(IndexMemoryPool->IndexToMemoryPoolIndex, &KeyIndex);
 }
 
 Void *IndexMemoryPoolReserve(
     IndexMemoryPoolRef IndexMemoryPool,
-    Index KeyIndex
+    Int KeyIndex
 ) {
     assert(!IndexMemoryPoolIsFull(IndexMemoryPool));
     assert(!IndexMemoryPoolIsReserved(IndexMemoryPool, KeyIndex));
     
-
-    Index MemoryPoolIndex = 0;
+    Int MemoryPoolIndex = 0;
     Void *Memory = MemoryPoolReserveNext(IndexMemoryPool->MemoryPool, &MemoryPoolIndex);
-    DictionaryInsert(IndexMemoryPool->IndexToMemoryPoolIndex, &KeyIndex, &MemoryPoolIndex, sizeof(Index));
+    DictionaryInsert(IndexMemoryPool->IndexToMemoryPoolIndex, &KeyIndex, &MemoryPoolIndex, sizeof(Int));
     return Memory;
 }
 
 Void *IndexMemoryPoolFetch(
     IndexMemoryPoolRef IndexMemoryPool,
-    Index KeyIndex
+    Int KeyIndex
 ) {
     assert(IndexMemoryPoolIsReserved(IndexMemoryPool, KeyIndex));
-    Index MemoryPoolIndex = *(Index *)DictionaryLookup(IndexMemoryPool->IndexToMemoryPoolIndex, &KeyIndex);
+    Int MemoryPoolIndex = *(Int *)DictionaryLookup(IndexMemoryPool->IndexToMemoryPoolIndex, &KeyIndex);
     return MemoryPoolFetch(IndexMemoryPool->MemoryPool, MemoryPoolIndex);
 }
 
 Void IndexMemoryPoolRelease(
     IndexMemoryPoolRef IndexMemoryPool,
-    Index KeyIndex
+    Int KeyIndex
 ) {
     assert(IndexMemoryPoolIsReserved(IndexMemoryPool, KeyIndex));
-    Index MemoryPoolIndex = *(Index *)DictionaryLookup(IndexMemoryPool->IndexToMemoryPoolIndex, &KeyIndex);
+    Int MemoryPoolIndex = *(Int *)DictionaryLookup(IndexMemoryPool->IndexToMemoryPoolIndex, &KeyIndex);
     MemoryPoolRelease(IndexMemoryPool->MemoryPool, MemoryPoolIndex);
     DictionaryRemove(IndexMemoryPool->IndexToMemoryPoolIndex, &KeyIndex);
 }

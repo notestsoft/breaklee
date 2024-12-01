@@ -16,7 +16,7 @@ Bool _IsPointerEqual(
 
 MemoryRef _AllocatorTemp(
     AllocatorMode Mode,
-    Index Capacity,
+    Int Capacity,
     MemoryRef Memory,
     MemoryRef Context
 ) {
@@ -34,7 +34,7 @@ MemoryRef _AllocatorTemp(
     case AllocatorModeReallocate: {
         void *NewMemory = AllocatorReallocate(TempContext->Allocator, Memory, Capacity);
         if (NewMemory) {
-            Index ElementIndex = 0;
+            Int ElementIndex = 0;
             if (ArrayGetIndexOfElement(TempContext->Allocations, &_IsPointerEqual, Memory, &ElementIndex)) {
                 ArraySetElementAtIndex(TempContext->Allocations, ElementIndex, &NewMemory);
             }
@@ -46,7 +46,7 @@ MemoryRef _AllocatorTemp(
         return NULL;
 
     case AllocatorModeDestroy: {
-        for (Index Index = 0; Index < ArrayGetElementCount(TempContext->Allocations); Index += 1) {
+        for (Int Index = 0; Index < ArrayGetElementCount(TempContext->Allocations); Index += 1) {
             MemoryRef Memory = *((MemoryRef*)ArrayGetElementAtIndex(TempContext->Allocations, Index));
             AllocatorDeallocate(TempContext->Allocator, Memory);
         }

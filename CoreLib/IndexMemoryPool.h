@@ -10,19 +10,19 @@ typedef struct _IndexMemoryPool *IndexMemoryPoolRef;
 
 IndexMemoryPoolRef IndexMemoryPoolCreate(
     AllocatorRef Allocator,
-    Index BlockSize,
-    Index BlockCount
+    Int BlockSize,
+    Int BlockCount
 );
 
 Void IndexMemoryPoolDestroy(
     IndexMemoryPoolRef IndexMemoryPool
 );
 
-Index IndexMemoryPoolGetBlockSize(
+Int IndexMemoryPoolGetBlockSize(
     IndexMemoryPoolRef IndexMemoryPool
 );
 
-Index IndexMemoryPoolGetBlockCount(
+Int IndexMemoryPoolGetBlockCount(
     IndexMemoryPoolRef IndexMemoryPool
 );
 
@@ -32,22 +32,22 @@ Bool IndexMemoryPoolIsFull(
 
 Bool IndexMemoryPoolIsReserved(
     IndexMemoryPoolRef IndexMemoryPool,
-    Index KeyIndex
+    Int KeyIndex
 );
 
 Void *IndexMemoryPoolReserve(
     IndexMemoryPoolRef IndexMemoryPool,
-    Index KeyIndex
+    Int KeyIndex
 );
 
 Void *IndexMemoryPoolFetch(
     IndexMemoryPoolRef IndexMemoryPool,
-    Index KeyIndex
+    Int KeyIndex
 );
 
 Void IndexMemoryPoolRelease(
     IndexMemoryPoolRef IndexMemoryPool,
-    Index KeyIndex
+    Int KeyIndex
 );
 
 EXTERN_C_END

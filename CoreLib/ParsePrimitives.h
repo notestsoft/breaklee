@@ -48,9 +48,9 @@ Void ParseUInt64(
     UInt64* Result
 );
 
-Void ParseIndex(
+Void ParseInt(
     CString Value,
-    Index* Result
+    Int* Result
 );
 
 Bool ParseAttributeInt8(
@@ -81,6 +81,13 @@ Bool ParseAttributeInt64(
     Int64* Result
 );
 
+Bool ParseAttributeInt(
+    ArchiveRef Object,
+    Int32 NodeIndex,
+    CString Name,
+    Int* Result
+);
+
 Bool ParseAttributeUInt8(
     ArchiveRef Object,
     Int32 NodeIndex,
@@ -107,13 +114,6 @@ Bool ParseAttributeUInt64(
     Int32 NodeIndex,
     CString Name,
     UInt64* Result
-);
-
-Bool ParseAttributeIndex(
-    ArchiveRef Object,
-    Int32 NodeIndex,
-    CString Name,
-    Index* Result
 );
 
 Bool ParseAttributeFloat32(
@@ -256,13 +256,6 @@ Bool ParseAttributeUInt64Equal(
     Int32 NodeIndex,
     CString Name,
     UInt64 Value
-);
-
-Bool ParseAttributeIndexEqual(
-    ArchiveRef Object,
-    Int32 NodeIndex,
-    CString Name,
-    Index Value
 );
 
 Bool ParseAttributeFloat32Equal(

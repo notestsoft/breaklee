@@ -8,8 +8,8 @@ typedef struct _IPCPacketBuffer *IPCPacketBufferRef;
 
 IPCPacketBufferRef IPCPacketBufferCreate(
     AllocatorRef Allocator,
-    Index Alignment,
-    Index Length
+    Int Alignment,
+    Int Length
 );
 
 Void IPCPacketBufferDestroy(
@@ -27,13 +27,13 @@ Void* _IPCPacketBufferInit(
 
 Void* IPCPacketBufferAppend(
     IPCPacketBufferRef PacketBuffer,
-    Index Length
+    Int Length
 );
 
 Void* IPCPacketBufferAppendCopy(
     IPCPacketBufferRef PacketBuffer,
     Void* Source,
-    Index Length
+    Int Length
 );
 
 CString IPCPacketBufferAppendCString(

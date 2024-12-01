@@ -31,7 +31,7 @@ RTQuickSlotRef RTCharacterGetQuickSlotByIndex(
 	RTCharacterRef Character,
 	Int32 SlotIndex
 ) {
-	for (Int32 Index = 0; Index < Character->Data.QuickSlotInfo.Info.SlotCount; Index += 1) {
+	for (Int Index = 0; Index < Character->Data.QuickSlotInfo.Info.SlotCount; Index += 1) {
 		if (Character->Data.QuickSlotInfo.Slots[Index].SlotIndex == SlotIndex) {
 			return &Character->Data.QuickSlotInfo.Slots[Index];
 		}
@@ -64,7 +64,7 @@ Bool RTCharacterRemoveQuickSlot(
 	RTCharacterRef Character,
 	Int32 SlotIndex
 ) {
-	for (Int32 Index = 0; Index < Character->Data.QuickSlotInfo.Info.SlotCount; Index++) {
+	for (Int Index = 0; Index < Character->Data.QuickSlotInfo.Info.SlotCount; Index++) {
 		if (Character->Data.QuickSlotInfo.Slots[Index].SlotIndex == SlotIndex) {
 			Int32 TailLength = Character->Data.QuickSlotInfo.Info.SlotCount - Index - 1;
 			if (TailLength > 0) {

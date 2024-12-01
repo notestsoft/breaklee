@@ -6,20 +6,20 @@
 #include "WorldManager.h"
 #include "NotificationProtocol.h"
 
-Index RTCalculateWorldTileIndex(
+Int RTCalculateWorldTileIndex(
     UInt16 X,
     UInt16 Y
 ) {
-    return (Index)Y + (Index)X * RUNTIME_WORLD_SIZE;
+    return (Int)Y + (Int)X * RUNTIME_WORLD_SIZE;
 }
 
-Index RTCalculateWorldChunkIndex(
+Int RTCalculateWorldChunkIndex(
     UInt16 X,
     UInt16 Y
 ) {
-    Index ChunkX = MIN(RUNTIME_WORLD_CHUNK_COUNT, X >> RUNTIME_WORLD_CHUNK_SIZE_EXPONENT);
-    Index ChunkY = MIN(RUNTIME_WORLD_CHUNK_COUNT, Y >> RUNTIME_WORLD_CHUNK_SIZE_EXPONENT);
-    return (Index)ChunkX + ChunkY * RUNTIME_WORLD_CHUNK_COUNT;
+    Int ChunkX = MIN(RUNTIME_WORLD_CHUNK_COUNT, X >> RUNTIME_WORLD_CHUNK_SIZE_EXPONENT);
+    Int ChunkY = MIN(RUNTIME_WORLD_CHUNK_COUNT, Y >> RUNTIME_WORLD_CHUNK_SIZE_EXPONENT);
+    return ChunkX + ChunkY * RUNTIME_WORLD_CHUNK_COUNT;
 }
 
 RTWorldChunkRef RTWorldContextGetChunk(
@@ -27,7 +27,7 @@ RTWorldChunkRef RTWorldContextGetChunk(
     UInt16 X,
     UInt16 Y
 ) {
-    Index ChunkIndex = RTCalculateWorldChunkIndex(X, Y);
+    Int ChunkIndex = RTCalculateWorldChunkIndex(X, Y);
     assert(ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT);
     return &WorldContext->Chunks[ChunkIndex];
 }
@@ -37,7 +37,7 @@ RTWorldTile RTWorldContextGetTile(
     UInt16 X,
     UInt16 Y
 ) {
-    Index TileIndex = RTCalculateWorldTileIndex(X, Y);
+    Int TileIndex = RTCalculateWorldTileIndex(X, Y);
     RTWorldTile Tile = WorldContext->WorldData->Tiles[TileIndex];
     Tile.MobCount = WorldContext->TileMobCounter[TileIndex];
     return Tile;
@@ -57,9 +57,9 @@ Void RTWorldContextAddReferenceCount(
     Int32 EndChunkX = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, ChunkX + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
     Int32 EndChunkY = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, ChunkY + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
 
-    for (Int32 DeltaChunkX = StartChunkX; DeltaChunkX <= EndChunkX; DeltaChunkX += 1) {
-        for (Int32 DeltaChunkY = StartChunkY; DeltaChunkY <= EndChunkY; DeltaChunkY += 1) {
-            Index ChunkIndex = (Index)DeltaChunkX + DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
+    for (Int DeltaChunkX = StartChunkX; DeltaChunkX <= EndChunkX; DeltaChunkX += 1) {
+        for (Int DeltaChunkY = StartChunkY; DeltaChunkY <= EndChunkY; DeltaChunkY += 1) {
+            Int ChunkIndex = DeltaChunkX + DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
             assert(ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT* RUNTIME_WORLD_CHUNK_COUNT);
             RTWorldChunkRef WorldChunk = &WorldContext->Chunks[ChunkIndex];
             WorldChunk->ReferenceCount += ReferenceCount;
@@ -102,11 +102,11 @@ Void RTWorldContextUpdate(
     if (WorldContext->NextItemUpdateTimestamp <= Timestamp) {
         WorldContext->NextItemUpdateTimestamp = INT64_MAX;
 
-        for (Int32 ChunkIndex = 0; ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT; ChunkIndex += 1) {
+        for (Int ChunkIndex = 0; ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT; ChunkIndex += 1) {
             RTWorldChunkRef WorldChunk = &WorldContext->Chunks[ChunkIndex];
             /* TODO: @MobUpdateImprovement Fix world chunk mob update idling
             if (WorldContext->WorldData->Type < 1 && WorldChunk->ReferenceCount > 0) {
-                for (Index Index = 0; Index < ArrayGetElementCount(WorldChunk->Mobs); Index += 1) {
+                for (Int Index = 0; Index < ArrayGetElementCount(WorldChunk->Mobs); Index += 1) {
                     RTEntityID MobID = *(RTEntityID*)ArrayGetElementAtIndex(WorldChunk->Mobs, Index);
                     RTMobRef Mob = RTWorldContextGetMob(WorldContext, MobID);
                     assert(Mob);
@@ -117,7 +117,7 @@ Void RTWorldContextUpdate(
             if (WorldChunk->NextItemUpdateTimestamp > Timestamp) continue;
             WorldChunk->NextItemUpdateTimestamp = INT64_MAX;
 
-            for (Int32 ItemIndex = (Int32)ArrayGetElementCount(WorldChunk->Items) - 1; ItemIndex >= 0; ItemIndex -= 1) {
+            for (Int ItemIndex = (Int32)ArrayGetElementCount(WorldChunk->Items) - 1; ItemIndex >= 0; ItemIndex -= 1) {
                 RTEntityID ItemEntity = *(RTEntityID*)ArrayGetElementAtIndex(WorldChunk->Items, ItemIndex);
                 RTWorldItemRef Item = RTWorldContextGetItem(WorldContext, ItemEntity);
                 if (Item->DespawnTimestamp <= Timestamp) {
@@ -290,22 +290,22 @@ Void RTWorldSpawnMob(
 
     if (Mob->Pattern) RTMobPatternSpawn(Runtime, WorldContext, Mob, Mob->Pattern);
 
-    if (Mob->Spawn.SpawnTriggerID) {
+    if (Mob->Spawn.SpawnTriggerID > 0) {
         RTDungeonTriggerEvent(WorldContext, Mob->ID, Mob->Spawn.SpawnTriggerID);
     }
 
-    if (WorldContext->DungeonIndex) {
+    if (WorldContext->DungeonIndex > 0) {
         RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, WorldContext->DungeonIndex);
         assert(DungeonData);
 
-        Index MobIndex = Mob->ID.EntityIndex;
+        Int MobIndex = Mob->ID.EntityIndex;
         RTDungeonTimeControlDataRef TimeControl = (RTDungeonTimeControlDataRef)DictionaryLookup(DungeonData->TimeControls, &MobIndex);
         if (TimeControl && TimeControl->Event == RUNTIME_DUNGEON_TIME_CONTROL_TYPE_SPAWN) {
             RTDungeonAddTime(WorldContext, TimeControl->Value);
         }
 
         if (DungeonData->TimerData.Active) {
-            for (Int32 Index = 0; Index < DungeonData->TimerData.MobIndexCount; Index += 1) {
+            for (Int Index = 0; Index < DungeonData->TimerData.MobIndexCount; Index += 1) {
                 if (Mob->ID.EntityIndex == DungeonData->TimerData.MobIndexList[Index]) {
                     Mob->IsTimerMob = true;
                     break;
@@ -317,9 +317,9 @@ Void RTWorldSpawnMob(
 
         RTDungeonImmuneControlDataRef ImmuneControl = (RTDungeonImmuneControlDataRef)DictionaryLookup(DungeonData->ImmuneControls, &MobIndex);
         if (ImmuneControl) {
-            for (Int32 Index = 0; Index < ImmuneControl->ImmuneCount; Index += 1) {
+            for (Int Index = 0; Index < ImmuneControl->ImmuneCount; Index += 1) {
                 RTImmuneDataRef ImmuneData = &ImmuneControl->ImmuneList[Index];
-                if (ImmuneData->CanAttack) continue; // TODO: Check if this case is necessary 
+                if (ImmuneData->CanAttack > 0) continue; // TODO: Check if this case is necessary 
 
                 RTEntityID TargetID = {
                     .EntityIndex = ImmuneData->TargetIndex,
@@ -347,7 +347,7 @@ Void RTWorldSpawnMob(
             // assert(Mob->Spawn.IsMissionGate); TODO: Verify data quality
     
             if (!GateControl->CanAttack) {
-                for (Int32 Index = 0; Index < GateControl->CellCount; Index += 1) {
+                for (Int Index = 0; Index < GateControl->CellCount; Index += 1) {
                     RTWorldTileIncreaseImmunityCount(Runtime, WorldContext, GateControl->CellList[Index].X, GateControl->CellList[Index].Y);
                 }
             }
@@ -386,10 +386,11 @@ Void RTWorldCreateMob(
 ) {
     assert(MobSpeciesIndex < Runtime->MobDataCount);
     assert(AreaX >= 0 || (AreaX < 0 && LinkMob && !RTEntityIsNull(LinkMob->ID)));
+    assert(AreaX >= 0 || (AreaX < 0 && LinkMob && !RTEntityIsNull(LinkMob->ID)));
     assert(AreaY >= 0 || (AreaY < 0 && LinkMob && !RTEntityIsNull(LinkMob->ID)));
 
-    for (Int32 SpawnIndex = 0; SpawnIndex < Count; SpawnIndex += 1) {
-        Index MemoryPoolIndex = 0;
+    for (Int SpawnIndex = 0; SpawnIndex < Count; SpawnIndex += 1) {
+        Int MemoryPoolIndex = 0;
         RTMobRef Mob = (RTMobRef)MemoryPoolReserveNext(WorldContext->MobPool, &MemoryPoolIndex);
         Mob->ID.EntityIndex = WorldContext->NextMobEntityIndex;
         Mob->ID.WorldIndex = WorldContext->WorldData->WorldIndex;
@@ -415,21 +416,21 @@ Void RTWorldCreateMob(
             ArrayAppendElement(LinkMob->Pattern->LinkMobs, &Mob->ID);
         }
 
-        if (Mob->Spawn.MobPatternIndex) {
-            Index MobPatternIndex = Mob->Spawn.MobPatternIndex;
+        if (Mob->Spawn.MobPatternIndex > 0) {
+            Int MobPatternIndex = Mob->Spawn.MobPatternIndex;
             RTMobPatternDataRef MobPatternData = (RTMobPatternDataRef)MemoryPoolFetch(Runtime->MobPatternDataPool, MobPatternIndex);
             if (MobPatternData) {
-                Index PatternMemoryPoolIndex = 0;
+                Int PatternMemoryPoolIndex = 0;
                 Mob->Pattern = (RTMobPatternRef)MemoryPoolReserveNext(WorldContext->MobPatternPool, &PatternMemoryPoolIndex);
                 memset(Mob->Pattern, 0, sizeof(struct _RTMobPattern));
                 Mob->Pattern->Data = MobPatternData;
                 Mob->Pattern->ActionStates = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTMobActionState), RUNTIME_MOB_PATTERN_MAX_TRIGGER_GROUP_COUNT);
                 Mob->Pattern->LinkMobs = ArrayCreateEmpty(Runtime->Allocator, sizeof(RTEntityID), 8);
-                DictionaryInsert(WorldContext->EntityToMobPattern, &Mob->ID, &PatternMemoryPoolIndex, sizeof(Index));
+                DictionaryInsert(WorldContext->EntityToMobPattern, &Mob->ID, &PatternMemoryPoolIndex, sizeof(Int));
             }
         }
 
-        DictionaryInsert(WorldContext->EntityToMob, &Mob->ID, &MemoryPoolIndex, sizeof(Index));
+        DictionaryInsert(WorldContext->EntityToMob, &Mob->ID, &MemoryPoolIndex, sizeof(Int));
 
         WorldContext->NextMobEntityIndex += 1;
 
@@ -441,7 +442,7 @@ RTMobRef RTWorldContextGetMob(
     RTWorldContextRef WorldContext,
     RTEntityID Entity
 ) {
-    Index* MobPoolIndex = (Index*)DictionaryLookup(WorldContext->EntityToMob, &Entity);
+    Int* MobPoolIndex = (Int*)DictionaryLookup(WorldContext->EntityToMob, &Entity);
     if (!MobPoolIndex) return NULL;
 
     return (RTMobRef)MemoryPoolFetch(WorldContext->MobPool, *MobPoolIndex);
@@ -475,7 +476,7 @@ Void RTWorldDespawnMob(
         return;
 
     if (Mob->Pattern) {
-        for (Int32 Index = 0; Index < ArrayGetElementCount(Mob->Pattern->LinkMobs); Index += 1) {
+        for (Int Index = 0; Index < ArrayGetElementCount(Mob->Pattern->LinkMobs); Index += 1) {
             RTEntityID LinkMobID = *(RTEntityID*)ArrayGetElementAtIndex(Mob->Pattern->LinkMobs, Index);
             RTMobRef LinkMob = RTWorldContextGetMob(WorldContext, LinkMobID);
             assert(LinkMob);
@@ -571,11 +572,11 @@ Void RTWorldDespawnMob(
         Mob->EventDespawnLinkID = kEntityIDNull;
     }
 
-    if (Mob->Spawn.KillTriggerID) {
+    if (Mob->Spawn.KillTriggerID > 0) {
         RTDungeonTriggerEvent(WorldContext, Mob->ID, Mob->Spawn.KillTriggerID);
     }
 
-    for (Index Index = 0; Index < RUNTIME_MOB_MAX_EVENT_COUNT; Index += 1) {
+    for (Int Index = 0; Index < RUNTIME_MOB_MAX_EVENT_COUNT; Index += 1) {
         if (Mob->Spawn.EventProperty[Index] == RUNTIME_MOB_EVENT_NONE) continue;
 
         RTEntityID MobID = { 0 };
@@ -610,11 +611,11 @@ Void RTWorldDespawnMob(
 
     RTWorldIncrementQuestMobCounter(Runtime, WorldContext, Mob->Spawn.MobSpeciesIndex);
 
-    if (WorldContext->DungeonIndex) {
+    if (WorldContext->DungeonIndex > 0) {
         RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, WorldContext->DungeonIndex);
         assert(DungeonData);
 
-        Index MobIndex = Mob->ID.EntityIndex;
+        Int MobIndex = Mob->ID.EntityIndex;
         RTDungeonTimeControlDataRef TimeControl = (RTDungeonTimeControlDataRef)DictionaryLookup(DungeonData->TimeControls, &MobIndex);
         if (TimeControl && TimeControl->Event == RUNTIME_DUNGEON_TIME_CONTROL_TYPE_DESPAWN) {
             RTDungeonAddTime(WorldContext, TimeControl->Value);
@@ -626,9 +627,9 @@ Void RTWorldDespawnMob(
 
         RTDungeonImmuneControlDataRef ImmuneControl = (RTDungeonImmuneControlDataRef)DictionaryLookup(DungeonData->ImmuneControls, &MobIndex);
         if (ImmuneControl) {
-            for (Int32 Index = 0; Index < ImmuneControl->ImmuneCount; Index += 1) {
+            for (Int Index = 0; Index < ImmuneControl->ImmuneCount; Index += 1) {
                 RTImmuneDataRef ImmuneData = &ImmuneControl->ImmuneList[Index];
-                if (ImmuneData->CanAttack) continue; // TODO: Check if this case is necessary 
+                if (ImmuneData->CanAttack > 0) continue; // TODO: Check if this case is necessary 
 
                 RTEntityID TargetID = {
                     .EntityIndex = ImmuneData->TargetIndex,
@@ -654,7 +655,7 @@ Void RTWorldDespawnMob(
         RTDungeonGateControlDataRef GateControl = (RTDungeonGateControlDataRef)DictionaryLookup(DungeonData->GateControls, &MobIndex);
         if (GateControl) {
             if (!GateControl->CanAttack) {
-                for (Int32 Index = 0; Index < GateControl->CellCount; Index += 1) {
+                for (Int Index = 0; Index < GateControl->CellCount; Index += 1) {
                     RTWorldTileDecreaseImmunityCount(Runtime, WorldContext, GateControl->CellList[Index].X, GateControl->CellList[Index].Y);
                 }
             }
@@ -694,7 +695,7 @@ Void RTWorldRespawnMob(
         if (Mob->Pattern) {
             RTMobPatternStop(Runtime, WorldContext, Mob, Mob->Pattern);
 
-            Index MemoryPoolIndex = *(Index*)DictionaryLookup(WorldContext->EntityToMobPattern, &Mob->ID);
+            Int MemoryPoolIndex = *(Int*)DictionaryLookup(WorldContext->EntityToMobPattern, &Mob->ID);
             ArrayDestroy(Mob->Pattern->ActionStates);
             ArrayDestroy(Mob->Pattern->LinkMobs);
             MemoryPoolRelease(WorldContext->MobPatternPool, MemoryPoolIndex);
@@ -766,7 +767,7 @@ RTWorldItemRef RTWorldContextGetItem(
     RTWorldContextRef WorldContext,
     RTEntityID Entity
 ) {
-    Index* ItemPoolIndex = (Index*)DictionaryLookup(WorldContext->EntityToItem, &Entity);
+    Int* ItemPoolIndex = (Int*)DictionaryLookup(WorldContext->EntityToItem, &Entity);
     if (!ItemPoolIndex) return NULL;
 
     return (RTWorldItemRef)MemoryPoolFetch(WorldContext->ItemPool, *ItemPoolIndex);
@@ -789,7 +790,7 @@ RTWorldItemRef RTWorldGetItemByEntity(
     RTWorldContextRef WorldContext,
     RTEntityID Entity
 ) {
-    Index *ItemPoolIndex = (Index*)DictionaryLookup(WorldContext->EntityToItem, &Entity);
+    Int* ItemPoolIndex = (Int*)DictionaryLookup(WorldContext->EntityToItem, &Entity);
     if (!ItemPoolIndex) return NULL;
     
     return (RTWorldItemRef)MemoryPoolFetch(WorldContext->ItemPool, *ItemPoolIndex);
@@ -809,7 +810,7 @@ RTWorldItemRef RTWorldSpawnItem(
         RTWorldDespawnItem(Runtime, WorldContext, Item);
     }
     
-    Index ItemPoolIndex = 0;
+    Int ItemPoolIndex = 0;
     RTWorldItemRef Item = (RTWorldItemRef)MemoryPoolReserveNext(WorldContext->ItemPool, &ItemPoolIndex);
     Item->ID.EntityIndex = (UInt16)ItemPoolIndex;
     Item->ID.WorldIndex = WorldContext->WorldData->WorldIndex;
@@ -839,7 +840,7 @@ RTWorldItemRef RTWorldSpawnItem(
     Item->DespawnTimestamp = Item->Timestamp + Runtime->Config.WorldItemDespawnInterval;
     WorldContext->NextItemUpdateTimestamp = MIN(WorldContext->NextItemUpdateTimestamp, Item->DespawnTimestamp);
 
-    DictionaryInsert(WorldContext->EntityToItem, &Item->ID, &ItemPoolIndex, sizeof(Index));
+    DictionaryInsert(WorldContext->EntityToItem, &Item->ID, &ItemPoolIndex, sizeof(Int));
     
     RTWorldChunkRef WorldChunk = RTWorldContextGetChunk(WorldContext, X, Y);
     WorldChunk->NextItemUpdateTimestamp = MIN(WorldChunk->NextItemUpdateTimestamp, Item->DespawnTimestamp);
@@ -1007,7 +1008,7 @@ Bool RTWorldTraceMovement(
     Int32 X = StartX;
     Int32 Y = StartY;
 
-    for (Int32 Index = 0; Index < Length; Index++) {
+    for (Int Index = 0; Index < Length; Index++) {
         D += StepD;
         X += StepX;
         Y += StepY;
@@ -1032,12 +1033,12 @@ Bool RTWorldTraceMovement(
 Void RTWorldIncrementQuestMobCounter(
     RTRuntimeRef Runtime,
     RTWorldContextRef World,
-    Index MobSpeciesIndex
+    Int64 MobSpeciesIndex
 ) {
     if (World->WorldData->Type != RUNTIME_WORLD_TYPE_DUNGEON &&
         World->WorldData->Type != RUNTIME_WORLD_TYPE_QUEST_DUNGEON) return;
 
-    for (Int32 Index = 0; Index < World->MissionMobCount; Index++) {
+    for (Int Index = 0; Index < World->MissionMobCount; Index++) {
         if (World->MissionMobs[Index].MobID != MobSpeciesIndex) continue;
 
         World->MissionMobs[Index].Count = MIN(World->MissionMobs[Index].Count + 1, World->MissionMobs[Index].MaxCount);
@@ -1057,9 +1058,9 @@ Void RTWorldSetMobTable(
     RTWorldContextRef WorldContext,
     ArrayRef MobTable
 ) {
-    for (Index ChunkIndex = 0; ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT; ChunkIndex += 1) {
+    for (Int ChunkIndex = 0; ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT; ChunkIndex += 1) {
         RTWorldChunkRef WorldChunk = &WorldContext->Chunks[ChunkIndex];
-        for (Int32 MobIndex = (Int32)ArrayGetElementCount(WorldChunk->Mobs) - 1; MobIndex >= 0; MobIndex -= 1) {
+        for (Int MobIndex = (Int32)ArrayGetElementCount(WorldChunk->Mobs) - 1; MobIndex >= 0; MobIndex -= 1) {
             RTEntityID Entity = *(RTEntityID*)ArrayGetElementAtIndex(WorldChunk->Mobs, MobIndex);
             RTWorldChunkRemove(WorldChunk, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT);
         }
@@ -1067,7 +1068,7 @@ Void RTWorldSetMobTable(
 
     DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(WorldContext->EntityToMobPattern);
     while (Iterator.Key) {
-        Index MemoryPoolIndex = *(Index*)DictionaryLookup(WorldContext->EntityToMobPattern, Iterator.Key);
+        Int MemoryPoolIndex = *(Int*)DictionaryLookup(WorldContext->EntityToMobPattern, Iterator.Key);
         RTMobPatternRef MobPattern = (RTMobPatternRef)MemoryPoolFetch(WorldContext->MobPatternPool, MemoryPoolIndex);
         ArrayDestroy(MobPattern->ActionStates);
         Iterator = DictionaryKeyIteratorNext(Iterator);
@@ -1080,10 +1081,10 @@ Void RTWorldSetMobTable(
 
     WorldContext->NextMobEntityIndex = 0;
 
-    for (Index MobIndex = 0; MobIndex < ArrayGetElementCount(MobTable); MobIndex += 1) {
+    for (Int MobIndex = 0; MobIndex < ArrayGetElementCount(MobTable); MobIndex += 1) {
         RTMobRef TableMob = (RTMobRef)ArrayGetElementAtIndex(MobTable, MobIndex);
 
-        Index MemoryPoolIndex = 0;
+        Int MemoryPoolIndex = 0;
         RTMobRef Mob = (RTMobRef)MemoryPoolReserveNext(WorldContext->MobPool, &MemoryPoolIndex);
         memcpy(Mob, TableMob, sizeof(struct _RTMob));
 
@@ -1092,28 +1093,28 @@ Void RTWorldSetMobTable(
         Mob->ID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
         Mob->IsSpawned = false;
         Mob->RemainingFindCount = Mob->SpeciesData->FindCount;
-        Mob->RemainingSpawnCount = Mob->Spawn.SpawnCount;
+        Mob->RemainingSpawnCount = MAX(Mob->Spawn.SpawnCount - 1, 0);
 
         WorldContext->NextMobEntityIndex = MAX(WorldContext->NextMobEntityIndex, TableMob->ID.EntityIndex + 1);
 
-        if (Mob->Spawn.MobPatternIndex) {
-            Index MobPatternIndex = Mob->Spawn.MobPatternIndex;
+        if (Mob->Spawn.MobPatternIndex > 0) {
+            Int MobPatternIndex = Mob->Spawn.MobPatternIndex;
             RTMobPatternDataRef MobPatternData = (RTMobPatternDataRef)MemoryPoolFetch(Runtime->MobPatternDataPool, MobPatternIndex);
             if (MobPatternData) {
-                Index PatternMemoryPoolIndex = 0;
+                Int PatternMemoryPoolIndex = 0;
                 Mob->Pattern = (RTMobPatternRef)MemoryPoolReserveNext(WorldContext->MobPatternPool, &PatternMemoryPoolIndex);
                 memset(Mob->Pattern, 0, sizeof(struct _RTMobPattern));
                 Mob->Pattern->Data = MobPatternData;
                 Mob->Pattern->ActionStates = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTMobActionState), RUNTIME_MOB_PATTERN_MAX_TRIGGER_GROUP_COUNT);
                 Mob->Pattern->LinkMobs = ArrayCreateEmpty(Runtime->Allocator, sizeof(RTEntityID), 8);
-                DictionaryInsert(WorldContext->EntityToMobPattern, &Mob->ID, &PatternMemoryPoolIndex, sizeof(Index));
+                DictionaryInsert(WorldContext->EntityToMobPattern, &Mob->ID, &PatternMemoryPoolIndex, sizeof(Int));
             }
         }
 
-        DictionaryInsert(WorldContext->EntityToMob, &Mob->ID, &MemoryPoolIndex, sizeof(Index));
+        DictionaryInsert(WorldContext->EntityToMob, &Mob->ID, &MemoryPoolIndex, sizeof(Int));
     }
 
-    for (Index MobIndex = 0; MobIndex < ArrayGetElementCount(MobTable); MobIndex += 1) {
+    for (Int MobIndex = 0; MobIndex < ArrayGetElementCount(MobTable); MobIndex += 1) {
         RTMobRef TableMob = (RTMobRef)ArrayGetElementAtIndex(MobTable, MobIndex);
 
         RTEntityID MobID = { 0 };
@@ -1121,13 +1122,13 @@ Void RTWorldSetMobTable(
         MobID.WorldIndex = WorldContext->WorldData->WorldIndex;
         MobID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
 
-        Index* MemoryPoolIndex = DictionaryLookup(WorldContext->EntityToMob, &MobID);
+        Int* MemoryPoolIndex = DictionaryLookup(WorldContext->EntityToMob, &MobID);
         assert(MemoryPoolIndex);
 
         RTMobRef Mob = (RTMobRef)MemoryPoolFetch(WorldContext->MobPool, *MemoryPoolIndex);
         assert(Mob);
          
-        if (Mob->Spawn.SpawnDefault) {
+        if (Mob->Spawn.SpawnDefault > 0) {
             RTWorldSpawnMob(Runtime, WorldContext, Mob);
         }
     }
@@ -1152,9 +1153,9 @@ Void RTWorldContextEnumerateEntitiesInRange(
     Int32 EndChunkX = MIN(RUNTIME_WORLD_CHUNK_COUNT, X >> RUNTIME_WORLD_CHUNK_SIZE_EXPONENT);
     Int32 EndChunkY = MIN(RUNTIME_WORLD_CHUNK_COUNT, Y >> RUNTIME_WORLD_CHUNK_SIZE_EXPONENT);
 
-    for (Int32 DeltaChunkX = StartChunkX; DeltaChunkX <= EndChunkX; DeltaChunkX += 1) {
-        for (Int32 DeltaChunkY = StartChunkY; DeltaChunkY <= EndChunkY; DeltaChunkY += 1) {
-            Index ChunkIndex = (Index)DeltaChunkX + (Index)DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
+    for (Int DeltaChunkX = StartChunkX; DeltaChunkX <= EndChunkX; DeltaChunkX += 1) {
+        for (Int DeltaChunkY = StartChunkY; DeltaChunkY <= EndChunkY; DeltaChunkY += 1) {
+            Int ChunkIndex = DeltaChunkX + DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
             assert(ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT* RUNTIME_WORLD_CHUNK_COUNT);
 
             RTWorldChunkRef WorldChunk = &WorldContext->Chunks[ChunkIndex];
@@ -1177,7 +1178,7 @@ Void RTWorldContextEnumerateEntitiesInRange(
                 UNREACHABLE("Invalid entity type given!");
             }
 
-            for (Int32 Index = 0; Index < ArrayGetElementCount(Entities); Index += 1) {
+            for (Int Index = 0; Index < ArrayGetElementCount(Entities); Index += 1) {
                 RTEntityID Entity = *(RTEntityID*)ArrayGetElementAtIndex(Entities, Index);
                 UInt16 TargetX = 0;
                 UInt16 TargetY = 0;
@@ -1250,9 +1251,9 @@ Void RTWorldContextEnumerateBroadcastTargets(
     Int32 EndChunkX = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, ChunkX + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
     Int32 EndChunkY = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, ChunkY + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
 
-    for (Int32 DeltaChunkX = StartChunkX; DeltaChunkX <= EndChunkX; DeltaChunkX += 1) {
-        for (Int32 DeltaChunkY = StartChunkY; DeltaChunkY <= EndChunkY; DeltaChunkY += 1) {
-            Index ChunkIndex = (Index)DeltaChunkX + DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
+    for (Int DeltaChunkX = StartChunkX; DeltaChunkX <= EndChunkX; DeltaChunkX += 1) {
+        for (Int DeltaChunkY = StartChunkY; DeltaChunkY <= EndChunkY; DeltaChunkY += 1) {
+            Int ChunkIndex = DeltaChunkX + DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
             assert(ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT);
 
             RTWorldChunkRef WorldChunk = &WorldContext->Chunks[ChunkIndex];
@@ -1275,7 +1276,7 @@ Void RTWorldContextEnumerateBroadcastTargets(
                 UNREACHABLE("Invalid entity type given!");
             }
 
-            for (Int32 Index = 0; Index < ArrayGetElementCount(Entities); Index += 1) {
+            for (Int Index = 0; Index < ArrayGetElementCount(Entities); Index += 1) {
                 RTEntityID Entity = *(RTEntityID*)ArrayGetElementAtIndex(Entities, Index);
                 Callback(Entity, Userdata);
             }
@@ -1315,8 +1316,8 @@ Void RTWorldContextEnumerateBroadcastChunks(
     Int32 EndChunkX = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, CurrentChunkX + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
     Int32 EndChunkY = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, CurrentChunkY + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
 
-    for (Int32 DeltaChunkX = StartChunkX; DeltaChunkX <= EndChunkX; DeltaChunkX += 1) {
-        for (Int32 DeltaChunkY = StartChunkY; DeltaChunkY <= EndChunkY; DeltaChunkY += 1) {
+    for (Int DeltaChunkX = StartChunkX; DeltaChunkX <= EndChunkX; DeltaChunkX += 1) {
+        for (Int DeltaChunkY = StartChunkY; DeltaChunkY <= EndChunkY; DeltaChunkY += 1) {
             if (RTChunkAreaIntersectsPoint(
                 PreviousChunkX,
                 PreviousChunkY,
@@ -1327,7 +1328,7 @@ Void RTWorldContextEnumerateBroadcastChunks(
                 continue;
             }
         
-            Index ChunkIndex = (Index)DeltaChunkX + DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
+            Int ChunkIndex = DeltaChunkX + DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
             assert(ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT);
 
             RTWorldChunkRef WorldChunk = &WorldContext->Chunks[ChunkIndex];
@@ -1350,7 +1351,7 @@ Void RTWorldContextEnumerateBroadcastChunks(
                 UNREACHABLE("Invalid entity type given!");
             }
 
-            for (Int32 Index = 0; Index < ArrayGetElementCount(Entities); Index += 1) {
+            for (Int Index = 0; Index < ArrayGetElementCount(Entities); Index += 1) {
                 RTEntityID Entity = *(RTEntityID*)ArrayGetElementAtIndex(Entities, Index);
                 Callback(Entity, Userdata);
             }

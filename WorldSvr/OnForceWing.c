@@ -8,7 +8,7 @@
 CLIENT_PROCEDURE_BINDING(FORCE_WING_GRADE_UP) {
 	if (!Character) goto error;
 
-	Index PacketLength = sizeof(C2S_DATA_FORCE_WING_GRADE_UP) + sizeof(UInt16) * (Packet->InventorySlotCount);
+	Int PacketLength = sizeof(C2S_DATA_FORCE_WING_GRADE_UP) + sizeof(UInt16) * (Packet->InventorySlotCount);
 	if (Packet->Length < PacketLength) goto error;
 
 	S2C_DATA_FORCE_WING_GRADE_UP* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, FORCE_WING_GRADE_UP);
@@ -28,13 +28,13 @@ CLIENT_PROCEDURE_BINDING(FORCE_WING_GRADE_UP) {
 	if (!UpgradeData) goto error;
 
 	Int64 RequiredItemCount[RUNTIME_DATA_MAX_FORCE_WING_UPGRADE_MATERIAL_COUNT] = { 0 };
-	for (Index Index = 0; Index < UpgradeData->ForceWingUpgradeMaterialCount; Index += 1) {
+	for (Int Index = 0; Index < UpgradeData->ForceWingUpgradeMaterialCount; Index += 1) {
 		RequiredItemCount[Index] = UpgradeData->ForceWingUpgradeMaterialList[Index].RequiredMaterialItemCount;
 	}
 
 	Int64 ConsumableItemCount[RUNTIME_DATA_MAX_FORCE_WING_UPGRADE_MATERIAL_COUNT] = { 0 };
-	for (Index InventorySlotIndex = 0; InventorySlotIndex < Packet->InventorySlotCount; InventorySlotIndex += 1) {
-		for (Index MaterialIndex = 0; MaterialIndex < UpgradeData->ForceWingUpgradeMaterialCount; MaterialIndex += 1) {
+	for (Int InventorySlotIndex = 0; InventorySlotIndex < Packet->InventorySlotCount; InventorySlotIndex += 1) {
+		for (Int MaterialIndex = 0; MaterialIndex < UpgradeData->ForceWingUpgradeMaterialCount; MaterialIndex += 1) {
 			RequiredItemCount[MaterialIndex] = UpgradeData->ForceWingUpgradeMaterialList[MaterialIndex].RequiredMaterialItemCount;
 
 			if (!RTInventoryCanConsumeStackableItems(
@@ -51,12 +51,12 @@ CLIENT_PROCEDURE_BINDING(FORCE_WING_GRADE_UP) {
 		}
 	}
 
-	for (Index Index = 0; Index < UpgradeData->ForceWingUpgradeMaterialCount; Index += 1) {
+	for (Int Index = 0; Index < UpgradeData->ForceWingUpgradeMaterialCount; Index += 1) {
 		if (RequiredItemCount[Index] > ConsumableItemCount[Index]) goto error;
 	}
 
-	for (Index InventorySlotIndex = 0; InventorySlotIndex < Packet->InventorySlotCount; InventorySlotIndex += 1) {
-		for (Index MaterialIndex = 0; MaterialIndex < UpgradeData->ForceWingUpgradeMaterialCount; MaterialIndex += 1) {
+	for (Int InventorySlotIndex = 0; InventorySlotIndex < Packet->InventorySlotCount; InventorySlotIndex += 1) {
+		for (Int MaterialIndex = 0; MaterialIndex < UpgradeData->ForceWingUpgradeMaterialCount; MaterialIndex += 1) {
 			RequiredItemCount[MaterialIndex] = UpgradeData->ForceWingUpgradeMaterialList[MaterialIndex].RequiredMaterialItemCount;
 
 			if (!RTInventoryCanConsumeStackableItems(
@@ -86,7 +86,7 @@ CLIENT_PROCEDURE_BINDING(FORCE_WING_GRADE_UP) {
 
 	Int32 AddedTrainingPointCount = NextGradeInfoData->Grade * RUNTIME_CHARACTER_FORCE_WING_GRADE_TRAINING_POINT_COUNT;
 
-	for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT; Index += 1) {
+	for (Int Index = 0; Index < RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_COUNT; Index += 1) {
 		Character->Data.ForceWingInfo.Info.PresetTrainingPointCount[Index] += AddedTrainingPointCount;
 	}
 
@@ -105,7 +105,7 @@ CLIENT_PROCEDURE_BINDING(FORCE_WING_GRADE_UP) {
 		RUNTIME_SPECIAL_SKILL_SLOT_FORCE_WING_3,
 	};
 
-	for (Int32 Index = 0; Index < sizeof(ForceWingSkillSlotIndices) / sizeof(Int32); Index += 1) {
+	for (Int Index = 0; Index < sizeof(ForceWingSkillSlotIndices) / sizeof(Int32); Index += 1) {
 		Int32 SlotIndex = ForceWingSkillSlotIndices[Index];
 		RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotBySlotIndex(Runtime, Character, SlotIndex);
 		if (!SkillSlot) continue;
@@ -136,7 +136,7 @@ error:
 CLIENT_PROCEDURE_BINDING(FORCE_WING_LEVEL_UP) {
 	if (!Character) goto error;
 
-	Index PacketLength = sizeof(C2S_DATA_FORCE_WING_LEVEL_UP) + sizeof(UInt16) * (Packet->InventorySlotCount1 + Packet->InventorySlotCount2);
+	Int PacketLength = sizeof(C2S_DATA_FORCE_WING_LEVEL_UP) + sizeof(UInt16) * ((Int)Packet->InventorySlotCount1 + Packet->InventorySlotCount2);
 	if (Packet->Length < PacketLength) goto error;
 
 	S2C_DATA_FORCE_WING_LEVEL_UP* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, FORCE_WING_LEVEL_UP);
@@ -247,7 +247,7 @@ error:
 CLIENT_PROCEDURE_BINDING(SET_FORCEWING_TRAINING_SLOT_FLAGS) {
 	if (!Character) goto error;
 
-	for (Index Index = 0; Index < RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_SIZE; Index += 1) {
+	for (Int Index = 0; Index < RUNTIME_CHARACTER_MAX_FORCE_WING_PRESET_PAGE_SIZE; Index += 1) {
 		Character->Data.ForceWingInfo.Info.TrainingUnlockFlags[Index] = Packet->Flags[Index];
 	}
 

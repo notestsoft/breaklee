@@ -23,7 +23,7 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 
 	Int32 Seed = (Int32)PlatformGetTickCount();
 
-	for (Int32 DestroyItemIndex = 0; DestroyItemIndex < Runtime->Context->DestroyItemCount; DestroyItemIndex += 1) {
+	for (Int DestroyItemIndex = 0; DestroyItemIndex < Runtime->Context->DestroyItemCount; DestroyItemIndex += 1) {
 		RTDataDestroyItemRef ItemPattern = &Runtime->Context->DestroyItemList[DestroyItemIndex];
 		if (ItemPattern->ItemIndex != (ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX)) continue;
 		if (ItemPattern->MinEnchantLevel > ItemSlot->Item.UpgradeLevel) continue;
@@ -36,7 +36,7 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 		if (ItemPattern->Slot == 1 && ItemOptions.Equipment.SlotCount < 1) continue;
 		if (ItemPattern->Epic != -1) {
 			Int32 EpicSlotIndex = -1;
-			for (Int32 SlotIndex = 0; SlotIndex < ItemOptions.Equipment.SlotCount; SlotIndex += 1) {
+			for (Int SlotIndex = 0; SlotIndex < ItemOptions.Equipment.SlotCount; SlotIndex += 1) {
 				if (!ItemOptions.Equipment.Slots[SlotIndex].IsEpic) continue;
 
 				EpicSlotIndex = SlotIndex;
@@ -48,7 +48,7 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 				if (EpicSlotIndex < 0) continue;
 				
 				Bool Found = false;
-				for (Index EpicLevelIndex = 0; EpicLevelIndex < ItemPattern->EpicLevelCount; EpicLevelIndex += 1) {
+				for (Int EpicLevelIndex = 0; EpicLevelIndex < ItemPattern->EpicLevelCount; EpicLevelIndex += 1) {
 					if (ItemPattern->EpicLevel[EpicLevelIndex] == -1 ||
 						ItemPattern->EpicLevel[EpicLevelIndex] == ItemOptions.Equipment.Slots[EpicSlotIndex].ForceLevel) {
 						Found = true;
@@ -58,7 +58,7 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 				if (!Found) continue;
 
 				Found = false;
-				for (Index EpicOptionIndex = 0; EpicOptionIndex < ItemPattern->EpicOptionCount; EpicOptionIndex += 1) {
+				for (Int EpicOptionIndex = 0; EpicOptionIndex < ItemPattern->EpicOptionCount; EpicOptionIndex += 1) {
 					if (ItemPattern->EpicOption[EpicOptionIndex] == -1 ||
 						ItemPattern->EpicOption[EpicOptionIndex] == ItemOptions.Equipment.Slots[EpicSlotIndex].ForceIndex) {
 						Found = true;
@@ -79,7 +79,7 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 		RTDataDestroyItemPoolRef ItemPool = RTRuntimeDataDestroyItemPoolGet(Runtime->Context, ItemPattern->PoolID);
 		if (!ItemPool) continue;
 
-		for (Int32 ItemResultIndex = 0; ItemResultIndex < ItemPool->DestroyItemPoolResultCount; ItemResultIndex += 1) {
+		for (Int ItemResultIndex = 0; ItemResultIndex < ItemPool->DestroyItemPoolResultCount; ItemResultIndex += 1) {
 			RTDataDestroyItemPoolResultRef ItemResult = &ItemPool->DestroyItemPoolResultList[ItemResultIndex];
 			Int32 ItemCount = RandomRange(&Seed, ItemResult->MinCount, ItemResult->MaxCount);
 			if (ItemCount < 1) continue;
@@ -94,7 +94,7 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 				Int32 Rate = RandomRange(&Seed, 0, RateLimit);
 				Int32 RateOffset = 0;
 
-				for (Int32 OptionIndex = 0; OptionIndex < ItemOptionPool->DestroyItemOptionPoolOptionCount; OptionIndex += 1) {
+				for (Int OptionIndex = 0; OptionIndex < ItemOptionPool->DestroyItemOptionPoolOptionCount; OptionIndex += 1) {
 					if (Rate <= ItemOptionPool->DestroyItemOptionPoolOptionList[OptionIndex].Rate + RateOffset) {
 						ItemOptions = ItemOptionPool->DestroyItemOptionPoolOptionList[OptionIndex].Option;
 						break;
@@ -119,7 +119,7 @@ CLIENT_PROCEDURE_BINDING(EXTRACT_ITEM) {
 				}
 			}
 			else {
-				for (Int32 Index = 0; Index < ItemCount; Index += 1) {
+				for (Int Index = 0; Index < ItemCount; Index += 1) {
 					struct _RTItemSlot Slot = { 0 };
 					Slot.Item.ID = ItemResult->ItemKind;
 					Slot.ItemOptions = ItemOptions;

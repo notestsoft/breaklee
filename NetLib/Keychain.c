@@ -28,7 +28,7 @@ Void KeychainGenerate(
     UInt8* Buffer = &Keychain->Key[0];
     UInt32 Perm[3];
 
-    for (Int32 Index = Position; Index < Position + Size; Index++) {
+    for (Int Index = Position; Index < Position + Size; Index++) {
         Perm[2] = Key * 0x2F6B6F5;
         Perm[2] += 0x14698B7;
         Perm[0] = Perm[2];
@@ -95,7 +95,7 @@ Void KeychainEncryptClientPacket(
 
     UInt32 T = (Size - 8) >> 2;
     UInt32 T1;
-    UInt32 Index = 8;
+    UInt Index = 8;
 
     while (T > 0) {
         T1 = BIT_CONVERT(UInt32, Buffer, (Int32)Index);
@@ -144,7 +144,7 @@ Void KeychainEncryptPacket(
     Token *= 4;
     Token = *((UInt32*)&Keychain->Key[Token]);
 
-    Int32 Index, Size = (Length - 4) / 4;
+    Int Index, Size = (Length - 4) / 4;
     for (Index = 4; Size > 0; Index += 4, Size--) {
         UInt32 Value = *((UInt32*)&Packet[Index]);
         Value ^= Token;
@@ -157,7 +157,7 @@ Void KeychainEncryptPacket(
 
     Int32 RemainingSize = ((Length - 4) & 3);
     Token &= Keychain->Mask[RemainingSize];
-    for (Int32 Offset = 0; Offset < RemainingSize; Offset++) {
+    for (Int Offset = 0; Offset < RemainingSize; Offset++) {
         Packet[Index + Offset] ^= (UInt8)(Token >> (Offset * 8)) & 0xFF;
     }
 }
@@ -172,7 +172,7 @@ Void KeychainDecryptClientPacket(
     UInt32 Key = BIT_CONVERT(UInt32, Keychain->Key, T);
     *(UInt32*)&Packet[0] ^= 0x7AB38CF1;
 
-    UInt32 Index, R, T1;
+    UInt Index, R, T1;
     Size -= R = (Size - 4) & 3;
 
     for (Index = 4; Index < Size; Index += 4) {

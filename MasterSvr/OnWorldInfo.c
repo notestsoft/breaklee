@@ -2,15 +2,14 @@
 #include "IPCProcedures.h"
 
 IPC_PROCEDURE_BINDING(W2M, NFY_WORLD_INFO) {
-	if (!ConnectionContext->NodeID.Serial) return;
+	if (IPCNodeIDIsNull(ConnectionContext->NodeID)) return;
 
-	Index WorldIndex = ConnectionContext->NodeID.Serial;
-	WorldInfoRef WorldInfo = (WorldInfoRef)DictionaryLookup(Context->WorldInfoTable, &WorldIndex);
+	WorldInfoRef WorldInfo = (WorldInfoRef)DictionaryLookup(Context->WorldInfoTable, &ConnectionContext->NodeID);
 	if (!WorldInfo) {
 		struct _WorldInfo NewWorldInfo = { 0 };
 		NewWorldInfo.NodeID = ConnectionContext->NodeID;
-		DictionaryInsert(Context->WorldInfoTable, &WorldIndex, &NewWorldInfo, sizeof(struct _WorldInfo));
-		WorldInfo = (WorldInfoRef)DictionaryLookup(Context->WorldInfoTable, &WorldIndex);
+		DictionaryInsert(Context->WorldInfoTable, &ConnectionContext->NodeID, &NewWorldInfo, sizeof(struct _WorldInfo));
+		WorldInfo = (WorldInfoRef)DictionaryLookup(Context->WorldInfoTable, &ConnectionContext->NodeID);
 		assert(WorldInfo);
 	}
 

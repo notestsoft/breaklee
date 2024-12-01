@@ -6,7 +6,7 @@
 #include "Server.h"
 
 RTDataCollectionKindInfoRef RTRuntimeDataCollectionKindInfoGet(RTDataCollectionKindRef Parent, Int32 Key) {
-    for (Int32 Index = 0; Index < Parent->CollectionKindInfoCount; Index += 1) {
+    for (Int Index = 0; Index < Parent->CollectionKindInfoCount; Index += 1) {
         RTDataCollectionKindInfoRef Child = &Parent->CollectionKindInfoList[Index];
         if (Child->ID == Key) return Child;
     }
@@ -15,7 +15,7 @@ RTDataCollectionKindInfoRef RTRuntimeDataCollectionKindInfoGet(RTDataCollectionK
 }
 
 RTDataCollectionKindInfoDetailRef RTRuntimeDataCollectionKindInfoDetailGet(RTDataCollectionKindInfoRef Parent, Int32 Key) {
-    for (Int32 Index = 0; Index < Parent->CollectionKindInfoDetailCount; Index += 1) {
+    for (Int Index = 0; Index < Parent->CollectionKindInfoDetailCount; Index += 1) {
         RTDataCollectionKindInfoDetailRef Child = &Parent->CollectionKindInfoDetailList[Index];
         if (Child->MissionID == Key) return Child;
     }
@@ -24,7 +24,7 @@ RTDataCollectionKindInfoDetailRef RTRuntimeDataCollectionKindInfoDetailGet(RTDat
 }
 
 RTDataCollectionMissionInfoRef RTRuntimeDataCollectionMissionInfoGet(RTDataCollectionMissionRef Parent, Int32 CollectionID, Int32 MissionID) {
-    for (Int32 Index = 0; Index < Parent->CollectionMissionInfoCount; Index += 1) {
+    for (Int Index = 0; Index < Parent->CollectionMissionInfoCount; Index += 1) {
         RTDataCollectionMissionInfoRef Child = &Parent->CollectionMissionInfoList[Index];
         if (Child->ID == CollectionID && Child->MissionID == MissionID) return Child;
     }
@@ -33,7 +33,7 @@ RTDataCollectionMissionInfoRef RTRuntimeDataCollectionMissionInfoGet(RTDataColle
 }
 
 RTDataCollectionMissionDetailRef RTRuntimeDataCollectionMissionInfoDetailGet(RTDataCollectionMissionInfoRef Parent, Int32 Key) {
-    for (Int32 Index = 0; Index < Parent->CollectionMissionDetailCount; Index += 1) {
+    for (Int Index = 0; Index < Parent->CollectionMissionDetailCount; Index += 1) {
         RTDataCollectionMissionDetailRef Child = &Parent->CollectionMissionDetailList[Index];
         if (Child->ID == Key) return Child;
     }
@@ -88,7 +88,7 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
             CollectionMissionDetail->ItemID
         );
 
-        for (Int32 Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
+        for (Int Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
             RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index]);
             if (!ItemSlot) goto error;
 
@@ -97,7 +97,7 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
 
             Bool IsStackable = ItemData->MaxStackSize > 0;
             Bool Found = false;
-            for (Int32 DetailIndex = 0; DetailIndex < CollectionMissionItem->CollectionMissionItemDetailCount; DetailIndex += 1) {
+            for (Int DetailIndex = 0; DetailIndex < CollectionMissionItem->CollectionMissionItemDetailCount; DetailIndex += 1) {
                 RTDataCollectionMissionItemDetailRef CollectionMissionItemDetail = &CollectionMissionItem->CollectionMissionItemDetailList[DetailIndex];
 
                 if (CollectionMissionItemDetail->ItemIndex != (ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX)) continue;
@@ -142,7 +142,7 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
             CollectionMissionDetail->ItemID
         );
 
-        for (Int32 Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
+        for (Int Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
             RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index]);
             if (!ItemSlot) goto error;
 
@@ -150,7 +150,7 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
             assert(ItemData);
 
             Bool Found = false;
-            for (Int32 DetailIndex = 0; DetailIndex < CollectionMissionUpgrade->CollectionMissionUpgradeDetailCount; DetailIndex += 1) {
+            for (Int DetailIndex = 0; DetailIndex < CollectionMissionUpgrade->CollectionMissionUpgradeDetailCount; DetailIndex += 1) {
                 RTDataCollectionMissionUpgradeDetailRef CollectionMissionUpgradeDetail = &CollectionMissionUpgrade->CollectionMissionUpgradeDetailList[DetailIndex];
 
                 RTItem MissionItem = { 0 };
@@ -188,7 +188,7 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
             CollectionMissionDetail->ItemID
         );
 
-        for (Int32 Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
+        for (Int Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
             RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index]);
             if (!ItemSlot) goto error;
 
@@ -234,7 +234,7 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
         goto error;
     }
 
-    for (Int32 Index = 0; Index < RUNTIME_CHARACTER_MAX_COLLECTION_ITEM_COUNT; Index += 1) {
+    for (Int Index = 0; Index < RUNTIME_CHARACTER_MAX_COLLECTION_ITEM_COUNT; Index += 1) {
         Response->MissionItemCounts[Index] = CharacterCollectionSlot->MissionItemCounts[Index];
     }
 

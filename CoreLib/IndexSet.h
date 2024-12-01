@@ -5,7 +5,7 @@
 EXTERN_C_BEGIN
 
 struct _IndexSetIterator {
-    Index Value;
+    Int Value;
 };
 
 struct _IndexSet {
@@ -18,14 +18,14 @@ typedef struct _IndexSetIterator* IndexSetIteratorRef;
 
 IndexSetRef IndexSetCreate(
     AllocatorRef Allocator,
-    Index Capacity
+    Int Capacity
 );
 
 Void IndexSetDestroy(
     IndexSetRef Set
 );
 
-Index IndexSetGetElementCount(
+Int IndexSetGetElementCount(
     IndexSetRef Set
 );
 
@@ -35,17 +35,17 @@ Void IndexSetClear(
 
 Void IndexSetInsert(
     IndexSetRef Set,
-    Index Value
+    Int Value
 );
 
 Void IndexSetRemove(
     IndexSetRef Set,
-    Index Value
+    Int Value
 );
 
 Bool IndexSetContains(
     IndexSetRef Set,
-    Index Value
+    Int Value
 );
 
 IndexSetRef IndexSetUnion(

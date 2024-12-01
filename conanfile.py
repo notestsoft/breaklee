@@ -9,6 +9,7 @@ class BreakleeConan(ConanFile):
         "libuv/1.48.0",
         "lua/5.4.7",
         "openssl/3.3.1",
+        "sqlite3/3.47.0",
         "zlib/1.3.1",
     ]
     generators = "CMakeDeps", "CMakeToolchain"
@@ -17,6 +18,7 @@ class BreakleeConan(ConanFile):
         self.options["libuv"].shared = False
         self.options["lua"].shared = False
         self.options["openssl"].shared = False
+        self.options["sqlite3"].shared = False
         self.options["zlib"].shared = False
 
         if self.settings.os != "Windows":

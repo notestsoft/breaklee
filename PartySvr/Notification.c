@@ -12,7 +12,7 @@ Void BroadcastToParty(
     RTPartyRef Party = RTRuntimeGetParty(Context->Runtime, PartyID);
     if (!Party) return;
 
-    for (Int32 Index = 0; Index < Party->MemberCount; Index += 1) {
+    for (Int Index = 0; Index < Party->MemberCount; Index += 1) {
         RTPartySlotRef Slot = &Party->Members[Index];
         if (RTEntityIsNull(Slot->MemberID)) continue;
 
@@ -81,7 +81,7 @@ Void BroadcastPartyData(
     Response->Header.Target.Type = IPC_TYPE_WORLD;
     Response->MemberCount = Party->MemberCount;
 
-    for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
+    for (Int Index = 0; Index < Party->MemberCount; Index += 1) {
         memcpy(&Response->MemberInfo[Index], &Party->Members[Index], sizeof(struct _RTPartyMemberInfo));
     }
 

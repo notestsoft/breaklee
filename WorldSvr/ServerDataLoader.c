@@ -48,6 +48,32 @@ struct _ArchiveItemData {
 };
 
 struct _ArchiveMobData {
+    Char FileName[60];
+    Char TextName[34];
+    Int32 Scale;
+    Float32 Radius;
+    Float32 MovementSpeed;
+    Float32 MovementAnimationSpeed;
+    Float32 ChaseSpeed;
+    Float32 ChaseAnimationSpeed;
+    Float32 unk6;
+    Int32 ShowDeath;
+    Int32 ShowSpawn;
+    Int32 AlphaDeath;
+    Int32 AlphaSpawn;
+    Float32 DefaultSkillTime;
+    Int32 Group1;
+    Int32 Group2;
+    Int32 Property;
+    Float32 SpecialSkillTime;
+    Int16 Level;
+    Int32 Bex;
+    Int16 ServerBossType;
+    Int16 Color;
+    Int32 ServerBoss;
+};
+
+struct _ArchiveMobServerData {
     Int32 Level;
     Float64 HP;
     Int32 HPRecharge;
@@ -71,7 +97,8 @@ struct _ArchiveMobData {
     Int32 AttackPattern;
     UInt32 Aggressive;
     UInt32 Cooperative;
-    UInt64 Exp;
+    Int32 Exp;
+    Int32 Attack;
     Int32 DefaultSkillStance;
     Int32 SpecialSkillStance;
     Float32 MovementSpeed;
@@ -101,7 +128,7 @@ struct _ArchiveMobData {
     Int32 ResistSilence;
     Int32 ResistDiffDamage;
     Int32 ProportionalHPDmg;
-    Int32 IsWorldBoss;
+    Int32 ServerBossType;
     UInt8 K[3];
     Int32 L[6];
 };
@@ -283,7 +310,7 @@ Bool ServerLoadBattleStyleFormulaData(
         Iterator = ArchiveQueryNodeIteratorNext(RankArchive, Iterator);
     }
 
-    for (Int32 BattleStyleIndex = RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MIN; BattleStyleIndex <= RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX; BattleStyleIndex += 1) {
+    for (Int BattleStyleIndex = RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MIN; BattleStyleIndex <= RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX; BattleStyleIndex += 1) {
         assert(RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MIN <= BattleStyleIndex && BattleStyleIndex <= RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX);
 
         RTBattleStyleSkillFormulaDataRef FormulaData = &Runtime->BattleStyleSkillFormulaData[BattleStyleIndex - 1];
@@ -724,7 +751,7 @@ Bool ServerLoadItemData(
         "item4.enc"
     };
 
-    for (Int32 FileIndex = 0; FileIndex < 4; FileIndex += 1) {
+    for (Int FileIndex = 0; FileIndex < 4; FileIndex += 1) {
         CString FilePath = PathCombineAll(RuntimeDirectory, FileNames[FileIndex], NULL);
         UInt8* Buffer = NULL;
         Int32 BufferLength = 0;
@@ -735,7 +762,7 @@ Bool ServerLoadItemData(
         }
 
         Int32 ItemCount = BufferLength / sizeof(struct _ArchiveItemData);
-        for (Int32 Index = 0; Index < ItemCount; Index += 1) {
+        for (Int Index = 0; Index < ItemCount; Index += 1) {
             assert(Runtime->ItemDataCount < RUNTIME_MEMORY_MAX_ITEM_DATA_COUNT);
 
             struct _ArchiveItemData* ArchiveItemData = (struct _ArchiveItemData*)(Buffer + sizeof(struct _ArchiveItemData) * Index);
@@ -771,80 +798,100 @@ Bool ServerLoadMobData(
     CString ServerDirectory
 ) {
     RTRuntimeRef Runtime = Context->Runtime;
-    CString FilePath = PathCombineAll(RuntimeDirectory, "mobserver.dat", NULL);
-    UInt8* Memory = NULL;
-    Int32 MemoryLength;
-    FileRef File = FileOpen(FilePath);
-    if (!File) return false;
+    FileRef MobFile = NULL;
+    UInt8* MobMemory = NULL;
+    Int32 MobMemoryLength = 0;
+    FileRef MobServerFile = NULL;
+    UInt8* MobServerMemory = NULL;
+    Int32 MobServerMemoryLength = 0;
 
-    FileRead(File, &Memory, &MemoryLength);
+    MobFile = FileOpen(PathCombineAll(RuntimeDirectory, "mob.dat", NULL));
+    if (!MobFile) goto error;
 
-    struct _ArchiveMobData* ArchiveMobMemory = (struct _ArchiveMobData*)Memory;
+    MobServerFile = FileOpen(PathCombineAll(RuntimeDirectory, "mobserver.dat", NULL));
+    if (!MobServerFile) goto error;
 
-    Index MobCount = MemoryLength / sizeof(struct _ArchiveMobData);
-    for (Int32 Index = 0; Index < MobCount; Index += 1) {
-        struct _ArchiveMobData* ArchiveMobData = &ArchiveMobMemory[Index];
+    FileRead(MobFile, &MobMemory, &MobMemoryLength);
+    FileClose(MobFile);
+    MobFile = NULL;
+
+    FileRead(MobServerFile, &MobServerMemory, &MobServerMemoryLength);
+    FileClose(MobServerFile);
+    MobServerFile = NULL;
+
+    struct _ArchiveMobData* ArchiveMob = (struct _ArchiveMobData*)MobMemory;
+    struct _ArchiveMobServerData* ArchiveMobServer = (struct _ArchiveMobServerData*)MobServerMemory;
+
+    Int MobCount = MobMemoryLength / sizeof(struct _ArchiveMobData);
+    Int MobServerCount = MobServerMemoryLength / sizeof(struct _ArchiveMobServerData);
+    if (MobCount != MobServerCount) goto error;
+
+    for (Int Index = 0; Index < MobCount; Index += 1) {
+        struct _ArchiveMobData* ArchiveMobData = &ArchiveMob[Index];
+        struct _ArchiveMobServerData* ArchiveMobServerData = &ArchiveMobServer[Index];
 
         assert(Index < RUNTIME_MEMORY_MAX_MOB_DATA_COUNT);
         RTMobSpeciesDataRef MobData = &Runtime->MobData[Index];
         Runtime->MobDataCount = MAX(Runtime->MobDataCount, Index + 1);
-
         MobData->MobSpeciesIndex = Index;
-        MobData->Level = ArchiveMobData->Level;
-        MobData->MoveSpeed = ArchiveMobData->MovementSpeed;
-        MobData->ChaseSpeed = ArchiveMobData->ChaseSpeed;
-        MobData->Radius = 0; // TODO: Load radius from mobs data
-        MobData->Property = ArchiveMobData->Property;
-        MobData->AttackPattern = ArchiveMobData->AttackPattern;
-        MobData->AggressiveType = ArchiveMobData->Aggressive; // TODO: Check if this maps correctly
-        MobData->Cooperate = ArchiveMobData->Cooperative;
+        MobData->Level = ArchiveMobServerData->Level;
+        MobData->MoveSpeed = ArchiveMobServerData->MovementSpeed;
+        MobData->ChaseSpeed = ArchiveMobServerData->ChaseSpeed;
+        MobData->Radius = ArchiveMobData->Radius;
+        MobData->Property = ArchiveMobServerData->Property;
+        MobData->AttackPattern = ArchiveMobServerData->AttackPattern;
+        MobData->Cooperate = ArchiveMobServerData->Cooperative;
         MobData->Escape = 0; // TODO: Property is missing
-        MobData->AttackType = 0; // TODO: Property is missing
-        MobData->Scale = ArchiveMobData->Scale;
-        MobData->FindCount = ArchiveMobData->FindCount;
-        MobData->FindInterval = ArchiveMobData->FindInterval * 1000;
-        MobData->MoveInterval = ArchiveMobData->MoveInterval;
-        MobData->AlertRange = ArchiveMobData->AlertRange;
-        MobData->ChaseRange = ArchiveMobData->ChaseRange;
-        MobData->LimitRangeB = ArchiveMobData->LimitRangeB;
+        MobData->AttackType = ArchiveMobServerData->Attack;
+        MobData->Scale = ArchiveMobServerData->Scale;
+        MobData->FindCount = ArchiveMobServerData->FindCount;
+        MobData->FindInterval = ArchiveMobServerData->FindInterval * 1000;
+        MobData->MoveInterval = ArchiveMobServerData->MoveInterval;
+        MobData->AlertRange = ArchiveMobServerData->AlertRange;
+        MobData->ChaseRange = ArchiveMobServerData->ChaseRange;
+        MobData->LimitRangeB = ArchiveMobServerData->LimitRangeB;
         MobData->ChaseInterval = 100;
-        MobData->HP = ArchiveMobData->HP;
-        MobData->Defense = ArchiveMobData->Defense;
-        MobData->AttackRate = ArchiveMobData->AttackRate;
-        MobData->DefenseRate = ArchiveMobData->DefenseRate;
-        MobData->HPRecharge = ArchiveMobData->HPRecharge;
-        MobData->DamageReduction = ArchiveMobData->DamageDiscount;
-        MobData->Accuracy = ArchiveMobData->Accuracy;
-        MobData->Penetration = ArchiveMobData->Penetration;
-        MobData->ResistCriticalRate = ArchiveMobData->ResistCriticalRate;
-        MobData->IgnoreAccuracy = ArchiveMobData->IgnoreAccuracy;
-        MobData->IgnoreDamageReduction = ArchiveMobData->IgnoreDamageReduction;
-        MobData->IgnorePenetration = ArchiveMobData->IgnorePenetration;
-        MobData->AbsoluteDamage = ArchiveMobData->AbsoluteDamage;
-        MobData->ResistSkillAmp = ArchiveMobData->ResistSkillAmp;
-        MobData->ResistCriticalDamage = ArchiveMobData->ResistCriticalDamage;
-        MobData->ResistSuppression = ArchiveMobData->ResistSuppression;
-        MobData->ResistSilence = ArchiveMobData->ResistSilence;
-        MobData->ReflectDamage = ArchiveMobData->ProportionalHPDmg;
-        MobData->MoveInterval = ArchiveMobData->MoveInterval;
-        MobData->Accuracy = ArchiveMobData->Accuracy;
-        MobData->DefaultSkill.PhysicalAttackMin = ArchiveMobData->DefaultSkillPhysicalAttackMin;
-        MobData->DefaultSkill.PhysicalAttackMax = ArchiveMobData->DefaultSkillPhysicalAttackMax;
-        MobData->DefaultSkill.Reach = ArchiveMobData->DefaultSkillReach;
-        MobData->DefaultSkill.Range = ArchiveMobData->DefaultSkillRange;
-        MobData->DefaultSkill.Stance = ArchiveMobData->DefaultSkillStance;
-        MobData->DefaultSkill.SkillGroup = ArchiveMobData->DefaultSkillGroup;
-        MobData->DefaultSkill.Interval = ArchiveMobData->DefaultSkillInterval * 1000;
-        MobData->SpecialSkill.PhysicalAttackMin = ArchiveMobData->SpecialSkillPhysicalAttackMin;
-        MobData->SpecialSkill.PhysicalAttackMax = ArchiveMobData->SpecialSkillPhysicalAttackMax;
-        MobData->SpecialSkill.Reach = ArchiveMobData->SpecialSkillReach;
-        MobData->SpecialSkill.Range = ArchiveMobData->SpecialSkillRange;
-        MobData->SpecialSkill.Stance = ArchiveMobData->SpecialSkillStance;
-        MobData->SpecialSkill.SkillGroup = ArchiveMobData->SpecialSkillGroup;
-        MobData->SpecialSkill.Interval = ArchiveMobData->SpecialSkillInterval * 1000;
-        MobData->AttackSignal = ArchiveMobData->AttackSignalValue;
-        MobData->IsWorldBoss = ArchiveMobData->IsWorldBoss;
-        MobData->Exp = ArchiveMobData->Exp;
+        MobData->HP = ArchiveMobServerData->HP;
+        MobData->Defense = ArchiveMobServerData->Defense;
+        MobData->AttackRate = ArchiveMobServerData->AttackRate;
+        MobData->DefenseRate = ArchiveMobServerData->DefenseRate;
+        MobData->HPRecharge = ArchiveMobServerData->HPRecharge;
+        MobData->DamageReduction = ArchiveMobServerData->DamageDiscount;
+        MobData->Accuracy = ArchiveMobServerData->Accuracy;
+        MobData->Penetration = ArchiveMobServerData->Penetration;
+        MobData->ResistCriticalRate = ArchiveMobServerData->ResistCriticalRate;
+        MobData->IgnoreAccuracy = ArchiveMobServerData->IgnoreAccuracy;
+        MobData->IgnoreDamageReduction = ArchiveMobServerData->IgnoreDamageReduction;
+        MobData->IgnorePenetration = ArchiveMobServerData->IgnorePenetration;
+        MobData->AbsoluteDamage = ArchiveMobServerData->AbsoluteDamage;
+        MobData->ResistSkillAmp = ArchiveMobServerData->ResistSkillAmp;
+        MobData->ResistCriticalDamage = ArchiveMobServerData->ResistCriticalDamage;
+        MobData->ResistSuppression = ArchiveMobServerData->ResistSuppression;
+        MobData->ResistSilence = ArchiveMobServerData->ResistSilence;
+        MobData->ReflectDamage = ArchiveMobServerData->ProportionalHPDmg;
+        MobData->Flee = ArchiveMobServerData->MoveInterval;
+        MobData->MoveInterval = 500;
+        MobData->Accuracy = ArchiveMobServerData->Accuracy;
+        MobData->DefaultSkill.PhysicalAttackMin = ArchiveMobServerData->DefaultSkillPhysicalAttackMin;
+        MobData->DefaultSkill.PhysicalAttackMax = ArchiveMobServerData->DefaultSkillPhysicalAttackMax;
+        MobData->DefaultSkill.Reach = ArchiveMobServerData->DefaultSkillReach;
+        MobData->DefaultSkill.Range = ArchiveMobServerData->DefaultSkillRange;
+        MobData->DefaultSkill.Stance = ArchiveMobServerData->DefaultSkillStance;
+        MobData->DefaultSkill.SkillGroup = ArchiveMobServerData->DefaultSkillGroup;
+        MobData->DefaultSkill.Interval = ceilf(ArchiveMobServerData->DefaultSkillInterval * 10) * 100;
+        MobData->SpecialSkill.PhysicalAttackMin = ArchiveMobServerData->SpecialSkillPhysicalAttackMin;
+        MobData->SpecialSkill.PhysicalAttackMax = ArchiveMobServerData->SpecialSkillPhysicalAttackMax;
+        MobData->SpecialSkill.Reach = ArchiveMobServerData->SpecialSkillReach;
+        MobData->SpecialSkill.Range = ArchiveMobServerData->SpecialSkillRange;
+        MobData->SpecialSkill.Stance = ArchiveMobServerData->SpecialSkillStance;
+        MobData->SpecialSkill.SkillGroup = ArchiveMobServerData->SpecialSkillGroup;
+        MobData->SpecialSkill.Interval = ceilf(ArchiveMobServerData->SpecialSkillInterval * 10) * 100;
+        MobData->AttackSignal = ArchiveMobServerData->AttackSignalValue;
+        MobData->BossType = ArchiveMobServerData->ServerBossType;
+        MobData->Exp = ArchiveMobServerData->Exp;
+        MobData->AttackCountAmp = ArchiveMobServerData->AttackCountAmp;
+        MobData->AggroPattern = ArchiveMobServerData->AggroPattern;
+        MobData->ResistDiffDamage = ArchiveMobServerData->ResistDiffDamage;
 
         Int32 Radius = (MobData->Scale + 1) >> 1;
         MobData->DefaultSkill.Distance = (MobData->Scale >> 1) + MobData->DefaultSkill.Reach;
@@ -858,15 +905,29 @@ Bool ServerLoadMobData(
         if (MobData->SpecialSkill.Offset < Radius) {
             MobData->SpecialSkill.Offset = Radius;
         }
-        MobData->CanAttack = ArchiveMobData->CanAttack == 0; // TODO: Resolve correct mapping
+        
+        MobData->CanAttack = ArchiveMobServerData->CanAttack == 0; // TODO: Resolve correct mapping
         MobData->CanMove = (MobData->FindCount >= RUNTIME_MOB_FIND_COUNT_UNMOVABLE) ? 0 : 1;
+
+        if (MobData->AttackType == RUNTIME_MOB_ATTACK_TYPE_NONE) {
+            MobData->CanAttack = 0;
+        }
+        
+        MobData->AggressiveType = RUNTIME_MOB_AGGRESSIVE_TYPE_PASSIVE;
+        if (ArchiveMobServerData->Aggressive) {
+            MobData->AggressiveType = RUNTIME_MOB_AGGRESSIVE_TYPE_AGGRESSIVE;
+        }
+
+        if (ArchiveMobServerData->AggroPattern == RUNTIME_MOB_AGGRESSIVE_TYPE_NATIONONLY) {
+            MobData->AggressiveType = RUNTIME_MOB_AGGRESSIVE_TYPE_NATIONONLY;
+        }
     }
 
     Int32 SkillGroupUsage[50] = { 0 };
     Int32 AttackPatternUsage[50] = { 0 };
 
-    for (Int32 Index = 0; Index < MobCount; Index += 1) {
-        struct _ArchiveMobData* ArchiveMobData = &ArchiveMobMemory[Index];
+    for (Int Index = 0; Index < MobCount; Index += 1) {
+        struct _ArchiveMobServerData* ArchiveMobData = &ArchiveMobServer[Index];
 
         SkillGroupUsage[ArchiveMobData->DefaultSkillGroup] += 1;
         SkillGroupUsage[ArchiveMobData->SpecialSkillGroup] += 1;
@@ -921,19 +982,27 @@ Bool ServerLoadMobData(
         }
     }
 
-    for (Int32 Index = 0; Index < 50; Index += 1) {
+    for (Int Index = 0; Index < 50; Index += 1) {
         if (SkillGroupUsage[Index] > 0)
             Warn("Mob Skill Group: %d", Index);
     }
 
-    for (Int32 Index = 0; Index < 50; Index += 1) {
+    for (Int Index = 0; Index < 50; Index += 1) {
         if (AttackPatternUsage[Index] > 0)
             Warn("Mob Attack Pattern: %d", Index);
     }
 
-    FileClose(File);
-    free(Memory);
+    free(MobMemory);
+    free(MobServerMemory);
     return true;
+
+error:
+    if (MobFile) FileClose(MobFile);
+    if (MobServerFile) FileClose(MobServerFile);
+    if (MobMemory) free(MobMemory);
+    if (MobServerMemory) free(MobServerMemory);
+
+    return false;
 }
 
 Bool ServerLoadWarpData(
@@ -959,7 +1028,7 @@ Bool ServerLoadWorldMobData(
         Mob->ID.WorldIndex = WorldData->WorldIndex;
         Mob->ID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
 
-        if (!ParseAttributeIndex(Archive, ChildIterator->Index, "SpeciesIndex", &Mob->Spawn.MobSpeciesIndex)) goto error;
+        if (!ParseAttributeInt32(Archive, ChildIterator->Index, "SpeciesIndex", &Mob->Spawn.MobSpeciesIndex)) goto error;
         if (!ParseAttributeInt32(Archive, ChildIterator->Index, "X", &Mob->Spawn.AreaX)) goto error;
         if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Y", &Mob->Spawn.AreaY)) goto error;
         if (!ParseAttributeInt32(Archive, ChildIterator->Index, "Width", &Mob->Spawn.AreaWidth)) goto error;
@@ -1046,8 +1115,8 @@ Bool ServerLoadSpeciesDropData(
 ) {
     ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, ArchiveParentIndex, DropPoolName);
     while (ChildIterator) {
-        Index DropPoolIndex = 0;
-        if (!ParseAttributeIndex(Archive, ChildIterator->Index, "MobSpeciesIndex", &DropPoolIndex)) goto error;
+        Int DropPoolIndex = 0;
+        if (!ParseAttributeInt(Archive, ChildIterator->Index, "MobSpeciesIndex", &DropPoolIndex)) goto error;
 
         ArrayRef DropPool = (ArrayRef)DictionaryLookup(SpeciesDropPool, &DropPoolIndex);
         if (!DropPool) {
@@ -1103,8 +1172,8 @@ Bool ServerLoadTerrainData(
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(TerrainArchive, ParentIndex, "map_index");
     while (Iterator) {
-        Index WorldIndex = 0;
-        if (!ParseAttributeIndex(TerrainArchive, Iterator->Index, "world_id", &WorldIndex)) goto error;
+        Int32 WorldIndex = 0;
+        if (!ParseAttributeInt32(TerrainArchive, Iterator->Index, "world_id", &WorldIndex)) goto error;
 
         RTWorldDataRef World = RTWorldDataCreate(Runtime->WorldManager, WorldIndex);
         World->WorldIndex = WorldIndex;
@@ -1140,7 +1209,7 @@ Bool ServerLoadWorldData(
     Int32 WarAllowed = 0;
     Int32 WarControl = 0;
 
-    for (Index WorldIndex = 0; WorldIndex < Runtime->WorldManager->MaxWorldDataCount; WorldIndex += 1) {
+    for (Int WorldIndex = 0; WorldIndex < Runtime->WorldManager->MaxWorldDataCount; WorldIndex += 1) {
         if (!RTWorldDataExists(Runtime->WorldManager, WorldIndex)) continue;
         
         RTWorldDataRef World = RTWorldDataGet(Runtime->WorldManager, WorldIndex);
@@ -1168,8 +1237,8 @@ Bool ServerLoadWorldData(
 
         if (NodeIndex < 0) goto error;
 
-        Index WorldIndex = 0;
-        if (!ParseAttributeIndex(TempArchive, NodeIndex, "id", &WorldIndex)) goto error;
+        Int32 WorldIndex = 0;
+        if (!ParseAttributeInt32(TempArchive, NodeIndex, "id", &WorldIndex)) goto error;
         assert(WorldIndex == World->WorldIndex);
 
         if (!ParseAttributeInt32(TempArchive, NodeIndex, "type", &World->Type)) goto error;
@@ -1178,9 +1247,9 @@ Bool ServerLoadWorldData(
         if (!ParseAttributeInt32(TempArchive, NodeIndex, "allowedwar", &WarAllowed)) goto error;
         if (!ParseAttributeInt32(TempArchive, NodeIndex, "warcontrol", &WarControl)) goto error;
 
-        if (HasMapCode) World->Flags |= RUNTIME_WORLD_FLAGS_HAS_MAPCODE;
-        if (WarAllowed) World->Flags |= RUNTIME_WORLD_FLAGS_WAR_ALLOWED;
-        if (WarControl) World->Flags |= RUNTIME_WORLD_FLAGS_WAR_CONTROL;
+        if (HasMapCode > 0) World->Flags |= RUNTIME_WORLD_FLAGS_HAS_MAPCODE;
+        if (WarAllowed > 0) World->Flags |= RUNTIME_WORLD_FLAGS_WAR_ALLOWED;
+        if (WarControl > 0) World->Flags |= RUNTIME_WORLD_FLAGS_WAR_CONTROL;
 
         Char MapFileName[MAX_PATH] = { 0 };
         if (!ParseAttributeString(TempArchive, NodeIndex, "map_file", MapFileName, MAX_PATH)) goto error;
@@ -1214,7 +1283,7 @@ Bool ServerLoadWorldData(
             Int32 EffectCount = *((Int32*)&MapData[MapDataOffset]);
             MapDataOffset += 4;
 
-            for (Int32 Index = 0; Index < EffectCount; Index++) {
+            for (Int Index = 0; Index < EffectCount; Index++) {
                 UInt16 TextLength = *((UInt16*)&MapData[MapDataOffset]);
                 MapDataOffset += 18;
                 MapDataOffset += TextLength;
@@ -1223,14 +1292,14 @@ Bool ServerLoadWorldData(
             Int32 TextureCount = *((Int32*)&MapData[MapDataOffset]);
             MapDataOffset += 4;
 
-            for (Int32 Index = 0; Index < TextureCount; Index++) {
+            for (Int Index = 0; Index < TextureCount; Index++) {
                 UInt32 Size = *((UInt32*)&MapData[MapDataOffset]);
                 MapDataOffset += 4;
                 MapDataOffset += Size;
             }
 
             MapDataOffset += 12;
-            MapDataOffset += (RUNTIME_WORLD_SIZE + 1) * (RUNTIME_WORLD_SIZE + 1) * sizeof(UInt32);
+            MapDataOffset += (Int)(RUNTIME_WORLD_SIZE + 1) * (RUNTIME_WORLD_SIZE + 1) * sizeof(UInt32);
             UInt32* TileData = (UInt32*)&MapData[MapDataOffset];
             memcpy(World->Tiles, TileData, sizeof(UInt32) * RUNTIME_WORLD_SIZE * RUNTIME_WORLD_SIZE);
             free(MapData);
@@ -1304,7 +1373,7 @@ Bool ServerLoadWorldData(
         }
     }
 
-    for (Index WorldIndex = 0; WorldIndex < Runtime->WorldManager->MaxWorldDataCount; WorldIndex += 1) {
+    for (Int WorldIndex = 0; WorldIndex < Runtime->WorldManager->MaxWorldDataCount; WorldIndex += 1) {
         if (!RTWorldDataExists(Runtime->WorldManager, WorldIndex)) continue;
 
         RTWorldDataRef World = RTWorldDataGet(Runtime->WorldManager, WorldIndex);
@@ -1319,15 +1388,15 @@ Bool ServerLoadWorldData(
 
         if (NodeIndex < 0) continue;
 
-        Index WorldIndex = 0;
-        if (!ParseAttributeIndex(MainArchive, NodeIndex, "id", &WorldIndex)) continue;
+        Int32 WorldIndex = 0;
+        if (!ParseAttributeInt32(MainArchive, NodeIndex, "id", &WorldIndex)) continue;
         assert(WorldIndex == World->WorldIndex);
     }
 
     return true;
 
 error:
-    for (Index WorldIndex = 0; WorldIndex < Runtime->WorldManager->MaxWorldDataCount; WorldIndex += 1) {
+    for (Int WorldIndex = 0; WorldIndex < Runtime->WorldManager->MaxWorldDataCount; WorldIndex += 1) {
         if (!RTWorldDataExists(Runtime->WorldManager, WorldIndex)) continue;
 
         RTWorldDataRef World = RTWorldDataGet(Runtime->WorldManager, WorldIndex);
@@ -1537,8 +1606,8 @@ Bool ServerLoadDungeonExtraData(
 
         ArchiveIteratorRef GroupIterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "TriggerGroup");
         while (GroupIterator) {
-            Index TriggerGroupIndex = 0;
-            if (!ParseAttributeIndex(Archive, GroupIterator->Index, "Index", &TriggerGroupIndex)) {
+            Int TriggerGroupIndex = 0;
+            if (!ParseAttributeInt(Archive, GroupIterator->Index, "Index", &TriggerGroupIndex)) {
                 Error("Loading '%s' in '%s' failed!", "Index", FilePath);
                 goto error;
             }
@@ -1595,8 +1664,8 @@ Bool ServerLoadDungeonExtraData(
 
         GroupIterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "ActionGroup");
         while (GroupIterator) {
-            Index ActionGroupIndex = 0;
-            if (!ParseAttributeIndex(Archive, GroupIterator->Index, "Index", &ActionGroupIndex)) {
+            Int ActionGroupIndex = 0;
+            if (!ParseAttributeInt(Archive, GroupIterator->Index, "Index", &ActionGroupIndex)) {
                 Error("Loading '%s' in '%s' failed!", "Index", FilePath);
                 goto error;
             }
@@ -1647,8 +1716,8 @@ Bool ServerLoadDungeonExtraData(
 
         GroupIterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "TimeControl");
         while (GroupIterator) {
-            Index MobIndex = 0;
-            if (!ParseAttributeIndex(Archive, GroupIterator->Index, "MobIndex", &MobIndex)) {
+            Int MobIndex = 0;
+            if (!ParseAttributeInt(Archive, GroupIterator->Index, "MobIndex", &MobIndex)) {
                 Error("Loading '%s' in '%s' failed!", "MobIndex", FilePath);
                 goto error;
             }
@@ -1763,8 +1832,8 @@ Bool ServerLoadDungeonMissionData(
 
     ArchiveIteratorRef NodeIterator = ArchiveQueryNodeIteratorFirst(Archive, MissionNodeIndex, "mission_immune");
     while (NodeIterator) {
-        Index MobIndex = 0;
-        if (!ParseAttributeIndex(Archive, NodeIterator->Index, "id", &MobIndex))
+        Int MobIndex = 0;
+        if (!ParseAttributeInt(Archive, NodeIterator->Index, "id", &MobIndex))
             goto error;
 
         RTDungeonImmuneControlDataRef ImmuneControlData = DictionaryLookup(DungeonData->ImmuneControls, &MobIndex);
@@ -1793,18 +1862,18 @@ Bool ServerLoadDungeonMissionData(
 
     NodeIterator = ArchiveQueryNodeIteratorFirst(Archive, MissionNodeIndex, "gate");
     while (NodeIterator) {
-        Index MobIndex = 0;
-        if (!ParseAttributeIndex(Archive, NodeIterator->Index, "id", &MobIndex))
+        Int MobIndex = 0;
+        if (!ParseAttributeInt(Archive, NodeIterator->Index, "id", &MobIndex))
             goto error;
 
         Bool MobFound = false;
-        for (Int32 PatternPartIndex = 0; PatternPartIndex < DungeonData->PatternPartCount; PatternPartIndex += 1) {
+        for (Int PatternPartIndex = 0; PatternPartIndex < DungeonData->PatternPartCount; PatternPartIndex += 1) {
             RTMissionDungeonPatternPartDataRef PatternPartData = RTRuntimeGetPatternPartByID(
                 Runtime,
                 DungeonData->PatternPartIndices[PatternPartIndex]
             );
 
-            for (Index Index = 0; Index < ArrayGetElementCount(PatternPartData->MobTable); Index += 1) {
+            for (Int Index = 0; Index < ArrayGetElementCount(PatternPartData->MobTable); Index += 1) {
                 RTMobRef Mob = (RTMobRef)ArrayGetElementAtIndex(PatternPartData->MobTable, Index);
                 if (Mob->ID.EntityIndex != MobIndex) continue;
 
@@ -1865,8 +1934,8 @@ Bool ServerLoadPatternPartData(
         if (ParentIndex < 0) 
             goto error;
 
-        Index PatternPartIndex = 0;
-        if (!ParseAttributeIndex(Archive, ParentIndex, "Index", &PatternPartIndex)) 
+        Int PatternPartIndex = 0;
+        if (!ParseAttributeInt(Archive, ParentIndex, "Index", &PatternPartIndex)) 
             goto error;
 
         RTMissionDungeonPatternPartDataRef PatternPartData = (RTMissionDungeonPatternPartDataRef)DictionaryLookup(Runtime->PatternPartData, &PatternPartIndex);
@@ -1885,7 +1954,7 @@ Bool ServerLoadPatternPartData(
                 goto error;
             }
 
-            if (!ParseAttributeIndex(Archive, MobIterator->Index, "SpeciesIndex", &Mob->Spawn.MobSpeciesIndex)) {
+            if (!ParseAttributeInt32(Archive, MobIterator->Index, "SpeciesIndex", &Mob->Spawn.MobSpeciesIndex)) {
                 Error("Loading '%s' in '%s' failed!", "SpeciesIndex", FilePath);
                 goto error;
             }
@@ -1955,7 +2024,7 @@ Bool ServerLoadPatternPartData(
             );
 
             Mob->SpeciesData = &Context->Runtime->MobData[Mob->Spawn.MobSpeciesIndex];
-            Mob->IsInfiniteSpawn = true;
+            Mob->IsInfiniteSpawn = Mob->Spawn.SpawnCount == 1 && Mob->Spawn.SpawnDefault;
             Mob->IsPermanentDeath = false;
             Mob->RemainingSpawnCount = 0;
 
@@ -1985,8 +2054,8 @@ Bool ServerLoadQuestDungeonData(
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "dungeon");
     while (Iterator) {
-        Index DungeonIndex = 0;
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
+        Int DungeonIndex = 0;
+        if (!ParseAttributeInt(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
         assert(!DictionaryLookup(Runtime->DungeonData, &DungeonIndex));
 
         struct _RTDungeonData DungeonDataMemory = { 0 };
@@ -2059,8 +2128,8 @@ Bool ServerLoadQuestDungeonData(
 
     Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "pp");
     while (Iterator) {
-        Index PatternPartIndex = 0;
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &PatternPartIndex)) goto error;
+        Int PatternPartIndex = 0;
+        if (!ParseAttributeInt(Archive, Iterator->Index, "id", &PatternPartIndex)) goto error;
         assert(!DictionaryLookup(Runtime->PatternPartData, &PatternPartIndex));
         memset(&PatternPartData, 0, sizeof(struct _RTMissionDungeonPatternPartData));
         PatternPartData.MobTable = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTMob), 8);
@@ -2081,7 +2150,7 @@ Bool ServerLoadQuestDungeonData(
             ','
         );
 
-        for (Index Index = 0; Index < PatternPartData.MissionMobCount; Index += 1) {
+        for (Int Index = 0; Index < PatternPartData.MissionMobCount; Index += 1) {
             PatternPartData.MissionMobs[Index].MobID = MissionMobs[Index].MobID;
             PatternPartData.MissionMobs[Index].Count = MissionMobs[Index].MaxCount;
             PatternPartData.MissionMobs[Index].MaxCount = MissionMobs[Index].MaxCount;
@@ -2105,8 +2174,8 @@ Bool ServerLoadQuestDungeonData(
 
     Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "dungeon");
     while (Iterator) {
-        Index DungeonIndex = 0;
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
+        Int DungeonIndex = 0;
+        if (!ParseAttributeInt(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
         assert(DictionaryLookup(Runtime->DungeonData, &DungeonIndex));
 
         RTDungeonDataRef DungeonData = DictionaryLookup(Runtime->DungeonData, &DungeonIndex);
@@ -2137,8 +2206,8 @@ Bool ServerLoadMissionDungeonData(
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "dungeon");
     while (Iterator) {
-        Index DungeonIndex = 0;
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
+        Int DungeonIndex = 0;
+        if (!ParseAttributeInt(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
         assert(!DictionaryLookup(Runtime->DungeonData, &DungeonIndex));
 
         struct _RTDungeonData DungeonDataMemory = { 0 };
@@ -2216,8 +2285,8 @@ Bool ServerLoadMissionDungeonData(
 
     Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "pp");
     while (Iterator) {
-        Index PatternPartIndex = 0;
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &PatternPartIndex)) goto error;
+        Int PatternPartIndex = 0;
+        if (!ParseAttributeInt(Archive, Iterator->Index, "id", &PatternPartIndex)) goto error;
         assert(!DictionaryLookup(Runtime->PatternPartData, &PatternPartIndex));
         memset(&PatternPartData, 0, sizeof(struct _RTMissionDungeonPatternPartData));
 
@@ -2251,8 +2320,8 @@ Bool ServerLoadMissionDungeonData(
 
     Iterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "dungeon");
     while (Iterator) {
-        Index DungeonIndex = 0;
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
+        Int DungeonIndex = 0;
+        if (!ParseAttributeInt(Archive, Iterator->Index, "id", &DungeonIndex)) goto error;
         assert(DictionaryLookup(Runtime->DungeonData, &DungeonIndex));
 
         RTDungeonDataRef DungeonData = DictionaryLookup(Runtime->DungeonData, &DungeonIndex);
@@ -2319,8 +2388,8 @@ Bool ServerLoadMobPatrolData(
     while (Iterator) {
         ArchiveClear(PatrolArchive, true);
 
-        Index PatrolIndex = -1;
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "Index", &PatrolIndex)) goto error;
+        Int32 PatrolIndex = -1;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Index", &PatrolIndex)) goto error;
 
         Char FilePath[MAX_PATH] = { 0 };
         if (!ParseAttributeString(Archive, Iterator->Index, "FilePath", FilePath, MAX_PATH)) goto error;
@@ -2401,8 +2470,8 @@ Bool ServerLoadMobPatternData(
     while (Iterator) {
         ArchiveClear(PatternArchive, true);
 
-        Index PatternIndex = -1;
-        if (!ParseAttributeIndex(Archive, Iterator->Index, "Index", &PatternIndex)) goto error;
+        Int32 PatternIndex = -1;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "Index", &PatternIndex)) goto error;
 
         Char FilePath[MAX_PATH] = { 0 };
         if (!ParseAttributeString(Archive, Iterator->Index, "FilePath", FilePath, MAX_PATH)) goto error;
@@ -2570,8 +2639,8 @@ Bool ServerLoadOptionPoolData(
 
         ArchiveIteratorRef PoolIterator = ArchiveQueryNodeIteratorFirst(Archive, ParentIndex, "Pool");
         while (PoolIterator) {
-            Index PoolIndex = 0;
-            if (!ParseAttributeIndex(Archive, PoolIterator->Index, "Index", &PoolIndex)) goto error;
+            Int32 PoolIndex = 0;
+            if (!ParseAttributeInt32(Archive, PoolIterator->Index, "Index", &PoolIndex)) goto error;
 
             ArchiveIteratorRef ChildIterator = ArchiveQueryNodeIteratorFirst(Archive, PoolIterator->Index, "ItemLevelPool.ItemLevel");
             while (ChildIterator) {

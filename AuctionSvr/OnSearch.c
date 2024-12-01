@@ -36,7 +36,7 @@ IPC_PROCEDURE_BINDING(D2A, SEARCH) {
     Response->Unknown3 = 0;
     Response->ResultCount = Packet->ResultCount;
 
-    for (Int32 Index = 0; Index < Packet->ResultCount; Index += 1) {
+    for (Int Index = 0; Index < Packet->ResultCount; Index += 1) {
         S2C_DATA_SEARCH_RESULT_SLOT* ResponseSlot = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_SEARCH_RESULT_SLOT);
         ResponseSlot->SlotIndex = Index;
         ResponseSlot->ItemID = Packet->Results[Index].ItemID;

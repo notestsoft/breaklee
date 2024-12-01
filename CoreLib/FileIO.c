@@ -74,7 +74,7 @@ CString PathCombineAll(
     CString Path,
     ...
 ) {
-    static char FilePathBuffer[MAX_PATH] = { 0 };
+    static Char FilePathBuffer[MAX_PATH] = { 0 };
     memset(FilePathBuffer, 0, MAX_PATH);
     snprintf(FilePathBuffer, MAX_PATH, "%s", Path);
 

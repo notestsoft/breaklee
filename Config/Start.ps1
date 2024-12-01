@@ -80,11 +80,11 @@ function Cleanup {
 	}
 }
 
-#Add-Process -Name "AuctionSvr" -Path "AuctionSvr.exe" -Arguments @()
-#Add-Process -Name "ChatSvr" -Path "ChatSvr.exe" -Arguments @()
+Add-Process -Name "AuctionSvr" -Path "AuctionSvr.exe" -Arguments @()
+Add-Process -Name "ChatSvr" -Path "ChatSvr.exe" -Arguments @()
 Add-Process -Name "LoginSvr" -Path "LoginSvr.exe" -Arguments @()
 Add-Process -Name "MasterSvr" -Path "MasterSvr.exe" -Arguments @()
-#Add-Process -Name "PartySvr" -Path "PartySvr.exe" -Arguments @()
+Add-Process -Name "PartySvr" -Path "PartySvr.exe" -Arguments @()
 Add-Process -Name "WorldSvr" -Path "WorldSvr.exe" -Arguments @("WorldSvr.ini")
 #Add-Process -Name "WorldSvr02" -Path "WorldSvr02.exe" -Arguments @("WorldSvr_02.ini")
 #Add-Process -Name "WorldSvr03" -Path "WorldSvr03.exe" -Arguments @("WorldSvr_03.ini")

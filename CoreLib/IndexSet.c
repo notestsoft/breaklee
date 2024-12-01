@@ -5,13 +5,13 @@
 
 IndexSetRef IndexSetCreate(
     AllocatorRef Allocator,
-    Index Capacity
+    Int Capacity
 ) {
     IndexSetRef Set = (IndexSetRef)AllocatorAllocate(Allocator, sizeof(struct _IndexSet));
     if (!Set) Fatal("Memory allocation failed!");
     
     Set->Allocator = Allocator;
-    Set->Indices = ArrayCreateEmpty(Allocator, sizeof(Index), Capacity);
+    Set->Indices = ArrayCreateEmpty(Allocator, sizeof(Int), Capacity);
     return Set;
 }
 
@@ -22,7 +22,7 @@ Void IndexSetDestroy(
     AllocatorDeallocate(Set->Allocator, Set);
 }
 
-Index IndexSetGetElementCount(
+Int IndexSetGetElementCount(
     IndexSetRef Set
 ) {
     return ArrayGetElementCount(Set->Indices);
@@ -36,7 +36,7 @@ Void IndexSetClear(
 
 Void IndexSetInsert(
     IndexSetRef Set,
-    Index Value
+    Int Value
 ) {
     if (IndexSetContains(Set, Value)) return;
     
@@ -45,10 +45,10 @@ Void IndexSetInsert(
 
 Void IndexSetRemove(
     IndexSetRef Set,
-    Index Value
+    Int Value
 ) {
-    for (Index ElementIndex = 0; ElementIndex < ArrayGetElementCount(Set->Indices); ElementIndex += 1) {
-        Index Element = *((Index*)ArrayGetElementAtIndex(Set->Indices, ElementIndex));
+    for (Int ElementIndex = 0; ElementIndex < ArrayGetElementCount(Set->Indices); ElementIndex += 1) {
+        Int Element = *((Int*)ArrayGetElementAtIndex(Set->Indices, ElementIndex));
         if (Element == Value) {
             ArrayRemoveElementAtIndex(Set->Indices, ElementIndex);
             break;
@@ -58,10 +58,10 @@ Void IndexSetRemove(
 
 Bool IndexSetContains(
     IndexSetRef Set,
-    Index Value
+    Int Value
 ) {
-    for (Index ElementIndex = 0; ElementIndex < ArrayGetElementCount(Set->Indices); ElementIndex += 1) {
-        Index Element = *((Index*)ArrayGetElementAtIndex(Set->Indices, ElementIndex));
+    for (Int ElementIndex = 0; ElementIndex < ArrayGetElementCount(Set->Indices); ElementIndex += 1) {
+        Int Element = *((Int*)ArrayGetElementAtIndex(Set->Indices, ElementIndex));
         if (Element == Value) {
             return true;
         }
@@ -76,13 +76,13 @@ IndexSetRef IndexSetUnion(
 ) {
     IndexSetRef Result = IndexSetCreate(Lhs->Allocator, ArrayGetElementCount(Lhs->Indices) + ArrayGetElementCount(Rhs->Indices));
     
-    for (Index ElementIndex = 0; ElementIndex < ArrayGetElementCount(Lhs->Indices); ElementIndex += 1) {
-        Index Element = *((Index*)ArrayGetElementAtIndex(Lhs->Indices, ElementIndex));
+    for (Int ElementIndex = 0; ElementIndex < ArrayGetElementCount(Lhs->Indices); ElementIndex += 1) {
+        Int Element = *((Int*)ArrayGetElementAtIndex(Lhs->Indices, ElementIndex));
         IndexSetInsert(Result, Element);
     }
 
-    for (Index ElementIndex = 0; ElementIndex < ArrayGetElementCount(Rhs->Indices); ElementIndex += 1) {
-        Index Element = *((Index*)ArrayGetElementAtIndex(Rhs->Indices, ElementIndex));
+    for (Int ElementIndex = 0; ElementIndex < ArrayGetElementCount(Rhs->Indices); ElementIndex += 1) {
+        Int Element = *((Int*)ArrayGetElementAtIndex(Rhs->Indices, ElementIndex));
         IndexSetInsert(Result, Element);
     }
 
@@ -95,8 +95,8 @@ IndexSetRef IndexSetIntersection(
 ) {
     IndexSetRef Result = IndexSetCreate(Lhs->Allocator, ArrayGetElementCount(Lhs->Indices) + ArrayGetElementCount(Rhs->Indices));
     
-    for (Index ElementIndex = 0; ElementIndex < ArrayGetElementCount(Lhs->Indices); ElementIndex += 1) {
-        Index Element = *((Index*)ArrayGetElementAtIndex(Lhs->Indices, ElementIndex));
+    for (Int ElementIndex = 0; ElementIndex < ArrayGetElementCount(Lhs->Indices); ElementIndex += 1) {
+        Int Element = *((Int*)ArrayGetElementAtIndex(Lhs->Indices, ElementIndex));
         if (IndexSetContains(Rhs, Element)) {
             IndexSetInsert(Result, Element);
         }
@@ -111,13 +111,13 @@ IndexSetRef IndexSetDifference(
 ) {
     IndexSetRef Result = IndexSetCreate(Lhs->Allocator, ArrayGetElementCount(Lhs->Indices) + ArrayGetElementCount(Rhs->Indices));
     
-    for (Index ElementIndex = 0; ElementIndex < ArrayGetElementCount(Lhs->Indices); ElementIndex += 1) {
-        Index Element = *((Index*)ArrayGetElementAtIndex(Lhs->Indices, ElementIndex));
+    for (Int ElementIndex = 0; ElementIndex < ArrayGetElementCount(Lhs->Indices); ElementIndex += 1) {
+        Int Element = *((Int*)ArrayGetElementAtIndex(Lhs->Indices, ElementIndex));
         IndexSetInsert(Result, Element);
     }
 
-    for (Index ElementIndex = 0; ElementIndex < ArrayGetElementCount(Rhs->Indices); ElementIndex += 1) {
-        Index Element = *((Index*)ArrayGetElementAtIndex(Rhs->Indices, ElementIndex));
+    for (Int ElementIndex = 0; ElementIndex < ArrayGetElementCount(Rhs->Indices); ElementIndex += 1) {
+        Int Element = *((Int*)ArrayGetElementAtIndex(Rhs->Indices, ElementIndex));
         IndexSetRemove(Result, Element);
     }
 
@@ -130,13 +130,13 @@ IndexSetRef IndexSetSymmetricDifference(
 ) {
     IndexSetRef Result = IndexSetCreate(Lhs->Allocator, ArrayGetElementCount(Lhs->Indices) + ArrayGetElementCount(Rhs->Indices));
     
-    for (Index ElementIndex = 0; ElementIndex < ArrayGetElementCount(Lhs->Indices); ElementIndex += 1) {
-        Index Element = *((Index*)ArrayGetElementAtIndex(Lhs->Indices, ElementIndex));
+    for (Int ElementIndex = 0; ElementIndex < ArrayGetElementCount(Lhs->Indices); ElementIndex += 1) {
+        Int Element = *((Int*)ArrayGetElementAtIndex(Lhs->Indices, ElementIndex));
         IndexSetInsert(Result, Element);
     }
 
-    for (Index ElementIndex = 0; ElementIndex < ArrayGetElementCount(Rhs->Indices); ElementIndex += 1) {
-        Index Element = *((Index*)ArrayGetElementAtIndex(Rhs->Indices, ElementIndex));
+    for (Int ElementIndex = 0; ElementIndex < ArrayGetElementCount(Rhs->Indices); ElementIndex += 1) {
+        Int Element = *((Int*)ArrayGetElementAtIndex(Rhs->Indices, ElementIndex));
         if (IndexSetContains(Lhs, Element)) {
             IndexSetRemove(Result, Element);
         }
@@ -152,8 +152,8 @@ Bool IndexSetIsSubsetOf(
     IndexSetRef Set,
     IndexSetRef Other
 ) {
-    for (Index ElementIndex = 0; ElementIndex < ArrayGetElementCount(Set->Indices); ElementIndex += 1) {
-        Index Element = *((Index*)ArrayGetElementAtIndex(Set->Indices, ElementIndex));
+    for (Int ElementIndex = 0; ElementIndex < ArrayGetElementCount(Set->Indices); ElementIndex += 1) {
+        Int Element = *((Int*)ArrayGetElementAtIndex(Set->Indices, ElementIndex));
         if (!IndexSetContains(Other, Element)) {
             return false;
         }
@@ -184,8 +184,8 @@ IndexSetIteratorRef IndexSetIteratorNext(
     IndexSetIteratorRef Start = IndexSetGetIterator(Set);
     if (!Start) return NULL;
 
-    Index ElementSize = ArrayGetElementSize(Set->Indices);
-    Index Offset = ((UInt8*)Iterator - (UInt8*)Start) / ElementSize + 1;
+    Int ElementSize = ArrayGetElementSize(Set->Indices);
+    Int Offset = ((UInt8*)Iterator - (UInt8*)Start) / ElementSize + 1;
 
     if (0 <= Offset && Offset < ArrayGetElementCount(Set->Indices)) {
         return (IndexSetIteratorRef)ArrayGetElementAtIndex(Set->Indices, Offset);
@@ -209,8 +209,8 @@ IndexSetIteratorRef IndexSetInverseIteratorNext(
     IndexSetIteratorRef Start = IndexSetGetIterator(Set);
     if (!Start) return NULL;
 
-    Index ElementSize = ArrayGetElementSize(Set->Indices);
-    Index Offset = ((UInt8*)Iterator - (UInt8*)Start) / ElementSize;
+    Int ElementSize = ArrayGetElementSize(Set->Indices);
+    Int Offset = ((UInt8*)Iterator - (UInt8*)Start) / ElementSize;
     if (Offset < 1) return NULL;
     
     Offset -= 1;

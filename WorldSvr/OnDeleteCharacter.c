@@ -8,7 +8,7 @@
 CLIENT_PROCEDURE_BINDING(DELETE_CHARACTER) {
     if (!(Client->Flags & CLIENT_FLAGS_VERIFIED) || Client->AccountID < 1) goto error;
 
-    for (Int32 Index = 0; Index < MAX_CHARACTER_COUNT; Index++) {
+    for (Int Index = 0; Index < MAX_CHARACTER_COUNT; Index++) {
         IPC_DATA_CHARACTER_INFO* Character = &Client->Characters[Index];
         if (Character->CharacterIndex < 1) continue;
         if (Character->CharacterIndex != Packet->CharacterIndex) continue;
@@ -37,7 +37,7 @@ error:
 IPC_PROCEDURE_BINDING(D2W, DELETE_CHARACTER) {
     if (!ClientConnection) return;
 
-    for (Int32 Index = 0; Index < MAX_CHARACTER_COUNT; Index++) {
+    for (Int Index = 0; Index < MAX_CHARACTER_COUNT; Index++) {
         IPC_DATA_CHARACTER_INFO* Character = &Client->Characters[Index];
         if (Character->CharacterIndex < 1) continue;
         if (Character->CharacterIndex != Packet->CharacterIndex) continue;

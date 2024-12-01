@@ -594,7 +594,7 @@ NOTIFICATION_PROTOCOL(MOB_PATTERN_ATTACK, 938,
     Int32 AttackIndex;
     Int32 X;
     Int32 Y;
-    UInt8 Unknown1;
+    UInt8 ReflectResult;
     Int64 CurrentHP;
     Int64 ReflectDamage;
     Int64 Unknown3;

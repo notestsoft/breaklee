@@ -28,7 +28,7 @@ RTEssenceAbilitySlotRef RTCharacterGetEssenceAbilitySlot(
 	RTCharacterRef Character,
 	UInt32 AbilityID
 ) {
-	for (Int32 Index = 0; Index < Character->Data.AbilityInfo.Info.EssenceAbilityCount; Index += 1) {
+	for (Int Index = 0; Index < Character->Data.AbilityInfo.Info.EssenceAbilityCount; Index += 1) {
 		RTEssenceAbilitySlotRef AbilitySlot = &Character->Data.AbilityInfo.EssenceAbilitySlots[Index];
 		if (AbilitySlot->AbilityID != AbilityID) continue;
 
@@ -72,7 +72,7 @@ Bool RTCharacterAddEssenceAbility(
 	if (MaterialSlotCount < RequiredMaterialSlotCount) return false;
 
 	Int32 MaterialSlotOffset = 0;
-	for (Int32 Index = 0; Index < AbilityCostLevel->Item1[2]; Index += 1) {
+	for (Int Index = 0; Index < AbilityCostLevel->Item1[2]; Index += 1) {
 		RTItemSlotRef MaterialSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index]);
 		if (!MaterialSlot) return false;
 
@@ -83,7 +83,7 @@ Bool RTCharacterAddEssenceAbility(
 		if (AbilityCostLevel->Item1[1] != MaterialSlot->ItemOptions) return false;
 	}
 
-	for (Int32 Index = 0; Index < AbilityCostLevel->Item2[2]; Index += 1) {
+	for (Int Index = 0; Index < AbilityCostLevel->Item2[2]; Index += 1) {
 		RTItemSlotRef MaterialSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index + AbilityCostLevel->Item1[2]]);
 		if (!MaterialSlot) return false;
 
@@ -94,11 +94,11 @@ Bool RTCharacterAddEssenceAbility(
 		if (AbilityCostLevel->Item1[1] != MaterialSlot->ItemOptions) return false;
 	}
 
-	for (Int32 Index = 0; Index < AbilityCostLevel->Item1[2]; Index += 1) {
+	for (Int Index = 0; Index < AbilityCostLevel->Item1[2]; Index += 1) {
 		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index]);
 	}
 
-	for (Int32 Index = 0; Index < AbilityCostLevel->Item2[2]; Index += 1) {
+	for (Int Index = 0; Index < AbilityCostLevel->Item2[2]; Index += 1) {
 		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index + AbilityCostLevel->Item1[2]]);
 	}
 
@@ -142,14 +142,14 @@ Bool RTCharacterUpgradeEssenceAbility(
 		{ { AbilityCostLevel->Item2[0], AbilityCostLevel->Item2[1], AbilityCostLevel->Item2[2] }, 0, AbilityCostLevel->Item2[2] },
 	};
 
-	for (Int32 Index = 0; Index < InventorySlotCount; Index += 1) {
-		for (Int32 CostIndex = 0; CostIndex < CostCount; CostIndex += 1) {
-			if (!Cost[CostIndex].CostItem[0]) continue;
+	for (Int Index = 0; Index < InventorySlotCount; Index += 1) {
+		for (Int CostIndex = 0; CostIndex < CostCount; CostIndex += 1) {
+			if (Cost[CostIndex].CostItem[0] < 1) continue;
 
 			RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, InventorySlotIndices[Index]);
 			if (!ItemSlot) return false;
 			if (ItemSlot->Item.ID != Cost[CostIndex].CostItem[0]) return false;
-			if (Cost[CostIndex].CostItem[1] && ItemSlot->ItemOptions != Cost[CostIndex].CostItem[1]) return false;
+			if (Cost[CostIndex].CostItem[1] > 0 && ItemSlot->ItemOptions != Cost[CostIndex].CostItem[1]) return false;
 
 			RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
 			if (!ItemData) return false;
@@ -163,17 +163,17 @@ Bool RTCharacterUpgradeEssenceAbility(
 		}
 	}
 
-	for (Int32 CostIndex = 0; CostIndex < CostCount; CostIndex += 1) {
-		if (!Cost[CostIndex].CostItem[0]) continue;
+	for (Int CostIndex = 0; CostIndex < CostCount; CostIndex += 1) {
+		if (Cost[CostIndex].CostItem[0] < 1) continue;
 
 		if (Cost[CostIndex].CostItem[2] > Cost[CostIndex].ConsumableCount) {
 			return false;
 		}
 	}
 
-	for (Int32 Index = 0; Index < InventorySlotCount; Index += 1) {
-		for (Int32 CostIndex = 0; CostIndex < CostCount; CostIndex += 1) {
-			if (!Cost[CostIndex].CostItem[0]) continue;
+	for (Int Index = 0; Index < InventorySlotCount; Index += 1) {
+		for (Int CostIndex = 0; CostIndex < CostCount; CostIndex += 1) {
+			if (Cost[CostIndex].CostItem[0] < 1) continue;
 			if (Cost[CostIndex].RemainingCount < 1) continue;
 
 			RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, InventorySlotIndices[Index]);
@@ -245,7 +245,7 @@ RTBlendedAbilitySlotRef RTCharacterGetBlendedAbilitySlot(
 	RTCharacterRef Character,
 	UInt32 AbilityID
 ) {
-	for (Int32 Index = 0; Index < Character->Data.AbilityInfo.Info.BlendedAbilityCount; Index += 1) {
+	for (Int Index = 0; Index < Character->Data.AbilityInfo.Info.BlendedAbilityCount; Index += 1) {
 		RTBlendedAbilitySlotRef AbilitySlot = &Character->Data.AbilityInfo.BlendedAbilitySlots[Index];
 		if (AbilitySlot->AbilityID != AbilityID) continue;
 
@@ -284,7 +284,7 @@ Bool RTCharacterAddBlendedAbility(
 	if (MaterialSlotCount < RequiredMaterialSlotCount) return false;
 
 	Int32 MaterialSlotOffset = 0;
-	for (Int32 Index = 0; Index < AbilityCost->ItemCost[1]; Index += 1) {
+	for (Int Index = 0; Index < AbilityCost->ItemCost[1]; Index += 1) {
 		RTItemSlotRef MaterialSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index]);
 		if (!MaterialSlot) return false;
 
@@ -294,7 +294,7 @@ Bool RTCharacterAddBlendedAbility(
 		if (AbilityCost->ItemCost[0] != MaterialData->ItemID) return false;
 	}
 
-	for (Int32 Index = 0; Index < AbilityCost->ItemCost[1]; Index += 1) {
+	for (Int Index = 0; Index < AbilityCost->ItemCost[1]; Index += 1) {
 		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index]);
 	}
 	
@@ -356,7 +356,7 @@ RTKarmaAbilitySlotRef RTCharacterGetKarmaAbilitySlot(
 	RTCharacterRef Character,
 	UInt32 AbilityID
 ) {
-	for (Int32 Index = 0; Index < Character->Data.AbilityInfo.Info.KarmaAbilityCount; Index += 1) {
+	for (Int Index = 0; Index < Character->Data.AbilityInfo.Info.KarmaAbilityCount; Index += 1) {
 		RTKarmaAbilitySlotRef AbilitySlot = &Character->Data.AbilityInfo.KarmaAbilitySlots[Index];
 		if (AbilitySlot->AbilityID != AbilityID) continue;
 
@@ -400,7 +400,7 @@ Bool RTCharacterAddKarmaAbility(
 	if (MaterialSlotCount < RequiredMaterialSlotCount) return false;
 
 	Int32 MaterialSlotOffset = 0;
-	for (Int32 Index = 0; Index < AbilityCostLevel->Item1[2]; Index += 1) {
+	for (Int Index = 0; Index < AbilityCostLevel->Item1[2]; Index += 1) {
 		RTItemSlotRef MaterialSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index]);
 		if (!MaterialSlot) return false;
 
@@ -411,7 +411,7 @@ Bool RTCharacterAddKarmaAbility(
 		if (AbilityCostLevel->Item1[1] != MaterialSlot->ItemOptions) return false;
 	}
 
-	for (Int32 Index = 0; Index < AbilityCostLevel->Item2[2]; Index += 1) {
+	for (Int Index = 0; Index < AbilityCostLevel->Item2[2]; Index += 1) {
 		RTItemSlotRef MaterialSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index + AbilityCostLevel->Item1[2]]);
 		if (!MaterialSlot) return false;
 
@@ -422,11 +422,11 @@ Bool RTCharacterAddKarmaAbility(
 		if (AbilityCostLevel->Item1[1] != MaterialSlot->ItemOptions) return false;
 	}
 
-	for (Int32 Index = 0; Index < AbilityCostLevel->Item1[2]; Index += 1) {
+	for (Int Index = 0; Index < AbilityCostLevel->Item1[2]; Index += 1) {
 		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index]);
 	}
 
-	for (Int32 Index = 0; Index < AbilityCostLevel->Item2[2]; Index += 1) {
+	for (Int Index = 0; Index < AbilityCostLevel->Item2[2]; Index += 1) {
 		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index + AbilityCostLevel->Item1[2]]);
 	}
 
@@ -469,9 +469,9 @@ Bool RTCharacterUpgradeKarmaAbility(
 		{ { AbilityCostLevel->Item2[0], AbilityCostLevel->Item2[1], AbilityCostLevel->Item2[2] }, 0, AbilityCostLevel->Item2[2] },
 	};
 
-	for (Int32 Index = 0; Index < InventorySlotCount; Index += 1) {
-		for (Int32 CostIndex = 0; CostIndex < CostCount; CostIndex += 1) {
-			if (!Cost[CostIndex].CostItem[0]) continue;
+	for (Int Index = 0; Index < InventorySlotCount; Index += 1) {
+		for (Int CostIndex = 0; CostIndex < CostCount; CostIndex += 1) {
+			if (Cost[CostIndex].CostItem[0] < 1) continue;
 
 			RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, InventorySlotIndices[Index]);
 			if (!ItemSlot) return false;
@@ -480,7 +480,7 @@ Bool RTCharacterUpgradeKarmaAbility(
 			RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
 			if (!ItemData) return false;
 
-			if (Cost[CostIndex].CostItem[1] && ItemSlot->ItemOptions != Cost[CostIndex].CostItem[1]) return false;
+			if (Cost[CostIndex].CostItem[1] > 0 && ItemSlot->ItemOptions != Cost[CostIndex].CostItem[1]) return false;
 
 			if (ItemData->MaxStackSize > 0) {
 				Cost[CostIndex].ConsumableCount += ItemSlot->ItemOptions;
@@ -491,17 +491,17 @@ Bool RTCharacterUpgradeKarmaAbility(
 		}
 	}
 
-	for (Int32 CostIndex = 0; CostIndex < CostCount; CostIndex += 1) {
-		if (!Cost[CostIndex].CostItem[0]) continue;
+	for (Int CostIndex = 0; CostIndex < CostCount; CostIndex += 1) {
+		if (Cost[CostIndex].CostItem[0] < 1) continue;
 
 		if (Cost[CostIndex].CostItem[2] > Cost[CostIndex].ConsumableCount) {
 			return false;
 		}
 	}
 
-	for (Int32 Index = 0; Index < InventorySlotCount; Index += 1) {
-		for (Int32 CostIndex = 0; CostIndex < CostCount; CostIndex += 1) {
-			if (!Cost[CostIndex].CostItem[0]) continue;
+	for (Int Index = 0; Index < InventorySlotCount; Index += 1) {
+		for (Int CostIndex = 0; CostIndex < CostCount; CostIndex += 1) {
+			if (Cost[CostIndex].CostItem[0] < 1) continue;
 			if (Cost[CostIndex].RemainingCount < 1) continue;
 
 			RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, InventorySlotIndices[Index]);

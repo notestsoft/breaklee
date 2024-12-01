@@ -16,7 +16,7 @@ CLIENT_PROCEDURE_BINDING(GET_WAREHOUSE) {
 	Response->Count = Character->Data.WarehouseInfo.Info.SlotCount;
 	Response->Currency = Character->Data.WarehouseInfo.Info.Currency;
 
-	for (Int32 Index = 0; Index < Character->Data.WarehouseInfo.Info.SlotCount; Index += 1) {
+	for (Int Index = 0; Index < Character->Data.WarehouseInfo.Info.SlotCount; Index += 1) {
 		RTItemSlotRef ItemSlot = &Character->Data.WarehouseInfo.Slots[Index];
 		
 		S2C_DATA_GET_WAREHOUSE_SLOT_INDEX* ResponseSlot = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_GET_WAREHOUSE_SLOT_INDEX);
@@ -109,22 +109,22 @@ CLIENT_PROCEDURE_BINDING(SORT_WAREHOUSE) {
 
 	Bool WarehouseOccupancyMask[RUNTIME_WAREHOUSE_TOTAL_SIZE] = { 0 };
 	memset(WarehouseOccupancyMask, 0, sizeof(Bool) * RUNTIME_WAREHOUSE_TOTAL_SIZE);
-	for (Int32 Index = 0; Index < Character->Data.WarehouseInfo.Info.SlotCount; Index += 1) {
+	for (Int Index = 0; Index < Character->Data.WarehouseInfo.Info.SlotCount; Index += 1) {
 		WarehouseOccupancyMask[Character->Data.WarehouseInfo.Slots[Index].SlotIndex] = true;
 	}
 
-	for (Int32 Index = 0; Index < Packet->Count; Index += 1) {
+	for (Int Index = 0; Index < Packet->Count; Index += 1) {
 		WarehouseOccupancyMask[Packet->WarehouseSlots[Index]] = false;
 	}
 
-	for (Int32 Index = 0; Index < Packet->Count; Index += 1) {
+	for (Int Index = 0; Index < Packet->Count; Index += 1) {
 		Int32 SlotIndex = RTWarehouseGetSlotIndex(Runtime, &Character->Data.WarehouseInfo, Packet->WarehouseSlots[Index]);
 		if (SlotIndex < 0) goto error;
 
 		RTItemSlotRef Slot = &TempWarehouse->Slots[SlotIndex];
 
 		Bool Found = false;
-		for (Int32 SlotIndex = 0; SlotIndex < RUNTIME_WAREHOUSE_TOTAL_SIZE; SlotIndex += 1) {
+		for (Int SlotIndex = 0; SlotIndex < RUNTIME_WAREHOUSE_TOTAL_SIZE; SlotIndex += 1) {
 			if (!WarehouseOccupancyMask[SlotIndex]) {
 				WarehouseOccupancyMask[SlotIndex] = true;
 				Slot->SlotIndex = SlotIndex;

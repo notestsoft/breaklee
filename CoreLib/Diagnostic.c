@@ -162,7 +162,7 @@ Void _OnCrashDefault(
 
     CString* Symbols = backtrace_symbols(BackTrace, Frames);
     if (Symbols) {
-        for (Int32 Index = 0; Index < Frames; Index += 1) {
+        for (Int Index = 0; Index < Frames; Index += 1) {
             Error("%s", Symbols[Index]);
         }
 

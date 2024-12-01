@@ -328,7 +328,7 @@ Int32 lua_RTCharacterSpawnMob(lua_State* State) {
     lua_Integer Interval = luaL_checkinteger(State, 5);
     lua_Integer Count = luaL_checkinteger(State, 6);
     lua_Integer MobPatternIndex = luaL_checkinteger(State, 7);
-    CString MobScriptFileName = luaL_checkstring(State, 8);
+    CString MobScriptFileName = (CString)luaL_checkstring(State, 8);
     lua_Integer Delay = luaL_checkinteger(State, 9);
 
     if (X < 0 || Y < 0) {

@@ -18,7 +18,7 @@ CLIENT_PROCEDURE_BINDING(BUY_SKILLBOOK) {
     // TODO: Check NPC distance to character
 
     RTTrainerSkillDataRef Skill = NULL;
-    for (Int32 Index = 0; Index < Trainer->SkillCount; Index++) {
+    for (Int Index = 0; Index < Trainer->SkillCount; Index++) {
         if (Trainer->Skills[Index].SlotID == Packet->SlotID && Trainer->Skills[Index].ID == Packet->SkillID) {
             Skill = &Trainer->Skills[Index];
         }

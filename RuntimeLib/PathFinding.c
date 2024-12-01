@@ -75,7 +75,7 @@ RTPathFindingNodeRef RTPathFindingAStar(
 			return Node;
 		}
 
-		for (Int32 Index = 0; Index < 8; Index += 1) {
+		for (Int Index = 0; Index < 8; Index += 1) {
 			Int32 X = Node->X + PathFindingOffsetX[Index];
 			Int32 Y = Node->Y + PathFindingOffsetY[Index];
 

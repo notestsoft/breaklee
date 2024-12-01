@@ -83,7 +83,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_ACTION) {
 	if (!Character) goto error;
 
 	Bool Success = true;
-	for (Int32 Index = 0; Index < Packet->ActionCount; Index++) {
+	for (Int Index = 0; Index < Packet->ActionCount; Index++) {
 		Success &= RTCharacterQuestAction(
 			Runtime,
 			Character,
@@ -104,7 +104,7 @@ CLIENT_PROCEDURE_BINDING(QUEST_ACTION) {
 	Response->QuestID = Packet->QuestID;
 	Response->NpcFlags = 0;
 
-	for (Int32 Index = 0; Index < QuestSlot->NpcActionIndex; Index += 1) {
+	for (Int Index = 0; Index < QuestSlot->NpcActionIndex; Index += 1) {
 		Response->NpcFlags |= 1 << Index;
 	}
     
@@ -185,7 +185,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_CLOSE) {
 	
 	Int32 Offset = 0;
 	UInt16 InventorySlotIndices[3] = { 0, 0, 0 };
-	for (Int32 Index = 0; Index < Quest->MissionItemCount; Index += 1) {
+	for (Int Index = 0; Index < Quest->MissionItemCount; Index += 1) {
 		InventorySlotIndices[Index] = *((UInt16*)&Packet->Data[Offset]);
 		Offset += sizeof(UInt16);
 	}
@@ -237,7 +237,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_ACTION) {
 	if (!Character) goto error;
 
 	Bool Success = true;
-	for (Int32 Index = 0; Index < Packet->ActionCount; Index += 1) {
+	for (Int Index = 0; Index < Packet->ActionCount; Index += 1) {
 		Success &= RTCharacterPartyQuestAction(
 			Runtime,
 			Character,
@@ -262,7 +262,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_QUEST_ACTION) {
 	Response->QuestID = Packet->QuestID;
 	Response->NpcSetID = Packet->NpcSetID;
 
-	for (Int32 Index = 0; Index < QuestSlot->NpcActionIndex; Index += 1) {
+	for (Int Index = 0; Index < QuestSlot->NpcActionIndex; Index += 1) {
 		Response->NpcFlags |= 1 << Index;
 	}
 

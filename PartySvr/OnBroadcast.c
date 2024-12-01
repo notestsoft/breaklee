@@ -7,7 +7,7 @@ IPC_PROCEDURE_BINDING(W2P, BROADCAST_TO_PARTY) {
     RTPartyRef Party = RTPartyManagerGetParty(Context->PartyManager, Packet->PartyID);
     if (!Party) return;
 
-    for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
+    for (Int Index = 0; Index < Party->MemberCount; Index += 1) {
         RTPartyMemberInfoRef Member = &Party->Members[Index];
 
         IPC_P2W_DATA_BROADCAST_TO_CHARACTER* Response = IPCPacketBufferInit(Connection->PacketBuffer, P2W, BROADCAST_TO_CHARACTER);

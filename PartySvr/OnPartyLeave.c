@@ -15,7 +15,7 @@ IPC_PROCEDURE_BINDING(W2P, PARTY_LEAVE) {
     IPCSocketUnicast(Socket, Response);
 
     if (Response->Result) {
-        for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
+        for (Int Index = 0; Index < Party->MemberCount; Index += 1) {
             RTPartyMemberInfoRef Member = &Party->Members[Index];
 
             IPC_P2W_DATA_PARTY_LEAVE* Response = IPCPacketBufferInit(Connection->PacketBuffer, P2W, PARTY_LEAVE);

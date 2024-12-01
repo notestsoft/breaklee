@@ -17,7 +17,7 @@ params:
 #define ROLL_POOL(__POOL__, __COUNT__, __GET_CHANCE__, __RESULT_REF__)    \
     {                                                                     \
         Int32 MaxRandomValue = 0;                                         \
-        for (Int32 Index = 0; Index < __COUNT__; Index += 1) {            \
+        for (Int Index = 0; Index < __COUNT__; Index += 1) {            \
             MaxRandomValue += __GET_CHANCE__(&__POOL__[Index]);           \
         }                                                                 \
                                                                           \
@@ -25,7 +25,7 @@ params:
         Int32 RandomValue = RandomRange(&Seed, 0, MaxRandomValue);        \
         Int32 CumulativeChance = 0;                                       \
                                                                           \
-        for (Int32 Index = 0; Index < __COUNT__; Index += 1) {            \
+        for (Int Index = 0; Index < __COUNT__; Index += 1) {            \
             CumulativeChance += __GET_CHANCE__(&__POOL__[Index]);         \
             if (RandomValue < CumulativeChance) {                         \
                 __RESULT_REF__ = &__POOL__[Index];                        \

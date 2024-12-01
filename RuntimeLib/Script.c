@@ -12,7 +12,7 @@ static Int32 _DebugWorldSpawnItem(lua_State* State);
 static Int32 _DebugMobSetPosition(lua_State* State);
 
 struct _RTScript {
-    Index PoolIndex;
+    Int PoolIndex;
     Char FilePath[MAX_PATH];
     FileEventRef FileEvent;
     lua_State* State;
@@ -21,7 +21,7 @@ struct _RTScript {
 struct _RTScriptManager {
     AllocatorRef Allocator;
     RTRuntimeRef Runtime;
-    Index MaxScriptCount;
+    Int MaxScriptCount;
     MemoryPoolRef ScriptPool;
     DictionaryRef ScriptTable;
 };
@@ -52,7 +52,7 @@ Void RTScriptBindMobAPI(
 
 RTScriptManagerRef RTScriptManagerCreate(
     RTRuntimeRef Runtime,
-    Index MaxScriptCount
+    Int MaxScriptCount
 ) {
     RTScriptManagerRef ScriptManager = AllocatorAllocate(Runtime->Allocator, sizeof(struct _RTScriptManager));
     if (!ScriptManager) Fatal("Memory allocation failed!");
@@ -71,7 +71,7 @@ Void RTScriptManagerDestroy(
 ) {
     DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(ScriptManager->ScriptTable);
     while (Iterator.Key) {
-        Index MemoryPoolIndex = *(Index*)Iterator.Value;
+        Int MemoryPoolIndex = *(Int*)Iterator.Value;
         RTScriptRef Script = MemoryPoolFetch(ScriptManager->ScriptPool, MemoryPoolIndex);
         if (Script->FileEvent) FileEventDestroy(Script->FileEvent);
         lua_close(Script->State);
@@ -133,12 +133,12 @@ RTScriptRef RTScriptManagerLoadScript(
     RTScriptManagerRef ScriptManager,
     CString FilePath
 ) {
-    Index* ScriptPoolIndex = (Index*)DictionaryLookup(ScriptManager->ScriptTable, FilePath);
+    Int* ScriptPoolIndex = (Int*)DictionaryLookup(ScriptManager->ScriptTable, FilePath);
     if (ScriptPoolIndex) return (RTScriptRef)MemoryPoolFetch(ScriptManager->ScriptPool, *ScriptPoolIndex);
 
-    Index MemoryPoolIndex = 0;
+    Int MemoryPoolIndex = 0;
     RTScriptRef Script = (RTScriptRef)MemoryPoolReserveNext(ScriptManager->ScriptPool, &MemoryPoolIndex);
-    DictionaryInsert(ScriptManager->ScriptTable, FilePath, &MemoryPoolIndex, sizeof(Index));
+    DictionaryInsert(ScriptManager->ScriptTable, FilePath, &MemoryPoolIndex, sizeof(Int));
 
     CStringCopySafe(Script->FilePath, MAX_PATH, FilePath);
     Script->PoolIndex = MemoryPoolIndex;
@@ -316,12 +316,12 @@ static Int32 _DebugWorldSpawnMob(
     Int32 Y = (Int32)lua_tointeger(State, 5);
     
     /*
-    Index MemoryPoolIndex = 0;
+    Int MemoryPoolIndex = 0;
     RTMobRef Minion = (RTMobRef)MemoryPoolReserveNext(WorldContext->MobPool, &MemoryPoolIndex);
     Minion->ID.EntityIndex = MemoryPoolIndex + 1;
     Minion->ID.WorldIndex = WorldContext->WorldData->WorldIndex;
     Minion->ID.EntityType = RUNTIME_ENTITY_TYPE_MOB;
-    DictionaryInsert(WorldContext->EntityToMob, &Mob->ID, &MemoryPoolIndex, sizeof(Index));
+    DictionaryInsert(WorldContext->EntityToMob, &Mob->ID, &MemoryPoolIndex, sizeof(Int));
 
     Minion->Spawn.MobSpeciesIndex = MobSpeciesIndex;
     Minion->Spawn.AreaX = X;

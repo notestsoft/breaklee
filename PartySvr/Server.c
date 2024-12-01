@@ -6,7 +6,7 @@
 
 ClientContextRef ServerGetClientByIndex(
     ServerContextRef Context,
-    Index CharacterIndex,
+    UInt32 CharacterIndex,
     CString CharacterName,
     Int32 CharacterNameLength
 ) {

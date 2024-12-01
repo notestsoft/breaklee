@@ -84,13 +84,13 @@ RTNotificationManagerDispatchToNearby(Runtime->NotificationManager, Notification
 
 Void* RTNotificationAppend(
     Void* Notification,
-    Index Length
+    Int Length
 );
 
 Void* RTNotificationAppendCopy(
     Void* Notification,
     Void* Source,
-    Index Length
+    Int Length
 );
 
 CString RTNotificationAppendCString(

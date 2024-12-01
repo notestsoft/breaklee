@@ -51,7 +51,7 @@ RTWorldManagerRef RTWorldManagerCreate(
     );
 
     // NOTE: WorldIndex 0 is reserved for an unused world context to preserve it for null checks
-    Index NullIndex = 0;
+    Int NullIndex = 0;
     MemoryPoolReserve(WorldManager->GlobalWorldContextPool, NullIndex);
     MemoryPoolReserve(WorldManager->PartyWorldContextPool, NullIndex);
     MemoryPoolReserve(WorldManager->CharacterContextPool, NullIndex);
@@ -62,7 +62,7 @@ RTWorldManagerRef RTWorldManagerCreate(
 Void RTWorldManagerDestroy(
     RTWorldManagerRef WorldManager
 ) {
-    for (Index WorldIndex = 0; WorldIndex < WorldManager->MaxGlobalWorldContextCount; WorldIndex += 1) {
+    for (Int WorldIndex = 0; WorldIndex < WorldManager->MaxGlobalWorldContextCount; WorldIndex += 1) {
         if (!MemoryPoolIsReserved(WorldManager->GlobalWorldContextPool, WorldIndex)) continue;
         
         RTWorldContextDestroyGlobal(WorldManager, WorldIndex);
@@ -75,7 +75,7 @@ Void RTWorldManagerDestroy(
         Iterator = DictionaryKeyIteratorNext(Iterator);
     }
 
-    for (Index WorldIndex = 0; WorldIndex < WorldManager->MaxWorldDataCount; WorldIndex += 1) {
+    for (Int WorldIndex = 0; WorldIndex < WorldManager->MaxWorldDataCount; WorldIndex += 1) {
         if (!MemoryPoolIsReserved(WorldManager->WorldDataPool, WorldIndex)) continue;
         
         RTWorldDataRef WorldData = (RTWorldDataRef)MemoryPoolFetch(WorldManager->WorldDataPool, WorldIndex);
@@ -114,7 +114,7 @@ Void RTWorldManagerUpdate(
 ) {
     DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(WorldManager->IndexToGlobalWorldContextPoolIndex);
     while (Iterator.Key) {
-        Index WorldIndex = *(Index*)Iterator.Key;
+        Int WorldIndex = *(Int64*)Iterator.Key;
         RTWorldContextRef WorldContext = RTWorldContextGetGlobal(WorldManager, WorldIndex);
         if (WorldContext->Active) RTWorldContextUpdate(WorldContext);
         Iterator = DictionaryKeyIteratorNext(Iterator);
@@ -132,7 +132,7 @@ Void RTWorldManagerUpdate(
     // TODO: This routine shouldn't be on high frequency 100ms is sufficient
     Iterator = DictionaryGetKeyIterator(WorldManager->IndexToCharacterContextPoolIndex);
     while (Iterator.Key) {
-        Index CharacterIndex = *(Index*)Iterator.Key;
+        UInt32 CharacterIndex = *(Int*)Iterator.Key;
         RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(WorldManager, CharacterIndex);
         RTCharacterUpdate(WorldManager->Runtime, Character);
 
@@ -142,29 +142,29 @@ Void RTWorldManagerUpdate(
 
 RTWorldDataRef RTWorldDataCreate(
     RTWorldManagerRef WorldManager,
-    Index WorldIndex
+    Int WorldIndex
 ) {
     return (RTWorldDataRef)MemoryPoolReserve(WorldManager->WorldDataPool, WorldIndex);
 }
 
 Bool RTWorldDataExists(
     RTWorldManagerRef WorldManager,
-    Index WorldIndex
+    Int WorldIndex
 ) {
     return MemoryPoolIsReserved(WorldManager->WorldDataPool, WorldIndex);
 }
 
 RTWorldDataRef RTWorldDataGet(
     RTWorldManagerRef WorldManager,
-    Index WorldIndex
+    Int WorldIndex
 ) {
     return (RTWorldDataRef)MemoryPoolFetch(WorldManager->WorldDataPool, WorldIndex);
 }
 
 RTWorldContextRef RTWorldContextGet(
     RTWorldManagerRef WorldManager,
-    Index WorldIndex,
-    Index WorldInstanceIndex
+    Int WorldIndex,
+    Int WorldInstanceIndex
 ) {
     RTWorldDataRef WorldData = RTWorldDataGet(WorldManager, WorldIndex);
     if (WorldData->Type == RUNTIME_WORLD_TYPE_GLOBAL) {
@@ -176,11 +176,11 @@ RTWorldContextRef RTWorldContextGet(
 
 RTWorldContextRef RTWorldContextCreateGlobal(
     RTWorldManagerRef WorldManager,
-    Index WorldIndex
+    Int WorldIndex
 ) {
     assert(!DictionaryLookup(WorldManager->IndexToGlobalWorldContextPoolIndex, &WorldIndex));
 
-    Index WorldPoolIndex = 0;
+    Int WorldPoolIndex = 0;
     RTWorldContextRef WorldContext = (RTWorldContextRef)MemoryPoolReserveNext(WorldManager->GlobalWorldContextPool, &WorldPoolIndex);
     assert(WorldContext);
     WorldContext->WorldManager = WorldManager;
@@ -205,9 +205,9 @@ RTWorldContextRef RTWorldContextCreateGlobal(
     memcpy(WorldContext->Tiles, WorldContext->WorldData->Tiles, sizeof(RTWorldTile) * RUNTIME_WORLD_SIZE * RUNTIME_WORLD_SIZE);
     MemoryPoolReserve(WorldContext->ItemPool, 0);
     
-    for (Int32 ChunkX = 0; ChunkX < RUNTIME_WORLD_CHUNK_COUNT; ChunkX += 1) {
-        for (Int32 ChunkY = 0; ChunkY < RUNTIME_WORLD_CHUNK_COUNT; ChunkY += 1) {
-            Index ChunkIndex = ChunkX + ChunkY * RUNTIME_WORLD_CHUNK_COUNT; // TODO: Check which axis is the first one
+    for (Int ChunkX = 0; ChunkX < RUNTIME_WORLD_CHUNK_COUNT; ChunkX += 1) {
+        for (Int ChunkY = 0; ChunkY < RUNTIME_WORLD_CHUNK_COUNT; ChunkY += 1) {
+            Int ChunkIndex = ChunkX + ChunkY * RUNTIME_WORLD_CHUNK_COUNT; // TODO: Check which axis is the first one
             RTWorldChunkInitialize(
                 WorldManager->Runtime,
                 WorldContext,
@@ -220,7 +220,7 @@ RTWorldContextRef RTWorldContextCreateGlobal(
         }
     }
 
-    DictionaryInsert(WorldManager->IndexToGlobalWorldContextPoolIndex, &WorldIndex, &WorldPoolIndex, sizeof(Index));
+    DictionaryInsert(WorldManager->IndexToGlobalWorldContextPoolIndex, &WorldIndex, &WorldPoolIndex, sizeof(Int));
 
     if (WorldContext->WorldData->Type != RUNTIME_WORLD_TYPE_DUNGEON &&
         WorldContext->WorldData->Type != RUNTIME_WORLD_TYPE_QUEST_DUNGEON) {
@@ -232,26 +232,26 @@ RTWorldContextRef RTWorldContextCreateGlobal(
 
 RTWorldContextRef RTWorldContextGetGlobal(
     RTWorldManagerRef WorldManager,
-    Index WorldIndex
+    Int WorldIndex
 ) {
-    Index* WorldPoolIndex = (Index*)DictionaryLookup(WorldManager->IndexToGlobalWorldContextPoolIndex, &WorldIndex);
+    Int* WorldPoolIndex = (Int*)DictionaryLookup(WorldManager->IndexToGlobalWorldContextPoolIndex, &WorldIndex);
     if (!WorldPoolIndex) return NULL;
     return (RTWorldContextRef)MemoryPoolFetch(WorldManager->GlobalWorldContextPool, *WorldPoolIndex);
 }
 
 Void RTWorldContextDestroyGlobal(
     RTWorldManagerRef WorldManager,
-    Index WorldIndex
+    Int WorldIndex
 ) {
     RTWorldContextRef WorldContext = RTWorldContextGetGlobal(WorldManager, WorldIndex);
 
-    for (Index ChunkIndex = 0; ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT; ChunkIndex += 1) {
+    for (Int ChunkIndex = 0; ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT; ChunkIndex += 1) {
         RTWorldChunkDeinitialize(&WorldContext->Chunks[ChunkIndex]);
     }
 
     DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(WorldContext->EntityToMobPattern);
     while (Iterator.Key) {
-        Index MemoryPoolIndex = *(Index*)DictionaryLookup(WorldContext->EntityToMobPattern, Iterator.Key);
+        Int MemoryPoolIndex = *(Int*)DictionaryLookup(WorldContext->EntityToMobPattern, Iterator.Key);
         RTMobPatternRef MobPattern = (RTMobPatternRef)MemoryPoolFetch(WorldContext->MobPatternPool, MemoryPoolIndex);
         ArrayDestroy(MobPattern->ActionStates);
         ArrayDestroy(MobPattern->LinkMobs);
@@ -269,20 +269,20 @@ Void RTWorldContextDestroyGlobal(
 
 RTWorldContextRef RTWorldContextCreateParty(
     RTWorldManagerRef WorldManager,
-    Index WorldIndex,
-    Index DungeonIndex,
+    Int WorldIndex,
+    Int64 DungeonIndex,
     RTEntityID Party
 ) {
     assert(!RTEntityIsNull(Party));
 
-    Index* WorldPoolIndexPtr = DictionaryLookup(WorldManager->PartyToWorldContextPoolIndex, &Party);
+    Int* WorldPoolIndexPtr = DictionaryLookup(WorldManager->PartyToWorldContextPoolIndex, &Party);
     if (WorldPoolIndexPtr) {
         return (RTWorldContextRef)MemoryPoolFetch(WorldManager->PartyWorldContextPool, *WorldPoolIndexPtr);
     }
 
     assert(!DictionaryLookup(WorldManager->PartyToWorldContextPoolIndex, &Party));
 
-    Index WorldPoolIndex = 0;
+    Int WorldPoolIndex = 0;
     RTWorldContextRef WorldContext = (RTWorldContextRef)MemoryPoolReserveNext(WorldManager->PartyWorldContextPool, &WorldPoolIndex);
     assert(WorldContext);
     WorldContext->WorldManager = WorldManager;
@@ -308,9 +308,9 @@ RTWorldContextRef RTWorldContextCreateParty(
     
     MemoryPoolReserve(WorldContext->ItemPool, 0);
     
-    for (Int32 ChunkX = 0; ChunkX < RUNTIME_WORLD_CHUNK_COUNT; ChunkX += 1) {
-        for (Int32 ChunkY = 0; ChunkY < RUNTIME_WORLD_CHUNK_COUNT; ChunkY += 1) {
-            Index ChunkIndex = ChunkX + ChunkY * RUNTIME_WORLD_CHUNK_COUNT; // TODO: Check which axis is the first one
+    for (Int ChunkX = 0; ChunkX < RUNTIME_WORLD_CHUNK_COUNT; ChunkX += 1) {
+        for (Int ChunkY = 0; ChunkY < RUNTIME_WORLD_CHUNK_COUNT; ChunkY += 1) {
+            Int ChunkIndex = ChunkX + ChunkY * RUNTIME_WORLD_CHUNK_COUNT; // TODO: Check which axis is the first one
             RTWorldChunkInitialize(
                 WorldManager->Runtime,
                 WorldContext,
@@ -323,7 +323,7 @@ RTWorldContextRef RTWorldContextCreateParty(
         }
     }
     
-    DictionaryInsert(WorldManager->PartyToWorldContextPoolIndex, &Party, &WorldPoolIndex, sizeof(Index));
+    DictionaryInsert(WorldManager->PartyToWorldContextPoolIndex, &Party, &WorldPoolIndex, sizeof(Int));
     return WorldContext;
 }
 
@@ -339,7 +339,7 @@ Bool RTWorldContextHasParty(
 ) {
     if (RTEntityIsNull(Party)) return false;
 
-    Index* WorldPoolIndex = (Index*)DictionaryLookup(WorldManager->PartyToWorldContextPoolIndex, &Party);
+    Int* WorldPoolIndex = (Int*)DictionaryLookup(WorldManager->PartyToWorldContextPoolIndex, &Party);
     return (WorldPoolIndex != NULL);
 }
 
@@ -348,7 +348,7 @@ RTWorldContextRef RTWorldContextGetParty(
     RTEntityID Party
 ) {
     assert(!RTEntityIsNull(Party));
-    Index *WorldPoolIndex = (Index*)DictionaryLookup(WorldManager->PartyToWorldContextPoolIndex, &Party);
+    Int* WorldPoolIndex = (Int*)DictionaryLookup(WorldManager->PartyToWorldContextPoolIndex, &Party);
     if (!WorldPoolIndex) return NULL;
     return (RTWorldContextRef)MemoryPoolFetch(WorldManager->PartyWorldContextPool, *WorldPoolIndex);
 }
@@ -361,13 +361,13 @@ Void RTWorldContextDestroyParty(
 
     RTWorldContextRef WorldContext = RTWorldContextGetParty(WorldManager, Party);
 
-    for (Index ChunkIndex = 0; ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT; ChunkIndex += 1) {
+    for (Int ChunkIndex = 0; ChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT; ChunkIndex += 1) {
         RTWorldChunkDeinitialize(&WorldContext->Chunks[ChunkIndex]);
     }
 
     DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(WorldContext->EntityToMobPattern);
     while (Iterator.Key) {
-        Index MemoryPoolIndex = *(Index*)DictionaryLookup(WorldContext->EntityToMobPattern, Iterator.Key);
+        Int MemoryPoolIndex = *(Int*)DictionaryLookup(WorldContext->EntityToMobPattern, Iterator.Key);
         RTMobPatternRef MobPattern = (RTMobPatternRef)MemoryPoolFetch(WorldContext->MobPatternPool, MemoryPoolIndex);
         ArrayDestroy(MobPattern->ActionStates);
         Iterator = DictionaryKeyIteratorNext(Iterator);
@@ -383,24 +383,24 @@ Void RTWorldContextDestroyParty(
     DictionaryRemove(WorldManager->PartyToWorldContextPoolIndex, &Party);
 }
 
-Int32 RTWorldContextGetPartyInstanceCount(
+Int RTWorldContextGetPartyInstanceCount(
     RTWorldManagerRef WorldManager
 ) {
-    return (Int32)MemoryPoolGetReservedBlockCount(WorldManager->PartyWorldContextPool);
+    return MemoryPoolGetReservedBlockCount(WorldManager->PartyWorldContextPool);
 }
 
 RTCharacterRef RTWorldManagerCreateCharacter(
     RTWorldManagerRef WorldManager,
-    Index CharacterIndex
+    UInt32 CharacterIndex
 ) {
     assert(!DictionaryLookup(WorldManager->IndexToCharacterContextPoolIndex, &CharacterIndex));
 
-    Index CharacterPoolIndex = 0;
+    Int CharacterPoolIndex = 0;
     RTCharacterRef Character = (RTCharacterRef)MemoryPoolReserveNext(WorldManager->CharacterContextPool, &CharacterPoolIndex);
     Character->CharacterIndex = CharacterIndex;
     Character->ID.EntityIndex = (UInt16)CharacterPoolIndex;
     Character->ID.EntityType = RUNTIME_ENTITY_TYPE_CHARACTER;
-    DictionaryInsert(WorldManager->IndexToCharacterContextPoolIndex, &CharacterIndex, &CharacterPoolIndex, sizeof(Index));
+    DictionaryInsert(WorldManager->IndexToCharacterContextPoolIndex, &CharacterIndex, &CharacterPoolIndex, sizeof(Int));
     return Character;
 }
 
@@ -432,9 +432,9 @@ RTCharacterRef RTWorldManagerGetCharacter(
 
 RTCharacterRef RTWorldManagerGetCharacterByIndex(
     RTWorldManagerRef WorldManager,
-    Index CharacterIndex
+    UInt32 CharacterIndex
 ) {
-    Index* CharacterPoolIndex = DictionaryLookup(WorldManager->IndexToCharacterContextPoolIndex, &CharacterIndex);
+    Int* CharacterPoolIndex = DictionaryLookup(WorldManager->IndexToCharacterContextPoolIndex, &CharacterIndex);
     if (!CharacterPoolIndex) return NULL;
 
     return (RTCharacterRef)MemoryPoolFetch(WorldManager->CharacterContextPool, *CharacterPoolIndex);
@@ -442,9 +442,9 @@ RTCharacterRef RTWorldManagerGetCharacterByIndex(
 
 Void RTWorldManagerDestroyCharacter(
     RTWorldManagerRef WorldManager,
-    Index CharacterIndex
+    UInt32 CharacterIndex
 ) {
-    Index* CharacterPoolIndex = DictionaryLookup(WorldManager->IndexToCharacterContextPoolIndex, &CharacterIndex);
+    Int* CharacterPoolIndex = DictionaryLookup(WorldManager->IndexToCharacterContextPoolIndex, &CharacterIndex);
     assert(CharacterPoolIndex);
 
     MemoryPoolRelease(WorldManager->CharacterContextPool, *CharacterPoolIndex);

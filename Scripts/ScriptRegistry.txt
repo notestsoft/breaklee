@@ -1,2 +1,2 @@
 AddNetworkScript Environment/148_get_server_time.lua
-AddItemScript 33556304 Items/spawn_mob.lua
+AddItemScript 33556304 Items/spawn_mazel.lua

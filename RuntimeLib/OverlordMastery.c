@@ -50,7 +50,7 @@ RTOverlordMasterySlotRef RTCharacterGetOverlordMasterySlot(
 	RTCharacterRef Character,
 	Int32 MasteryIndex
 ) {
-	for (Int32 Index = 0; Index < Character->Data.OverlordMasteryInfo.Info.SlotCount; Index += 1) {
+	for (Int Index = 0; Index < Character->Data.OverlordMasteryInfo.Info.SlotCount; Index += 1) {
 		if (Character->Data.OverlordMasteryInfo.Slots[Index].MasteryIndex == MasteryIndex) {
 			return &Character->Data.OverlordMasteryInfo.Slots[Index];
 		}

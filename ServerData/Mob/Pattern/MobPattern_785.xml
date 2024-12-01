@@ -2,17 +2,17 @@
 <MobPattern Index="785">
 	<MobTriggerGroup Index="1" Type="1" Parameters="2500">
 		<MobActionGroup Index="1" Delay="">
-			<MobAction Index="1" Type="10" Parameters="1737" Duration="2500" TargetType="1" TargetParameters="" Loop="1" LoopDelay="1000" Priority="0"/>
+			<MobAction Index="1" Type="10" Parameters="1737:32500:17000:18700" Duration="2500" TargetType="1" TargetParameters="" Loop="1" LoopDelay="1000" Priority="0"/>
 		</MobActionGroup>
 	</MobTriggerGroup>
 	<MobTriggerGroup Index="2" Type="1" Parameters="7500">
 		<MobActionGroup Index="2" Delay="">
-			<MobAction Index="1" Type="10" Parameters="1738" Duration="2500" TargetType="1" TargetParameters="" Loop="1" LoopDelay="4000" Priority="0"/>
+			<MobAction Index="1" Type="10" Parameters="1738:34700:22000:24200" Duration="2500" TargetType="1" TargetParameters="" Loop="1" LoopDelay="4000" Priority="0"/>
 		</MobActionGroup>
 	</MobTriggerGroup>
 	<MobTriggerGroup Index="3" Type="1" Parameters="15000">
 		<MobActionGroup Index="3" Delay="">
-			<MobAction Index="1" Type="10" Parameters="1739" Duration="2500" TargetType="1" TargetParameters="" Loop="1" LoopDelay="10000" Priority="0"/>
+			<MobAction Index="1" Type="10" Parameters="1739:36900:31000:34100" Duration="2500" TargetType="1" TargetParameters="" Loop="1" LoopDelay="10000" Priority="0"/>
 		</MobActionGroup>
 	</MobTriggerGroup>
 	<MobTriggerGroup Index="4" Type="2" Parameters="30">

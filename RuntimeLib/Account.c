@@ -25,7 +25,7 @@ Bool RTCharacterConsumeForceGem(
 Bool RTAccountIsCharacterSlotOpen(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
-	Int32 Index
+	Int Index
 ) {
 	return Character->Data.AccountInfo.CharacterSlotOpenMask & (1 << Index);
 }
@@ -34,7 +34,7 @@ Bool RTAccountOpenCharacterSlot(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character
 ) {
-	for (Int32 Index = 0; Index < RUNTIME_ACCOUNT_MAX_CHARACTER_COUNT; Index += 1) {
+	for (Int Index = 0; Index < RUNTIME_ACCOUNT_MAX_CHARACTER_COUNT; Index += 1) {
 		if ((Character->Data.AccountInfo.CharacterSlotOpenMask & (1 << Index)) < 1) {
 			Character->Data.AccountInfo.CharacterSlotOpenMask |= 1 << Index;
 			Character->SyncMask.AccountInfo = true;

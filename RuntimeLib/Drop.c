@@ -13,7 +13,7 @@ Bool RTDropPoolRollItem(
     Int32 MobLevel,
     RTDropResultRef Result
 ) {
-    for (Int32 DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
+    for (Int DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
         RTDropItemRef DropItem = (RTDropItemRef)ArrayGetElementAtIndex(DropPool, DropIndex);
         if (MobLevel > 0 && DropItem->MinMobLevel > MobLevel) continue;
         if (MobLevel > 0 && DropItem->MaxMobLevel < MobLevel) continue;
@@ -43,11 +43,11 @@ Bool RTCalculateDrop(
     Int32 DropRateOffset = 0;
     Int32 Level = (Int32)Mob->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL];
 
-    if (World->DungeonIndex) {
+    if (World->DungeonIndex > 0) {
         RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, World->DungeonIndex);
         assert(DungeonData);
 
-        Index DropPoolIndex = Mob->SpeciesData->MobSpeciesIndex;
+        Int DropPoolIndex = Mob->SpeciesData->MobSpeciesIndex;
         ArrayRef DropPool = (ArrayRef)DictionaryLookup(DungeonData->DropTable.MobDropPool, &DropPoolIndex);
         if (DropPool) {
             if (RTDropPoolRollItem(Runtime, DropRateValue, &DropRateOffset, DropPool, 0, Result)) return true;
@@ -57,7 +57,7 @@ Bool RTCalculateDrop(
         if (RTDropPoolRollItem(Runtime, DropRateValue, &DropRateOffset, DropPool, Level, Result)) return true;
     }
 
-    Index DropPoolIndex = Mob->SpeciesData->MobSpeciesIndex;
+    Int DropPoolIndex = Mob->SpeciesData->MobSpeciesIndex;
     ArrayRef DropPool = (ArrayRef)DictionaryLookup(World->WorldData->DropTable.MobDropPool, &DropPoolIndex);
     if (DropPool) {
         if (RTDropPoolRollItem(Runtime, DropRateValue, &DropRateOffset, DropPool, 0, Result)) return true;
@@ -113,7 +113,7 @@ Bool RTDropCurrency(
         return true;
     }
     else if (DropRateValue < FinalCurrencyDropRate + FinalCurrencyBombDropRate) {
-        for (Int32 Index = 0; Index < RUNTIME_DROP_BASE_CURRENCY_BOMB_STACK_SIZE; Index += 1) {
+        for (Int Index = 0; Index < RUNTIME_DROP_BASE_CURRENCY_BOMB_STACK_SIZE; Index += 1) {
             Int32 BaseDropAmount = MAX(1, Level) * RUNTIME_DROP_BASE_CURRENCY_BOMB_MULTIPLIER;
 
             RTDropResult Drop = { 0 };
@@ -145,14 +145,14 @@ Bool RTCalculateQuestDrop(
     Int32 Seed = (Int32)PlatformGetTickCount();
     Int32 DropRateValue = RandomRange(&World->Seed, 0, INT32_MAX);
     Int32 DropRateOffset = 0;
-    Index DropPoolIndex = Mob->SpeciesData->MobSpeciesIndex;
+    Int DropPoolIndex = Mob->SpeciesData->MobSpeciesIndex;
 
-    if (World->DungeonIndex) {
+    if (World->DungeonIndex > 0) {
         RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, World->DungeonIndex);
 
         ArrayRef DropPool = (ArrayRef)DictionaryLookup(DungeonData->DropTable.QuestDropPool, &DropPoolIndex);
         if (DropPool) {
-            for (Int32 DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
+            for (Int DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
                 RTDropItemRef DropItem = (RTDropItemRef)ArrayGetElementAtIndex(DropPool, DropIndex);
                 if (!RTCharacterHasQuestItemCounter(Runtime, Character, DropItem->ItemID, DropItem->ItemOptions)) continue;
                 
@@ -171,7 +171,7 @@ Bool RTCalculateQuestDrop(
 
     ArrayRef DropPool = (ArrayRef)DictionaryLookup(World->WorldData->DropTable.QuestDropPool, &DropPoolIndex);
     if (DropPool) {
-        for (Int32 DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
+        for (Int DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
             RTDropItemRef DropItem = (RTDropItemRef)ArrayGetElementAtIndex(DropPool, DropIndex);
             if (!RTCharacterHasQuestItemCounter(Runtime, Character, DropItem->ItemID, DropItem->ItemOptions)) continue;
 
@@ -189,7 +189,7 @@ Bool RTCalculateQuestDrop(
 
     DropPool = (ArrayRef)DictionaryLookup(Runtime->DropTable.QuestDropPool, &DropPoolIndex);
     if (DropPool) {
-        for (Int32 DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
+        for (Int DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
             RTDropItemRef DropItem = (RTDropItemRef)ArrayGetElementAtIndex(DropPool, DropIndex);
             if (!RTCharacterHasQuestItemCounter(Runtime, Character, DropItem->ItemID, DropItem->ItemOptions)) continue;
 
@@ -218,14 +218,14 @@ Bool RTCalculatePartyQuestDrop(
     Int32 Seed = (Int32)PlatformGetTickCount();
     Int32 DropRateValue = RandomRange(&World->Seed, 0, INT32_MAX);
     Int32 DropRateOffset = 0;
-    Index DropPoolIndex = Mob->SpeciesData->MobSpeciesIndex;
+    Int DropPoolIndex = Mob->SpeciesData->MobSpeciesIndex;
 
-    if (World->DungeonIndex) {
+    if (World->DungeonIndex > 0) {
         RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, World->DungeonIndex);
 
         ArrayRef DropPool = (ArrayRef)DictionaryLookup(DungeonData->DropTable.QuestDropPool, &DropPoolIndex);
         if (DropPool) {
-            for (Int32 DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
+            for (Int DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
                 RTDropItemRef DropItem = (RTDropItemRef)ArrayGetElementAtIndex(DropPool, DropIndex);
                 if (!RTPartyHasQuestItemCounter(Runtime, Party, DropItem->ItemID, DropItem->ItemOptions)) continue;
 
@@ -244,7 +244,7 @@ Bool RTCalculatePartyQuestDrop(
 
     ArrayRef DropPool = (ArrayRef)DictionaryLookup(World->WorldData->DropTable.QuestDropPool, &DropPoolIndex);
     if (DropPool) {
-        for (Int32 DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
+        for (Int DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
             RTDropItemRef DropItem = (RTDropItemRef)ArrayGetElementAtIndex(DropPool, DropIndex);
             if (!RTPartyHasQuestItemCounter(Runtime, Party, DropItem->ItemID, DropItem->ItemOptions)) continue;
 
@@ -262,7 +262,7 @@ Bool RTCalculatePartyQuestDrop(
 
     DropPool = (ArrayRef)DictionaryLookup(Runtime->DropTable.QuestDropPool, &DropPoolIndex);
     if (DropPool) {
-        for (Int32 DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
+        for (Int DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
             RTDropItemRef DropItem = (RTDropItemRef)ArrayGetElementAtIndex(DropPool, DropIndex);
             if (!RTPartyHasQuestItemCounter(Runtime, Party, DropItem->ItemID, DropItem->ItemOptions)) continue;
 

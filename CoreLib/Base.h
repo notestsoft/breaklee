@@ -182,4 +182,11 @@ typedef double Float64;
 typedef Float64 Float;
 typedef UInt64 Timestamp;
 typedef Void* MemoryRef;
-typedef size_t Index;
+
+#if defined(USE_BIG_INTERGER_SIZE)
+typedef UInt64 UInt;
+typedef Int64 Int;
+#else
+typedef UInt32 UInt;
+typedef Int32 Int;
+#endif

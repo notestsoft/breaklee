@@ -15,11 +15,11 @@ enum {
 struct _RTWorldChunk {
     RTRuntimeRef Runtime;
     RTWorldContextRef WorldContext;
-    Index WorldIndex;
-    Index WorldInstanceIndex;
-	Index ReferenceCount;
-    Int32 ChunkX;
-    Int32 ChunkY;
+    Int WorldIndex;
+    Int WorldInstanceIndex;
+    Int ReferenceCount;
+    Int ChunkX;
+    Int ChunkY;
     ArrayRef Characters;
 	ArrayRef Mobs;
 	ArrayRef Items;
@@ -33,10 +33,10 @@ Void RTWorldChunkInitialize(
 	RTRuntimeRef Runtime,
     RTWorldContextRef WorldContext,
 	RTWorldChunkRef Chunk,
-    Index WorldIndex,
-    Index WorldInstanceIndex,
-    Int32 ChunkX,
-    Int32 ChunkY
+    Int WorldIndex,
+    Int WorldInstanceIndex,
+    Int ChunkX,
+    Int ChunkY
 );
 
 Void RTWorldChunkDeinitialize(

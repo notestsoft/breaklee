@@ -28,7 +28,7 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 		CostGrade = UpgradeGradeChange->CostGrade;
 	}
 
-	for (Int32 SlotIndex = 0; SlotIndex < Packet->ForceCoreCount; SlotIndex += 1) {
+	for (Int SlotIndex = 0; SlotIndex < Packet->ForceCoreCount; SlotIndex += 1) {
 		RTItemSlotRef ForceCoreSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->ForceCoreSlotIndices[SlotIndex]);
 		if (!ForceCoreSlot) goto error;
 		
@@ -106,9 +106,9 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 		Int32 RandomForceCorePoolCount = 0;
 		Int32 RandomForceCorePool[16] = { 0 };
 
-		for (Index Index = 0; Index < ForceCoreBase->ForceCoreBaseCodeCount; Index += 1) {
+		for (Int Index = 0; Index < ForceCoreBase->ForceCoreBaseCodeCount; Index += 1) {
 			RTDataForceCoreBaseCodeRef Code = &ForceCoreBase->ForceCoreBaseCodeList[Index];
-			if (Code->HasRandomRate) {
+			if (Code->HasRandomRate > 0) {
 				RandomForceCorePool[RandomForceCorePoolCount] = (Int32)Index;
 				RandomForceCorePoolCount += 1;
 			}
@@ -187,7 +187,7 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 			}
 		}
 
-		for (Int32 SlotIndex = 0; SlotIndex < Packet->ForceCoreCount; SlotIndex += 1) {
+		for (Int SlotIndex = 0; SlotIndex < Packet->ForceCoreCount; SlotIndex += 1) {
 			RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, Packet->ForceCoreSlotIndices[SlotIndex]);			
 		}
 
@@ -255,7 +255,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 	Int32 RemainingCoreCount = 0;
 	Int32 RemainingSafeCount = 0;
 
-	if (CoreData->UpgradeCore.IsPerfectCore) {
+	if (CoreData->UpgradeCore.IsPerfectCore > 0) {
 		UpgradeType = RUNTIME_DATA_UPGRADE_TYPE_PERFECT;
 		UpgradeCoreLevel = 0;
 		UpgradeCoreFlagIndex = 0;
@@ -298,7 +298,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 	}
 
 	// TODO: We have to snapshot inventory here to rollback!!!
-	for (Int32 Index = 0; Index < Packet->CoreCount; Index += 1) {
+	for (Int Index = 0; Index < Packet->CoreCount; Index += 1) {
 		RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->CoreSlotIndices[Index]);
 		assert(CoreSlot);
 
@@ -353,7 +353,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 	if (Result != RUNTIME_UPGRADE_RESULT_UPGRADE_1 &&
 		Result != RUNTIME_UPGRADE_RESULT_UPGRADE_2) {
 
-		for (Int32 Index = 0; Index < Packet->SafeCount; Index += 1) {
+		for (Int Index = 0; Index < Packet->SafeCount; Index += 1) {
 			RTItemSlotRef SafeSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->SafeSlotIndices[Index]);
 			assert(SafeSlot);
 
@@ -419,7 +419,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_LEVEL) {
     if (TargetItemType == RUNTIME_ITEM_TYPE_HELMED2) TargetItemType = RUNTIME_ITEM_TYPE_HELMED1;
 
 	RTDataExtremeUpgradeBaseGradeRef ExtremeUpgradeBaseGrade = NULL;
-	for (Index Index = 0; Index < Runtime->Context->ExtremeUpgradeBaseCount; Index += 1) {
+	for (Int Index = 0; Index < Runtime->Context->ExtremeUpgradeBaseCount; Index += 1) {
 		RTDataExtremeUpgradeBaseRef ExtremeUpgradeBase = &Runtime->Context->ExtremeUpgradeBaseList[Index];
 		if (ExtremeUpgradeBase->Type != TargetItemType) continue;
 
@@ -461,7 +461,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_LEVEL) {
 
 	Int32 CorePower = 0;
 
-	for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
+	for (Int Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
 		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index]);
 		if (!ItemSlot) goto error;
 
@@ -499,7 +499,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_LEVEL) {
 
 	Character->Data.Info.Alz -= ExtremeUpgradeFormulaLevel->CurrencyPrice;
 
-	for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
+	for (Int Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
 		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index]);
 	}
 
@@ -542,7 +542,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_EXTREME_REPAIR) {
 		Response->Result = S2C_UPGRADE_EXTREME_REPAIR_RESULT_SUCCESS;
 		TargetSlot->Item.IsBroken = false;
 	}
-	else if (SourceData->RepairKit.HasSafeguard) {
+	else if (SourceData->RepairKit.HasSafeguard > 0) {
 		Response->Result = S2C_UPGRADE_EXTREME_REPAIR_RESULT_FAILED;
 	}
 	else {
@@ -605,7 +605,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_CHAOS_LEVEL) {
 	Int32 RequiredSafeCount = UpgradeGroupCostLevel->RequiredSafeCount;
 
 	// TODO: We have to snapshot inventory here to rollback!!!
-	for (Int32 Index = 0; Index < Packet->CoreCount; Index += 1) {
+	for (Int Index = 0; Index < Packet->CoreCount; Index += 1) {
 		RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, CoreSlotIndices[Index]);
 		assert(CoreSlot);
 
@@ -651,7 +651,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_CHAOS_LEVEL) {
 
 	Int32 ConsumedSafeCount = 0;
 	if (Result != RUNTIME_CHAOS_UPGRADE_RESULT_UPGRADE) {
-		for (Int32 Index = 0; Index < Packet->SafeCount; Index += 1) {
+		for (Int Index = 0; Index < Packet->SafeCount; Index += 1) {
 			RTItemSlotRef SafeSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, SafeSlotIndices[Index]);
 			assert(SafeSlot);
 
@@ -665,7 +665,7 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_CHAOS_LEVEL) {
 			}
 
 			Bool Found = false;
-			for (Int32 SafeGuardItemIndex = 0; SafeGuardItemIndex < Runtime->Context->ChaosUpgradeSafeguardItemCount; SafeGuardItemIndex += 1) {
+			for (Int SafeGuardItemIndex = 0; SafeGuardItemIndex < Runtime->Context->ChaosUpgradeSafeguardItemCount; SafeGuardItemIndex += 1) {
 				RTDataChaosUpgradeSafeguardItemRef UpgradeSafeGuardItem = &Runtime->Context->ChaosUpgradeSafeguardItemList[SafeGuardItemIndex];
 				if (UpgradeSafeGuardItem->Group != UpgradeMain->Group) continue;
 				if (UpgradeSafeGuardItem->Option != SafeData->Options[0]) continue;
@@ -763,7 +763,7 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_ITEM_LEVEL) {
 	Int32 RequiredSafeCount = GroupCostLevel->RequiredSafeCount;
 
 	// TODO: We have to snapshot inventory here to rollback!!!
-	for (Int32 Index = 0; Index < Packet->CoreCount; Index += 1) {
+	for (Int Index = 0; Index < Packet->CoreCount; Index += 1) {
 		RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, CoreSlotIndices[Index]);
 		assert(CoreSlot);
 
@@ -807,7 +807,7 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_ITEM_LEVEL) {
 
 	Int32 ConsumedSafeCount = 0;
 	if (Result == RUNTIME_DIVINE_UPGRADE_RESULT_DOWNGRADE) {
-		for (Int32 Index = 0; Index < Packet->SafeCount; Index += 1) {
+		for (Int Index = 0; Index < Packet->SafeCount; Index += 1) {
 			RTItemSlotRef SafeSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, SafeSlotIndices[Index]);
 			assert(SafeSlot);
 
@@ -939,7 +939,7 @@ CLIENT_PROCEDURE_BINDING(EXTREME_UPGRADE_SEAL) {
 		if (TargetSlot->Item.UpgradeLevel < 15) goto error;
 
 		RTDataExtremeUpgradeBaseGradeRef ExtremeUpgradeBaseGrade = NULL;
-		for (Index Index = 0; Index < Runtime->Context->ExtremeUpgradeBaseCount; Index += 1) {
+		for (Int Index = 0; Index < Runtime->Context->ExtremeUpgradeBaseCount; Index += 1) {
 			RTDataExtremeUpgradeBaseRef ExtremeUpgradeBase = &Runtime->Context->ExtremeUpgradeBaseList[Index];
 			if (ExtremeUpgradeBase->Type != TargetItemType) continue;
 

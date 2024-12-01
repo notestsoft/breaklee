@@ -2,7 +2,7 @@
 
 RTPartyManagerRef RTPartyManagerCreate(
     AllocatorRef Allocator,
-    Index MaxPartyCount
+    Int MaxPartyCount
 ) {
     RTPartyManagerRef PartyManager = AllocatorAllocate(Allocator, sizeof(struct _RTPartyManager));
     if (!PartyManager) Fatal("Memory allocation failed");
@@ -13,7 +13,7 @@ RTPartyManagerRef RTPartyManagerCreate(
     PartyManager->CharacterToPartyEntity = IndexDictionaryCreate(Allocator, MaxPartyCount);
     PartyManager->CharacterToPartyInvite = IndexDictionaryCreate(Allocator, MaxPartyCount);
 
-    Index NullIndex = 0;
+    Int NullIndex = 0;
     MemoryPoolReserve(PartyManager->PartyPool, NullIndex);
     MemoryPoolReserve(PartyManager->PartyInvitationPool, NullIndex);
     MemoryPoolReserve(PartyManager->SoloPartyPool, NullIndex);
@@ -39,7 +39,7 @@ RTPartyRef RTPartyManagerCreateParty(
     Int32 PartyType
 ) {
     MemoryPoolRef PartyPool = (PartyType == RUNTIME_PARTY_TYPE_SOLO_DUNGEON) ? PartyManager->SoloPartyPool : PartyManager->PartyPool;
-    Index PartyPoolIndex = 0;
+    Int PartyPoolIndex = 0;
     RTPartyRef Party = (RTPartyRef)MemoryPoolReserveNext(PartyPool, &PartyPoolIndex);
     Party->ID.EntityIndex = (UInt16)PartyPoolIndex;
     Party->ID.WorldIndex = PartyType;
@@ -60,13 +60,13 @@ RTPartyRef RTPartyManagerCreatePartyRemote(
     RTPartyManagerRef PartyManager,
     RTPartyRef RemoteParty
 ) {
-    Index PartyPoolIndex = RemoteParty->ID.EntityIndex;
+    Int PartyPoolIndex = RemoteParty->ID.EntityIndex;
     if (!MemoryPoolIsReserved(PartyManager->PartyPool, PartyPoolIndex)) {
         RTPartyRef Party = (RTPartyRef)MemoryPoolReserve(PartyManager->PartyPool, PartyPoolIndex);
         memcpy(Party, RemoteParty, sizeof(struct _RTParty));
 
-        for (Index MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {
-            Index CharacterIndex = RemoteParty->Members[MemberIndex].CharacterIndex;
+        for (Int MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {
+            UInt32 CharacterIndex = RemoteParty->Members[MemberIndex].CharacterIndex;
             assert(!DictionaryLookup(PartyManager->CharacterToPartyEntity, &CharacterIndex));
             DictionaryInsert(PartyManager->CharacterToPartyEntity, &CharacterIndex, &Party->ID, sizeof(struct _RTEntityID));
         }
@@ -83,8 +83,8 @@ Void RTPartyManagerDestroyParty(
 ) {
     // TODO: Cleanup also all invitations to this party!!!
 
-    for (Index MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {
-        Index CharacterIndex = Party->Members[MemberIndex].CharacterIndex;
+    for (Int MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {
+        UInt32 CharacterIndex = Party->Members[MemberIndex].CharacterIndex;
         DictionaryRemove(PartyManager->CharacterToPartyEntity, &CharacterIndex);
     }
 
@@ -93,7 +93,7 @@ Void RTPartyManagerDestroyParty(
         PartyPool = PartyManager->SoloPartyPool;
     }
 
-    Index PartyPoolIndex = Party->ID.EntityIndex;
+    Int PartyPoolIndex = Party->ID.EntityIndex;
     MemoryPoolRelease(PartyPool, PartyPoolIndex);
 }
 
@@ -101,7 +101,7 @@ Void RTPartyManagerDestroyPartyRemote(
     RTPartyManagerRef PartyManager,
     RTPartyRef RemoteParty
 ) {
-    Index PartyPoolIndex = RemoteParty->ID.EntityIndex;
+    Int PartyPoolIndex = RemoteParty->ID.EntityIndex;
     if (MemoryPoolIsReserved(PartyManager->PartyPool, PartyPoolIndex)) {
         RTPartyManagerDestroyParty(PartyManager, RemoteParty);
     }
@@ -109,7 +109,7 @@ Void RTPartyManagerDestroyPartyRemote(
 
 RTPartyRef RTPartyManagerGetPartyByCharacter(
     RTPartyManagerRef PartyManager,
-    Index CharacterIndex
+    UInt32 CharacterIndex
 ) {
     RTEntityID* PartyID = (RTEntityID*)DictionaryLookup(PartyManager->CharacterToPartyEntity, &CharacterIndex);
     if (!PartyID) return NULL;
@@ -119,7 +119,7 @@ RTPartyRef RTPartyManagerGetPartyByCharacter(
         PartyPool = PartyManager->SoloPartyPool;
     }
 
-    Index PartyPoolIndex = PartyID->EntityIndex;
+    Int PartyPoolIndex = PartyID->EntityIndex;
     return (RTPartyRef)MemoryPoolFetch(PartyPool, PartyPoolIndex);
 }
 
@@ -134,7 +134,7 @@ RTPartyRef RTPartyManagerGetParty(
         PartyPool = PartyManager->SoloPartyPool;
     }
 
-    Index PartyPoolIndex = PartyID.EntityIndex;
+    Int PartyPoolIndex = PartyID.EntityIndex;
     if (!MemoryPoolIsReserved(PartyPool, PartyPoolIndex)) return NULL;
 
     return (RTPartyRef)MemoryPoolFetch(PartyPool, PartyPoolIndex);
@@ -147,7 +147,7 @@ Bool RTPartyManagerAddMember(
 ) {
     if (Party->MemberCount >= RUNTIME_PARTY_MAX_MEMBER_COUNT) return false;
 
-    Index CharacterIndex = Member->CharacterIndex;
+    UInt32 CharacterIndex = Member->CharacterIndex;
     if (DictionaryLookup(PartyManager->CharacterToPartyEntity, &CharacterIndex)) return false;
 
     DictionaryInsert(PartyManager->CharacterToPartyEntity, &CharacterIndex, &Party->ID, sizeof(struct _RTEntityID));
@@ -160,7 +160,7 @@ Bool RTPartyManagerAddMember(
 
 Bool RTPartyManagerRemoveMember(
     RTPartyManagerRef PartyManager,
-    Index CharacterIndex
+    UInt32 CharacterIndex
 ) {
     RTEntityID* PartyID = (RTEntityID*)DictionaryLookup(PartyManager->CharacterToPartyEntity, &CharacterIndex);
     if (!PartyID) return false;
@@ -170,10 +170,10 @@ Bool RTPartyManagerRemoveMember(
         PartyPool = PartyManager->SoloPartyPool;
     }
 
-    Index PartyPoolIndex = PartyID->EntityIndex;
+    Int PartyPoolIndex = PartyID->EntityIndex;
     RTPartyRef Party = (RTPartyRef)MemoryPoolFetch(PartyPool, PartyPoolIndex);
 
-    for (Int32 Index = 0; Index < Party->MemberCount; Index += 1) {
+    for (Int Index = 0; Index < Party->MemberCount; Index += 1) {
         if (Party->Members[Index].CharacterIndex != CharacterIndex) continue;
 
         Int32 TailLength = Party->MemberCount - Index - 1;

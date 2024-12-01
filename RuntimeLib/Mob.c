@@ -3,6 +3,7 @@
 #include "Movement.h"
 #include "Script.h"
 #include "Runtime.h"
+#include "World.h"
 #include "WorldManager.h"
 #include "NotificationProtocol.h"
 #include "NotificationManager.h"
@@ -59,7 +60,7 @@ Void RTMobInit(
 	}
 
 	Mob->IsAttackingCharacter = Mob->EnemyCount < 1;
-	for (Int32 Index = 0; Index < Mob->EnemyCount; Index += 1) {
+	for (Int Index = 0; Index < Mob->EnemyCount; Index += 1) {
 		if (Mob->Enemies[Index] < 0) {
 			Mob->IsAttackingCharacter = true;
 			break;
@@ -179,7 +180,7 @@ RTEntityID RTMobGetMaxAggroTarget(
 	RTMobRef Mob
 ) {
 	Int32 MaxAggroIndex = -1;
-	Int32 Index = 0;
+	Int Index = 0;
 
 	while (Index < Mob->Aggro.Count) {
 		RTEntityID EnemyID = Mob->Aggro.Entities[Index];
@@ -330,7 +331,7 @@ Void RTMobApplyDamage(
 	Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT] = MAX(0, Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT]);
 	
 	Bool Found = false;
-	for (Int32 Index = 0; Index < Mob->Aggro.Count; Index += 1) {
+	for (Int Index = 0; Index < Mob->Aggro.Count; Index += 1) {
 		if (RTEntityIsEqual(Mob->Aggro.Entities[Index], Source)) {
 			Mob->Aggro.ReceivedDamage[Index] += Damage;
 			Found = true;
@@ -520,7 +521,7 @@ RTEntityID RTMobFindNearbyTarget(
 	RTEntityID Target = kEntityIDNull;
 	Int32 Distance = Mob->AlertRange;
 
-	for (Int32 Index = 0; Index < Mob->EnemyCount; Index += 1) {
+	for (Int Index = 0; Index < Mob->EnemyCount; Index += 1) {
 		Int32 EnemyIndex = Mob->Enemies[Index];
 		if (EnemyIndex < 0) {
 			struct _RTMobFindNearbyTargetArguments Arguments = { 0 };
@@ -653,7 +654,7 @@ Void RTMobUpdate(
 
 			Mob->RemainingSpawnCount = MAX(0, Mob->RemainingSpawnCount - 1);
 			Mob->NextTimestamp = Timestamp;
-			RTWorldSpawnMob(Runtime, WorldContext, Mob);
+			RTWorldSpawnMobEvent(Runtime, WorldContext, Mob, Mob->Spawn.SpawnInterval);
 		}
 
 		return;
@@ -948,7 +949,7 @@ Void RTMobStartSpecialAction(
 	RTMobRef Mob,
 	Int32 SpecialActionIndex
 ) {
-	if (Mob->SpecialActionIndex) {
+	if (Mob->SpecialActionIndex > 0) {
 		RTMobCancelSpecialAction(Runtime, WorldContext, Mob);
 	}
 
@@ -986,6 +987,102 @@ Void RTMobCancelSpecialAction(
 	NotificationTarget->MobID = Mob->ID;
 	NotificationTarget->ActionIndex = Mob->SpecialActionIndex;
 	NotificationTarget->ActionElapsedTime = (UInt32)(CurrentTimestamp - Mob->SpecialActionStartTimestamp);
+	RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
+}
+
+Void RTMobAttack(
+	RTRuntimeRef Runtime,
+	RTWorldContextRef WorldContext,
+	RTMobRef Mob,
+	Int32 AttackIndex,
+	Int64 AttackRate,
+	Int64 PhysicalAttackMin,
+	Int64 PhysicalAttackMax,
+	Int32 TargetType,
+	Int32 TargetIndex
+) {
+	RTDataMobAttackRef MobAttack = RTRuntimeDataMobAttackGet(Runtime->Context, AttackIndex);
+	assert(MobAttack && MobAttack->MobAttackDataCount > 0);
+
+	RTDataMobAttackDataRef MobAttackData = &MobAttack->MobAttackDataList[0];
+	RTDataMobSkillRef MobSkillData = (MobAttackData->SkillID > 0) ? RTRuntimeDataMobSkillGet(Runtime->Context, MobAttackData->SkillID) : NULL;
+
+	NOTIFICATION_DATA_MOB_PATTERN_ATTACK* Notification = RTNotificationInit(MOB_PATTERN_ATTACK);
+	Notification->SourceIndex = Mob->ID.Serial;
+	Notification->AttackIndex = AttackIndex;
+	Notification->X = Mob->Movement.PositionCurrent.X;
+	Notification->Y = Mob->Movement.PositionCurrent.Y;
+	Notification->ReflectResult = 0;
+	Notification->CurrentHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+	Notification->ReflectDamage = 0;
+	Notification->Unknown3 = 0;
+
+	RTBattleAttributesRef Attacker = &Mob->Attributes;
+	RTBattleAttributesRef Defender = NULL;
+
+	if (TargetType == RUNTIME_MOB_ATTACK_TARGET_TYPE_ENEMY_1 ||
+		TargetType == RUNTIME_MOB_ATTACK_TARGET_TYPE_ENEMY_2 ||
+		TargetType == RUNTIME_MOB_ATTACK_TARGET_TYPE_ENEMY_DEFERRED ||
+		TargetType == RUNTIME_MOB_ATTACK_TARGET_TYPE_ENEMY_FIX_POSITION) {
+		// TODO: Check Enemies array & also filter MaxAggroTarget to character only
+		RTEntityID TargetID = RTMobGetMaxAggroTarget(Runtime, WorldContext, Mob);
+	}
+	else if (TargetType == RUNTIME_MOB_ATTACK_TARGET_TYPE_SELF) {
+		Defender = &Mob->Attributes;
+	}
+	else if (TargetType == RUNTIME_MOB_ATTACK_TARGET_TYPE_TARGET) {
+		RTEntityID TargetID = {
+			.EntityIndex = TargetIndex,
+			.WorldIndex = WorldContext->WorldData->WorldIndex,
+			.EntityType = RUNTIME_ENTITY_TYPE_MOB
+		};
+		RTMobRef Target = RTWorldContextGetMob(WorldContext, TargetID);
+		Defender = &Target->Attributes;
+	}
+	else if (TargetType == RUNTIME_MOB_ATTACK_TARGET_TYPE_MISSION_GATE) {
+		for (Int Index = 0; Index < Mob->EnemyCount; Index += 1) {
+			if (Mob->Enemies[Index] >= 0) {
+				RTEntityID TargetID = {
+					.EntityIndex = Mob->Enemies[Index],
+					.WorldIndex = WorldContext->WorldData->WorldIndex,
+					.EntityType = RUNTIME_ENTITY_TYPE_MOB
+				};
+				RTMobRef Target = RTWorldContextGetMob(WorldContext, TargetID);
+				if (Target->Spawn.IsMissionGate > 0) {
+					Defender = &Target->Attributes;
+					break;
+				}
+			}
+		}
+	}
+
+	if (!Defender) {
+		Trace("MobAttack(%d, %d) no target found", Mob->ID.EntityIndex, AttackIndex);
+		return;
+	}
+
+	RTEntityID Target = RTMobGetMaxAggroTarget(Runtime, WorldContext, Mob);
+	if (Target.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) {
+		RTCharacterRef Character = RTWorldManagerGetCharacter(Runtime->WorldManager, Target);
+		assert(Character);
+
+		NOTIFICATION_DATA_MOB_PATTERN_ATTACK_TARGET* NotificationTarget = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_MOB_PATTERN_ATTACK_TARGET);
+		NotificationTarget->TargetEntityType = Target.EntityType;
+		NotificationTarget->TargetIndex = Character->CharacterIndex;
+		NotificationTarget->IsDead = RTCharacterIsAlive(Runtime, Character) ? 0 : 1;
+		NotificationTarget->AttackType = 0;
+		NotificationTarget->AppliedDamage = 0;
+		NotificationTarget->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+		NotificationTarget->CurrentShield = Character->Attributes.Values[RUNTIME_ATTRIBUTE_DAMAGE_ABSORB];
+		NotificationTarget->Unknown1 = 0;
+		NotificationTarget->AdditionalDamage = 0;
+		NotificationTarget->BfxIndex = 0;
+		NotificationTarget->BfxDuration = 0;
+
+		Notification->TargetCount += 1;
+	}
+
+	RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_MOB_PATTERN_ATTACK_TARGET);
 	RTNotificationDispatchToNearby(Notification, Mob->Movement.WorldChunk);
 }
 

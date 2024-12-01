@@ -20,8 +20,8 @@ PacketBufferRef PacketBufferCreate(
     UInt16 ProtocolIdentifier,
     UInt16 ProtocolVersion,
     UInt16 ProtocolExtension,
-    Index Alignment,
-    Index Length,
+    Int Alignment,
+    Int Length,
     Bool IsClient
 );
 
@@ -31,8 +31,8 @@ Void PacketBufferInitialize(
     UInt16 ProtocolIdentifier,
     UInt16 ProtocolVersion,
     UInt16 ProtocolExtension,
-    Index Alignment,
-    Index Length,
+    Int Alignment,
+    Int Length,
     Bool IsClient
 );
 
@@ -69,13 +69,13 @@ Void* PacketBufferInitFromFile(
 
 Void* PacketBufferAppend(
     PacketBufferRef PacketBuffer,
-    Index Length
+    Int Length
 );
 
 Void* PacketBufferAppendCopy(
     PacketBufferRef PacketBuffer,
     Void* Source,
-    Index Length
+    Int Length
 );
 
 CString PacketBufferAppendCString(

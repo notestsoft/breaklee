@@ -8,7 +8,7 @@ RTCollectionSlotRef RTCharacterGetCollectionSlot(
 	UInt8 CollectionID,
 	UInt16 MissionID
 ) {
-	for (Int32 Index = 0; Index < Character->Data.CollectionInfo.Info.SlotCount; Index += 1) {
+	for (Int Index = 0; Index < Character->Data.CollectionInfo.Info.SlotCount; Index += 1) {
 		RTCollectionSlotRef Slot = &Character->Data.CollectionInfo.Slots[Index];
 		if (Slot->TypeID != TypeID) continue;
 		if (Slot->CollectionID != CollectionID) continue;

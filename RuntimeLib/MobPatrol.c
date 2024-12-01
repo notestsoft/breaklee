@@ -11,7 +11,7 @@ RTMobPatrolBranchDataRef RTMobPatrolGetBranchData(
 	RTMobPatrolDataRef MobPatrol,
 	Int32 BranchIndex
 ) {
-	for (Int32 Index = 0; Index < ArrayGetElementCount(MobPatrol->Branches); Index += 1) {
+	for (Int Index = 0; Index < ArrayGetElementCount(MobPatrol->Branches); Index += 1) {
 		RTMobPatrolBranchDataRef BranchData = (RTMobPatrolBranchDataRef)ArrayGetElementAtIndex(MobPatrol->Branches, Index);
 		if (BranchData->Index == BranchIndex) return BranchData;
 	}
@@ -26,7 +26,7 @@ Void RTMobPatrolInit(
 	memset(&Mob->Patrol, 0, sizeof(struct _RTMobPatrol));
 	if (!Mob->Spawn.MobPatrolIndex) return;
 
-	Index MemoryPoolIndex = Mob->Spawn.MobPatrolIndex;
+	Int MemoryPoolIndex = Mob->Spawn.MobPatrolIndex;
 	Mob->Patrol.Data = (RTMobPatrolDataRef)MemoryPoolFetch(Runtime->MobPatrolDataPool, MemoryPoolIndex);
 	Mob->Patrol.WaypointIndex = 0;
 

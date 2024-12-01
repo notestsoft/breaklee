@@ -199,7 +199,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_LEAVE) {
 	RTPartyRef Party = RTPartyManagerGetParty(Runtime->PartyManager, Packet->PartyID);
 	if (!Party) return;
 
-	for (Int32 Index = 0; Index < Party->MemberCount; Index += 1) {
+	for (Int Index = 0; Index < Party->MemberCount; Index += 1) {
 		RTPartyMemberInfoRef Member = &Party->Members[Index];
 
 		ClientContextRef Client = ServerGetClientByIndex(Context, Member->CharacterIndex, NULL);
@@ -271,7 +271,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_CHANGE_LEADER) {
 
 	RTPartyChangeLeader(Party, Packet->CharacterIndex);
 
-	for (Int32 Index = 0; Index < Party->MemberCount; Index += 1) {
+	for (Int Index = 0; Index < Party->MemberCount; Index += 1) {
 		RTPartyMemberInfoRef Member = &Party->Members[Index];
 
 		ClientContextRef Client = ServerGetClientByIndex(Context, Member->CharacterIndex, NULL);
@@ -320,13 +320,13 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE_TIMEOUT) {
 }
 
 IPC_PROCEDURE_BINDING(P2W, PARTY_INFO) {
-	Index PartyPoolIndex = Packet->Party.ID.EntityIndex;
+	Int PartyPoolIndex = Packet->Party.ID.EntityIndex;
 	if (MemoryPoolIsReserved(Runtime->PartyManager->PartyPool, PartyPoolIndex)) {
 		RTPartyRef LocalParty = (RTPartyRef)MemoryPoolFetch(Runtime->PartyManager->PartyPool, PartyPoolIndex);
 		memcpy(LocalParty, &Packet->Party, sizeof(struct _RTParty));
 	}
 
-	for (Int32 Index = 0; Index < Packet->Party.MemberCount; Index += 1) {
+	for (Int Index = 0; Index < Packet->Party.MemberCount; Index += 1) {
 		RTPartyMemberInfoRef Member = &Packet->Party.Members[Index];
 
 		ClientContextRef Client = ServerGetClientByIndex(Context, Member->CharacterIndex, NULL);
@@ -337,7 +337,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INFO) {
 		Notification->LeaderCharacterIndex = (UInt32)Packet->Party.LeaderCharacterIndex;
 		Notification->MemberCount = Packet->Party.MemberCount;
 
-		for (Int32 MemberIndex = 0; MemberIndex < Packet->Party.MemberCount; MemberIndex += 1) {
+		for (Int MemberIndex = 0; MemberIndex < Packet->Party.MemberCount; MemberIndex += 1) {
 			Notification->Members[MemberIndex] = Packet->Party.Members[MemberIndex];
 		}
 
@@ -362,7 +362,7 @@ IPC_PROCEDURE_BINDING(P2W, CLIENT_CONNECT) {
 	Notification->Unknown4 = 0;
 	Notification->MemberCount = Packet->MemberCount;
 
-	for (Index Index = 0; Index < Packet->MemberCount; Index += 1) {
+	for (Int Index = 0; Index < Packet->MemberCount; Index += 1) {
 		Notification->Members[Index] = Packet->Members[Index];
 	}
 
@@ -381,7 +381,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_DATA) {
 	S2C_DATA_NFY_PARTY_UPDATE* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, NFY_PARTY_UPDATE);
 	Notification->MemberCount = Packet->MemberCount;
 
-	for (Int32 MemberIndex = 0; MemberIndex < Packet->MemberCount; MemberIndex += 1) {
+	for (Int MemberIndex = 0; MemberIndex < Packet->MemberCount; MemberIndex += 1) {
 		S2C_DATA_PARTY_UPDATE_MEMBER* Member = &Notification->Members[MemberIndex];
 		Member->Info = Packet->MemberInfo[MemberIndex];
 
@@ -401,7 +401,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_DATA) {
 		// TODO: Resolve all unknown fields...
 	}
 
-	for (Int32 Index = 0; Index < Packet->MemberCount; Index += 1) {
+	for (Int Index = 0; Index < Packet->MemberCount; Index += 1) {
 		ClientContextRef Client = ServerGetClientByIndex(Context, Packet->MemberInfo[Index].CharacterIndex, NULL);
 		if (!Client) continue;
 
@@ -419,7 +419,7 @@ IPC_PROCEDURE_BINDING(P2W, BROADCAST_TO_CHARACTER) {
 IPC_PROCEDURE_BINDING(P2W, CREATE_PARTY) {
 	RTPartyRef Party = RTPartyManagerCreatePartyRemote(Runtime->PartyManager, &Packet->Party);
 	if (Party) {
-		for (Int32 Index = 0; Index < Party->MemberCount; Index += 1) {
+		for (Int Index = 0; Index < Party->MemberCount; Index += 1) {
 			RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Party->Members[Index].CharacterIndex);
 			if (!Character) continue;
 
@@ -443,7 +443,7 @@ Void SendPartyData(
 	S2C_DATA_NFY_PARTY_UPDATE* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, NFY_PARTY_UPDATE);
 	Notification->MemberCount = Party->MemberCount;
 
-	for (Int32 MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {
+	for (Int MemberIndex = 0; MemberIndex < Party->MemberCount; MemberIndex += 1) {
 		RTPartyMemberInfoRef MemberInfo = &Party->Members[MemberIndex];
 
 		RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Party->Members[MemberIndex].CharacterIndex);
@@ -485,7 +485,7 @@ Void SendPartyData(
 		}
 	}
 
-	for (Int32 Index = 0; Index < Party->MemberCount; Index += 1) {
+	for (Int Index = 0; Index < Party->MemberCount; Index += 1) {
 		ClientContextRef Client = ServerGetClientByIndex(Context, Party->Members[Index].CharacterIndex, NULL);
 		if (!Client) continue;
 		SocketSend(Context->ClientSocket, Client->Connection, Notification);

@@ -5,22 +5,22 @@
 Bool RTGiftBoxIsActive(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    Int32 Index
+    Int Index
 ) {
     RTDataGiftBoxConditionRef Condition = RTRuntimeDataGiftBoxConditionGet(Runtime->Context, Index);
     if (!Condition) return false;
     if (!Condition->IsEnabled) return false;
 
-    if (Condition->IsPremiumService) {
+    if (Condition->IsPremiumService > 0) {
         if (Character->Data.PremiumServiceInfo.Info.SlotCount < 1) return false;
     }
 
-    if (Condition->IsPremiumPC) {
+    if (Condition->IsPremiumPC > 0) {
         return false;
     }
 
     if (Condition->BlessingBeadIndex > 0) {
-        for (Int32 SlotIndex = 0; SlotIndex < Character->Data.BlessingBeadInfo.Info.SlotCount; SlotIndex += 1) {
+        for (Int SlotIndex = 0; SlotIndex < Character->Data.BlessingBeadInfo.Info.SlotCount; SlotIndex += 1) {
             if (Character->Data.BlessingBeadInfo.Slots[SlotIndex].Index != Condition->BlessingBeadIndex) continue;
 
             return true;
@@ -35,9 +35,9 @@ Bool RTGiftBoxIsActive(
 RTGiftBoxSlotRef RTCharacterGetGiftBox(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    Int32 Index
+    Int Index
 ) {
-    for (Int32 SlotIndex = 0; SlotIndex < Character->Data.GiftboxInfo.Info.SlotCount; SlotIndex += 1) {
+    for (Int SlotIndex = 0; SlotIndex < Character->Data.GiftboxInfo.Info.SlotCount; SlotIndex += 1) {
         RTGiftBoxSlotRef GiftBoxSlot = &Character->Data.GiftboxInfo.Slots[SlotIndex];
         if (GiftBoxSlot->Index == Index) return GiftBoxSlot;
     }
@@ -52,7 +52,7 @@ Void RTCharacterUpdateGiftBox(
     Int32 Seed = (Int32)PlatformGetTickCount();
     Timestamp CurrentTimestamp = GetTimestamp();
 
-    for (Int32 Index = 0; Index < RUNTIME_CHARACTER_MAX_GIFT_BOX_SLOT_COUNT; Index += 1) {
+    for (Int Index = 0; Index < RUNTIME_CHARACTER_MAX_GIFT_BOX_SLOT_COUNT; Index += 1) {
         RTGiftBoxSlotRef GiftBoxSlot = RTCharacterGetGiftBox(Runtime, Character, Index);
         if (!GiftBoxSlot) {
             GiftBoxSlot = &Character->Data.GiftboxInfo.Slots[Character->Data.GiftboxInfo.Info.SlotCount];
@@ -70,7 +70,7 @@ Void RTCharacterUpdateGiftBox(
                 Int32 RandomRate = RandomRange(&Seed, 0, 10000);
                 Int32 RandomRateOffset = 0;
 
-                for (Int32 TimeIndex = 0; TimeIndex < TimePool->GiftBoxTimePoolValueCount; TimeIndex += 1) {
+                for (Int TimeIndex = 0; TimeIndex < TimePool->GiftBoxTimePoolValueCount; TimeIndex += 1) {
                     RTDataGiftBoxTimePoolValueRef Value = &TimePool->GiftBoxTimePoolValueList[TimeIndex];
                     if (RandomRate <= Value->Rate + RandomRateOffset) {
                         CooldownTime = Value->RequiredTime;
@@ -103,7 +103,7 @@ Void RTCharacterUpdateGiftBox(
 Bool RTCharacterRollGiftBox(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    Int32 Index
+    Int Index
 ) {
     if (Index < 0 || Index >= Character->Data.GiftboxInfo.Info.SlotCount) return false;
 
@@ -123,7 +123,7 @@ Bool RTCharacterRollGiftBox(
         Int32 RandomRate = RandomRange(&Seed, 0, 1000000);
         Int32 RandomRateOffset = 0;
 
-        for (Int32 RewardIndex = 0; RewardIndex < RewardPool->GiftBoxRewardPoolItemCount; RewardIndex += 1) {
+        for (Int RewardIndex = 0; RewardIndex < RewardPool->GiftBoxRewardPoolItemCount; RewardIndex += 1) {
             RTDataGiftBoxRewardPoolItemRef RewardItem = &RewardPool->GiftBoxRewardPoolItemList[RewardIndex];
             if (RandomRate <= RewardItem->Rate + RandomRateOffset) {
                 RewardSlot->IsRolled = true;
@@ -144,7 +144,7 @@ Bool RTCharacterRollGiftBox(
 Bool RTCharacterReceiveGiftBox(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    Int32 Index,
+    Int Index,
     Int32 InventorySlotIndex,
     Int32 StackSize
 ) {

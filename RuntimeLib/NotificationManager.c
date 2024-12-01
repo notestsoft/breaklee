@@ -40,7 +40,7 @@ Void RTNotificationManagerRegisterCallback(
     RTNotificationCallback Callback,
     Void* UserData
 ) {
-    Index Key = Command;
+    Int Key = Command;
     assert(!DictionaryLookup(NotificationManager->CommandRegistry, &Key));
     
     struct _RTNotificationCommandContext Context = { 0 };
@@ -55,7 +55,7 @@ Void RTNotificationManagerDispatchToCharacter(
     RTCharacterRef Character
 ) {
     assert(Character);
-    Index Key = ((RTNotificationRef)Notification)->Command;
+    Int Key = ((RTNotificationRef)Notification)->Command;
     RTNotificationCommandContextRef Context = (RTNotificationCommandContextRef)DictionaryLookup(NotificationManager->CommandRegistry, &Key);
     if (Context) Context->Callback(
         NotificationManager->Runtime,
@@ -71,7 +71,7 @@ Void RTNotificationManagerDispatchToParty(
     RTPartyRef Party
 ) {
     RTRuntimeRef Runtime = NotificationManager->Runtime;
-    for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
+    for (Int Index = 0; Index < Party->MemberCount; Index += 1) {
         RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Party->Members[Index].CharacterIndex);
         if (!Character) continue;
 
@@ -84,7 +84,7 @@ Void RTNotificationManagerDispatchToChunk(
     Void* Notification,
     RTWorldChunkRef WorldChunk
 ) {
-    for (Int32 Index = 0; Index < ArrayGetElementCount(WorldChunk->Characters); Index += 1) {
+    for (Int Index = 0; Index < ArrayGetElementCount(WorldChunk->Characters); Index += 1) {
         RTEntityID Entity = *(RTEntityID*)ArrayGetElementAtIndex(WorldChunk->Characters, Index);
         RTCharacterRef Character = RTWorldManagerGetCharacter(WorldChunk->Runtime->WorldManager, Entity);
         if (!Character) continue;
@@ -109,9 +109,9 @@ Void RTNotificationManagerDispatchToNearby(
     Int32 EndChunkX = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, WorldChunk->ChunkX + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
     Int32 EndChunkY = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, WorldChunk->ChunkY + RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
 
-    for (Int32 DeltaChunkX = StartChunkX; DeltaChunkX <= EndChunkX; DeltaChunkX += 1) {
-        for (Int32 DeltaChunkY = StartChunkY; DeltaChunkY <= EndChunkY; DeltaChunkY += 1) {
-            Index WorldChunkIndex = (Index)DeltaChunkX + DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
+    for (Int DeltaChunkX = StartChunkX; DeltaChunkX <= EndChunkX; DeltaChunkX += 1) {
+        for (Int DeltaChunkY = StartChunkY; DeltaChunkY <= EndChunkY; DeltaChunkY += 1) {
+            Int WorldChunkIndex = DeltaChunkX + DeltaChunkY * RUNTIME_WORLD_CHUNK_COUNT;
             assert(WorldChunkIndex < RUNTIME_WORLD_CHUNK_COUNT * RUNTIME_WORLD_CHUNK_COUNT);
             
             RTWorldChunkRef NearbyWorldChunk = &WorldChunk->WorldContext->Chunks[WorldChunkIndex];
@@ -133,7 +133,7 @@ RTNotificationRef _RTNotificationInit(
 
 Void* RTNotificationAppend(
     Void* Notification,
-    Index Length
+    Int Length
 ) {
     assert(((RTNotificationRef)Notification)->Length + Length <= RUNTIME_MAX_NOTIFICATION_BUFFER_LENGTH);
     Void* Memory = ((UInt8*)Notification) + ((RTNotificationRef)Notification)->Length;
@@ -145,7 +145,7 @@ Void* RTNotificationAppend(
 Void* RTNotificationAppendCopy(
     Void* Notification,
     Void* Source,
-    Index Length
+    Int Length
 ) {
     Void* Memory = RTNotificationAppend(Notification, Length);
     memcpy(Memory, Source, Length);

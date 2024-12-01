@@ -27,7 +27,7 @@ CLIENT_PROCEDURE_BINDING(MERIT_MEDAL_EVALUATION) {
 	Int32 RandomRate = RandomRange(&Seed, 0, 1000000);
 	Int32 RandomRateOffset = 0;
 
-	for (Int32 Index = 0; Index < ItemPoolGroup->MeritItemPoolGroupItemCount; Index += 1) {
+	for (Int Index = 0; Index < ItemPoolGroup->MeritItemPoolGroupItemCount; Index += 1) {
 		RTDataMeritItemPoolGroupItemRef GroupItem = &ItemPoolGroup->MeritItemPoolGroupItemList[Index];
 		if (RandomRate <= GroupItem->Rate * 1000 + RandomRateOffset) {
 			ItemSlot->Item.Serial = GroupItem->ItemIDs[Character->Data.StyleInfo.Nation - 1];

@@ -101,7 +101,7 @@ SocketRef ServerCreateSocket(
     UInt32 SocketFlags,
     CString SocketHost,
     UInt16 SocketPort,
-    Index ConnectionContextSize,
+    Int ConnectionContextSize,
     UInt16 ProtocolIdentifier,
     UInt16 ProtocolVersion,
     UInt16 ProtocolExtension,
@@ -117,7 +117,7 @@ SocketRef ServerCreateSocket(
 Void ServerSocketRegisterPacketCallback(
     ServerRef Server,
     SocketRef Socket,
-    Index Command,
+    Int Command,
     ServerPacketCallback Callback
 );
 

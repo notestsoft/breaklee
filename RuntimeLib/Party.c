@@ -2,9 +2,9 @@
 
 RTPartyMemberInfoRef RTPartyGetMember(
     RTPartyRef Party,
-    Index CharacterIndex
+    UInt32 CharacterIndex
 ) {
-    for (Index Index = 0; Index < Party->MemberCount; Index += 1) {
+    for (Int Index = 0; Index < Party->MemberCount; Index += 1) {
         RTPartyMemberInfoRef Member = &Party->Members[Index];
         if (Member->CharacterIndex != CharacterIndex) continue;
 
@@ -16,7 +16,7 @@ RTPartyMemberInfoRef RTPartyGetMember(
 
 Bool RTPartyChangeLeader(
     RTPartyRef Party,
-    Index CharacterIndex
+    UInt32 CharacterIndex
 ) {
     RTPartyMemberInfoRef Member = RTPartyGetMember(Party, CharacterIndex);
     if (!Member) return false;

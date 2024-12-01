@@ -2,12 +2,12 @@
 <MobPattern Index="374">
 	<MobTriggerGroup Index="1" Type="1" Parameters="10">
 		<MobActionGroup Index="1" Delay="">
-			<MobAction Index="1" Type="10" Parameters="703" Duration="500" TargetType="11" TargetParameters="" Loop="1" LoopDelay="500" Priority="0"/>
+			<MobAction Index="1" Type="10" Parameters="703:20000:2480:2480" Duration="500" TargetType="11" TargetParameters="" Loop="1" LoopDelay="500" Priority="0"/>
 		</MobActionGroup>
 	</MobTriggerGroup>
 	<MobTriggerGroup Index="2" Type="1" Parameters="60000">
 		<MobActionGroup Index="2" Delay="">
-			<MobAction Index="1" Type="10" Parameters="796" Duration="500" TargetType="11" TargetParameters="" Loop="1" LoopDelay="30000" Priority="0"/>
+			<MobAction Index="1" Type="10" Parameters="796:20000:5014:5014" Duration="500" TargetType="11" TargetParameters="" Loop="1" LoopDelay="30000" Priority="0"/>
 		</MobActionGroup>
 	</MobTriggerGroup>
 	<MobPool/>

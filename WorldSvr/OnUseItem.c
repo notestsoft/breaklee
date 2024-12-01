@@ -18,9 +18,10 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM) {
 		RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
 		if (!ItemData) goto error;
 
-		Index ItemScriptKey = ItemSlot->Item.Serial & RUNTIME_ITEM_MASK_INDEX;
-		RTScriptRef ItemScript = *(RTScriptRef*)DictionaryLookup(Context->ItemScriptRegistry, &ItemScriptKey);
-		if (ItemScript) {
+		Int ItemScriptKey = ItemSlot->Item.Serial & RUNTIME_ITEM_MASK_INDEX;
+		RTScriptRef* ItemScriptRef = (RTScriptRef*)DictionaryLookup(Context->ItemScriptRegistry, &ItemScriptKey);
+		if (ItemScriptRef) {
+			RTScriptRef ItemScript = *ItemScriptRef;
 			Response->Result = S2C_DATA_USE_ITEM_RESULT_SUCCESS;
 			RTScriptCallOnEvent(ItemScript, Runtime, Character);
 		}
@@ -157,7 +158,7 @@ CLIENT_PROCEDURE_BINDING(MULTI_CONVERT_ITEM) {
 
 	memcpy(&kInventoryInfoBackup, &Character->Data.InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
 
-	Int32 TailLength = (Packet->SourceItemCount + Packet->TargetItemCount) * sizeof(UInt16);
+	Int TailLength = ((Int)Packet->SourceItemCount + Packet->TargetItemCount) * sizeof(UInt16);
 	if (Packet->Length != sizeof(C2S_DATA_MULTI_CONVERT_ITEM) + TailLength) goto error;
 	if (Packet->SourceItemCount < 1 || Packet->TargetItemCount < 1) goto error;
 
@@ -169,9 +170,8 @@ CLIENT_PROCEDURE_BINDING(MULTI_CONVERT_ITEM) {
 	UInt16* SourceInventorySlots = &Packet->SourceInventorySlots[0];
 	UInt16* TargetInventorySlots = &Packet->SourceInventorySlots[Packet->SourceItemCount];
 
-	Int32 SourceItemIndex = 0;
-
-	for (Int32 Index = 0; Index < Packet->TargetItemCount; Index += 1) {
+	Int SourceItemIndex = 0;
+	for (Int Index = 0; Index < Packet->TargetItemCount; Index += 1) {
 		RTItemSlotRef SourceItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, SourceInventorySlots[SourceItemIndex]);
 		if (!SourceItemSlot && SourceItemIndex < Packet->SourceItemCount) {
 			SourceItemIndex += 1;
@@ -276,7 +276,7 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM_SAVER) {
 	Bool FirstIsSaving = FirstItemAmount == 0;
 	Int32 TotalAmount = 0;
 
-	for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
+	for (Int Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
 		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlots[Index].InventorySlotIndex);
 		if (!ItemSlot) goto error;
 
@@ -344,14 +344,14 @@ CLIENT_PROCEDURE_BINDING(USE_ITEM_SAVER) {
 	Response->Result = S2C_DATA_USE_ITEM_RESULT_SUCCESS;
 
 	if (FirstIsSaving) {
-		for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
+		for (Int Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
 			RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlots[Index].InventorySlotIndex);
 			assert(ItemSlot);
 			ItemSlot->ItemOptions |= (UInt64)Packet->InventorySlots[Index].Amount << 16;
 		}
 	}
 	else {
-		for (Index Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
+		for (Int Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
 			RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlots[Index].InventorySlotIndex);
 			assert(ItemSlot);
 			RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlots[Index].InventorySlotIndex);

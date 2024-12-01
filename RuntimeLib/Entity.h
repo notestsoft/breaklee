@@ -49,7 +49,7 @@ Bool RTEntityIsEqual(
 
 DictionaryRef EntityDictionaryCreate(
 	AllocatorRef Allocator,
-	Index Capacity
+	Int Capacity
 );
 
 #pragma pack(pop)

@@ -12,7 +12,7 @@ Bool RTCharacterCanTakenNewbieSupportReward(
 	if (Character->Data.NewbieSupportInfo.Info.SlotCount >= RUNTIME_CHARACTER_MAX_NEWBIE_SUPPORT_SLOT_COUNT) return false;
 	if (Character->Data.NewbieSupportInfo.Info.Timestamp > 0 && Character->Data.NewbieSupportInfo.Info.Timestamp < GetTimestamp()) return false;
 
-	for (Index Index = 0; Index < Character->Data.NewbieSupportInfo.Info.SlotCount; Index += 1) {
+	for (Int Index = 0; Index < Character->Data.NewbieSupportInfo.Info.SlotCount; Index += 1) {
 		RTNewbieSupportSlotRef Slot = &Character->Data.NewbieSupportInfo.Slots[Index];
 		if (Slot->CategoryType != CategoryType) continue;
 		if (Slot->RewardIndex != RewardIndex) continue;
@@ -61,7 +61,7 @@ Bool RTCharacterTakeNewbieSupportReward(
 	RTDataNewbieSupportRewardPoolRef RewardPool = RTRuntimeDataNewbieSupportRewardPoolGet(Runtime->Context, Reward->RewardID);
 	if (!RewardPool) return false;
 
-	for (Index Index = 0; Index < InventorySlotCount; Index += 1) {
+	for (Int Index = 0; Index < InventorySlotCount; Index += 1) {
 		if (!RTInventoryIsSlotEmpty(Runtime, &Character->Data.InventoryInfo, InventorySlotIndex[Index])) return false;
 	}
 
@@ -73,7 +73,7 @@ Bool RTCharacterTakeNewbieSupportReward(
 	RTDataNewbieSupportRewardPoolItemRef RewardItem = &RewardPool->NewbieSupportRewardPoolItemList[RewardIndex];
 	if (RewardItem->BattleStyleFlag && (RewardItem->BattleStyleFlag & BattleStyleFlag) < 1) return false;
 
-	for (Index RewardItemIndex = 0; RewardItemIndex < RewardItem->Count; RewardItemIndex += 1) {
+	for (Int RewardItemIndex = 0; RewardItemIndex < RewardItem->Count; RewardItemIndex += 1) {
 		struct _RTItemSlot TempSlot = { 0 };
 		TempSlot.Item.Serial = RewardItem->ItemID;
 		TempSlot.ItemOptions = RewardItem->ItemOptions;

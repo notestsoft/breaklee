@@ -4,23 +4,23 @@
 
 struct _MemoryBuffer {
     AllocatorRef Allocator;
-    Index Alignment;
-    Index Size;
-    Index SizeAligned;
-    Index WriteOffset;
-    Index ReadOffset;
+    Int Alignment;
+    Int Size;
+    Int SizeAligned;
+    Int WriteOffset;
+    Int ReadOffset;
     UInt8 *Memory;
 };
 
 MemoryBufferRef MemoryBufferCreate(
     AllocatorRef Allocator,
-    Index Alignment,
-    Index Length
+    Int Alignment,
+    Int Length
 ) {
-    Index MemorySize = sizeof(UInt8) * Length;
-    Index MemorySizeAligned = Align(MemorySize, Alignment);
-    Index HeaderSizeAligned = Align(sizeof(struct _MemoryBuffer), Alignment);
-    Index TotalSize = HeaderSizeAligned + MemorySizeAligned;
+    Int MemorySize = sizeof(UInt8) * Length;
+    Int MemorySizeAligned = Align(MemorySize, Alignment);
+    Int HeaderSizeAligned = Align(sizeof(struct _MemoryBuffer), Alignment);
+    Int TotalSize = HeaderSizeAligned + MemorySizeAligned;
     
     MemoryBufferRef MemoryBuffer = (MemoryBufferRef)AllocatorAllocate(Allocator, TotalSize);
     if (!MemoryBuffer) Fatal("MemoryBuffer allocation failed!");
@@ -42,13 +42,13 @@ Void MemoryBufferDestroy(
     AllocatorDeallocate(MemoryBuffer->Allocator, MemoryBuffer);
 }
 
-Index MemoryBufferGetWriteOffset(
+Int MemoryBufferGetWriteOffset(
     MemoryBufferRef MemoryBuffer
 ) {
     return MemoryBuffer->WriteOffset;
 }
 
-Index MemoryBufferGetFreeSize(
+Int MemoryBufferGetFreeSize(
     MemoryBufferRef MemoryBuffer
 ) {
     return MemoryBuffer->Size - MemoryBuffer->WriteOffset;
@@ -56,7 +56,7 @@ Index MemoryBufferGetFreeSize(
 
 UInt8* MemoryBufferGetMemory(
     MemoryBufferRef MemoryBuffer,
-    Index Offset
+    Int Offset
 ) {
     assert(Offset <= MemoryBuffer->WriteOffset);
     return MemoryBuffer->Memory + sizeof(UInt8) * Offset;
@@ -64,22 +64,22 @@ UInt8* MemoryBufferGetMemory(
 
 Void MemoryBufferPopFront(
     MemoryBufferRef MemoryBuffer,
-    Index Length
+    Int Length
 ) {
     MemoryBufferRemove(MemoryBuffer, 0, Length);
 }
 
 Void MemoryBufferRemove(
     MemoryBufferRef MemoryBuffer,
-    Index Offset,
-    Index Length
+    Int Offset,
+    Int Length
 ) {
     assert(Offset + Length <= MemoryBuffer->WriteOffset);
 
     if (Offset + Length < MemoryBuffer->WriteOffset) {
         UInt8* Destination = MemoryBufferGetMemory(MemoryBuffer, Offset);
         UInt8* Source = MemoryBufferGetMemory(MemoryBuffer, Offset + Length);
-        Index TailLength = MemoryBuffer->WriteOffset - (Offset + Length);
+        Int TailLength = MemoryBuffer->WriteOffset - (Offset + Length);
         memmove(Destination, Source, TailLength);
     }
 
@@ -94,9 +94,9 @@ Void MemoryBufferClear(
 
 UInt8* MemoryBufferAppend(
     MemoryBufferRef MemoryBuffer,
-    Index Length
+    Int Length
 ) {
-    Index AppendedOffset = MemoryBuffer->WriteOffset + Length;
+    Int AppendedOffset = MemoryBuffer->WriteOffset + Length;
     assert(AppendedOffset <= MemoryBuffer->Size);
     
     UInt8* Memory = MemoryBufferGetMemory(MemoryBuffer, MemoryBuffer->WriteOffset);
@@ -109,9 +109,9 @@ UInt8* MemoryBufferAppend(
 UInt8* MemoryBufferAppendCopy(
     MemoryBufferRef MemoryBuffer,
     Void* Source,
-    Index Length
+    Int Length
 ) {
-    Index AppendedOffset = MemoryBuffer->WriteOffset + Length;
+    Int AppendedOffset = MemoryBuffer->WriteOffset + Length;
     assert(AppendedOffset <= MemoryBuffer->Size);
 
     UInt8* Memory = MemoryBufferGetMemory(MemoryBuffer, MemoryBuffer->WriteOffset);
@@ -121,7 +121,7 @@ UInt8* MemoryBufferAppendCopy(
     return Memory;
 }
 
-Index MemoryBufferGetReadOffset(
+Int MemoryBufferGetReadOffset(
     MemoryBufferRef MemoryBuffer
 ) {
     return MemoryBuffer->ReadOffset;
@@ -129,7 +129,7 @@ Index MemoryBufferGetReadOffset(
 
 Void MemoryBufferSetReadOffset(
     MemoryBufferRef MemoryBuffer,
-    Index Offset
+    Int Offset
 ) {
     assert(Offset <= MemoryBuffer->ReadOffset);
     MemoryBuffer->ReadOffset = Offset;
@@ -137,7 +137,7 @@ Void MemoryBufferSetReadOffset(
 
 UInt8* MemoryBufferReadBytes(
     MemoryBufferRef MemoryBuffer,
-    Index Length
+    Int Length
 ) {
     if (Length < 1) return NULL;
 
@@ -151,7 +151,7 @@ UInt8* MemoryBufferReadBytes(
 Void MemoryBufferReadBytesCopy(
     MemoryBufferRef MemoryBuffer,
     Void* Destination,
-    Index Length
+    Int Length
 ) {
     if (Length < 1) return;
     UInt8* Memory = MemoryBufferReadBytes(MemoryBuffer, Length);

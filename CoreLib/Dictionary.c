@@ -12,7 +12,7 @@ struct _DictionaryBucket {
 
 struct _DictionaryBuffer {
     Int32 Offset;
-    Index Capacity;
+    Int Capacity;
     MemoryRef Memory;
 };
 typedef struct _DictionaryBuffer DictionaryBuffer;
@@ -25,7 +25,7 @@ struct _Dictionary {
     DictionaryKeySizeCallback KeySizeCallback;
     DictionaryBuffer KeyBuffer;
     DictionaryBuffer ElementBuffer;
-    Index Capacity;
+    Int Capacity;
     Int32 ElementCount;
     DictionaryBucketRef* Buckets;
 };
@@ -45,9 +45,9 @@ static inline Void _DictionaryBufferInit(
 static inline Void _DictionaryBufferReserveCapacity(
     DictionaryRef Dictionary,
     DictionaryBuffer* Buffer,
-    Index Capacity
+    Int Capacity
 ) {
-    Index NewCapacity = Buffer->Capacity;
+    Int NewCapacity = Buffer->Capacity;
     while (NewCapacity < Capacity) {
         NewCapacity *= _kDictionaryBufferGrowthFactor;
     }
@@ -119,19 +119,19 @@ Bool _IndexDictionaryKeyComparator(
     Void* Lhs,
     Void* Rhs
 ) {
-    return (*(Index*)Lhs) == (*(Index*)Rhs);
+    return (*(Int*)Lhs) == (*(Int*)Rhs);
 }
 
 UInt64 _IndexDictionaryKeyHasher(
     Void* Key
 ) {
-    return (UInt64)(*(Index*)Key);
+    return (UInt64)(*(Int*)Key);
 }
 
 Int32 _IndexDictionaryKeySizeCallback(
     Void* Key
 ) {
-    return sizeof(Index);
+    return sizeof(Int);
 }
 
 DictionaryRef DictionaryCreate(
@@ -139,7 +139,7 @@ DictionaryRef DictionaryCreate(
     DictionaryKeyComparator Comparator,
     DictionaryKeyHasher Hasher,
     DictionaryKeySizeCallback KeySizeCallback,
-    Index Capacity
+    Int Capacity
 ) {
     DictionaryRef Dictionary = (DictionaryRef)AllocatorAllocate(
         Allocator,
@@ -161,7 +161,7 @@ DictionaryRef DictionaryCreate(
     return Dictionary;
 }
 
-DictionaryRef CStringDictionaryCreate(AllocatorRef Allocator, Index Capacity) {
+DictionaryRef CStringDictionaryCreate(AllocatorRef Allocator, Int Capacity) {
     return DictionaryCreate(
         Allocator, 
         &_CStringDictionaryKeyComparator, 
@@ -173,7 +173,7 @@ DictionaryRef CStringDictionaryCreate(AllocatorRef Allocator, Index Capacity) {
 
 DictionaryRef IndexDictionaryCreate(
     AllocatorRef Allocator, 
-    Index Capacity
+    Int Capacity
 ) {
     return DictionaryCreate(
         Allocator, 
@@ -205,7 +205,7 @@ Void DictionaryInsert(
     }
 
     UInt64 Hash = Dictionary->Hasher(Key);
-    Index Index = Hash % Dictionary->Capacity;
+    Int Index = Hash % Dictionary->Capacity;
     DictionaryBucketRef Bucket = (DictionaryBucketRef)(((UInt8*)Dictionary->Buckets) + sizeof(struct _DictionaryBucket) * Index);
     while (Bucket && Bucket->IsFilled) {
         Void* BucketKey = _DictionaryBufferGetElement(Dictionary, &Dictionary->KeyBuffer, Bucket->KeyOffset);
@@ -250,7 +250,7 @@ Void* DictionaryLookup(
     Void* Key
 ) {
     UInt64 Hash = Dictionary->Hasher(Key);
-    Index Index = Hash % Dictionary->Capacity;
+    Int Index = Hash % Dictionary->Capacity;
     DictionaryBucketRef Bucket = (DictionaryBucketRef)(((UInt8*)Dictionary->Buckets) + sizeof(struct _DictionaryBucket) * Index);
     while (Bucket && Bucket->IsFilled) {
         Void* BucketKey = _DictionaryBufferGetElement(Dictionary, &Dictionary->KeyBuffer, Bucket->KeyOffset);
@@ -269,7 +269,7 @@ Void DictionaryRemove(
     Void* Key
 ) {
     UInt64 Hash = Dictionary->Hasher(Key);
-    Index Index = Hash % Dictionary->Capacity;
+    Int Index = Hash % Dictionary->Capacity;
     DictionaryBucketRef Bucket = (DictionaryBucketRef)(((UInt8*)Dictionary->Buckets) + sizeof(struct _DictionaryBucket) * Index);
     DictionaryBucketRef PreviousBucket = NULL;
 
@@ -345,7 +345,7 @@ DictionaryKeyIterator DictionaryGetKeyIterator(
     Iterator.Key = NULL;
     Iterator.Value = NULL;
 
-    for (Index Index = 0; Index < Dictionary->Capacity; Index += 1) {
+    for (Int Index = 0; Index < Dictionary->Capacity; Index += 1) {
         DictionaryBucketRef Bucket = (DictionaryBucketRef)(((UInt8*)Dictionary->Buckets) + sizeof(struct _DictionaryBucket) * Index);
         while (Bucket && !Bucket->IsFilled) {
             Bucket = Bucket->Next;
@@ -383,7 +383,7 @@ DictionaryKeyIterator DictionaryKeyIteratorNext(
         return Iterator;
     }
 
-    for (Index Index = Iterator.BucketIndex + 1; Index < Iterator.Dictionary->Capacity; Index += 1) {
+    for (Int Index = Iterator.BucketIndex + 1; Index < Iterator.Dictionary->Capacity; Index += 1) {
         DictionaryBucketRef Bucket = (DictionaryBucketRef)(((UInt8*)Iterator.Dictionary->Buckets) + sizeof(struct _DictionaryBucket) * Index);
         while (Bucket && !Bucket->IsFilled) {
             Bucket = Bucket->Next;

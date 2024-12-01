@@ -14,7 +14,7 @@ Bool RTWarehouseSetSlot(
 	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, Slot->Item.ID);
 	assert(ItemData);
 
-	Int32 Index = RTWarehouseGetSlotIndex(
+	Int Index = RTWarehouseGetSlotIndex(
 		Runtime,
 		Warehouse,
 		Slot->SlotIndex
@@ -64,7 +64,7 @@ Int32 RTWarehouseGetSlotIndex(
 	RTCharacterWarehouseInfoRef Warehouse,
 	Int32 SlotIndex
 ) {
-	for (Int32 Index = 0; Index < Warehouse->Info.SlotCount; Index++) {
+	for (Int Index = 0; Index < Warehouse->Info.SlotCount; Index++) {
 		RTItemSlotRef Slot = &Warehouse->Slots[Index];
 		if (Slot->SlotIndex == SlotIndex) {
 			return Index;
@@ -79,7 +79,7 @@ RTItemSlotRef RTWarehouseGetSlot(
 	RTCharacterWarehouseInfoRef Warehouse,
 	Int32 SlotIndex
 ) {
-	Int32 Index = RTWarehouseGetSlotIndex(Runtime, Warehouse, SlotIndex);
+	Int Index = RTWarehouseGetSlotIndex(Runtime, Warehouse, SlotIndex);
 	if (Index < 0) return NULL;
 	return &Warehouse->Slots[Index];
 }
@@ -89,7 +89,7 @@ Int32 RTWarehouseGetInsertionIndex(
 	RTCharacterWarehouseInfoRef Warehouse,
 	Int32 SlotIndex
 ) {
-	for (Int32 Index = 0; Index < Warehouse->Info.SlotCount; Index += 1) {
+	for (Int Index = 0; Index < Warehouse->Info.SlotCount; Index += 1) {
 		RTItemSlotRef InventorySlot = &Warehouse->Slots[Index];
 		if (InventorySlot->SlotIndex > SlotIndex) {
 			return Index;

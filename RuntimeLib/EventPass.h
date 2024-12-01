@@ -9,7 +9,7 @@ EXTERN_C_BEGIN
 
 struct _RTEventPassMissionPage {
     Int32 Group;
-    Int32 Index;
+    Int Index;
     Int64 Unknown1;
     Timestamp UnknownTimestamps[5];
     UInt64 Unknown2;
@@ -19,13 +19,13 @@ struct _RTEventPassMissionPage {
 struct _RTEventPassMissionSlot {
     Int32 PageIndex;
     Int32 Group;
-    Int32 Index;
+    Int Index;
     Int32 Counter;
 };
 
 struct _RTEventPassRewardSlot {
     Int32 Group;
-    Int32 Index;
+    Int Index;
     Int16 Status;
 };
 

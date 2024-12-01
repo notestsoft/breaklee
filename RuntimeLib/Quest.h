@@ -88,7 +88,7 @@ struct _RTQuestMissionData {
 };
 
 struct _RTQuestData {
-    Int32 Index;
+    Int Index;
     Int32 ID;
     Int32 Type;
     Int32 Party;
@@ -189,7 +189,7 @@ Void RTCharacterDungeonQuestFlagClear(
 
 Void RTCharacterDungeonQuestFlagSet(
     RTCharacterRef Character,
-    Index DungeonIndex
+    Int64 DungeonIndex
 );
 
 Bool RTCharacterDungeonQuestFlagIsSet(
@@ -256,7 +256,7 @@ Bool RTCharacterSetQuestDisplayNotice(
 Bool RTCharacterIncrementQuestMobCounter(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    Index MobSpeciesIndex
+    Int64 MobSpeciesIndex
 );
 
 Bool RTCharacterUpdateQuestItemCounter(

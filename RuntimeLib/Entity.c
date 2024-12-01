@@ -46,7 +46,7 @@ Int32 _EntityDictionaryKeySizeCallback(
 
 DictionaryRef EntityDictionaryCreate(
     AllocatorRef Allocator,
-    Index Capacity
+    Int Capacity
 ) {
     return DictionaryCreate(
         Allocator,

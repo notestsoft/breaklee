@@ -2,17 +2,17 @@
 <MobPattern Index="414">
 	<MobTriggerGroup Index="1" Type="1" Parameters="1000">
 		<MobActionGroup Index="1" Delay="">
-			<MobAction Index="1" Type="10" Parameters="847" Duration="2000" TargetType="1" TargetParameters="" Loop="1" LoopDelay="2300" Priority="0"/>
+			<MobAction Index="1" Type="10" Parameters="847:8002:2749:3235" Duration="2000" TargetType="1" TargetParameters="" Loop="1" LoopDelay="2300" Priority="0"/>
 		</MobActionGroup>
 	</MobTriggerGroup>
 	<MobTriggerGroup Index="2" Type="1" Parameters="2000">
 		<MobActionGroup Index="2" Delay="">
-			<MobAction Index="1" Type="10" Parameters="848" Duration="2200" TargetType="1" TargetParameters="" Loop="1" LoopDelay="7200" Priority="0"/>
+			<MobAction Index="1" Type="10" Parameters="848:8002:3364:4206" Duration="2200" TargetType="1" TargetParameters="" Loop="1" LoopDelay="7200" Priority="0"/>
 		</MobActionGroup>
 	</MobTriggerGroup>
 	<MobTriggerGroup Index="3" Type="1" Parameters="33000">
 		<MobActionGroup Index="3" Delay="">
-			<MobAction Index="1" Type="10" Parameters="849" Duration="3000" TargetType="1" TargetParameters="" Loop="1" LoopDelay="25000" Priority="0"/>
+			<MobAction Index="1" Type="10" Parameters="849:8002:4364:5206" Duration="3000" TargetType="1" TargetParameters="" Loop="1" LoopDelay="25000" Priority="0"/>
 		</MobActionGroup>
 	</MobTriggerGroup>
 	<MobPool/>

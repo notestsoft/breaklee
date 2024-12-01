@@ -45,10 +45,10 @@ CLIENT_PROCEDURE_BINDING(BUY_ITEM) {
     // if (PriceCash > /* TODO: Check Character Cash Amount */) goto error;
     if (PriceGem > Character->Data.AccountInfo.ForceGem) goto error;
 
-    if (ShopItem->ShopPricePoolIndex) {
+    if (ShopItem->ShopPricePoolIndex > 0) {
         Int32 ItemPriceIndex = 0;
 
-        for (Int32 Index = 0; Index < Runtime->Context->ShopPricePoolCount; Index += 1) {
+        for (Int Index = 0; Index < Runtime->Context->ShopPricePoolCount; Index += 1) {
             RTDataShopPricePoolRef PricePool = &Runtime->Context->ShopPricePoolList[Index];
             if (PricePool->PoolIndex != ShopItem->ShopPricePoolIndex) continue;
 
@@ -81,7 +81,7 @@ CLIENT_PROCEDURE_BINDING(BUY_ITEM) {
 
         ItemPriceIndex = 0;
 
-        for (Int32 Index = 0; Index < Runtime->Context->ShopPricePoolCount; Index += 1) {
+        for (Int Index = 0; Index < Runtime->Context->ShopPricePoolCount; Index += 1) {
             RTDataShopPricePoolRef PricePool = &Runtime->Context->ShopPricePoolList[Index];
             if (PricePool->PoolIndex != ShopItem->ShopPricePoolIndex) continue;
 
@@ -118,7 +118,7 @@ CLIENT_PROCEDURE_BINDING(BUY_ITEM) {
 
     Bool Success = true;
     struct _RTItemSlot ItemSlot = { 0 };
-    for (Int32 Index = 0; Index < Packet->ItemCount; Index += 1) {
+    for (Int Index = 0; Index < Packet->ItemCount; Index += 1) {
         ItemSlot.SlotIndex = Packet->InventoryIndex[Index];
         ItemSlot.Item.Serial = ShopItem->ItemID;
         ItemSlot.ItemOptions = ShopItem->ItemOptions;
@@ -162,7 +162,7 @@ CLIENT_PROCEDURE_BINDING(SELL_ITEM) {
     RTDataShopIndexRef ShopIndex = RTRuntimeDataShopIndexGet(Runtime->Context, WorldIndex, Packet->NpcIndex);
     if (!ShopIndex) {
         Bool Found = false;
-        for (Index Index = 0; Index < Runtime->Context->EventCount; Index += 1) {
+        for (Int Index = 0; Index < Runtime->Context->EventCount; Index += 1) {
             RTDataEventRef Event = &Runtime->Context->EventList[Index];
             if (Event->NpcIndex == Packet->NpcIndex && Event->EventShopCount > 0) {                
                 Found = true;
@@ -175,7 +175,7 @@ CLIENT_PROCEDURE_BINDING(SELL_ITEM) {
 
     // TODO: Check NPC distance to character
 
-    for (Int32 Index = 0; Index < Packet->InventoryIndexCount; Index++) {
+    for (Int Index = 0; Index < Packet->InventoryIndexCount; Index++) {
         Int32 ItemSlotIndex = Packet->InventoryIndex[Index];
         RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, ItemSlotIndex);
         if (!ItemSlot) goto error;
@@ -218,7 +218,7 @@ CLIENT_PROCEDURE_BINDING(GET_SHOP_LIST) {
     S2C_DATA_GET_SHOP_LIST* Response = PacketBufferInit(PacketBuffer, S2C, GET_SHOP_LIST);
     Response->Count = Runtime->Context->ShopIndexCount;
     
-    for (Int32 Index = 0; Index < Runtime->Context->ShopIndexCount; Index += 1) {
+    for (Int Index = 0; Index < Runtime->Context->ShopIndexCount; Index += 1) {
         RTDataShopIndexRef ShopIndex = &Runtime->Context->ShopIndexList[Index];
 
         S2C_DATA_GET_SHOP_LIST_INDEX* ResponseIndex = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_GET_SHOP_LIST_INDEX);
@@ -247,7 +247,7 @@ CLIENT_PROCEDURE_BINDING(GET_SHOP_DATA) {
     Response->ShopIndex = ShopPool->ShopIndex;
     Response->Count = ShopPool->ShopItemCount;
 
-    for (Int32 Index = 0; Index < ShopPool->ShopItemCount; Index += 1) {
+    for (Int Index = 0; Index < ShopPool->ShopItemCount; Index += 1) {
         RTDataShopItemRef ShopItem = &ShopPool->ShopItemList[Index];
          
         S2C_DATA_GET_SHOP_DATA_INDEX* ResponseItem = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_GET_SHOP_DATA_INDEX);
@@ -290,7 +290,7 @@ CLIENT_PROCEDURE_BINDING(GET_SHOP_ITEM_PRICE_POOL) {
     S2C_DATA_GET_SHOP_ITEM_PRICE_POOL* Response = PacketBufferInit(PacketBuffer, S2C, GET_SHOP_ITEM_PRICE_POOL);
     Response->Count = Runtime->Context->ShopPricePoolCount;
 
-    for (Int32 Index = 0; Index < Runtime->Context->ShopPricePoolCount; Index += 1) {
+    for (Int Index = 0; Index < Runtime->Context->ShopPricePoolCount; Index += 1) {
         RTDataShopPricePoolRef ShopPrice = &Runtime->Context->ShopPricePoolList[Index];
 
         S2C_DATA_GET_SHOP_ITEM_PRICE_POOL_INDEX* ResponsePrice = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_GET_SHOP_ITEM_PRICE_POOL_INDEX);
@@ -315,7 +315,7 @@ CLIENT_PROCEDURE_BINDING(GET_ITEM_RECOVERY_LIST) {
     S2C_DATA_GET_ITEM_RECOVERY_LIST* Response = PacketBufferInit(PacketBuffer, S2C, GET_ITEM_RECOVERY_LIST);
     Response->Count = Character->Data.RecoveryInfo.Info.SlotCount;
 
-    for (Int32 Index = 0; Index < RUNTIME_CHARACTER_MAX_RECOVERY_SLOT_COUNT; Index += 1) {
+    for (Int Index = 0; Index < RUNTIME_CHARACTER_MAX_RECOVERY_SLOT_COUNT; Index += 1) {
         RTItemSlotRef ItemSlot = &Character->Data.RecoveryInfo.Slots[Index];
         if (!ItemSlot->Item.Serial) continue;
 

@@ -20,7 +20,7 @@ Void RTForceEffectApplyIncreaseAttribute(
     RTBattleAttributesRef Attributes,
     Int64 Value
 ) {
-    for (Index Index = 0; Index < Formula->AttributeCount; Index += 1) {
+    for (Int Index = 0; Index < Formula->AttributeCount; Index += 1) {
         Attributes->Values[Formula->AttributeIndices[Index]] += Value;
     }
 }
@@ -32,7 +32,7 @@ Void RTForceEffectCancelIncreaseAttribute(
     RTBattleAttributesRef Attributes,
     Int64 Value
 ) {
-    for (Index Index = 0; Index < Formula->AttributeCount; Index += 1) {
+    for (Int Index = 0; Index < Formula->AttributeCount; Index += 1) {
         Attributes->Values[Formula->AttributeIndices[Index]] -= Value;
     }
 }
@@ -44,7 +44,7 @@ Void RTForceEffectApplyIncreaseRage(
     RTBattleAttributesRef Attributes,
     Int64 Value
 ) {
-    for (Index Index = 0; Index < Formula->AttributeCount; Index += 1) {
+    for (Int Index = 0; Index < Formula->AttributeCount; Index += 1) {
         Attributes->Values[Formula->AttributeIndices[Index]] = MIN(
             Attributes->Values[Formula->AttributeIndices[Index]] + Value,
             Attributes->Values[Formula->AttributeIndices[RUNTIME_ATTRIBUTE_RAGE_MAX]]
@@ -91,7 +91,7 @@ Void RTForceEffectRemoveImmobility(
 
 RTForceEffectFormulaRef RTRuntimeAddForceEffectFormula(
     RTRuntimeRef Runtime,
-    Index ForceEffectIndex,
+    Int ForceEffectIndex,
 	RTForceEffectFormulaCallback OnApply,
     RTForceEffectFormulaCallback OnCancel
 ) {
@@ -104,7 +104,7 @@ RTForceEffectFormulaRef RTRuntimeAddForceEffectFormula(
 
 Void RTForceEffectFormulaBindAttribute(
     RTForceEffectFormulaRef Formula,
-    Index AttributeIndex
+    Int AttributeIndex
 ) {
     assert(Formula->AttributeCount < RUNTIME_MAX_FORCE_EFFECT_ATTRIBUTE_COUNT);
     
@@ -680,9 +680,9 @@ Void RTCharacterApplyForceEffect(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
     RTEntityID Source,
-	Index ForceEffectIndex,
+    Int ForceEffectIndex,
 	Int64 ForceValue,
-	Int32 ForceValueType
+    Int ForceValueType
 ) {
 	// TODO: Check if ForceValueType is relevant for the runtime
     if (ForceEffectIndex < 1) return;
@@ -699,9 +699,9 @@ Void RTCharacterCancelForceEffect(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
     RTEntityID Source,
-	Index ForceEffectIndex,
+    Int ForceEffectIndex,
 	Int64 ForceValue,
-	Int32 ForceValueType
+    Int ForceValueType
 ) {
     RTForceEffectFormulaRef Formula = (RTForceEffectFormulaRef)MemoryPoolFetch(Runtime->ForceEffectFormulaPool, ForceEffectIndex);
     Formula->OnCancel(Runtime, Formula, Source, &Character->Attributes, ForceValue);
@@ -711,9 +711,9 @@ Void RTMobApplyForceEffect(
     RTRuntimeRef Runtime,
     RTMobRef Mob,
     RTEntityID Source,
-    Index ForceEffectIndex,
+    Int ForceEffectIndex,
     Int64 ForceValue,
-    Int32 ForceValueType
+    Int ForceValueType
 ) {
     // TODO: Check if ForceValueType is relevant for the runtime
     if (ForceEffectIndex < 1) return;
@@ -725,9 +725,9 @@ Void RTMobCancelForceEffect(
     RTRuntimeRef Runtime,
     RTMobRef Mob,
     RTEntityID Source,
-    Index ForceEffectIndex,
+    Int ForceEffectIndex,
     Int64 ForceValue,
-    Int32 ForceValueType
+    Int ForceValueType
 ) {
     RTForceEffectFormulaRef Formula = (RTForceEffectFormulaRef)MemoryPoolFetch(Runtime->ForceEffectFormulaPool, ForceEffectIndex);
     Formula->OnCancel(Runtime, Formula, Source, &Mob->Attributes, ForceValue);

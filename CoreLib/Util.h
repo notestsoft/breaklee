@@ -22,17 +22,17 @@ do { \
     Trace("[%s] Time elapsed: %lldms", __NAME__, _ElapsedMilliseconds); \
 } while (0)
 
-Index Align(
-    Index Value,
-    Index Alignment
+UInt Align(
+    UInt Value,
+    UInt Alignment
 );
 
 Bool IsPowerOfTwo(
-    Index Value
+    UInt Value
 );
 
-Index NextPowerOfTwo(
-    Index Value
+UInt NextPowerOfTwo(
+    UInt Value
 );
 
 Timestamp GetTimestamp();
@@ -142,11 +142,11 @@ Void ReadConfigUInt64(
     UInt64* Result
 );
 
-Void ReadConfigIndex(
+Void ReadConfigInt(
     CString FilePath,
     CString KeyPath,
     CString Default,
-    Index* Result
+    Int* Result
 );
 
 Timestamp PlatformGetTickCount();

@@ -30,7 +30,7 @@ IPC_PROCEDURE_BINDING(D2A, GET_ITEM_LIST) {
 	Response->Result = Packet->Result;
 	Response->ItemCount = Packet->ItemCount;
 	
-	for (Int32 Index = 0; Index < Packet->ItemCount; Index += 1) {
+	for (Int Index = 0; Index < Packet->ItemCount; Index += 1) {
 		S2C_DATA_GET_ITEM_LIST_INDEX* ResponseItem = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_GET_ITEM_LIST_INDEX);
 		ResponseItem->SlotIndex = Packet->Items[Index].SlotIndex;
 		ResponseItem->ItemID = Packet->Items[Index].ItemID;

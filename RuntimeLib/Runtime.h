@@ -92,7 +92,7 @@ struct _RTRuntime {
 
 RTRuntimeRef RTRuntimeCreate(
     AllocatorRef Allocator,
-    Index MaxPartyCount,
+    Int MaxPartyCount,
     Void* UserData
 );
 
@@ -234,8 +234,8 @@ RTBattleStyleRankDataRef RTRuntimeGetBattleStyleRankData(
 RTWorldContextRef RTRuntimeOpenDungeon(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    Index WorldIndex,
-    Index DungeonIndex
+    Int WorldIndex,
+    Int DungeonIndex
 );
 
 Void RTRuntimeCloseDungeon(
@@ -245,12 +245,12 @@ Void RTRuntimeCloseDungeon(
 
 RTDungeonDataRef RTRuntimeGetDungeonDataByID(
     RTRuntimeRef Runtime,
-    Index DungeonIndex
+    Int DungeonIndex
 );
 
 RTMissionDungeonPatternPartDataRef RTRuntimeGetPatternPartByID(
     RTRuntimeRef Runtime,
-    Index PatternPartIndex
+    Int PatternPartIndex
 );
 
 Void RTRuntimeBroadcastCharacterData(

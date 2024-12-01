@@ -22,7 +22,7 @@ Int32 RTCharacterGetBuffSlotIndexBuffType(
 
     Int32 BuffSlotCount = 0;
 
-    for (Int32 Index = 0; Index < 7; Index += 1) {
+    for (Int Index = 0; Index < 7; Index += 1) {
         BuffSlotCount += *BuffSlotCounts[Index];
         if (SlotIndex < BuffSlotCount) {
             return Index;
@@ -38,7 +38,7 @@ RTBuffSlotRef RTCharacterGetBuffSlotBySkillIndex(
     Int32 SkillIndex,
     Int32* ResultSlotIndex
 ) {
-    for (Int32 Index = 0; Index < Character->Data.BuffInfo.Info.SkillBuffCount; Index += 1) {
+    for (Int Index = 0; Index < Character->Data.BuffInfo.Info.SkillBuffCount; Index += 1) {
         RTBuffSlotRef BuffSlot = &Character->Data.BuffInfo.Slots[Index];
         if (BuffSlot->SkillIndex == SkillIndex) {
             *ResultSlotIndex = Index;
@@ -67,7 +67,7 @@ Int32 RTCharacterGetGroupedBuffSlotIndex(
     Int32 BuffSlotCount = 0;
     Int32 BuffSlotOffset = 0;
 
-    for (Int32 Index = 0; Index < 7; Index += 1) {
+    for (Int Index = 0; Index < 7; Index += 1) {
         BuffSlotCount += *BuffSlotCounts[Index];
         if (SlotIndex < BuffSlotCount) {
             return SlotIndex + *BuffSlotCounts[Index] - BuffSlotCount;
@@ -95,7 +95,7 @@ RTBuffSlotRef RTCharacterInsertBuffSlot(
     Int32 BuffSlotCount = 0;
     Int32 BuffSlotOffset = 0;
 
-    for (Int32 Index = 0; Index < 7; Index += 1) {
+    for (Int Index = 0; Index < 7; Index += 1) {
         BuffSlotCount += *BuffSlotCounts[Index];
         BuffSlotOffset += (BuffSlotType >= Index) ? *BuffSlotCounts[Index] : 0;
     }
@@ -136,7 +136,7 @@ Void RTCharacterRemoveBuffSlot(
     Int32 BuffSlotType = -1;
     Int32 BuffSlotCount = 0;
 
-    for (Int32 Index = 0; Index < 7; Index += 1) {
+    for (Int Index = 0; Index < 7; Index += 1) {
         BuffSlotCount += *BuffSlotCounts[Index];
         if (BuffSlotType < 0 && SlotIndex < BuffSlotCount) {
             BuffSlotType = Index;
@@ -173,9 +173,9 @@ Void RTCharacterInitializeBuffs(
 
     Character->LastBuffUpdateTimestamp = CurrentTimestamp;
     Character->BuffUpdateTimestamp = UINT64_MAX;
-    for (Int32 Index = 0; Index < BuffSlotCount; Index += 1) {
+    for (Int Index = 0; Index < BuffSlotCount; Index += 1) {
         RTBuffSlotRef BuffSlot = &Character->Data.BuffInfo.Slots[Index];
-        if (BuffSlot->Duration) {
+        if (BuffSlot->Duration > 0) {
             Character->BuffUpdateTimestamp = MIN(Character->BuffUpdateTimestamp, CurrentTimestamp + BuffSlot->Duration);
         } 
 
@@ -183,7 +183,7 @@ Void RTCharacterInitializeBuffs(
         if (BuffType == RUNTIME_BUFF_SLOT_TYPE_SKILL || BuffType == RUNTIME_BUFF_SLOT_TYPE_FORCE_WING) {
             RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, BuffSlot->SkillIndex);
             if (SkillData) {
-                for (Int32 ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
+                for (Int ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
                     RTSkillValueDataRef SkillValue = &SkillData->SkillValues[ValueIndex];
                     Int64 ForceValue = RTCalculateSkillValue(SkillValue, BuffSlot->SkillLevel, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT]);
 
@@ -225,7 +225,7 @@ Void RTCharacterUpdateBuffs(
             Character->Data.BuffInfo.Info.FirePlaceBuffCount
         );
 
-        for (Int32 Index = 0; Index < BuffSlotCount; Index += 1) {
+        for (Int Index = 0; Index < BuffSlotCount; Index += 1) {
             RTBuffSlotRef BuffSlot = &Character->Data.BuffInfo.Slots[Index];
             if (BuffSlot->Duration > Interval) {
                 BuffSlot->Duration -= Interval;
@@ -239,7 +239,7 @@ Void RTCharacterUpdateBuffs(
         }
 
         Bool UpdateAttributes = false;
-        for (Int32 Index = BuffSlotCount - 1; Index >= 0; Index -= 1) {
+        for (Int Index = BuffSlotCount - 1; Index >= 0; Index -= 1) {
             RTBuffSlotRef BuffSlot = &Character->Data.BuffInfo.Slots[Index];
             if (BuffSlot->Duration > 0) continue;
 
@@ -312,7 +312,7 @@ Void RTCharacterRemoveAllBuffs(
         Character->Data.BuffInfo.Info.FirePlaceBuffCount
     );
 
-    for (Int32 Index = 0; Index < BuffSlotCount; Index += 1) {
+    for (Int Index = 0; Index < BuffSlotCount; Index += 1) {
         RTBuffSlotRef BuffSlot = &Character->Data.BuffInfo.Slots[Index];
 
         NOTIFICATION_DATA_REMOVE_BUFF* Notification = RTNotificationInit(REMOVE_BUFF);
@@ -371,7 +371,7 @@ RTMobBuffSlotRef RTMobGetBuffSlotBySkillIndex(
     Int32 SkillIndex,
     Int32* ResultSlotIndex
 ) {
-    for (Int32 Index = 0; Index < Mob->Buffs.SlotCount; Index += 1) {
+    for (Int Index = 0; Index < Mob->Buffs.SlotCount; Index += 1) {
         RTMobBuffSlotRef BuffSlot = &Mob->Buffs.Slots[Index];
         if (BuffSlot->SkillIndex == SkillIndex) {
             *ResultSlotIndex = Index;
@@ -402,7 +402,7 @@ Void RTMobRemoveBuffSlot(
     RTMobBuffSlotRef BuffSlot = &Mob->Buffs.Slots[SlotIndex];
 
     RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, BuffSlot->SkillIndex);
-    for (Int32 ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
+    for (Int ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
         RTSkillValueDataRef SkillValue = &SkillData->SkillValues[ValueIndex];
         Int64 ForceValue = RTCalculateSkillValue(SkillValue, BuffSlot->SkillLevel, BuffSlot->Rage);
 
@@ -446,7 +446,7 @@ Void RTMobUpdateBuffs(
         Mob->BuffUpdateTimestamp = UINT64_MAX;
         Mob->LastBuffUpdateTimestamp = CurrentTimestamp;
 
-        for (Int32 Index = 0; Index < Mob->Buffs.SlotCount; Index += 1) {
+        for (Int Index = 0; Index < Mob->Buffs.SlotCount; Index += 1) {
             RTMobBuffSlotRef BuffSlot = &Mob->Buffs.Slots[Index];
             if (BuffSlot->Duration > Interval) {
                 BuffSlot->Duration -= Interval;
@@ -457,7 +457,7 @@ Void RTMobUpdateBuffs(
             }
         }
 
-        for (Int32 Index = Mob->Buffs.SlotCount - 1; Index >= 0; Index -= 1) {
+        for (Int Index = Mob->Buffs.SlotCount - 1; Index >= 0; Index -= 1) {
             RTMobBuffSlotRef BuffSlot = &Mob->Buffs.Slots[Index];
             if (BuffSlot->Duration > 0) continue;
 
@@ -488,7 +488,7 @@ UInt32 RTMobApplyBuff(
     BuffSlot->Rage = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT];
     BuffSlot->Duration = RTCalculateSkillDuration(SkillData, SkillSlot->Level, BuffSlot->BattleRank);
 
-    for (Int32 ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
+    for (Int ValueIndex = 0; ValueIndex < SkillData->SkillValueCount; ValueIndex += 1) {
         RTSkillValueDataRef SkillValue = &SkillData->SkillValues[ValueIndex];
         Int64 ForceValue = RTCalculateSkillValue(SkillValue, BuffSlot->SkillLevel, BuffSlot->Rage);
 

@@ -32,7 +32,7 @@ Bool RTCharacterConsumeForceGem(
 Bool RTAccountIsCharacterSlotOpen(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
-	Int32 Index
+	Int Index
 );
 
 Bool RTAccountOpenCharacterSlot(

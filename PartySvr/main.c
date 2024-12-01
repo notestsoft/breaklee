@@ -59,7 +59,7 @@ Void ServerOnUpdate(
     
     DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(Context->PartyManager->CharacterToPartyInvite);
     while (Iterator.Key) {
-        Index PartyInvitationPoolIndex = *(Index*)Iterator.Value;
+        Int PartyInvitationPoolIndex = *(Int*)Iterator.Value;
         Iterator = DictionaryKeyIteratorNext(Iterator);
 
         RTPartyInvitationRef Invitation = (RTPartyInvitationRef)MemoryPoolFetch(Context->PartyManager->PartyInvitationPool, PartyInvitationPoolIndex);
@@ -67,7 +67,7 @@ Void ServerOnUpdate(
         assert(Party);
 
         if (Invitation->InvitationTimestamp + Context->Config.PartySvr.PartyInvitationTimeout < CurrentTimestamp) {
-            Index* InviterWorldIndex = (Index*)DictionaryLookup(Context->CharacterToWorldServer, &Invitation->InviterCharacterIndex);
+            Int* InviterWorldIndex = (Int*)DictionaryLookup(Context->CharacterToWorldServer, &Invitation->InviterCharacterIndex);
             if (InviterWorldIndex) {
                 IPC_P2W_DATA_PARTY_INVITE_TIMEOUT* Notification = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, P2W, PARTY_INVITE_TIMEOUT);
                 Notification->Header.Source = Server->IPCSocket->NodeID;
@@ -79,8 +79,8 @@ Void ServerOnUpdate(
                 IPCSocketUnicast(Server->IPCSocket, Notification);
             }
 
-            Index InvitedCharacterIndex = Invitation->Member.CharacterIndex;
-            Index* InvitedWorldIndex = (Index*)DictionaryLookup(Context->CharacterToWorldServer, &InvitedCharacterIndex);
+            Int InvitedCharacterIndex = Invitation->Member.CharacterIndex;
+            Int* InvitedWorldIndex = (Int*)DictionaryLookup(Context->CharacterToWorldServer, &InvitedCharacterIndex);
             if (InvitedWorldIndex) {
                 IPC_P2W_DATA_PARTY_INVITE_TIMEOUT* Notification = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, P2W, PARTY_INVITE_TIMEOUT);
                 Notification->Header.Source = Server->IPCSocket->NodeID;

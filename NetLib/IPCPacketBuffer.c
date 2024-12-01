@@ -8,8 +8,8 @@ struct _IPCPacketBuffer {
 
 IPCPacketBufferRef IPCPacketBufferCreate(
     AllocatorRef Allocator,
-    Index Alignment,
-    Index Length
+    Int Alignment,
+    Int Length
 ) {
     IPCPacketBufferRef PacketBuffer = (IPCPacketBufferRef)AllocatorAllocate(Allocator, sizeof(struct _IPCPacketBuffer));
     if (!PacketBuffer) Fatal("PacketBuffer allocation failed!");
@@ -42,7 +42,7 @@ Void* _IPCPacketBufferInit(
 
 Void* IPCPacketBufferAppend(
     IPCPacketBufferRef PacketBuffer,
-    Index Length
+    Int Length
 ) {
     if (Length < 1) return NULL;
     IPCPacketRef Packet = (IPCPacketRef)MemoryBufferGetMemory(PacketBuffer->MemoryBuffer, 0);
@@ -54,7 +54,7 @@ Void* IPCPacketBufferAppend(
 Void* IPCPacketBufferAppendCopy(
     IPCPacketBufferRef PacketBuffer,
     Void* Source,
-    Index Length
+    Int Length
 ) {
     if (Length < 1) return NULL;
     Void* Memory = IPCPacketBufferAppend(PacketBuffer, Length);
@@ -66,7 +66,7 @@ CString IPCPacketBufferAppendCString(
     IPCPacketBufferRef PacketBuffer,
     CString Value
 ) {
-    return (CString)IPCPacketBufferAppendCopy(PacketBuffer, (Void*)Value, (Index)strlen(Value) + 1);
+    return (CString)IPCPacketBufferAppendCopy(PacketBuffer, (Void*)Value, (Int)strlen(Value) + 1);
 }
 
 Void IPCPacketLogBytes(
@@ -77,7 +77,7 @@ Void IPCPacketLogBytes(
 
     fprintf(stdout, "Packet Size: %d\n", Length);
 
-    for (Int32 Index = 0; Index < Length; Index += 1) {
+    for (Int Index = 0; Index < Length; Index += 1) {
         fprintf(stdout, "%02hhX ", Buffer[Index]);
     }
 

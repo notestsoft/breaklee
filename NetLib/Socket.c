@@ -10,7 +10,7 @@ struct _SocketConnectionWriteRequest {
 SocketConnectionRef SocketReserveConnection(
     SocketRef Socket
 ) {
-    Index ConnectionPoolIndex = 0;
+    Int ConnectionPoolIndex = 0;
     SocketConnectionRef Connection = (SocketConnectionRef)MemoryPoolReserveNext(Socket->ConnectionPool, &ConnectionPoolIndex);
     IndexSetInsert(Socket->ConnectionIndices, ConnectionPoolIndex);
     memset(Connection, 0, sizeof(struct _SocketConnection));
@@ -103,7 +103,7 @@ Void _AllocateRecvBuffer(
 ) {
     SocketConnectionRef Connection = (SocketConnectionRef)Handle->data;
     MemoryRef RecvBuffer = Connection->RecvBuffer;
-    Index RecvBufferLength = Connection->RecvBufferLength;
+    Int RecvBufferLength = Connection->RecvBufferLength;
     if (RecvBuffer) SuggestedSize = MAX(SuggestedSize, RecvBufferLength);
 
     if (!RecvBuffer) {
@@ -300,7 +300,7 @@ SocketRef SocketCreate(
     Socket->DeferredWriteRequests = ArrayCreateEmpty(Allocator, sizeof(struct _SocketConnectionWriteRequest*), 8);
     Socket->Userdata = Userdata;
 
-    for (Int32 Index = 0; Index < PacketBufferBacklogSize; Index += 1) {
+    for (Int Index = 0; Index < PacketBufferBacklogSize; Index += 1) {
         PacketBufferRef PacketBuffer = (PacketBufferRef)ArrayAppendUninitializedElement(Socket->PacketBufferBacklog);
         PacketBufferInitialize(PacketBuffer, Allocator, ProtocolIdentifier, ProtocolVersion, ProtocolExtension, 4, WriteBufferSize, Flags & SOCKET_FLAGS_CLIENT);
     }
@@ -311,7 +311,7 @@ SocketRef SocketCreate(
 Void SocketDestroy(
     SocketRef Socket
 ) {
-    for (Int32 Index = 0; Index < ArrayGetElementCount(Socket->PacketBufferBacklog); Index += 1) {
+    for (Int Index = 0; Index < ArrayGetElementCount(Socket->PacketBufferBacklog); Index += 1) {
         PacketBufferRef PacketBuffer = (PacketBufferRef)ArrayGetElementAtIndex(Socket->PacketBufferBacklog, Index);
         PacketBufferFree(PacketBuffer);
     }
@@ -391,7 +391,7 @@ Void _OnWrite(
 Void SocketProcessDeferred(
     SocketRef Socket
 ) {
-    for (Int32 Index = 0; Index < ArrayGetElementCount(Socket->DeferredWriteRequests); Index += 1) {
+    for (Int Index = 0; Index < ArrayGetElementCount(Socket->DeferredWriteRequests); Index += 1) {
         struct _SocketConnectionWriteRequest* WriteRequest = *(struct _SocketConnectionWriteRequest**)ArrayGetElementAtIndex(Socket->DeferredWriteRequests, Index);
         SocketConnectionRef Connection = (SocketConnectionRef)WriteRequest->Request.data;
         uv_write(&WriteRequest->Request, (uv_stream_t*)Connection->Handle, &WriteRequest->Buffer, 1, _OnWrite);
@@ -483,7 +483,7 @@ Void SocketSendAllRaw(
 
     IndexSetIteratorRef Iterator = IndexSetGetIterator(Socket->ConnectionIndices);
     while (Iterator) {
-        Index ConnectionPoolIndex = Iterator->Value;
+        Int ConnectionPoolIndex = Iterator->Value;
         Iterator = IndexSetIteratorNext(Socket->ConnectionIndices, Iterator);
 
         SocketConnectionRef Connection = (SocketConnectionRef)MemoryPoolFetch(Socket->ConnectionPool, ConnectionPoolIndex);
@@ -538,7 +538,7 @@ Void SocketSendAll(
 
     IndexSetIteratorRef Iterator = IndexSetGetIterator(Socket->ConnectionIndices);
     while (Iterator) {
-        Index ConnectionPoolIndex = Iterator->Value;
+        Int ConnectionPoolIndex = Iterator->Value;
         Iterator = IndexSetIteratorNext(Socket->ConnectionIndices, Iterator);
 
         SocketConnectionRef Connection = (SocketConnectionRef)MemoryPoolFetch(Socket->ConnectionPool, ConnectionPoolIndex);
@@ -562,7 +562,7 @@ Void SocketDisconnect(
     uv_close((uv_handle_t*)Connection->Handle, _OnClose);
 }
 
-Index SocketGetConnectionCount(
+Int SocketGetConnectionCount(
     SocketRef Socket
 ) {
     return IndexSetGetElementCount(Socket->ConnectionIndices);
@@ -570,11 +570,11 @@ Index SocketGetConnectionCount(
 
 SocketConnectionRef SocketGetConnection(
     SocketRef Socket,
-    Index ConnectionID
+    Int ConnectionID
 ) {
     IndexSetIteratorRef Iterator = IndexSetGetIterator(Socket->ConnectionIndices);
     while (Iterator) {
-        Index ConnectionPoolIndex = Iterator->Value;
+        Int ConnectionPoolIndex = Iterator->Value;
         Iterator = IndexSetIteratorNext(Socket->ConnectionIndices, Iterator);
 
         SocketConnectionRef Connection = (SocketConnectionRef)MemoryPoolFetch(Socket->ConnectionPool, ConnectionPoolIndex);

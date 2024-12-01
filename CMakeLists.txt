@@ -8,6 +8,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG=1")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/CMake)
 
 option(CONFIG_BUILD_TARGET_AUCTION_SVR "Build Auction Server" ON)
 option(CONFIG_BUILD_TARGET_BREAKLEE "Build Breaklee" ON)
@@ -20,11 +21,16 @@ option(CONFIG_BUILD_TARGET_WORLD_SVR "Build World Server" ON)
 
 include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 
+if (MSVC)
+    add_compile_options(/ZI)
+endif()
+
 find_package(libuv REQUIRED)
 find_package(lua REQUIRED)
-find_package(OpenSSL REQUIRED)
-find_package(ZLIB REQUIRED)
 find_package(ODBC REQUIRED)
+find_package(OpenSSL REQUIRED)
+find_package(SQLite3 REQUIRED)
+find_package(ZLIB REQUIRED)
 
 file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/)
 

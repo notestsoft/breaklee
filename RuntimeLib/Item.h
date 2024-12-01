@@ -317,7 +317,7 @@ struct _RTItemData {
 		} MeritMedal;
 
 		struct {
-			Int32 Index;
+			Int Index;
 		} BlessingBead;
 
 		// TODO: Add other item types like potion, pet, ...
@@ -578,7 +578,7 @@ Bool RTItemOptionPushSlots(
 
 Void RTItemOptionClearForceSlot(
 	RTItemOptions* Options,
-	Int32 Index
+	Int Index
 );
 
 Void RTItemOptionClearSecondForceSlot(

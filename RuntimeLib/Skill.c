@@ -67,7 +67,7 @@ Bool RTCheckSkillTargetDistance(
 	Int32 MaxDistance = (Skill->RangeType == RUNTIME_SKILL_RANGE_TYPE_RECT) ? Skill->Range - 1 : Skill->MaxReach;
 	MaxDistance += ErrorTolerance;
 
-	for (Int32 Index = 0; Index < 9; Index++) {
+	for (Int Index = 0; Index < 9; Index++) {
 		Int32 Distance = RTCalculateDistance(TargetX, TargetY, Permutations[Index][0], Permutations[Index][1]);
 		if (Distance <= MaxDistance) return true;
 	}
@@ -170,7 +170,7 @@ Int32 RTCharacterGetBattleModeSkillIndex(
 		RUNTIME_SPECIAL_SKILL_SLOT_BATTLE_MODE_3,
 	};
 
-	for (Int32 Index = 0; Index < sizeof(SkillSlotIndices) / sizeof(SkillSlotIndices[0]); Index += 1) {
+	for (Int Index = 0; Index < sizeof(SkillSlotIndices) / sizeof(SkillSlotIndices[0]); Index += 1) {
 		RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotBySlotIndex(Runtime, Character, SkillSlotIndices[Index]);
 		if (!SkillSlot) continue;
 
@@ -226,7 +226,7 @@ Int32 RTCharacterGetAuraModeIndexForSkillIndex(
 	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotBySkillIndex(Runtime, Character, SkillIndex);
 	if (!SkillSlot) return 0;
 
-	for (Int32 Index = 0; Index < SkillSlotCount; Index += 1) {
+	for (Int Index = 0; Index < SkillSlotCount; Index += 1) {
 		if (SkillSlotIndices[Index] == SkillSlot->Index) return Index + 1;
 	}
 

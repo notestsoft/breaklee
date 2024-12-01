@@ -31,7 +31,7 @@ Void SendPremiumServiceList(
     S2C_DATA_PREMIUM_BENEFIT_INFO_LIST* Response = PacketBufferInitExtended(PacketBuffer, S2C, PREMIUM_BENEFIT_INFO_LIST);
     Response->Count = Context->Runtime->Context->PremiumServiceCount;
 
-    for (Index Index = 0; Index < Context->Runtime->Context->PremiumServiceCount; Index += 1) {
+    for (Int Index = 0; Index < Context->Runtime->Context->PremiumServiceCount; Index += 1) {
         RTDataPremiumServiceRef PremiumService = &Context->Runtime->Context->PremiumServiceList[Index];
 
         S2C_DATA_PREMIUM_BENEFIT_INFO* ResponseInfo = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_PREMIUM_BENEFIT_INFO);

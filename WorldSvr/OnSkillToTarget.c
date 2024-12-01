@@ -82,7 +82,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_TARGET) {
 
 		// TODO: Validate Targets
 
-		for (Int32 TargetIndex = 0; TargetIndex < PacketData->TargetCount; TargetIndex += 1) {
+		for (Int TargetIndex = 0; TargetIndex < PacketData->TargetCount; TargetIndex += 1) {
 			RTEntityID TargetID = PacketTargetData[TargetIndex].TargetID;
 			UInt8 TargetIDType = PacketTargetData[TargetIndex].TargetType;
 

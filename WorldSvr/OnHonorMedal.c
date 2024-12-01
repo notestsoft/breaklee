@@ -18,7 +18,7 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_UNLOCK_SLOT) {
 
     RTDataHonorMedalSlotOpenMedalRef HonorMedalSlotOpenMedal1 = NULL;
     RTDataHonorMedalSlotOpenMedalRef HonorMedalSlotOpenMedal2 = NULL;
-    for (Index Index = 0; Index < HonorMedalSlotOpenCategory->HonorMedalSlotOpenMedalCount; Index += 1) {
+    for (Int Index = 0; Index < HonorMedalSlotOpenCategory->HonorMedalSlotOpenMedalCount; Index += 1) {
         RTDataHonorMedalSlotOpenMedalRef HonorMedalSlotOpenMedal = &HonorMedalSlotOpenCategory->HonorMedalSlotOpenMedalList[Index];
         if (HonorMedalSlotOpenMedal->Group != Packet->GroupIndex) continue;
 
@@ -36,7 +36,7 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_UNLOCK_SLOT) {
     if (HonorMedalSlotOpenMedal1) {
         if (HonorMedalSlotOpenMedal1->ItemCount != Packet->MaterialSlotCount1) goto error;
 
-        for (Index Index = 0; Index < Packet->MaterialSlotCount1; Index += 1) {
+        for (Int Index = 0; Index < Packet->MaterialSlotCount1; Index += 1) {
             RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex1[Index]);
             if (!ItemSlot || HonorMedalSlotOpenMedal1->ItemID != ItemSlot->Item.ID) goto error;
         }
@@ -45,7 +45,7 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_UNLOCK_SLOT) {
     if (HonorMedalSlotOpenMedal2) {
         if (HonorMedalSlotOpenMedal2->ItemCount != Packet->MaterialSlotCount2) goto error;
 
-        for (Index Index = 0; Index < Packet->MaterialSlotCount1; Index += 1) {
+        for (Int Index = 0; Index < Packet->MaterialSlotCount1; Index += 1) {
             RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex2[Index]);
             if (!ItemSlot || HonorMedalSlotOpenMedal2->ItemID != ItemSlot->Item.ID) goto error;
         }
@@ -54,11 +54,11 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_UNLOCK_SLOT) {
     if (Packet->MaterialSlotCount2 > 0 && !HonorMedalSlotOpenMedal2) goto error;
     if (!RTCharacterCanAddHonorMedalSlot(Runtime, Character, Packet->CategoryIndex, Packet->GroupIndex, Packet->SlotIndex)) goto error;
 
-    for (Index Index = 0; Index < Packet->MaterialSlotCount1; Index += 1) {
+    for (Int Index = 0; Index < Packet->MaterialSlotCount1; Index += 1) {
         RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex1[Index]);
     }
 
-    for (Index Index = 0; Index < Packet->MaterialSlotCount1; Index += 1) {
+    for (Int Index = 0; Index < Packet->MaterialSlotCount1; Index += 1) {
         RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex2[Index]);
     }
 
@@ -108,7 +108,7 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_ROLL_SLOT) {
     Int32 Seed = (Int32)PlatformGetTickCount();
     Int32 DropRate = RandomRange(&Seed, 0, 1000);
     Int32 DropRateOffset = 0;
-    for (Int32 Index = 0; Index < Group->HonorMedalUpgradeMedalCount; Index += 1) {
+    for (Int Index = 0; Index < Group->HonorMedalUpgradeMedalCount; Index += 1) {
         if (DropRate <= Group->HonorMedalUpgradeMedalList[Index].Rate + DropRateOffset) {
             Slot->ForceEffectIndex = Group->HonorMedalUpgradeMedalList[Index].ForceEffectIndex;
             break;
@@ -166,7 +166,7 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_SEALING) {
         RTItemHonorMedalSealData SealData = { 0 };
         SealData.Group = Packet->GroupIndex;
 
-        for (Int32 SlotIndex = 0; SlotIndex < SlotCountMedal->SlotCount; SlotIndex += 1) {
+        for (Int SlotIndex = 0; SlotIndex < SlotCountMedal->SlotCount; SlotIndex += 1) {
             RTHonorMedalSlotRef MedalSlot = RTCharacterGetHonorMedalSlot(Runtime, Character, CategoryIndex, Packet->GroupIndex, SlotIndex);
             if (!MedalSlot) continue;
             if (!MedalSlot->IsUnlocked) continue;
@@ -193,14 +193,14 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_SEALING) {
         RTDataHonorMedalSlotCountMedalRef SlotCountMedal = RTRuntimeDataHonorMedalSlotCountMedalGet(SlotCountCategory, SealData.Group);
         if (!SlotCountMedal) goto error;
 
-        for (Int32 SlotIndex = 0; SlotIndex < SlotCountMedal->SlotCount; SlotIndex += 1) {
+        for (Int SlotIndex = 0; SlotIndex < SlotCountMedal->SlotCount; SlotIndex += 1) {
             RTHonorMedalSlotRef MedalSlot = RTCharacterGetHonorMedalSlot(Runtime, Character, CategoryIndex, SealData.Group, SlotIndex);
             if (!MedalSlot) goto error;
             if (!MedalSlot->IsUnlocked) goto error;
             if (MedalSlot->ForceEffectIndex > 0) goto error;
         }
 
-        for (Int32 SlotIndex = 0; SlotIndex < SlotCountMedal->SlotCount; SlotIndex += 1) {
+        for (Int SlotIndex = 0; SlotIndex < SlotCountMedal->SlotCount; SlotIndex += 1) {
             RTHonorMedalSlotRef MedalSlot = RTCharacterGetHonorMedalSlot(Runtime, Character, CategoryIndex, SealData.Group, SlotIndex);
             assert(MedalSlot && MedalSlot->IsUnlocked);
 

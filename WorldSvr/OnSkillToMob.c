@@ -83,7 +83,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 	RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
 
 	// TODO: Add evaluation for each target
-	for (Int32 Index = 0; Index < Packet->TargetCount; Index += 1) {
+	for (Int Index = 0; Index < Packet->TargetCount; Index += 1) {
 		C2S_DATA_SKILL_TO_MOB_TARGET* Target = &Packet->Data[Index];
 		S2C_DATA_SKILL_TO_MOB_TARGET* TargetResponse = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_SKILL_TO_MOB_TARGET);
 		TargetResponse->Entity = Target->Entity;
@@ -187,7 +187,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 	Notification->CharacterHP = Response->CharacterHP;
 	Notification->Shield = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_ABSOLUTE_DAMAGE];
 
-	for (Int32 Index = 0; Index < Response->TargetCount; Index++) {
+	for (Int Index = 0; Index < Response->TargetCount; Index++) {
 		S2C_DATA_SKILL_TO_MOB_TARGET* TargetResponse = &Response->Data[Index];
 		S2C_DATA_NFY_SKILL_TO_MOB_TARGET* TargetNotification = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_NFY_SKILL_TO_MOB_TARGET);
 		TargetNotification->Entity = TargetResponse->Entity;
