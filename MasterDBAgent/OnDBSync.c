@@ -533,7 +533,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 				Context->Database,
 				"SyncMercenary",
 				DB_INPUT_INT32(Packet->CharacterIndex),
-				DB_INPUT_UINT16(Info->SlotCount),
+				DB_INPUT_INT32(Info->SlotCount),
 				DB_INPUT_DATA(Slots, SlotsLength),
 				DB_PARAM_END
 			)) {

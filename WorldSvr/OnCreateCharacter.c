@@ -73,40 +73,41 @@ CLIENT_PROCEDURE_BINDING(CREATE_CHARACTER) {
 	Request->PositionY = CharacterInit->Y;
 
 	struct _RTCharacterEquipmentData EquipmentData = { 0 };
-	if (CharacterInit->Suit > 0) {
+	if (CharacterInit->Suit != UINT32_MAX) {
 		RTItemSlotRef ItemSlot = &EquipmentData.EquipmentSlots[EquipmentData.Info.EquipmentSlotCount];
 		ItemSlot->Item.ID = CharacterInit->Suit;
 		ItemSlot->SlotIndex = RUNTIME_EQUIPMENT_SLOT_INDEX_SUIT;
 		EquipmentData.Info.EquipmentSlotCount += 1;
 	}
 
-	if (CharacterInit->Glove > 0) {
+	if (CharacterInit->Glove != UINT32_MAX) {
 		RTItemSlotRef ItemSlot = &EquipmentData.EquipmentSlots[EquipmentData.Info.EquipmentSlotCount];
 		ItemSlot->Item.ID = CharacterInit->Glove;
 		ItemSlot->SlotIndex = RUNTIME_EQUIPMENT_SLOT_INDEX_GLOVES;
 		EquipmentData.Info.EquipmentSlotCount += 1;
 	}
 
-	if (CharacterInit->Boot > 0) {
+	if (CharacterInit->Boot != UINT32_MAX) {
 		RTItemSlotRef ItemSlot = &EquipmentData.EquipmentSlots[EquipmentData.Info.EquipmentSlotCount];
 		ItemSlot->Item.ID = CharacterInit->Boot;
 		ItemSlot->SlotIndex = RUNTIME_EQUIPMENT_SLOT_INDEX_BOOTS;
 		EquipmentData.Info.EquipmentSlotCount += 1;
 	}
 
-	if (CharacterInit->RightHand > 0) {
+	if (CharacterInit->RightHand != UINT32_MAX) {
 		RTItemSlotRef ItemSlot = &EquipmentData.EquipmentSlots[EquipmentData.Info.EquipmentSlotCount];
 		ItemSlot->Item.ID = CharacterInit->RightHand;
 		ItemSlot->SlotIndex = RUNTIME_EQUIPMENT_SLOT_INDEX_WEAPON_RIGHT;
 		EquipmentData.Info.EquipmentSlotCount += 1;
 	}
 
-	if (CharacterInit->LeftHand > 0) {
+	if (CharacterInit->LeftHand != UINT32_MAX) {
 		RTItemSlotRef ItemSlot = &EquipmentData.EquipmentSlots[EquipmentData.Info.EquipmentSlotCount];
 		ItemSlot->Item.ID = CharacterInit->LeftHand;
 		ItemSlot->SlotIndex = RUNTIME_EQUIPMENT_SLOT_INDEX_WEAPON_LEFT;
 		EquipmentData.Info.EquipmentSlotCount += 1;
 	}
+
 	IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &EquipmentData.Info, sizeof(struct _RTEquipmentInfo));
 	IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, EquipmentData.EquipmentSlots, sizeof(struct _RTItemSlot) * EquipmentData.Info.EquipmentSlotCount);
 	IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, EquipmentData.InventorySlots, sizeof(struct _RTItemSlot) * EquipmentData.Info.InventorySlotCount);

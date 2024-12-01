@@ -37,7 +37,7 @@ Void RTMobPatternInsertActionState(
 	RTMobActionGroupDataRef ActionGroupData,
 	RTMobActionDataRef ActionData
 ) {
-	Trace("EnqueueAction(%d, %d, %d) on Mob(%d:%llu:%llu)",
+	Trace("EnqueueAction(%d, %d, %d) on Mob(%d:%d:%d)",
 		TriggerData->Index,
 		ActionGroupData->Index,
 		ActionData->Index,
@@ -110,7 +110,7 @@ Void RTMobPatternStartAction(
 	RTMobPatternRef MobPattern,
 	RTMobActionStateRef ActionState
 ) {
-	Trace("StartAction(%d, %d, %d) on Mob(%d:%llu:%llu)",
+	Trace("StartAction(%d, %d, %d) on Mob(%d:%d:%d)",
 		ActionState->TriggerData->Index,
 		ActionState->ActionGroupData->Index,
 		ActionState->ActionData->Index,
@@ -382,7 +382,7 @@ Void RTMobPatternCancelAction(
 	RTMobPatternRef MobPattern,
 	RTMobActionStateRef ActionState
 ) {
-	Trace("CancelAction(%d, %d, %d) on Mob(%d:%llu:%llu)",
+	Trace("CancelAction(%d, %d, %d) on Mob(%d:%d:%d)",
 		ActionState->TriggerData->Index,
 		ActionState->ActionGroupData->Index,
 		ActionState->ActionData->Index,

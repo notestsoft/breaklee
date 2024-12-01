@@ -1,6 +1,6 @@
 CREATE PROCEDURE SyncMercenary (
     IN InCharacterID INT,
-    IN InSlotCount SMALLINT UNSIGNED,
+    IN InSlotCount INT,
     IN InSlotData BLOB
 )
 BEGIN

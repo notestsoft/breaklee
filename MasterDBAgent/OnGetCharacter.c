@@ -125,7 +125,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_INT16, &Response->Character.VehicleInventoryInfo.SlotCount,
         DB_TYPE_INT16, &Response->Character.SkillSlotInfo.SlotCount,
         DB_TYPE_INT16, &Response->Character.QuickSlotInfo.SlotCount,
-        DB_TYPE_INT16, &Response->Character.MercenaryInfo.SlotCount,
+        DB_TYPE_INT32, &Response->Character.MercenaryInfo.SlotCount,
         DB_TYPE_INT16, &Response->Character.ItemPeriodCount,
         DB_TYPE_INT16, &Response->Character.AbilityInfo.APTotal,
         DB_TYPE_INT16, &Response->Character.AbilityInfo.AP,

@@ -1,6 +1,6 @@
 CREATE TABLE Mercenary (
     CharacterID INT NOT NULL,
-    SlotCount SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+    SlotCount INT UNSIGNED NOT NULL DEFAULT 0,
     SlotData BLOB NOT NULL,
     
     PRIMARY KEY (CharacterID),
