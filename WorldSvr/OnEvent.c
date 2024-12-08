@@ -148,7 +148,6 @@ CLIENT_PROCEDURE_BINDING(EVENT_ACTION) {
 			CString ScriptFilePath = PathCombineNoAlloc(Context->Config.WorldSvr.ScriptDataPath, EventItem->Script);
 			RTScriptRef Script = RTScriptManagerLoadScript(Runtime->ScriptManager, ScriptFilePath);
 			RTScriptCallOnEvent(Script, Runtime, Character);
-			RTScriptManagerUnloadScript(Runtime->ScriptManager, Script);
 
 			S2C_DATA_EVENT_ACTION* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, EVENT_ACTION);
 			Response->EventIndex = Packet->EventIndex;

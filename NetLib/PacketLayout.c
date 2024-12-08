@@ -708,7 +708,7 @@ Bool PacketLayoutParse(
            
             lua_createtable(State, (Int32)PacketField->Length, 0);
             for (Int ChildIndex = 0; ChildIndex < PacketField->Length; ChildIndex += 1) {
-                lua_pushinteger(State, ChildIndex + 1);
+                lua_pushinteger(State, (lua_Integer)ChildIndex + 1);
                 if (!PacketLayoutParse(Child, Buffer, OutOffset, Length, State)) return false;
 
                 lua_settable(State, -3);
@@ -725,7 +725,7 @@ Bool PacketLayoutParse(
             
             lua_createtable(State, Count, 0);
             for (Int ChildIndex = 0; ChildIndex < Count; ChildIndex += 1) {
-                lua_pushinteger(State, ChildIndex + 1);
+                lua_pushinteger(State, (lua_Integer)ChildIndex + 1);
                 if (!PacketLayoutParse(Child, Buffer, OutOffset, Length, State)) return false;
 
                 lua_settable(State, -3);

@@ -138,6 +138,11 @@ PacketBufferRef SocketGetNextPacketBuffer(
     SocketRef Socket
 );
 
+UInt16 SocketGetPacketMagic(
+    SocketRef Socket,
+    Bool Extended
+);
+
 Void SocketSendRaw(
     SocketRef Socket,
     SocketConnectionRef Connection,

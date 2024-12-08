@@ -4,14 +4,14 @@
 
 struct _DictionaryBucket {
     UInt64 Hash;
-    Int32 KeyOffset;
-    Int32 ElementOffset;
+    Int KeyOffset;
+    Int ElementOffset;
     Bool IsFilled;
     struct _DictionaryBucket* Next;
 };
 
 struct _DictionaryBuffer {
-    Int32 Offset;
+    Int Offset;
     Int Capacity;
     MemoryRef Memory;
 };
@@ -26,11 +26,11 @@ struct _Dictionary {
     DictionaryBuffer KeyBuffer;
     DictionaryBuffer ElementBuffer;
     Int Capacity;
-    Int32 ElementCount;
+    Int ElementCount;
     DictionaryBucketRef* Buckets;
 };
 
-const Int32 _kDictionaryBufferDefaultCapacity = 65535;
+const Int _kDictionaryBufferDefaultCapacity = 65535;
 const Float32 _kDictionaryBufferGrowthFactor = 1.5;
 
 static inline Void _DictionaryBufferInit(

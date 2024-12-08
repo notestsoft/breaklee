@@ -24,4 +24,10 @@ struct _RTCharacterMercenaryInfo {
 
 #pragma pack(pop)
 
+Bool RTCharacterRegisterMercenaryCard(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt16 InventorySlotIndex
+);
+
 EXTERN_C_END

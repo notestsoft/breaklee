@@ -380,7 +380,6 @@ Void _OnWrite(
         Error("Write error: %s\n", uv_strerror(Status));
 
         if (Status == UV_ECONNRESET || Status == UV_ECONNREFUSED) {
-            assert((uv_stream_t*)Connection->Handle == WriteRequest->handle);
             SocketDisconnect(Connection->Socket, Connection);
         }
     }
@@ -403,6 +402,7 @@ Void SocketProcessDeferred(
 PacketBufferRef SocketGetNextPacketBuffer(
     SocketRef Socket
 ) {
+    // TODO: If this is reallocating while containing packets its causing dangling pointers!
     if (Socket->PacketBufferIndex >= ArrayGetElementCount(Socket->PacketBufferBacklog)) {
         PacketBufferRef PacketBuffer = (PacketBufferRef)ArrayAppendUninitializedElement(Socket->PacketBufferBacklog);
         PacketBufferInitialize(
@@ -420,6 +420,22 @@ PacketBufferRef SocketGetNextPacketBuffer(
     PacketBufferRef PacketBuffer = (PacketBufferRef)ArrayGetElementAtIndex(Socket->PacketBufferBacklog, Socket->PacketBufferIndex);
     Socket->PacketBufferIndex += 1;
     return PacketBuffer;
+}
+
+UInt16 SocketGetPacketMagic(
+    SocketRef Socket,
+    Bool Extended
+) {
+    if (Socket->Flags & SOCKET_FLAGS_CLIENT) {
+        return Socket->ProtocolIdentifier + Socket->ProtocolVersion;
+    }
+    else {
+        if (Extended) {
+            return Socket->ProtocolIdentifier + Socket->ProtocolVersion + Socket->ProtocolExtension;
+        }
+
+        return Socket->ProtocolIdentifier + Socket->ProtocolVersion;
+    }
 }
 
 Void SocketSendRaw(

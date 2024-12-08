@@ -160,7 +160,7 @@ Void ServerRun(
 
     while (!ApplicationIsShuttingDown()) {
         if (Server->OnUpdate) Server->OnUpdate(Server, Server->Userdata);
-        
+
         for (Int Index = 0; Index < ArrayGetElementCount(Server->Sockets); Index += 1) {
             ServerSocketContextRef SocketContext = (ServerSocketContextRef)ArrayGetElementAtIndex(Server->Sockets, Index);
             
@@ -174,7 +174,6 @@ Void ServerRun(
         }
 
         IPCSocketUpdate(Server->IPCSocket);
-
         PlatformSleep(1);
     }
 }

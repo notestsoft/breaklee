@@ -46,13 +46,20 @@ RTSkillSlotRef RTCharacterAddSkillSlot(
 ) {
 	if (Character->Data.SkillSlotInfo.Info.SlotCount >= RUNTIME_CHARACTER_MAX_SKILL_SLOT_COUNT) return NULL;
 
+	RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillID);
+	if (!SkillData) return NULL;
+
 	RTSkillSlotRef SkillSlot = &Character->Data.SkillSlotInfo.Slots[Character->Data.SkillSlotInfo.Info.SlotCount];
 	SkillSlot->ID = SkillID;
 	SkillSlot->Level = Level;
 	SkillSlot->Index = SlotIndex;
 	Character->Data.SkillSlotInfo.Info.SlotCount += 1;
 	Character->SyncMask.SkillSlotInfo = true;
-	RTCharacterInitializeAttributes(Runtime, Character);
+
+	if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_PASSIVE) {
+		RTCharacterInitializeAttributes(Runtime, Character);
+	}
+
 	return SkillSlot;
 }
 

@@ -469,7 +469,6 @@ Void OnWrite(
         Error("Write error: %s\n", uv_strerror(Status));
 
         if (Status == UV_ECONNRESET || Status == UV_ECONNREFUSED) {
-            assert((uv_stream_t*)Connection->Handle == WriteRequest->handle);
             IPCSocketDisconnect(Connection->Socket, Connection);
         }
     }

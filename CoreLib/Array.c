@@ -28,7 +28,7 @@ ArrayRef ArrayCreate(
     Int Count
 ) {
     ArrayRef Array = ArrayCreateEmpty(Allocator, Size, Count);
-    memcpy(Array->Memory, Memory, Size * Count);
+    memcpy(Array->Memory, Memory, (size_t)Size * Count);
     return Array;
 }
 

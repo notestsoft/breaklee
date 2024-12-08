@@ -704,6 +704,11 @@ Void RTCharacterCancelForceEffect(
     Int ForceValueType
 ) {
     RTForceEffectFormulaRef Formula = (RTForceEffectFormulaRef)MemoryPoolFetch(Runtime->ForceEffectFormulaPool, ForceEffectIndex);
+    if (!Formula) {
+        Warn("No formula found for index(%d)", ForceEffectIndex);
+        return;
+    }
+    
     Formula->OnCancel(Runtime, Formula, Source, &Character->Attributes, ForceValue);
 }
 
@@ -718,6 +723,11 @@ Void RTMobApplyForceEffect(
     // TODO: Check if ForceValueType is relevant for the runtime
     if (ForceEffectIndex < 1) return;
     RTForceEffectFormulaRef Formula = (RTForceEffectFormulaRef)MemoryPoolFetch(Runtime->ForceEffectFormulaPool, ForceEffectIndex);
+    if (!Formula) {
+        Warn("No formula found for index(%d)", ForceEffectIndex);
+        return;
+    }
+
     Formula->OnApply(Runtime, Formula, Source, &Mob->Attributes, ForceValue);
 }
 

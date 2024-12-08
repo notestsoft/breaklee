@@ -9,7 +9,7 @@ Void SendRuntimeNotification(
     SocketConnectionRef Connection,
     RTNotificationRef Notification
 ) {
-    Notification->Magic = PacketBufferGetMagic(SocketGetNextPacketBuffer(Socket), false);
+    Notification->Magic = SocketGetPacketMagic(Socket, false);
     SocketSend(Socket, Connection, Notification);
 }
 
