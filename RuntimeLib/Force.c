@@ -45,9 +45,11 @@ Void RTForceEffectApplyIncreaseRage(
     Int64 Value
 ) {
     for (Int Index = 0; Index < Formula->AttributeCount; Index += 1) {
-        Attributes->Values[Formula->AttributeIndices[Index]] = MIN(
-            Attributes->Values[Formula->AttributeIndices[Index]] + Value,
-            Attributes->Values[Formula->AttributeIndices[RUNTIME_ATTRIBUTE_RAGE_MAX]]
+        Int AttributeIndex = Formula->AttributeIndices[Index];
+        assert(AttributeIndex < RUNTIME_ATTRIBUTE_COUNT);
+        Attributes->Values[AttributeIndex] = MIN(
+            Attributes->Values[AttributeIndex] + Value,
+            Attributes->Values[RUNTIME_ATTRIBUTE_RAGE_MAX]
         );
     }
 }
@@ -740,5 +742,10 @@ Void RTMobCancelForceEffect(
     Int ForceValueType
 ) {
     RTForceEffectFormulaRef Formula = (RTForceEffectFormulaRef)MemoryPoolFetch(Runtime->ForceEffectFormulaPool, ForceEffectIndex);
+    if (!Formula) {
+        Warn("No formula found for index(%d)", ForceEffectIndex);
+        return;
+    }
+
     Formula->OnCancel(Runtime, Formula, Source, &Mob->Attributes, ForceValue);
 }

@@ -384,6 +384,38 @@ Int32 lua_RTCharacterAddSkillSlot(lua_State* State) {
     return 0;
 }
 
+Int32 lua_RTCharacterSetNation(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    Character->Data.StyleInfo.Nation = (UInt8)luaL_checkinteger(State, 2);
+    Character->SyncMask.StyleInfo = true;
+
+    return 0;
+}
+
+Int32 lua_RTCharacterSetStats(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_STR] = (Int32)luaL_checkinteger(State, 2);
+    Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_DEX] = (Int32)luaL_checkinteger(State, 3);
+    Character->Data.Info.Stat[RUNTIME_CHARACTER_STAT_INT] = (Int32)luaL_checkinteger(State, 4);
+    Character->SyncMask.Info = true;
+
+    return 0;
+}
+
 Void RTScriptBindCharacterAPI(
 	RTScriptRef Script
 ) {
@@ -412,6 +444,8 @@ Void RTScriptBindCharacterAPI(
         "SpawnObject", lua_RTCharacterSpawnObject,
         "SpawnMob", lua_RTCharacterSpawnMob,
         "AddSkillSlot", lua_RTCharacterAddSkillSlot,
+        "SetNation", lua_RTCharacterSetNation,
+        "SetStats", lua_RTCharacterSetStats,
         NULL
     );
 }

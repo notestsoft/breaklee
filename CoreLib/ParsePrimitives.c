@@ -203,7 +203,7 @@ Bool ParseAttributeUInt8(
     if (!Data) goto error;
 
     if (Data->Length < 1 || strlen(Data->Data) < 1) {
-        *Result = UINT32_MAX;
+        *Result = UINT8_MAX;
         return true;
     }
 
@@ -227,7 +227,7 @@ Bool ParseAttributeUInt16(
     if (!Data) goto error;
 
     if (Data->Length < 1 || strlen(Data->Data) < 1) {
-        *Result = UINT32_MAX;
+        *Result = UINT16_MAX;
         return true;
     }
 
