@@ -197,7 +197,7 @@ Int PacketManagerGetLayoutIndex(
     CString Name
 ) {
     Int* PacketLayoutIndex = DictionaryLookup(PacketManager->NameToPacketLayout, Name);
-    if (!PacketLayoutIndex) return UINT64_MAX;
+    if (!PacketLayoutIndex) return -1;
 
     return *PacketLayoutIndex;
 }
@@ -215,7 +215,7 @@ PacketLayoutRef PacketManagerGetLayout(
     CString Name
 ) {
     Int Index = PacketManagerGetLayoutIndex(PacketManager, Name);
-    if (Index == UINT64_MAX) return NULL;
+    if (Index < 0) return NULL;
 
     return PacketManagerGetLayoutByIndex(PacketManager, Index);
 }
@@ -453,7 +453,7 @@ Void PacketLayoutAddStaticArray(
     Int32 Count
 ) {
     Int ChildIndex = PacketManagerGetLayoutIndex(PacketLayout->Manager, ChildName);
-    if (ChildIndex == UINT64_MAX) Fatal("Packet layout named '%s' not found!", ChildName);
+    if (ChildIndex < 0) Fatal("Packet layout named '%s' not found!", ChildName);
 
     PacketLayoutAddField(PacketLayout, Name, PACKET_FIELD_TYPE_STATIC_ARRAY, Count, ChildIndex, 0);
 }
@@ -465,7 +465,7 @@ Void PacketLayoutAddDynamicArray(
     CString CountName
 ) {
     Int ChildIndex = PacketManagerGetLayoutIndex(PacketLayout->Manager, ChildName);
-    if (ChildIndex == UINT64_MAX) Fatal("Packet layout named '%s' not found!", ChildName);
+    if (ChildIndex < 0) Fatal("Packet layout named '%s' not found!", ChildName);
 
     Int* CountIndex = DictionaryLookup(PacketLayout->NameToField, CountName);
     if (!CountIndex) Fatal("Packet field named '%s' not found!", ChildName);
@@ -1152,7 +1152,7 @@ static Int32 PacketManagerAPI_RegisterPacketHandler(
     }
     
     Int LayoutIndex = PacketManagerGetLayoutIndex(PacketManager, Name);
-    if (LayoutIndex == UINT64_MAX) {
+    if (LayoutIndex < 0) {
         return luaL_error(State, "Layout named %s not found!", Name);
     }
 

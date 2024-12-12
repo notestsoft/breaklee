@@ -91,6 +91,29 @@ Void RTInventoryFindItems(
 	RTItemSlotRef Results
 );
 
+Bool RTInventoryCanConsumeItem(
+	RTRuntimeRef Runtime,
+	RTCharacterInventoryInfoRef Inventory,
+	UInt64 RequiredItemID,
+	Int64 RequiredItemCount,
+	UInt16 InventorySlotIndex
+);
+
+Int64 RTInventoryGetConsumableItemCount(
+	RTRuntimeRef Runtime,
+	RTCharacterInventoryInfoRef Inventory,
+	UInt64 RequiredItemID,
+	UInt16 InventorySlotIndex
+);
+
+Int64 RTInventoryConsumeItem(
+	RTRuntimeRef Runtime,
+	RTCharacterInventoryInfoRef Inventory,
+	UInt64 RequiredItemID,
+	Int64 RequiredItemCount,
+	UInt16 InventorySlotIndex
+);
+
 Bool RTInventoryCanConsumeStackableItems(
 	RTRuntimeRef Runtime,
 	RTCharacterInventoryInfoRef Inventory,

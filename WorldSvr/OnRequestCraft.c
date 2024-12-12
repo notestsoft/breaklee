@@ -3,25 +3,32 @@
 #include "ClientSocket.h"
 #include "Notification.h"
 #include "Server.h"
-/*
 
-CLIENT_PROTOCOL(C2S, REQUEST_CRAFT_REGISTER, 2249, 13133,
-	C2S_DATA_SIGNATURE;
-UInt32 RequestCode;
-Int32 InventorySlotCount;
-C2S_REQUEST_CRAFT_INVENTORY_SLOT InventorySlots[0];
-// UInt8 Unknown2[4168]; - Maybe AuthCaptcha
-)
-
-*/
 CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_REGISTER) {
+	if (!Character) goto error;
+
+	RTDataRequestCraftRecipeRef RecipeData = RTRuntimeDataRequestCraftRecipeGet(Runtime->Context, Packet->RequestCode);
+	if (!RecipeData) goto error;
+
+	Int PacketLength = sizeof(C2S_DATA_REQUEST_CRAFT_REGISTER) + sizeof(struct _RTRequestCraftInventorySlot) * Packet->InventorySlotCount + sizeof(C2S_DATA_REQUEST_CRAFT_REGISTER_TAIL);
+	if (PacketLength != Packet->Length) goto error;
+
 	S2C_DATA_REQUEST_CRAFT_REGISTER* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, REQUEST_CRAFT_REGISTER);
 	Response->Result = 0;
+
+	if (RTCharacterRegisterRequestCraftRecipe(Runtime, Character, Packet->RequestCode, Packet->InventorySlotCount, Packet->InventorySlots)) {
+		Response->Result = 1;
+	}
+
 	SocketSend(Socket, Connection, Response);
 	return;
 
 error:
-	SocketDisconnect(Socket, Connection);
+	{
+		S2C_DATA_REQUEST_CRAFT_REGISTER* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, REQUEST_CRAFT_REGISTER);
+		Response->Result = 0;
+		SocketSend(Socket, Connection, Response);
+	}
 }
 
 /*

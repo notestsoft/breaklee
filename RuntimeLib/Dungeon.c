@@ -463,9 +463,7 @@ Void RTDungeonUpdateTimerItemCount(
     RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemID.ID);
     assert(ItemData);
 
-    UInt64 ItemStackSizeMask = RTItemDataGetStackSizeMask(ItemData);
-    Int64 ItemStackSize = ItemOptions & ItemStackSizeMask;
-    WorldContext->TimerItemCount += ItemStackSize;
+    WorldContext->TimerItemCount += RTItemDataGetStackSize(ItemData, ItemOptions);
 
     RTPartyRef Party = RTRuntimeGetParty(Runtime, WorldContext->Party);
     assert(Party);

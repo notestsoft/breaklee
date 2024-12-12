@@ -52,9 +52,8 @@ Int64 RTItemCalculateSellPrice(
 ) {
 	// TODO: Calculate correct sell price
 
-	UInt64 ItemStackSizeMask = RTItemDataGetStackSizeMask(ItemData);
-	Int64 ItemStackSize = ItemSlot->ItemOptions & ItemStackSizeMask;
-
+	Int64 ItemStackSize = RTItemDataGetStackSize(ItemData, ItemSlot->ItemOptions);
+	
 	if (ItemSlot->Item.IsCharacterBinding) {
 		return 0;
 	}
@@ -494,6 +493,15 @@ UInt64 RTItemDataGetStackSizeMask(
 	}
 
 	return UINT64_MAX;
+}
+
+Int64 RTItemDataGetStackSize(
+	RTItemDataRef ItemData,
+	UInt64 ItemOptions
+) {
+	UInt64 ItemStackSizeMask = RTItemDataGetStackSizeMask(ItemData);
+	Int64 ItemStackSize = ItemOptions & ItemStackSizeMask;
+	return ItemStackSize;
 }
 
 UInt64 RTItemDataGetItemOptionsOffset(

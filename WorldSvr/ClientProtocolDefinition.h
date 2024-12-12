@@ -252,8 +252,8 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     struct _RTAppearanceInfo AppearanceInfo;
     struct _RTAchievementInfo AchievementInfo;
     struct _RTCraftInfo CraftInfo;
-    struct _RTRequestCraftInfo RequestCraftInfo;
     Int32 Unknown3;
+    struct _RTRequestCraftInfo RequestCraftInfo;
     struct _RTCooldownInfo CooldownInfo;
     struct _RTUpgradeInfo UpgradeInfo;
     struct _RTGoldMeritMasteryInfo GoldMeritMasteryInfo;
@@ -3118,16 +3118,15 @@ CLIENT_PROTOCOL(S2C, NFY_CRAFT_ENERGY, DEFAULT, 2248,
     UInt32 Unknown1;
 )
 
-CLIENT_PROTOCOL_STRUCT(C2S_REQUEST_CRAFT_INVENTORY_SLOT,
-    Int32 InventorySlotIndex;
-    Int32 Count;
+CLIENT_PROTOCOL_STRUCT(C2S_DATA_REQUEST_CRAFT_REGISTER_TAIL,
+    UInt8 Unknown2[4168];
 )
 
 CLIENT_PROTOCOL(C2S, REQUEST_CRAFT_REGISTER, DEFAULT, 2249,
     UInt32 RequestCode;
     Int32 InventorySlotCount;
-    C2S_REQUEST_CRAFT_INVENTORY_SLOT InventorySlots[0];
-    // UInt8 Unknown2[4168]; - Maybe AuthCaptcha
+    struct _RTRequestCraftInventorySlot InventorySlots[0];
+    // C2S_REQUEST_CRAFT_REGISTER_TAIL Tail; - Maybe AuthCaptcha
 )
 
 CLIENT_PROTOCOL(S2C, REQUEST_CRAFT_REGISTER, DEFAULT, 2249,
@@ -3139,7 +3138,7 @@ CLIENT_PROTOCOL(C2S, REQUEST_CRAFT_START, DEFAULT, 2250,
     UInt8 RequestSlotIndex;
     Int32 Unknown1; // - Maybe AuthCaptcha
     Int32 InventorySlotCount;
-    C2S_REQUEST_CRAFT_INVENTORY_SLOT InventorySlots[0];
+    struct _RTRequestCraftInventorySlot InventorySlots[0];
     // UInt8 Unknown2[4168]; - Maybe AuthCaptcha
 )
 
@@ -3152,7 +3151,7 @@ CLIENT_PROTOCOL(C2S, REQUEST_CRAFT_END, DEFAULT, 2251,
     UInt8 RequestSlotIndex;
     Int32 Unknown1; // - Maybe AuthCaptcha
     Int32 InventorySlotCount;
-    C2S_REQUEST_CRAFT_INVENTORY_SLOT InventorySlots[0];
+    struct _RTRequestCraftInventorySlot InventorySlots[0];
     // UInt8 Unknown2[4168]; - Maybe AuthCaptcha
 )
 

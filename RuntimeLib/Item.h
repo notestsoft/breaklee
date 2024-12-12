@@ -535,6 +535,11 @@ UInt64 RTItemDataGetStackSizeMask(
 	RTItemDataRef ItemData
 );
 
+Int64 RTItemDataGetStackSize(
+	RTItemDataRef ItemData,
+	UInt64 ItemOptions
+);
+
 UInt64 RTItemDataGetItemOptionsOffset(
 	RTItemDataRef ItemData
 );

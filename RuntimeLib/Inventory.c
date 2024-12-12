@@ -306,6 +306,89 @@ Void RTInventoryFindItems(
 	}
 }
 
+Bool RTInventoryCanConsumeItem(
+	RTRuntimeRef Runtime,
+	RTCharacterInventoryInfoRef Inventory,
+	UInt64 RequiredItemID,
+	Int64 RequiredItemCount,
+	UInt16 InventorySlotIndex
+) {
+	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, Inventory, InventorySlotIndex);
+	if (!ItemSlot) return false;
+	if ((ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX) != RequiredItemID) return false;
+
+	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
+	if (!ItemData) return false;
+
+	UInt64 StackSizeMask = RTItemDataGetStackSizeMask(ItemData);
+	if (StackSizeMask > 0) {
+		Int64 StackSize = ItemSlot->ItemOptions & StackSizeMask;
+		if (StackSize < RequiredItemCount) return false;
+	}
+	else {
+		if (RequiredItemCount > 1) return false;
+	}
+
+	return true;
+}
+
+Int64 RTInventoryGetConsumableItemCount(
+	RTRuntimeRef Runtime,
+	RTCharacterInventoryInfoRef Inventory,
+	UInt64 RequiredItemID,
+	UInt16 InventorySlotIndex
+) {
+	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, Inventory, InventorySlotIndex);
+	if (!ItemSlot) return false;
+	if ((ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX) != RequiredItemID) return false;
+
+	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
+	if (!ItemData) return false;
+
+	UInt64 StackSizeMask = RTItemDataGetStackSizeMask(ItemData);
+	if (StackSizeMask > 0) {
+		return (Int)(ItemSlot->ItemOptions & StackSizeMask);
+	}
+
+	return 1;
+}
+
+Int64 RTInventoryConsumeItem(
+	RTRuntimeRef Runtime,
+	RTCharacterInventoryInfoRef Inventory,
+	UInt64 RequiredItemID,
+	Int64 RequiredItemCount,
+	UInt16 InventorySlotIndex
+) {
+	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, Inventory, InventorySlotIndex);
+	assert(ItemSlot);
+	assert((ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX) == RequiredItemID);
+
+	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
+	assert(ItemData);
+
+	UInt64 ItemStackSizeMask = RTItemDataGetStackSizeMask(ItemData);
+	if (ItemStackSizeMask > 0) {
+		Int64 ItemStackSize = ItemSlot->ItemOptions & ItemStackSizeMask;
+		UInt64 ItemOptions = ItemSlot->ItemOptions & ~ItemStackSizeMask;
+		Int64 ConsumedCount = MIN(RequiredItemCount, ItemStackSize);
+		Int64 RemainingStackSize = ItemStackSize - ConsumedCount;
+		if (RemainingStackSize <= 0) {
+			RTInventoryClearSlot(Runtime, Inventory, InventorySlotIndex);
+		}
+		else {
+			ItemSlot->ItemOptions = ItemOptions | (RemainingStackSize & ItemStackSizeMask);
+		}
+
+		return ConsumedCount;
+	}
+	else {
+		assert(RequiredItemCount == 1);
+		RTInventoryClearSlot(Runtime, Inventory, InventorySlotIndex);
+		return 1;
+	}
+}
+
 Bool RTInventoryCanConsumeStackableItems(
 	RTRuntimeRef Runtime,
 	RTCharacterInventoryInfoRef Inventory,
@@ -318,7 +401,7 @@ Bool RTInventoryCanConsumeStackableItems(
 	for (Int Index = 0; Index < InventorySlotCount; Index += 1) {
 		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, Inventory, InventorySlotIndex[Index]);
 		if (!ItemSlot) return false;
-		if (ItemSlot->Item.ID != RequiredItemID) return false;
+		if ((ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX) != RequiredItemID) return false;
 
 		ConsumableItemCount += ItemSlot->ItemOptions;
 	}
@@ -338,7 +421,7 @@ Void RTInventoryConsumeStackableItems(
 	for (Int Index = 0; Index < InventorySlotCount; Index += 1) {
 		RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, Inventory, InventorySlotIndex[Index]);
 		assert(ItemSlot);
-		assert(ItemSlot->Item.ID == RequiredItemID);
+		assert((ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX) == RequiredItemID);
 
 		Int64 ConsumeItemCount = MIN(RemainingItemCount, ItemSlot->ItemOptions);
 		ItemSlot->ItemOptions -= ConsumeItemCount;

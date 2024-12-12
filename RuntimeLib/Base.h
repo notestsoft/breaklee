@@ -102,6 +102,7 @@ typedef struct _RTResearchSupportMaterialSlot* RTResearchSupportMaterialSlotRef;
 typedef struct _RTResearchSupportMissionSlot* RTResearchSupportMissionSlotRef;
 typedef struct _RTResearchSupportMissionBoard* RTResearchSupportMissionBoardRef;
 typedef struct _RTRequestCraftSlot* RTRequestCraftSlotRef;
+typedef struct _RTRequestCraftInventorySlot* RTRequestCraftInventorySlotRef;
 typedef struct _RTCharacterResearchSupportInfo* RTCharacterResearchSupportInfoRef;
 typedef struct _RTScript* RTScriptRef;
 typedef struct _RTScriptManager* RTScriptManagerRef; 

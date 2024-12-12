@@ -74,20 +74,20 @@ UInt8 RTCharacterAnimaMasteryTrainSlot(
         if (Price->SlotPrice > 0 && Character->Data.Info.Alz < Price->SlotPrice) return 0;
 
         if (Price->RequiredItemID > 0 && Price->RequiredItemCount > 0) {
-            Int32 ConsumableItemCount = 0;
+            Int64 TotalConsumableItemCount = 0;
             for (Int Index = 0; Index < MaterialSlotCount; Index += 1) {
-                RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index]);
-                if (!ItemSlot) return 0;
+                Int64 ConsumableItemCount = RTInventoryGetConsumableItemCount(
+                    Runtime, 
+                    &Character->Data.InventoryInfo, 
+                    Price->RequiredItemID, 
+                    MaterialSlotIndex[Index]
+                );
+                if (ConsumableItemCount < 1) return 0;
 
-                RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
-                if (!ItemData) return 0;
-
-                UInt64 StackSizeMask = RTItemDataGetStackSizeMask(ItemData);
-                UInt64 StackSize = ItemSlot->ItemOptions & StackSizeMask;
-                ConsumableItemCount += StackSize;
+                TotalConsumableItemCount += ConsumableItemCount;
             }
 
-            if (ConsumableItemCount < Price->RequiredItemCount) return 0;
+            if (TotalConsumableItemCount < Price->RequiredItemCount) return 0;
         }
 
         if (Price->SlotPrice > 0) {
@@ -96,24 +96,17 @@ UInt8 RTCharacterAnimaMasteryTrainSlot(
         }
 
         if (Price->RequiredItemID > 0 && Price->RequiredItemCount > 0) {
-            Int32 RemainingItemCount = Price->RequiredItemCount;
+            Int64 RemainingItemCount = Price->RequiredItemCount;
             for (Int Index = 0; Index < MaterialSlotCount; Index += 1) {
-                RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index]);
-                RTItemDataRef ItemData = (ItemSlot) ? RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID) : NULL;
-                if (!ItemSlot || !ItemData) return 0;
+                Int64 ConsumedItemCount = RTInventoryConsumeItem(
+                    Runtime,
+                    &Character->Data.InventoryInfo,
+                    Price->RequiredItemID,
+                    RemainingItemCount,
+                    MaterialSlotIndex[Index]
+                );
 
-                UInt64 StackSizeMask = RTItemDataGetStackSizeMask(ItemData);
-                Int64 StackSize = ItemSlot->ItemOptions & StackSizeMask;
-                Int64 ConsumedCount = MIN(RemainingItemCount, StackSize);
-                Int64 RemainingStackSize = StackSize - ConsumedCount;
-                if (RemainingStackSize <= 0) {
-                    RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, MaterialSlotIndex[Index]);
-                }
-                else {
-                    ItemSlot->ItemOptions = (ItemSlot->ItemOptions & ~StackSizeMask) | RemainingStackSize;
-                }
-
-                RemainingItemCount -= ConsumedCount;
+                RemainingItemCount -= ConsumedItemCount;
             }
 
             Character->SyncMask.InventoryInfo = true;
