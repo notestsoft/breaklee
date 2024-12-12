@@ -516,73 +516,12 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         memcpy(Character->Data.BuffInfo.Slots, Memory, Length);
         Memory += Length;
     }
-    
+
     CStringCopySafe(Character->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->Character.Name);
 
-    RTCharacterToggleAstralWeapon(Runtime, Character, false, false);
-    RTCharacterInitializeAttributes(Runtime, Character);
-    RTMovementInitialize(
-        Runtime,
-        &Character->Movement,
-        Character->ID,
-        Character->Data.Info.PositionX,
-        Character->Data.Info.PositionY,
-        (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
-        RUNTIME_WORLD_TILE_WALL
-    );
-
+    RTCharacterInitialize(Runtime, Character);
+    
     Client->CharacterIndex = Packet->CharacterIndex;
-
-    RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
-    if ((World->WorldData->Type == RUNTIME_WORLD_TYPE_QUEST_DUNGEON ||
-        World->WorldData->Type == RUNTIME_WORLD_TYPE_DUNGEON) &&
-        World->DungeonIndex != Character->Data.Info.DungeonIndex) {
-
-        RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, Character->Data.Info.DungeonIndex);
-        if (!DungeonData) goto error;
-
-        RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, DungeonData->FailWarpNpcID);
-        RTWorldContextRef TargetWorld = World;
-        if (World->WorldData->WorldIndex != WarpPoint.WorldIndex) {
-            TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpPoint.WorldIndex);
-            assert(TargetWorld);
-        }
-
-        World = TargetWorld;
-        Character->Data.Info.PositionX = WarpPoint.X;
-        Character->Data.Info.PositionY = WarpPoint.Y;
-        Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
-        Character->Data.Info.DungeonIndex = (Int32)TargetWorld->DungeonIndex;
-    }
-
-    if (!RTCharacterIsAlive(Runtime, Character)) {
-        RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, World->WorldData->DeadWarpIndex);
-        RTWorldContextRef TargetWorld = World;
-        if (World->WorldData->WorldIndex != WarpPoint.WorldIndex) {
-            TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpPoint.WorldIndex);
-            assert(TargetWorld);
-        }
-
-        Character->Data.Info.CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
-        Character->Data.Info.CurrentMP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX];
-        Character->Data.Info.PositionX = WarpPoint.X;
-        Character->Data.Info.PositionY = WarpPoint.Y;
-        Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
-        Character->Data.Info.DungeonIndex = (Int32)TargetWorld->DungeonIndex;
-
-        RTCharacterInitializeAttributes(Runtime, Character);
-        RTMovementInitialize(
-            Runtime,
-            &Character->Movement,
-            Character->ID,
-            Character->Data.Info.PositionX,
-            Character->Data.Info.PositionY,
-            (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
-            RUNTIME_WORLD_TILE_WALL
-        );
-    }
-
-    RTCharacterUpdateGiftBox(Runtime, Character);
 
     PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Context->ClientSocket);
     S2C_DATA_INITIALIZE* Response = PacketBufferInitExtended(PacketBuffer, S2C, INITIALIZE);
@@ -823,7 +762,22 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     // TODO: CraftData
     
     Response->RequestCraftInfo = Character->Data.RequestCraftInfo.Info;
-    // TODO: RequestCraftData
+    if (Character->Data.RequestCraftInfo.Info.SlotCount > 0) {
+        PacketBufferAppendCopy(
+            PacketBuffer,
+            Character->Data.RequestCraftInfo.Slots,
+            sizeof(struct _RTRequestCraftSlot) * Character->Data.RequestCraftInfo.Info.SlotCount
+        );
+    }
+
+    Response->CooldownInfo = Character->Data.CooldownInfo.Info;
+    if (Character->Data.CooldownInfo.Info.SlotCount > 0) {
+        PacketBufferAppendCopy(
+            PacketBuffer,
+            Character->Data.CooldownInfo.Slots,
+            sizeof(struct _RTCooldownSlot) * Character->Data.CooldownInfo.Info.SlotCount
+        );
+    }
 
     Response->VehicleInventoryInfo = Character->Data.VehicleInventoryInfo.Info;
     if (Character->Data.VehicleInventoryInfo.Info.SlotCount > 0) {
@@ -1095,7 +1049,8 @@ struct _RTCharacterCostumeInfo {
 
     SocketSend(Context->ClientSocket, ClientConnection, Response);
 
-    RTWorldSpawnCharacter(Runtime, World, Character->ID);
+    RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Runtime, Character);
+    RTWorldSpawnCharacter(Runtime, WorldContext, Character->ID);
     
     // TODO: Move event data to database and trigger request on init
     SendEventInfo(Context, Client);

@@ -13,6 +13,7 @@
 #include <RuntimeLib/Buff.h>
 #include <RuntimeLib/Character.h>
 #include <RuntimeLib/Collection.h>
+#include <RuntimeLib/Cooldown.h>
 #include <RuntimeLib/Drop.h>
 #include <RuntimeLib/Dungeon.h>
 #include <RuntimeLib/Equipment.h>

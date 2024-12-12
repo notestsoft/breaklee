@@ -30,6 +30,7 @@ Void ClientSocketOnDisconnect(
         RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Client->CharacterIndex);
         if (Character) {
             RTCharacterUpdateBuffs(Context->Runtime, Character, true);
+            RTCharacterUpdateCooldowns(Context->Runtime, Character, true);
             ServerSyncCharacter(Server, Context, Client, Character);
 
             // TODO: @DungeonCleanUp Delete character dungeon instance and respawn to global world

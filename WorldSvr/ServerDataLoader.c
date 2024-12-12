@@ -1299,7 +1299,7 @@ Bool ServerLoadWorldData(
             }
 
             MapDataOffset += 12;
-            MapDataOffset += (Int)(RUNTIME_WORLD_SIZE + 1) * (RUNTIME_WORLD_SIZE + 1) * sizeof(UInt32);
+            MapDataOffset += (UInt64)(RUNTIME_WORLD_SIZE + 1) * (RUNTIME_WORLD_SIZE + 1) * sizeof(UInt32);
             UInt32* TileData = (UInt32*)&MapData[MapDataOffset];
             memcpy(World->Tiles, TileData, sizeof(UInt32) * RUNTIME_WORLD_SIZE * RUNTIME_WORLD_SIZE);
             free(MapData);
@@ -1430,6 +1430,7 @@ Bool ServerLoadSkillData(
         if (!ParseAttributeInt32(Archive, Iterator->Index, "group", &SkillData->SkillGroup)) goto error;
         ParseAttributeInt32Array(Archive, Iterator->Index, "dur", SkillData->Duration, 2, ',');
         if (!ParseAttributeInt32(Archive, Iterator->Index, "intensity", &SkillData->Intensity)) goto error;
+        if (!ParseAttributeInt32(Archive, Iterator->Index, "instant_execute", &SkillData->InstantExecute)) goto error;
         if (!ParseAttributeInt32(Archive, Iterator->Index, "element", &SkillData->Element)) goto error;
         
         ArchiveIteratorRef AttributeIterator = ArchiveQueryNodeIteratorFirst(Archive, Iterator->Index, "attribute");
@@ -1493,7 +1494,7 @@ Bool ServerLoadSkillData(
 
             ArchiveIteratorRef CostIterator = ArchiveQueryNodeIteratorFirst(Archive, ParamIterator->Index, "cost");
             if (CostIterator) {
-                if (!ParseAttributeInt32(Archive, CostIterator->Index, "cooltime_id", &SkillData->CooltimeID)) goto error;
+                if (!ParseAttributeInt32(Archive, CostIterator->Index, "cooltime_id", &SkillData->CooldownIndex)) goto error;
                 if (!ParseAttributeInt32Array(Archive, CostIterator->Index, "mp", SkillData->Mp, 2, ',')) goto error;
                 if (!ParseAttributeInt32(Archive, CostIterator->Index, "sp", &SkillData->Sp)) goto error;
                 if (!ParseAttributeInt32(Archive, CostIterator->Index, "rage_value", &SkillData->RageValue)) goto error;
@@ -2137,7 +2138,7 @@ Bool ServerLoadQuestDungeonData(
         struct {
             Int32 MobID;
             Int32 MaxCount;
-        } MissionMobs[RUNTIME_MAX_QUEST_COUNTER_COUNT];
+        } MissionMobs[RUNTIME_MAX_QUEST_COUNTER_COUNT] = { 0 };
 
         PatternPartData.MissionMobCount = ParseAttributeInt32Array2D(
             Archive,

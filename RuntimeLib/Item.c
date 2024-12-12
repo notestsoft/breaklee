@@ -768,6 +768,21 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStub) {
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemPotion) {
+	if (!RTCharacterIsAlive(Runtime, Character)) return RUNTIME_ITEM_USE_RESULT_IS_DEAD;
+
+	if (RTCharacterHasCooldown(Runtime, Character, ItemData->Potion.CooldownIndex)) {
+		return RUNTIME_ITEM_USE_RESULT_COOLDOWN_1;
+	}
+
+	Bool IsNationWar = false; // TODO: Set correct value for nation war!
+	RTCharacterSetCooldown(
+		Runtime,
+		Character,
+		ItemData->Potion.CooldownIndex,
+		ItemData->Potion.CooldownInterval,
+		IsNationWar
+	);
+
 	switch (ItemData->Potion.PotionType) {
 		case RUNTIME_ITEM_SUBTYPE_POTION_HP:
 		case RUNTIME_ITEM_SUBTYPE_POTION_AUTO_HP:
@@ -1188,6 +1203,19 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemCharm) {
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSpecialPotion) {
 	if (!RTCharacterIsAlive(Runtime, Character)) return RUNTIME_ITEM_USE_RESULT_IS_DEAD;
 
+	if (RTCharacterHasCooldown(Runtime, Character, ItemData->Potion.CooldownIndex)) {
+		return RUNTIME_ITEM_USE_RESULT_COOLDOWN_1;
+	}
+
+	Bool IsNationWar = false; // TODO: Set correct value for nation war!
+	RTCharacterSetCooldown(
+		Runtime,
+		Character,
+		ItemData->SpecialPotion.CooldownIndex,
+		ItemData->SpecialPotion.CooldownInterval,
+		IsNationWar
+	);
+
 	// TODO: Check item cooldowns
 	// TODO: Depending on buff slot they should override the old buff
 
@@ -1212,8 +1240,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSpecialPotion) {
 		Character,
 		ItemData->SpecialPotion.ForceEffectIndex,
 		ForceEffectValue,
-		ItemData->SpecialPotion.Duration,
-		ItemData->SpecialPotion.Cooldown
+		ItemData->SpecialPotion.Duration
 	);
  
     {

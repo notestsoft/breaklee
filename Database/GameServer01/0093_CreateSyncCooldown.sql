@@ -7,7 +7,6 @@ CREATE PROCEDURE SyncCooldown (
 BEGIN
     UPDATE Cooldown
     SET
-        SkillCooldownCount = InSkillCooldownCount,
         CooldownSlotCount = InCooldownSlotCount,
         SpiritRaiseCooldown = InSpiritRaiseCooldown,
         CooldownSlotData = InCooldownSlotData

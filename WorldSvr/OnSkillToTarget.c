@@ -38,6 +38,12 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_TARGET) {
 		goto error;
 	}
 
+	Timestamp CooldownInterval = RTCharacterGetCooldownInterval(Runtime, Character, SkillData->CooldownIndex);
+	if (CooldownInterval > Context->Config.WorldSvr.CooldownErrorTolerance) goto error;
+
+	Bool IsNationWar = false; // TODO: Set correct value for nation war!
+	RTCharacterSetCooldown(Runtime, Character, SkillData->CooldownIndex, 0, IsNationWar);
+
 	PacketBufferRef ResponsePacketBuffer = SocketGetNextPacketBuffer(Socket);
 	PacketBufferRef NotificationPacketBuffer = SocketGetNextPacketBuffer(Socket);
 

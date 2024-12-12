@@ -53,12 +53,6 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 		return;
 	}
 
-    RTCharacterAddMP(Runtime, Character, -RequiredMP, false);
-    
-	if (SkillData->RageValue < 0) {
-		if (!RTCharacterConsumeRage(Runtime, Character, ABS(SkillData->RageValue))) goto error;
-	}
-
 	// TODO: Apply dash by skill if needed
 
 	RTMovementUpdateDeadReckoning(Context->Runtime, &Character->Movement);
@@ -73,6 +67,16 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_MOB) {
 	if (CharacterPositionError > 1) 
 		goto error;
 	*/
+	Timestamp CooldownInterval = RTCharacterGetCooldownInterval(Runtime, Character, SkillData->CooldownIndex);
+	if (CooldownInterval > Context->Config.WorldSvr.CooldownErrorTolerance) goto error;
+
+	if (SkillData->RageValue < 0) {
+		if (!RTCharacterConsumeRage(Runtime, Character, ABS(SkillData->RageValue))) goto error;
+	}
+
+	RTCharacterAddMP(Runtime, Character, -RequiredMP, false);
+	Bool IsNationWar = false; // TODO: Set correct value for nation war!
+	RTCharacterSetCooldown(Runtime, Character, SkillData->CooldownIndex, 0, IsNationWar);
 
 	PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
 	S2C_DATA_SKILL_TO_MOB* Response = PacketBufferInit(PacketBuffer, S2C, SKILL_TO_MOB);

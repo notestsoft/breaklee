@@ -46,6 +46,7 @@
 #include "Skill.h"
 #include "SkillSlot.h"
 #include "StellarMastery.h"
+#include "Timer.h"
 #include "Transcendence.h"
 #include "Transform.h"
 #include "Upgrade.h"
@@ -216,9 +217,11 @@ struct _RTCharacter {
     struct _RTBattleAttributes Attributes;
     Int32 AbilityExpRate;
     Int32 SkillComboLevel;
+    // TODO: Migrate to RTTimer
     Timestamp BuffUpdateTimestamp;
     Timestamp LastBuffUpdateTimestamp;
     Timestamp RegenUpdateTimestamp;
+    struct _RTTimer CooldownTimer;
     Timestamp GiftBoxUpdateTimestamps[RUNTIME_CHARACTER_MAX_GIFT_BOX_SLOT_COUNT];
     Int32 MobPatternWarpX;
     Int32 MobPatternWarpY;
@@ -227,6 +230,11 @@ struct _RTCharacter {
 #pragma pack(pop)
 
 Void RTCharacterInitializeAttributes(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Void RTCharacterInitialize(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 );

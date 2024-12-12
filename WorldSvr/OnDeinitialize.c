@@ -12,6 +12,7 @@ CLIENT_PROCEDURE_BINDING(DEINITIALIZE) {
 
     if (Character) {
         RTCharacterUpdateGiftBox(Runtime, Character);
+        RTCharacterUpdateCooldowns(Runtime, Character, true);
 
         ServerSyncCharacter(Server, Context, Client, Character);
 

@@ -376,6 +376,49 @@ error:
     return false;
 }
 
+Int32 ParseAttributeUInt16ArrayCounted(
+    ArchiveRef Object,
+    Int32 NodeIndex,
+    CString Name,
+    UInt16* Result,
+    Int64 Count,
+    Char Separator
+) {
+    Int32 AttributeIndex = ArchiveNodeGetAttributeByName(Object, NodeIndex, Name);
+    if (AttributeIndex < 0) goto error;
+
+    ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
+    if (!Data) goto error;
+
+    memset(Result, 0, sizeof(UInt16) * Count);
+
+    if (Data->Length < 1 || strlen(Data->Data) < 1) {
+        return 0;
+    }
+
+    Int Index = 0;
+    Char* Cursor = Data->Data;
+    while (Cursor < Data->Data + Data->Length) {
+        if (*Cursor == '\0') break;
+
+        if (*Cursor == Separator) {
+            Cursor += 1;
+            continue;
+        }
+
+        assert(Index < Count);
+        Char* Next;
+        Result[Index] = (Int32)strtoll(Cursor, &Next, 10);
+        Index += 1;
+        Cursor = Next;
+    }
+
+    return Index;
+
+error:
+    return 0;
+}
+
 Int32 ParseAttributeInt32ArrayCounted(
     ArchiveRef Object,
     Int32 NodeIndex,

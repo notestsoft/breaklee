@@ -139,6 +139,15 @@ Bool ParseAttributeInt32Array(
     Char Separator
 );
 
+Int32 ParseAttributeUInt16ArrayCounted(
+    ArchiveRef Object,
+    Int32 NodeIndex,
+    CString Name,
+    UInt16* Result,
+    Int64 Count,
+    Char Separator
+);
+
 Int32 ParseAttributeInt32ArrayCounted(
     ArchiveRef Object,
     Int32 NodeIndex,

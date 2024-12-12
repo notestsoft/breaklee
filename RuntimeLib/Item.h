@@ -227,10 +227,11 @@ struct _RTItemData {
 
 		struct {
 			Int32 PotionType;
-			Int32 Unknown1[3];
+			Int32 CooldownIndex;
+			Int32 Unknown1[2];
 			Int32 PotionValue;
 			Int32 Unknown2;
-			Int32 PotionCooldown;
+			Int32 CooldownInterval;
 			Int32 Unknown3;
 			Int32 StatType;
 		} Potion;
@@ -248,11 +249,11 @@ struct _RTItemData {
 
 		struct {
 			Int32 ForceEffectIndex;
-			Int32 CooldownGroupIndex;
+			Int32 CooldownIndex;
 			Int32 Unknown1[2];
 			Int32 PotionValue;
 			Int32 Unknown2;
-			Int32 Cooldown;
+			Int32 CooldownInterval;
 			Int32 Unknown3;
 			Int32 Duration;
 		} SpecialPotion;

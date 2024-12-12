@@ -169,6 +169,7 @@ struct _RTCharacterSkillData {
 	Int32 Duration[2];
 	Int32 Multi;
 	Int32 Intensity;
+	Int32 InstantExecute;
 	Int32 Element;
 	Int32 Target;
 	Int32 MaxTarget;
@@ -202,7 +203,7 @@ struct _RTCharacterSkillData {
 	Int32 SPenet[2];
 	Int32 CritDmg[2];
 	Int32 DamageType;
-	Int32 CooltimeID;
+	Int32 CooldownIndex;
 	Int32 RageValue;
 	Int32 Mp[2];
 	Int32 Sp;
@@ -271,8 +272,7 @@ Int32 RTCharacterApplyForceEffectBuff(
 	RTCharacterRef Character,
 	Int32 ForceEffectIndex,
 	Int32 ForceEffectValue,
-	Int32 Duration,
-	Int32 Cooldown
+	Int32 Duration
 );
 
 Int32 RTCharacterGetBattleModeSkillIndex(

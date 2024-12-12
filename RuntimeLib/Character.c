@@ -1,3 +1,4 @@
+#include "AstralWeapon.h"
 #include "BattleMode.h"
 #include "Character.h"
 #include "Inventory.h"
@@ -45,7 +46,7 @@ Void RTCharacterInitializeBattleStyleLevel(
 		Character->Data.StyleInfo.Style.BattleRank,
 		LevelFormula->DeltaHP2
 	);
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX] = (Int64)LevelFormula->BaseMP + LevelFormula->DeltaMP * (Character->Data.Info.Level - 1) / 10;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX] = (Int64)LevelFormula->BaseMP + (Int64)LevelFormula->DeltaMP * (Character->Data.Info.Level - 1) / 10;
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX] = SpiritPointLimitData->Value;
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_MAX] = 0;
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX] = RageLimitLevelData->Value;
@@ -439,6 +440,64 @@ Void RTCharacterInitializeAttributes(
 	RTMovementSetSpeed(Runtime, &Character->Movement, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED]);
 }
 
+Void RTCharacterInitialize(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+	RTCharacterInitializeAttributes(Runtime, Character);
+	RTCharacterToggleAstralWeapon(Runtime, Character, false, false);
+
+	RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Runtime, Character);
+	if ((WorldContext->WorldData->Type == RUNTIME_WORLD_TYPE_QUEST_DUNGEON ||
+		WorldContext->WorldData->Type == RUNTIME_WORLD_TYPE_DUNGEON) &&
+		WorldContext->DungeonIndex != Character->Data.Info.DungeonIndex) {
+
+		RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, Character->Data.Info.DungeonIndex);
+		if (DungeonData) {
+			RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, DungeonData->FailWarpNpcID);
+			RTWorldContextRef TargetWorldContext = WorldContext;
+			if (WorldContext->WorldData->WorldIndex != WarpPoint.WorldIndex) {
+				TargetWorldContext = RTRuntimeGetWorldByID(Runtime, WarpPoint.WorldIndex);
+				assert(TargetWorldContext);
+			}
+
+			WorldContext = TargetWorldContext;
+			Character->Data.Info.PositionX = WarpPoint.X;
+			Character->Data.Info.PositionY = WarpPoint.Y;
+			Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
+			Character->Data.Info.DungeonIndex = (Int32)TargetWorldContext->DungeonIndex;
+		}
+	}
+
+	if (!RTCharacterIsAlive(Runtime, Character)) {
+		RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, WorldContext->WorldData->DeadWarpIndex);
+		RTWorldContextRef TargetWorldContext = WorldContext;
+		if (WorldContext->WorldData->WorldIndex != WarpPoint.WorldIndex) {
+			TargetWorldContext = RTRuntimeGetWorldByID(Runtime, WarpPoint.WorldIndex);
+			assert(TargetWorldContext);
+		}
+
+		Character->Data.Info.CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
+		Character->Data.Info.CurrentMP = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX];
+		Character->Data.Info.PositionX = WarpPoint.X;
+		Character->Data.Info.PositionY = WarpPoint.Y;
+		Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
+		Character->Data.Info.DungeonIndex = (Int32)TargetWorldContext->DungeonIndex;
+	}
+
+	RTMovementInitialize(
+		Runtime,
+		&Character->Movement,
+		Character->ID,
+		Character->Data.Info.PositionX,
+		Character->Data.Info.PositionY,
+		(Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+		RUNTIME_WORLD_TILE_WALL
+	);
+	RTCharacterInitializeCooldowns(Runtime, Character);
+	RTCharacterUpdateGiftBox(Runtime, Character);
+}
+
 Void RTCharacterUpdate(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character
@@ -485,6 +544,7 @@ Void RTCharacterUpdate(
 	}
 
 	RTCharacterUpdateBuffs(Runtime, Character, false);
+	RTCharacterUpdateCooldowns(Runtime, Character, false);
 }
 
 Bool RTCharacterIsAlive(

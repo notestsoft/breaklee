@@ -51,6 +51,12 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
     RTCharacterAddMP(Runtime, Character, -RequiredMP, false);
 
 	if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_MOVEMENT) {
+		Timestamp CooldownInterval = RTCharacterGetCooldownInterval(Runtime, Character, SkillData->CooldownIndex);
+		if (CooldownInterval > Context->Config.WorldSvr.CooldownErrorTolerance) goto error;
+
+		Bool IsNationWar = false; // TODO: Set correct value for nation war!
+		RTCharacterSetCooldown(Runtime, Character, SkillData->CooldownIndex, 0, IsNationWar);
+
 		Int32 PacketLength = sizeof(C2S_DATA_SKILL_TO_CHARACTER) + sizeof(C2S_DATA_SKILL_GROUP_MOVEMENT);
 		if (Packet->Length != PacketLength) goto error;
 		
@@ -137,12 +143,18 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		}
 		else if (SkillData->Intensity == RUNTIME_SKILL_INTENSITY_ASTRAL_AURA) {
 			if (PacketData->IsActivation) {
+				Timestamp CooldownInterval = RTCharacterGetCooldownInterval(Runtime, Character, SkillData->CooldownIndex);
+				if (CooldownInterval > Context->Config.WorldSvr.CooldownErrorTolerance) goto error;
+
 				RTCharacterStartAuraMode(Runtime, Character, SkillData->SkillID);
 			}
 			else {
 				RTCharacterCancelAuraMode(Runtime, Character);
 			}
 		}
+
+		Bool IsNationWar = false; // TODO: Set correct value for nation war!
+		RTCharacterSetCooldown(Runtime, Character, SkillData->CooldownIndex, 0, IsNationWar);
 		
 		S2C_DATA_SKILL_GROUP_ASTRAL* ResponseData = PacketBufferAppendStruct(ResponsePacketBuffer, S2C_DATA_SKILL_GROUP_ASTRAL);
 		ResponseData->CurrentMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
@@ -158,11 +170,17 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		C2S_DATA_SKILL_GROUP_BATTLE_MODE* PacketData = (C2S_DATA_SKILL_GROUP_BATTLE_MODE*)&Packet->Data[0];
 
 		if (PacketData->IsActivation) {
+			Timestamp CooldownInterval = RTCharacterGetCooldownInterval(Runtime, Character, SkillData->CooldownIndex);
+			if (CooldownInterval > Context->Config.WorldSvr.CooldownErrorTolerance) goto error;
+
 			RTCharacterStartBattleMode(Runtime, Character, SkillData->SkillID);
 		}
 		else {
 			RTCharacterCancelBattleMode(Runtime, Character);
 		}
+
+		Bool IsNationWar = false; // TODO: Set correct value for nation war!
+		RTCharacterSetCooldown(Runtime, Character, SkillData->CooldownIndex, 0, IsNationWar);
 
 		S2C_DATA_SKILL_GROUP_BATTLE_MODE* ResponseData = PacketBufferAppendStruct(ResponsePacketBuffer, S2C_DATA_SKILL_GROUP_BATTLE_MODE);
 		ResponseData->CurrentMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];

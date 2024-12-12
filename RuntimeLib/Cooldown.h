@@ -24,4 +24,46 @@ struct _RTCharacterCooldownInfo {
 
 #pragma pack(pop)
 
+Void RTCharacterInitializeCooldowns(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Void RTCharacterUpdateCooldowns(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Bool ForceUpdate
+);
+
+Bool RTCharacterHasCooldown(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int CooldownIndex
+);
+
+Timestamp RTCharacterGetCooldownInterval(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int CooldownIndex
+);
+
+Void RTCharacterSetCooldown(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int CooldownIndex,
+    Timestamp CooldownInterval,
+    Bool IsNationWar
+);
+
+Bool RTCharacterHasSpiritRaiseCooldown(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Void RTCharacterSetSpiritRaiseCooldown(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 CooldownInterval
+);
+
 EXTERN_C_END

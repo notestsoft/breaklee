@@ -119,6 +119,7 @@ typedef struct _RTDungeonTriggerData* RTDungeonTriggerDataRef;
 typedef struct _RTDungeonTriggerActionData* RTDungeonTriggerActionDataRef;
 typedef struct _RTDungeonTimeControlData* RTDungeonTimeControlDataRef;
 typedef struct _RTTimerData* RTTimerDataRef;
+typedef struct _RTTimer* RTTimerRef;
 typedef struct _RTDungeonTimerData* RTDungeonTimerDataRef;
 typedef struct _RTImmuneData* RTImmuneDataRef;
 typedef struct _RTDungeonImmuneControlData* RTDungeonImmuneControlDataRef;

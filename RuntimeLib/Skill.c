@@ -150,8 +150,7 @@ Int32 RTCharacterApplyForceEffectBuff(
     RTCharacterRef Character,
 	Int32 ForceEffectIndex,
 	Int32 ForceEffectValue,
-	Int32 Duration,
-	Int32 Cooldown
+	Int32 Duration
 ) {
     Int32 BuffResult = 0;
 	// TODO: Add force effect system with buff support...
