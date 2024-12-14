@@ -159,6 +159,10 @@ Void ServerSyncCharacter(
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.DailyQuestInfo.Slots, sizeof(struct _RTDailyQuestSlot) * Character->Data.DailyQuestInfo.Info.SlotCount);
 	}
 
+	if (Character->SyncMask.HelpInfo) {
+		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.HelpInfo, sizeof(struct _RTCharacterHelpInfo));
+	}
+
 	if (Character->SyncMask.MercenaryInfo) {
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.MercenaryInfo.Info, sizeof(struct _RTMercenaryInfo));
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.MercenaryInfo.Slots, sizeof(struct _RTMercenarySlot) * Character->Data.MercenaryInfo.Info.SlotCount);

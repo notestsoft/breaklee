@@ -214,8 +214,8 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         memcpy(Character->Data.DailyQuestInfo.Slots, Memory, Length);
         Memory += Length;
     }
-
-//    UInt32 HelpWindow;
+    
+    Character->Data.HelpInfo = Packet->Character.HelpInfo;
 
     Character->Data.AppearanceInfo.Info = Packet->Character.AppearanceInfo;
     if (Packet->Character.AppearanceInfo.EquipmentAppearanceCount > 0) {
@@ -1051,7 +1051,7 @@ struct _RTCharacterCostumeInfo {
 
     RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Runtime, Character);
     RTWorldSpawnCharacter(Runtime, WorldContext, Character->ID);
-    
+
     // TODO: Move event data to database and trigger request on init
     SendEventInfo(Context, Client);
     SendEventList(Context, Client);

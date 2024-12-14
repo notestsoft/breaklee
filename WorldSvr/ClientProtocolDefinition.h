@@ -248,7 +248,7 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     UInt8 DungeonBookmarkEnabled;
     UInt8 DungeonBookmarkInfo[4096];
     struct _RTDailyQuestInfo DailyQuestInfo;
-    UInt32 HelpWindow;
+    struct _RTCharacterHelpInfo HelpInfo;
     struct _RTAppearanceInfo AppearanceInfo;
     struct _RTAchievementInfo AchievementInfo;
     struct _RTCraftInfo CraftInfo;

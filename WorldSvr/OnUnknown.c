@@ -66,8 +66,10 @@ error:
 CLIENT_PROCEDURE_BINDING(UPDATE_HELP_INFO) {
 	if (!Character) goto error;
 
+	RTCharacterSetHelpWindow(Character, Packet->HelpWindow);
+
 	S2C_DATA_UPDATE_HELP_INFO* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, UPDATE_HELP_INFO);
-	Response->Result = Packet->HelpWindow;
+	Response->Result = 1;
 	SocketSend(Socket, Connection, Response);
 	return;
 

@@ -263,7 +263,7 @@ IPC_PROTOCOL_STRUCT(IPC_D2W_DATA_INITIALIZE_CHARACTER,
 	struct _RTPremiumServiceInfo PremiumServiceInfo;
 	struct _RTQuestInfo QuestInfo;
 	struct _RTDailyQuestInfo DailyQuestInfo;
-	UInt32 HelpWindow;
+	struct _RTCharacterHelpInfo HelpInfo;
 	struct _RTAppearanceInfo AppearanceInfo;
 	struct _RTAchievementInfo AchievementInfo;
 	struct _RTCraftInfo CraftInfo;

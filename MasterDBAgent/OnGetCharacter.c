@@ -144,7 +144,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_DATA, &Response->Character.QuestInfo.FinishedQuestDungeons[0], sizeof(Response->Character.QuestInfo.FinishedQuestDungeons),
         DB_TYPE_DATA, &Response->Character.QuestInfo.FinishedMissionDungeons[0], sizeof(Response->Character.QuestInfo.FinishedMissionDungeons),
         DB_TYPE_INT32, &Response->Character.DailyQuestInfo.SlotCount,
-        DB_TYPE_INT32, &Response->Character.HelpWindow,
+        DB_TYPE_INT32, &Response->Character.HelpInfo.HelpWindow,
         DB_TYPE_UINT8, &Response->Character.AppearanceInfo.EquipmentAppearanceCount,
         DB_TYPE_INT16, &Response->Character.AppearanceInfo.InventoryAppearanceCount,
         DB_TYPE_INT32, &Response->Character.AchievementInfo.AllAchievementScore,

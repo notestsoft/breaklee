@@ -65,6 +65,10 @@
 			<item slot_id="94" item_id="33557041" option="0" duration_id="0" price="0"></item>
 			<item slot_id="95" item_id="2014" option="0" duration_id="0" price="0"></item>
 
+			<item slot_id="100" item_id="33557331" option="999" duration_id="0" price="0"></item>
+			<item slot_id="101" item_id="33557332" option="999" duration_id="0" price="0"></item>
+			<item slot_id="102" item_id="33557333" option="9999" duration_id="0" price="0"></item>
+
             <item slot_id="119" item_id="33558399" option="0" duration_id="0" price="0"></item>
             <item slot_id="120" item_id="2842" option="1000000000" duration_id="0" price="0"></item>
             <item slot_id="121" item_id="3523" option="640127" duration_id="0" price="0"></item>

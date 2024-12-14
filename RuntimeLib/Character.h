@@ -24,6 +24,7 @@
 #include "Exploration.h"
 #include "ForceWing.h"
 #include "GiftBox.h"
+#include "Help.h"
 #include "HonorMedal.h"
 #include "HonorRank.h"
 #include "Inventory.h"

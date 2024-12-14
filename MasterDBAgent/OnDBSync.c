@@ -525,6 +525,20 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			}
 		}
 
+		if (Packet->SyncMask.HelpInfo) {
+			ReadMemory(struct _RTCharacterHelpInfo, Info, 1);
+
+			if (!DatabaseCallProcedure(
+				Context->Database,
+				"SyncHelp",
+				DB_INPUT_INT32(Packet->CharacterIndex),
+				DB_INPUT_UINT32(Info->HelpWindow),
+				DB_PARAM_END
+			)) {
+				Response->SyncMaskFailed.HelpInfo = true;
+			}
+		}
+
 		if (Packet->SyncMask.MercenaryInfo) {
 			ReadMemory(struct _RTMercenaryInfo, Info, 1);
 			ReadMemory(struct _RTMercenarySlot, Slots, Info->SlotCount);
