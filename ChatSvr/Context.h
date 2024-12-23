@@ -27,6 +27,7 @@ struct _ClientContext {
     SocketConnectionRef Connection;
     UInt32 Flags;
     UInt32 AuthKey;	
+    Int32 AccountID;
     UInt32 CharacterIndex;
     Int32 WorldServerIndex;
 };

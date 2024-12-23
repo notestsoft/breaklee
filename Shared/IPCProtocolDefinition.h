@@ -823,6 +823,16 @@ IPC_PROTOCOL(W2C, CLIENT_DISCONNECT,
 	UInt32 CharacterIndex;
 )
 
+IPC_PROTOCOL(L2M, FORCE_DISCONNECT,
+	Int SourceConnectionID;
+	Int32 AccountID;
+)
+
+IPC_PROTOCOL(M2N, FORCE_DISCONNECT,
+	Int SourceConnectionID;
+	Int32 AccountID;
+)
+
 #undef IPC_PROTOCOL_ENUM
 #undef IPC_PROTOCOL_STRUCT
 #undef IPC_PROTOCOL

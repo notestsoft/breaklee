@@ -86,3 +86,9 @@ Void ServerLoadMigrationData(
 
     fclose(File);
 }
+
+Void ServerClearState(
+    ServerContextRef Context
+) {
+    DatabaseCallProcedure(Context->Database, "ClearSessionOnline", DB_PARAM_END);
+}

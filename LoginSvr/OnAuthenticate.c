@@ -133,16 +133,51 @@ Void SendURLList(
     SocketSend(Socket, Connection, Response);
 }
 
-Void SendMessageLoginSuccess(
+Void SendLoginSuccess(
     ServerRef Server,
     ServerContextRef Context,
     SocketRef Socket,
     SocketConnectionRef Connection,
     ClientContextRef Client
 ) {
-    S2C_DATA_SYSTEM_MESSAGE* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, SYSTEM_MESSAGE);
-    Response->Message = SYSTEM_MESSAGE_LOGIN_SUCCESS;
+    PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
+    S2C_DATA_AUTHENTICATE* Response = PacketBufferInit(PacketBuffer, S2C, AUTHENTICATE);
+    Response->KeepAlive = (Client->AccountStatus == ACCOUNT_STATUS_NORMAL) ? 1 : 0;
+    Response->LoginStatus = Client->LoginStatus;
+    Response->AccountStatus = Client->AccountStatus;
+    Response->SubMessageType = 13;
+
+    S2C_DATA_AUTHENTICATE_EXTENSION_13* Extension = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_AUTHENTICATE_EXTENSION_13);
+    Extension->AccountID = Client->AccountID;
+    Extension->GroupIndex = Context->Config.Login.GroupIndex;
+    memcpy(Extension->AuthKey, Client->SessionKey, MAX_SESSIONKEY_LENGTH);
+
+    Int32 ServerCount = 0;
+    DatabaseHandleRef Handle = DatabaseCallProcedureFetch(
+        Context->Database,
+        "GetServerCharacterList",
+        DB_INPUT_INT32(Client->AccountID),
+        DB_OUTPUT_INT32(ServerCount),
+        DB_PARAM_END
+    );
+
+    Int32 ServerIndex = 0;
+    while (DatabaseHandleReadNext(
+        Context->Database,
+        Handle,
+        DB_TYPE_UINT8, &Extension->Servers[ServerIndex].ServerID, sizeof(UInt8),
+        DB_TYPE_UINT8, &Extension->Servers[ServerIndex].CharacterCount, sizeof(UInt8),
+        DB_PARAM_END
+    )) {
+        assert(ServerIndex < MAX_SERVER_COUNT);
+        ServerIndex += 1;
+    }
+
     SocketSend(Socket, Connection, Response);
+
+    S2C_DATA_SYSTEM_MESSAGE* SystemMessage = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, SYSTEM_MESSAGE);
+    SystemMessage->Message = SYSTEM_MESSAGE_LOGIN_SUCCESS;
+    SocketSend(Socket, Connection, SystemMessage);
 }
 
 CLIENT_PROCEDURE_BINDING(AUTHENTICATE) {
@@ -243,65 +278,20 @@ authenticate:
 
     PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
     S2C_DATA_AUTHENTICATE* Response = PacketBufferInit(PacketBuffer, S2C, AUTHENTICATE);
-    Response->KeepAlive = (Client->AccountStatus == ACCOUNT_STATUS_NORMAL) ? 1 : 0;
+    Response->KeepAlive = (Client->AccountStatus == ACCOUNT_STATUS_NORMAL || Client->AccountStatus == ACCOUNT_STATUS_ALREADY_LOGGED_IN) ? 1 : 0;
     Response->Unknown2 = -1;
     Response->LoginStatus = 0;
     Response->AccountStatus = Client->AccountStatus;
-    SocketSend(Socket, Connection, Response);
-    
-    if (Client->LoginStatus != LOGIN_STATUS_SUCCESS) goto error;
 
-    Client->Flags |= CLIENT_FLAGS_AUTHENTICATED;
-
-    StartAuthTimer(Server, Context, Socket, Connection, Client, Context->Config.Login.AutoDisconnectDelay);
-    SendURLList(Server, Context, Socket, Connection, Client);
-
-    PacketBuffer = SocketGetNextPacketBuffer(Socket);
-    Response = PacketBufferInit(PacketBuffer, S2C, AUTHENTICATE);
-    Response->KeepAlive = (Client->AccountStatus == ACCOUNT_STATUS_NORMAL) ? 1 : 0;
-    Response->LoginStatus = Client->LoginStatus;
-    Response->AccountStatus = Client->AccountStatus;
-    Response->SubMessageType = 13;
-
-    S2C_DATA_AUTHENTICATE_EXTENSION_13* Extension = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_AUTHENTICATE_EXTENSION_13);
-    Extension->AccountID = Client->AccountID;
-    memcpy(Extension->AuthKey, Client->SessionKey, MAX_SESSIONKEY_LENGTH);
-
-    Int32 ServerCount = 0;
-    DatabaseHandleRef Handle = DatabaseCallProcedureFetch(
-        Context->Database,
-        "GetServerCharacterList",
-        DB_INPUT_INT32(Client->AccountID),
-        DB_OUTPUT_INT32(ServerCount),
-        DB_PARAM_END
-    );
-
-    Int32 ServerIndex = 0;
-    while (DatabaseHandleReadNext(
-        Context->Database,
-        Handle,
-        DB_TYPE_UINT8, &Extension->Servers[ServerIndex].ServerID, sizeof(UInt8),
-        DB_TYPE_UINT8, &Extension->Servers[ServerIndex].CharacterCount, sizeof(UInt8),
-        DB_PARAM_END
-    )) {
-        assert(ServerIndex < MAX_SERVER_COUNT);
-        ServerIndex += 1;
+    if (Client->AccountStatus == ACCOUNT_STATUS_ALREADY_LOGGED_IN) {
+        Response->AccountStatus = ACCOUNT_STATUS_NORMAL;
     }
 
     SocketSend(Socket, Connection, Response);
 
-    StartAuthTimer(Server, Context, Socket, Connection, Client, Context->Config.Login.AutoDisconnectDelay);
-//    StartDisconnectTimer(Server, Socket, Client, Connection, Context->Config.Login.AutoDisconnectDelay, 21);
-    SendMessageLoginSuccess(Server, Context, Socket, Connection, Client);
-
-    // Just clearing the payload buffer to avoid keeping sensitive data in memory!
-    memset(Client->RSAPayloadBuffer, 0, sizeof(Client->RSAPayloadBuffer));
-
-    IPC_L2M_DATA_GET_WORLD_LIST* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, L2M, GET_WORLD_LIST);
-    Request->Header.Source = Server->IPCSocket->NodeID;
-    Request->Header.Target.Group = Server->IPCSocket->NodeID.Group;
-    Request->Header.Target.Type = IPC_TYPE_MASTER;
-    IPCSocketUnicast(Server->IPCSocket, Request);
+    if (Response->KeepAlive) {
+        StartAuthTimer(Server, Context, Socket, Connection, Client, Context->Config.Login.AutoDisconnectDelay);
+    }
 
     if (Client->AccountID > 0) {
         IPC_N2M_DATA_CLIENT_CONNECT* Notification = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, N2M, CLIENT_CONNECT);
@@ -311,6 +301,39 @@ authenticate:
         Notification->AccountID = Client->AccountID;
         IPCSocketUnicast(Server->IPCSocket, Notification);
     }
+
+    if (Client->AccountStatus == ACCOUNT_STATUS_ALREADY_LOGGED_IN) {
+        Response = PacketBufferInit(PacketBuffer, S2C, AUTHENTICATE);
+        Response->KeepAlive = 0;
+        Response->Unknown2 = -1;
+        Response->LoginStatus = 0;
+        Response->AccountStatus = Client->AccountStatus;
+        Response->SubMessageType = 13;
+
+        S2C_DATA_AUTHENTICATE_EXTENSION_13* Extension = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_AUTHENTICATE_EXTENSION_13);
+        Extension->AccountID = Client->AccountID;
+        Extension->GroupIndex = Context->Config.Login.GroupIndex;
+        SocketSend(Socket, Connection, Response);
+        return;
+    }
+
+    if (Client->LoginStatus != LOGIN_STATUS_SUCCESS) goto error;
+
+    Client->Flags |= CLIENT_FLAGS_AUTHENTICATED;
+
+    SendURLList(Server, Context, Socket, Connection, Client);
+    StartAuthTimer(Server, Context, Socket, Connection, Client, Context->Config.Login.AutoDisconnectDelay);
+//    StartDisconnectTimer(Server, Socket, Client, Connection, Context->Config.Login.AutoDisconnectDelay, 21);
+    SendLoginSuccess(Server, Context, Socket, Connection, Client);
+
+    // Just clearing the payload buffer to avoid keeping sensitive data in memory!
+    memset(Client->RSAPayloadBuffer, 0, sizeof(Client->RSAPayloadBuffer));
+
+    IPC_L2M_DATA_GET_WORLD_LIST* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, L2M, GET_WORLD_LIST);
+    Request->Header.Source = Server->IPCSocket->NodeID;
+    Request->Header.Target.Group = Server->IPCSocket->NodeID.Group;
+    Request->Header.Target.Type = IPC_TYPE_MASTER;
+    IPCSocketUnicast(Server->IPCSocket, Request);
 
     return;
 

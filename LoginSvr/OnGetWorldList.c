@@ -57,17 +57,18 @@ IPC_PROCEDURE_BINDING(M2L, GET_WORLD_LIST) {
         SocketSend(Context->ClientSocket, Connection, Notification);
 
         PacketBuffer = SocketGetNextPacketBuffer(Context->ClientSocket);
-        S2C_DATA_UNKNOWN_124* Unknown124 = PacketBufferInit(PacketBuffer, S2C, UNKNOWN_124);
-        Unknown124->Unknown1 = 0;
-        Unknown124->Unknown2[0] = 100;
-        Unknown124->Unknown2[1] = 200;
-        Unknown124->Unknown2[2] = 300;
-        Unknown124->Unknown2[3] = 400;
-        Unknown124->Unknown3 = 1;
-        Unknown124->Unknown4[0] = 500;
-        Unknown124->Unknown4[1] = 600;
-        Unknown124->Unknown4[2] = 700;
-        Unknown124->Unknown4[3] = 800;
-        SocketSend(Context->ClientSocket, Connection, Unknown124);
+
+        S2C_DATA_HOT_CHANNEL_DATA* ChannelData = PacketBufferInit(PacketBuffer, S2C, HOT_CHANNEL_DATA);
+        ChannelData->ChannelData[0].Index = 0;
+        ChannelData->ChannelData[0].Unknown1[0] = 100;
+        ChannelData->ChannelData[0].Unknown1[1] = 200;
+        ChannelData->ChannelData[0].Unknown1[2] = 300;
+        ChannelData->ChannelData[0].Unknown1[3] = 400;
+        ChannelData->ChannelData[1].Index = 1;
+        ChannelData->ChannelData[1].Unknown1[0] = 500;
+        ChannelData->ChannelData[1].Unknown1[1] = 600;
+        ChannelData->ChannelData[1].Unknown1[2] = 700;
+        ChannelData->ChannelData[1].Unknown1[3] = 800;
+        SocketSend(Context->ClientSocket, Connection, ChannelData);
     }
 }

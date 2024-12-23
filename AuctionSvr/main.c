@@ -56,6 +56,9 @@ Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(            \
 #define IPC_D2A_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(D2A, __NAME__)
 #include "IPCCommands.h"
 
+#define IPC_M2N_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(M2N, __NAME__)
+#include "IPCCommands.h"
+
 Void ServerOnUpdate(
     ServerRef Server,
     Void *ServerContext
@@ -133,6 +136,11 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
 #define IPC_D2A_COMMAND(__NAME__) \
     Trace("RegisterCommand(%d, IPC_D2A_%s)", IPC_D2A_ ## __NAME__, #__NAME__); \
     IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_D2A_ ## __NAME__, &SERVER_IPC_D2A_PROC_ ## __NAME__);
+#include "IPCCommands.h"
+
+#define IPC_M2N_COMMAND(__NAME__) \
+    Trace("RegisterCommand(%d, IPC_M2N_%s)", IPC_M2N_ ## __NAME__, #__NAME__); \
+    IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_M2N_ ## __NAME__, &SERVER_IPC_M2N_PROC_ ## __NAME__);
 #include "IPCCommands.h"
 
     ServerRun(Server);

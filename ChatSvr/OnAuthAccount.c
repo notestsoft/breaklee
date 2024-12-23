@@ -7,6 +7,7 @@ CLIENT_PROCEDURE_BINDING(AUTH_ACCOUNT) {
 	if (!Client) goto error;
 
 	// TODO: Check if connection ip is same as worldsvr ip
+	Client->AccountID = (Packet->CharacterIndex & ~MAX_CHARACTER_COUNT) / MAX_CHARACTER_COUNT;
 	Client->CharacterIndex = Packet->CharacterIndex;
 
 	S2C_DATA_AUTH_ACCOUNT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, AUTH_ACCOUNT);

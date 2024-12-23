@@ -211,6 +211,7 @@ Int32 main(Int32 argc, CString* argv) {
 
     ServerLoadMigrationData(Config, &ServerContext);
 
+    ServerClearState(&ServerContext);
     ServerRun(Server);
     ServerDestroy(Server);
     DatabaseDisconnect(ServerContext.Database);
