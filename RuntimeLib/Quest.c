@@ -384,7 +384,7 @@ Bool RTCharacterQuestClear(
 		RTCharacterAddSkillSlot(Runtime, Character, Quest->Reward[RUNTIME_QUEST_REWARD_SKILL], 1, SlotIndex[SlotOffset++]);
 	}
 
-	RTCharacterAddHonorPoint(Runtime, Character, Quest->Reward[RUNTIME_QUEST_REWARD_HONOR_POINT]);
+	RTCharacterAddHonorPoint(Runtime, Character, 0, Quest->Reward[RUNTIME_QUEST_REWARD_HONOR_POINT]);
 	RTCharacterAddSkillExp(Runtime, Character, Quest->Reward[RUNTIME_QUEST_REWARD_SKILL_EXP]);
 	RTCharacterAddAbilityExp(Runtime, Character, Quest->Reward[RUNTIME_QUEST_REWARD_AXP]);
 	

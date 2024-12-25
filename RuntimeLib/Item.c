@@ -824,7 +824,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemPotion) {
 		}
 
 		case RUNTIME_ITEM_SUBTYPE_POTION_HONOR:
-			RTCharacterAddHonorPoint(Runtime, Character, ItemData->Potion.PotionValue);
+			RTCharacterAddHonorPoint(Runtime, Character, 0, ItemData->Potion.PotionValue);
 			break;
 
 		case RUNTIME_ITEM_SUBTYPE_POTION_FULL_RECOVERY:
@@ -921,7 +921,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemImmediateReward) {
 		UNIMPLEMENTED;
 
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_HONOR:
-		RTCharacterAddHonorPoint(Runtime, Character, ItemSlot->ItemOptions);
+		RTCharacterAddHonorPoint(Runtime, Character, 0, ItemSlot->ItemOptions);
 		break;
 
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_AXP:
@@ -1595,7 +1595,7 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
 		UNIMPLEMENTED;
 
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_HONOR:
-		RTCharacterAddHonorPoint(Runtime, Character, TotalAmount);
+		RTCharacterAddHonorPoint(Runtime, Character, 0, TotalAmount);
 		break;
 
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_AXP:
@@ -1620,6 +1620,18 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_WINGEXP: {
 		if (Character->Data.ForceWingInfo.Info.Grade < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
 		RTCharacterAddWingExp(Runtime, Character, TotalAmount);
+		break;
+	}
+
+	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_GOLD_MERIT_EXP: {
+		RTCharacterGoldMeritMasteryAddExp(Runtime, Character, TotalAmount);
+
+		NOTIFICATION_DATA_MERIT_POINTS_UPDATE* Notification = RTNotificationInit(MERIT_POINTS_UPDATE);
+		Notification->Success = 1;
+		Notification->GoldMeritPoints = Character->Data.GoldMeritMasteryInfo.Info.Points;
+		Notification->PlatinumMeritPoints = Character->Data.PlatinumMeritMasteryInfo.Info.Points;
+		Notification->DiamondMeritPoints = Character->Data.DiamondMeritMasteryInfo.Info.Points;
+		RTNotificationDispatchToCharacter(Notification, Character);
 		break;
 	}
 

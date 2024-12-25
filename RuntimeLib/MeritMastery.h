@@ -7,8 +7,14 @@ EXTERN_C_BEGIN
 
 #pragma pack(push, 1)
 
+enum {
+    RUNTIME_MERIT_MASTERY_GRADE_GOLD        = 0,
+    RUNTIME_MERIT_MASTERY_GRADE_PLATINUM    = 1,
+    RUNTIME_MERIT_MASTERY_GRADE_DIAMOND     = 2,
+};
+
 struct _RTGoldMeritMasterySlot {
-    Int Index;
+    Int32 Index;
     Int32 Level;
 };
 
@@ -34,14 +40,14 @@ struct _RTPlatinumMeritUnlockedSlot {
 
 struct _RTPlatinumMeritMasterySlot {
     Int8 MemorizeIndex;
-    Int Index;
+    Int32 Index;
     Int32 Level;
 };
 
 struct _RTPlatinumMeritSpecialMasterySlot {
     Int8 MemorizeIndex;
     Int32 Category;
-    Int Index;
+    Int32 Index;
     Int32 Grade;
 };
 
@@ -78,14 +84,14 @@ struct _RTDiamondMeritUnlockedSlot {
 
 struct _RTDiamondMeritMasterySlot {
     Int8 MemorizeIndex;
-    Int Index;
+    Int32 Index;
     Int32 Level;
 };
 
 struct _RTDiamondMeritSpecialMasterySlot {
     Int8 MemorizeIndex;
     Int32 Category;
-    Int Index;
+    Int32 Index;
     Int32 Grade;
 };
 
@@ -113,5 +119,58 @@ struct _RTCharacterDiamondMeritMasteryData {
 };
 
 #pragma pack(pop)
+
+RTGoldMeritMasterySlotRef RTCharacterGoldMeritGetMasterySlot(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int MasteryIndex
+);
+
+Void RTCharacterGoldMeritMasteryAddExp(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 Exp
+);
+
+RTPlatinumMeritMasterySlotRef RTCharacterPlatinumMeritGetMasterySlot(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int MemorizeIndex,
+    Int MasteryIndex
+);
+
+Void RTCharacterPlatinumMeritMasteryAddExp(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 Exp
+);
+
+RTDiamondMeritMasterySlotRef RTCharacterDiamondMeritGetMasterySlot(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int MemorizeIndex,
+    Int MasteryIndex
+);
+
+Void RTCharacterDiamondMeritMasteryAddExp(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 Exp
+);
+
+Bool RTCharacterRegisterMeritMedals(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int InventorySlotCount,
+    UInt32* InventorySlotIndices
+);
+
+Bool RTCharacterMeritMasteryTrain(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 MasteryIndex,
+    Int32 TargetLevel,
+    Int32* RemainingMeritPoints
+);
 
 EXTERN_C_END

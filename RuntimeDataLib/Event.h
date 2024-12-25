@@ -39,6 +39,11 @@ RUNTIME_DATA_TYPE_BEGIN(Event, "events.event")
 				RUNTIME_DATA_PROPERTY(Int32, Option, "option")
 				RUNTIME_DATA_PROPERTY(Int32, StackSize, "stack_size")
 			RUNTIME_DATA_TYPE_END_CHILD(ItemOptionStack)
+			// TODO: Automatically assign the correct stack size without specifying new structures in the xml!
+			RUNTIME_DATA_TYPE_BEGIN_CHILD(LargeItemOptionStack, "large_stack_option")
+				RUNTIME_DATA_PROPERTY(Int32, Option, "option")
+				RUNTIME_DATA_PROPERTY(Int32, StackSize, "stack_size")
+			RUNTIME_DATA_TYPE_END_CHILD(LargeItemOptionStack)
 		RUNTIME_DATA_TYPE_END_CHILD(EventShopItem)
 	RUNTIME_DATA_TYPE_END_CHILD(EventShop)
 

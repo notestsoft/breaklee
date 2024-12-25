@@ -369,3 +369,19 @@ CLIENT_PROCEDURE_BINDING(RECOVER_ITEM) {
 error:
     SocketDisconnect(Socket, Connection);
 }
+
+CLIENT_PROCEDURE_BINDING(GET_SHOP_ROTATION) {
+    if (!Character) goto error;
+
+    S2C_DATA_GET_SHOP_ROTATION* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, GET_SHOP_ROTATION);
+    Response->Result = 0;
+    Response->Rotations[0] = 0;
+    Response->Rotations[1] = 0;
+    Response->Rotations[2] = 0;
+    Response->Rotations[3] = 0;
+    SocketSend(Socket, Connection, Response);
+    return;
+
+error:
+    SocketDisconnect(Socket, Connection);
+}

@@ -342,6 +342,7 @@ Void RTCharacterAddWingExp(
 Void RTCharacterAddHonorPoint(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
+    UInt8 ChangeType,
     Int64 HonorPoint
 );
 

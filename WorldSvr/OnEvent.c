@@ -86,6 +86,12 @@ CLIENT_PROCEDURE_BINDING(GET_EVENT_LIST) {
 					Options.OptionStack.StackSize = OptionStack->StackSize;
 				}
 
+				if (ItemData->LargeItemOptionStackCount > 0) {
+					RTDataLargeItemOptionStackRef OptionStack = &ItemData->LargeItemOptionStackList[0];
+					Options.LargeOptionStack.Option = OptionStack->Option;
+					Options.LargeOptionStack.StackSize = OptionStack->StackSize;
+				}
+
 				ShopItem->ItemOptions = Options.Serial;
 				ItemData->ItemOptions = Options.Serial;
 				/*

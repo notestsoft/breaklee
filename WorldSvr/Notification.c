@@ -121,6 +121,10 @@ NOTIFICATION_PROCEDURE_BINDING(DUNGEON_PATTERN_PART_COMPLETED) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 
+NOTIFICATION_PROCEDURE_BINDING(HONOR_POINT_CHANGE) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
 NOTIFICATION_PROCEDURE_BINDING(PARTY_QUEST_ACTION) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
@@ -223,6 +227,10 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTER_STATUS) {
 }
 
 NOTIFICATION_PROCEDURE_BINDING(DUNGEON_TIMER) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
+NOTIFICATION_PROCEDURE_BINDING(MERIT_POINTS_UPDATE) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 

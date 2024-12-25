@@ -51,7 +51,7 @@ enum {
 };
 
 struct _RTWorldItem {
-    Int Index;
+    Int32 Index;
     RTEntityID ID;
     UInt64 ItemOptions;
     UInt32 ItemSourceIndex;
@@ -67,7 +67,7 @@ struct _RTWorldItem {
 };
 
 struct _RTWorldData {
-    Int WorldIndex;
+    Int32 WorldIndex;
     Int32 Type;
     Int32 DeadWarpIndex;
     Int32 ReturnWarpIndex;

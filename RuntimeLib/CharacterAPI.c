@@ -84,7 +84,7 @@ Int32 lua_RTCharacterAddHonorPoint(lua_State* State) {
     lua_pop(State, 1);
 
     Int64 HonorPoint = luaL_checkinteger(State, 2);
-    RTCharacterAddHonorPoint(Runtime, Character, HonorPoint);
+    RTCharacterAddHonorPoint(Runtime, Character, 0, HonorPoint);
     return 0;
 }
 

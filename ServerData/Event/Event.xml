@@ -943,11 +943,16 @@
             <item slot_id = "41" item_id = "33556830" option = "1" duration_id = "0" price = "0"></item>
             <item slot_id = "43" item_id = "33556876" option = "0" duration_id = "0" price = "0"></item>
             <item slot_id = "44" item_id = "33554961" option = "10" duration_id = "0" price = "0"></item>
-
-            <item slot_id = "45" item_id = "33554940" option = "0" duration_id = "0" price = "0"></item>
-            
+            <item slot_id = "45" item_id = "33554940" option = "0" duration_id = "0" price = "0"></item>            
             <item slot_id = "46" item_id = "33554923" option = "0" duration_id = "0" price = "0"></item>
             <item slot_id = "47" item_id = "33554941" option = "0" duration_id = "0" price = "0"></item>
+
+            <item slot_id = "49" item_id = "33558292" option = "0" duration_id = "0" price = "0">
+                <large_stack_option option="100" stack_size="999" />
+            </item>
+            <item slot_id = "50" item_id = "33556850" option = "0" duration_id = "0" price = "0">
+                <large_stack_option option="100" stack_size="999" />
+            </item>
             
         </event_shop>
     </event>

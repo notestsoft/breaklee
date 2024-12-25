@@ -88,7 +88,7 @@ struct _RTQuestMissionData {
 };
 
 struct _RTQuestData {
-    Int Index;
+    Int32 Index;
     Int32 ID;
     Int32 Type;
     Int32 Party;

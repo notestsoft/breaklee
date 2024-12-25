@@ -183,6 +183,22 @@ CONCAT(RTData, __NAME__ ## Ref) CONCAT(RTRuntimeData, __NAME__ ## Get)( \
     return NULL; \
 }
 
+#define RUNTIME_DATA_TYPE_INDEX_PAIR(__NAME__, __TYPE_1__, __FIELD_1__, __TYPE_2__, __FIELD_2__) \
+CONCAT(RTData, __NAME__ ## Ref) CONCAT(RTRuntimeData, __NAME__ ## Get)( \
+	RTRuntimeDataContextRef Context, \
+    __TYPE_1__ __FIELD_1__, \
+    __TYPE_2__ __FIELD_2__ \
+) { \
+    for (Int _Index = 0; _Index < Context->CONCAT(__NAME__, Count); _Index++) { \
+        CONCAT(RTData, __NAME__ ## Ref) Data = &Context->CONCAT(__NAME__, List)[_Index]; \
+        if (Data->__FIELD_1__ == __FIELD_1__ && Data->__FIELD_2__ == __FIELD_2__) { \
+            return Data; \
+        } \
+    } \
+ \
+    return NULL; \
+}
+
 #define RUNTIME_DATA_TYPE_INDEX_SUFFIXED(__NAME__, __SUFFIX__, __TYPE__, __FIELD__) \
 CONCAT(RTData, __NAME__ ## Ref) CONCAT(RTRuntimeData ## __NAME__, Get ## __SUFFIX__)( \
 	RTRuntimeDataContextRef Context, \

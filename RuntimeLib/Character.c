@@ -1210,6 +1210,7 @@ Int32 RTCharacterAddSkillExp(
 Void RTCharacterAddHonorPoint(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
+	UInt8 ChangeType,
 	Int64 HonorPoint
 ) {
 	Int64 NewHonorPoint = Character->Data.Info.HonorPoint + HonorPoint;
@@ -1217,6 +1218,23 @@ Void RTCharacterAddHonorPoint(
 	NewHonorPoint = MAX(Runtime->Config.MinHonorPoint, NewHonorPoint);
 	Character->Data.Info.HonorPoint = NewHonorPoint;
 	Character->SyncMask.Info = true;
+
+	if (ChangeType > 0) {
+		{
+			NOTIFICATION_DATA_CHARACTER_DATA* Notification = RTNotificationInit(CHARACTER_DATA);
+			Notification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_HONOR_MEDAL;
+			Notification->HonorMedalGrade = Character->Data.HonorMedalInfo.Info.Grade;
+			Notification->HonorPoints = Character->Data.Info.HonorPoint;
+			RTNotificationDispatchToCharacter(Notification, Character);
+		}
+
+		{
+			NOTIFICATION_DATA_HONOR_POINT_CHANGE* Notification = RTNotificationInit(HONOR_POINT_CHANGE);
+			Notification->ChangeType = ChangeType;
+			Notification->HonorPoints = HonorPoint;
+			RTNotificationDispatchToCharacter(Notification, Character);
+		}
+	}
 }
 
 Void RTCharacterAddAbilityExp(

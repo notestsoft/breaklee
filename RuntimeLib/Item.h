@@ -76,9 +76,11 @@ enum {
 	RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_HONOR = 6,
 	RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_AXP = 7,
 	RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_WAREXP = 8,
+
 	RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_MEDALSCORE = 12,
 	RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_OXP = 13,
 	RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_WINGEXP = 14,
+	RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_GOLD_MERIT_EXP = 15,
 };
 
 enum {
@@ -318,7 +320,7 @@ struct _RTItemData {
 		} MeritMedal;
 
 		struct {
-			Int Index;
+			Int32 Index;
 		} BlessingBead;
 
 		// TODO: Add other item types like potion, pet, ...
@@ -449,6 +451,11 @@ struct _RTItemOptions {
 			UInt64 StackSize : 7;
 			UInt64 Option : 25;
 		} OptionStack;
+
+		struct {
+			UInt64 StackSize : 16;
+			UInt64 Option : 16;
+		} LargeOptionStack;
 
 		struct {
 			UInt64 StackSize : 16;
