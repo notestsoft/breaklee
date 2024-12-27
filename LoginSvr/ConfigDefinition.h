@@ -32,8 +32,9 @@ CONFIG_PARAMETER(Bool, EmailVerificationEnabled, "LoginSvr.EmailVerificationEnab
 CONFIG_PARAMETER(UInt64, WorldListBroadcastInterval, "LoginSvr.WorldListBroadcastInterval", 1000)
 CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, CaptchaDataPath, "LoginSvr.CaptchaDataPath", ServerData\\Captcha)
 CONFIG_PARAMETER(Bool, CaptchaVerificationEnabled, "LoginSvr.CaptchaVerificationEnabled", 0)
-CONFIG_PARAMETER(Int32, LogLevel, "LoginSvr.LogLevel", 5)
 CONFIG_PARAMETER(Int32, HashIterations, "LoginSvr.HashIterations", 1000)
+CONFIG_PARAMETER(Timestamp, LocalTimeOffset, "LoginSvr.LocalTimeOffset", 3600)
+CONFIG_PARAMETER(Int32, LogLevel, "LoginSvr.LogLevel", 5)
 CONFIG_END(Login)
 
 CONFIG_BEGIN(Database)

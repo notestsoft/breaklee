@@ -108,6 +108,7 @@ Int32 main(Int32 argc, CString* argv) {
     CString ConfigFilePath = PathCombineNoAlloc(WorkingDirectory, "PartySvr.ini");
     ServerConfig Config = ServerConfigLoad(ConfigFilePath);
 
+    SetTimestampOffset(Config.PartySvr.LocalTimeOffset);
     DiagnosticSetupLogFile(argv[0], Config.PartySvr.LogLevel, NULL, NULL);
 
     AllocatorRef Allocator = AllocatorGetSystemDefault();

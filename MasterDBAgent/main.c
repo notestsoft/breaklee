@@ -41,6 +41,7 @@ Int32 main(Int32 argc, CString* argv) {
     CString ConfigFilePath = PathCombineNoAlloc(WorkingDirectory, "MasterDBAgent.ini");
     ServerConfig Config = ServerConfigLoad(ConfigFilePath);
 
+    SetTimestampOffset(Config.MasterDBAgent.LocalTimeOffset);
     DiagnosticSetupLogFile(argv[0], Config.MasterDBAgent.LogLevel, NULL, NULL);
 
     AllocatorRef Allocator = AllocatorGetSystemDefault();

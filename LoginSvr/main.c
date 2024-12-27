@@ -123,6 +123,7 @@ Int32 main(Int32 argc, CString* argv) {
     CString ConfigFilePath = PathCombineNoAlloc(WorkingDirectory, "LoginSvr.ini");
     ServerConfig Config = ServerConfigLoad(ConfigFilePath);
 
+    SetTimestampOffset(Config.Login.LocalTimeOffset);
     DiagnosticSetupLogFile(argv[0], Config.Login.LogLevel, NULL, NULL);
 
     AllocatorRef Allocator = AllocatorGetSystemDefault();

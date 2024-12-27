@@ -18,6 +18,7 @@ CONFIG_BEGIN(ChatSvr)
 CONFIG_PARAMETER(UInt8, GroupIndex, "ChatSvr.GroupIndex", 21)
 CONFIG_PARAMETER(UInt16, Port, "ChatSvr.Port", 38170)
 CONFIG_PARAMETER(Int32, MaxConnectionCount, "ChatSvr.MaxConnectionCount", 5)
+CONFIG_PARAMETER(Timestamp, LocalTimeOffset, "ChatSvr.LocalTimeOffset", 3600)
 CONFIG_PARAMETER(Int32, LogLevel, "ChatSvr.LogLevel", 5)
 CONFIG_END(ChatSvr)
 

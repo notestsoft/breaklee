@@ -150,6 +150,7 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     CString ConfigFilePath = PathCombineNoAlloc(WorkingDirectory, ConfigFileName);
     ServerConfig Config = ServerConfigLoad(ConfigFilePath);
 
+    SetTimestampOffset(Config.WorldSvr.LocalTimeOffset);
     DiagnosticSetupLogFile(Arguments[0], Config.WorldSvr.LogLevel, NULL, NULL);
 
     AllocatorRef Allocator = AllocatorGetSystemDefault();

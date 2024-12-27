@@ -14,6 +14,7 @@
 #include "Util.h"
 #include "String.h"
 
+static Timestamp kTimestampOffset = 0;
 static Char kRandomKeyTable[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 UInt Align(
@@ -42,8 +43,12 @@ UInt NextPowerOfTwo(UInt Value) {
     return Value;
 }
 
+Void SetTimestampOffset(Timestamp Offset) {
+    kTimestampOffset = Offset;
+}
+
 Timestamp GetTimestamp() {
-	return (Timestamp)time(NULL);
+	return (Timestamp)time(NULL) + kTimestampOffset;
 }
 
 Timestamp GetTimestampMs() {
@@ -55,11 +60,11 @@ Timestamp GetTimestampMs() {
     LargeInt.HighPart = FileTime.dwHighDateTime;
 
     Timestamp Milliseconds = LargeInt.QuadPart / 10000;
-    return Milliseconds - 11644473600000ULL;
+    return Milliseconds - 11644473600000ULL + kTimestampOffset * 1000;
 #else
     struct timeval tv;
     gettimeofday(&tv, NULL);
-    return (uint64_t)tv.tv_sec * 1000 + tv.tv_usec / 1000;
+    return (uint64_t)tv.tv_sec * 1000 + tv.tv_usec / 1000 + kTimestampOffset * 1000;
 #endif
 }
 
@@ -349,6 +354,17 @@ Void ReadConfigInt(
     Char Buffer[MAX_PATH] = { 0 };
     ReadConfigString(FilePath, KeyPath, Default, Buffer, MAX_PATH);
     ParseInt(Buffer, Result);
+}
+
+Void ReadConfigTimestamp(
+    CString FilePath,
+    CString KeyPath,
+    CString Default,
+    Timestamp* Result
+) {
+    Char Buffer[MAX_PATH] = { 0 };
+    ReadConfigString(FilePath, KeyPath, Default, Buffer, MAX_PATH);
+    ParseUInt64(Buffer, (UInt64*)Result);
 }
 
 Timestamp PlatformGetTickCount() {

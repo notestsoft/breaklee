@@ -18,6 +18,7 @@ CONFIG_BEGIN(AuctionSvr)
 CONFIG_PARAMETER(UInt8, GroupIndex, "AuctionSvr.GroupIndex", 21)
 CONFIG_PARAMETER(UInt16, Port, "AuctionSvr.Port", 38160)
 CONFIG_PARAMETER(Int32, MaxConnectionCount, "AuctionSvr.MaxConnectionCount", 5)
+CONFIG_PARAMETER(Timestamp, LocalTimeOffset, "AuctionSvr.LocalTimeOffset", 3600)
 CONFIG_PARAMETER(Int32, LogLevel, "AuctionSvr.LogLevel", 5)
 CONFIG_END(AuctionSvr)
 

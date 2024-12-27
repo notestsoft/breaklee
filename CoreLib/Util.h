@@ -35,6 +35,8 @@ UInt NextPowerOfTwo(
     UInt Value
 );
 
+Void SetTimestampOffset(Timestamp Offset);
+
 Timestamp GetTimestamp();
 
 Timestamp GetTimestampMs();
@@ -147,6 +149,13 @@ Void ReadConfigInt(
     CString KeyPath,
     CString Default,
     Int* Result
+);
+
+Void ReadConfigTimestamp(
+    CString FilePath,
+    CString KeyPath,
+    CString Default,
+    Timestamp* Result
 );
 
 Timestamp PlatformGetTickCount();
