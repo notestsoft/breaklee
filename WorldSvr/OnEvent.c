@@ -94,14 +94,14 @@ CLIENT_PROCEDURE_BINDING(GET_EVENT_LIST) {
 
 				ShopItem->ItemOptions = Options.Serial;
 				ItemData->ItemOptions = Options.Serial;
-				/*
-				ShopItem->ItemPriceCount = 10;
+
+				ShopItem->ItemPriceCount = ItemData->EventItemPriceCount;
 				for (Int Index = 0; Index < ShopItem->ItemPriceCount; Index += 1) {
-					S2C_DATA_EVENT_SHOP_ITEM_PRICE* ShopItemPrice = PacketBufferAppendStruct(Connection->PacketBuffer, S2C_DATA_EVENT_SHOP_ITEM_PRICE);
-					ShopItemPrice->ItemID.ID = 1;
-					ShopItemPrice->ItemCount = 1;
+					S2C_DATA_EVENT_SHOP_ITEM_PRICE* ShopItemPrice = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_EVENT_SHOP_ITEM_PRICE);
+					ShopItemPrice->ItemID.Serial = ItemData->EventItemPriceList[Index].ItemID;
+					ShopItemPrice->ItemOptions = ItemData->EventItemPriceList[Index].ItemOptions;
+					ShopItemPrice->ItemCount = ItemData->EventItemPriceList[Index].ItemCount;
 				}
-				*/
 			}
 		}
 
@@ -131,7 +131,15 @@ error:
 CLIENT_PROCEDURE_BINDING(EVENT_ACTION) {
 	if (!Character) goto error;
 
-	Int PacketLength = sizeof(C2S_DATA_EVENT_ACTION) + sizeof(UInt16) * Packet->InventorySlotCount;
+	Int PacketLength = sizeof(C2S_DATA_EVENT_ACTION) + sizeof(UInt16) * Packet->InventorySlotCount + sizeof(UInt16) * Packet->ItemPriceCount;
+
+	Int DataOffset = 0;
+	for (Int Index = 0; Index < Packet->ItemPriceCount; Index += 1) {
+		C2S_DATA_EVENT_ACTION_ITEM_PRICE* ItemPrice = (C2S_DATA_EVENT_ACTION_ITEM_PRICE*)&Packet->Data[DataOffset];
+		PacketLength += sizeof(UInt16) * ItemPrice->InventorySlotCount;
+		DataOffset += sizeof(C2S_DATA_EVENT_ACTION_ITEM_PRICE) + sizeof(UInt16) * ItemPrice->InventorySlotCount;
+	}
+
 	if (Packet->Length != PacketLength) goto error;
 
 	RTDataEventRef Event = RTRuntimeDataEventGet(Runtime->Context, Packet->EventIndex);
@@ -140,17 +148,16 @@ CLIENT_PROCEDURE_BINDING(EVENT_ACTION) {
 
 	// TODO: Add action types for other events...
 	// TODO: Check NPC distance to character
-	// TODO: Check and subtract item prices
 
 	if (Event->EventShopCount < 1) goto error;
 
 	RTDataEventShopRef EventShop = &Event->EventShopList[0];
-	RTDataEventShopItemRef Item = RTRuntimeDataEventShopItemGet(EventShop, Packet->ShopSlotIndex);
-	if (!Item) goto error;
+	RTDataEventShopItemRef EventItem = RTRuntimeDataEventShopItemGet(EventShop, Packet->ShopSlotIndex);
+	if (!EventItem) goto error;
 
 	for (Int Index = 0; Index < Event->EventItemCount; Index += 1) {
 		RTDataEventItemRef EventItem = &Event->EventItemList[Index];
-		if (EventItem->ItemID == Item->ItemID && EventItem->ItemOptions == Item->ItemOptions && strlen(EventItem->Script) > 0) {
+		if (EventItem->ItemID == EventItem->ItemID && EventItem->ItemOptions == EventItem->ItemOptions && strlen(EventItem->Script) > 0) {
 			CString ScriptFilePath = PathCombineNoAlloc(Context->Config.WorldSvr.ScriptDataPath, EventItem->Script);
 			RTScriptRef Script = RTScriptManagerLoadScript(Runtime->ScriptManager, ScriptFilePath);
 			RTScriptCallOnEvent(Script, Runtime, Character);
@@ -164,8 +171,36 @@ CLIENT_PROCEDURE_BINDING(EVENT_ACTION) {
 		}
 	}
 
+	if (EventItem->EventItemPriceCount != Packet->ItemPriceCount) goto error;
+
+	Int64 TotalPrice = EventItem->ItemPrice * Packet->InventorySlotCount;
+	if (Character->Data.Info.Alz < TotalPrice) goto error;
+
+	DataOffset = 0;
+	for (Int PriceIndex = 0; PriceIndex < Packet->ItemPriceCount; PriceIndex += 1) {
+		C2S_DATA_EVENT_ACTION_ITEM_PRICE* ItemPrice = (C2S_DATA_EVENT_ACTION_ITEM_PRICE*)&Packet->Data[DataOffset];
+		DataOffset += sizeof(C2S_DATA_EVENT_ACTION_ITEM_PRICE) + sizeof(UInt16) * ItemPrice->InventorySlotCount;
+
+		Int64 TotalConsumableItemCount = 0;
+		for (Int SlotIndex = 0; SlotIndex < ItemPrice->InventorySlotCount; SlotIndex += 1) {
+			Int64 ConsumableItemCount = RTInventoryGetConsumableItemCount(
+				Runtime,
+				&Character->Data.InventoryInfo,
+				EventItem->EventItemPriceList[PriceIndex].ItemID,
+				EventItem->EventItemPriceList[PriceIndex].ItemOptions,
+				ItemPrice->InventorySlotIndex[SlotIndex]
+			);
+			if (ConsumableItemCount < 1) goto error;
+
+			TotalConsumableItemCount += ConsumableItemCount;
+		}
+
+		if (TotalConsumableItemCount < EventItem->EventItemPriceList[PriceIndex].ItemCount) goto error;
+	}
+
+	UInt16* InventorySlotIndex = (UInt16*)&Packet->Data[DataOffset];
 	for (Int Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
-		if (!RTInventoryIsSlotEmpty(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index])) {
+		if (!RTInventoryIsSlotEmpty(Runtime, &Character->Data.InventoryInfo, InventorySlotIndex[Index])) {
 			goto error;
 		}
 	}
@@ -176,12 +211,34 @@ CLIENT_PROCEDURE_BINDING(EVENT_ACTION) {
 	Response->Unknown1 = Packet->Unknown1;
 	Response->ItemCount = Packet->InventorySlotCount;
 
+	DataOffset = 0;
+	for (Int PriceIndex = 0; PriceIndex < Packet->ItemPriceCount; PriceIndex += 1) {
+		C2S_DATA_EVENT_ACTION_ITEM_PRICE* ItemPrice = (C2S_DATA_EVENT_ACTION_ITEM_PRICE*)&Packet->Data[DataOffset];
+		DataOffset += sizeof(C2S_DATA_EVENT_ACTION_ITEM_PRICE) + sizeof(UInt16) * ItemPrice->InventorySlotCount;
+
+		Int64 RemainingItemCount = EventItem->EventItemPriceList[PriceIndex].ItemCount;
+		for (Int SlotIndex = 0; SlotIndex < ItemPrice->InventorySlotCount; SlotIndex += 1) {
+			RemainingItemCount -= RTInventoryConsumeItem(
+				Runtime,
+				&Character->Data.InventoryInfo,
+				EventItem->EventItemPriceList[PriceIndex].ItemID,
+				EventItem->EventItemPriceList[PriceIndex].ItemOptions,
+				RemainingItemCount,
+				ItemPrice->InventorySlotIndex[SlotIndex]
+			);
+
+			Character->SyncMask.InventoryInfo = true;
+		}
+	}
+
+	InventorySlotIndex = (UInt16*)&Packet->Data[DataOffset];
+
 	struct _RTItemSlot ItemSlot = { 0 };
 	for (Int Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
-		ItemSlot.SlotIndex = Packet->InventorySlotIndex[Index];
-		ItemSlot.Item.Serial = Item->ItemID;
-		ItemSlot.ItemOptions = Item->ItemOptions;
-		// ItemSlot.ItemDuration = Item->ItemDurationID;
+		ItemSlot.SlotIndex = InventorySlotIndex[Index];
+		ItemSlot.Item.Serial = EventItem->ItemID;
+		ItemSlot.ItemOptions = EventItem->ItemOptions;
+		ItemSlot.ItemDuration.DurationIndex = EventItem->ItemDurationID;
 
 		if (!RTInventorySetSlot(Runtime, &Character->Data.InventoryInfo, &ItemSlot)) goto error;
 
@@ -193,6 +250,9 @@ CLIENT_PROCEDURE_BINDING(EVENT_ACTION) {
 		ResponseItem->ItemDuration = ItemSlot.ItemDuration;
 		ResponseItem->SlotIndex = ItemSlot.SlotIndex;
 	}
+
+	Character->Data.Info.Alz -= TotalPrice;
+	Character->SyncMask.Info = true;
 
 	SocketSend(Socket, Connection, Response);
 	return;

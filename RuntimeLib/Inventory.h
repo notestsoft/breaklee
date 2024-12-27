@@ -103,6 +103,7 @@ Int64 RTInventoryGetConsumableItemCount(
 	RTRuntimeRef Runtime,
 	RTCharacterInventoryInfoRef Inventory,
 	UInt64 RequiredItemID,
+	UInt64 RequiredItemOptions,
 	UInt16 InventorySlotIndex
 );
 
@@ -110,6 +111,7 @@ Int64 RTInventoryConsumeItem(
 	RTRuntimeRef Runtime,
 	RTCharacterInventoryInfoRef Inventory,
 	UInt64 RequiredItemID,
+	UInt64 RequiredItemOptions,
 	Int64 RequiredItemCount,
 	UInt16 InventorySlotIndex
 );

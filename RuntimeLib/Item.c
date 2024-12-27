@@ -471,9 +471,12 @@ UInt64 RTItemForceOptionEncode(
 	return Options.Serial;
 }
 
+// TODO: Add stack size mask for all item types or maybe move to a file!
 UInt64 RTItemDataGetStackSizeMask(
 	RTItemDataRef ItemData
 ) {
+	if (ItemData->MaxStackSize < 1) return 0;
+
 	if (ItemData->ItemType == RUNTIME_ITEM_TYPE_QUEST_S ||
 		ItemData->ItemType == RUNTIME_ITEM_TYPE_SPECIAL_POTION ||
 		ItemData->ItemType == RUNTIME_ITEM_TYPE_FORCE_CORE_ORDER_SHEET) {

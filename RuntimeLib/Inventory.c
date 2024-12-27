@@ -336,14 +336,16 @@ Int64 RTInventoryGetConsumableItemCount(
 	RTRuntimeRef Runtime,
 	RTCharacterInventoryInfoRef Inventory,
 	UInt64 RequiredItemID,
+	UInt64 RequiredItemOptions,
 	UInt16 InventorySlotIndex
 ) {
 	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, Inventory, InventorySlotIndex);
-	if (!ItemSlot) return false;
-	if ((ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX) != RequiredItemID) return false;
+	if (!ItemSlot) return 0;
+	if ((ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX) != RequiredItemID) return 0;
+	if (RequiredItemOptions > 0 && ItemSlot->ItemOptions != RequiredItemOptions) return 0;
 
 	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
-	if (!ItemData) return false;
+	if (!ItemData) return 0;
 
 	UInt64 StackSizeMask = RTItemDataGetStackSizeMask(ItemData);
 	if (StackSizeMask > 0) {
@@ -357,12 +359,14 @@ Int64 RTInventoryConsumeItem(
 	RTRuntimeRef Runtime,
 	RTCharacterInventoryInfoRef Inventory,
 	UInt64 RequiredItemID,
+	UInt64 RequiredItemOptions,
 	Int64 RequiredItemCount,
 	UInt16 InventorySlotIndex
 ) {
 	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, Inventory, InventorySlotIndex);
 	assert(ItemSlot);
 	assert((ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX) == RequiredItemID);
+	assert(RequiredItemOptions == 0 || ItemSlot->ItemOptions == RequiredItemOptions);
 
 	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
 	assert(ItemData);
@@ -383,7 +387,6 @@ Int64 RTInventoryConsumeItem(
 		return ConsumedCount;
 	}
 	else {
-		assert(RequiredItemCount == 1);
 		RTInventoryClearSlot(Runtime, Inventory, InventorySlotIndex);
 		return 1;
 	}
@@ -403,6 +406,7 @@ Bool RTInventoryCanConsumeStackableItems(
 		if (!ItemSlot) return false;
 		if ((ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX) != RequiredItemID) return false;
 
+		// TODO: This will cause bugs for items which have specific stack size bit patterns!
 		ConsumableItemCount += ItemSlot->ItemOptions;
 	}
 

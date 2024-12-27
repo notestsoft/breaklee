@@ -2469,16 +2469,23 @@ CLIENT_PROTOCOL(S2C, GET_EVENT_LIST, DEFAULT, 1003,
     // S2C_DATA_EVENT Events[];
 )
 
+CLIENT_PROTOCOL_STRUCT(C2S_DATA_EVENT_ACTION_ITEM_PRICE,
+    UInt16 InventorySlotCount;
+    UInt16 InventorySlotIndex[0];
+)
+
 // TODO: Add support for additional event action types!
 CLIENT_PROTOCOL(C2S, EVENT_ACTION, DEFAULT, 1006,
     Int32 EventIndex;
     Int32 Unknown1;
     UInt8 NpcIndex;
-    UInt32 ShopSlotIndex;
+    UInt16 ShopSlotIndex;
+    UInt16 ItemPriceCount;
     UInt16 InventorySlotCount;
-    UInt16 InventorySlotIndex[0];
+    UInt8 Data[0];
+    // EVENT_ACTION_ITEM_PRICE ItemPrices[]
+    // UInt16 InventorySlotIndex[0];
 )
-
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_ACTION_SHOP_ITEM,
     RTItem Item;
@@ -2490,7 +2497,7 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_EVENT_ACTION_SHOP_ITEM,
 CLIENT_PROTOCOL(S2C, EVENT_ACTION, DEFAULT, 1006,
     Int32 EventIndex;
     Int32 Unknown1;
-    UInt8 Unknown2;
+    UInt8 Result;
     UInt16 ItemCount;
     // S2C_DATA_EVENT_ACTION_SHOP_ITEM Items[InventorySlotCount];
 )

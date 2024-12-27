@@ -80,6 +80,7 @@ UInt8 RTCharacterAnimaMasteryTrainSlot(
                     Runtime, 
                     &Character->Data.InventoryInfo, 
                     Price->RequiredItemID, 
+                    0,
                     MaterialSlotIndex[Index]
                 );
                 if (ConsumableItemCount < 1) return 0;
@@ -102,6 +103,7 @@ UInt8 RTCharacterAnimaMasteryTrainSlot(
                     Runtime,
                     &Character->Data.InventoryInfo,
                     Price->RequiredItemID,
+                    0,
                     RemainingItemCount,
                     MaterialSlotIndex[Index]
                 );

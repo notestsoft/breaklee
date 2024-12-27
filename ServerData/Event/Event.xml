@@ -1057,12 +1057,24 @@
         </event_shop>
     </event>
 
-    <event id="17" type="2" use_flags="15" world_id="1" npc_id="49" description="Upgrade II">
+    <event id="17" type="2" use_flags="15" world_id="1" npc_id="49" description="Exchange">
         <event_description content="Upgrade II" />
         
         <event_shop>
-            <item slot_id="0" item_id="3103" option="999" duration_id="0" price="0"></item>
-            <item slot_id="1" item_id="3103" option="999" duration_id="0" price="0"></item>
+            <item slot_id="0" item_id="1" option="0" duration_id="0" price="0">
+                <item_price item_id="2" option="0" count="1" />
+            </item>
+            <item slot_id="1" item_id="2" option="0" duration_id="0" price="0">
+                <item_price item_id="1" option="0" count="1" />
+            </item>
+            <item slot_id="2" item_id="1214" option="0" duration_id="0" price="0">
+                <item_price item_id="1" option="0" count="2" />
+                <item_price item_id="2" option="0" count="1" />
+            </item>
+            <item slot_id="3" item_id="1215" option="0" duration_id="0" price="0">
+                <item_price item_id="1" option="0" count="1" />
+                <item_price item_id="2" option="0" count="2" />
+            </item>
         </event_shop>
     </event>
 

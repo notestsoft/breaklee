@@ -105,6 +105,7 @@ Bool RTCharacterRegisterRequestCraftRecipe(
 				Runtime,
 				&Character->Data.InventoryInfo,
 				RecipeData->RegisterItem[0],
+				0,
 				InventorySlot.Count,
 				InventorySlot.InventorySlotIndex
 			);
