@@ -18,6 +18,7 @@ option(CONFIG_BUILD_TARGET_MASTER_DBAGENT "Build Master DB Agent" ON)
 option(CONFIG_BUILD_TARGET_MASTER_SVR "Build Master Server" ON)
 option(CONFIG_BUILD_TARGET_PARTY_SVR "Build Party Server" ON)
 option(CONFIG_BUILD_TARGET_WORLD_SVR "Build World Server" ON)
+option(CONFIG_BUILD_TARGET_CLIENT "Build Client" ON)
 
 include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 
@@ -187,6 +188,32 @@ if(CONFIG_BUILD_TARGET_WORLD_SVR)
     if(WIN32)
         target_link_libraries(WorldSvr PRIVATE ${WORLD_SVR_DIR}/main.res)
     endif()
+endif()
+
+if(CONFIG_BUILD_TARGET_CLIENT)
+    find_package(DirectX REQUIRED)
+    find_package(raylib REQUIRED)
+
+    set(UI_LIB_DIR ${PROJECT_SOURCE_DIR}/UILib)
+
+    file(GLOB UI_LIB_HEADERS ${UI_LIB_DIR}/*.h)
+    file(GLOB UI_LIB_SOURCES ${UI_LIB_DIR}/*.c)
+    
+    add_library(UILib STATIC ${UI_LIB_HEADERS} ${UI_LIB_SOURCES})
+    set_target_properties(UILib PROPERTIES LINKER_LANGUAGE CXX)
+    target_link_libraries(UILib PRIVATE CoreLib NetLib RuntimeDataLib RuntimeLib ${LUA_LIBRARIES} ${DirectX_LIBRARIES} ${raylib_LIBRARIES})
+    target_include_directories(UILib PUBLIC ${PROJECT_SOURCE_DIR} ${lua_INCLUDE_DIR} ${DirectX_INCLUDE_DIRS} ${raylib_INCLUDE_DIR})
+    
+    set(CLIENT_DIR ${PROJECT_SOURCE_DIR}/Client)
+    
+    file(GLOB CLIENT_HEADERS ${CLIENT_DIR}/*.h)
+    file(GLOB CLIENT_SOURCES ${CLIENT_DIR}/*.c ${CLIENT_DIR}/*.cpp)
+
+	add_executable(Client ${CLIENT_HEADERS} ${CLIENT_SOURCES})
+    set_target_properties(Client PROPERTIES LINKER_LANGUAGE CXX)
+	set_target_properties(Client PROPERTIES WIN32_EXECUTABLE TRUE)
+	target_link_libraries(Client CoreLib NetLib RuntimeDataLib RuntimeLib UILib ${DirectX_LIBRARIES})
+	target_include_directories(Client PUBLIC ${PROJECT_SOURCE_DIR} ${DirectX_INCLUDE_DIRS})
 endif()
 
 if(NOT WIN32)

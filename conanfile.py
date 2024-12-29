@@ -11,6 +11,7 @@ class BreakleeConan(ConanFile):
         "openssl/3.3.1",
         "sqlite3/3.47.0",
         "zlib/1.3.1",
+        "raylib/5.0"
     ]
     generators = "CMakeDeps", "CMakeToolchain"
 
@@ -20,6 +21,7 @@ class BreakleeConan(ConanFile):
         self.options["openssl"].shared = False
         self.options["sqlite3"].shared = False
         self.options["zlib"].shared = False
+        self.options["raylib"].shared = False
 
         if self.settings.os != "Windows":
             self.requires("odbc/2.3.11")
