@@ -238,6 +238,14 @@ NOTIFICATION_PROCEDURE_BINDING(DUNGEON_TIMER_INFO) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 
+NOTIFICATION_PROCEDURE_BINDING(MERIT_MASTERY_OPEN_SLOT) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
+NOTIFICATION_PROCEDURE_BINDING(DIAMOND_MERIT_MASTERY_OPEN_SLOT) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
 Void BroadcastUserList(
     ServerRef Server,
     ServerContextRef Context

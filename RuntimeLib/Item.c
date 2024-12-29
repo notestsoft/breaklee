@@ -6,6 +6,8 @@
 #include "NotificationProtocol.h"
 #include "NotificationManager.h"
 
+// TODO: Verify packet payload length for each item proc
+
 // TODO: This is most likely encoded into item data!
 Bool RTItemTypeIsProtectable(
 	UInt32 ItemType
@@ -1638,6 +1640,18 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
 		break;
 	}
 
+	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_PLATINUM_MERIT_EXP: {
+		RTCharacterPlatinumMeritMasteryAddExp(Runtime, Character, TotalAmount);
+
+		NOTIFICATION_DATA_MERIT_POINTS_UPDATE* Notification = RTNotificationInit(MERIT_POINTS_UPDATE);
+		Notification->Success = 1;
+		Notification->GoldMeritPoints = Character->Data.GoldMeritMasteryInfo.Info.Points;
+		Notification->PlatinumMeritPoints = Character->Data.PlatinumMeritMasteryInfo.Info.Points;
+		Notification->DiamondMeritPoints = Character->Data.DiamondMeritMasteryInfo.Info.Points;
+		RTNotificationDispatchToCharacter(Notification, Character);
+		break;
+	}
+
 	default:
 		return RUNTIME_ITEM_USE_RESULT_FAILED;
 	}
@@ -1692,6 +1706,80 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemTransformationCard) {
 	Character->SyncMask.TransformInfo = true;
 
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+}
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemTimeReducer) {
+	struct {
+		Int32 ItemCount;
+		Int32 Unknown2;
+		UInt16 InventorySlotIndex;
+	} *Data = Payload;
+
+	if (ItemSlot->ItemOptions < Data->ItemCount) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+	Int32 TotalTimeInterval = Data->ItemCount * ItemData->TimeReducer.TimeInterval;
+
+	ItemSlot->ItemOptions -= Data->ItemCount;
+	if (ItemSlot->ItemOptions < 1) {
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
+	}
+	Character->SyncMask.InventoryInfo = true;
+
+	if (ItemData->TimeReducer.Grade == RUNTIME_MERIT_MASTERY_GRADE_PLATINUM) {
+		if (!Character->Data.PlatinumMeritMasteryInfo.Info.IsEnabled) return RUNTIME_ITEM_USE_RESULT_FAILED;
+		if (Character->Data.PlatinumMeritMasteryInfo.Info.OpenSlotMasteryIndex < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+		Character->Data.PlatinumMeritMasteryInfo.Info.OpenSlotUnlockTime -= TotalTimeInterval;
+		Character->SyncMask.PlatinumMeritMasteryInfo = true;
+	}
+
+	if (ItemData->TimeReducer.Grade == RUNTIME_MERIT_MASTERY_GRADE_DIAMOND) {
+		if (!Character->Data.DiamondMeritMasteryInfo.Info.IsEnabled) return RUNTIME_ITEM_USE_RESULT_FAILED;
+		if (Character->Data.DiamondMeritMasteryInfo.Info.OpenSlotMasteryIndex < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+		Character->Data.DiamondMeritMasteryInfo.Info.OpenSlotUnlockTime -= TotalTimeInterval;
+		Character->SyncMask.DiamondMeritMasteryInfo = true;
+	}
+
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+}
+
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemMemorizeExtender) {
+	if (ItemData->MemorizeExtender.Grade == RUNTIME_MERIT_MASTERY_GRADE_PLATINUM) {
+		if (!Character->Data.PlatinumMeritMasteryInfo.Info.IsEnabled) return RUNTIME_ITEM_USE_RESULT_FAILED;
+		if (Character->Data.PlatinumMeritMasteryInfo.Info.TotalMemorizeCount >= RUNTIME_CHARACTER_MAX_PLATINUM_MERIT_MEMORIZE_COUNT) return RUNTIME_ITEM_USE_RESULT_FAILED;
+	
+		RTPlatinumMeritExtendedMemorizeSlotRef MemorizeSlot = &Character->Data.PlatinumMeritMasteryInfo.ExtendedMemorizeSlots[Character->Data.PlatinumMeritMasteryInfo.Info.TotalMemorizeCount];
+		MemorizeSlot->MemorizeIndex = Character->Data.PlatinumMeritMasteryInfo.Info.TotalMemorizeCount + 1;
+		MemorizeSlot->Points = Character->Data.PlatinumMeritMasteryInfo.Info.Points;
+		Character->Data.PlatinumMeritMasteryInfo.Info.TotalMemorizeCount += 1;
+		Character->Data.PlatinumMeritMasteryInfo.Info.ExtendedMemorizeCount = Character->Data.PlatinumMeritMasteryInfo.Info.TotalMemorizeCount - RUNTIME_CHARACTER_DEFAULT_PLATINUM_MERIT_MEMORIZE_COUNT;
+		Character->SyncMask.PlatinumMeritMasteryInfo = true;
+
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
+		Character->SyncMask.InventoryInfo = true;
+
+		return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+	}
+
+	if (ItemData->MemorizeExtender.Grade == RUNTIME_MERIT_MASTERY_GRADE_DIAMOND) {
+		if (!Character->Data.DiamondMeritMasteryInfo.Info.IsEnabled) return RUNTIME_ITEM_USE_RESULT_FAILED;
+		if (Character->Data.DiamondMeritMasteryInfo.Info.TotalMemorizeCount >= RUNTIME_CHARACTER_MAX_DIAMOND_MERIT_MEMORIZE_COUNT) return RUNTIME_ITEM_USE_RESULT_FAILED;
+
+		RTDiamondMeritExtendedMemorizeSlotRef MemorizeSlot = &Character->Data.DiamondMeritMasteryInfo.ExtendedMemorizeSlots[Character->Data.DiamondMeritMasteryInfo.Info.TotalMemorizeCount];
+		MemorizeSlot->MemorizeIndex = Character->Data.DiamondMeritMasteryInfo.Info.TotalMemorizeCount + 1;
+		MemorizeSlot->Points = Character->Data.DiamondMeritMasteryInfo.Info.Points;
+		Character->Data.DiamondMeritMasteryInfo.Info.TotalMemorizeCount += 1;
+		Character->Data.DiamondMeritMasteryInfo.Info.ExtendedMemorizeCount = Character->Data.DiamondMeritMasteryInfo.Info.TotalMemorizeCount - RUNTIME_CHARACTER_DEFAULT_DIAMOND_MERIT_MEMORIZE_COUNT;
+		Character->SyncMask.DiamondMeritMasteryInfo = true;
+
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
+		Character->SyncMask.InventoryInfo = true;
+
+		return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+	}
+
+	return RUNTIME_ITEM_USE_RESULT_FAILED;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemChangeGender) {

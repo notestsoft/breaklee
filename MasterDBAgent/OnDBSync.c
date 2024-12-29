@@ -51,7 +51,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 
 		if (Packet->SyncMask.PlatinumMeritMasteryInfo) {
 			ReadMemory(struct _RTPlatinumMeritMasteryInfo, Info, 1);
-			ReadMemory(struct _RTPlatinumMeritExtendedMemorizeSlot, ExtendedMemorizeSlots, Info->ExtendedMemorizeCount);
+			ReadMemory(struct _RTPlatinumMeritExtendedMemorizeSlot, ExtendedMemorizeSlots, Info->TotalMemorizeCount);
 			ReadMemory(struct _RTPlatinumMeritUnlockedSlot, UnlockedSlots, Info->UnlockedSlotCount);
 			ReadMemory(struct _RTPlatinumMeritMasterySlot, MasterySlots, Info->MasterySlotCount);
 			ReadMemory(struct _RTPlatinumMeritSpecialMasterySlot, SpecialMasterySlots, Info->SpecialMasterySlotCount);
@@ -66,10 +66,11 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 				DB_INPUT_UINT8(Info->ActiveMemorizeIndex),
 				DB_INPUT_INT32(Info->OpenSlotMasteryIndex),
 				DB_INPUT_UINT64(Info->OpenSlotUnlockTime),
-				DB_INPUT_INT16(Info->ExtendedMemorizeCount),
+				DB_INPUT_INT16(Info->TotalMemorizeCount),
 				DB_INPUT_INT16(Info->UnlockedSlotCount),
 				DB_INPUT_INT16(Info->MasterySlotCount),
 				DB_INPUT_INT16(Info->SpecialMasterySlotCount),
+				DB_INPUT_INT8(Info->ExtendedMemorizeCount),
 				DB_INPUT_DATA(ExtendedMemorizeSlots, ExtendedMemorizeSlotsLength),
 				DB_INPUT_DATA(UnlockedSlots, UnlockedSlotsLength),
 				DB_INPUT_DATA(MasterySlots, MasterySlotsLength),
@@ -82,7 +83,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 
 		if (Packet->SyncMask.DiamondMeritMasteryInfo) {
 			ReadMemory(struct _RTDiamondMeritMasteryInfo, Info, 1);
-			ReadMemory(struct _RTDiamondMeritExtendedMemorizeSlot, ExtendedMemorizeSlots, Info->ExtendedMemorizeCount);
+			ReadMemory(struct _RTDiamondMeritExtendedMemorizeSlot, ExtendedMemorizeSlots, Info->TotalMemorizeCount);
 			ReadMemory(struct _RTDiamondMeritUnlockedSlot, UnlockedSlots, Info->UnlockedSlotCount);
 			ReadMemory(struct _RTDiamondMeritMasterySlot, MasterySlots, Info->MasterySlotCount);
 			ReadMemory(struct _RTDiamondMeritSpecialMasterySlot, SpecialMasterySlots, Info->SpecialMasterySlotCount);
@@ -97,11 +98,12 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 				DB_INPUT_UINT8(Info->ActiveMemorizeIndex),
 				DB_INPUT_INT32(Info->OpenSlotMasteryIndex),
 				DB_INPUT_UINT64(Info->OpenSlotUnlockTime),
-				DB_INPUT_INT16(Info->ExtendedMemorizeCount),
+				DB_INPUT_INT16(Info->TotalMemorizeCount),
 				DB_INPUT_INT16(Info->UnlockedSlotCount),
 				DB_INPUT_INT16(Info->MasterySlotCount),
 				DB_INPUT_INT16(Info->SpecialMasterySlotCount),
-				DB_INPUT_INT32(Info->ExtendedMasterySlotCount),
+				DB_INPUT_INT32(Info->SpecialMasteryExp),
+				DB_INPUT_INT8(Info->ExtendedMemorizeCount),
 				DB_INPUT_DATA(ExtendedMemorizeSlots, ExtendedMemorizeSlotsLength),
 				DB_INPUT_DATA(UnlockedSlots, UnlockedSlotsLength),
 				DB_INPUT_DATA(MasterySlots, MasterySlotsLength),

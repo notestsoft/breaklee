@@ -75,6 +75,13 @@ CONCAT(RTData, __NAME__ ## Ref) CONCAT(RTRuntimeData, __NAME__ ## Get)(			 \
 	__TYPE__ __FIELD__															 \
 );
 
+#define RUNTIME_DATA_TYPE_INDEX_CHILD_PAIR(__PARENT__, __NAME__, __TYPE_1__, __FIELD_1__, __TYPE_2__, __FIELD_2__) \
+CONCAT(RTData, __NAME__ ## Ref) CONCAT(RTRuntimeData, __NAME__ ## Get)(			 \
+	CONCAT(RTData, __PARENT__ ## Ref) Parent,								     \
+	__TYPE_1__ __FIELD_1__,														 \
+	__TYPE_2__ __FIELD_2__														 \
+);
+
 #define RUNTIME_DATA_TYPE_INDEX_SINGLE(__NAME__)				        \
 CONCAT(RTData, __NAME__ ## Ref) CONCAT(RTRuntimeData, __NAME__ ## Get)( \
 	RTRuntimeDataContextRef Context								        \

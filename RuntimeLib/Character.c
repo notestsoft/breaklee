@@ -271,27 +271,6 @@ Void RTCharacterInitializeAchievements(
     // TODO: Achievement values
 }
 
-Void RTCharacterInitializeGoldMeritMastery(
-    RTRuntimeRef Runtime,
-    RTCharacterRef Character
-) {
-    // TODO: Gold merit values
-}
-
-Void RTCharacterInitializePlatinumMeritMastery(
-    RTRuntimeRef Runtime,
-    RTCharacterRef Character
-) {
-    // TODO: Platinum merit values
-}
-
-Void RTCharacterInitializeDiamondMeritMastery(
-	RTRuntimeRef Runtime,
-	RTCharacterRef Character
-) {
-	// TODO: Diamond merit values
-}
-
 Void RTCharacterInitializeOverlordMastery(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
@@ -389,9 +368,7 @@ Void RTCharacterInitializeAttributes(
     RTCharacterInitializeBlessingBeads(Runtime, Character);
     RTCharacterInitializePremiumServices(Runtime, Character);
     RTCharacterInitializeAchievements(Runtime, Character);
-    RTCharacterInitializeGoldMeritMastery(Runtime, Character);
-    RTCharacterInitializePlatinumMeritMastery(Runtime, Character);
-	RTCharacterInitializeDiamondMeritMastery(Runtime, Character);
+	RTCharacterInitializeMeritMastery(Runtime, Character);
     RTCharacterInitializeOverlordMastery(Runtime, Character);
     RTCharacterInitializeHonorMedalMastery(Runtime, Character);
     RTCharacterInitializeForceWingMastery(Runtime, Character);
@@ -543,6 +520,7 @@ Void RTCharacterUpdate(
 		RTCharacterUpdateBattleMode(Runtime, Character);
 	}
 
+	RTCharacterUpdateMeritMastery(Runtime, Character, false);
 	RTCharacterUpdateBuffs(Runtime, Character, false);
 	RTCharacterUpdateCooldowns(Runtime, Character, false);
 }

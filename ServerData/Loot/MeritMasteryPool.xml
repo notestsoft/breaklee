@@ -1,0 +1,415 @@
+<MeritMasteryPool>
+    <SpecialMasteryPool Grade="1">
+        <Category Index="5">
+            <Mastery Index="1">
+                <Option Grade="1" Rate="7475" RewardExp="0" />
+                <Option Grade="2" Rate="5000" RewardExp="0" />
+                <Option Grade="3" Rate="3000" RewardExp="0" />
+                <Option Grade="4" Rate="1000" RewardExp="0" />
+                <Option Grade="5" Rate="500" RewardExp="0" />
+                <Option Grade="6" Rate="50" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="2">
+                <Option Grade="1" Rate="8000" RewardExp="0" />
+                <Option Grade="2" Rate="5000" RewardExp="0" />
+                <Option Grade="3" Rate="3000" RewardExp="0" />
+                <Option Grade="4" Rate="1100" RewardExp="0" />
+                <Option Grade="5" Rate="600" RewardExp="0" />
+                <Option Grade="6" Rate="65" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="3">
+                <Option Grade="2" Rate="5000" RewardExp="0" />
+                <Option Grade="3" Rate="3000" RewardExp="0" />
+                <Option Grade="4" Rate="1200" RewardExp="0" />
+                <Option Grade="5" Rate="700" RewardExp="0" />
+                <Option Grade="6" Rate="80" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="4">
+                <Option Grade="1" Rate="8000" RewardExp="0" />
+                <Option Grade="2" Rate="5000" RewardExp="0" />
+                <Option Grade="3" Rate="3000" RewardExp="0" />
+                <Option Grade="4" Rate="1300" RewardExp="0" />
+                <Option Grade="5" Rate="800" RewardExp="0" />
+                <Option Grade="6" Rate="95" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="5">
+                <Option Grade="1" Rate="8000" RewardExp="0" />
+                <Option Grade="2" Rate="5000" RewardExp="0" />
+                <Option Grade="3" Rate="3000" RewardExp="0" />
+                <Option Grade="4" Rate="1400" RewardExp="0" />
+                <Option Grade="5" Rate="900" RewardExp="0" />
+                <Option Grade="6" Rate="110" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="6">
+                <Option Grade="1" Rate="8000" RewardExp="0" />
+                <Option Grade="2" Rate="5000" RewardExp="0" />
+                <Option Grade="3" Rate="3000" RewardExp="0" />
+                <Option Grade="4" Rate="1500" RewardExp="0" />
+                <Option Grade="5" Rate="1000" RewardExp="0" />
+                <Option Grade="6" Rate="125" RewardExp="0" />
+            </Mastery>
+        </Category>
+        <Category Index="6">
+            <Mastery Index="7">
+                <Option Grade="1" Rate="9000" RewardExp="0" />
+                <Option Grade="2" Rate="5000" RewardExp="0" />
+                <Option Grade="3" Rate="3000" RewardExp="0" />
+                <Option Grade="4" Rate="1000" RewardExp="0" />
+                <Option Grade="5" Rate="500" RewardExp="0" />
+                <Option Grade="6" Rate="50" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="8">
+                <Option Grade="1" Rate="9000" RewardExp="0" />
+                <Option Grade="2" Rate="5000" RewardExp="0" />
+                <Option Grade="3" Rate="3000" RewardExp="0" />
+                <Option Grade="4" Rate="1100" RewardExp="0" />
+                <Option Grade="5" Rate="650" RewardExp="0" />
+                <Option Grade="6" Rate="75" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="9">
+                <Option Grade="1" Rate="9425" RewardExp="0" />
+                <Option Grade="2" Rate="5000" RewardExp="0" />
+                <Option Grade="3" Rate="3000" RewardExp="0" />
+                <Option Grade="4" Rate="1200" RewardExp="0" />
+                <Option Grade="5" Rate="800" RewardExp="0" />
+                <Option Grade="6" Rate="100" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="10">
+                <Option Grade="1" Rate="10000" RewardExp="0" />
+                <Option Grade="2" Rate="5000" RewardExp="0" />
+                <Option Grade="3" Rate="3000" RewardExp="0" />
+                <Option Grade="4" Rate="2000" RewardExp="0" />
+                <Option Grade="5" Rate="1250" RewardExp="0" />
+                <Option Grade="6" Rate="150" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="11">
+                <Option Grade="1" Rate="10000" RewardExp="0" />
+                <Option Grade="2" Rate="5000" RewardExp="0" />
+                <Option Grade="3" Rate="3000" RewardExp="0" />
+                <Option Grade="4" Rate="2000" RewardExp="0" />
+                <Option Grade="5" Rate="1500" RewardExp="0" />
+                <Option Grade="6" Rate="200" RewardExp="0" />
+            </Mastery>
+        </Category>
+        <Category Index="7">
+            <Mastery Index="12">
+                <Option Grade="4" Rate="1000" RewardExp="0" />
+                <Option Grade="5" Rate="100" RewardExp="0" />
+                <Option Grade="6" Rate="10" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="13">
+                <Option Grade="1" Rate="9000" RewardExp="0" />
+                <Option Grade="2" Rate="4000" RewardExp="0" />
+                <Option Grade="3" Rate="3000" RewardExp="0" />
+                <Option Grade="4" Rate="1100" RewardExp="0" />
+                <Option Grade="5" Rate="500" RewardExp="0" />
+                <Option Grade="6" Rate="70" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="14">
+                <Option Grade="1" Rate="9165" RewardExp="0" />
+                <Option Grade="2" Rate="4000" RewardExp="0" />
+                <Option Grade="3" Rate="3000" RewardExp="0" />
+                <Option Grade="4" Rate="1200" RewardExp="0" />
+                <Option Grade="5" Rate="650" RewardExp="0" />
+                <Option Grade="6" Rate="90" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="15">
+                <Option Grade="1" Rate="9600" RewardExp="0" />
+                <Option Grade="2" Rate="4000" RewardExp="0" />
+                <Option Grade="3" Rate="3000" RewardExp="0" />
+                <Option Grade="4" Rate="1300" RewardExp="0" />
+                <Option Grade="5" Rate="800" RewardExp="0" />
+                <Option Grade="6" Rate="110" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="16">
+                <Option Grade="1" Rate="10000" RewardExp="0" />
+                <Option Grade="2" Rate="5000" RewardExp="0" />
+                <Option Grade="3" Rate="6000" RewardExp="0" />
+                <Option Grade="4" Rate="1400" RewardExp="0" />
+                <Option Grade="5" Rate="950" RewardExp="0" />
+                <Option Grade="6" Rate="130" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="17">
+                <Option Grade="1" Rate="10125" RewardExp="0" />
+                <Option Grade="2" Rate="5000" RewardExp="0" />
+                <Option Grade="3" Rate="3000" RewardExp="0" />
+                <Option Grade="4" Rate="1500" RewardExp="0" />
+                <Option Grade="5" Rate="1050" RewardExp="0" />
+                <Option Grade="6" Rate="150" RewardExp="0" />
+            </Mastery>
+        </Category>
+        <Category Index="8">
+            <Mastery Index="18">
+                <Option Grade="4" Rate="1000" RewardExp="0" />
+                <Option Grade="5" Rate="100" RewardExp="0" />
+                <Option Grade="6" Rate="10" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="19">
+                <Option Grade="1" Rate="10000" RewardExp="0" />
+                <Option Grade="2" Rate="7000" RewardExp="0" />
+                <Option Grade="3" Rate="5000" RewardExp="0" />
+                <Option Grade="4" Rate="1200" RewardExp="0" />
+                <Option Grade="5" Rate="800" RewardExp="0" />
+                <Option Grade="6" Rate="100" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="20">
+                <Option Grade="1" Rate="10000" RewardExp="0" />
+                <Option Grade="2" Rate="7000" RewardExp="0" />
+                <Option Grade="3" Rate="5000" RewardExp="0" />
+                <Option Grade="4" Rate="1300" RewardExp="0" />
+                <Option Grade="5" Rate="950" RewardExp="0" />
+                <Option Grade="6" Rate="125" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="21">
+                <Option Grade="1" Rate="10000" RewardExp="0" />
+                <Option Grade="2" Rate="7000" RewardExp="0" />
+                <Option Grade="3" Rate="5000" RewardExp="0" />
+                <Option Grade="4" Rate="1400" RewardExp="0" />
+                <Option Grade="5" Rate="1050" RewardExp="0" />
+                <Option Grade="6" Rate="150" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="22">
+                <Option Grade="1" Rate="10940" RewardExp="0" />
+                <Option Grade="2" Rate="7000" RewardExp="0" />
+                <Option Grade="3" Rate="5000" RewardExp="0" />
+                <Option Grade="4" Rate="1500" RewardExp="0" />
+                <Option Grade="5" Rate="1200" RewardExp="0" />
+                <Option Grade="6" Rate="175" RewardExp="0" />
+            </Mastery>
+        </Category>
+        <Category Index="9">
+            <Mastery Index="23">
+                <Option Grade="5" Rate="100" RewardExp="0" />
+                <Option Grade="6" Rate="10" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="24">
+                <Option Grade="1" Rate="8500" RewardExp="0" />
+                <Option Grade="2" Rate="4200" RewardExp="0" />
+                <Option Grade="3" Rate="3200" RewardExp="0" />
+                <Option Grade="4" Rate="1200" RewardExp="0" />
+                <Option Grade="5" Rate="700" RewardExp="0" />
+                <Option Grade="6" Rate="50" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="25">
+                <Option Grade="1" Rate="8500" RewardExp="0" />
+                <Option Grade="2" Rate="4400" RewardExp="0" />
+                <Option Grade="3" Rate="3400" RewardExp="0" />
+                <Option Grade="4" Rate="1400" RewardExp="0" />
+                <Option Grade="5" Rate="900" RewardExp="0" />
+                <Option Grade="6" Rate="90" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="26">
+                <Option Grade="1" Rate="8665" RewardExp="0" />
+                <Option Grade="2" Rate="4600" RewardExp="0" />
+                <Option Grade="3" Rate="3600" RewardExp="0" />
+                <Option Grade="4" Rate="1600" RewardExp="0" />
+                <Option Grade="5" Rate="1100" RewardExp="0" />
+                <Option Grade="6" Rate="130" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="27">
+                <Option Grade="1" Rate="8975" RewardExp="0" />
+                <Option Grade="2" Rate="4800" RewardExp="0" />
+                <Option Grade="3" Rate="3800" RewardExp="0" />
+                <Option Grade="4" Rate="1800" RewardExp="0" />
+                <Option Grade="5" Rate="1300" RewardExp="0" />
+                <Option Grade="6" Rate="170" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="28">
+                <Option Grade="1" Rate="10100" RewardExp="0" />
+                <Option Grade="2" Rate="5000" RewardExp="0" />
+                <Option Grade="3" Rate="4000" RewardExp="0" />
+                <Option Grade="4" Rate="2000" RewardExp="0" />
+                <Option Grade="5" Rate="1500" RewardExp="0" />
+                <Option Grade="6" Rate="210" RewardExp="0" />
+            </Mastery>
+        </Category>
+        <Category Index="10">
+            <Mastery Index="29">
+                <Option Grade="5" Rate="100" RewardExp="0" />
+                <Option Grade="6" Rate="10" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="30">
+                <Option Grade="1" Rate="10000" RewardExp="0" />
+                <Option Grade="2" Rate="6200" RewardExp="0" />
+                <Option Grade="3" Rate="4200" RewardExp="0" />
+                <Option Grade="4" Rate="1200" RewardExp="0" />
+                <Option Grade="5" Rate="700" RewardExp="0" />
+                <Option Grade="6" Rate="50" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="31">
+                <Option Grade="1" Rate="10000" RewardExp="0" />
+                <Option Grade="2" Rate="6400" RewardExp="0" />
+                <Option Grade="3" Rate="4400" RewardExp="0" />
+                <Option Grade="4" Rate="1400" RewardExp="0" />
+                <Option Grade="5" Rate="900" RewardExp="0" />
+                <Option Grade="6" Rate="90" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="32">
+                <Option Grade="1" Rate="10000" RewardExp="0" />
+                <Option Grade="2" Rate="6600" RewardExp="0" />
+                <Option Grade="3" Rate="4600" RewardExp="0" />
+                <Option Grade="4" Rate="1600" RewardExp="0" />
+                <Option Grade="5" Rate="1250" RewardExp="0" />
+                <Option Grade="6" Rate="200" RewardExp="0" />
+            </Mastery>
+            <Mastery Index="33">
+                <Option Grade="1" Rate="11870" RewardExp="0" />
+                <Option Grade="2" Rate="8000" RewardExp="0" />
+                <Option Grade="3" Rate="5000" RewardExp="0" />
+                <Option Grade="4" Rate="2850" RewardExp="0" />
+                <Option Grade="5" Rate="2100" RewardExp="0" />
+                <Option Grade="6" Rate="280" RewardExp="0" />
+            </Mastery>
+        </Category>
+    </SpecialMasteryPool>
+    <SpecialMasteryPool Grade="2">
+        <Category Index="11">
+            <Mastery Index="34">
+                <Option Grade="1" Rate="9720" RewardExp="10" />
+                <Option Grade="2" Rate="6480" RewardExp="15" />
+                <Option Grade="3" Rate="3880" RewardExp="30" />
+                <Option Grade="4" Rate="1280" RewardExp="50" />
+                <Option Grade="5" Rate="640" RewardExp="100" />
+            </Mastery>
+            <Mastery Index="35">
+                <Option Grade="1" Rate="7950" RewardExp="10" />
+                <Option Grade="2" Rate="5290" RewardExp="15" />
+                <Option Grade="3" Rate="3180" RewardExp="30" />
+                <Option Grade="4" Rate="1060" RewardExp="50" />
+                <Option Grade="5" Rate="520" RewardExp="100" />
+            </Mastery>
+            <Mastery Index="36">
+                <Option Grade="1" Rate="9720" RewardExp="10" />
+                <Option Grade="2" Rate="6480" RewardExp="15" />
+                <Option Grade="3" Rate="3880" RewardExp="30" />
+                <Option Grade="4" Rate="1280" RewardExp="50" />
+                <Option Grade="5" Rate="640" RewardExp="100" />
+            </Mastery>
+            <Mastery Index="37">
+                <Option Grade="1" Rate="7950" RewardExp="10" />
+                <Option Grade="2" Rate="5290" RewardExp="15" />
+                <Option Grade="3" Rate="3180" RewardExp="30" />
+                <Option Grade="4" Rate="1060" RewardExp="50" />
+                <Option Grade="5" Rate="520" RewardExp="100" />
+            </Mastery>
+            <Mastery Index="38">
+                <Option Grade="1" Rate="8830" RewardExp="10" />
+                <Option Grade="2" Rate="5880" RewardExp="15" />
+                <Option Grade="3" Rate="3530" RewardExp="30" />
+                <Option Grade="4" Rate="1180" RewardExp="50" />
+                <Option Grade="5" Rate="580" RewardExp="100" />
+            </Mastery>
+        </Category>
+        <Category Index="15">
+            <Mastery Index="39">
+                <Option Grade="1" Rate="10600" RewardExp="10" />
+                <Option Grade="2" Rate="7060" RewardExp="15" />
+                <Option Grade="3" Rate="4240" RewardExp="30" />
+                <Option Grade="4" Rate="1400" RewardExp="50" />
+                <Option Grade="5" Rate="700" RewardExp="100" />
+            </Mastery>
+            <Mastery Index="40">
+                <Option Grade="1" Rate="7950" RewardExp="10" />
+                <Option Grade="2" Rate="5290" RewardExp="15" />
+                <Option Grade="3" Rate="3180" RewardExp="30" />
+                <Option Grade="4" Rate="1060" RewardExp="50" />
+                <Option Grade="5" Rate="520" RewardExp="100" />
+            </Mastery>
+            <Mastery Index="41">
+                <Option Grade="1" Rate="10600" RewardExp="10" />
+                <Option Grade="2" Rate="7060" RewardExp="15" />
+                <Option Grade="3" Rate="4240" RewardExp="30" />
+                <Option Grade="4" Rate="1400" RewardExp="50" />
+                <Option Grade="5" Rate="700" RewardExp="100" />
+            </Mastery>
+            <Mastery Index="42">
+                <Option Grade="1" Rate="7950" RewardExp="10" />
+                <Option Grade="2" Rate="5290" RewardExp="15" />
+                <Option Grade="3" Rate="3180" RewardExp="30" />
+                <Option Grade="4" Rate="1060" RewardExp="50" />
+                <Option Grade="5" Rate="520" RewardExp="100" />
+            </Mastery>
+            <Mastery Index="43">
+                <Option Grade="1" Rate="7060" RewardExp="10" />
+                <Option Grade="2" Rate="4720" RewardExp="15" />
+                <Option Grade="3" Rate="2820" RewardExp="30" />
+                <Option Grade="4" Rate="940" RewardExp="50" />
+                <Option Grade="5" Rate="460" RewardExp="100" />
+            </Mastery>
+        </Category>
+        <Category Index="19">
+            <Mastery Index="44">
+                <Option Grade="1" Rate="10600" RewardExp="10" />
+                <Option Grade="2" Rate="7060" RewardExp="15" />
+                <Option Grade="3" Rate="4240" RewardExp="30" />
+                <Option Grade="4" Rate="1400" RewardExp="50" />
+                <Option Grade="5" Rate="700" RewardExp="100" />
+            </Mastery>
+            <Mastery Index="45">
+                <Option Grade="1" Rate="7950" RewardExp="10" />
+                <Option Grade="2" Rate="5290" RewardExp="15" />
+                <Option Grade="3" Rate="3180" RewardExp="30" />
+                <Option Grade="4" Rate="1060" RewardExp="50" />
+                <Option Grade="5" Rate="520" RewardExp="100" />
+            </Mastery>
+            <Mastery Index="46">
+                <Option Grade="1" Rate="10600" RewardExp="10" />
+                <Option Grade="2" Rate="7060" RewardExp="15" />
+                <Option Grade="3" Rate="4240" RewardExp="30" />
+                <Option Grade="4" Rate="1400" RewardExp="50" />
+                <Option Grade="5" Rate="700" RewardExp="100" />
+            </Mastery>
+            <Mastery Index="47">
+                <Option Grade="1" Rate="7950" RewardExp="10" />
+                <Option Grade="2" Rate="5290" RewardExp="15" />
+                <Option Grade="3" Rate="3180" RewardExp="30" />
+                <Option Grade="4" Rate="1060" RewardExp="50" />
+                <Option Grade="5" Rate="520" RewardExp="100" />
+            </Mastery>
+            <Mastery Index="48">
+                <Option Grade="1" Rate="7060" RewardExp="10" />
+                <Option Grade="2" Rate="4720" RewardExp="15" />
+                <Option Grade="3" Rate="2820" RewardExp="30" />
+                <Option Grade="4" Rate="940" RewardExp="50" />
+                <Option Grade="5" Rate="460" RewardExp="100" />
+            </Mastery>
+        </Category>
+        <Category Index="23">
+            <Mastery Index="49">
+                <Option Grade="1" Rate="13250" RewardExp="10" />
+                <Option Grade="2" Rate="8820" RewardExp="15" />
+                <Option Grade="3" Rate="5290" RewardExp="30" />
+                <Option Grade="4" Rate="1760" RewardExp="50" />
+                <Option Grade="5" Rate="880" RewardExp="100" />
+            </Mastery>
+            <Mastery Index="50">
+                <Option Grade="1" Rate="7060" RewardExp="10" />
+                <Option Grade="2" Rate="4720" RewardExp="15" />
+                <Option Grade="3" Rate="2820" RewardExp="30" />
+                <Option Grade="4" Rate="940" RewardExp="50" />
+                <Option Grade="5" Rate="460" RewardExp="100" />
+            </Mastery>
+            <Mastery Index="51">
+                <Option Grade="1" Rate="7950" RewardExp="10" />
+                <Option Grade="2" Rate="5290" RewardExp="15" />
+                <Option Grade="3" Rate="3180" RewardExp="30" />
+                <Option Grade="4" Rate="1060" RewardExp="50" />
+                <Option Grade="5" Rate="520" RewardExp="100" />
+            </Mastery>
+            <Mastery Index="52">
+                <Option Grade="1" Rate="7950" RewardExp="10" />
+                <Option Grade="2" Rate="5290" RewardExp="15" />
+                <Option Grade="3" Rate="3180" RewardExp="30" />
+                <Option Grade="4" Rate="1060" RewardExp="50" />
+                <Option Grade="5" Rate="520" RewardExp="100" />
+            </Mastery>
+            <Mastery Index="53">
+                <Option Grade="1" Rate="7950" RewardExp="10" />
+                <Option Grade="2" Rate="5290" RewardExp="15" />
+                <Option Grade="3" Rate="3180" RewardExp="30" />
+                <Option Grade="4" Rate="1060" RewardExp="50" />
+                <Option Grade="5" Rate="520" RewardExp="100" />
+            </Mastery>
+        </Category>
+    </SpecialMasteryPool>
+</MeritMasteryPool>

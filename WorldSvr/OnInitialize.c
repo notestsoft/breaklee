@@ -274,8 +274,8 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     }
 
     Character->Data.PlatinumMeritMasteryInfo.Info = Packet->Character.PlatinumMeritMasteryInfo;
-    if (Packet->Character.PlatinumMeritMasteryInfo.ExtendedMemorizeCount > 0) {
-        Int32 Length = sizeof(struct _RTPlatinumMeritExtendedMemorizeSlot) * Packet->Character.PlatinumMeritMasteryInfo.ExtendedMemorizeCount;
+    if (Packet->Character.PlatinumMeritMasteryInfo.TotalMemorizeCount > 0) {
+        Int32 Length = sizeof(struct _RTPlatinumMeritExtendedMemorizeSlot) * Packet->Character.PlatinumMeritMasteryInfo.TotalMemorizeCount;
         memcpy(Character->Data.PlatinumMeritMasteryInfo.ExtendedMemorizeSlots, Memory, Length);
         Memory += Length;
     }
@@ -299,8 +299,8 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     }
 
     Character->Data.DiamondMeritMasteryInfo.Info = Packet->Character.DiamondMeritMasteryInfo;
-    if (Packet->Character.DiamondMeritMasteryInfo.ExtendedMemorizeCount > 0) {
-        Int32 Length = sizeof(struct _RTDiamondMeritExtendedMemorizeSlot) * Packet->Character.DiamondMeritMasteryInfo.ExtendedMemorizeCount;
+    if (Packet->Character.DiamondMeritMasteryInfo.TotalMemorizeCount > 0) {
+        Int32 Length = sizeof(struct _RTDiamondMeritExtendedMemorizeSlot) * Packet->Character.DiamondMeritMasteryInfo.TotalMemorizeCount;
         memcpy(Character->Data.DiamondMeritMasteryInfo.ExtendedMemorizeSlots, Memory, Length);
         Memory += Length;
     }
@@ -312,7 +312,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     }
 
     if (Packet->Character.DiamondMeritMasteryInfo.MasterySlotCount > 0) {
-        Int32 Length = sizeof(struct _RTDiamondMeritUnlockedSlot) * Packet->Character.DiamondMeritMasteryInfo.MasterySlotCount;
+        Int32 Length = sizeof(struct _RTDiamondMeritMasterySlot) * Packet->Character.DiamondMeritMasteryInfo.MasterySlotCount;
         memcpy(Character->Data.DiamondMeritMasteryInfo.MasterySlots, Memory, Length);
         Memory += Length;
     }
@@ -798,11 +798,11 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     }
 
     Response->PlatinumMeritMasteryInfo = Character->Data.PlatinumMeritMasteryInfo.Info;
-    if (Character->Data.PlatinumMeritMasteryInfo.Info.ExtendedMemorizeCount > 0) {
+    if (Character->Data.PlatinumMeritMasteryInfo.Info.TotalMemorizeCount > 0) {
         PacketBufferAppendCopy(
             PacketBuffer,
             Character->Data.PlatinumMeritMasteryInfo.ExtendedMemorizeSlots,
-            sizeof(struct _RTPlatinumMeritExtendedMemorizeSlot) * Character->Data.PlatinumMeritMasteryInfo.Info.ExtendedMemorizeCount
+            sizeof(struct _RTPlatinumMeritExtendedMemorizeSlot) * Character->Data.PlatinumMeritMasteryInfo.Info.TotalMemorizeCount
         );
     }
 
@@ -831,11 +831,11 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     }
 
     Response->DiamondMeritMasteryInfo = Character->Data.DiamondMeritMasteryInfo.Info;
-    if (Character->Data.DiamondMeritMasteryInfo.Info.ExtendedMemorizeCount > 0) {
+    if (Character->Data.DiamondMeritMasteryInfo.Info.TotalMemorizeCount > 0) {
         PacketBufferAppendCopy(
             PacketBuffer,
             Character->Data.DiamondMeritMasteryInfo.ExtendedMemorizeSlots,
-            sizeof(struct _RTPlatinumMeritExtendedMemorizeSlot) * Character->Data.DiamondMeritMasteryInfo.Info.ExtendedMemorizeCount
+            sizeof(struct _RTPlatinumMeritExtendedMemorizeSlot) * Character->Data.DiamondMeritMasteryInfo.Info.TotalMemorizeCount
         );
     }
 

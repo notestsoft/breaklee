@@ -33,7 +33,7 @@ Void ServerSyncCharacter(
 
 	if (Character->SyncMask.PlatinumMeritMasteryInfo) {
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.PlatinumMeritMasteryInfo.Info, sizeof(struct _RTPlatinumMeritMasteryInfo));
-		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.PlatinumMeritMasteryInfo.ExtendedMemorizeSlots, sizeof(struct _RTPlatinumMeritExtendedMemorizeSlot) * Character->Data.PlatinumMeritMasteryInfo.Info.ExtendedMemorizeCount);
+		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.PlatinumMeritMasteryInfo.ExtendedMemorizeSlots, sizeof(struct _RTPlatinumMeritExtendedMemorizeSlot) * Character->Data.PlatinumMeritMasteryInfo.Info.TotalMemorizeCount);
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.PlatinumMeritMasteryInfo.UnlockedSlots, sizeof(struct _RTPlatinumMeritUnlockedSlot) * Character->Data.PlatinumMeritMasteryInfo.Info.UnlockedSlotCount);
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.PlatinumMeritMasteryInfo.MasterySlots, sizeof(struct _RTPlatinumMeritMasterySlot) * Character->Data.PlatinumMeritMasteryInfo.Info.MasterySlotCount);
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.PlatinumMeritMasteryInfo.SpecialMasterySlots, sizeof(struct _RTPlatinumMeritSpecialMasterySlot) * Character->Data.PlatinumMeritMasteryInfo.Info.SpecialMasterySlotCount);
@@ -41,7 +41,7 @@ Void ServerSyncCharacter(
 
 	if (Character->SyncMask.DiamondMeritMasteryInfo) {
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.DiamondMeritMasteryInfo.Info, sizeof(struct _RTDiamondMeritMasteryInfo));
-		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.DiamondMeritMasteryInfo.ExtendedMemorizeSlots, sizeof(struct _RTDiamondMeritExtendedMemorizeSlot) * Character->Data.DiamondMeritMasteryInfo.Info.ExtendedMemorizeCount);
+		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.DiamondMeritMasteryInfo.ExtendedMemorizeSlots, sizeof(struct _RTDiamondMeritExtendedMemorizeSlot) * Character->Data.DiamondMeritMasteryInfo.Info.TotalMemorizeCount);
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.DiamondMeritMasteryInfo.UnlockedSlots, sizeof(struct _RTDiamondMeritUnlockedSlot) * Character->Data.DiamondMeritMasteryInfo.Info.UnlockedSlotCount);
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.DiamondMeritMasteryInfo.MasterySlots, sizeof(struct _RTDiamondMeritMasterySlot) * Character->Data.DiamondMeritMasteryInfo.Info.MasterySlotCount);
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.DiamondMeritMasteryInfo.SpecialMasterySlots, sizeof(struct _RTDiamondMeritSpecialMasterySlot) * Character->Data.DiamondMeritMasteryInfo.Info.SpecialMasterySlotCount);

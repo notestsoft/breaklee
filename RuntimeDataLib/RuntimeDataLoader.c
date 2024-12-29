@@ -229,6 +229,22 @@ CONCAT(RTData, __NAME__ ## Ref) CONCAT(RTRuntimeData, __NAME__ ## Get)(			      
     return NULL;                                                                        \
 }
 
+#define RUNTIME_DATA_TYPE_INDEX_CHILD_PAIR(__PARENT__, __NAME__, __TYPE_1__, __FIELD_1__, __TYPE_2__, __FIELD_2__) \
+CONCAT(RTData, __NAME__ ## Ref) CONCAT(RTRuntimeData, __NAME__ ## Get)(			                       \
+	CONCAT(RTData, __PARENT__ ## Ref) Parent,								                           \
+	__TYPE_1__ __FIELD_1__,														                       \
+	__TYPE_2__ __FIELD_2__														                       \
+) {                                                                                                    \
+    for (Int _Index = 0; _Index < Parent->CONCAT(__NAME__, Count); _Index++) {                         \
+        CONCAT(RTData, __NAME__ ## Ref) Data = &Parent->CONCAT(__NAME__, List)[_Index];                \
+        if (Data->__FIELD_1__ == __FIELD_1__ && Data->__FIELD_2__ == __FIELD_2__) {                    \
+            return Data;                                                                               \
+        }                                                                                              \
+    }                                                                                                  \
+                                                                                                       \
+    return NULL;                                                                                       \
+}
+
 #define RUNTIME_DATA_TYPE_INDEX_SINGLE(__NAME__)				\
 CONCAT(RTData, __NAME__ ## Ref) CONCAT(RTRuntimeData, __NAME__ ## Get)( \
 	RTRuntimeDataContextRef Context                             \

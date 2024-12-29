@@ -35,7 +35,7 @@ struct _RTPlatinumMeritExtendedMemorizeSlot {
 };
 
 struct _RTPlatinumMeritUnlockedSlot {
-    Int32 SlotIndex;
+    Int32 MasteryIndex;
 };
 
 struct _RTPlatinumMeritMasterySlot {
@@ -58,11 +58,11 @@ struct _RTPlatinumMeritMasteryInfo {
     UInt8 ActiveMemorizeIndex;
     Int32 OpenSlotMasteryIndex;
     Timestamp OpenSlotUnlockTime;
-    Int16 ExtendedMemorizeCount;
+    Int16 TotalMemorizeCount;
     Int16 UnlockedSlotCount;
     Int16 MasterySlotCount;
     Int16 SpecialMasterySlotCount;
-    UInt8 Unknown1;
+    UInt8 ExtendedMemorizeCount;
 };
 
 struct _RTCharacterPlatinumMeritMasteryData {
@@ -79,7 +79,7 @@ struct _RTDiamondMeritExtendedMemorizeSlot {
 };
 
 struct _RTDiamondMeritUnlockedSlot {
-    Int32 SlotIndex;
+    Int32 MasteryIndex;
 };
 
 struct _RTDiamondMeritMasterySlot {
@@ -102,12 +102,12 @@ struct _RTDiamondMeritMasteryInfo {
     UInt8 ActiveMemorizeIndex;
     Int32 OpenSlotMasteryIndex;
     Timestamp OpenSlotUnlockTime;
-    Int16 ExtendedMemorizeCount;
+    Int16 TotalMemorizeCount;
     Int16 UnlockedSlotCount;
     Int16 MasterySlotCount;
     Int16 SpecialMasterySlotCount;
-    Int32 ExtendedMasterySlotCount;
-    UInt8 Unknown1;
+    Int32 SpecialMasteryExp;
+    UInt8 ExtendedMemorizeCount;
 };
 
 struct _RTCharacterDiamondMeritMasteryData {
@@ -120,10 +120,26 @@ struct _RTCharacterDiamondMeritMasteryData {
 
 #pragma pack(pop)
 
+Int32 RTMeritMasteryGetCategoryIndex(
+    RTRuntimeRef Runtime,
+    Int32 MasteryIndex
+);
+
+Void RTCharacterInitializeMeritMastery(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Void RTCharacterUpdateMeritMastery(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Bool ForceUpdate
+);
+
 RTGoldMeritMasterySlotRef RTCharacterGoldMeritGetMasterySlot(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    Int MasteryIndex
+    Int32 MasteryIndex
 );
 
 Void RTCharacterGoldMeritMasteryAddExp(
@@ -132,11 +148,18 @@ Void RTCharacterGoldMeritMasteryAddExp(
     Int32 Exp
 );
 
+Bool RTCharacterPlatinumMeritMasteryGradeUp(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt16 InventorySlotCount,
+    UInt16* InventorySlotIndex
+);
+
 RTPlatinumMeritMasterySlotRef RTCharacterPlatinumMeritGetMasterySlot(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    Int MemorizeIndex,
-    Int MasteryIndex
+    Int32 MemorizeIndex,
+    Int32 MasteryIndex
 );
 
 Void RTCharacterPlatinumMeritMasteryAddExp(
@@ -145,11 +168,56 @@ Void RTCharacterPlatinumMeritMasteryAddExp(
     Int32 Exp
 );
 
+Bool RTCharacterPlatinumMeritMasteryOpenSlot(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 MasteryIndex,
+    UInt16 InventorySlotCount1,
+    UInt16* InventorySlotIndices1,
+    UInt16 InventorySlotCount2,
+    UInt16* InventorySlotIndices2
+);
+
+Bool RTCharacterPlatinumMeritMasterySetActiveMemorizeIndex(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 MemorizeIndex
+);
+
+Int32 RTCharacterPlatinumMeritMasteryGetPoints(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Void RTCharacterPlatinumMeritMasteryGetSpecialMasterySlots(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int8 MemorizeIndex,
+    Int32 CategoryIndex,
+    RTPlatinumMeritSpecialMasterySlotRef* Result1,
+    RTPlatinumMeritSpecialMasterySlotRef* Result2
+);
+
+Bool RTCharacterPlatinumMeritMasteryGrantSpecialMastery(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 Category,
+    UInt16 InventorySlotCount,
+    UInt16* InventorySlotIndex
+);
+
+Bool RTCharacterDiamondMeritMasteryGradeUp(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt16 InventorySlotCount,
+    UInt16* InventorySlotIndex
+);
+
 RTDiamondMeritMasterySlotRef RTCharacterDiamondMeritGetMasterySlot(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    Int MemorizeIndex,
-    Int MasteryIndex
+    Int32 MemorizeIndex,
+    Int32 MasteryIndex
 );
 
 Void RTCharacterDiamondMeritMasteryAddExp(
@@ -158,10 +226,49 @@ Void RTCharacterDiamondMeritMasteryAddExp(
     Int32 Exp
 );
 
+Bool RTCharacterDiamondMeritMasteryOpenSlot(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 MasteryIndex,
+    UInt16 InventorySlotCount1,
+    UInt16* InventorySlotIndices1,
+    UInt16 InventorySlotCount2,
+    UInt16* InventorySlotIndices2
+);
+
+Bool RTCharacterDiamondMeritMasterySetActiveMemorizeIndex(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 MemorizeIndex
+);
+
+Int32 RTCharacterDiamondMeritMasteryGetPoints(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Void RTCharacterDiamondMeritMasteryGetSpecialMasterySlots(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int8 MemorizeIndex,
+    Int32 CategoryIndex,
+    RTDiamondMeritSpecialMasterySlotRef* Result1,
+    RTDiamondMeritSpecialMasterySlotRef* Result2,
+    RTDiamondMeritSpecialMasterySlotRef* Result3
+);
+
+Bool RTCharacterDiamondMeritMasteryGrantSpecialMastery(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 CategoryIndex,
+    UInt16 InventorySlotCount,
+    UInt16* InventorySlotIndex
+);
+
 Bool RTCharacterRegisterMeritMedals(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    Int InventorySlotCount,
+    Int32 InventorySlotCount,
     UInt32* InventorySlotIndices
 );
 

@@ -187,21 +187,23 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_UINT8, &Response->Character.PlatinumMeritMasteryInfo.ActiveMemorizeIndex,
         DB_TYPE_INT32, &Response->Character.PlatinumMeritMasteryInfo.OpenSlotMasteryIndex,
         DB_TYPE_INT64, &Response->Character.PlatinumMeritMasteryInfo.OpenSlotUnlockTime,
-        DB_TYPE_INT16, &Response->Character.PlatinumMeritMasteryInfo.ExtendedMemorizeCount,
+        DB_TYPE_INT16, &Response->Character.PlatinumMeritMasteryInfo.TotalMemorizeCount,
         DB_TYPE_INT16, &Response->Character.PlatinumMeritMasteryInfo.UnlockedSlotCount,
         DB_TYPE_INT16, &Response->Character.PlatinumMeritMasteryInfo.MasterySlotCount,
         DB_TYPE_INT16, &Response->Character.PlatinumMeritMasteryInfo.SpecialMasterySlotCount,
+        DB_TYPE_INT8, &Response->Character.PlatinumMeritMasteryInfo.ExtendedMemorizeCount,
         DB_TYPE_UINT8, &Response->Character.DiamondMeritMasteryInfo.IsEnabled,
         DB_TYPE_INT32, &Response->Character.DiamondMeritMasteryInfo.Exp,
         DB_TYPE_INT32, &Response->Character.DiamondMeritMasteryInfo.Points,
         DB_TYPE_UINT8, &Response->Character.DiamondMeritMasteryInfo.ActiveMemorizeIndex,
         DB_TYPE_INT32, &Response->Character.DiamondMeritMasteryInfo.OpenSlotMasteryIndex,
         DB_TYPE_INT64, &Response->Character.DiamondMeritMasteryInfo.OpenSlotUnlockTime,
-        DB_TYPE_INT16, &Response->Character.DiamondMeritMasteryInfo.ExtendedMemorizeCount,
+        DB_TYPE_INT16, &Response->Character.DiamondMeritMasteryInfo.TotalMemorizeCount,
         DB_TYPE_INT16, &Response->Character.DiamondMeritMasteryInfo.UnlockedSlotCount,
         DB_TYPE_INT16, &Response->Character.DiamondMeritMasteryInfo.MasterySlotCount,
         DB_TYPE_INT16, &Response->Character.DiamondMeritMasteryInfo.SpecialMasterySlotCount,
-        DB_TYPE_INT32, &Response->Character.DiamondMeritMasteryInfo.ExtendedMasterySlotCount,
+        DB_TYPE_INT32, &Response->Character.DiamondMeritMasteryInfo.SpecialMasteryExp,
+        DB_TYPE_INT8, &Response->Character.DiamondMeritMasteryInfo.ExtendedMemorizeCount,
         DB_TYPE_INT32, &Response->Character.AchievementExtendedInfo.SlotCount,
         DB_TYPE_INT32, &Response->Character.ForceGem,
         DB_TYPE_INT32, &Response->Character.WarpServiceInfo.SlotCount,
@@ -391,14 +393,14 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, RequestCraftSlots, sizeof(struct _RTRequestCraftSlot) * Response->Character.RequestCraftInfo.SlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, CooldownSlots, sizeof(struct _RTCooldownSlot) * Response->Character.CooldownInfo.SlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, GoldMeritMasterySlots, sizeof(struct _RTGoldMeritMasterySlot) * Response->Character.GoldMeritMasteryInfo.SlotCount);
-    IPCPacketBufferAppendCopy(Connection->PacketBuffer, PlatinumMeritExtendedMemorizeSlots, sizeof(struct _RTPlatinumMeritExtendedMemorizeSlot) * Response->Character.PlatinumMeritMasteryInfo.ExtendedMemorizeCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, PlatinumMeritExtendedMemorizeSlots, sizeof(struct _RTPlatinumMeritExtendedMemorizeSlot) * Response->Character.PlatinumMeritMasteryInfo.TotalMemorizeCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, PlatinumMeritUnlockedSlots, sizeof(struct _RTPlatinumMeritUnlockedSlot) * Response->Character.PlatinumMeritMasteryInfo.UnlockedSlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, PlatinumMeritMasterySlots, sizeof(struct _RTPlatinumMeritMasterySlot) * Response->Character.PlatinumMeritMasteryInfo.MasterySlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, PlatinumMeritSpecialMasterySlots, sizeof(struct _RTPlatinumMeritSpecialMasterySlot) * Response->Character.PlatinumMeritMasteryInfo.SpecialMasterySlotCount);
-    IPCPacketBufferAppendCopy(Connection->PacketBuffer, DiamondMeritExtendedMemorizeSlots, sizeof(struct _RTDiamondMeritExtendedMemorizeSlot) * Response->Character.PlatinumMeritMasteryInfo.ExtendedMemorizeCount);
-    IPCPacketBufferAppendCopy(Connection->PacketBuffer, DiamondMeritUnlockedSlots, sizeof(struct _RTDiamondMeritUnlockedSlot) * Response->Character.PlatinumMeritMasteryInfo.UnlockedSlotCount);
-    IPCPacketBufferAppendCopy(Connection->PacketBuffer, DiamondMeritMasterySlots, sizeof(struct _RTDiamondMeritMasterySlot) * Response->Character.PlatinumMeritMasteryInfo.MasterySlotCount);
-    IPCPacketBufferAppendCopy(Connection->PacketBuffer, DiamondMeritSpecialMasterySlots, sizeof(struct _RTDiamondMeritSpecialMasterySlot) * Response->Character.PlatinumMeritMasteryInfo.SpecialMasterySlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, DiamondMeritExtendedMemorizeSlots, sizeof(struct _RTDiamondMeritExtendedMemorizeSlot) * Response->Character.DiamondMeritMasteryInfo.TotalMemorizeCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, DiamondMeritUnlockedSlots, sizeof(struct _RTDiamondMeritUnlockedSlot) * Response->Character.DiamondMeritMasteryInfo.UnlockedSlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, DiamondMeritMasterySlots, sizeof(struct _RTDiamondMeritMasterySlot) * Response->Character.DiamondMeritMasteryInfo.MasterySlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, DiamondMeritSpecialMasterySlots, sizeof(struct _RTDiamondMeritSpecialMasterySlot) * Response->Character.DiamondMeritMasteryInfo.SpecialMasterySlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, AchievementExtendedRewardSlots, sizeof(struct _RTAchievementExtendedRewardSlot) * Response->Character.AchievementExtendedInfo.SlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, WarpServiceSlots, sizeof(struct _RTWarpServiceSlot) * Response->Character.WarpServiceInfo.SlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, OverlordMasterySlots, sizeof(struct _RTOverlordMasterySlot) * Response->Character.OverlordMasteryInfo.SlotCount);

@@ -81,6 +81,8 @@ enum {
 	RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_OXP = 13,
 	RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_WINGEXP = 14,
 	RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_GOLD_MERIT_EXP = 15,
+
+	RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_PLATINUM_MERIT_EXP = 17,
 };
 
 enum {
@@ -323,6 +325,18 @@ struct _RTItemData {
 			Int32 Index;
 		} BlessingBead;
 
+		struct {
+			Int32 TimeInterval;
+			Int32 Unknown1;
+			Int32 Unknown2;
+			Int32 Unknown3;
+			Int32 Grade;
+		} TimeReducer;
+
+		struct {
+			Int32 Grade;
+		} MemorizeExtender;
+
 		// TODO: Add other item types like potion, pet, ...
 
 		struct { Int32 Options[22]; };
@@ -415,6 +429,14 @@ struct _RTItemOptions {
 			UInt64 Level : 8;
 			UInt64 Category : 8;
 		} Seal;
+
+		struct {
+			UInt64 Category : 8;
+			UInt64 Index1 : 16;
+			UInt64 Grade1 : 8;
+			UInt64 Index2 : 16;
+			UInt64 Grade2 : 8;
+		} MeritSeal;
 
 		struct {
 			UInt16 ItemLevel;
@@ -640,6 +662,8 @@ struct _RTItemHonorMedalResetSelectivePayload {
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemHonorMedalResetSelective);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemTransformationCard);
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemTimeReducer);
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemMemorizeExtender);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemChangeGender);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemCrest);
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemLotto);

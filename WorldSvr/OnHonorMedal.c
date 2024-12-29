@@ -5,6 +5,8 @@
 #include "Server.h"
 
 CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_UNLOCK_SLOT) {
+    if (!Character) return;
+
     Int32 PacketLength = sizeof(C2S_DATA_HONOR_MEDAL_UNLOCK_SLOT) + (Packet->MaterialSlotCount1 + Packet->MaterialSlotCount2) * sizeof(UInt16);
     if (Packet->Length < PacketLength) goto error;
 

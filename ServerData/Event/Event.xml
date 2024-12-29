@@ -20,6 +20,12 @@
         <event_item script="Event/add_stats.lua" item_id="1562" option="4208885" external_id="-1" texture_item_id="2884" title="$35#Scroll of Stats" description="$33#[Applied On Purchase]$____Increase STR/DEX/INT to 60000_" />
     </event>
 
+    <event id="1823" type="2" use_flags="15" world_id="4" npc_id="81" description="Request Craft Shop">        
+        <event_shop>
+            <item slot_id="0" item_id="755" option="383" duration_id="0" price="0"></item>
+        </event_shop>
+    </event>
+
     <event id="1" type="2" use_flags="11" world_id="1" npc_id="49" description="Character">
         <event_description content="Character" />
         <event_shop>
@@ -36,10 +42,10 @@
             <item slot_id="11" item_id="33557013" option="999" duration_id="0" price="0"></item>
             <item slot_id="12" item_id="33557014" option="999" duration_id="0" price="0"></item>
 
-            <item slot_id="16" item_id="3191" option="3276900" duration_id="0" price="0"></item>
-            <item slot_id="17" item_id="3192" option="3276900" duration_id="0" price="0"></item>
-            <item slot_id="18" item_id="33554908" option="3276900" duration_id="0" price="0"></item>
-            <item slot_id="19" item_id="33555979" option="3276900" duration_id="0" price="0"></item>
+            <item slot_id="16" item_id="3191" option="327685000" duration_id="0" price="0"></item>
+            <item slot_id="17" item_id="3192" option="327685000" duration_id="0" price="0"></item>
+            <item slot_id="18" item_id="33554908" option="327685000" duration_id="0" price="0"></item>
+            <item slot_id="19" item_id="33555979" option="327685000" duration_id="0" price="0"></item>
 
             <item slot_id="24" item_id="3191" option="100" duration_id="0" price="0"></item>
             <item slot_id="25" item_id="3192" option="100" duration_id="0" price="0"></item>
@@ -917,30 +923,30 @@
         <event_description content="Merit Mastery" />
         
         <event_shop>
-            <item slot_id = "0" item_id = "33558293" option = "1" duration_id = "0" price = "0"></item>
-            <item slot_id = "1" item_id = "33558294" option = "1" duration_id = "0" price = "0"></item>
-            <item slot_id = "2" item_id = "33558295" option = "1" duration_id = "0" price = "0"></item>
-            <item slot_id = "3" item_id = "33558296" option = "1" duration_id = "0" price = "0"></item>
-            <item slot_id = "4" item_id = "33558297" option = "1" duration_id = "0" price = "0"></item>
-            <item slot_id = "5" item_id = "33558298" option = "1" duration_id = "0" price = "0"></item>
-            <item slot_id = "6" item_id = "33558299" option = "1" duration_id = "0" price = "0"></item>
-            <item slot_id = "7" item_id = "33558300" option = "1" duration_id = "0" price = "0"></item>
-            <item slot_id = "8" item_id = "33558301" option = "1" duration_id = "0" price = "0"></item>
-            <item slot_id = "9" item_id = "33558302" option = "1" duration_id = "0" price = "0"></item>
+            <item slot_id = "0" item_id = "33558293" option = "999" duration_id = "0" price = "0"></item>
+            <item slot_id = "1" item_id = "33558294" option = "999" duration_id = "0" price = "0"></item>
+            <item slot_id = "2" item_id = "33558295" option = "999" duration_id = "0" price = "0"></item>
+            <item slot_id = "3" item_id = "33558296" option = "999" duration_id = "0" price = "0"></item>
+            <item slot_id = "4" item_id = "33558297" option = "999" duration_id = "0" price = "0"></item>
+            <item slot_id = "5" item_id = "33558298" option = "999" duration_id = "0" price = "0"></item>
+            <item slot_id = "6" item_id = "33558299" option = "999" duration_id = "0" price = "0"></item>
+            <item slot_id = "7" item_id = "33558300" option = "999" duration_id = "0" price = "0"></item>
+            <item slot_id = "8" item_id = "33558301" option = "999" duration_id = "0" price = "0"></item>
+            <item slot_id = "9" item_id = "33558302" option = "999" duration_id = "0" price = "0"></item>
             <item slot_id = "11" item_id = "33558303" option = "0" duration_id = "0" price = "0"></item>
             <item slot_id = "12" item_id = "33556875" option = "0" duration_id = "0" price = "0"></item>
-            <item slot_id = "19" item_id = "33554962" option = "1" duration_id = "0" price = "0"></item>
-            <item slot_id = "20" item_id = "33554963" option = "1" duration_id = "0" price = "0"></item>
-            <item slot_id = "32" item_id = "33556821" option = "1" duration_id = "0" price = "0"></item>
-            <item slot_id = "33" item_id = "33556822" option = "1" duration_id = "0" price = "0"></item>
-            <item slot_id = "34" item_id = "33556823" option = "1" duration_id = "0" price = "0"></item>
-            <item slot_id = "35" item_id = "33556824" option = "1" duration_id = "0" price = "0"></item>
-            <item slot_id = "36" item_id = "33556825" option = "1" duration_id = "0" price = "0"></item>
-            <item slot_id = "37" item_id = "33556826" option = "1" duration_id = "0" price = "0"></item>
-            <item slot_id = "38" item_id = "33556827" option = "1" duration_id = "0" price = "0"></item>
-            <item slot_id = "39" item_id = "33556828" option = "1" duration_id = "0" price = "0"></item>
-            <item slot_id = "40" item_id = "33556829" option = "1" duration_id = "0" price = "0"></item>
-            <item slot_id = "41" item_id = "33556830" option = "1" duration_id = "0" price = "0"></item>
+            <item slot_id = "19" item_id = "33554962" option = "999" duration_id = "0" price = "0"></item>
+            <item slot_id = "20" item_id = "33554963" option = "999" duration_id = "0" price = "0"></item>
+            <item slot_id = "32" item_id = "33556821" option = "999" duration_id = "0" price = "0"></item>
+            <item slot_id = "33" item_id = "33556822" option = "999" duration_id = "0" price = "0"></item>
+            <item slot_id = "34" item_id = "33556823" option = "999" duration_id = "0" price = "0"></item>
+            <item slot_id = "35" item_id = "33556824" option = "999" duration_id = "0" price = "0"></item>
+            <item slot_id = "36" item_id = "33556825" option = "999" duration_id = "0" price = "0"></item>
+            <item slot_id = "37" item_id = "33556826" option = "999" duration_id = "0" price = "0"></item>
+            <item slot_id = "38" item_id = "33556827" option = "999" duration_id = "0" price = "0"></item>
+            <item slot_id = "39" item_id = "33556828" option = "999" duration_id = "0" price = "0"></item>
+            <item slot_id = "40" item_id = "33556829" option = "999" duration_id = "0" price = "0"></item>
+            <item slot_id = "41" item_id = "33556830" option = "999" duration_id = "0" price = "0"></item>
             <item slot_id = "43" item_id = "33556876" option = "0" duration_id = "0" price = "0"></item>
             <item slot_id = "44" item_id = "33554961" option = "10" duration_id = "0" price = "0"></item>
             <item slot_id = "45" item_id = "33554940" option = "0" duration_id = "0" price = "0"></item>            
@@ -954,6 +960,11 @@
                 <large_stack_option option="100" stack_size="999" />
             </item>
             
+            <item slot_id = "64" item_id = "33554733" option = "0" duration_id = "0" price = "0"></item>
+            <item slot_id = "65" item_id = "33555961" option = "0" duration_id = "0" price = "0"></item>
+            
+            <item slot_id = "80" item_id = "33556875" option = "0" duration_id = "0" price = "0"></item>
+
         </event_shop>
     </event>
 
@@ -1121,15 +1132,6 @@
             <item slot_id="48" item_id="33554669" option="0" duration_id="0" price="0"></item>
             <item slot_id="49" item_id="33554670" option="0" duration_id="0" price="0"></item>
             <item slot_id="50" item_id="33554671" option="0" duration_id="0" price="0"></item>
-        </event_shop>
-    </event>
-
-    <event id="19" type="2" use_flags="15" world_id="1" npc_id="49" description="Basic Craft I">
-        <event_description content="Basic Craft I" />
-        
-        <event_shop>
-            <item slot_id="0" item_id="3103" option="999" duration_id="0" price="0"></item>
-            <item slot_id="1" item_id="3103" option="999" duration_id="0" price="0"></item>
         </event_shop>
     </event>
 

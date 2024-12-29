@@ -29,6 +29,7 @@ Void ClientSocketOnDisconnect(
     if (Client->CharacterIndex > 0) {
         RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Client->CharacterIndex);
         if (Character) {
+            RTCharacterUpdateMeritMastery(Context->Runtime, Character, true);
             RTCharacterUpdateBuffs(Context->Runtime, Character, true);
             RTCharacterUpdateCooldowns(Context->Runtime, Character, true);
             ServerSyncCharacter(Server, Context, Client, Character);

@@ -156,9 +156,9 @@ CLIENT_PROCEDURE_BINDING(EVENT_ACTION) {
 	if (!EventItem) goto error;
 
 	for (Int Index = 0; Index < Event->EventItemCount; Index += 1) {
-		RTDataEventItemRef EventItem = &Event->EventItemList[Index];
-		if (EventItem->ItemID == EventItem->ItemID && EventItem->ItemOptions == EventItem->ItemOptions && strlen(EventItem->Script) > 0) {
-			CString ScriptFilePath = PathCombineNoAlloc(Context->Config.WorldSvr.ScriptDataPath, EventItem->Script);
+		RTDataEventItemRef Item = &Event->EventItemList[Index];
+		if (EventItem->ItemID == Item->ItemID && EventItem->ItemOptions == Item->ItemOptions && strlen(Item->Script) > 0) {
+			CString ScriptFilePath = PathCombineNoAlloc(Context->Config.WorldSvr.ScriptDataPath, Item->Script);
 			RTScriptRef Script = RTScriptManagerLoadScript(Runtime->ScriptManager, ScriptFilePath);
 			RTScriptCallOnEvent(Script, Runtime, Character);
 
