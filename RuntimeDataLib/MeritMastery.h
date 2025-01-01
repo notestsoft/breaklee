@@ -179,3 +179,13 @@ RUNTIME_DATA_TYPE_INDEX(MeritItemPool, Int32, Type)
 RUNTIME_DATA_TYPE_INDEX_CHILD(MeritItemPool, MeritItemPoolGroup, Int32, EvaluationCount)
 
 RUNTIME_DATA_FILE_END
+
+RUNTIME_DATA_FILE_BEGIN(DIR_PATH(Loot, MeritItemResetPool.xml))
+
+RUNTIME_DATA_TYPE_BEGIN(MeritItemResetPool, "MeritItemResetPool.Item")
+	RUNTIME_DATA_PROPERTY(Int32, Grade, "Grade")
+	RUNTIME_DATA_PROPERTY_ARRAY(UInt64, ItemIDs, "ItemIDs", 3, ',')
+RUNTIME_DATA_TYPE_END(MeritItemResetPool)
+RUNTIME_DATA_TYPE_INDEX(MeritItemResetPool, Int32, Grade)
+
+RUNTIME_DATA_FILE_END

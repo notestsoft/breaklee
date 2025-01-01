@@ -47,6 +47,54 @@ Void SetTimestampOffset(Timestamp Offset) {
     kTimestampOffset = Offset;
 }
 
+Void ConvertLocalToUtcAt(Int32* Hour, Int32* Minute) {
+#if defined(_WIN32) || defined(_WIN64)
+    TIME_ZONE_INFORMATION TimeZoneInfo;
+    DWORD Result = GetTimeZoneInformation(&TimeZoneInfo);
+    if (Result == TIME_ZONE_ID_INVALID) return;
+
+    LONG BiasInMinutes = TimeZoneInfo.Bias;
+    if (Result == TIME_ZONE_ID_DAYLIGHT) {
+        BiasInMinutes += TimeZoneInfo.DaylightBias;
+    }
+
+    *Minute += BiasInMinutes % 60;
+    *Hour += BiasInMinutes / 60;
+
+    if (*Minute < 0) {
+        *Minute += 60;
+        *Hour -= 1;
+    }
+
+    if (*Minute >= 60) {
+        *Minute -= 60;
+        *Hour += 1;
+    }
+
+    if (*Hour < 0) {
+        *Hour += 24;
+    }
+
+    if (*Hour >= 24) {
+        *Hour -= 24;
+    }
+#else
+    time_t Now = time(NULL);
+    struct tm LocalTm, UtcTm;
+
+    localtime_r(&Now, &LocalTm);
+    LocalTm.tm_hour = *Hour;
+    LocalTm.tm_min = *Minute;
+    LocalTm.tm_sec = 0;
+
+    time_t LocalTime = mktime(&LocalTm);
+    gmtime_r(&LocalTime, &UtcTm);
+
+    *Hour = UtcTm.tm_hour;
+    *Minute = UtcTm.tm_min;
+#endif
+}
+
 Timestamp GetTimestamp() {
 	return (Timestamp)time(NULL) + kTimestampOffset;
 }
@@ -65,6 +113,40 @@ Timestamp GetTimestampMs() {
     struct timeval tv;
     gettimeofday(&tv, NULL);
     return (uint64_t)tv.tv_sec * 1000 + tv.tv_usec / 1000 + kTimestampOffset * 1000;
+#endif
+}
+
+Timestamp GetTimestampAt(Int32 Hour, Int32 Minute) {
+    return GetTimestampMsAt(Hour, Minute) / 1000;
+}
+
+Timestamp GetTimestampMsAt(Int32 Hour, Int32 Minute) {
+#if defined(_WIN32) || defined(_WIN64)
+    SYSTEMTIME SystemTime;
+    GetSystemTime(&SystemTime); // Get current UTC time
+    SystemTime.wHour = Hour;
+    SystemTime.wMinute = Minute;
+    SystemTime.wSecond = 0;
+    SystemTime.wMilliseconds = 0;
+
+    FILETIME FileTime;
+    ULARGE_INTEGER LargeInt = { 0 };
+    SystemTimeToFileTime(&SystemTime, &FileTime);
+    LargeInt.LowPart = FileTime.dwLowDateTime;
+    LargeInt.HighPart = FileTime.dwHighDateTime;
+
+    Timestamp Milliseconds = LargeInt.QuadPart / 10000; // Convert to milliseconds
+    return Milliseconds - 11644473600000ULL + kTimestampOffset * 1000;
+#else
+    struct tm UtcTime;
+    time_t CurrentTime = time(NULL);
+    gmtime_r(&CurrentTime, &UtcTime); // Get UTC time
+
+    UtcTime.tm_hour = Hour;
+    UtcTime.tm_min = Minute;
+    UtcTime.tm_sec = 0;
+    time_t TimestampSeconds = timegm(&UtcTime); // Convert to seconds since epoch
+    return (uint64_t)TimestampSeconds * 1000 + kTimestampOffset * 1000; // Return in ms
 #endif
 }
 

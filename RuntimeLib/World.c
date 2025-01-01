@@ -458,6 +458,21 @@ Void RTWorldDespawnMobEvent(
     Mob->EventDespawnTimestamp = GetTimestampMs() + Delay;
 }
 
+Void RTWorldDespawnMobList(
+    RTRuntimeRef Runtime,
+    RTWorldContextRef WorldContext,
+    ArrayRef EntityList
+) {
+    // TODO: Replace notifications with NOTIFICATION_MOBS_DESPAWN_LIST
+    for (Int Index = 0; Index < ArrayGetElementCount(EntityList); Index += 1) {
+        RTEntityID MobID = *(RTEntityID*)ArrayGetElementAtIndex(EntityList, Index);
+        RTMobRef Mob = RTWorldContextGetMob(WorldContext, MobID);
+        if (!Mob || !RTMobIsAlive(Mob)) continue;
+
+        RTWorldDespawnMob(Runtime, WorldContext, Mob);
+    }
+}
+
 Void RTWorldDespawnMob(
     RTRuntimeRef Runtime,
     RTWorldContextRef WorldContext,
@@ -476,16 +491,7 @@ Void RTWorldDespawnMob(
         return;
 
     if (Mob->Pattern) {
-        for (Int Index = 0; Index < ArrayGetElementCount(Mob->Pattern->LinkMobs); Index += 1) {
-            RTEntityID LinkMobID = *(RTEntityID*)ArrayGetElementAtIndex(Mob->Pattern->LinkMobs, Index);
-            RTMobRef LinkMob = RTWorldContextGetMob(WorldContext, LinkMobID);
-            assert(LinkMob);
-        
-            if (RTMobIsAlive(LinkMob)) {
-                RTWorldDespawnMobEvent(Runtime, WorldContext, LinkMob, 0);
-            }
-        }
-
+        RTWorldDespawnMobList(Runtime, WorldContext, Mob->Pattern->LinkMobs);
         RTMobPatternStop(Runtime, WorldContext, Mob, Mob->Pattern);
     }
 

@@ -37,9 +37,15 @@ UInt NextPowerOfTwo(
 
 Void SetTimestampOffset(Timestamp Offset);
 
+Void ConvertLocalToUtcAt(Int32 * Hour, Int32 * Minute);
+
 Timestamp GetTimestamp();
 
 Timestamp GetTimestampMs();
+
+Timestamp GetTimestampAt(Int32 Hour, Int32 Minute);
+
+Timestamp GetTimestampMsAt(Int32 Hour, Int32 Minute);
 
 Bool GetPlatformErrorMessage(
 	CString Buffer,

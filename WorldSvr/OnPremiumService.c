@@ -122,6 +122,10 @@ CLIENT_PROCEDURE_BINDING(PURCHASE_PREMIUM_SERVICE) {
         RTGiftBoxSlotRef GiftBoxSlot = RTCharacterGetGiftBox(Runtime, Character, Data->SlotIndex);
         if (!GiftBoxSlot) goto error;
 
+        RTDataGiftBoxConditionRef GiftBoxCondition = RTRuntimeDataGiftBoxConditionGet(Runtime->Context, Data->SlotIndex);
+        if (!GiftBoxCondition) goto error;
+        if (GiftBoxSlot->ResetCount >= GiftBoxCondition->DailyResetCount) goto error;
+
         RTDataGiftBoxPricePoolRef PricePool = RTRuntimeDataGiftBoxPricePoolGet(Runtime->Context, Data->SlotIndex);
         if (!PricePool) goto error;
 
@@ -132,6 +136,7 @@ CLIENT_PROCEDURE_BINDING(PURCHASE_PREMIUM_SERVICE) {
 
         Response->Result = 0;
         GiftBoxSlot->ElapsedTime = GiftBoxSlot->CooldownTime;
+        GiftBoxSlot->ResetCount += 1;
     }
 
     Response->ForceGemCount = Character->Data.AccountInfo.ForceGem;

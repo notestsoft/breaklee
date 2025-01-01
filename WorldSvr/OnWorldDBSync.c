@@ -90,6 +90,10 @@ Void ServerSyncCharacter(
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.StyleInfo, sizeof(struct _RTCharacterStyleInfo));
 	}
 
+	if (Character->SyncMask.DailyResetInfo) {
+		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.DailyResetInfo, sizeof(struct _RTCharacterDailyResetInfo));
+	}
+
 	if (Character->SyncMask.BattleModeInfo) {
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.BattleModeInfo, sizeof(struct _RTCharacterBattleModeInfo));
 	}

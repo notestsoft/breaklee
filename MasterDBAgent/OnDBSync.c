@@ -304,6 +304,21 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			}
 		}
 
+		if (Packet->SyncMask.DailyResetInfo) {
+			ReadMemory(struct _RTCharacterDailyResetInfo, Info, 1);
+
+			if (!DatabaseCallProcedure(
+				Context->Database,
+				"SyncDailyReset",
+				DB_INPUT_INT32(Packet->CharacterIndex),
+				DB_INPUT_UINT64(Info->LastResetTimestamp),
+				DB_INPUT_UINT64(Info->NextResetTimestamp),
+				DB_PARAM_END
+			)) {
+				Response->SyncMaskFailed.DailyResetInfo = true;
+			}
+		}
+
 		if (Packet->SyncMask.BattleModeInfo) {
 			ReadMemory(struct _RTCharacterBattleModeInfo, Info, 1);
 

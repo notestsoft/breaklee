@@ -150,7 +150,9 @@ CLIENT_PROCEDURE_BINDING(QUEST_DUNGEON_SPAWN) {
             // TODO: The inventory slot should also be checked inside the warp command
             RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Character->DungeonEntryItemSlotIndex);
             if (!ItemSlot) goto error;
-            if ((ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX) != DungeonData->EntryItemID.Serial ||
+
+            // TODO: Consider event dungeons!
+            if ((ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX) != DungeonData->EntryItemID.Serial || 
                 ItemSlot->ItemOptions != DungeonData->EntryItemOption) goto error;
 
             RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);

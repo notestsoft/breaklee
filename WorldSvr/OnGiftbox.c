@@ -35,6 +35,7 @@ CLIENT_PROCEDURE_BINDING(OPEN_GIFTBOX_ROLL) {
     S2C_DATA_OPEN_GIFTBOX_ROLL* Response = PacketBufferInit(PacketBuffer, S2C, OPEN_GIFTBOX_ROLL);
     if (RTCharacterRollGiftBox(Runtime, Character, Packet->SlotIndex)) {
         Response->Count = 1;
+        // TODO: Add support for multiple reward items
         
         S2C_DATA_OPEN_GIFTBOX_ROLL_SLOT* ResponseSlot = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_OPEN_GIFTBOX_ROLL_SLOT);
         ResponseSlot->SlotIndex = Packet->SlotIndex;

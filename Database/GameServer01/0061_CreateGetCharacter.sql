@@ -87,6 +87,8 @@ BEGIN
         Characters.MapsMask,
         Characters.Style,
         Characters.LiveStyle,
+        DailyReset.LastResetTimestamp,
+        DailyReset.NextResetTimestamp,
         Equipment.EquipmentSlotCount,
         Equipment.InventorySlotCount,
         Equipment.LinkSlotCount,
@@ -335,6 +337,7 @@ BEGIN
         Buff.SlotData
     FROM Characters
     LEFT JOIN Accounts ON Characters.AccountID = Accounts.AccountID
+    LEFT JOIN DailyReset ON Characters.CharacterID = DailyReset.CharacterID
     LEFT JOIN BattleMode ON Characters.CharacterID = BattleMode.CharacterID
     LEFT JOIN Buff ON Characters.CharacterID = Buff.CharacterID
     LEFT JOIN Equipment ON Characters.CharacterID = Equipment.CharacterID

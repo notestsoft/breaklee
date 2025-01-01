@@ -22,6 +22,7 @@ ACCOUNT_DATA_PROTOCOL(struct _RTCharacterSettingsInfo, SettingsInfo)
 
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterInfo, Info)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterStyleInfo, StyleInfo)
+CHARACTER_DATA_PROTOCOL(struct _RTCharacterDailyResetInfo, DailyResetInfo)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterBattleModeInfo, BattleModeInfo)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterBuffInfo, BuffInfo)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterEquipmentData, EquipmentInfo)

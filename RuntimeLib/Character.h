@@ -17,6 +17,7 @@
 #include "Costume.h"
 #include "Craft.h"
 #include "DailyQuest.h"
+#include "DailyReset.h"
 #include "DamageBooster.h"
 #include "Entity.h"
 #include "Equipment.h"

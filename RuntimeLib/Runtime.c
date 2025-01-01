@@ -3,18 +3,21 @@
 #include "Mob.h"
 #include "MobPatrol.h"
 #include "MobPattern.h"
-#include "PartyManager.h"
-#include "Runtime.h"
 #include "NotificationProtocol.h"
 #include "NotificationManager.h"
 #include "OptionPool.h"
+#include "PartyManager.h"
+#include "Runtime.h"
 #include "Script.h"
+#include "TradeManager.h"
 #include "World.h"
 #include "WorldManager.h"
 
 RTRuntimeRef RTRuntimeCreate(
     AllocatorRef Allocator,
     Int MaxPartyCount,
+    Int32 MaxTradeDistance,
+    Timestamp TradeRequestTimeout,
     Void* UserData
 ) {
     RTRuntimeRef Runtime = (RTRuntimeRef)AllocatorAllocate(Allocator, sizeof(struct _RTRuntime));
@@ -38,6 +41,12 @@ RTRuntimeRef RTRuntimeCreate(
         RUNTIME_MEMORY_MAX_GLOBAL_WORLD_CONTEXT_COUNT,
         RUNTIME_MEMORY_MAX_PARTY_WORLD_CONTEXT_COUNT,
         RUNTIME_MEMORY_MAX_CHARACTER_COUNT
+    );
+    Runtime->TradeManager = RTTradeManagerCreate(
+        Runtime, 
+        RUNTIME_MEMORY_MAX_CHARACTER_COUNT,
+        MaxTradeDistance,
+        TradeRequestTimeout
     );
     Runtime->NotificationManager = RTNotificationManagerCreate(Runtime);
     Runtime->OptionPoolManager = RTOptionPoolManagerCreate(Runtime->Allocator);
@@ -171,6 +180,30 @@ Void RTRuntimeUpdate(
         }
     }
     */
+}
+
+Timestamp RTRuntimeGetNextDailyResetTime(
+    RTRuntimeRef Runtime
+) {
+    Timestamp CurrentTimestamp = GetTimestamp();
+    Timestamp NextDailyResetTimestamp = GetTimestampAt(Runtime->Config.DailyResetTimeHour, Runtime->Config.DailyResetTimeMinute);
+    while (NextDailyResetTimestamp < CurrentTimestamp) {
+        NextDailyResetTimestamp += 24ULL * 60 * 60;
+    }
+
+    return NextDailyResetTimestamp;
+}
+
+Timestamp RTRuntimeGetNextDailyResetTimeMs(
+    RTRuntimeRef Runtime
+) {
+    Timestamp CurrentTimestamp = GetTimestampMs();
+    Timestamp NextDailyResetTimestamp = GetTimestampMsAt(Runtime->Config.DailyResetTimeHour, Runtime->Config.DailyResetTimeMinute);
+    while (NextDailyResetTimestamp < CurrentTimestamp) {
+        NextDailyResetTimestamp += 24ULL * 60 * 60 * 1000;
+    }
+
+    return NextDailyResetTimestamp;
 }
 
 RTWorldContextRef RTRuntimeGetWorldByID(

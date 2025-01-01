@@ -63,6 +63,7 @@ RTWarpPointResult RTRuntimeGetWarpPoint(
     return Result;
 }
 
+// TODO: Warp func needs to be cleaned up!!!
 Bool RTRuntimeWarpCharacter(
     RTRuntimeRef Runtime,
     RTEntityID Entity,
@@ -226,6 +227,57 @@ Bool RTRuntimeWarpCharacter(
 
             RTWorldSpawnCharacterWithoutNotification(Runtime, TargetWorld, Entity);
 
+            return true;
+        }
+
+        case RUNTIME_NPC_ID_EVENT_DUNGEON_WARP: {
+            Int32 DungeonIndex = WarpPositionX << 8 | WarpPositionY;
+            // TODO: Check if user is currently in dungeon and next dungeon index for success is matching
+
+            RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, DungeonIndex);
+
+            // TODO: Check and remove EntryItem
+
+            if (Character->Data.Info.Level < DungeonData->EntryConditionLevel) return false;
+
+            // TODO: Check if party has other dungeon
+            // TODO: Check MaxPlayerCount & Party Size
+            // TODO: Check EntryConditionClass
+
+            RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, DungeonData->EntryWarpID);
+            RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
+
+            RTWorldContextRef DungeonWorld = RTRuntimeOpenDungeon(Runtime, Character, WarpPoint.WorldIndex, DungeonData->DungeonIndex);
+            if (!DungeonWorld) return false;
+
+            // Character->Data.Info.Alz -= Warp->Fee;
+            Character->Data.Info.PositionX = WarpPoint.X;
+            Character->Data.Info.PositionY = WarpPoint.Y;
+            Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
+            Character->Data.Info.DungeonIndex = (Int32)DungeonWorld->DungeonIndex;
+            Character->DungeonEntryItemSlotIndex = SlotIndex;
+            Character->SyncMask.Info = true;
+
+            RTMovementInitialize(
+                Runtime,
+                &Character->Movement,
+                Character->ID,
+                WarpPoint.X,
+                WarpPoint.Y,
+                (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+                RUNTIME_WORLD_TILE_WALL
+            );
+
+            RTWorldSpawnCharacterWithoutNotification(Runtime, DungeonWorld, Entity);
+
+            /*
+            Int32 FailWarpNpcID;
+            Int32 DeadWarpID;
+            Int32 SuccessWarpNpcID;
+            Int32 WarpNpcSetID;
+            Int32 DungeonType;
+            Int32 MissionTimeout;
+            */
             return true;
         }
 

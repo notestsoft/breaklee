@@ -1,11 +1,18 @@
 <GiftBox>
     <Condition>
-		<GiftBox Index="0" IsEnabled="1" IsPremiumService="0" IsPremiumPC="0" BlessingBeadIndex="-1" />
-		<GiftBox Index="1" IsEnabled="1" IsPremiumService="1" IsPremiumPC="0" BlessingBeadIndex="-1" />
-		<GiftBox Index="2" IsEnabled="1" IsPremiumService="0" IsPremiumPC="0" BlessingBeadIndex="8" />
-		<GiftBox Index="3" IsEnabled="1" IsPremiumService="0" IsPremiumPC="0" BlessingBeadIndex="65" />
-		<GiftBox Index="4" IsEnabled="0" IsPremiumService="0" IsPremiumPC="1" BlessingBeadIndex="56" />
+		<GiftBox Index="0" IsEnabled="1" IsPremiumService="0" IsPremiumPC="0" BlessingBeadIndex="-1" DailyResetCount="5" />
+		<GiftBox Index="1" IsEnabled="1" IsPremiumService="1" IsPremiumPC="0" BlessingBeadIndex="-1" DailyResetCount="5" />
+		<GiftBox Index="2" IsEnabled="1" IsPremiumService="0" IsPremiumPC="0" BlessingBeadIndex="8" DailyResetCount="5" />
+		<GiftBox Index="3" IsEnabled="1" IsPremiumService="0" IsPremiumPC="0" BlessingBeadIndex="65" DailyResetCount="5" />
+		<GiftBox Index="4" IsEnabled="0" IsPremiumService="0" IsPremiumPC="1" BlessingBeadIndex="56" DailyResetCount="5" />
     </Condition>
+    <SpecialGiftBox RequiredPoints="10000">
+		<GiftBox Index="0" RewardPoints="13" />
+		<GiftBox Index="1" RewardPoints="25" />
+		<GiftBox Index="2" RewardPoints="25" />
+		<GiftBox Index="3" RewardPoints="45" />
+		<GiftBox Index="4" RewardPoints="45" />
+    </SpecialGiftBox>
     <TimePool>
         <Pool Index="0">
             <Time RequiredTime="600" Rate="300" />

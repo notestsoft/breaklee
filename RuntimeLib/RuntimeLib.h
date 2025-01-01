@@ -68,6 +68,7 @@
 #include <RuntimeLib/SkillSlot.h>
 #include <RuntimeLib/StellarMastery.h>
 #include <RuntimeLib/Timer.h>
+#include <RuntimeLib/TradeManager.h>
 #include <RuntimeLib/Trainer.h>
 #include <RuntimeLib/Transcendence.h>
 #include <RuntimeLib/Transform.h>

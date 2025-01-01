@@ -34,6 +34,10 @@ CONFIG_PARAMETER(UInt64, CooldownErrorTolerance, "WorldSvr.CooldownErrorToleranc
 CONFIG_PARAMETER(Int32, NewbieSupportTimeout, "WorldSvr.NewbieSupportTimeout", 10080)
 CONFIG_PARAMETER(Timestamp, LocalTimeOffset, "WorldSvr.LocalTimeOffset", 3600)
 CONFIG_PARAMETER(Int32, LogLevel, "WorldSvr.LogLevel", 5)
+CONFIG_PARAMETER(Int32, DailyResetTimeHour, "WorldSvr.DailyResetTimeHour", 20)
+CONFIG_PARAMETER(Int32, DailyResetTimeMinute, "WorldSvr.DailyResetTimeMinute", 13)
+CONFIG_PARAMETER(Int32, MaxTradeDistance, "WorldSvr.MaxTradeDistance", 8)
+CONFIG_PARAMETER(Timestamp, TradeRequestTimeout, "WorldSvr.TradeRequestTimeout", 60000)
 CONFIG_END(WorldSvr)
 
 CONFIG_BEGIN(Environment)

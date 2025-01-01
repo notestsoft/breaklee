@@ -2,6 +2,18 @@
 #include "GiftBox.h"
 #include "Runtime.h"
 
+Void RTCharacterGiftBoxDailyReset(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    for (Int Index = 0; Index < RUNTIME_CHARACTER_MAX_GIFT_BOX_SLOT_COUNT; Index += 1) {
+        RTGiftBoxSlotRef GiftBoxSlot = RTCharacterGetGiftBox(Runtime, Character, Index);
+        if (!GiftBoxSlot) continue;
+
+        GiftBoxSlot->ResetCount = 0;
+    }
+}
+
 Bool RTGiftBoxIsActive(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
@@ -167,9 +179,12 @@ Bool RTCharacterReceiveGiftBox(
         GiftBoxSlot->CooldownTime = 0;
         GiftBoxSlot->ReceivedCount += 1;
         RTCharacterUpdateGiftBox(Runtime, Character);
-    }
 
-    // TODO: Add Special Giftbox Point Reward
+        RTDataSpecialGiftBoxRewardPoolRef SpecialGiftBoxReward = RTRuntimeDataSpecialGiftBoxRewardPoolGet(Runtime->Context, GiftBoxSlot->Index);
+        if (SpecialGiftBoxReward) {
+            Character->Data.GiftboxInfo.Info.SpecialPoints += SpecialGiftBoxReward->RewardPoints;
+        }
+    }
 
     Character->SyncMask.GiftboxInfo = true;
     return true;

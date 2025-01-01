@@ -43,7 +43,13 @@ Void RTCharacterSetAllQuestFlags(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character
 ) {
-	memset(Character->Data.QuestInfo.Info.FinishedQuests, 0xFF, RUNTIME_CHARACTER_MAX_QUEST_FLAG_COUNT);
+	for (Int Index = 0; Index < Runtime->QuestDataCount; Index += 1) {
+		RTQuestDataRef QuestData = &Runtime->QuestData[Index];
+		if (QuestData->DailyCount > 0) continue;
+
+		RTCharacterQuestFlagSet(Character, QuestData->ID);
+	}
+
 	Character->SyncMask.QuestInfo = true;
 }
 
@@ -390,6 +396,10 @@ Bool RTCharacterQuestClear(
 	
 	// TODO: Check if RUNTIME_QUEST_REWARD_PET_EXP is removed in ep39
 	// TODO: Add reward type RUNTIME_QUEST_REWARD_GUILD_EXP
+
+	if (Quest->DailyCount) {
+		RTCharacterDailyQuestClear(Runtime, Character, QuestIndex);
+	}
 
 	RTCharacterQuestFlagSet(Character, QuestIndex);
 	RTCharacterRemoveQuestSlot(Runtime, Character, QuestSlotIndex);

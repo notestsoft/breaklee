@@ -109,7 +109,6 @@ Bool RTCharacterRegisterRequestCraftRecipe(
 				InventorySlot.Count,
 				InventorySlot.InventorySlotIndex
 			);
-
 		}
 
 		Character->SyncMask.InventoryInfo = true;

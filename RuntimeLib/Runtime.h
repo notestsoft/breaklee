@@ -45,6 +45,8 @@ struct _RTRuntimeConfig {
     Int64 MaxHonorPoint;
     Int64 MinHonorPoint;
     CString ScriptFilePath;
+    Int32 DailyResetTimeHour;
+    Int32 DailyResetTimeMinute;
 };
 
 struct _RTRuntime {
@@ -55,6 +57,7 @@ struct _RTRuntime {
     RTPartyManagerRef PartyManager;
     RTScriptManagerRef ScriptManager;
     RTWorldManagerRef WorldManager;
+    RTTradeManagerRef TradeManager;
     RTNotificationManagerRef NotificationManager;
     RTOptionPoolManagerRef OptionPoolManager;
     Int32 SlopeFormulaDataCount;
@@ -93,6 +96,8 @@ struct _RTRuntime {
 RTRuntimeRef RTRuntimeCreate(
     AllocatorRef Allocator,
     Int MaxPartyCount,
+    Int32 MaxTradeDistance,
+    Timestamp TradeRequestTimeout,
     Void* UserData
 );
 
@@ -107,6 +112,14 @@ Bool RTRuntimeLoadData(
 );
 
 Void RTRuntimeUpdate(
+    RTRuntimeRef Runtime
+);
+
+Timestamp RTRuntimeGetNextDailyResetTime(
+    RTRuntimeRef Runtime
+);
+
+Timestamp RTRuntimeGetNextDailyResetTimeMs(
     RTRuntimeRef Runtime
 );
 

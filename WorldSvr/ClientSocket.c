@@ -29,9 +29,18 @@ Void ClientSocketOnDisconnect(
     if (Client->CharacterIndex > 0) {
         RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Client->CharacterIndex);
         if (Character) {
+            RTTradeManagerDestroyContext(
+                Context->Runtime->TradeManager,
+                Character->CharacterIndex,
+                NOTIFICATION_TRADE_EVENT_TYPE_CANCEL_TRADE
+            );
+
+            RTCharacterUpdateDailyReset(Context->Runtime, Character);
+            RTCharacterUpdateGiftBox(Context->Runtime, Character);
             RTCharacterUpdateMeritMastery(Context->Runtime, Character, true);
             RTCharacterUpdateBuffs(Context->Runtime, Character, true);
             RTCharacterUpdateCooldowns(Context->Runtime, Character, true);
+
             ServerSyncCharacter(Server, Context, Client, Character);
 
             // TODO: @DungeonCleanUp Delete character dungeon instance and respawn to global world

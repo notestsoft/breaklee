@@ -2,7 +2,6 @@ CREATE PROCEDURE GetCharacterInfo (
     IN InCharacterID INT
 )
 BEGIN
-    -- Select and return the required character information directly
     SELECT 
         Characters.SlotIndex,
         Characters.CharacterID, 

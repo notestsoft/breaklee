@@ -11,12 +11,21 @@ CLIENT_PROCEDURE_BINDING(DEINITIALIZE) {
     // TODO: Save solo dungeon to party svr
 
     if (Character) {
+        RTTradeManagerDestroyContext(
+            Runtime->TradeManager,
+            Character->CharacterIndex,
+            NOTIFICATION_TRADE_EVENT_TYPE_CANCEL_TRADE
+        );
+
+        RTCharacterUpdateDailyReset(Runtime, Character);
         RTCharacterUpdateGiftBox(Runtime, Character);
+        RTCharacterUpdateMeritMastery(Runtime, Character, true);
+        RTCharacterUpdateBuffs(Runtime, Character, true);
         RTCharacterUpdateCooldowns(Runtime, Character, true);
 
         ServerSyncCharacter(Server, Context, Client, Character);
 
-        RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Context->Runtime, Character);
+        RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Runtime, Character);
         RTWorldDespawnCharacter(
             WorldContext->WorldManager->Runtime,
             WorldContext,

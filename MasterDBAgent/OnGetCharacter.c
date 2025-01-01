@@ -117,6 +117,8 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_INT32, &Response->Character.CharacterStyleInfo.MapsMask,
         DB_TYPE_INT32, &Response->Character.CharacterStyleInfo.Style.RawValue,
         DB_TYPE_INT32, &Response->Character.CharacterStyleInfo.LiveStyle.RawValue,
+        DB_TYPE_UINT64, &Response->Character.DailyResetInfo.LastResetTimestamp,
+        DB_TYPE_UINT64, &Response->Character.DailyResetInfo.NextResetTimestamp,
         DB_TYPE_UINT8, &Response->Character.EquipmentInfo.EquipmentSlotCount,
         DB_TYPE_UINT8, &Response->Character.EquipmentInfo.InventorySlotCount,
         DB_TYPE_UINT8, &Response->Character.EquipmentInfo.LinkSlotCount,

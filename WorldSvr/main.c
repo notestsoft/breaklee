@@ -156,7 +156,13 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     AllocatorRef Allocator = AllocatorGetSystemDefault();
     struct _ServerContext ServerContext = { 0 };
     ServerContext.Config = Config;
-    ServerContext.Runtime = RTRuntimeCreate(Allocator, Config.WorldSvr.MaxPartyCount, &ServerContext);
+    ServerContext.Runtime = RTRuntimeCreate(
+        Allocator, 
+        Config.WorldSvr.MaxPartyCount,
+        Config.WorldSvr.MaxTradeDistance,
+        Config.WorldSvr.TradeRequestTimeout,
+        &ServerContext
+    );
     ServerContext.Runtime->Environment.IsPKEnabled = Config.Environment.IsPKEnabled;
     ServerContext.Runtime->Environment.IsPremiumEnabled = Config.Environment.IsPremiumEnabled;
     ServerContext.Runtime->Environment.IsWarEnabled = Config.Environment.IsWarEnabled;
@@ -171,7 +177,14 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     ServerContext.Runtime->Config.MinHonorPoint = Config.Environment.MinHonorPoint;
     ServerContext.Runtime->Config.MaxHonorPoint = Config.Environment.MaxHonorPoint;
     ServerContext.Runtime->Config.ScriptFilePath = Config.WorldSvr.ScriptDataPath;
+    ServerContext.Runtime->Config.DailyResetTimeHour = Config.WorldSvr.DailyResetTimeHour;
+    ServerContext.Runtime->Config.DailyResetTimeMinute = Config.WorldSvr.DailyResetTimeMinute;
     ServerContext.ItemScriptRegistry = IndexDictionaryCreate(Allocator, 8);
+
+    ConvertLocalToUtcAt(
+        &ServerContext.Runtime->Config.DailyResetTimeHour,
+        &ServerContext.Runtime->Config.DailyResetTimeMinute
+    );
 
     IPCNodeID NodeID = kIPCNodeIDNull;
     NodeID.Group = Config.WorldSvr.GroupIndex;
@@ -192,7 +205,6 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     );
     ServerContext.Server = Server;
     ServerContext.IPCSocket = Server->IPCSocket;
-
     ServerContext.ClientSocket = ServerCreateSocket(
         Server,
         SOCKET_FLAGS_LISTENER | SOCKET_FLAGS_ENCRYPTED,

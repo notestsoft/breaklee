@@ -103,6 +103,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Character->Data.AccountInfo = Client->AccountInfo;
     Character->Data.Info = Packet->Character.CharacterInfo;
     Character->Data.StyleInfo = Packet->Character.CharacterStyleInfo;
+    Character->Data.DailyResetInfo = Packet->Character.DailyResetInfo;
 
     UInt8* Memory = &Packet->Data[0];
 

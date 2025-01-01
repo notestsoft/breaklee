@@ -95,6 +95,14 @@ NOTIFICATION_PROCEDURE_BINDING(ATTACK_TO_MOB) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 
+NOTIFICATION_PROCEDURE_BINDING(TRADE_EVENT) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
+NOTIFICATION_PROCEDURE_BINDING(TRADE_ADD_ITEMS) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_BATTLE_RANK_UP) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
@@ -215,6 +223,10 @@ NOTIFICATION_PROCEDURE_BINDING(MOBS_DESPAWN_BY_LINK_MOB) {
 }
 
 NOTIFICATION_PROCEDURE_BINDING(REMOVE_BUFF) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
+NOTIFICATION_PROCEDURE_BINDING(DAILY_QUEST_RESET) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 

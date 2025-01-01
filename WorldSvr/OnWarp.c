@@ -39,3 +39,16 @@ CLIENT_PROCEDURE_BINDING(WARP) {
 error:
 	SocketDisconnect(Socket, Connection);
 }
+
+CLIENT_PROCEDURE_BINDING(GET_SERVER_POSITION) {
+    if (!Character) goto error;
+
+    S2C_DATA_GET_SERVER_POSITION* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, GET_SERVER_POSITION);
+    Response->PositionCurrentX = Character->Data.Info.PositionX;
+    Response->PositionCurrentY = Character->Data.Info.PositionY;
+    SocketSend(Socket, Connection, Response);
+    return;
+
+error:
+    SocketDisconnect(Socket, Connection);
+}

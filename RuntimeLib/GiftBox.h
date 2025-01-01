@@ -36,6 +36,11 @@ struct _RTCharacterGiftboxInfo {
 
 #pragma pack(pop)
 
+Void RTCharacterGiftBoxDailyReset(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
 RTGiftBoxSlotRef RTCharacterGetGiftBox(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
