@@ -52,6 +52,7 @@
 #include <RuntimeLib/OverlordMastery.h>
 #include <RuntimeLib/Party.h>
 #include <RuntimeLib/PartyManager.h>
+#include <RuntimeLib/PersonalShop.h>
 #include <RuntimeLib/PremiumService.h>
 #include <RuntimeLib/Preset.h>
 #include <RuntimeLib/Quest.h>

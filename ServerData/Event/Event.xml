@@ -87,6 +87,9 @@
             <item slot_id="119" item_id="33556435" option="1" duration_id="0" price="0"></item>
             <item slot_id="118" item_id="33556879" option="1" duration_id="0" price="0"></item>
             <item slot_id="117" item_id="33554677" option="460544" duration_id="0" price="0"></item>
+
+            <item slot_id = "96" item_id = "33554689" option = "0" duration_id = "0" price = "0"></item>
+            <item slot_id = "97" item_id = "2377" option = "0" duration_id = "0" price = "0"></item>
         </event_shop>
 
     </event>

@@ -62,4 +62,7 @@ CHARACTER_DATA_PROTOCOL(struct _RTCharacterSecretShopData, SecretShopInfo)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterDamageBoosterData, DamageBoosterInfo)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterExplorationData, ExplorationInfo)
 
+// Not Persisted
+CHARACTER_DATA_PROTOCOL(struct _RTCharacterPersonalShopInfo, PersonalShopInfo)
+
 #undef CHARACTER_DATA_PROTOCOL

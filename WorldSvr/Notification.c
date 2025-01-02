@@ -133,6 +133,10 @@ NOTIFICATION_PROCEDURE_BINDING(HONOR_POINT_CHANGE) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 
+NOTIFICATION_PROCEDURE_BINDING(PERSONAL_SHOP_OPEN) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
 NOTIFICATION_PROCEDURE_BINDING(PARTY_QUEST_ACTION) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }

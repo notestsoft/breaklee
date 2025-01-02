@@ -41,21 +41,11 @@ Void RTNotificationAppendCharacterSpawnIndex(
     NotificationCharacter->IsDead = RTCharacterIsAlive(Runtime, Character) ? 0 : 1;
     NotificationCharacter->EquipmentSlotCount = Character->Data.EquipmentInfo.Info.EquipmentSlotCount;
     NotificationCharacter->CostumeSlotCount = RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT;
-    NotificationCharacter->IsInvisible = false;
-    NotificationCharacter->IsPersonalShop = false;
+    NotificationCharacter->IsInvisible = Character->Data.StyleInfo.Nation == 3;
     NotificationCharacter->GuildIndex = 0;
     NotificationCharacter->GuildColor = 0;
-    NotificationCharacter->Unknown8 = 0;
-    NotificationCharacter->Unknown9 = 0;
     NotificationCharacter->Unknown10 = 0;
     NotificationCharacter->HasPetInfo = 0;
-    NotificationCharacter->PetCount = 0;
-    NotificationCharacter->HasBlessingBeadBaloon = 0;
-    NotificationCharacter->HasItemBallon = 0;
-    NotificationCharacter->SkillBuffCount = Character->Data.BuffInfo.Info.SkillBuffCount;
-    NotificationCharacter->GmBuffCount = Character->Data.BuffInfo.Info.GmBuffCount;
-    NotificationCharacter->ForceCaliburBuffCount = Character->Data.BuffInfo.Info.ForceCaliburBuffCount;
-    NotificationCharacter->FirePlaceBuffCount = Character->Data.BuffInfo.Info.FirePlaceBuffCount;
     NotificationCharacter->IsBringer = 0;
     NotificationCharacter->DisplayTitle = Character->Data.AchievementInfo.Info.DisplayTitle;
     NotificationCharacter->EventTitle = Character->Data.AchievementInfo.Info.EventTitle;
@@ -87,17 +77,20 @@ Void RTNotificationAppendCharacterSpawnIndex(
         Slot->EquipmentSlotIndex = Index;
     }
 
-    // S2C_DATA_CHARACTERS_SPAWN_PERSONAL_SHOP_MESSAGE PersonalShopMessage[IsPersonalShop];
-    // S2C_DATA_CHARACTERS_SPAWN_PERSONAL_SHOP_INFO PersonalShopInfo[IsPersonalShop];
-    // S2C_DATA_CHARACTERS_SPAWN_BUFF_SLOT Buffs[ActiveBuffCount + DebuffCount + GmBuffCount + PassiveBuffCount];
-    for (Int Index = 0; Index < Character->Data.BuffInfo.Info.SkillBuffCount; Index += 1) {
-        RTBuffSlotRef BuffSlot = &Character->Data.BuffInfo.Slots[Index];
-    
-        NOTIFICATION_DATA_CHARACTERS_SPAWN_BUFF_SLOT* NotificationBuff = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_BUFF_SLOT);
-        NotificationBuff->SkillIndex = BuffSlot->SkillIndex;
-        NotificationBuff->SkillLevel = BuffSlot->SkillLevel;
+    NotificationCharacter->IsPersonalShop = Character->Data.PersonalShopInfo.IsActive;
+    if (Character->Data.PersonalShopInfo.IsActive) {
+        NOTIFICATION_DATA_CHARACTERS_SPAWN_PERSONAL_SHOP_MESSAGE* NotificationShopMessage = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_PERSONAL_SHOP_MESSAGE);
+        NotificationShopMessage->MessageLength = Character->Data.PersonalShopInfo.Info.NameLength;
+        RTNotificationAppendCopy(Notification, Character->Data.PersonalShopInfo.Name, Character->Data.PersonalShopInfo.Info.NameLength);
+
+        NOTIFICATION_DATA_CHARACTERS_SPAWN_PERSONAL_SHOP_INFO* NotificationShopInfo = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_PERSONAL_SHOP_INFO);
+        NotificationShopInfo->PremiumShopItemID = Character->Data.PersonalShopInfo.PremiumShopItemID;
     }
-    
+
+    NotificationCharacter->SkillBuffCount = Character->Data.BuffInfo.Info.SkillBuffCount;
+    NotificationCharacter->GmBuffCount = Character->Data.BuffInfo.Info.GmBuffCount;
+    NotificationCharacter->ForceCaliburBuffCount = Character->Data.BuffInfo.Info.ForceCaliburBuffCount;
+    NotificationCharacter->FirePlaceBuffCount = Character->Data.BuffInfo.Info.FirePlaceBuffCount;
     Int8 BuffSlotCounts[] = {
          Character->Data.BuffInfo.Info.SkillBuffCount,
          Character->Data.BuffInfo.Info.PotionBuffCount,
@@ -126,15 +119,13 @@ Void RTNotificationAppendCharacterSpawnIndex(
 
         BuffSlotOffset += BuffSlotCounts[BuffType];
     }
-    
+
     //NOTIFICATION_DATA_CHARACTERS_SPAWN_BFX_SLOT* BfxSlot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_BFX_SLOT);
     //BfxSlot->BfxIndex = 8;
     //BfxSlot->Duration = 10000;
 
-    // S2C_DATA_CHARACTERS_SPAWN_PET_SLOT Pets[PetCount];
-    // S2C_DATA_CHARACTERS_SPAWN_BALOON_SLOT ItemBaloon[HasItemBaloon];
+    // S2C_DATA_CHARACTERS_SPAWN_PET_SLOT Pets[HasPetInfo];
 }
-
 
 Void RTWorldChunkBroadcastCharactersToCharacter(
     RTWorldChunkRef WorldChunk,

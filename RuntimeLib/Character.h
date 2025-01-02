@@ -36,6 +36,7 @@
 #include "MythMastery.h"
 #include "NewbieSupport.h"
 #include "OverlordMastery.h"
+#include "PersonalShop.h"
 #include "PremiumService.h"
 #include "Preset.h"
 #include "Quest.h"
