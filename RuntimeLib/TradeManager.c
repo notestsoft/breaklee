@@ -249,7 +249,11 @@ UInt8 RTTradeManagerRequestTradeResponse(
         }
     }
     else {
-        // TODO: Notify Target
+        RTTradeManagerDestroyContext(
+            TradeManager,
+            Target->CharacterIndex,
+            EventType
+        );
     }
 
     return EventType;
@@ -353,6 +357,30 @@ UInt8 RTTradeManagerCloseTrade(
         return EventType;
     }
 
+    if (EventType == NOTIFICATION_TRADE_EVENT_TYPE_CANCEL_SUBMIT) {
+        TradeContext->Source.IsReady = false;
+        TradeContext->Source.IsConfirmed = false;
+        TradeContext->Source.IsInventoryReady = false;
+
+        /* Source */ {
+            NOTIFICATION_DATA_TRADE_EVENT* Notification = RTNotificationInit(TRADE_EVENT);
+            Notification->EventType = NOTIFICATION_TRADE_EVENT_TYPE_CANCEL_SUBMIT;
+            RTNotificationDispatchToCharacter(Notification, Source);
+        }
+
+        TradeContext->Target.IsReady = false;
+        TradeContext->Target.IsConfirmed = false;
+        TradeContext->Target.IsInventoryReady = false;
+
+        /* Target */ {
+            NOTIFICATION_DATA_TRADE_EVENT* Notification = RTNotificationInit(TRADE_EVENT);
+            Notification->EventType = NOTIFICATION_TRADE_EVENT_TYPE_CANCEL_SUBMIT;
+            RTNotificationDispatchToCharacter(Notification, Target);
+        }
+
+        return EventType;
+    }
+
     if (RTTradeManagerDestroyContext(TradeManager, Character->CharacterIndex, EventType)) {
         return EventType;
     }
@@ -419,6 +447,26 @@ UInt8 RTTradeManagerAddItems(
         RTNotificationDispatchToCharacter(Notification, Source);
     }
 
+    TradeContext->Source.IsReady = false;
+    TradeContext->Source.IsConfirmed = false;
+    TradeContext->Source.IsInventoryReady = false;
+
+    /* Source */ {
+        NOTIFICATION_DATA_TRADE_EVENT* Notification = RTNotificationInit(TRADE_EVENT);
+        Notification->EventType = NOTIFICATION_TRADE_EVENT_TYPE_CANCEL_SUBMIT;
+        RTNotificationDispatchToCharacter(Notification, Source);
+    }
+
+    TradeContext->Target.IsReady = false;
+    TradeContext->Target.IsConfirmed = false;
+    TradeContext->Target.IsInventoryReady = false;
+
+    /* Target */ {
+        NOTIFICATION_DATA_TRADE_EVENT* Notification = RTNotificationInit(TRADE_EVENT);
+        Notification->EventType = NOTIFICATION_TRADE_EVENT_TYPE_CANCEL_SUBMIT;
+        RTNotificationDispatchToCharacter(Notification, Target);
+    }
+
     return NOTIFICATION_TRADE_EVENT_TYPE_ADD_ITEM;
 
 error:
@@ -462,6 +510,26 @@ UInt8 RTTradeManagerAddCurrency(
     }
     else if (Character->CharacterIndex == Target->CharacterIndex) {
         RTNotificationDispatchToCharacter(Notification, Source);
+    }
+
+    TradeContext->Source.IsReady = false;
+    TradeContext->Source.IsConfirmed = false;
+    TradeContext->Source.IsInventoryReady = false;
+
+    /* Source */ {
+        NOTIFICATION_DATA_TRADE_EVENT* Notification = RTNotificationInit(TRADE_EVENT);
+        Notification->EventType = NOTIFICATION_TRADE_EVENT_TYPE_CANCEL_SUBMIT;
+        RTNotificationDispatchToCharacter(Notification, Source);
+    }
+
+    TradeContext->Target.IsReady = false;
+    TradeContext->Target.IsConfirmed = false;
+    TradeContext->Target.IsInventoryReady = false;
+
+    /* Target */ {
+        NOTIFICATION_DATA_TRADE_EVENT* Notification = RTNotificationInit(TRADE_EVENT);
+        Notification->EventType = NOTIFICATION_TRADE_EVENT_TYPE_CANCEL_SUBMIT;
+        RTNotificationDispatchToCharacter(Notification, Target);
     }
 
     return NOTIFICATION_TRADE_EVENT_TYPE_ADD_ITEM;
