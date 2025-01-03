@@ -18,22 +18,27 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		goto error;
 	}
 
+	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotBySlotIndex(Runtime, Character, Packet->SlotIndex);
+	if (!SkillSlot) SkillSlot = RTCharacterGetSkillSlotBySkillIndex(Runtime, Character, Packet->SkillIndex);
+	if (!SkillSlot) goto error;
+
+	RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillSlot->ID);
+	assert(SkillData);
+
+	Bool UseMoveStep = false;
+	Bool UseStun = false;
+	Bool UseHitCount = false;
+	Bool UseDebuff = false;
+
+	// TODO: Add skill cast time and cooldown checks
+
+	// TODO: Calculate timing of combo skill
+
 	PacketBufferRef ResponsePacketBuffer = SocketGetNextPacketBuffer(Socket);
 	PacketBufferRef NotificationPacketBuffer = SocketGetNextPacketBuffer(Socket);
 
-	RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, Packet->SkillIndex);
-	if (!SkillData) goto error;
-
 	S2C_DATA_SKILL_TO_CHARACTER* Response = PacketBufferInit(ResponsePacketBuffer, S2C, SKILL_TO_CHARACTER);
 	Response->SkillIndex = Packet->SkillIndex;
-
-	RTSkillSlotRef SkillSlot = RTCharacterGetSkillSlotBySlotIndex(Runtime, Character, Packet->SlotIndex);
-	if (!SkillSlot) SkillSlot = RTCharacterGetSkillSlotBySkillIndex(Runtime, Character, Packet->SkillIndex);
-	if (SkillSlot->ID != Packet->SkillIndex) goto error;
-
-	// TODO: Add SkillData validations
-	// TODO: Add skill cast time and cooldown checks
-	// TODO: Consume sp
 
 	Int32 RequiredMP = RTCharacterCalculateRequiredMP(
 		Runtime,
@@ -44,11 +49,15 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 	);
 
 	if (Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT] < RequiredMP) {
-		// TODO: Send error notification
-		// return; TODO: Some skills should always be executed like the astral skill even if there is no mp left!
+		S2C_DATA_NFY_ERROR* Error = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, NFY_ERROR);
+		Error->ErrorCommand = Packet->Command;
+		Error->ErrorSubCommand = SkillData->SkillGroup;
+		Error->ErrorCode = 14; // Insufficient MP
+		SocketSend(Socket, Connection, Error);
+		return;
 	}
 
-    RTCharacterAddMP(Runtime, Character, -RequiredMP, false);
+	RTCharacterAddMP(Runtime, Character, -RequiredMP, false);
 
 	if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_ATTACK) {
 		Timestamp CooldownInterval = RTCharacterGetCooldownInterval(Runtime, Character, SkillData->CooldownIndex);
@@ -64,6 +73,101 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		PacketLength += sizeof(C2S_DATA_SKILL_TO_CHARACTER_TARGET) * PacketData->TargetCount;
 		if (Packet->Length != PacketLength) goto error;
 
+		S2C_DATA_SKILL_GROUP_ATTACK* ResponseData = PacketBufferAppendStruct(ResponsePacketBuffer, S2C_DATA_SKILL_GROUP_ATTACK);
+		
+		Int32 TargetCount = 0;
+		Int32 ReceivedSkillExp = 0;
+
+		RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
+
+		// TODO: Add evaluation for each target
+		for (Int Index = 0; Index < PacketData->TargetCount; Index += 1) {
+			C2S_DATA_SKILL_TO_CHARACTER_TARGET* Target = &PacketData->Data[Index];
+			S2C_DATA_SKILL_TO_CHARACTER_TARGET* TargetResponse = PacketBufferAppendStruct(ResponsePacketBuffer, S2C_DATA_SKILL_TO_CHARACTER_TARGET);
+			TargetResponse->Entity = Target->Entity;
+			TargetResponse->EntityIDType = Target->EntityIDType;
+
+			RTCharacterRef TargetCharacter = RTWorldManagerGetCharacter(Runtime->WorldManager, Target->Entity);
+			/*if (!TargetCharacter || RTCharacterIsAlive(Runtime, TargetCharacter) || Index >= SkillData->MaxTarget) {
+				TargetResponse->AttackType = RUNTIME_ATTACK_TYPE_MISS;
+				continue;
+			}*/
+
+			RTBattleResult Result = RTCalculateSkillAttackResult(
+				Runtime,
+				World,
+				SkillSlot->Level,
+				SkillData,
+				true,
+				&Character->Attributes,
+				&TargetCharacter->Attributes,
+				&Character->Movement,
+				&TargetCharacter->Movement
+			);
+
+			TargetResponse->AttackType = Result.AttackType;
+			TargetResponse->AppliedDamage = (UInt32)Result.AppliedDamage;
+			TargetResponse->TotalDamage = (UInt32)Result.TotalDamage;
+			TargetResponse->AdditionalDamage = (UInt32)Result.AdditionalDamage; // TODO: Check why additional damage is being displayed wrong by client
+			TargetResponse->HP = TargetCharacter->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+			TargetResponse->Unknown3 = 1;
+
+
+			TargetCount += 1;
+		}
+
+
+		ResponseData->CharacterHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+		ResponseData->CharacterMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+		ResponseData->CharacterSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+		ResponseData->Unknown4 = -1;
+		ResponseData->CharacterMaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
+		ResponseData->AccumulatedExp = Character->Data.Info.Exp;
+		ResponseData->Unknown2 = Character->Data.OverlordMasteryInfo.Info.Exp;
+		ResponseData->ReceivedSkillExp = ReceivedSkillExp;
+		//ResponseData->AXP = Character->Data.AbilityInfo.Info.Axp;
+		//ResponseData->AP = Character->Data.AbilityInfo.Info.AP;
+		ResponseData->TargetCount = TargetCount;
+
+
+		SocketSend(Socket, Connection, Response);
+
+		S2C_DATA_NFY_SKILL_TO_CHARACTER* Notification = PacketBufferInit(NotificationPacketBuffer, S2C, NFY_SKILL_TO_CHARACTER);
+		Notification->SkillIndex = Response->SkillIndex;
+
+		S2C_DATA_NFY_SKILL_GROUP_ATTACK* NotificationData = PacketBufferAppendStruct(NotificationPacketBuffer, S2C_DATA_NFY_SKILL_GROUP_ATTACK);
+
+		
+		NotificationData->TargetCount = ResponseData->TargetCount;
+		NotificationData->CharacterIndex = (UInt32)Character->CharacterIndex;
+		NotificationData->PositionSet.X = PacketData->PositionSet.X;
+		NotificationData->PositionSet.Y = PacketData->PositionSet.Y;
+		NotificationData->CharacterHP = ResponseData->CharacterHP;
+		NotificationData->Shield = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_ABSOLUTE_DAMAGE];
+
+		for (Int Index = 0; Index < ResponseData->TargetCount; Index++) {
+			S2C_DATA_SKILL_TO_CHARACTER_TARGET* TargetResponse = &ResponseData->Data[Index];
+			S2C_DATA_NFY_SKILL_TO_CHARACTER_TARGET* TargetNotification = 
+				PacketBufferAppendStruct(NotificationPacketBuffer, S2C_DATA_NFY_SKILL_TO_CHARACTER_TARGET);
+
+			RTCharacterRef TargetCharacter = RTWorldManagerGetCharacter(Runtime->WorldManager, TargetResponse->Entity);
+
+
+			TargetNotification->CharacterIndex = (UInt32)TargetCharacter->CharacterIndex;
+			//TargetNotification->EntityIDType = TargetResponse->EntityIDType;
+			TargetNotification->AttackType = TargetResponse->AttackType;
+			TargetNotification->HP = TargetResponse->HP;
+			TargetNotification->Unknown3 = 1;
+		}
+
+		BroadcastToWorld(
+			Context,
+			World,
+			kEntityIDNull,
+			Character->Data.Info.PositionX,
+			Character->Data.Info.PositionY,
+			Notification
+		);
 
 	} else if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_MOVEMENT) {
 		Timestamp CooldownInterval = RTCharacterGetCooldownInterval(Runtime, Character, SkillData->CooldownIndex);

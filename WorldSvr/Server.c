@@ -216,3 +216,4 @@ ClientContextRef ServerGetClientByIndex(
 
     return NULL;
 }
+

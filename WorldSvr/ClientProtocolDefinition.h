@@ -544,7 +544,10 @@ enum {
 CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_TO_CHARACTER_TARGET,
     RTEntityID Entity;
     UInt8 EntityIDType;
-    UInt32 Unknown1;
+    UInt8 AttackType;
+    UInt8 HitNum;
+    Bool IgnoreDamage;
+	UInt8 Unknown1;
 )
 
 CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_GROUP_ATTACK,
@@ -639,6 +642,37 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_SKILL_GROUP_VEHICLE,
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_SKILL_GROUP_WING,
     Int32 CurrentMP;
     Int32 CurrentSP;
+)
+
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_SKILL_TO_CHARACTER_TARGET,
+    RTEntityID Entity;
+    UInt8 EntityIDType;
+    UInt8 AttackType;
+    UInt32 AppliedDamage;
+    UInt32 TotalDamage;
+    UInt32 AdditionalDamage;
+    UInt64 HP;
+    CSC_POSITION PositionSet;
+    UInt32 BfxType;
+    UInt32 BfxDuration;
+    UInt8 Unknown3;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_SKILL_GROUP_ATTACK,
+    UInt64 CharacterHP;
+    UInt32 CharacterMP;
+    UInt16 CharacterSP;
+    UInt64 AccumulatedExp;
+    Int32 Unknown2;
+    Int32 Unknown3;
+    UInt64 ReceivedSkillExp;
+    Int32 Unknown4;
+    UInt8 Unknown5;
+    UInt64 CharacterMaxHP;
+    UInt32 ReflectDamage;
+    UInt8 TargetCount;
+    S2C_DATA_SKILL_TO_CHARACTER_TARGET Data[0];
 )
 
 CLIENT_PROTOCOL(S2C, SKILL_TO_CHARACTER, DEFAULT, 175,
@@ -1534,6 +1568,38 @@ CLIENT_PROTOCOL_ENUM(
     S2C_DATA_REPUTATION_CHANGE_TYPE_MOBS_KILL = 0x5,
     S2C_DATA_REPUTATION_CHANGE_TYPE_GUILD_KILL = 0x6,
     S2C_DATA_REPUTATION_CHANGE_TYPE_UNKNOWN7 = 0x7,
+)
+
+CLIENT_PROTOCOL(C2S, PKREQUEST, DEFAULT, 341,
+    UInt16 SessionId; 
+    UInt16 U0;
+    UInt32 CharacterId;
+    UInt8 PkType;
+)
+
+CLIENT_PROTOCOL(S2C, PKREQUEST, DEFAULT, 341,
+    UInt8 Result;
+)
+
+CLIENT_PROTOCOL(S2C, NFY_PKREQUEST, DEFAULT, 342,
+    UInt32 CharacterId;
+)
+
+CLIENT_PROTOCOL(C2S, PKENDING, DEFAULT, 343,
+    UInt16 SessionId;
+    UInt16 U0;
+    UInt32 CharacterId;
+    UInt8 Result;
+    UInt8 PkType;
+)
+
+CLIENT_PROTOCOL(S2C, PKENDING, DEFAULT, 343,
+    UInt8 Result;
+)
+
+CLIENT_PROTOCOL(S2C, NFY_PKENDING, DEFAULT, 344,
+    UInt32 CharacterId;
+    UInt8 Result;
 )
 
 CLIENT_PROTOCOL(C2S, REPUTATION_CHANGE, DEFAULT, 346,
