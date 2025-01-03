@@ -4,7 +4,7 @@
 #include "PersonalShop.h"
 #include "Runtime.h"
 
-Bool RTCharacterOpenPersonalShop(
+Bool RTCharacterPersonalShopOpen(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
 	RTPersonalShopInfoRef ShopInfo,
@@ -41,6 +41,21 @@ Bool RTCharacterOpenPersonalShop(
 	Notification->PremiumShopItemID = Character->Data.PersonalShopInfo.PremiumShopItemID;
 	Notification->ShopNameLength = Character->Data.PersonalShopInfo.Info.NameLength;
 	RTNotificationAppendCopy(Notification, Character->Data.PersonalShopInfo.Name, Character->Data.PersonalShopInfo.Info.NameLength);
+	RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
+
+	return true;
+}
+
+Bool RTCharacterPersonalShopClose(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+	if (!Character->Data.PersonalShopInfo.IsActive) return false;
+
+	Character->Data.PersonalShopInfo.IsActive = false;
+
+	NOTIFICATION_DATA_PERSONAL_SHOP_CLOSE* Notification = RTNotificationInit(PERSONAL_SHOP_CLOSE);
+	Notification->CharacterIndex = Character->CharacterIndex;
 	RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
 
 	return true;

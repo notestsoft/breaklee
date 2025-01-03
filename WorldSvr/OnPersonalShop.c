@@ -17,7 +17,7 @@ CLIENT_PROCEDURE_BINDING(PERSONAL_SHOP_OPEN) {
 	Response->Result = 1;
 
 	if (Packet->ShopMode == C2S_PERSONAL_SHOP_OPEN_MODE_SELL) {
-		if (RTCharacterOpenPersonalShop(
+		if (RTCharacterPersonalShopOpen(
 			Runtime,
 			Character,
 			&Packet->ShopInfo,
@@ -33,6 +33,75 @@ CLIENT_PROCEDURE_BINDING(PERSONAL_SHOP_OPEN) {
 
 	}
 
+	SocketSend(Socket, Connection, Response);
+	return;
+
+error:
+	SocketDisconnect(Socket, Connection);
+}
+
+CLIENT_PROCEDURE_BINDING(PERSONAL_SHOP_CLOSE) {
+	if (!Character) goto error;
+
+	S2C_DATA_PERSONAL_SHOP_CLOSE* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, PERSONAL_SHOP_CLOSE);
+	if (!RTCharacterPersonalShopClose(Runtime, Character)) goto error;
+	SocketSend(Socket, Connection, Response);
+	return;
+
+error:
+	SocketDisconnect(Socket, Connection);
+}
+
+CLIENT_PROCEDURE_BINDING(PERSONAL_SHOP_VIEW) {
+	if (!Character) goto error;
+
+	PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
+	S2C_DATA_PERSONAL_SHOP_VIEW* Response = PacketBufferInit(PacketBuffer, S2C, PERSONAL_SHOP_VIEW);
+	Response->Result = 1;
+	
+	RTCharacterRef TargetCharacter = RTWorldManagerGetCharacter(Runtime->WorldManager, Packet->EntityID);
+	if (TargetCharacter && TargetCharacter->Data.PersonalShopInfo.IsActive) {
+		Response->Result = 0;
+
+		Response->SlotCount = TargetCharacter->Data.PersonalShopInfo.Info.SlotCount;
+		for (Int Index = 0; Index < TargetCharacter->Data.PersonalShopInfo.Info.SlotCount; Index += 1) {
+			RTPersonalShopSlotRef ShopSlot = &TargetCharacter->Data.PersonalShopInfo.Slots[Index];
+
+			S2C_DATA_PERSONAL_SHOP_VIEW_SLOT* ResponseSlot = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_PERSONAL_SHOP_VIEW_SLOT);
+			ResponseSlot->ShopSlotIndex = ShopSlot->ShopSlotIndex;
+			ResponseSlot->ItemPrice = ShopSlot->ItemPrice;
+			ResponseSlot->ItemID = ShopSlot->ItemID;
+			ResponseSlot->ItemOptions = ShopSlot->ItemOptions;
+			ResponseSlot->ItemDuration = 0; // TODO: Add item duration
+		}
+	}
+
+	SocketSend(Socket, Connection, Response);
+	return;
+
+error:
+	{
+		S2C_DATA_PERSONAL_SHOP_VIEW* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, PERSONAL_SHOP_VIEW);
+		Response->Result = 1;
+		SocketSend(Socket, Connection, Response);
+	}
+}
+
+CLIENT_PROCEDURE_BINDING(PERSONAL_SHOP_EXIT) {
+	if (!Character) goto error;
+
+	S2C_DATA_PERSONAL_SHOP_EXIT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, PERSONAL_SHOP_EXIT);
+	SocketSend(Socket, Connection, Response);
+	return;
+
+error:
+	SocketDisconnect(Socket, Connection);
+}
+
+CLIENT_PROCEDURE_BINDING(PERSONAL_SHOP_BUY) {
+	if (!Character) goto error;
+
+	S2C_DATA_PERSONAL_SHOP_BUY* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, PERSONAL_SHOP_BUY);
 	SocketSend(Socket, Connection, Response);
 	return;
 

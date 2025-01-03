@@ -31,12 +31,17 @@ struct _RTCharacterPersonalShopInfo {
 
 #pragma pack(pop)
 
-Bool RTCharacterOpenPersonalShop(
+Bool RTCharacterPersonalShopOpen(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
 	RTPersonalShopInfoRef ShopInfo,
 	RTPersonalShopSlotRef ShopSlots,
 	Char* ShopName
+);
+
+Bool RTCharacterPersonalShopClose(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
 );
 
 EXTERN_C_END
