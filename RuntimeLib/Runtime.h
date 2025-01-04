@@ -44,6 +44,7 @@ struct _RTRuntimeConfig {
     Int32 NewbieSupportTimeout;
     Int64 MaxHonorPoint;
     Int64 MinHonorPoint;
+    Int64 MaxInventoryCurrency;
     CString ScriptFilePath;
     Int32 DailyResetTimeHour;
     Int32 DailyResetTimeMinute;

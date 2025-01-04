@@ -141,6 +141,10 @@ NOTIFICATION_PROCEDURE_BINDING(PERSONAL_SHOP_CLOSE) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 
+NOTIFICATION_PROCEDURE_BINDING(PERSONAL_SHOP_BUY) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
 NOTIFICATION_PROCEDURE_BINDING(PARTY_QUEST_ACTION) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
@@ -150,6 +154,10 @@ NOTIFICATION_PROCEDURE_BINDING(PARTY_QUEST_LOOT_ITEM) {
 }
  
 NOTIFICATION_PROCEDURE_BINDING(PARTY_QUEST_MISSION_MOB_KILL) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
+NOTIFICATION_PROCEDURE_BINDING(PERSONAL_SHOP_REGISTER_ITEM) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 

@@ -10,6 +10,8 @@
 // TODO: Add protection to not enter another dungeon in a different channel when a dungeon is running
 //       Abusing chaos arena spawn delay to finish them all
 
+// TODO: Many systems change the inventory and all of them should update the quest counters!!!
+
 #define C2S_COMMAND(__NAME__, __COMMAND__)                                                                                       \
 Void SERVER_PROC_ ## __NAME__(                                                                                                   \
     ServerRef Server,                                                                                                            \
@@ -176,6 +178,7 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     ServerContext.Runtime->Config.NewbieSupportTimeout = Config.WorldSvr.NewbieSupportTimeout;
     ServerContext.Runtime->Config.MinHonorPoint = Config.Environment.MinHonorPoint;
     ServerContext.Runtime->Config.MaxHonorPoint = Config.Environment.MaxHonorPoint;
+    ServerContext.Runtime->Config.MaxInventoryCurrency = Config.Environment.MaxInventoryCurrency;
     ServerContext.Runtime->Config.ScriptFilePath = Config.WorldSvr.ScriptDataPath;
     ServerContext.Runtime->Config.DailyResetTimeHour = Config.WorldSvr.DailyResetTimeHour;
     ServerContext.Runtime->Config.DailyResetTimeMinute = Config.WorldSvr.DailyResetTimeMinute;

@@ -73,6 +73,7 @@ CLIENT_PROCEDURE_BINDING(PERSONAL_SHOP_VIEW) {
 			ResponseSlot->ItemID = ShopSlot->ItemID;
 			ResponseSlot->ItemOptions = ShopSlot->ItemOptions;
 			ResponseSlot->ItemDuration = 0; // TODO: Add item duration
+			ResponseSlot->ItemSerial = 0;
 		}
 	}
 
@@ -102,9 +103,58 @@ CLIENT_PROCEDURE_BINDING(PERSONAL_SHOP_BUY) {
 	if (!Character) goto error;
 
 	S2C_DATA_PERSONAL_SHOP_BUY* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, PERSONAL_SHOP_BUY);
+	Response->Result = S2C_PERSONAL_SHOP_BUY_RESULT_FAIL;
+
+	if (RTCharacterPersonalShopBuy(
+		Runtime,
+		Character,
+		Packet->EntityID,
+		Packet->ItemID,
+		Packet->InventorySlotIndex,
+		Packet->ShopSlotIndex,
+		Packet->ItemPrice
+	)) {
+		Response->Result = 0;
+	}
+
 	SocketSend(Socket, Connection, Response);
 	return;
 
 error:
-	SocketDisconnect(Socket, Connection);
+	{
+		S2C_DATA_PERSONAL_SHOP_BUY* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, PERSONAL_SHOP_BUY);
+		Response->Result = S2C_PERSONAL_SHOP_BUY_RESULT_FAIL;
+		SocketSend(Socket, Connection, Response);
+	}
 }
+
+CLIENT_PROCEDURE_BINDING(PERSONAL_SHOP_REGISTER_ITEM) {
+	if (!Character) goto error;
+	if (!RTEntityIsEqual(Character->ID, Packet->EntityID)) goto error;
+
+	S2C_DATA_PERSONAL_SHOP_REGISTER_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, PERSONAL_SHOP_REGISTER_ITEM);
+	Response->Result = 1;
+
+	if (RTCharacterPersonalShopRegisterItem(
+		Runtime,
+		Character,
+		Packet->InventorySlotIndex,
+		Packet->ItemID,
+		Packet->ItemOptions,
+		Packet->ShopSlotIndex,
+		Packet->ItemPrice
+	)) {
+		Response->Result = 0;
+	}
+
+	SocketSend(Socket, Connection, Response);
+	return;
+
+error:
+	{
+		S2C_DATA_PERSONAL_SHOP_REGISTER_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, PERSONAL_SHOP_REGISTER_ITEM);
+		Response->Result = 1;
+		SocketSend(Socket, Connection, Response);
+	}
+}
+

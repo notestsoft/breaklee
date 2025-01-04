@@ -2,6 +2,7 @@
 
 #include "Base.h"
 #include "Constants.h"
+#include "Entity.h"
 
 EXTERN_C_BEGIN
 
@@ -42,6 +43,26 @@ Bool RTCharacterPersonalShopOpen(
 Bool RTCharacterPersonalShopClose(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character
+);
+
+Bool RTCharacterPersonalShopBuy(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	RTEntityID ShopCharacterID,
+	UInt64 ItemID,
+	UInt16 InventorySlotIndex,
+	UInt8 ShopSlotIndex,
+	UInt64 ItemPrice
+);
+
+Bool RTCharacterPersonalShopRegisterItem(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	UInt16 InventorySlotIndex,
+	UInt64 ItemID,
+	UInt64 ItemOptions,
+	UInt8 ShopSlotIndex,
+	UInt64 ItemPrice
 );
 
 EXTERN_C_END
