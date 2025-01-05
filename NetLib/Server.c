@@ -108,7 +108,7 @@ SocketRef ServerCreateSocket(
     SocketContext->SocketPort = SocketPort;
     SocketContext->ConnectionContextPool = MemoryPoolCreate(Server->Allocator, ConnectionContextSize, MaxConnectionCount);
     SocketContext->PacketManager = PacketManagerCreate(Server->Allocator);
-    SocketContext->CommandRegistry = IndexDictionaryCreate(Server->Allocator, 8);
+    SocketContext->CommandRegistry = IndexDictionaryCreate(Server->Allocator, 1024);
     SocketContext->OnConnect = OnConnect;
     SocketContext->OnDisconnect = OnDisconnect;
     SocketContext->PacketGetCommand = &ClientPacketGetCommand;

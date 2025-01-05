@@ -549,6 +549,22 @@ enum {
 
 */
 
+CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_TO_CHARACTER_TARGET,
+    RTEntityID Entity;
+    UInt8 EntityIDType;
+    UInt32 Unknown1;
+)
+
+CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_GROUP_ATTACK,
+    UInt32 Unknown1;
+    CSC_POSITION PositionSet;
+    UInt8 Unknown2;
+    UInt8 TargetCount;
+    CSC_POSITION PositionCharacter;
+    CSC_POSITION PositionTarget;
+    C2S_DATA_SKILL_TO_CHARACTER_TARGET Data[0];
+)
+
 CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_GROUP_MOVEMENT,
     CSC_POSITION PositionBegin;
     CSC_POSITION PositionEnd;
@@ -575,6 +591,35 @@ CLIENT_PROTOCOL(C2S, SKILL_TO_CHARACTER, DEFAULT, 175,
     UInt16 SkillIndex;
     UInt8 SlotIndex;
     UInt8 Data[0];
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_SKILL_TO_CHARACTER_TARGET,
+    UInt32 CharacterIndex;
+    UInt8 AttackType;
+    UInt32 AppliedDamage;
+    UInt32 TotalDamage;
+    UInt32 AdditionalDamage;
+    UInt64 HP;
+    CSC_POSITION PositionSet;
+    UInt32 BfxType;
+    UInt32 BfxDuration;
+    UInt32 Unknown3;
+    UInt8 Unknown4;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_SKILL_GROUP_ATTACK,
+    UInt64 CharacterHP;
+    UInt32 CharacterMP;
+    UInt16 CharacterSP;
+    UInt64 AccumulatedExp;
+    UInt64 AccumulatedOxp;
+    UInt64 ReceivedMxp;
+    UInt32 ReceivedSkillExp;
+    UInt8 Unknown5;
+    UInt64 CharacterMaxHP;
+    UInt32 ReflectDamage;
+    UInt8 TargetCount;
+    S2C_DATA_SKILL_TO_CHARACTER_TARGET Data[0];
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_SKILL_GROUP_MOVEMENT,
@@ -986,6 +1031,27 @@ CLIENT_PROTOCOL(S2C, NFY_SKILL_TO_MOB, DEFAULT, 220,
     S2C_DATA_NFY_SKILL_TO_MOB_TARGET Data[0];
 )
 
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_SKILL_TO_CHARACTER_TARGET,
+    UInt32 CharacterIndex;
+    UInt8 AttackType;
+    UInt64 HP;
+    UInt32 BfxType;
+    UInt32 BfxDuration;
+    UInt8 Unknown2;
+    UInt32 Unknown3;
+    CSC_POSITION PositionSet;
+)
+
+CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_SKILL_GROUP_ATTACK,
+    UInt8 TargetCount;
+    UInt32 CharacterIndex;
+    CSC_POSITION PositionSet;
+    UInt8 Unknown1;
+    UInt64 CharacterHP;
+    UInt32 Shield;
+    S2C_DATA_NFY_SKILL_TO_CHARACTER_TARGET Data[0];
+)
+
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_SKILL_GROUP_MOVEMENT,
     UInt32 CharacterIndex;
     RTEntityID Entity;
@@ -1051,6 +1117,7 @@ CLIENT_PROTOCOL(S2C, WARP, DEFAULT, 244,
     UInt64 AccumulatedExp;
     UInt64 AccumulatedOxp;
     UInt64 ReceivedSkillExp;
+
     UInt64 Currency;
     RTEntityID Entity;
     UInt8 WorldType;

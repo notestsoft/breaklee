@@ -1040,8 +1040,8 @@ Bool ServerLoadWorldMobData(
         ParseAttributeInt32(Archive, ChildIterator->Index, "MobPatrolIndex", &Mob->Spawn.MobPatrolIndex);
         if (!ParseAttributeInt32(Archive, ChildIterator->Index, "MobPatternIndex", &Mob->Spawn.MobPatternIndex)) goto error;
         
-        Char MobScriptFileName[MAX_PATH] = { 0 };
-        if (ParseAttributeString(Archive, ChildIterator->Index, "Script", MobScriptFileName, MAX_PATH)) {
+        Char MobScriptFileName[PLATFORM_PATH_MAX] = { 0 };
+        if (ParseAttributeString(Archive, ChildIterator->Index, "Script", MobScriptFileName, PLATFORM_PATH_MAX)) {
             if (strlen(MobScriptFileName) > 0) {
                 CString MobScriptFilePath = PathCombineAll(ScriptDirectory, MobScriptFileName, NULL);
                 Mob->Script = RTScriptManagerLoadScript(Runtime->ScriptManager, MobScriptFilePath);
@@ -1182,9 +1182,9 @@ Bool ServerLoadTerrainData(
         World->DropTable.MobDropPool = IndexDictionaryCreate(Runtime->Allocator, 8);
         World->DropTable.QuestDropPool = IndexDictionaryCreate(Runtime->Allocator, 8);
 
-        Char WorldFileName[MAX_PATH];
+        Char WorldFileName[PLATFORM_PATH_MAX];
         if (!ParseAttributeInt32(TerrainArchive, Iterator->Index, "dead_warp", &World->DeadWarpIndex)) goto error;
-        if (!ParseAttributeString(TerrainArchive, Iterator->Index, "name", WorldFileName, MAX_PATH)) goto error;
+        if (!ParseAttributeString(TerrainArchive, Iterator->Index, "name", WorldFileName, PLATFORM_PATH_MAX)) goto error;
         if (!ParseAttributeInt32(TerrainArchive, Iterator->Index, "return_warp", &World->ReturnWarpIndex)) goto error;
 
         Iterator = ArchiveQueryNodeIteratorNext(TerrainArchive, Iterator);
@@ -1251,8 +1251,8 @@ Bool ServerLoadWorldData(
         if (WarAllowed > 0) World->Flags |= RUNTIME_WORLD_FLAGS_WAR_ALLOWED;
         if (WarControl > 0) World->Flags |= RUNTIME_WORLD_FLAGS_WAR_CONTROL;
 
-        Char MapFileName[MAX_PATH] = { 0 };
-        if (!ParseAttributeString(TempArchive, NodeIndex, "map_file", MapFileName, MAX_PATH)) goto error;
+        Char MapFileName[PLATFORM_PATH_MAX] = { 0 };
+        if (!ParseAttributeString(TempArchive, NodeIndex, "map_file", MapFileName, PLATFORM_PATH_MAX)) goto error;
         if (strlen(MapFileName) > 0) {
             CString MapFilePath = PathCombineAll(RuntimeDirectory, "Map", MapFileName, NULL);
             Info("Loading map file: %s", MapFilePath);
@@ -1356,7 +1356,7 @@ Bool ServerLoadWorldData(
             World->WorldIndex
         );
 
-        if (FileExists(WorldFilePath)) {
+        if (CLFileExists(WorldFilePath)) {
             Info("Loading world file: %s", WorldFilePath);
 
             if (!ArchiveLoadFromFile(TempArchive, WorldFilePath, false)) goto error;
@@ -2013,7 +2013,7 @@ Bool ServerLoadPatternPartData(
             ParseAttributeInt32Array(Archive, MobIterator->Index, "EventProperty", Mob->Spawn.EventProperty, RUNTIME_MOB_MAX_EVENT_COUNT, ',');
             ParseAttributeInt32Array(Archive, MobIterator->Index, "EventMobList", Mob->Spawn.EventMobs, RUNTIME_MOB_MAX_EVENT_COUNT, ',');
             ParseAttributeInt32Array(Archive, MobIterator->Index, "EventInterval", Mob->Spawn.EventInterval, RUNTIME_MOB_MAX_EVENT_COUNT, ',');
-            ParseAttributeString(Archive, MobIterator->Index, "Script", Mob->Spawn.Script, MAX_PATH);
+            ParseAttributeString(Archive, MobIterator->Index, "Script", Mob->Spawn.Script, PLATFORM_PATH_MAX);
 
             Mob->EnemyCount = ParseAttributeInt32ArrayCounted(
                 Archive, 
@@ -2348,7 +2348,7 @@ Bool ServerLoadWorldDropData(
     RTRuntimeRef Runtime = Context->Runtime;
     CString DropFilePath = PathCombineAll(ServerDirectory, "World", "World_0.xml", NULL);
 
-    if (FileExists(DropFilePath)) {
+    if (CLFileExists(DropFilePath)) {
         Info("Loading world file: %s", DropFilePath);
 
         ArchiveClear(TempArchive, true);
@@ -2392,8 +2392,8 @@ Bool ServerLoadMobPatrolData(
         Int32 PatrolIndex = -1;
         if (!ParseAttributeInt32(Archive, Iterator->Index, "Index", &PatrolIndex)) goto error;
 
-        Char FilePath[MAX_PATH] = { 0 };
-        if (!ParseAttributeString(Archive, Iterator->Index, "FilePath", FilePath, MAX_PATH)) goto error;
+        Char FilePath[PLATFORM_PATH_MAX] = { 0 };
+        if (!ParseAttributeString(Archive, Iterator->Index, "FilePath", FilePath, PLATFORM_PATH_MAX)) goto error;
 
         CString PatternFilePath = PathCombineAll(ServerDirectory, FilePath, NULL);
         if (!ArchiveLoadFromFile(PatrolArchive, PatternFilePath, false)) goto error;
@@ -2474,8 +2474,8 @@ Bool ServerLoadMobPatternData(
         Int32 PatternIndex = -1;
         if (!ParseAttributeInt32(Archive, Iterator->Index, "Index", &PatternIndex)) goto error;
 
-        Char FilePath[MAX_PATH] = { 0 };
-        if (!ParseAttributeString(Archive, Iterator->Index, "FilePath", FilePath, MAX_PATH)) goto error;
+        Char FilePath[PLATFORM_PATH_MAX] = { 0 };
+        if (!ParseAttributeString(Archive, Iterator->Index, "FilePath", FilePath, PLATFORM_PATH_MAX)) goto error;
 
         CString PatternFilePath = PathCombineAll(ServerDirectory, FilePath, NULL);
         if (!ArchiveLoadFromFile(PatternArchive, PatternFilePath, false)) goto error;
@@ -2599,8 +2599,8 @@ Bool ServerLoadMobPatternData(
 
             ParseAttributeInt32(PatternArchive, MobIterator->Index, "MobPatternIndex", &MobSpawn->MobPatternIndex);
 
-            Char MobScriptFileName[MAX_PATH] = { 0 };
-            if (ParseAttributeString(PatternArchive, MobIterator->Index, "Script", MobScriptFileName, MAX_PATH)) {
+            Char MobScriptFileName[PLATFORM_PATH_MAX] = { 0 };
+            if (ParseAttributeString(PatternArchive, MobIterator->Index, "Script", MobScriptFileName, PLATFORM_PATH_MAX)) {
                 if (strlen(MobScriptFileName) > 0) {
                     CString MobScriptFilePath = PathCombineAll(ScriptDirectory, MobScriptFileName, NULL);
                     MobSpawn->Script = RTScriptManagerLoadScript(Runtime->ScriptManager, MobScriptFilePath);
@@ -2630,7 +2630,7 @@ Bool ServerLoadOptionPoolData(
 ) {
     ArchiveRef Archive = ArchiveCreateEmpty(AllocatorGetSystemDefault());
     CString FilePath = PathCombineAll(ServerDirectory, "Loot", "OptionPool.xml", NULL);
-    if (FileExists(FilePath)) {
+    if (CLFileExists(FilePath)) {
         Info("Loading option pool file: %s", FilePath);
 
         if (!ArchiveLoadFromFile(Archive, FilePath, false)) goto error;

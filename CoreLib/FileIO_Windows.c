@@ -3,10 +3,11 @@
 #include "String.h"
 
 #ifdef _WIN32
+#include <Windows.h>
 
 static DWORD FileTransferByteCount = 0;
 static BOOL FileTransferCompleted = false;
-static Char FilePathBuffer[MAX_PATH] = { 0 };
+static Char FilePathBuffer[PLATFORM_PATH_MAX] = { 0 };
 
 VOID CALLBACK IOCompletionRoutine(
     __in DWORD ErrorCode,
@@ -170,7 +171,7 @@ Bool FileWrite(
     return true;
 }
 
-Bool FileExists(
+Bool CLFileExists(
     CString FilePath
 ) {
     WIN32_FIND_DATA Data;
@@ -193,7 +194,7 @@ Int32 FilesProcess(
     WIN32_FIND_DATA FindData;
     HANDLE FileHandle = FindFirstFile(PatternDirectory, &FindData);
     Int32 ProcessedFileCount = 0;
-    CHAR Buffer[MAX_PATH] = { 0 };
+    CHAR Buffer[PLATFORM_PATH_MAX] = { 0 };
 
     if (FileHandle == INVALID_HANDLE_VALUE) {
         return ProcessedFileCount;
@@ -236,9 +237,9 @@ Void PathCombine(
     assert(Directory);
     assert(File);
     
-    CStringCopySafe(Result, MAX_PATH, Directory);
+    CStringCopySafe(Result, PLATFORM_PATH_MAX, Directory);
     PathAppendSeparator(Result);
-    strcat_s(Result, MAX_PATH, File);
+    strcat_s(Result, PLATFORM_PATH_MAX, File);
 }
 
 Void PathAppend(
@@ -248,7 +249,7 @@ Void PathAppend(
     assert(Path);
     assert(Extension);
 
-    strcat_s(Path, MAX_PATH, Extension);
+    strcat_s(Path, PLATFORM_PATH_MAX, Extension);
 }
 
 Void PathAppendSeparator(
@@ -258,7 +259,7 @@ Void PathAppendSeparator(
     if (Path[Length - 1] == PLATFORM_PATH_SEPARATOR) return;
 
     Char Separator[2] = { PLATFORM_PATH_SEPARATOR, '\0' };
-    strcat_s(Path, MAX_PATH, Separator);
+    strcat_s(Path, PLATFORM_PATH_MAX, Separator);
 }
 
 #endif

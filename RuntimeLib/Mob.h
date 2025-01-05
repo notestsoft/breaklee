@@ -181,7 +181,7 @@ struct _RTMobSpawnData {
 	Int32 EventProperty[RUNTIME_MOB_MAX_EVENT_COUNT];
 	Int32 EventMobs[RUNTIME_MOB_MAX_EVENT_COUNT];
 	Int32 EventInterval[RUNTIME_MOB_MAX_EVENT_COUNT];
-	Char Script[MAX_PATH];
+	Char Script[PLATFORM_PATH_MAX];
 };
 
 struct _RTMobAggroData {

@@ -5,7 +5,7 @@ Void ServerLoadMigrationData(
     ServerContextRef Context
 ) {
     CString FilePath = PathCombineNoAlloc(Config.Database.MigrationDataPath, "MigrationRegistry.txt");
-    if (!FileExists(FilePath)) {
+    if (!CLFileExists(FilePath)) {
         Fatal("Error loading migration registry: %s", FilePath);
     }
 
@@ -18,7 +18,7 @@ Void ServerLoadMigrationData(
     while (fscanf(File, "%31s %255s", MigrationDirective, MigrationFileName) == 2) {
         if (strcmp(MigrationDirective, "AddMigration") == 0) {
             CString MigrationFilePath = PathCombineNoAlloc(Config.Database.MigrationDataPath, MigrationFileName);
-            if (!FileExists(MigrationFilePath)) Fatal("Migration file not found: %s", MigrationFilePath);
+            if (!CLFileExists(MigrationFilePath)) Fatal("Migration file not found: %s", MigrationFilePath);
 
             FileRef File = FileOpen(FilePath);
             if (!File) Fatal("Error loading migration file: %s", MigrationFilePath);

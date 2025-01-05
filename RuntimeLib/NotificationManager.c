@@ -23,7 +23,7 @@ RTNotificationManagerRef RTNotificationManagerCreate(
     RTNotificationManagerRef NotificationManager = AllocatorAllocate(Runtime->Allocator, sizeof(struct _RTNotificationManager));
     NotificationManager->Allocator = Runtime->Allocator;
     NotificationManager->Runtime = Runtime;
-    NotificationManager->CommandRegistry = IndexDictionaryCreate(Runtime->Allocator, 64);
+    NotificationManager->CommandRegistry = IndexDictionaryCreate(Runtime->Allocator, 1024);
     return NotificationManager;
 }
 

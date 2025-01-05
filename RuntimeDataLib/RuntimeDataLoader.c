@@ -33,8 +33,8 @@ RTRuntimeDataContextRef RTRuntimeDataContextCreate(
 	memset(Context, 0, sizeof(struct _RTRuntimeDataContext));
     Context->Allocator = Allocator;
     Context->FileEvents = ArrayCreateEmpty(AllocatorGetSystemDefault(), sizeof(FileEventRef), 8);
-    CStringCopySafe(Context->RuntimeDataPath, MAX_PATH, RuntimeDataPath);
-    CStringCopySafe(Context->ServerDataPath, MAX_PATH, ServerDataPath);
+    CStringCopySafe(Context->RuntimeDataPath, PLATFORM_PATH_MAX, RuntimeDataPath);
+    CStringCopySafe(Context->ServerDataPath, PLATFORM_PATH_MAX, ServerDataPath);
 
     {
         CString CurrentFileName = NULL;
@@ -471,7 +471,7 @@ Bool ParseAttributeRTDataItemType(
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
     if (!Data) goto error;
 
-    struct { Char Key[MAX_PATH]; RTDataItemType Value; } Dictionary[] = {
+    struct { Char Key[PLATFORM_PATH_MAX]; RTDataItemType Value; } Dictionary[] = {
         { "MG", RUNTIME_ITEM_TYPE_WEAPON_FORCE_CONTROLLER },
         { "1H", RUNTIME_ITEM_TYPE_WEAPON_ONE_HAND },
         { "2H", RUNTIME_ITEM_TYPE_WEAPON_TWO_HAND },
@@ -551,7 +551,7 @@ Bool ParseAttributeRTDataItemTypeGrade(
     ArchiveStringRef Data = ArchiveAttributeGetData(Object, AttributeIndex);
     if (!Data) goto error;
 
-    struct { Char Key[MAX_PATH]; RTDataItemTypeGrade Value; } Dictionary[] = {
+    struct { Char Key[PLATFORM_PATH_MAX]; RTDataItemTypeGrade Value; } Dictionary[] = {
         { "MG", -1 },
         { "1H", -1 },
         { "2H", -1 },

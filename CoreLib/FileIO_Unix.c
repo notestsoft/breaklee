@@ -138,7 +138,7 @@ Bool FileWrite(
     return true;
 }
 
-Bool FileExists(
+Bool CLFileExists(
     CString FilePath
 ) {
     struct stat Buffer;

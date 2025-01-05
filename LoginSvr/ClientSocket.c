@@ -16,7 +16,7 @@ Void ClientSocketOnConnect(
     Client->AccountID = -1;
     Client->Flags = 0;
     Client->DisconnectTimestamp = 0;
-    Client->RSA = NULL;
+    Client->PublicKeyCipher = NULL;
 }
 
 Void ClientSocketOnDisconnect(
@@ -27,8 +27,9 @@ Void ClientSocketOnDisconnect(
     Void *ConnectionContext
 ) {
     ClientContextRef Client = (ClientContextRef)ConnectionContext;
-    if (Client->RSA) {
-        RSA_free(Client->RSA);
+    if (Client->PublicKeyCipher) {
+        CLPublicKeyCipherDestroy(Client->PublicKeyCipher);
+        Client->PublicKeyCipher = NULL;
     }
 
     if (Client->AccountID > 0) {

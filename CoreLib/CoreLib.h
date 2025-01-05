@@ -16,5 +16,6 @@
 #include <CoreLib/MemoryPool.h>
 #include <CoreLib/ParsePrimitives.h>
 #include <CoreLib/String.h>
+#include <CoreLib/TableSet.h>
 #include <CoreLib/TempAllocator.h>
 #include <CoreLib/Util.h>

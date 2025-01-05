@@ -55,14 +55,14 @@ struct _PacketField {
     Int CountIndex;
     Int StackOffset;
     Int ArrayIndex;
-    Char Name[MAX_PATH];
+    Char Name[PLATFORM_PATH_MAX];
 };
 
 struct _PacketLayout {
     PacketManagerRef Manager;
     Int Index;
     Bool IsIntrinsic;
-    Char Name[MAX_PATH];
+    Char Name[PLATFORM_PATH_MAX];
     ArrayRef Fields;
     DictionaryRef NameToField;
 };
@@ -71,7 +71,7 @@ struct _PacketHandler {
     Int Command;
     Int LayoutIndex;
     Int Handler;
-    Char LayoutName[MAX_PATH];
+    Char LayoutName[PLATFORM_PATH_MAX];
 };
 
 struct _PacketManager {

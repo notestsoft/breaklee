@@ -47,7 +47,7 @@ Bool FileWrite(
 	Bool Append
 );
 
-Bool FileExists(
+Bool CLFileExists(
 	CString FilePath
 );
 

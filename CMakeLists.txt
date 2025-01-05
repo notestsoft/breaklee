@@ -19,6 +19,7 @@ option(CONFIG_BUILD_TARGET_MASTER_SVR "Build Master Server" ON)
 option(CONFIG_BUILD_TARGET_PARTY_SVR "Build Party Server" ON)
 option(CONFIG_BUILD_TARGET_WORLD_SVR "Build World Server" ON)
 option(CONFIG_BUILD_TARGET_CLIENT "Build Client" ON)
+option(CONFIG_BUILD_TARGET_EDITOR "Build Editor" ON)
 
 include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 
@@ -39,12 +40,16 @@ file(COPY ${PROJECT_SOURCE_DIR}/ServerData/ DESTINATION ${CMAKE_RUNTIME_OUTPUT_D
 file(COPY ${PROJECT_SOURCE_DIR}/Scripts/ DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/Scripts/)
 
 set(CORE_LIB_DIR ${PROJECT_SOURCE_DIR}/CoreLib)
+set(CRYPTO_LIB_DIR ${PROJECT_SOURCE_DIR}/CryptoLib)
 set(NET_LIB_DIR ${PROJECT_SOURCE_DIR}/NetLib)
 set(RUNTIME_DATA_LIB_DIR ${PROJECT_SOURCE_DIR}/RuntimeDataLib)
 set(RUNTIME_LIB_DIR ${PROJECT_SOURCE_DIR}/RuntimeLib)
 
 file(GLOB CORE_LIB_HEADERS ${CORE_LIB_DIR}/*.h)
 file(GLOB CORE_LIB_SOURCES ${CORE_LIB_DIR}/*.c)
+
+file(GLOB CRYPTO_LIB_HEADERS ${CRYPTO_LIB_DIR}/*.h)
+file(GLOB CRYPTO_LIB_SOURCES ${CRYPTO_LIB_DIR}/*.c)
 
 file(GLOB NET_LIB_HEADERS ${NET_LIB_DIR}/*.h)
 file(GLOB NET_LIB_SOURCES ${NET_LIB_DIR}/*.c)
@@ -59,11 +64,15 @@ set(SHARED_HEADERS_DIR ${PROJECT_SOURCE_DIR}/Shared)
 file(GLOB SHARED_HEADERS ${SHARED_HEADERS_DIR}/*.h)
 
 add_library(CoreLib STATIC ${CORE_LIB_HEADERS} ${CORE_LIB_SOURCES})
-target_link_libraries(CoreLib PRIVATE ${OpenSSL_LIBRARIES} ${zlib_LIBRARIES} ${libuv_LIBRARIES} ${ODBC_LIBRARIES})
-target_include_directories(CoreLib PUBLIC ${OpenSSL_INCLUDE_DIR} ${zlib_INCLUDE_DIR} ${libuv_INCLUDE_DIR} ${ODBC_INCLUDE_DIRS})
+target_link_libraries(CoreLib PRIVATE ${ZLIB_LIBRARIES} ${libuv_LIBRARIES} ${ODBC_LIBRARIES})
+target_include_directories(CoreLib PUBLIC ${PROJECT_SOURCE_DIR} ${ZLIB_INCLUDE_DIR} ${libuv_INCLUDE_DIR} ${ODBC_INCLUDE_DIRS})
+
+add_library(CryptoLib STATIC ${CRYPTO_LIB_HEADERS} ${CRYPTO_LIB_SOURCES})
+target_link_libraries(CryptoLib PRIVATE CoreLib openssl::openssl)
+target_include_directories(CryptoLib PUBLIC ${PROJECT_SOURCE_DIR} ${OpenSSL_INCLUDE_DIR})
 
 add_library(NetLib STATIC ${NET_LIB_HEADERS} ${NET_LIB_SOURCES})
-target_link_libraries(NetLib PRIVATE CoreLib lua::lua)
+target_link_libraries(NetLib PRIVATE CryptoLib CoreLib lua::lua)
 target_include_directories(NetLib PUBLIC ${PROJECT_SOURCE_DIR} ${lua_INCLUDE_DIR})
 
 add_library(RuntimeDataLib STATIC ${RUNTIME_DATA_LIB_HEADERS} ${RUNTIME_DATA_LIB_SOURCES})
@@ -82,7 +91,7 @@ if(CONFIG_BUILD_TARGET_AUCTION_SVR)
 
     add_executable(AuctionSvr ${AUCTION_SVR_HEADERS} ${AUCTION_SVR_SOURCES} ${SHARED_HEADERS})
     target_include_directories(AuctionSvr PUBLIC ${PROJECT_SOURCE_DIR} ${SHARED_HEADERS_DIR})
-    target_link_libraries(AuctionSvr PRIVATE NetLib CoreLib)
+    target_link_libraries(AuctionSvr PRIVATE NetLib CoreLib CryptoLib)
     
     if(WIN32)
         target_link_libraries(AuctionSvr PRIVATE ${AUCTION_SVR_DIR}/main.res)
@@ -97,7 +106,7 @@ if(CONFIG_BUILD_TARGET_BREAKLEE)
     
     add_executable(breaklee ${BREAKLEE_HEADERS} ${BREAKLEE_SOURCES} ${SHARED_HEADERS})
     target_include_directories(breaklee PUBLIC ${PROJECT_SOURCE_DIR} ${SHARED_HEADERS_DIR})
-    target_link_libraries(breaklee PRIVATE NetLib CoreLib)
+    target_link_libraries(breaklee PRIVATE NetLib CoreLib CryptoLib)
 endif()
 
 if(CONFIG_BUILD_TARGET_CHAT_SVR)
@@ -108,7 +117,7 @@ if(CONFIG_BUILD_TARGET_CHAT_SVR)
 
     add_executable(ChatSvr ${CHAT_SVR_HEADERS} ${CHAT_SVR_SOURCES} ${SHARED_HEADERS})
     target_include_directories(ChatSvr PUBLIC ${PROJECT_SOURCE_DIR} ${SHARED_HEADERS_DIR})
-    target_link_libraries(ChatSvr PRIVATE NetLib CoreLib)
+    target_link_libraries(ChatSvr PRIVATE NetLib CoreLib CryptoLib)
     
     if(WIN32)
         target_link_libraries(ChatSvr PRIVATE ${CHAT_SVR_DIR}/main.res)
@@ -123,7 +132,7 @@ if(CONFIG_BUILD_TARGET_LOGIN_SVR)
 
     add_executable(LoginSvr ${LOGIN_SVR_HEADERS} ${LOGIN_SVR_SOURCES} ${SHARED_HEADERS})
     target_include_directories(LoginSvr PUBLIC ${PROJECT_SOURCE_DIR} ${OPENSSL_INCLUDE_DIR} ${SHARED_HEADERS_DIR})
-    target_link_libraries(LoginSvr PRIVATE NetLib CoreLib)
+    target_link_libraries(LoginSvr PRIVATE NetLib CoreLib CryptoLib)
 
     if(WIN32)
         target_link_libraries(LoginSvr PRIVATE ${LOGIN_SVR_DIR}/main.res)
@@ -138,7 +147,7 @@ if(CONFIG_BUILD_TARGET_MASTER_DBAGENT)
 
     add_executable(MasterDBAgent ${MASTER_DBAGENT_HEADERS} ${MASTER_DBAGENT_SOURCES} ${SHARED_HEADERS})
     target_include_directories(MasterDBAgent PUBLIC ${PROJECT_SOURCE_DIR} ${SHARED_HEADERS_DIR})
-    target_link_libraries(MasterDBAgent PRIVATE NetLib CoreLib RuntimeLib RuntimeDataLib)
+    target_link_libraries(MasterDBAgent PRIVATE NetLib CoreLib CryptoLib RuntimeLib RuntimeDataLib)
     
     if(WIN32)
         target_link_libraries(MasterDBAgent PRIVATE ${MASTER_DBAGENT_DIR}/main.res)
@@ -153,7 +162,7 @@ if(CONFIG_BUILD_TARGET_MASTER_SVR)
 
     add_executable(MasterSvr ${MASTER_SVR_HEADERS} ${MASTER_SVR_SOURCES} ${SHARED_HEADERS})
     target_include_directories(MasterSvr PUBLIC ${PROJECT_SOURCE_DIR} ${SHARED_HEADERS_DIR})
-    target_link_libraries(MasterSvr PRIVATE NetLib CoreLib RuntimeLib RuntimeDataLib)
+    target_link_libraries(MasterSvr PRIVATE NetLib CoreLib CryptoLib RuntimeLib RuntimeDataLib)
     
     if(WIN32)
         target_link_libraries(MasterSvr PRIVATE ${MASTER_SVR_DIR}/main.res)
@@ -168,7 +177,7 @@ if(CONFIG_BUILD_TARGET_PARTY_SVR)
 
     add_executable(PartySvr ${PARTY_SVR_HEADERS} ${PARTY_SVR_SOURCES} ${SHARED_HEADERS})
     target_include_directories(PartySvr PUBLIC ${PROJECT_SOURCE_DIR} ${SHARED_HEADERS_DIR})
-    target_link_libraries(PartySvr PRIVATE NetLib CoreLib RuntimeLib RuntimeDataLib)
+    target_link_libraries(PartySvr PRIVATE NetLib CoreLib CryptoLib RuntimeLib RuntimeDataLib)
     
     if(WIN32)
         target_link_libraries(PartySvr PRIVATE ${PARTY_SVR_DIR}/main.res)
@@ -183,7 +192,7 @@ if(CONFIG_BUILD_TARGET_WORLD_SVR)
         
     add_executable(WorldSvr ${WORLD_SVR_HEADERS} ${WORLD_SVR_SOURCES} ${SHARED_HEADERS})
     target_include_directories(WorldSvr PUBLIC ${PROJECT_SOURCE_DIR} ${SHARED_HEADERS_DIR})
-    target_link_libraries(WorldSvr PRIVATE NetLib CoreLib RuntimeLib RuntimeDataLib)
+    target_link_libraries(WorldSvr PRIVATE NetLib CoreLib CryptoLib RuntimeLib RuntimeDataLib)
 
     if(WIN32)
         target_link_libraries(WorldSvr PRIVATE ${WORLD_SVR_DIR}/main.res)
@@ -201,7 +210,7 @@ if(CONFIG_BUILD_TARGET_CLIENT)
     
     add_library(UILib STATIC ${UI_LIB_HEADERS} ${UI_LIB_SOURCES})
     set_target_properties(UILib PROPERTIES LINKER_LANGUAGE CXX)
-    target_link_libraries(UILib PRIVATE CoreLib NetLib RuntimeDataLib RuntimeLib ${LUA_LIBRARIES} ${DirectX_LIBRARIES} ${raylib_LIBRARIES})
+    target_link_libraries(UILib PRIVATE CoreLib RuntimeDataLib RuntimeLib ${LUA_LIBRARIES} ${DirectX_LIBRARIES} ${raylib_LIBRARIES})
     target_include_directories(UILib PUBLIC ${PROJECT_SOURCE_DIR} ${lua_INCLUDE_DIR} ${DirectX_INCLUDE_DIRS} ${raylib_INCLUDE_DIR})
     
     set(CLIENT_DIR ${PROJECT_SOURCE_DIR}/Client)
@@ -212,8 +221,24 @@ if(CONFIG_BUILD_TARGET_CLIENT)
 	add_executable(Client ${CLIENT_HEADERS} ${CLIENT_SOURCES})
     set_target_properties(Client PROPERTIES LINKER_LANGUAGE CXX)
 	set_target_properties(Client PROPERTIES WIN32_EXECUTABLE TRUE)
-	target_link_libraries(Client CoreLib NetLib RuntimeDataLib RuntimeLib UILib ${DirectX_LIBRARIES})
+	target_link_libraries(Client CoreLib CryptoLib NetLib RuntimeDataLib RuntimeLib UILib ${DirectX_LIBRARIES})
 	target_include_directories(Client PUBLIC ${PROJECT_SOURCE_DIR} ${DirectX_INCLUDE_DIRS})
+endif()
+
+if(CONFIG_BUILD_TARGET_EDITOR)
+    find_package(DirectX REQUIRED)
+    find_package(raylib REQUIRED)
+    
+    set(EDITOR_DIR ${PROJECT_SOURCE_DIR}/Editor)
+    
+    file(GLOB EDITOR_HEADERS ${EDITOR_DIR}/*.h)
+    file(GLOB EDITOR_SOURCES ${EDITOR_DIR}/*.c ${EDITOR_DIR}/*.cpp)
+
+	add_executable(Editor ${EDITOR_HEADERS} ${EDITOR_SOURCES} ${SHARED_HEADERS})
+    #set_target_properties(Editor PROPERTIES LINKER_LANGUAGE CXX)
+	#set_target_properties(Editor PROPERTIES WIN32_EXECUTABLE TRUE)
+	target_link_libraries(Editor CoreLib RuntimeDataLib RuntimeLib ${raylib_LIBRARIES})
+	target_include_directories(Editor PUBLIC ${PROJECT_SOURCE_DIR} ${SHARED_HEADERS_DIR} ${raylib_INCLUDE_DIR})
 endif()
 
 if(NOT WIN32)

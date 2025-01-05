@@ -62,7 +62,7 @@ DWORD WINAPI CApplicationConsoleThread(
 CApplication::CApplication() {
 	LoadXInputLibrary();
 
-	Char Directory[MAX_PATH] = { 0 };
+	Char Directory[PLATFORM_PATH_MAX] = { 0 };
 	PathGetCurrentDirectory(Directory, sizeof(Directory));
 	this->ApplicationDirectory = std::string(Directory);
 	this->ResourceDirectory = std::string(Directory).append("\\Data");

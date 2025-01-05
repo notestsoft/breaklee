@@ -176,7 +176,7 @@ Bool CUIManager::LoadData(
         Cursor += sizeof(UInt16);
 
         if (Cursor + NameLength > End) return false;
-        CStringCopySafe(Name, MIN(MAX_PATH, NameLength + 1), (CString)Cursor);
+        CStringCopySafe(Name, MIN(PLATFORM_PATH_MAX, NameLength + 1), (CString)Cursor);
         Cursor += NameLength;
 
         if (Cursor + sizeof(UInt32) > End) return false;
@@ -255,7 +255,7 @@ Bool CUIManager::LoadData(
     UInt32 EventCount = *(UInt32*)Cursor;
     Cursor += sizeof(UInt32);
 
-    Char Target[MAX_PATH];
+    Char Target[PLATFORM_PATH_MAX];
     for (UInt Index = 0; Index < EventCount; Index += 1) {
         if (Cursor + sizeof(Int32) > End) return false;
         Int32 EventID = *(Int32*)Cursor;
@@ -266,7 +266,7 @@ Bool CUIManager::LoadData(
         Cursor += sizeof(UInt16);
 
         if (Cursor + NameLength > End) return false;
-        CStringCopySafe(Target, MAX_PATH, (CString)Cursor);
+        CStringCopySafe(Target, PLATFORM_PATH_MAX, (CString)Cursor);
         Target[NameLength] = '\0';
         Cursor += NameLength;
 
@@ -277,7 +277,7 @@ Bool CUIManager::LoadData(
         Cursor += sizeof(UInt16);
 
         if (Cursor + NameLength > End) return false;
-        CStringCopySafe(Target, MAX_PATH, (CString)Cursor);
+        CStringCopySafe(Target, PLATFORM_PATH_MAX, (CString)Cursor);
         Target[NameLength] = '\0';
         Cursor += NameLength;
 
@@ -290,14 +290,14 @@ Bool CUIManager::LoadData(
     UInt32 LabelCount = *(UInt32*)Cursor;
     Cursor += sizeof(UInt32);
 
-    Char LabelName[MAX_PATH];
+    Char LabelName[PLATFORM_PATH_MAX];
     for (UInt Index = 0; Index < LabelCount; Index += 1) {
         if (Cursor + sizeof(UInt16) > End) return false;
         UInt16 NameLength = *(UInt16*)Cursor;
         Cursor += sizeof(UInt16);
 
         if (Cursor + NameLength > End) return false;
-        CStringCopySafe(LabelName, MAX_PATH, (CString)Cursor);
+        CStringCopySafe(LabelName, PLATFORM_PATH_MAX, (CString)Cursor);
         Cursor += NameLength;
 
         if (Cursor + sizeof(Int32) > End) return false;

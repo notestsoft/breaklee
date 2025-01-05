@@ -104,7 +104,7 @@ Void ContextAddCaptchaFile(
     ServerContextRef Context = (ServerContextRef)UserData;
     CaptchaInfoRef Captcha = (CaptchaInfoRef)ArrayAppendUninitializedElement(Context->CaptchaInfoList);
 
-    CStringCopySafe(Captcha->Name, MAX_PATH, FileName);
+    CStringCopySafe(Captcha->Name, PLATFORM_PATH_MAX, FileName);
 
     CString ExtensionOffset = strstr(FileName, ".jpg");
     if (ExtensionOffset != NULL) {
@@ -118,8 +118,8 @@ Void ContextAddCaptchaFile(
 }
 
 Int32 main(Int32 argc, CString* argv) {
-    Char Buffer[MAX_PATH] = { 0 };
-    CString WorkingDirectory = PathGetCurrentDirectory(Buffer, MAX_PATH);
+    Char Buffer[PLATFORM_PATH_MAX] = { 0 };
+    CString WorkingDirectory = PathGetCurrentDirectory(Buffer, PLATFORM_PATH_MAX);
     CString ConfigFilePath = PathCombineNoAlloc(WorkingDirectory, "LoginSvr.ini");
     ServerConfig Config = ServerConfigLoad(ConfigFilePath);
 

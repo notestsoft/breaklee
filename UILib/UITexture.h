@@ -5,7 +5,7 @@
 EXTERN_C_BEGIN
 
 struct _UITexture {
-    Char FileName[MAX_PATH];
+    Char FileName[PLATFORM_PATH_MAX];
     Int32 Width;
     Int32 Height;
     UIHandleRef Handle;

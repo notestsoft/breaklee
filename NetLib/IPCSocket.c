@@ -350,7 +350,7 @@ IPCSocketRef IPCSocketCreate(
     Socket->ConnectionIndices = IndexSetCreate(Allocator, MaxConnectionCount);
     Socket->ConnectionPool = MemoryPoolCreate(Allocator, sizeof(struct _IPCSocketConnection), MaxConnectionCount);
     Socket->ConnectionContextPool = MemoryPoolCreate(Allocator, sizeof(struct _IPCNodeContext), MaxConnectionCount);
-    Socket->CommandRegistry = IndexDictionaryCreate(Allocator, 8);
+    Socket->CommandRegistry = IndexDictionaryCreate(Allocator, 1024);
     Socket->NodeTable = IPCNodeIDDictionaryCreate(Allocator, 8);
     Socket->Userdata = Userdata;
 

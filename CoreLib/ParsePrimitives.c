@@ -766,6 +766,6 @@ Bool ParseAttributeStringEqual(
     CString Value,
     Int64 Length
 ) {
-    Char Buffer[MAX_PATH];
+    Char Buffer[PLATFORM_PATH_MAX];
     return ParseAttributeString(Object, NodeIndex, Name, Buffer, Length) && strcmp(Value, Buffer) == 0;
 }

@@ -120,7 +120,7 @@ Void ServerLoadScriptData(
     while (fscanf(File, "%31s %255s", ScriptDirective, Argument1) == 2) {
         if (strcmp(ScriptDirective, "AddNetworkScript") == 0) {
             CString ScriptFilePath = PathCombineNoAlloc(Config.WorldSvr.ScriptDataPath, Argument1);
-            if (!FileExists(ScriptFilePath)) {
+            if (!CLFileExists(ScriptFilePath)) {
                 Error("Error loading ScriptRegistry");
                 break;
             }
@@ -133,7 +133,7 @@ Void ServerLoadScriptData(
             ParseUInt64(Argument1, &ItemID);
 
             CString ScriptFilePath = PathCombineNoAlloc(Config.WorldSvr.ScriptDataPath, Argument2);
-            if (!FileExists(ScriptFilePath)) {
+            if (!CLFileExists(ScriptFilePath)) {
                 Error("Error loading ScriptRegistry");
                 break;
             }

@@ -198,8 +198,8 @@ Void DiagnosticSetupLogFile(
     DiagnosticHandler Handler,
     Void* Context
 ) {
-    Char Buffer[MAX_PATH] = { 0 };
-    CString WorkingDirectory = PathGetCurrentDirectory(Buffer, MAX_PATH);
+    Char Buffer[PLATFORM_PATH_MAX] = { 0 };
+    CString WorkingDirectory = PathGetCurrentDirectory(Buffer, PLATFORM_PATH_MAX);
     CString FilePath = CStringFormat(
         "%s%cLogs%c%s_%d.log", 
         WorkingDirectory, 

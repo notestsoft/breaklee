@@ -10,8 +10,8 @@ EXTERN_C_BEGIN
 struct _RTRuntimeDataContext {
 	AllocatorRef Allocator;
 	ArrayRef FileEvents;
-	Char RuntimeDataPath[MAX_PATH];
-	Char ServerDataPath[MAX_PATH];
+	Char RuntimeDataPath[PLATFORM_PATH_MAX];
+	Char ServerDataPath[PLATFORM_PATH_MAX];
 
 #define RUNTIME_DATA_TYPE_BEGIN(__NAME__, __QUERY__) \
 	CString CONCAT(__NAME__, FileName);

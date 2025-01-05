@@ -131,13 +131,13 @@ Bool CFileManager::LoadFileTable() {
     UInt32 FolderCount = *(UInt32*)Cursor;
     Cursor += sizeof(UInt32);
 
-    Char FolderPath[MAX_PATH] = { 0 };
+    Char FolderPath[PLATFORM_PATH_MAX] = { 0 };
     for (Int FolderIndex = 0; FolderIndex < FolderCount; FolderIndex += 1) {
-        if (Cursor + MAX_PATH > End) return false;
+        if (Cursor + PLATFORM_PATH_MAX > End) return false;
 
-        memcpy(FolderPath, Cursor, MAX_PATH);
+        memcpy(FolderPath, Cursor, PLATFORM_PATH_MAX);
         this->IndexToFolder[FolderIndex] = String(FolderPath);
-        Cursor += MAX_PATH;
+        Cursor += PLATFORM_PATH_MAX;
     }
 
     if (Cursor + sizeof(UInt32) > End) return false;

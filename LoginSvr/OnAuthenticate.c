@@ -214,23 +214,19 @@ CLIENT_PROCEDURE_BINDING(AUTHENTICATE) {
         return;
     }
 
-    assert(Client->RSA);
-    Int32 Length = RSA_size(Client->RSA);
-    Int32 DecryptedPayloadLength = RSA_private_decrypt(
-        Length,
+    Int32 DecryptedPayloadLength = CLPublicKeyCipherDecrypt(
+        Client->PublicKeyCipher,
         Packet->Payload,
-        Client->RSAPayloadBuffer,
-        Client->RSA,
-        RSA_PKCS1_OAEP_PADDING
+        Client->PublicKeyCipherPayloadBuffer
     );
 
-    if (CLIENT_RSA_PAYLOAD_LENGTH != DecryptedPayloadLength) goto error;
+    if (CLIENT_PUBLIC_KEY_CIPHER_PAYLOAD_LENGTH != DecryptedPayloadLength) goto error;
 
-    CString Username = (CString)&Client->RSAPayloadBuffer[0];
+    CString Username = (CString)&Client->PublicKeyCipherPayloadBuffer[0];
     Int32 UsernameLength = (Int32)strlen(Username);
     if (UsernameLength > MAX_USERNAME_LENGTH) goto error;
 
-    CString Password = (CString)&Client->RSAPayloadBuffer[129];
+    CString Password = (CString)&Client->PublicKeyCipherPayloadBuffer[129];
     Int32 PasswordLength = (Int32)strlen(Password);
     if (PasswordLength > MAX_PASSWORD_LENGTH) goto error;
 
@@ -327,7 +323,7 @@ authenticate:
     SendLoginSuccess(Server, Context, Socket, Connection, Client);
 
     // Just clearing the payload buffer to avoid keeping sensitive data in memory!
-    memset(Client->RSAPayloadBuffer, 0, sizeof(Client->RSAPayloadBuffer));
+    memset(Client->PublicKeyCipherPayloadBuffer, 0, sizeof(Client->PublicKeyCipherPayloadBuffer));
 
     IPC_L2M_DATA_GET_WORLD_LIST* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, L2M, GET_WORLD_LIST);
     Request->Header.Source = Server->IPCSocket->NodeID;
@@ -339,7 +335,7 @@ authenticate:
 
 error:
     // Just clearing the payload buffer to avoid keeping sensitive data in memory!
-    memset(Client->RSAPayloadBuffer, 0, sizeof(Client->RSAPayloadBuffer));
+    memset(Client->PublicKeyCipherPayloadBuffer, 0, sizeof(Client->PublicKeyCipherPayloadBuffer));
 
     SocketDisconnect(Socket, Connection);
 }

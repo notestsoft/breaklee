@@ -97,8 +97,8 @@ Int32 main(
     }
 
     CString Pattern = Arguments[1];
-    Char DirectoryBuffer[MAX_PATH] = { 0 };
-    CString Directory = PathGetCurrentDirectory(DirectoryBuffer, MAX_PATH);
+    Char DirectoryBuffer[PLATFORM_PATH_MAX] = { 0 };
+    CString Directory = PathGetCurrentDirectory(DirectoryBuffer, PLATFORM_PATH_MAX);
     Int32 ProcessedFileCount = FilesProcess(
         Directory,
         Pattern,

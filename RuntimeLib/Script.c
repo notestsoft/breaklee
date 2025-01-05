@@ -13,7 +13,7 @@ static Int32 _DebugMobSetPosition(lua_State* State);
 
 struct _RTScript {
     Int PoolIndex;
-    Char FilePath[MAX_PATH];
+    Char FilePath[PLATFORM_PATH_MAX];
     FileEventRef FileEvent;
     lua_State* State;
 };
@@ -140,7 +140,7 @@ RTScriptRef RTScriptManagerLoadScript(
     RTScriptRef Script = (RTScriptRef)MemoryPoolReserveNext(ScriptManager->ScriptPool, &MemoryPoolIndex);
     DictionaryInsert(ScriptManager->ScriptTable, FilePath, &MemoryPoolIndex, sizeof(Int));
 
-    CStringCopySafe(Script->FilePath, MAX_PATH, FilePath);
+    CStringCopySafe(Script->FilePath, PLATFORM_PATH_MAX, FilePath);
     Script->PoolIndex = MemoryPoolIndex;
     Script->State = luaL_newstate();
     if (!Script->State) Fatal("Lua: State creation failed!");

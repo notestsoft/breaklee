@@ -3,6 +3,10 @@
 #include "Database.h"
 #include "String.h"
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
 #include <sql.h>
 #include <sqlext.h>
 #include <sqltypes.h>
@@ -14,11 +18,11 @@ struct _Database {
 	SQLHENV Environment;
 	SQLHDBC Connection;
 	SQLHSTMT Statement;
-	Char Driver[MAX_PATH];
-	Char Host[MAX_PATH];
-	Char Database[MAX_PATH];
-	Char Username[MAX_PATH];
-	Char Password[MAX_PATH];
+	Char Driver[PLATFORM_PATH_MAX];
+	Char Host[PLATFORM_PATH_MAX];
+	Char Database[PLATFORM_PATH_MAX];
+	Char Username[PLATFORM_PATH_MAX];
+	Char Password[PLATFORM_PATH_MAX];
 	UInt16 Port;
 	Int64 ResultBufferSize;
 	Bool AutoReconnect;
@@ -193,11 +197,11 @@ DatabaseRef DatabaseConnect(
 	}
 
 	Result->Allocator = Allocator;
-	CStringCopySafe(Result->Driver, MAX_PATH, Driver);
-	CStringCopySafe(Result->Host, MAX_PATH, Host);
-	CStringCopySafe(Result->Database, MAX_PATH, Database);
-	CStringCopySafe(Result->Username, MAX_PATH, Username);
-	CStringCopySafe(Result->Password, MAX_PATH, Password);
+	CStringCopySafe(Result->Driver, PLATFORM_PATH_MAX, Driver);
+	CStringCopySafe(Result->Host, PLATFORM_PATH_MAX, Host);
+	CStringCopySafe(Result->Database, PLATFORM_PATH_MAX, Database);
+	CStringCopySafe(Result->Username, PLATFORM_PATH_MAX, Username);
+	CStringCopySafe(Result->Password, PLATFORM_PATH_MAX, Password);
 	Result->Port = Port;
 	Result->Connection = Handle;
 	Result->Environment = Environment;

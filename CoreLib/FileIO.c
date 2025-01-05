@@ -74,9 +74,9 @@ CString PathCombineAll(
     CString Path,
     ...
 ) {
-    static Char FilePathBuffer[MAX_PATH] = { 0 };
-    memset(FilePathBuffer, 0, MAX_PATH);
-    snprintf(FilePathBuffer, MAX_PATH, "%s", Path);
+    static Char FilePathBuffer[PLATFORM_PATH_MAX] = { 0 };
+    memset(FilePathBuffer, 0, PLATFORM_PATH_MAX);
+    snprintf(FilePathBuffer, PLATFORM_PATH_MAX, "%s", Path);
 
     va_list Arguments;
     va_start(Arguments, Path);
@@ -86,10 +86,10 @@ CString PathCombineAll(
         if (!NextArgument || !NextArgument[0]) break;
 
         if (FilePathBuffer[strlen(FilePathBuffer) - 1] != '/') {
-            strncat(FilePathBuffer, PLATFORM_PATH_SEPARATOR_STRING, MAX_PATH - strlen(FilePathBuffer) - 1);
+            strncat(FilePathBuffer, PLATFORM_PATH_SEPARATOR_STRING, PLATFORM_PATH_MAX - strlen(FilePathBuffer) - 1);
         }
 
-        strncat(FilePathBuffer, NextArgument, MAX_PATH - strlen(FilePathBuffer) - 1);
+        strncat(FilePathBuffer, NextArgument, PLATFORM_PATH_MAX - strlen(FilePathBuffer) - 1);
     }
     va_end(Arguments);
 
@@ -112,12 +112,12 @@ CString PathGetFileNameExtension(
 	return Cursor + 1;
 }
 
-static Char PathRemoveExtensionBuffer[MAX_PATH] = { 0 };
+static Char PathRemoveExtensionBuffer[PLATFORM_PATH_MAX] = { 0 };
 
 CString PathRemoveExtensionNoAlloc(
     CString Path
 ) {
-    CStringCopySafe(PathRemoveExtensionBuffer, MAX_PATH, Path);
+    CStringCopySafe(PathRemoveExtensionBuffer, PLATFORM_PATH_MAX, Path);
     CString Cursor = strrchr(PathRemoveExtensionBuffer, '.');
     if (Cursor != NULL) *Cursor = '\0';
     return Path;

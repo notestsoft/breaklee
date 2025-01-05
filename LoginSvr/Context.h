@@ -19,7 +19,7 @@ enum {
 };
 
 struct _CaptchaInfo {
-    Char Name[MAX_PATH];
+    Char Name[PLATFORM_PATH_MAX];
     Int32 DataLength;
     Void* Data;
 };
@@ -52,8 +52,8 @@ struct _ClientContext {
     UInt32 Flags;
     UInt32 AuthKey;
     Timestamp DisconnectTimestamp;
-    RSA* RSA;
-    UInt8 RSAPayloadBuffer[CLIENT_RSA_PAYLOAD_LENGTH];
+    CLPublicKeyCipherRef PublicKeyCipher;
+    UInt8 PublicKeyCipherPayloadBuffer[CLIENT_PUBLIC_KEY_CIPHER_PAYLOAD_LENGTH];
     Int32 AccountID;
     Int32 LoginStatus;
     Int32 AccountStatus; 

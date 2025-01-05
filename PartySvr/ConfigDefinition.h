@@ -16,7 +16,7 @@
 
 CONFIG_BEGIN(PartySvr)
 CONFIG_PARAMETER(UInt8, GroupIndex, "PartySvr.GroupIndex", 21)
-CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, Host, "PartySvr.Host", 127.0.0.1)
+CONFIG_PARAMETER_ARRAY(Char, PLATFORM_PATH_MAX, Host, "PartySvr.Host", 127.0.0.1)
 CONFIG_PARAMETER(UInt16, Port, "PartySvr.Port", 38190)
 CONFIG_PARAMETER(Int32, MaxConnectionCount, "PartySvr.MaxConnectionCount", 64)
 CONFIG_PARAMETER(Int32, MaxPartyCount, "PartySvr.MaxPartyCount", 64)
@@ -26,7 +26,7 @@ CONFIG_PARAMETER(Int32, LogLevel, "PartySvr.LogLevel", 5)
 CONFIG_END(PartySvr)
 
 CONFIG_BEGIN(MasterSvr)
-CONFIG_PARAMETER_ARRAY(Char, MAX_PATH, Host, "MasterSvr.Host", 127.0.0.1)
+CONFIG_PARAMETER_ARRAY(Char, PLATFORM_PATH_MAX, Host, "MasterSvr.Host", 127.0.0.1)
 CONFIG_PARAMETER(UInt16, Port, "MasterSvr.Port", 38161)
 CONFIG_PARAMETER(UInt64, Timeout, "MasterSvr.Timeout", 1000)
 CONFIG_PARAMETER(Bool, LogPackets, "MasterSvr.LogPackets", 0)

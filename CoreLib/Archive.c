@@ -602,11 +602,11 @@ Int32 ArchiveQueryNodeWithAttribute(
         SubQuery = Query;
     }
 
-    Char Value[MAX_PATH] = { 0 };
+    Char Value[PLATFORM_PATH_MAX] = { 0 };
 
     ArchiveIteratorRef Iterator = ArchiveQueryNodeIteratorFirst(Archive, QueryIndex, SubQuery);
     while (Iterator) {
-        if (ParseAttributeString(Archive, Iterator->Index, AttributeName, Value, MAX_PATH) &&
+        if (ParseAttributeString(Archive, Iterator->Index, AttributeName, Value, PLATFORM_PATH_MAX) &&
             strcmp(AttributeValue, Value) == 0) {
             return Iterator->Index;
         }
@@ -652,7 +652,7 @@ ArchiveIteratorRef ArchiveQueryNodeIteratorFirst(
     Int32 Length = (Int32)(Cursor - Path);
     if (Length < 1) return NULL;
 
-    Char Name[MAX_PATH];
+    Char Name[PLATFORM_PATH_MAX];
     assert(Length < 64);
     memcpy(Name, Path, Length);
     Name[Length] = '\0';

@@ -38,8 +38,8 @@ Void ServerOnUpdate(
 }
 
 Int32 main(Int32 argc, CString* argv) {
-    Char Buffer[MAX_PATH] = { 0 };
-    CString WorkingDirectory = PathGetCurrentDirectory(Buffer, MAX_PATH);
+    Char Buffer[PLATFORM_PATH_MAX] = { 0 };
+    CString WorkingDirectory = PathGetCurrentDirectory(Buffer, PLATFORM_PATH_MAX);
     CString ConfigFilePath = PathCombineNoAlloc(WorkingDirectory, "MasterSvr.ini");
     ServerConfig Config = ServerConfigLoad(ConfigFilePath);
 

@@ -91,7 +91,7 @@ Bool CStringIsEqual(
     return memcmp(Lhs, Rhs, sizeof(Char) * LhsLength) == 0;
 }
 
-static Char kCStringFormatBuffer[MAX_PATH] = { 0 };
+static Char kCStringFormatBuffer[PLATFORM_PATH_MAX] = { 0 };
 
 CString CStringFormat(
     CString Format,

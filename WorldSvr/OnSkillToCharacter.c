@@ -50,7 +50,22 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 
     RTCharacterAddMP(Runtime, Character, -RequiredMP, false);
 
-	if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_MOVEMENT) {
+	if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_ATTACK) {
+		Timestamp CooldownInterval = RTCharacterGetCooldownInterval(Runtime, Character, SkillData->CooldownIndex);
+		if (CooldownInterval > Context->Config.WorldSvr.CooldownErrorTolerance) goto error;
+
+		Bool IsNationWar = false; // TODO: Set correct value for nation war!
+		RTCharacterSetCooldown(Runtime, Character, SkillData->CooldownIndex, 0, IsNationWar);
+
+		Int32 PacketLength = sizeof(C2S_DATA_SKILL_TO_CHARACTER) + sizeof(C2S_DATA_SKILL_GROUP_ATTACK);
+		if (Packet->Length < PacketLength) goto error;
+
+		C2S_DATA_SKILL_GROUP_ATTACK* PacketData = (C2S_DATA_SKILL_GROUP_ATTACK*)&Packet->Data[0];
+		PacketLength += sizeof(C2S_DATA_SKILL_TO_CHARACTER_TARGET) * PacketData->TargetCount;
+		if (Packet->Length != PacketLength) goto error;
+
+
+	} else if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_MOVEMENT) {
 		Timestamp CooldownInterval = RTCharacterGetCooldownInterval(Runtime, Character, SkillData->CooldownIndex);
 		if (CooldownInterval > Context->Config.WorldSvr.CooldownErrorTolerance) goto error;
 
@@ -62,7 +77,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		
 		C2S_DATA_SKILL_GROUP_MOVEMENT* PacketData = (C2S_DATA_SKILL_GROUP_MOVEMENT*)&Packet->Data[0];
 
-		S2C_DATA_SKILL_GROUP_MOVEMENT* ResponseData = PacketBufferAppendStruct(ResponsePacketBuffer, S2C_DATA_SKILL_GROUP_MOVEMENT);
+		S2C_DATA_SKILL_GROUP_ATTACK* ResponseData = PacketBufferAppendStruct(ResponsePacketBuffer, S2C_DATA_SKILL_GROUP_ATTACK);
 		ResponseData->CharacterMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 
 		Int32 CharacterPositionError = RTCalculateDistance(

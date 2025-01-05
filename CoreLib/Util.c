@@ -236,9 +236,9 @@ Void ReadConfigString(
         return;
     }
 
-    Char AppName[MAX_PATH] = { 0 };
-    Char KeyName[MAX_PATH] = { 0 };
-    Char Line[MAX_PATH] = { 0 };
+    Char AppName[PLATFORM_PATH_MAX] = { 0 };
+    Char KeyName[PLATFORM_PATH_MAX] = { 0 };
+    Char Line[PLATFORM_PATH_MAX] = { 0 };
     Int64 AppNameLength = 0;
     CString Cursor = strchr(KeyPath, '.');
     if (Cursor) {
@@ -261,7 +261,7 @@ Void ReadConfigString(
         if (!NewLine) NewLine = DataEnd;
 
         Int64 LineLength = NewLine - DataBegin;
-        if (LineLength > 0 && LineLength < MAX_PATH) {
+        if (LineLength > 0 && LineLength < PLATFORM_PATH_MAX) {
             strncpy(Line, DataBegin, LineLength);
             Line[LineLength] = '\0';
 
@@ -334,8 +334,8 @@ Void ReadConfigBool(
     CString Default,
     Bool* Result
 ) {
-    Char Buffer[MAX_PATH] = { 0 };
-    ReadConfigString(FilePath, KeyPath, Default, Buffer, MAX_PATH);
+    Char Buffer[PLATFORM_PATH_MAX] = { 0 };
+    ReadConfigString(FilePath, KeyPath, Default, Buffer, PLATFORM_PATH_MAX);
     ParseBool(Buffer, Result);
 }
 
@@ -345,8 +345,8 @@ Void ReadConfigInt8(
     CString Default,
     Int8* Result
 ) {
-    Char Buffer[MAX_PATH] = { 0 };
-    ReadConfigString(FilePath, KeyPath, Default, Buffer, MAX_PATH);
+    Char Buffer[PLATFORM_PATH_MAX] = { 0 };
+    ReadConfigString(FilePath, KeyPath, Default, Buffer, PLATFORM_PATH_MAX);
     ParseInt8(Buffer, Result);
 }
 
@@ -356,8 +356,8 @@ Void ReadConfigInt16(
     CString Default,
     Int16* Result
 ) {
-    Char Buffer[MAX_PATH] = { 0 };
-    ReadConfigString(FilePath, KeyPath, Default, Buffer, MAX_PATH);
+    Char Buffer[PLATFORM_PATH_MAX] = { 0 };
+    ReadConfigString(FilePath, KeyPath, Default, Buffer, PLATFORM_PATH_MAX);
     ParseInt16(Buffer, Result);
 }
 
@@ -367,8 +367,8 @@ Void ReadConfigInt32(
     CString Default,
     Int32* Result
 ) {
-    Char Buffer[MAX_PATH] = { 0 };
-    ReadConfigString(FilePath, KeyPath, Default, Buffer, MAX_PATH);
+    Char Buffer[PLATFORM_PATH_MAX] = { 0 };
+    ReadConfigString(FilePath, KeyPath, Default, Buffer, PLATFORM_PATH_MAX);
     ParseInt32(Buffer, Result);
 }
 
@@ -378,8 +378,8 @@ Void ReadConfigInt64(
     CString Default,
     Int64* Result
 ) {
-    Char Buffer[MAX_PATH] = { 0 };
-    ReadConfigString(FilePath, KeyPath, Default, Buffer, MAX_PATH);
+    Char Buffer[PLATFORM_PATH_MAX] = { 0 };
+    ReadConfigString(FilePath, KeyPath, Default, Buffer, PLATFORM_PATH_MAX);
     ParseInt64(Buffer, Result);
 }
 
@@ -389,8 +389,8 @@ Void ReadConfigUInt8(
     CString Default,
     UInt8* Result
 ) {
-    Char Buffer[MAX_PATH] = { 0 };
-    ReadConfigString(FilePath, KeyPath, Default, Buffer, MAX_PATH);
+    Char Buffer[PLATFORM_PATH_MAX] = { 0 };
+    ReadConfigString(FilePath, KeyPath, Default, Buffer, PLATFORM_PATH_MAX);
     ParseUInt8(Buffer, Result);
 }
 
@@ -400,8 +400,8 @@ Void ReadConfigUInt16(
     CString Default,
     UInt16* Result
 ) {
-    Char Buffer[MAX_PATH] = { 0 };
-    ReadConfigString(FilePath, KeyPath, Default, Buffer, MAX_PATH);
+    Char Buffer[PLATFORM_PATH_MAX] = { 0 };
+    ReadConfigString(FilePath, KeyPath, Default, Buffer, PLATFORM_PATH_MAX);
     ParseUInt16(Buffer, Result);
 }
 
@@ -411,8 +411,8 @@ Void ReadConfigUInt32(
     CString Default,
     UInt32* Result
 ) {
-    Char Buffer[MAX_PATH] = { 0 };
-    ReadConfigString(FilePath, KeyPath, Default, Buffer, MAX_PATH);
+    Char Buffer[PLATFORM_PATH_MAX] = { 0 };
+    ReadConfigString(FilePath, KeyPath, Default, Buffer, PLATFORM_PATH_MAX);
     ParseUInt32(Buffer, Result);
 }
 
@@ -422,8 +422,8 @@ Void ReadConfigUInt64(
     CString Default,
     UInt64* Result
 ) {
-    Char Buffer[MAX_PATH] = { 0 };
-    ReadConfigString(FilePath, KeyPath, Default, Buffer, MAX_PATH);
+    Char Buffer[PLATFORM_PATH_MAX] = { 0 };
+    ReadConfigString(FilePath, KeyPath, Default, Buffer, PLATFORM_PATH_MAX);
     ParseUInt64(Buffer, Result);
 }
 
@@ -433,8 +433,8 @@ Void ReadConfigInt(
     CString Default,
     Int* Result
 ) {
-    Char Buffer[MAX_PATH] = { 0 };
-    ReadConfigString(FilePath, KeyPath, Default, Buffer, MAX_PATH);
+    Char Buffer[PLATFORM_PATH_MAX] = { 0 };
+    ReadConfigString(FilePath, KeyPath, Default, Buffer, PLATFORM_PATH_MAX);
     ParseInt(Buffer, Result);
 }
 
@@ -444,8 +444,8 @@ Void ReadConfigTimestamp(
     CString Default,
     Timestamp* Result
 ) {
-    Char Buffer[MAX_PATH] = { 0 };
-    ReadConfigString(FilePath, KeyPath, Default, Buffer, MAX_PATH);
+    Char Buffer[PLATFORM_PATH_MAX] = { 0 };
+    ReadConfigString(FilePath, KeyPath, Default, Buffer, PLATFORM_PATH_MAX);
     ParseUInt64(Buffer, (UInt64*)Result);
 }
 

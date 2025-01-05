@@ -379,7 +379,11 @@ DictionaryKeyIterator DictionaryKeyIteratorNext(
             &Iterator.Dictionary->KeyBuffer,
             Iterator.Bucket->KeyOffset
         );
-
+        Iterator.Value = _DictionaryBufferGetElement(
+            Iterator.Dictionary,
+            &Iterator.Dictionary->ElementBuffer,
+            Iterator.Bucket->ElementOffset
+        );
         return Iterator;
     }
 
@@ -396,6 +400,11 @@ DictionaryKeyIterator DictionaryKeyIteratorNext(
                 Iterator.Dictionary,
                 &Iterator.Dictionary->KeyBuffer,
                 Iterator.Bucket->KeyOffset
+            );
+            Iterator.Value = _DictionaryBufferGetElement(
+                Iterator.Dictionary,
+                &Iterator.Dictionary->ElementBuffer,
+                Iterator.Bucket->ElementOffset
             );
             return Iterator;
         }

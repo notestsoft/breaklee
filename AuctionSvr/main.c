@@ -74,8 +74,8 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
 
     Info("Load config file: %s", ConfigFileName);
 
-    Char Buffer[MAX_PATH] = { 0 };
-    CString WorkingDirectory = PathGetCurrentDirectory(Buffer, MAX_PATH);
+    Char Buffer[PLATFORM_PATH_MAX] = { 0 };
+    CString WorkingDirectory = PathGetCurrentDirectory(Buffer, PLATFORM_PATH_MAX);
     CString ConfigFilePath = PathCombineNoAlloc(WorkingDirectory, ConfigFileName);
     ServerConfig Config = ServerConfigLoad(ConfigFilePath);
 
