@@ -226,7 +226,6 @@ if(CONFIG_BUILD_TARGET_CLIENT)
 endif()
 
 if(CONFIG_BUILD_TARGET_EDITOR)
-    find_package(DirectX REQUIRED)
     find_package(raylib REQUIRED)
     
     set(EDITOR_DIR ${PROJECT_SOURCE_DIR}/Editor)
