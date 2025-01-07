@@ -18,6 +18,7 @@ CLIENT_PROCEDURE_BINDING(PKREQUEST) {
 
     RTCharacterRef TargetCharacter = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Packet->CharacterId);
     if (!TargetCharacter) goto error;
+    if (!RTCharacterIsAlive(Runtime, TargetCharacter)) goto error;
 
     Response->Result = 0;
 
@@ -29,7 +30,7 @@ CLIENT_PROCEDURE_BINDING(PKREQUEST) {
     SocketSend(Socket, Connection, Response);
 
 error:
-    //SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
     return;
 }
 
@@ -46,6 +47,7 @@ CLIENT_PROCEDURE_BINDING(PKENDING) {
 
     RTCharacterRef TargetCharacter = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Packet->CharacterId);
     if (!TargetCharacter) goto error;
+    if (!RTCharacterIsAlive(Runtime, TargetCharacter)) goto error;
 
     Response->Result = 0;
 
@@ -58,6 +60,6 @@ CLIENT_PROCEDURE_BINDING(PKENDING) {
     SocketSend(Socket, Connection, Response);
 
 error:
-    //SocketSend(Socket, Connection, Response);
+    SocketSend(Socket, Connection, Response);
     return;
 }

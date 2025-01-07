@@ -128,6 +128,39 @@ Bool RTRuntimeWarpCharacter(
         case RUNTIME_NPC_ID_WAR_WARP: return false;
         case RUNTIME_NPC_ID_WAR_BATTLEFIELD: return false;
         case RUNTIME_NPC_ID_WAR_LOBBY: return false;
+        case RUNTIME_NPC_ID_PK_DEAD: {
+            RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, World->WorldData->DeadWarpIndex);
+            RTWorldContextRef TargetWorld = World;
+            if (World->WorldData->WorldIndex != WarpPoint.WorldIndex) {
+                TargetWorld = RTRuntimeGetWorldByID(Runtime, WarpPoint.WorldIndex);
+                assert(TargetWorld);
+            }
+
+            RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);
+            RTCharacterRemoveAllBuffs(Runtime, Character);
+            RTCharacterSetHP(Runtime, Character, Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX], false);
+            RTCharacterSetMP(Runtime, Character, (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX], false);
+            Character->Data.Info.PositionX = WarpPoint.X;
+            Character->Data.Info.PositionY = WarpPoint.Y;
+            Character->Data.Info.WorldIndex = WarpPoint.WorldIndex;
+            Character->Data.Info.DungeonIndex = (Int32)TargetWorld->DungeonIndex;
+            Character->SyncMask.Info = true;
+            RTCharacterInitializeAttributes(Runtime, Character);
+
+            RTMovementInitialize(
+                Runtime,
+                &Character->Movement,
+                Character->ID,
+                WarpPoint.X,
+                WarpPoint.Y,
+                (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MOVEMENT_SPEED],
+                RUNTIME_WORLD_TILE_WALL
+            );
+
+            RTWorldSpawnCharacterWithoutNotification(Runtime, TargetWorld, Entity);
+
+            return true;
+        }
         case RUNTIME_NPC_ID_DEAD: {
             RTWarpPointResult WarpPoint = RTRuntimeGetWarpPoint(Runtime, Character, World->WorldData->DeadWarpIndex);
             RTWorldContextRef TargetWorld = World;
@@ -385,7 +418,7 @@ Bool RTRuntimeWarpCharacter(
         }
         case RUNTIME_NPC_ID_UNKNOWN_3: return false;
         case RUNTIME_NPC_ID_PRISON: return false;
-        case RUNTIME_NPC_ID_UNKNOWN_4: return false;
+        //case RUNTIME_NPC_ID_UNKNOWN_4: return false;
         case RUNTIME_NPC_ID_UNKNOWN_5: return false;
         case RUNTIME_NPC_ID_GM: return false;
         }

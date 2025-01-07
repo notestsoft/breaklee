@@ -31,7 +31,7 @@ enum {
     RUNTIME_NPC_ID_QUEST_DUNGEON_EXIT   = 57,
     RUNTIME_NPC_ID_UNKNOWN_3            = 56,
     RUNTIME_NPC_ID_PRISON               = 55,
-    RUNTIME_NPC_ID_UNKNOWN_4            = 54,
+    RUNTIME_NPC_ID_PK_DEAD            = 54,
     RUNTIME_NPC_ID_UNKNOWN_5            = 53,
     RUNTIME_NPC_ID_GM                   = 52,
 
