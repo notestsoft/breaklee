@@ -47,6 +47,11 @@ Bool CStringIsEqual(
     CString Rhs
 );
 
+Bool CStringHasFileExtension(
+    CString String,
+    CString Extension
+);
+
 CString CStringFormat(
     PRINTFLIKE_PARAMETER(CString Format),
     ...

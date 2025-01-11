@@ -1117,7 +1117,6 @@ CLIENT_PROTOCOL(S2C, WARP, DEFAULT, 244,
     UInt64 AccumulatedExp;
     UInt64 AccumulatedOxp;
     UInt64 ReceivedSkillExp;
-
     UInt64 Currency;
     RTEntityID Entity;
     UInt8 WorldType;

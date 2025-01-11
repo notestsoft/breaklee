@@ -15,13 +15,15 @@
 #endif
 
 CONFIG_BEGIN(Editor)
-CONFIG_PARAMETER_ARRAY(Char, PLATFORM_PATH_MAX, ServerDataPath, "Editor.ServerDataPath", Data)
-CONFIG_PARAMETER_ARRAY(Char, PLATFORM_PATH_MAX, ClientDataPath, "Editor.ClientDataPath", Data)
+CONFIG_PARAMETER_ARRAY(Char, PLATFORM_PATH_MAX, ServerDataPath, "Editor.ServerDataPath", C:\\Users\\ylmz6\\Documents\\CabalServerData)
+CONFIG_PARAMETER_ARRAY(Char, PLATFORM_PATH_MAX, ClientDataPath, "Editor.ClientDataPath", C:\\CABALKR\\data)
+CONFIG_PARAMETER_ARRAY(Char, PLATFORM_PATH_MAX, ShaderDataPath, "Editor.ShaderDataPath", C:\\Users\\ylmz6\\Documents\\breaklee_Shaders)
+CONFIG_PARAMETER_ARRAY(Char, PLATFORM_PATH_MAX, ClientLanguage, "Editor.ClientLanguage", Korean)
 CONFIG_END(Editor)
 
 CONFIG_BEGIN(Screen)
-CONFIG_PARAMETER(Int32, Width, "Screen.Width", 800)
-CONFIG_PARAMETER(Int32, Height, "Screen.Height", 460)
+CONFIG_PARAMETER(Int32, Width, "Screen.Width", 1280)
+CONFIG_PARAMETER(Int32, Height, "Screen.Height", 720)
 CONFIG_PARAMETER(Int32, TargetFPS, "Screen.TargetFPS", 60)
 CONFIG_END(Screen)
 

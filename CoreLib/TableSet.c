@@ -2,8 +2,11 @@
 #include "Diagnostic.h"
 #include "Dictionary.h"
 #include "FileIO.h"
+#include "ParsePrimitives.h"
 #include "String.h"
 #include "TableSet.h"
+
+#include <ctype.h>
 
 struct _CLValueIndex {
     Int RowIndex;
@@ -42,35 +45,12 @@ struct _CLTable {
     DictionaryRef NameToColumnIndex;
     DictionaryRef IndexToValue;
 };
-typedef struct _CLTable* CLTableRef;
 
 struct _CLTableSet {
     AllocatorRef Allocator;
     ArrayRef Tables;
     DictionaryRef NameToTable;
 };
-
-Void CLTableAddColumn(
-    CLTableRef Table,
-    CString Column
-) {
-    DictionaryInsert(Table->NameToColumnIndex, Column, &Table->ColumnCount, sizeof(Int));
-    Table->ColumnCount += 1;
-}
-
-Void CLTableAddValue(
-    CLTableRef Table,
-    Int ColumnIndex,
-    Int RowIndex,
-    CString Value
-) {
-    CLValueIndex Index = {
-        .ColumnIndex = ColumnIndex,
-        .RowIndex = RowIndex
-    };
-
-    DictionaryInsert(Table->IndexToValue, &Index, Value, strlen(Value) + 1);
-}
 
 CLTableRef CLTableSetAddTable(
     CLTableSetRef TableSet,
@@ -274,7 +254,7 @@ Bool CLTableSetLoadFromSource(
             }
             Char ValueEnd = *Cursor;
             *Cursor = '\0';
-            CLTableAddValue(Table, ColumnIndex, Table->RowCount, Value);
+            CLTableSetValue(Table, ColumnIndex, Table->RowCount, Value);
             *Cursor = ValueEnd;
             ColumnIndex += 1;
 
@@ -342,4 +322,295 @@ Bool CLTableSetWriteToFile(
             printf("\n");
         }
     }
+
+    return true;
+}
+
+CLTableRef CLTableSetGetTable(
+    CLTableSetRef TableSet,
+    CString TableName
+) {
+    Int* TableIndexPtr = (Int*)DictionaryLookup(TableSet->NameToTable, TableName);
+    if (!TableIndexPtr) return NULL;
+
+    return (CLTableRef)ArrayGetElementAtIndex(TableSet->Tables, *TableIndexPtr);
+}
+
+Void CLTableAddColumn(
+    CLTableRef Table,
+    CString ColumnName
+) {
+    DictionaryInsert(Table->NameToColumnIndex, ColumnName, &Table->ColumnCount, sizeof(Int));
+    Table->ColumnCount += 1;
+}
+
+Int CLTableGetColumnCount(
+    CLTableRef Table
+) {
+    return Table->ColumnCount;
+}
+
+Int CLTableGetRowCount(
+    CLTableRef Table
+) {
+    return Table->RowCount;
+}
+
+Void CLTableSetValue(
+    CLTableRef Table,
+    Int ColumnIndex,
+    Int RowIndex,
+    CString Value
+) {
+    CLValueIndex Index = {
+        .ColumnIndex = ColumnIndex,
+        .RowIndex = RowIndex
+    };
+
+    DictionaryInsert(Table->IndexToValue, &Index, Value, strlen(Value) + 1);
+}
+
+Bool CLTableGetValue(
+    CLTableRef Table,
+    CString ColumnName,
+    Int RowIndex,
+    CString* Result
+) {
+    Int* ColumnIndexPtr = (Int*)DictionaryLookup(Table->NameToColumnIndex, ColumnName);
+    if (!ColumnIndexPtr) return false;
+
+    CLValueIndex Index = { .ColumnIndex = *ColumnIndexPtr, .RowIndex = RowIndex };
+    *Result = (CString)DictionaryLookup(Table->IndexToValue, &Index);
+    return *Result != NULL;
+}
+
+Bool CLTableGetValueInt8(
+    CLTableRef Table,
+    CString ColumnName,
+    Int RowIndex,
+    Int8* Result
+) {
+    CString Value = NULL;
+    if (!CLTableGetValue(Table, ColumnName, RowIndex, &Value)) goto error;
+
+    if (CStringIsEqual(Value, "<null>") || strlen(Value) < 1) {
+        *Result = -1;
+        return true;
+    }
+
+    ParseInt8(Value, Result);
+    return true;
+
+error:
+    return false;
+}
+
+Bool CLTableGetValueInt16(
+    CLTableRef Table,
+    CString ColumnName,
+    Int RowIndex,
+    Int16* Result
+) {
+    CString Value = NULL;
+    if (!CLTableGetValue(Table, ColumnName, RowIndex, &Value)) goto error;
+
+    if (CStringIsEqual(Value, "<null>") || strlen(Value) < 1) {
+        *Result = -1;
+        return true;
+    }
+
+    ParseInt16(Value, Result);
+    return true;
+
+error:
+    return false;
+}
+
+Bool CLTableGetValueInt32(
+    CLTableRef Table,
+    CString ColumnName,
+    Int RowIndex,
+    Int32* Result
+) {
+    CString Value = NULL;
+    if (!CLTableGetValue(Table, ColumnName, RowIndex, &Value)) goto error;
+
+    if (CStringIsEqual(Value, "<null>") || strlen(Value) < 1) {
+        *Result = -1;
+        return true;
+    }
+
+    ParseInt32(Value, Result);
+    return true;
+
+error:
+    return false;
+}
+
+Bool CLTableGetValueInt64(
+    CLTableRef Table,
+    CString ColumnName,
+    Int RowIndex,
+    Int64* Result
+) {
+    CString Value = NULL;
+    if (!CLTableGetValue(Table, ColumnName, RowIndex, &Value)) goto error;
+
+    if (CStringIsEqual(Value, "<null>") || strlen(Value) < 1) {
+        *Result = -1;
+        return true;
+    }
+
+    ParseInt64(Value, Result);
+    return true;
+
+error:
+    return false;
+}
+
+Bool CLTableGetValueInt(
+    CLTableRef Table,
+    CString ColumnName,
+    Int RowIndex,
+    Int* Result
+) {
+    CString Value = NULL;
+    if (!CLTableGetValue(Table, ColumnName, RowIndex, &Value)) goto error;
+
+    if (CStringIsEqual(Value, "<null>") || strlen(Value) < 1) {
+        *Result = -1;
+        return true;
+    }
+
+    ParseInt(Value, Result);
+    return true;
+
+error:
+    return false;
+}
+
+Bool CLTableGetValueUInt8(
+    CLTableRef Table,
+    CString ColumnName,
+    Int RowIndex,
+    UInt8* Result
+) {
+    CString Value = NULL;
+    if (!CLTableGetValue(Table, ColumnName, RowIndex, &Value)) goto error;
+
+    if (CStringIsEqual(Value, "<null>") || strlen(Value) < 1) {
+        *Result = UINT8_MAX;
+        return true;
+    }
+
+    ParseUInt8(Value, Result);
+    return true;
+
+error:
+    return false;
+}
+
+Bool CLTableGetValueUInt16(
+    CLTableRef Table,
+    CString ColumnName,
+    Int RowIndex,
+    UInt16* Result
+) {
+    CString Value = NULL;
+    if (!CLTableGetValue(Table, ColumnName, RowIndex, &Value)) goto error;
+
+    if (CStringIsEqual(Value, "<null>") || strlen(Value) < 1) {
+        *Result = UINT16_MAX;
+        return true;
+    }
+
+    ParseUInt16(Value, Result);
+    return true;
+
+error:
+    return false;
+}
+
+Bool CLTableGetValueUInt32(
+    CLTableRef Table,
+    CString ColumnName,
+    Int RowIndex,
+    UInt32* Result
+) {
+    CString Value = NULL;
+    if (!CLTableGetValue(Table, ColumnName, RowIndex, &Value)) goto error;
+
+    if (CStringIsEqual(Value, "<null>") || strlen(Value) < 1) {
+        *Result = UINT32_MAX;
+        return true;
+    }
+
+    ParseUInt32(Value, Result);
+    return true;
+
+error:
+    return false;
+}
+
+Bool CLTableGetValueUInt64(
+    CLTableRef Table,
+    CString ColumnName,
+    Int RowIndex,
+    UInt64* Result
+) {
+    CString Value = NULL;
+    if (!CLTableGetValue(Table, ColumnName, RowIndex, &Value)) goto error;
+
+    if (CStringIsEqual(Value, "<null>") || strlen(Value) < 1) {
+        *Result = UINT64_MAX;
+        return true;
+    }
+
+    ParseUInt64(Value, Result);
+    return true;
+
+error:
+    return false;
+}
+
+Bool CLTableGetValueFloat32(
+    CLTableRef Table,
+    CString ColumnName,
+    Int RowIndex,
+    Float32* Result
+) {
+    CString Value = NULL;
+    if (!CLTableGetValue(Table, ColumnName, RowIndex, &Value)) goto error;
+
+    if (CStringIsEqual(Value, "<null>") || strlen(Value) < 1) {
+        *Result = -1;
+        return true;
+    }
+
+    *Result = strtof(Value, NULL);
+    return true;
+
+error:
+    return false;
+}
+
+Bool CLTableGetValueFloat64(
+    CLTableRef Table,
+    CString ColumnName,
+    Int RowIndex,
+    Float64* Result
+) {
+    CString Value = NULL;
+    if (!CLTableGetValue(Table, ColumnName, RowIndex, &Value)) goto error;
+
+    if (CStringIsEqual(Value, "<null>") || strlen(Value) < 1) {
+        *Result = -1;
+        return true;
+    }
+
+    *Result = strtod(Value, NULL);
+    return true;
+
+error:
+    return false;
 }

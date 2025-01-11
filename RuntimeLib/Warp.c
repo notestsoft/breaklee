@@ -15,7 +15,8 @@ Bool RTCharacterConsumeReturnStone(
     if (!ItemData) return false;
 
     // TODO: Check return stone cooldown time!!!
-    if (ItemData->ItemType == RUNTIME_ITEM_TYPE_RETURN_STONE) {
+    if (ItemData->ItemType == RUNTIME_ITEM_TYPE_RETURN_STONE ||
+        ItemData->ItemType == RUNTIME_ITEM_TYPE_WARP_STONE) {
         if (ItemSlot->ItemOptions > 0) {
             ItemSlot->ItemOptions -= 1;
 
@@ -292,6 +293,7 @@ Bool RTRuntimeWarpCharacter(
 
             if (RTWorldIsTileColliding(Runtime, TargetWorld, WarpPoint.X, WarpPoint.Y, Character->Movement.CollisionMask)) return false;
 
+            // TODO: How to check if warp requires RUNTIME_ITEM_TYPE_WARP_STONE?
             if (!RTCharacterConsumeReturnStone(Runtime, Character, SlotIndex)) return false;
 
             RTWorldDespawnCharacter(Runtime, World, Entity, RUNTIME_WORLD_CHUNK_UPDATE_REASON_WARP);

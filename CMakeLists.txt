@@ -199,6 +199,19 @@ if(CONFIG_BUILD_TARGET_WORLD_SVR)
     endif()
 endif()
 
+if(CONFIG_BUILD_TARGET_EDITOR)
+    find_package(libsquish REQUIRED)
+
+    set(TEXTURE_LIB_DIR ${PROJECT_SOURCE_DIR}/TextureLib)
+    
+    file(GLOB TEXTURE_LIB_HEADERS ${TEXTURE_LIB_DIR}/*.h)
+    file(GLOB TEXTURE_LIB_SOURCES ${TEXTURE_LIB_DIR}/*.c ${TEXTURE_LIB_DIR}/*.cpp)
+    
+    add_library(TextureLib STATIC ${TEXTURE_LIB_HEADERS} ${TEXTURE_LIB_SOURCES})
+    target_link_libraries(TextureLib PRIVATE CoreLib libsquish::libsquish)
+    target_include_directories(TextureLib PUBLIC ${PROJECT_SOURCE_DIR} libsquish::libsquish)
+endif()
+
 if(CONFIG_BUILD_TARGET_CLIENT)
     find_package(DirectX REQUIRED)
     find_package(raylib REQUIRED)
@@ -236,7 +249,7 @@ if(CONFIG_BUILD_TARGET_EDITOR)
 	add_executable(Editor ${EDITOR_HEADERS} ${EDITOR_SOURCES} ${SHARED_HEADERS})
     #set_target_properties(Editor PROPERTIES LINKER_LANGUAGE CXX)
 	#set_target_properties(Editor PROPERTIES WIN32_EXECUTABLE TRUE)
-	target_link_libraries(Editor CoreLib RuntimeDataLib RuntimeLib ${raylib_LIBRARIES})
+	target_link_libraries(Editor CoreLib RuntimeDataLib RuntimeLib TextureLib ${raylib_LIBRARIES})
 	target_include_directories(Editor PUBLIC ${PROJECT_SOURCE_DIR} ${SHARED_HEADERS_DIR} ${raylib_INCLUDE_DIR})
 endif()
 

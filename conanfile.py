@@ -1,5 +1,5 @@
 from conan import ConanFile
-from conan.tools.cmake import CMake
+from conan.tools.cmake import CMake, CMakeToolchain
 
 class BreakleeConan(ConanFile):
     name = "breaklee"
@@ -24,6 +24,8 @@ class BreakleeConan(ConanFile):
         if self.settings.os == "Windows":
             self.requires("raylib/5.0")
             self.options["raylib"].shared = False
+            self.requires("libsquish/1.15")
+            self.options["libsquish/1.15"].shared = False
 
         if self.settings.os != "Windows":
             self.requires("odbc/2.3.11")

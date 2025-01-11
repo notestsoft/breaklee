@@ -41,7 +41,7 @@ Void RTNotificationAppendCharacterSpawnIndex(
     NotificationCharacter->IsDead = RTCharacterIsAlive(Runtime, Character) ? 0 : 1;
     NotificationCharacter->EquipmentSlotCount = Character->Data.EquipmentInfo.Info.EquipmentSlotCount;
     NotificationCharacter->CostumeSlotCount = RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT;
-    NotificationCharacter->IsInvisible = Character->Data.StyleInfo.Nation == 3;
+    // NotificationCharacter->IsInvisible = Character->Data.StyleInfo.Nation == 3;
     NotificationCharacter->GuildIndex = 0;
     NotificationCharacter->GuildColor = 0;
     NotificationCharacter->Unknown10 = 0;

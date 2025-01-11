@@ -91,6 +91,16 @@ Bool CStringIsEqual(
     return memcmp(Lhs, Rhs, sizeof(Char) * LhsLength) == 0;
 }
 
+Bool CStringHasFileExtension(
+    CString String,
+    CString Extension
+) {
+    CString Result = strrchr(String, Extension[0]);
+    if (!Result) return false;
+    
+    return strcmp(Result, Extension) == 0;
+}
+
 static Char kCStringFormatBuffer[PLATFORM_PATH_MAX] = { 0 };
 
 CString CStringFormat(

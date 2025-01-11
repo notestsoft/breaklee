@@ -5,9 +5,12 @@
 #ifdef _WIN32
 #include <Windows.h>
 
+#define FILE_PATH_BUFFER_COUNT 8
+
 static DWORD FileTransferByteCount = 0;
 static BOOL FileTransferCompleted = false;
-static Char FilePathBuffer[PLATFORM_PATH_MAX] = { 0 };
+static Char FilePathBufferList[FILE_PATH_BUFFER_COUNT * PLATFORM_PATH_MAX] = { 0 };
+static Int32 FilePathBufferIndex = 0;
 
 VOID CALLBACK IOCompletionRoutine(
     __in DWORD ErrorCode,
@@ -184,6 +187,52 @@ Bool CLFileExists(
     return false;
 }
 
+Int32 FilesList(
+    CString Directory,
+    CString Pattern,
+    Bool Recursive,
+    FilesListCallback Callback,
+    Void* UserData
+) {
+    CString PatternDirectory = PathCombineNoAlloc(Directory, Pattern);
+    WIN32_FIND_DATA FindData;
+    HANDLE FileHandle = FindFirstFile(PatternDirectory, &FindData);
+    Int32 ProcessedFileCount = 0;
+    CHAR Buffer[PLATFORM_PATH_MAX] = { 0 };
+
+    if (FileHandle != INVALID_HANDLE_VALUE) {
+        do {
+            if (!(FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+                CString FilePath = PathCombineNoAlloc(Directory, FindData.cFileName);
+                Callback(FindData.cFileName, FilePath, UserData);
+                ProcessedFileCount += 1;
+            }
+        } while (FindNextFile(FileHandle, &FindData) != 0);
+
+        FindClose(FileHandle);
+    }
+
+    if (Recursive) {
+        CString PatternDirectory = PathCombineNoAlloc(Directory, "*.*");
+        FileHandle = FindFirstFile(PatternDirectory, &FindData);
+        if (FileHandle != INVALID_HANDLE_VALUE) {
+            do {
+                if (strcmp(FindData.cFileName, ".") != 0 && strcmp(FindData.cFileName, "..") != 0) {
+                    if (FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+                        Char SubDirectory[PLATFORM_PATH_MAX] = { 0 };
+                        PathCombine(Directory, FindData.cFileName, SubDirectory);
+                        FilesList(SubDirectory, Pattern, Recursive, Callback, UserData);
+                    }
+                }
+            } while (FindNextFile(FileHandle, &FindData) != 0);
+
+            FindClose(FileHandle);
+        }
+    }
+
+    return ProcessedFileCount;
+}
+
 Int32 FilesProcess(
     CString Directory,
     CString Pattern,
@@ -225,6 +274,9 @@ CString PathCombineNoAlloc(
     CString Directory,
     CString File
 ) {
+    CString FilePathBuffer = &FilePathBufferList[FilePathBufferIndex * PLATFORM_PATH_MAX];
+    FilePathBufferIndex += 1;
+    FilePathBufferIndex %= FILE_PATH_BUFFER_COUNT;
     PathCombine(Directory, File, FilePathBuffer);
     return FilePathBuffer;
 }

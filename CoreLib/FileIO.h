@@ -51,6 +51,20 @@ Bool CLFileExists(
 	CString FilePath
 );
 
+typedef Void (*FilesListCallback)(
+	CString FileName,
+	CString FilePath,
+	Void* UserData
+);
+
+Int32 FilesList(
+	CString Directory,
+	CString Pattern,
+	Bool Recursive,
+	FilesListCallback Callback,
+	Void* UserData
+);
+
 typedef Void (*FilesProcessCallback)(
 	CString FileName,
 	FileRef File,

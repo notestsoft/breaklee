@@ -2,6 +2,19 @@
 #include "Character.h"
 #include "Runtime.h"
 
+Int RTCharacterGetCooldownSlotIndex(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int CooldownIndex
+) {
+    for (Int SlotIndex = 0; SlotIndex < Character->Data.CooldownInfo.Info.SlotCount; SlotIndex += 1) {
+        RTCooldownSlotRef CooldownSlot = &Character->Data.CooldownInfo.Slots[SlotIndex];
+        if (CooldownSlot->CooldownIndex == CooldownIndex) return SlotIndex;
+    }
+
+    return -1;
+}
+
 RTCooldownSlotRef RTCharacterAddCooldownSlot(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
@@ -21,19 +34,6 @@ RTCooldownSlotRef RTCharacterAddCooldownSlot(
     Character->Data.CooldownInfo.Info.SlotCount += 1;
     Character->SyncMask.CooldownInfo = true;
     return CooldownSlot;
-}
-
-Int RTCharacterGetCooldownSlotIndex(
-    RTRuntimeRef Runtime,
-    RTCharacterRef Character,
-    Int CooldownIndex
-) {
-    for (Int SlotIndex = 0; SlotIndex < Character->Data.CooldownInfo.Info.SlotCount; SlotIndex += 1) {
-        RTCooldownSlotRef CooldownSlot = &Character->Data.CooldownInfo.Slots[SlotIndex];
-        if (CooldownSlot->CooldownIndex == CooldownIndex) return SlotIndex;
-    }
-
-    return -1;
 }
 
 Void RTCharacterRemoveCooldownSlot(
