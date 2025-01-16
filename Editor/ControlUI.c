@@ -45,10 +45,28 @@ Void LoadArchive(
 	switch (ArchiveItemType) {
 	case UI_ITEM_LIST_EBM: {
 		EBMArchiveRef Archive = EBMArchiveCreate(Context->Allocator);
-		if (EBMArchiveLoadFromFile(Archive, FilePath)) {
+		if (EBMArchiveLoadFromFile(Context->ShaderEBM, Archive, FilePath)) {
 			Context->ArchiveItemType = ArchiveItemType;
 			Context->Archive = Archive;
 			EBMArchiveSetupCamera(Context, Archive);
+
+			if (Context->ModelList) UIListDestroy(Context->ModelList);
+			Context->ModelList = UIListCreate(Context->Allocator, sizeof(Int32));
+			Context->ModelIndex = -1;
+
+			for (Int32 Index = 0; Index < ArrayGetElementCount(Archive->Meshes); Index += 1) {
+				EBMMeshRef Mesh = (EBMMeshRef)ArrayGetElementAtIndex(Archive->Meshes, Index);
+				UIListAppendItem(Context->ModelList, Mesh->Name, (UInt8*)&Index, sizeof(Int32));
+			}
+
+			if (Context->AnimationList) UIListDestroy(Context->AnimationList);
+			Context->AnimationList = UIListCreate(Context->Allocator, sizeof(Int32));
+			Context->AnimationIndex = -1;
+
+			for (Int32 Index = 0; Index < ArrayGetElementCount(Archive->Animations); Index += 1) {
+				EBMAnimationRef Animation = (EBMAnimationRef)ArrayGetElementAtIndex(Archive->Animations, Index);
+				UIListAppendItem(Context->AnimationList, Animation->Name, (UInt8*)&Index, sizeof(Int32));
+			}
 		}
 		else {
 			EBMArchiveDestroy(Archive);
@@ -170,9 +188,6 @@ Void ControlUIInit(
 	FilesList(Context->Config.Editor.ClientDataPath, "*.efx", true, OnFilesList, State->EfxItemList);
 	FilesList(Context->Config.Editor.ClientDataPath, "*.eps", true, OnFilesList, State->EpsItemList);
 	FilesList(Context->Config.Editor.ClientDataPath, "*.mcl", true, OnFilesList, State->MclItemList);
-
-	Context->ArchiveItemType = -1;
-	Context->Archive = NULL;
 }
 
 Void ControlUIDeinit(
@@ -187,6 +202,33 @@ Void ControlUIDeinit(
 	UIListDestroy(State->Qd1ItemList);
 	UIListDestroy(State->Md1ItemList);
 	UIListDestroy(State->Md2ItemList);
+}
+
+float GetLuminance(Color color) {
+	float r = (color.r / 255.0f);
+	float g = (color.g / 255.0f);
+	float b = (color.b / 255.0f);
+
+	// Apply luminance correction factors based on the RGB components
+	r = (r <= 0.03928f) ? r / 12.92f : powf((r + 0.055f) / 1.055f, 2.4f);
+	g = (g <= 0.03928f) ? g / 12.92f : powf((g + 0.055f) / 1.055f, 2.4f);
+	b = (b <= 0.03928f) ? b / 12.92f : powf((b + 0.055f) / 1.055f, 2.4f);
+
+	return (0.2126f * r + 0.7152f * g + 0.0722f * b);
+}
+
+// Function to calculate the contrast ratio between two colors
+float GetContrastRatio(Color color1, Color color2) {
+	float lum1 = GetLuminance(color1) + 0.05f;
+	float lum2 = GetLuminance(color2) + 0.05f;
+	return (lum1 > lum2) ? (lum1 / lum2) : (lum2 / lum1);
+}
+
+// Function to choose the best text color (black or white) based on background luminance
+Color GetAccessibleTextColor(Color background) {
+	if (background.a < 1) return BLACK;
+	Color textColor = (GetLuminance(background) > 0.5f) ? BLACK : WHITE;
+	return textColor;
 }
 
 Void ControlUIDraw(
@@ -221,6 +263,108 @@ Void ControlUIDraw(
 				Context->Camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
 				Context->Camera.fovy = 45.0f;
 				Context->Camera.projection = CAMERA_PERSPECTIVE;
+			}
+		}
+	}
+
+	if (Context->Archive && Context->ArchiveItemType == UI_ITEM_LIST_EBM) {
+		EBMArchiveRef Archive = (EBMArchiveRef)Context->Archive;
+
+		Rectangle ListFrame = { 0, 72, 288, Context->Config.Screen.Height - 72 };
+		UIListItemRef Selection = NULL;
+
+//		if (UIListDraw(Context, Context->ModelList, ListFrame, &Selection)) {
+//			Context->ModelIndex = *(Int32*)UIListItemGetData(Selection);
+//		}
+
+		if (UIListDraw(Context, Context->AnimationList, ListFrame, &Selection)) {
+			Context->AnimationIndex = *(Int32*)UIListItemGetData(Selection);
+			Archive->ElapsedTime = 0.0f;
+		}
+
+		Char Value[128] = { 0 };
+		Rectangle ValueFrame = { Context->Config.Screen.Width - 288, 0, 288, 20 };
+
+		static Vector2 Scroll = { 0, 0 };
+		Rectangle PanelFrame = { Context->Config.Screen.Width - 288, 0, 288, Context->Config.Screen.Height };
+		Rectangle ContentFrame = { Context->Config.Screen.Width - 288, 0, 288, Context->Config.Screen.Height * ArrayGetElementCount(Archive->Materials) };
+		Rectangle ViewFrame = { 0, 0, 0, 0 };
+		GuiScrollPanel(PanelFrame, "", ContentFrame, &Scroll, &ViewFrame);
+
+		ValueFrame.y += Scroll.y;
+		Int MaterialIndex = -1;
+		if (Context->ModelIndex >= 0) {
+			EBMMeshRef Mesh = (EBMMeshRef)ArrayGetElementAtIndex(Archive->Meshes, Context->ModelIndex);
+			MaterialIndex = Mesh->MaterialIndex;
+		}
+
+		for (Int Index = 0; Index < ArrayGetElementCount(Archive->Materials); Index += 1) {
+			EBMMaterialRef Material = (EBMMaterialRef)ArrayGetElementAtIndex(Archive->Materials, Index);
+			if (MaterialIndex >= 0 && MaterialIndex != Index) continue;
+
+			struct { CString Name; Vector4 Color; } Colors[] = {
+				{ "Ambient", Material->Properties.Ambient },
+				{ "Diffuse", Material->Properties.Diffuse },
+				{ "Specular", Material->Properties.Specular },
+				{ "Emission", Material->Properties.Emission },
+			};
+
+			for (Int Index = 0; Index < sizeof(Colors) / sizeof(Colors[0]); Index += 1) {
+				Color Value = {
+					Colors[Index].Color.x * 255,
+					Colors[Index].Color.y * 255,
+					Colors[Index].Color.z * 255,
+					Colors[Index].Color.w * 255,
+				};
+
+				DrawRectangle(ValueFrame.x, ValueFrame.y, ValueFrame.width, ValueFrame.height, Value);
+				DrawRectangleLinesEx(ValueFrame, 0.5f, RAYWHITE);
+				DrawText(Colors[Index].Name, ValueFrame.x, ValueFrame.y + 4, 11, GetAccessibleTextColor(Value));
+				ValueFrame.y += ValueFrame.height;
+			}
+
+			sprintf(Value, "Strength (%.4f)", Material->Properties.Strength);
+			GuiLabel(ValueFrame, Value);
+			ValueFrame.y += ValueFrame.height;
+
+			GuiLabel(ValueFrame, "TextureMain");
+			ValueFrame.y += ValueFrame.height;
+
+			sprintf(Value, "IsFaceted (%d)", Material->TextureMain.IsFaceted);
+			GuiLabel(ValueFrame, Value);
+			ValueFrame.y += ValueFrame.height;
+
+			sprintf(Value, "ScrollSpeed (%.4f, %.4f)", Material->TextureMain.ScrollSpeed.x, Material->TextureMain.ScrollSpeed.y);
+			GuiLabel(ValueFrame, Value);
+			ValueFrame.y += ValueFrame.height;
+
+			ValueFrame.height = ValueFrame.width;
+			DrawTexturePro(Material->TextureMain.Texture.Texture, (Rectangle) { 0, 0, Material->TextureMain.Texture.Image.width, Material->TextureMain.Texture.Image.height }, ValueFrame, (Vector2) { 0, 0 }, 0, WHITE);
+			ValueFrame.y += ValueFrame.height;
+			ValueFrame.height = 20;
+	
+			if (Material->TextureBlend.MaterialIndex >= 0) {
+				EBMMaterialRef BlendMaterial = (EBMMaterialRef)ArrayGetElementAtIndex(Archive->Materials, Material->TextureBlend.MaterialIndex);
+
+				GuiLabel(ValueFrame, "TextureBlend");
+				ValueFrame.y += ValueFrame.height;
+
+				sprintf(Value, "IsFaceted (%d)", Material->TextureBlend.IsFaceted);
+				GuiLabel(ValueFrame, Value);
+				ValueFrame.y += ValueFrame.height;
+
+				sprintf(Value, "ScrollSpeed (%.4f, %.4f)", Material->TextureBlend.ScrollSpeed.x, Material->TextureBlend.ScrollSpeed.y);
+				GuiLabel(ValueFrame, Value);
+				ValueFrame.y += ValueFrame.height;
+
+				sprintf(Value, "BlendFlags (%d)", Material->TextureBlend.BlendFlags);
+				GuiLabel(ValueFrame, Value);
+				ValueFrame.y += ValueFrame.height;
+
+				ValueFrame.height = ValueFrame.width;
+				DrawTexturePro(BlendMaterial->TextureMain.Texture.Texture, (Rectangle) { 0, 0, BlendMaterial->TextureMain.Texture.Image.width, BlendMaterial->TextureMain.Texture.Image.height }, ValueFrame, (Vector2) { 0, 0 }, 0, WHITE);
+				ValueFrame.y += ValueFrame.width;
+				ValueFrame.y += ValueFrame.height;
 			}
 		}
 	}

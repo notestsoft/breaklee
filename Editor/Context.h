@@ -207,6 +207,11 @@ struct _EditorContext {
 
     Int32 ArchiveItemType;
     Void* Archive;
+    UIListRef ModelList;
+    Int32 ModelIndex;
+    UIListRef AnimationList;
+    Int32 AnimationIndex;
+    Shader ShaderEBM;
 
     DictionaryRef MissionDungeonNames;
     DictionaryRef MissionDungeonFiles;

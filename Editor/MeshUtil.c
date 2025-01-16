@@ -1,23 +1,53 @@
 #include "MeshUtil.h"
 
+
 Matrix ConvertDirectXMatrixToOpenGL(
     Matrix Source
 ) {
+
     Matrix Result = { 0 };
     // Transpose the matrix (row-major to column-major)
+    Result = MatrixTranspose(Source);
+/*
     for (int row = 0; row < 4; ++row) {
         for (int col = 0; col < 4; ++col) {
             ((Float32*)&Result)[col * 4 + row] = ((Float32*)&Source)[row * 4 + col];
         }
     }
-
+    */
+    
     // If necessary, adjust for coordinate system
     // Negate the z-axis for right-handed systems (projection matrix example)
-    //((Float32*)&Result)[2 * 4 + 2] *= -1; // Negate m22
-    //((Float32*)&Result)[3 * 4 + 2] *= -1; // Negate m32
+   // ((Float32*)&Result)[2 * 4 + 2] *= -1; // Negate m22
+  //  ((Float32*)&Result)[3 * 4 + 2] *= -1; // Negate m32
     return Result;
 }
 
+/*
+Matrix ConvertDirectXMatrixToOpenGL(Matrix dxMatrix) {
+    Matrix oglMatrix;
+
+    // Transpose the matrix to switch from row-major to column-major
+    oglMatrix.m0 = dxMatrix.m0;  oglMatrix.m1 = dxMatrix.m4;  oglMatrix.m2 = dxMatrix.m8;  oglMatrix.m3 = dxMatrix.m12;
+    oglMatrix.m4 = dxMatrix.m1;  oglMatrix.m5 = dxMatrix.m5;  oglMatrix.m6 = dxMatrix.m9;  oglMatrix.m7 = dxMatrix.m13;
+    oglMatrix.m8 = dxMatrix.m2;  oglMatrix.m9 = dxMatrix.m6;  oglMatrix.m10 = dxMatrix.m10; oglMatrix.m11 = dxMatrix.m14;
+    oglMatrix.m12 = dxMatrix.m3; oglMatrix.m13 = dxMatrix.m7; oglMatrix.m14 = dxMatrix.m11; oglMatrix.m15 = dxMatrix.m15;
+
+    // Flip the Y-axis by scaling Y components
+    oglMatrix.m1 = -oglMatrix.m1;
+    oglMatrix.m5 = -oglMatrix.m5;
+    oglMatrix.m9 = -oglMatrix.m9;
+    oglMatrix.m13 = -oglMatrix.m13;
+
+    // If it's a projection or view matrix, invert the Z-axis for right-handed coordinate system
+    oglMatrix.m2 = -oglMatrix.m2;
+    oglMatrix.m6 = -oglMatrix.m6;
+    oglMatrix.m10 = -oglMatrix.m10;
+    oglMatrix.m14 = -oglMatrix.m14;
+    
+    return oglMatrix;
+}
+*/
 Matrix ConvertTransformToRightHanded(
     Matrix Transform, 
     Vector3 Position, 

@@ -61,6 +61,17 @@ struct _EBMVertex {
 };
 typedef struct _EBMVertex EBMVertex;
 
+typedef struct _EBMBone* EBMBoneRef;
+
+struct _EBMBone {
+	CString Name;
+	Int32 ParentBoneIndex;
+	Matrix WorldMatrix;
+	Matrix InverseParentWorldMatrix;
+	EBMBoneRef ParentBone;
+	Matrix BoneMatrix;
+};
+
 struct _EBMMesh {
 	CString Name;
 	Matrix WorldMatrix;
@@ -70,21 +81,19 @@ struct _EBMMesh {
 	Bool IsEffectEnabled;
 	CString EffectName;
 	Mesh Mesh;
+	struct _EBMBone RootBoneMemory;
+	EBMBoneRef RootBone;
 };
 typedef struct _EBMMesh* EBMMeshRef;
-
-struct _EBMBone {
-	CString Name;
-	Int32 ParentBoneIndex;
-	Matrix SpaceMatrix;
-	Matrix ParentSpaceMatrix;
-};
-typedef struct _EBMBone* EBMBoneRef;
 
 struct _EBMSkinBone {
 	Int32 Count;
 	Int32* Indices;
 	Float32* Weights;
+	Int32 MeshIndex;
+	Int32 BoneIndex;
+	EBMMeshRef Mesh;
+	EBMBoneRef Bone;
 };
 typedef struct _EBMSkinBone* EBMSkinBoneRef;
 
@@ -96,7 +105,7 @@ typedef struct _EBMAnimationTranslation EBMAnimationTranslation;
 
 struct _EBMAnimationRotation {
 	Float32 Timestamp;
-	Vector4 Rotation;
+	Quaternion Rotation;
 };
 typedef struct _EBMAnimationRotation EBMAnimationRotation;
 
@@ -106,13 +115,16 @@ struct _EBMAnimationNode {
 	EBMAnimationTranslation* Translations;
 	Int32 RotationCount;
 	EBMAnimationRotation* Rotations;
+	EBMBoneRef Bone;
 };
 typedef struct _EBMAnimationNode EBMAnimationNode;
+typedef struct _EBMAnimationNode* EBMAnimationNodeRef;
 
 struct _EBMAnimation {
 	CString Name;
 	Int32 NodeCount;
 	EBMAnimationNode* Nodes;
+	Float32 Duration;
 };
 typedef struct _EBMAnimation* EBMAnimationRef;
 
@@ -126,9 +138,8 @@ typedef struct _EBMOptions EBMOptions;
 struct _EBMArchive {
 	AllocatorRef Allocator;
 	UInt8 Magic;
-	UInt16 Version;
-	UInt8 Padding;
-	UInt16 Unknown1;
+	UInt32 Version;
+	UInt8 Unknown1;
 	EBMOptions Options;
 	Vector3 BoundsMin;
 	Vector3 BoundsMax;
@@ -139,6 +150,7 @@ struct _EBMArchive {
 	ArrayRef Meshes;
 	ArrayRef SkinBones;
 	ArrayRef Animations;
+	Float32 ElapsedTime;
 };
 typedef struct _EBMArchive* EBMArchiveRef;
 
@@ -153,6 +165,7 @@ Void EBMArchiveDestroy(
 );
 
 Bool EBMArchiveLoadFromFile(
+	Shader Shader,
 	EBMArchiveRef Archive,
 	CString FilePath
 );

@@ -15,9 +15,9 @@
 #endif
 
 CONFIG_BEGIN(Editor)
-CONFIG_PARAMETER_ARRAY(Char, PLATFORM_PATH_MAX, ServerDataPath, "Editor.ServerDataPath", C:\\Users\\ylmz6\\Documents\\CabalServerData)
-CONFIG_PARAMETER_ARRAY(Char, PLATFORM_PATH_MAX, ClientDataPath, "Editor.ClientDataPath", C:\\CABALKR\\data)
-CONFIG_PARAMETER_ARRAY(Char, PLATFORM_PATH_MAX, ShaderDataPath, "Editor.ShaderDataPath", C:\\Users\\ylmz6\\Documents\\breaklee_Shaders)
+CONFIG_PARAMETER_ARRAY(Char, PLATFORM_PATH_MAX, ServerDataPath, "Editor.ServerDataPath", ServerData)
+CONFIG_PARAMETER_ARRAY(Char, PLATFORM_PATH_MAX, ClientDataPath, "Editor.ClientDataPath", ClientData)
+CONFIG_PARAMETER_ARRAY(Char, PLATFORM_PATH_MAX, ShaderDataPath, "Editor.ShaderDataPath", Shaders)
 CONFIG_PARAMETER_ARRAY(Char, PLATFORM_PATH_MAX, ClientLanguage, "Editor.ClientLanguage", Korean)
 CONFIG_END(Editor)
 

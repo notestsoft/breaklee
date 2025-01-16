@@ -548,7 +548,7 @@ Bool MCLArchiveLoadFromFile(
 
 		if (CStringHasFileExtension(Model->Name, ".ebm") || CStringHasFileExtension(Model->Name, ".EBM")) {
 			CString FilePath = PathCombineAll(Context->Config.Editor.ClientDataPath, "Object", Model->Name, NULL);
-			if (!EBMArchiveLoadFromFile(Model->Archive, FilePath)) {
+			if (!EBMArchiveLoadFromFile(Context->ShaderEBM, Model->Archive, FilePath)) {
 				Warn("Loading model %s failed!", FilePath);
 			}
 		}

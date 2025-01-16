@@ -1,6 +1,7 @@
 #include "Context.h"
 #include "ControlUI.h"
 #include "DataLoader.h"
+#include "EBMShader.h"
 
 #define RAYGUI_IMPLEMENTATION
 #include "raygui/raygui.h"
@@ -12,10 +13,12 @@ Int32 main(Int32 argc, CString* argv) {
     CString ConfigFilePath = PathCombineNoAlloc(WorkingDirectory, "Editor.ini");
     struct _EditorContext ContextMemory = { 0 };
     EditorContextRef Context = &ContextMemory;
+    Context->Allocator = AllocatorGetDefault();
     Context->Config = EditorConfigLoad(ConfigFilePath);
     Context->State.State = EDITOR_STATE_INIT;
     Context->ArchiveItemType = -1;
     Context->Archive = NULL;
+    Context->ModelList = NULL;
     Context->MissionDungeonNames = IndexDictionaryCreate(Context->Allocator, 1024);
     Context->MissionDungeonFiles = IndexDictionaryCreate(Context->Allocator, 1024);
     Context->MissionDungeons = ArrayCreateEmpty(Context->Allocator, sizeof(struct _MissionDungeonData), 8);
@@ -54,6 +57,7 @@ Int32 main(Int32 argc, CString* argv) {
     Context->Camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     Context->Camera.fovy = 45.0f;
     Context->Camera.projection = CAMERA_PERSPECTIVE;
+    Context->ShaderEBM = EBMShaderLoad(Context);
 
     ControlUIInit(Context, &Context->ControlState);
 
@@ -113,5 +117,7 @@ Int32 main(Int32 argc, CString* argv) {
     CloseWindow();
     DiagnosticTeardown();
 
+    UIListDestroy(Context->ModelList);
+    
     return 0;
 }
