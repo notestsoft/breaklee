@@ -66,10 +66,10 @@ typedef struct _EBMBone* EBMBoneRef;
 struct _EBMBone {
 	CString Name;
 	Int32 ParentBoneIndex;
-	Matrix WorldMatrix;
-	Matrix InverseParentWorldMatrix;
+	Matrix GlobalBindPoseMatrix;
+	Matrix ParentGlobalBindPoseMatrix;
+	Matrix LocalBoneMatrix;
 	EBMBoneRef ParentBone;
-	Matrix BoneMatrix;
 };
 
 struct _EBMMesh {

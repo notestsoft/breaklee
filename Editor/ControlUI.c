@@ -253,6 +253,16 @@ Void ControlUIDraw(
 		UIListRef List = State->IndexToItemList[State->ToolbarActiveIndex];
 		Rectangle ListFrame = { 0, 72, 288, Context->Config.Screen.Height - 72 };
 		UIListItemRef Selection = NULL;
+
+		Int32 SearchQueryTextLength = strlen(State->SearchBoxText);
+		if (GuiTextBox(SearchBoxFrame, State->SearchBoxText, UI_TEXT_LENGTH, State->SearchBoxEditMode)) {
+			State->SearchBoxEditMode = !State->SearchBoxEditMode;
+		}
+
+		if (SearchQueryTextLength != strlen(State->SearchBoxText)) {
+			UIListFilter(List, State->SearchBoxText);
+		}
+
 		if (UIListDraw(Context, List, ListFrame, &Selection)) {
 			CString FilePath = (CString)UIListItemGetData(Selection);
 			LoadArchive(Context, State, FilePath, State->ToolbarActiveIndex);

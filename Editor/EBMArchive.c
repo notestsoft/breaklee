@@ -240,10 +240,10 @@ Bool EBMArchiveLoadFromFile(
 				Bone->ParentBoneIndex = *(Int32*)&Source[SourceOffset];
 				SourceOffset += sizeof(Int32);
 
-				Bone->WorldMatrix = ConvertDirectXMatrixToOpenGL(*(Matrix*)&Source[SourceOffset]);
+				Bone->GlobalBindPoseMatrix = MatrixInvert(ConvertDirectXMatrixToOpenGL(*(Matrix*)&Source[SourceOffset]));
 				SourceOffset += sizeof(Matrix);
 
-				Bone->InverseParentWorldMatrix = MatrixInvert(ConvertDirectXMatrixToOpenGL(*(Matrix*)&Source[SourceOffset]));
+				Bone->ParentGlobalBindPoseMatrix = ConvertDirectXMatrixToOpenGL(*(Matrix*)&Source[SourceOffset]);
 				SourceOffset += sizeof(Matrix);
 
 //				Bone->BindPoseMatrix = MatrixMultiply(Bone->InverseParentWorldMatrix, Bone->WorldMatrix);
@@ -320,10 +320,10 @@ Bool EBMArchiveLoadFromFile(
 
 					Mesh->Mesh.vertices[Index * 3 + 0] = Position.x;
 					Mesh->Mesh.vertices[Index * 3 + 1] = Position.y;
-					Mesh->Mesh.vertices[Index * 3 + 2] = -Position.z;// CenterZ - (Position.z - CenterZ);//-Position.z; // Archive->BoundsMin.z + (Archive->BoundsMax.z - Position.z);
+					Mesh->Mesh.vertices[Index * 3 + 2] = Position.z;// CenterZ - (Position.z - CenterZ);//-Position.z; // Archive->BoundsMin.z + (Archive->BoundsMax.z - Position.z);
 					Mesh->Mesh.normals[Index * 3 + 0] = Vertex.Normal.x;
 					Mesh->Mesh.normals[Index * 3 + 1] = Vertex.Normal.y;
-					Mesh->Mesh.normals[Index * 3 + 2] = -Vertex.Normal.z;
+					Mesh->Mesh.normals[Index * 3 + 2] = Vertex.Normal.z;
 					Mesh->Mesh.texcoords[Index * 2 + 0] = Vertex.UV.x;
 					Mesh->Mesh.texcoords[Index * 2 + 1] = Vertex.UV.y;
 				}
@@ -421,7 +421,7 @@ Bool EBMArchiveLoadFromFile(
 					SourceOffset += sizeof(EBMAnimationTranslation) * Animation->Nodes[Index].TranslationCount;
 
 					for (Int TranslationIndex = 0; TranslationIndex < Animation->Nodes[Index].TranslationCount; TranslationIndex += 1) {
-						Animation->Nodes[Index].Translations[TranslationIndex].Position.z *= -1;
+						//Animation->Nodes[Index].Translations[TranslationIndex].Position.z *= -1;
 						Animation->Duration = MAX(Animation->Duration, Animation->Nodes[Index].Translations[TranslationIndex].Timestamp);
 					}
 
@@ -459,10 +459,10 @@ Bool EBMArchiveLoadFromFile(
 		EBMMeshRef Mesh = (EBMMeshRef)ArrayGetElementAtIndex(Archive->Meshes, Index);
 		Mesh->RootBoneMemory.Name = Mesh->Name;
 		Mesh->RootBoneMemory.ParentBoneIndex = INT_MIN;
-		Mesh->RootBoneMemory.WorldMatrix = Mesh->WorldMatrix;
-		Mesh->RootBoneMemory.InverseParentWorldMatrix = MatrixInvert(MatrixIdentity());
+		Mesh->RootBoneMemory.GlobalBindPoseMatrix = Mesh->WorldMatrix;
+		Mesh->RootBoneMemory.ParentGlobalBindPoseMatrix = MatrixIdentity();
 		Mesh->RootBoneMemory.ParentBone = NULL;
-		Mesh->RootBoneMemory.BoneMatrix = MatrixIdentity();
+		Mesh->RootBoneMemory.LocalBoneMatrix = MatrixIdentity();
 		Mesh->RootBone = &Mesh->RootBoneMemory;
 		if (Mesh->RootBoneIndex >= 0) Mesh->RootBone = (EBMBoneRef)ArrayGetElementAtIndex(Archive->Bones, Mesh->RootBoneIndex);
 		assert(Mesh->RootBone);
@@ -471,7 +471,7 @@ Bool EBMArchiveLoadFromFile(
 	for (Int Index = 0; Index < ArrayGetElementCount(Archive->Bones); Index += 1) {
 		EBMBoneRef Bone = (EBMBoneRef)ArrayGetElementAtIndex(Archive->Bones, Index);
 		Bone->ParentBone = NULL;
-		Bone->BoneMatrix = MatrixIdentity();
+		Bone->LocalBoneMatrix = MatrixIdentity();
 		if (Bone->ParentBoneIndex < 0) continue;
 
 		Bone->ParentBone = (EBMBoneRef)ArrayGetElementAtIndex(Archive->Bones, Bone->ParentBoneIndex);
@@ -524,21 +524,36 @@ Void EBMArchiveSetupCamera(
 	Context->Camera.projection = CAMERA_PERSPECTIVE;
 }
 
+static Int kMutationGetGlobalBoneMatrix = 2; // 0 - 2
+
 Matrix EBMBoneGetGlobalBoneMatrix(
 	EBMArchiveRef Archive,
-	EBMBoneRef Bone,
-	EBMMeshRef Mesh
+	EBMBoneRef Bone
 ) {
-	if (Bone->ParentBoneIndex == INT_MIN) return Bone->BoneMatrix;
+	if (Bone->ParentBoneIndex == INT_MIN || !Bone->ParentBone) return Bone->LocalBoneMatrix;
 
-	EBMBoneRef ParentBone = (Bone->ParentBone) ? Bone->ParentBone : Mesh->RootBone;
-	assert(ParentBone);
+	if (kMutationGetGlobalBoneMatrix == 0) {
+		return Bone->LocalBoneMatrix;
+	}
 
-	return MatrixMultiply(
-		EBMBoneGetGlobalBoneMatrix(Archive, ParentBone, Mesh),
-		Bone->BoneMatrix
-	); 
+	if (kMutationGetGlobalBoneMatrix == 1) {
+		return MatrixMultiply(
+			EBMBoneGetGlobalBoneMatrix(Archive, Bone->ParentBone),
+			Bone->LocalBoneMatrix
+		);
+	}
+
+	if (kMutationGetGlobalBoneMatrix == 2) {
+		return MatrixMultiply(
+			Bone->LocalBoneMatrix,
+			EBMBoneGetGlobalBoneMatrix(Archive, Bone->ParentBone)
+		);
+	}
+
+	return Bone->LocalBoneMatrix;
 }
+
+static Int kMutationLocalBoneMatrix = 6; // 0 - 8
 
 Void EBMAnimationUpdate(
 	EBMArchiveRef Archive,
@@ -569,7 +584,7 @@ Void EBMAnimationUpdate(
 			assert((Destination->Timestamp - Source->Timestamp) > 0);
 			Float32 Delta = (ElapsedTime - Source->Timestamp) / (Destination->Timestamp - Source->Timestamp);
 			FrameTranslation = Vector3Lerp(Source->Position, Destination->Position, Delta);
-			FrameTranslation.z *= -1;
+			//FrameTranslation.z *= -1;
 			break;
 		}
 
@@ -583,19 +598,87 @@ Void EBMAnimationUpdate(
 			assert((Destination->Timestamp - Source->Timestamp) > 0);
 			Float32 Delta = (ElapsedTime - Source->Timestamp) / (Destination->Timestamp - Source->Timestamp);
 			FrameRotation = QuaternionLerp(Source->Rotation, Destination->Rotation, Delta);
+			//FrameRotation.x *= -1;
+			//FrameRotation.y *= -1;
+			//FrameRotation.z *= -1;
 			FrameRotation = QuaternionInvert(FrameRotation);
 			break;
 		}
 
-		AnimationNode->Bone->BoneMatrix = MatrixMultiply(
-			//			MatrixMultiply(AnimationNode->Bone->WorldMatrix, AnimationNode->Bone->InverseParentWorldMatrix),
-			AnimationNode->Bone->WorldMatrix,
-			MatrixMultiply(
-				QuaternionToMatrix(FrameRotation),
-				MatrixTranslate(FrameTranslation.x, FrameTranslation.y, FrameTranslation.z)
-			)
+		AnimationNode->Bone->LocalBoneMatrix = MatrixMultiply(
+			QuaternionToMatrix(FrameRotation),
+			MatrixTranslate(FrameTranslation.x, FrameTranslation.y, FrameTranslation.z)
 		);
+		
+		if (kMutationLocalBoneMatrix == 1) {
+			AnimationNode->Bone->LocalBoneMatrix = MatrixMultiply(
+				MatrixInvert(AnimationNode->Bone->GlobalBindPoseMatrix),
+				AnimationNode->Bone->LocalBoneMatrix
+			);
+		}
+
+		if (kMutationLocalBoneMatrix == 2) {
+			AnimationNode->Bone->LocalBoneMatrix = MatrixMultiply(
+				AnimationNode->Bone->LocalBoneMatrix,
+				MatrixInvert(AnimationNode->Bone->GlobalBindPoseMatrix)
+			);
+		}
+
+		if (kMutationLocalBoneMatrix == 3) {
+			AnimationNode->Bone->LocalBoneMatrix = MatrixMultiply(
+				(AnimationNode->Bone->GlobalBindPoseMatrix),
+				AnimationNode->Bone->LocalBoneMatrix
+			);
+		}
+
+		if (kMutationLocalBoneMatrix == 4) {
+			AnimationNode->Bone->LocalBoneMatrix = MatrixMultiply(
+				AnimationNode->Bone->LocalBoneMatrix,
+				(AnimationNode->Bone->GlobalBindPoseMatrix)
+			);
+		}
+
+		if (kMutationLocalBoneMatrix == 5) {
+			AnimationNode->Bone->LocalBoneMatrix = MatrixMultiply(
+				MatrixInvert(AnimationNode->Bone->ParentGlobalBindPoseMatrix),
+				AnimationNode->Bone->LocalBoneMatrix
+			);
+		}
+
+		if (kMutationLocalBoneMatrix == 6) {
+			AnimationNode->Bone->LocalBoneMatrix = MatrixMultiply(
+				AnimationNode->Bone->LocalBoneMatrix,
+				MatrixInvert(AnimationNode->Bone->ParentGlobalBindPoseMatrix)
+			);
+		}
+
+		if (kMutationLocalBoneMatrix == 7) {
+			AnimationNode->Bone->LocalBoneMatrix = MatrixMultiply(
+				(AnimationNode->Bone->ParentGlobalBindPoseMatrix),
+				AnimationNode->Bone->LocalBoneMatrix
+			);
+		}
+
+		if (kMutationLocalBoneMatrix == 8) {
+			AnimationNode->Bone->LocalBoneMatrix = MatrixMultiply(
+				AnimationNode->Bone->LocalBoneMatrix,
+				(AnimationNode->Bone->ParentGlobalBindPoseMatrix)
+			);
+		}
+
+		//AnimationNode->Bone->LocalBoneMatrix = MatrixMultiply(
+		//	MatrixInvert(AnimationNode->Bone->GlobalBindPoseMatrix),
+		//	MatrixMultiply(
+		//		QuaternionToMatrix(FrameRotation),
+		//		MatrixTranslate(FrameTranslation.x, FrameTranslation.y, FrameTranslation.z)
+		//	)
+		//);
 	}
+}
+
+void PrintMatrix(Matrix M) {
+	printf("(%f, %f, %f, %f)\n(%f, %f, %f, %f)\n(%f, %f, %f, %f)\n(%f, %f, %f, %f)\n",
+		M.m0, M.m1, M.m2, M.m3, M.m4, M.m5, M.m6, M.m7, M.m8, M.m9, M.m10, M.m11, M.m12, M.m13, M.m14, M.m15);
 }
 
 Void EBMArchiveUpdateAnimation(
@@ -619,27 +702,27 @@ Void EBMArchiveUpdateAnimation(
 		for (Int SkinBoneIndex = 0; SkinBoneIndex < SkinBone->Count; SkinBoneIndex += 1) {
 			if (SkinBone->Weights[SkinBoneIndex] <= FLT_EPSILON) continue;
 
-			Matrix AnimationMatrix = EBMBoneGetGlobalBoneMatrix(Archive, SkinBone->Bone, SkinBone->Mesh);
-			//AnimationMatrix = MatrixMultiply(AnimationMatrix, MatrixInvert(SkinBone->Bone->WorldMatrix));
-			//AnimationMatrix = MatrixMultiply(MatrixScale(0.5f, 0.5f, 0.5f), AnimationMatrix);
-			//AnimatedTransform = MatrixMultiply(AnimatedTransform, MatrixRotateXYZ((Vector3) { M_PI * 0.0, M_PI * 0.0, M_PI * 1.5 }));
-
-			//Matrix SkinningTransform = MatrixMultiply(AnimatedTransform, MatrixInvert(SkinBone->Bone->WorldMatrix));
-			//Matrix SkinningTransform = EBMBoneGetAnimatedTransform2(Archive, Bone);
+			Matrix AnimationMatrix = EBMBoneGetGlobalBoneMatrix(Archive, SkinBone->Bone);
+			AnimationMatrix = MatrixMultiply( // Convert to bind pose space
+				MatrixInvert(SkinBone->Bone->GlobalBindPoseMatrix),
+				AnimationMatrix
+			);
 
 			Int32 VertexIndex = SkinBone->Indices[SkinBoneIndex];
 			assert(VertexIndex < SkinBone->Mesh->Mesh.vertexCount);
 			Vector3 Vertex = *(Vector3*)&SkinBone->Mesh->Mesh.vertices[VertexIndex * 3];
-			Vector3 AnimatedVertex = Vector3Transform(Vertex, AnimationMatrix);
-			SkinBone->Mesh->Mesh.animVertices[VertexIndex * 3 + 0] += AnimatedVertex.x * SkinBone->Weights[SkinBoneIndex];
-			SkinBone->Mesh->Mesh.animVertices[VertexIndex * 3 + 1] += AnimatedVertex.y * SkinBone->Weights[SkinBoneIndex];
-			SkinBone->Mesh->Mesh.animVertices[VertexIndex * 3 + 2] += AnimatedVertex.z * SkinBone->Weights[SkinBoneIndex];
+			Vector3 AnimationVertex = Vector3Transform(Vertex, AnimationMatrix);
+			AnimationVertex.z *= -1;
+			Vector3 AnimatedVertex = *(Vector3*)&SkinBone->Mesh->Mesh.animVertices[VertexIndex * 3];
+			AnimatedVertex = Vector3Add(AnimatedVertex, Vector3Scale(AnimationVertex, SkinBone->Weights[SkinBoneIndex]));
+			*(Vector3*)&SkinBone->Mesh->Mesh.animVertices[VertexIndex * 3] = AnimatedVertex;
 
 			Vector3 Normal = *(Vector3*)&SkinBone->Mesh->Mesh.normals[VertexIndex * 3];
-			Vector3 AnimatedNormal = Vector3Normalize(Vector3Transform(Normal, MatrixTranspose(MatrixInvert(AnimationMatrix))));
-			SkinBone->Mesh->Mesh.animNormals[VertexIndex * 3 + 0] += AnimatedNormal.x * SkinBone->Weights[SkinBoneIndex];
-			SkinBone->Mesh->Mesh.animNormals[VertexIndex * 3 + 1] += AnimatedNormal.y * SkinBone->Weights[SkinBoneIndex];
-			SkinBone->Mesh->Mesh.animNormals[VertexIndex * 3 + 2] += AnimatedNormal.z * SkinBone->Weights[SkinBoneIndex];
+			Vector3 AnimationNormal = Vector3Normalize(Vector3Transform(Normal, MatrixTranspose(MatrixInvert(AnimationMatrix))));
+			Vector3 AnimatedNormal = *(Vector3*)&SkinBone->Mesh->Mesh.animNormals[VertexIndex * 3 + 0];
+			AnimatedNormal = Vector3Add(AnimatedNormal, Vector3Scale(AnimationNormal, SkinBone->Weights[SkinBoneIndex]));
+			AnimatedNormal.z *= -1;
+			*(Vector3*)&SkinBone->Mesh->Mesh.animNormals[VertexIndex * 3 + 0] = AnimatedNormal;
 		}
 	}
 
@@ -648,140 +731,6 @@ Void EBMArchiveUpdateAnimation(
 		UpdateMeshBuffer(Mesh->Mesh, 0, Mesh->Mesh.animVertices, sizeof(Float32) * Mesh->Mesh.vertexCount * 3, 0);
 		UpdateMeshBuffer(Mesh->Mesh, 2, Mesh->Mesh.animNormals, sizeof(Float32) * Mesh->Mesh.vertexCount * 3, 0);
 	}
-
-	/*
-	void UpdateModelAnimationBones(Model model, ModelAnimation anim, int frame)
-	{
-		if ((anim.frameCount > 0) && (anim.bones != NULL) && (anim.framePoses != NULL))
-		{
-			if (frame >= anim.frameCount) frame = frame % anim.frameCount;
-
-			// Get first mesh which have bones
-			int firstMeshWithBones = -1;
-
-			for (int i = 0; i < model.meshCount; i++)
-			{
-				if (model.meshes[i].boneMatrices)
-				{
-					if (firstMeshWithBones == -1)
-					{
-						firstMeshWithBones = i;
-						break;
-					}
-				}
-			}
-
-			// Update all bones and boneMatrices of first mesh with bones.
-			for (int boneId = 0; boneId < anim.boneCount; boneId++)
-			{
-				Vector3 inTranslation = model.bindPose[boneId].translation; // 
-				Quaternion inRotation = model.bindPose[boneId].rotation;
-				Vector3 inScale = model.bindPose[boneId].scale;
-
-				Vector3 outTranslation = anim.framePoses[frame][boneId].translation; // TransformMatrix
-				Quaternion outRotation = anim.framePoses[frame][boneId].rotation;
-				Vector3 outScale = anim.framePoses[frame][boneId].scale;
-
-				Quaternion invRotation = QuaternionInvert(inRotation);
-				Vector3 invTranslation = Vector3RotateByQuaternion(Vector3Negate(inTranslation), invRotation);
-				Vector3 invScale = Vector3Divide((Vector3) { 1.0f, 1.0f, 1.0f }, inScale);
-
-				Vector3 boneTranslation = Vector3Add(Vector3RotateByQuaternion(
-					Vector3Multiply(outScale, invTranslation), outRotation), outTranslation);
-				Quaternion boneRotation = QuaternionMultiply(outRotation, invRotation);
-				Vector3 boneScale = Vector3Multiply(outScale, invScale);
-
-				Matrix boneMatrix = MatrixMultiply(MatrixMultiply(
-					QuaternionToMatrix(boneRotation),
-					MatrixTranslate(boneTranslation.x, boneTranslation.y, boneTranslation.z)),
-					MatrixScale(boneScale.x, boneScale.y, boneScale.z));
-
-				model.meshes[firstMeshWithBones].boneMatrices[boneId] = boneMatrix;
-			}
-
-			// Update remaining meshes with bones
-			// NOTE: Using deep copy because shallow copy results in double free with 'UnloadModel()'
-			if (firstMeshWithBones != -1)
-			{
-				for (int i = firstMeshWithBones + 1; i < model.meshCount; i++)
-				{
-					if (model.meshes[i].boneMatrices)
-					{
-						memcpy(model.meshes[i].boneMatrices,
-							model.meshes[firstMeshWithBones].boneMatrices,
-							model.meshes[i].boneCount * sizeof(model.meshes[i].boneMatrices[0]));
-					}
-				}
-			}
-		}
-	}
-
-	void UpdateModelAnimation(Model model, ModelAnimation anim, int frame)
-	{
-		UpdateModelAnimationBones(model, anim, frame);
-
-		for (int m = 0; m < model.meshCount; m++)
-		{
-			Mesh mesh = model.meshes[m];
-			Vector3 animVertex = { 0 };
-			Vector3 animNormal = { 0 };
-			int boneId = 0;
-			int boneCounter = 0;
-			float boneWeight = 0.0;
-			bool updated = false; // Flag to check when anim vertex information is updated
-			const int vValues = mesh.vertexCount * 3;
-
-			// Skip if missing bone data, causes segfault without on some models
-			if ((mesh.boneWeights == NULL) || (mesh.boneIds == NULL)) continue;
-
-			for (int vCounter = 0; vCounter < vValues; vCounter += 3)
-			{
-				mesh.animVertices[vCounter] = 0;
-				mesh.animVertices[vCounter + 1] = 0;
-				mesh.animVertices[vCounter + 2] = 0;
-				if (mesh.animNormals != NULL)
-				{
-					mesh.animNormals[vCounter] = 0;
-					mesh.animNormals[vCounter + 1] = 0;
-					mesh.animNormals[vCounter + 2] = 0;
-				}
-
-				// Iterates over 4 bones per vertex
-				for (int j = 0; j < 4; j++, boneCounter++)
-				{
-					boneWeight = mesh.boneWeights[boneCounter];
-					boneId = mesh.boneIds[boneCounter];
-
-					// Early stop when no transformation will be applied
-					if (boneWeight == 0.0f) continue;
-					animVertex = (Vector3){ mesh.vertices[vCounter], mesh.vertices[vCounter + 1], mesh.vertices[vCounter + 2] };
-					animVertex = Vector3Transform(animVertex, model.meshes[m].boneMatrices[boneId]);
-					mesh.animVertices[vCounter] += animVertex.x * boneWeight;
-					mesh.animVertices[vCounter + 1] += animVertex.y * boneWeight;
-					mesh.animVertices[vCounter + 2] += animVertex.z * boneWeight;
-					updated = true;
-
-					// Normals processing
-					// NOTE: We use meshes.baseNormals (default normal) to calculate meshes.normals (animated normals)
-					if ((mesh.normals != NULL) && (mesh.animNormals != NULL))
-					{
-						animNormal = (Vector3){ mesh.normals[vCounter], mesh.normals[vCounter + 1], mesh.normals[vCounter + 2] };
-						animNormal = Vector3Transform(animNormal, MatrixTranspose(MatrixInvert(model.meshes[m].boneMatrices[boneId])));
-						mesh.animNormals[vCounter] += animNormal.x * boneWeight;
-						mesh.animNormals[vCounter + 1] += animNormal.y * boneWeight;
-						mesh.animNormals[vCounter + 2] += animNormal.z * boneWeight;
-					}
-				}
-			}
-
-			if (updated)
-			{
-				rlUpdateVertexBuffer(mesh.vboId[0], mesh.animVertices, mesh.vertexCount * 3 * sizeof(float), 0); // Update vertex position
-				if (mesh.normals != NULL) rlUpdateVertexBuffer(mesh.vboId[2], mesh.animNormals, mesh.vertexCount * 3 * sizeof(float), 0); // Update vertex normals
-			}
-		}
-	}
-	*/
 }
 
 void DrawMeshWireframe(Mesh mesh, Matrix transform) {
@@ -922,23 +871,22 @@ static void DrawText3D(EditorContextRef Context, Font font, const char* text, Ve
 	}
 	rlPopMatrix();
 }
-/*
+
 Void EBMArchiveDrawBone(
 	EditorContextRef Context, 
 	EBMArchiveRef Archive, 
-	EBMBoneRef Parent, 
 	EBMBoneRef Bone, 
 	Matrix Transform,
 	Int32 Depth
 ) {
 	Vector3 ParentPosition = { 0, 0, 0 };
-	if (Parent) {
-		Matrix ParentTransform = EBMBoneGetGlobalBoneMatrix(Archive, Parent);
+	if (Bone->ParentBone) {
+		Matrix ParentTransform = EBMBoneGetGlobalBoneMatrix(Archive, Bone->ParentBone);
 		ParentPosition = Vector3Transform(ParentPosition, MatrixMultiply(ParentTransform, Transform));
 	}
 
 	Vector3 BonePosition = { 0, 0, 0 };
-	Matrix BoneTransform = EBMBoneGetAnimatedTransform(Archive, Bone);
+	Matrix BoneTransform = EBMBoneGetGlobalBoneMatrix(Archive, Bone);
 	BonePosition = Vector3Transform(BonePosition, MatrixMultiply(BoneTransform, Transform));
 
 	// Draw a line between parent and child
@@ -990,12 +938,12 @@ Void EBMArchiveDrawBone(
 
 	for (Int Index = 0; Index < ArrayGetElementCount(Archive->Bones); Index += 1) {
 		EBMBoneRef Child = (EBMBoneRef)ArrayGetElementAtIndex(Archive->Bones, Index);
-		if (Child->ParentBoneIndex != Bone->BoneIndex) continue;
+		if (Child->ParentBone != Bone) continue;
 
-		EBMArchiveDrawBone(Context, Archive, Bone, Child, Transform, Depth + 1);
+		EBMArchiveDrawBone(Context, Archive, Child, Transform, Depth + 1);
 	}
 }
-*/
+
 Void EBMArchiveDraw(
 	EditorContextRef Context,
 	EBMArchiveRef Archive
@@ -1003,6 +951,20 @@ Void EBMArchiveDraw(
 	if (Context->AnimationIndex >= 0) {
 		EBMAnimationRef Animation = (EBMAnimationRef)ArrayGetElementAtIndex(Archive->Animations, Context->AnimationIndex);
 		Archive->ElapsedTime += GetFrameTime();
+		if (Archive->ElapsedTime > Animation->Duration) {
+			//kMutationGetGlobalBoneMatrix += 1;
+			if (kMutationGetGlobalBoneMatrix > 2) {
+				kMutationGetGlobalBoneMatrix = 0;
+				kMutationLocalBoneMatrix += 1;
+			}
+
+			if (kMutationLocalBoneMatrix > 8) {
+				kMutationLocalBoneMatrix = 0;
+			}
+			
+			Trace("Mutation(%d, %d)", kMutationGetGlobalBoneMatrix, kMutationLocalBoneMatrix);
+		}
+
 		Archive->ElapsedTime = fmodf(Archive->ElapsedTime, Animation->Duration);
 		EBMArchiveUpdateAnimation(Archive, Animation->Name, Archive->ElapsedTime);
 	}
@@ -1034,8 +996,8 @@ Void EBMArchiveDraw(
 		for (Int MeshIndex = 0; MeshIndex < ArrayGetElementCount(Archive->Meshes); MeshIndex += 1) {
 			EBMMeshRef Mesh = (EBMMeshRef)ArrayGetElementAtIndex(Archive->Meshes, MeshIndex);
 			Matrix MeshTransform = MatrixIdentity();
-			//MeshTransform = MatrixMultiply(MeshTransform, QuaternionToMatrix(Mesh->AnimatedRotation));
-			//MeshTransform = MatrixMultiply(MeshTransform, MatrixTranslate(Mesh->AnimatedPosition.x, Mesh->AnimatedPosition.y, Mesh->AnimatedPosition.z));
+			//MeshTransform = MatrixMultiply(Mesh->RootBone->BoneMatrix, MeshTransform);
+//			MeshTransform = MatrixMultiply(MeshTransform, MatrixTranslate(Mesh->AnimatedPosition.x, Mesh->AnimatedPosition.y, Mesh->AnimatedPosition.z));
 			MeshTransform = MatrixMultiply(MeshTransform, Transform);
 
 			EBMMaterialRef MeshMaterial = (EBMMaterialRef)ArrayGetElementAtIndex(Archive->Materials, Mesh->MaterialIndex);
@@ -1067,29 +1029,27 @@ Void EBMArchiveDraw(
 		}
 	}
 	EndShaderMode();
-	/*
+
 	for (Int Index = 0; Index < ArrayGetElementCount(Archive->Bones); Index += 1) {
 		EBMBoneRef Bone = (EBMBoneRef)ArrayGetElementAtIndex(Archive->Bones, Index);
 
 		Vector3 AnimatedPosition = { 0, 0, 0 };
-		Matrix AnimatedTransform = EBMBoneGetAnimatedTransform(Archive, Bone);
+		Matrix AnimatedTransform = EBMBoneGetGlobalBoneMatrix(Archive, Bone);
 		AnimatedPosition = Vector3Transform(AnimatedPosition, MatrixMultiply(AnimatedTransform, Transform));
 		//DrawSphere(AnimatedPosition, 0.05f, RED);
 	}
-	*/
+
 	for (Int Index = 0; Index < ArrayGetElementCount(Archive->Bones); Index += 1) {
 		EBMBoneRef Bone = (EBMBoneRef)ArrayGetElementAtIndex(Archive->Bones, Index);
 
 		Vector3 AnimatedPosition = { 0, 0, 0 };
-		AnimatedPosition = Vector3Transform(AnimatedPosition, MatrixMultiply(Bone->WorldMatrix, Transform));
+		AnimatedPosition = Vector3Transform(AnimatedPosition, MatrixMultiply(MatrixInvert(Bone->GlobalBindPoseMatrix), Transform));
 		//DrawSphere(AnimatedPosition, 0.05f, BLUE);
 	}
 
 	for (Int Index = 0; Index < ArrayGetElementCount(Archive->Bones); Index += 1) {
 		EBMBoneRef Bone = (EBMBoneRef)ArrayGetElementAtIndex(Archive->Bones, Index);
-		if (Bone->ParentBoneIndex >= 0) continue;
-
-		//EBMArchiveDrawBone(Context, Archive, NULL, Bone, Transform, 0);
+		//EBMArchiveDrawBone(Context, Archive, Bone, Transform, 0);
 	}
 
 	Transform = MatrixIdentity();

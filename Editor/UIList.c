@@ -12,6 +12,8 @@ struct _UIList {
 	Int32 ActiveIndex;
 	ArrayRef Names;
 	ArrayRef Items;
+	ArrayRef FilteredNames;
+	ArrayRef FilteredItems;
 };
 
 UIListRef UIListCreate(
@@ -27,8 +29,11 @@ UIListRef UIListCreate(
 	List->ActiveIndex = -1;
 	List->Names = ArrayCreateEmpty(Allocator, sizeof(Char), 8);
 	List->Items = ArrayCreateEmpty(Allocator, sizeof(struct _UIListItem) + ItemDataLength, 8);
+	List->FilteredNames = ArrayCreateEmpty(Allocator, sizeof(Char), 8);
+	List->FilteredItems = ArrayCreateEmpty(Allocator, sizeof(struct _UIListItem) + ItemDataLength, 8);
 	Char Terminator = '\0';
 	ArrayAppendElement(List->Names, &Terminator);
+	ArrayAppendElement(List->FilteredNames, &Terminator);
 	return List;
 }
 
@@ -37,6 +42,8 @@ Void UIListDestroy(
 ) {
 	ArrayDestroy(List->Items);
 	ArrayDestroy(List->Names);
+	ArrayDestroy(List->FilteredItems);
+	ArrayDestroy(List->FilteredNames);
 	AllocatorDeallocate(List->Allocator, List);
 }
 
@@ -59,6 +66,16 @@ UIListItemRef UIListAppendItem(
 	else ArrayRemoveElementAtIndex(List->Names, ArrayGetElementCount(List->Names) - 1);
 	ArrayAppendMemory(List->Names, Name, strlen(Name) + 1);
 
+	UIListItemRef FilteredItem = ArrayAppendUninitializedElement(List->FilteredItems);
+	CStringCopySafe(FilteredItem->Name, UI_TEXT_LENGTH, Name);
+	if (DataLength > 0) memcpy(FilteredItem->Data, Data, DataLength);
+
+	CString FilteredNames = (CString)ArrayGetElementAtIndex(List->FilteredNames, 0);
+	Int32 FilteredNameLength = ArrayGetElementCount(List->FilteredNames) - 1;
+	if (FilteredNameLength > 0) FilteredNames[ArrayGetElementCount(List->FilteredNames) - 1] = ';';
+	else ArrayRemoveElementAtIndex(List->FilteredNames, ArrayGetElementCount(List->FilteredNames) - 1);
+	ArrayAppendMemory(List->FilteredNames, Name, strlen(Name) + 1);
+
 	return Item;
 }
 
@@ -72,7 +89,26 @@ Void UIListFilter(
 	UIListRef List,
 	CString SearchTerm
 ) {
+	ArrayRemoveAllElements(List->FilteredItems, true);
+	ArrayRemoveAllElements(List->FilteredNames, true);
 
+	Char Terminator = '\0';
+	ArrayAppendElement(List->FilteredNames, &Terminator);
+
+	for (Int Index = 0; Index < ArrayGetElementCount(List->Items); Index += 1) {
+		UIListItemRef Item = (UIListItemRef)ArrayGetElementAtIndex(List->Items, Index);
+		if (strlen(SearchTerm) > 0 && !strstr(Item->Name, SearchTerm)) continue;
+
+		UIListItemRef FilteredItem = ArrayAppendUninitializedElement(List->FilteredItems);
+		CStringCopySafe(FilteredItem->Name, UI_TEXT_LENGTH, Item->Name);
+		if (List->ItemDataLength > 0) memcpy(FilteredItem->Data, Item->Data, List->ItemDataLength);
+
+		CString FilteredNames = (CString)ArrayGetElementAtIndex(List->FilteredNames, 0);
+		Int32 FilteredNameLength = ArrayGetElementCount(List->FilteredNames) - 1;
+		if (FilteredNameLength > 0) FilteredNames[ArrayGetElementCount(List->FilteredNames) - 1] = ';';
+		else ArrayRemoveElementAtIndex(List->FilteredNames, ArrayGetElementCount(List->FilteredNames) - 1);
+		ArrayAppendMemory(List->FilteredNames, Item->Name, strlen(Item->Name) + 1);
+	}
 }
 
 Bool UIListDraw(
@@ -81,13 +117,13 @@ Bool UIListDraw(
 	Rectangle Frame,
 	UIListItemRef* Selection
 ) {
-	if (ArrayGetElementCount(List->Items) < 1) return false;
+	if (ArrayGetElementCount(List->FilteredItems) < 1) return false;
 
 	Int32 PreviousActiveIndex = List->ActiveIndex;
-	CString Names = (CString)ArrayGetElementAtIndex(List->Names, 0);
+	CString Names = (CString)ArrayGetElementAtIndex(List->FilteredNames, 0);
 	GuiListView(Frame, Names, &List->ScrollIndex, &List->ActiveIndex);
 	if (PreviousActiveIndex != List->ActiveIndex && List->ActiveIndex >= 0) {
-		*Selection = (UIListItemRef)ArrayGetElementAtIndex(List->Items, List->ActiveIndex);
+		*Selection = (UIListItemRef)ArrayGetElementAtIndex(List->FilteredItems, List->ActiveIndex);
 		return true;
 	}
 

@@ -18,8 +18,11 @@ Matrix ConvertDirectXMatrixToOpenGL(
     
     // If necessary, adjust for coordinate system
     // Negate the z-axis for right-handed systems (projection matrix example)
-   // ((Float32*)&Result)[2 * 4 + 2] *= -1; // Negate m22
-  //  ((Float32*)&Result)[3 * 4 + 2] *= -1; // Negate m32
+   //
+  // 
+    //Result = MatrixMultiply(Result, MatrixScale(1, 1, -1));
+   //((Float32*)&Result)[2 * 4 + 2] *= -1; // Negate m22
+   // ((Float32*)&Result)[3 * 4 + 2] *= -1; // Negate m32
     return Result;
 }
 
