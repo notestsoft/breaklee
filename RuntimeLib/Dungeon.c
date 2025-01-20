@@ -329,23 +329,17 @@ Bool RTDungeonTriggerEvent(
             assert(Mob);
 
             if (ActionData->TargetAction == RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_SPAWN) {
-                if (Mob->IsPermanentDeath) continue;
-                if (RTMobIsAlive(Mob)) continue;
-
                 RTWorldSpawnMobEvent(Runtime, World, Mob, ActionData->Delay);
                 Triggered = true;
             }
 
             if (ActionData->TargetAction == RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_KILL) {
-                if (!RTMobIsAlive(Mob)) continue;
-
                 RTWorldDespawnMobEvent(Runtime, World, Mob, ActionData->Delay);
                 Triggered = true;
             }
 
             if (ActionData->TargetAction == RUNTIME_DUNGEON_TRIGGER_ACTION_TYPE_REVIVE) {
-                if (RTMobIsAlive(Mob)) continue;
-
+                Mob->IsPermanentDeath = false;
                 RTWorldSpawnMobEvent(Runtime, World, Mob, ActionData->Delay);
                 Triggered = true;
             }

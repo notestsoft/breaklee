@@ -612,6 +612,8 @@ Void RTMobUpdate(
 		if (Mob->EventSpawnTimestamp > Timestamp) return;
 
 		Mob->EventSpawnTimestamp = 0;
+		if (Mob->IsPermanentDeath || Mob->IsSpawned) return;
+
 		RTWorldSpawnMob(Runtime, WorldContext, Mob);
 		return;
 	}
@@ -620,12 +622,10 @@ Void RTMobUpdate(
 		if (Mob->EventDespawnTimestamp > Timestamp) return;
 
 		Mob->EventDespawnTimestamp = 0;
+		if (!Mob->IsSpawned) return;
 
-		if (Mob->IsSpawned) {
-			Mob->NextTimestamp = Timestamp + Mob->Spawn.SpawnInterval;
-			RTWorldDespawnMob(Runtime, WorldContext, Mob);
-		}
-
+		Mob->NextTimestamp = Timestamp + Mob->Spawn.SpawnInterval;
+		RTWorldDespawnMob(Runtime, WorldContext, Mob);
 		return;
 	}
 

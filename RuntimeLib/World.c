@@ -219,6 +219,8 @@ Void RTWorldSpawnMobEvent(
 ) {
     Mob->NextTimestamp = 0;
     Mob->EventSpawnTimestamp = GetTimestampMs() + Delay;
+    Mob->EventDespawnTimestamp = 0;
+    Mob->EventRespawnTimestamp = 0;
 }
 
 Void RTWorldSpawnMob(
@@ -231,6 +233,7 @@ Void RTWorldSpawnMob(
     //assert(Mob->State == RUNTIME_MOB_STATE_DEAD);
     // assert(Mob->IsDead);
 
+    if (Mob->IsPermanentDeath) return;
     if (Mob->IsSpawned)
         return;
 
@@ -456,6 +459,8 @@ Void RTWorldDespawnMobEvent(
 ) {
     Mob->NextTimestamp = 0;
     Mob->EventDespawnTimestamp = GetTimestampMs() + Delay;
+    Mob->EventSpawnTimestamp = 0;
+    Mob->EventRespawnTimestamp = 0;
 }
 
 Void RTWorldDespawnMobList(

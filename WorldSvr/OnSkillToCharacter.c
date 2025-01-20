@@ -77,7 +77,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		
 		C2S_DATA_SKILL_GROUP_MOVEMENT* PacketData = (C2S_DATA_SKILL_GROUP_MOVEMENT*)&Packet->Data[0];
 
-		S2C_DATA_SKILL_GROUP_ATTACK* ResponseData = PacketBufferAppendStruct(ResponsePacketBuffer, S2C_DATA_SKILL_GROUP_ATTACK);
+		S2C_DATA_SKILL_GROUP_MOVEMENT* ResponseData = PacketBufferAppendStruct(ResponsePacketBuffer, S2C_DATA_SKILL_GROUP_MOVEMENT);
 		ResponseData->CharacterMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 
 		Int32 CharacterPositionError = RTCalculateDistance(
