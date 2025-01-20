@@ -60,11 +60,6 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
     assert(CharacterCollectionSlot);
 
     S2C_DATA_REGISTER_COLLECTION_ITEM* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, REGISTER_COLLECTION_ITEM);
-    Response->TypeID = Packet->TypeID;
-    Response->Unknown1 = Packet->Unknown1;
-    Response->CollectionID = Packet->CollectionID;
-    Response->MissionID = Packet->MissionID;
-    Response->MissionSlotIndex = Packet->MissionSlotIndex;
 
     RTDataCollectionMissionRef CollectionMission = RTRuntimeDataCollectionMissionGet(Runtime->Context, Packet->TypeID);
     if (!CollectionMission) goto error;
@@ -99,7 +94,6 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
             Bool Found = false;
             for (Int DetailIndex = 0; DetailIndex < CollectionMissionItem->CollectionMissionItemDetailCount; DetailIndex += 1) {
                 RTDataCollectionMissionItemDetailRef CollectionMissionItemDetail = &CollectionMissionItem->CollectionMissionItemDetailList[DetailIndex];
-
                 if (CollectionMissionItemDetail->ItemIndex != (ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX)) continue;
                 if (!IsStackable && CollectionMissionItemDetail->ItemOption != ItemSlot->ItemOptions) continue;
 
@@ -111,14 +105,17 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
 
             Int32 RegisteredAmount = 1;
             if (IsStackable) {
-                Int32 RequiredAmount = MAX(0, 
+                Int32 ConsumableAmount = RTItemDataGetStackSize(ItemData, ItemSlot->ItemOptions);
+                if (ConsumableAmount < 1) goto error;
+
+                Int32 RequiredAmount = MAX(0,
                     CollectionMissionDetail->ItemCount - CharacterCollectionSlot->MissionItemCounts[Packet->MissionSlotIndex]
                 );
                 Int32 RemainingAmount = MAX(0,
-                    (Int32)ItemSlot->ItemOptions - RequiredAmount
+                    (Int32)ConsumableAmount - RequiredAmount
                 );
 
-                RegisteredAmount = MIN((Int32)ItemSlot->ItemOptions, RequiredAmount);
+                RegisteredAmount = MIN(ConsumableAmount, RequiredAmount);
                 ItemSlot->ItemOptions = RemainingAmount;
             }
 
@@ -127,9 +124,7 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
                 CollectionMissionDetail->ItemCount
             );
 
-            if (!IsStackable || ItemSlot->ItemOptions < 1) {
-                if (!RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index])) goto error;
-            }
+            if (!RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index])) goto error;
         }
 
         Character->SyncMask.CollectionInfo = true;
@@ -205,15 +200,17 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
 
             Int32 RegisteredAmount = 1;
             if (IsStackable) {
+                Int32 ConsumableAmount = RTItemDataGetStackSize(ItemData, ItemSlot->ItemOptions);
+                if (ConsumableAmount < 1) goto error;
+
                 Int32 RequiredAmount = MAX(0,
                     CollectionMissionDetail->ItemCount - CharacterCollectionSlot->MissionItemCounts[Packet->MissionSlotIndex]
                 );
                 Int32 RemainingAmount = MAX(0,
-                    (Int32)ItemSlot->ItemOptions - RequiredAmount
+                    (Int32)ConsumableAmount - RequiredAmount
                 );
 
                 RegisteredAmount = MIN((Int32)ItemSlot->ItemOptions, RequiredAmount);
-                ItemSlot->ItemOptions = RemainingAmount;
             }
 
             CharacterCollectionSlot->MissionItemCounts[Packet->MissionSlotIndex] = MIN(
@@ -221,9 +218,7 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
                 CollectionMissionDetail->ItemCount
             );
 
-            if (!IsStackable || ItemSlot->ItemOptions < 1) {
-                if (!RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index])) goto error;
-            }
+            if (!RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex[Index])) goto error;
         }
 
         Character->SyncMask.CollectionInfo = true;
@@ -234,10 +229,7 @@ CLIENT_PROCEDURE_BINDING(REGISTER_COLLECTION_ITEM) {
         goto error;
     }
 
-    for (Int Index = 0; Index < RUNTIME_CHARACTER_MAX_COLLECTION_ITEM_COUNT; Index += 1) {
-        Response->MissionItemCounts[Index] = CharacterCollectionSlot->MissionItemCounts[Index];
-    }
-
+    Response->CollectionSlot = *CharacterCollectionSlot;
     SocketSend(Socket, Connection, Response);
     return;
 

@@ -1724,7 +1724,7 @@ Bool ServerLoadDungeonExtraData(
             }
 
             if (DictionaryLookup(DungeonData->TimeControls, &MobIndex)) {
-                Error("MobIndex %llu already has a TimeControl in Dungeon %d!", MobIndex, DungeonData->DungeonIndex);
+                Error("MobIndex %llu already has a TimeControl in Dungeon %llu!", MobIndex, DungeonData->DungeonIndex);
                 GroupIterator = ArchiveQueryNodeIteratorNext(Archive, GroupIterator);
                 continue;
             }
