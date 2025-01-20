@@ -391,19 +391,19 @@
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="179,180,181,182,183,184,185,186" NpcIndex="-1" ActionGroupIndex="131"/>
 	</TriggerGroup>
 	<TriggerGroup Index="131">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="187,188,189,190,191,192" NpcIndex="-1" ActionGroupIndex="133"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="187,188,189,190,191" NpcIndex="-1" ActionGroupIndex="133"/>
 	</TriggerGroup>
 	<TriggerGroup Index="132">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="187,188,189,190,191,192" NpcIndex="-1" ActionGroupIndex="134"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="187,188,189,190,191" NpcIndex="-1" ActionGroupIndex="134"/>
 	</TriggerGroup>
 	<TriggerGroup Index="133">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="187,188,189,190,191,192" NpcIndex="-1" ActionGroupIndex="135"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="187,188,189,190,191" NpcIndex="-1" ActionGroupIndex="135"/>
 	</TriggerGroup>
 	<TriggerGroup Index="134">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="187,188,189,190,191,192" NpcIndex="-1" ActionGroupIndex="136"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="187,188,189,190,191" NpcIndex="-1" ActionGroupIndex="136"/>
 	</TriggerGroup>
 	<TriggerGroup Index="135">
-		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="187,188,189,190,191,192" NpcIndex="-1" ActionGroupIndex="137"/>
+		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="187,188,189,190,191" NpcIndex="-1" ActionGroupIndex="137"/>
 	</TriggerGroup>
 	<TriggerGroup Index="136">
 		<Trigger Type="2" LiveMobIndexList="" DeadMobIndexList="" NpcIndex="-1" ActionGroupIndex="138"/>
