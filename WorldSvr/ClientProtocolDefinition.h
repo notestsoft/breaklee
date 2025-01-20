@@ -197,14 +197,6 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_OVERLORD_MASTERY_SLOT,
     UInt8 Level;
 )
 
-CLIENT_PROTOCOL_STRUCT(S2C_DATA_COLLECTION_SLOT,
-    UInt8 TypeID;
-    UInt8 CollectionID;
-    UInt16 MissionID;
-    UInt8 ReceivedReward;
-    UInt16 MissionItemCounts[6];
-)
-
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_NEWBIE_SUPPORT_SLOT,
     UInt8 CategoryType;
     UInt8 ConditionValue1;
@@ -1108,8 +1100,8 @@ CLIENT_PROTOCOL(C2S, WARP, DEFAULT, 244,
     UInt8 WarpPositionX;
     UInt8 WarpWorldID;
     UInt8 Unknown3[15];
-    Int32 WarpIndex;
-    UInt8 Unknown4;
+    UInt16 WarpIndex;
+    Int32 IsElite;
 )
 
 CLIENT_PROTOCOL(S2C, WARP, DEFAULT, 244,
