@@ -226,9 +226,9 @@ Bool RTCharacterQuestBegin(
 		RTNpcRef Npc = RTRuntimeGetNpcByWorldNpcID(Runtime, QuestNpc->WorldID, QuestNpc->NpcID);
 		if (!Npc) return false;
 
-		if (!RTMovementIsInRange(Runtime, &Character->Movement, Npc->X, Npc->Y)) {
-			return false;
-		}
+		//if (!RTMovementIsInRange(Runtime, &Character->Movement, Npc->X, Npc->Y)) {
+		//	return false;
+		//}
 
 		NpcActionIndex = QuestNpc->NpcActionOrder;
 
@@ -696,9 +696,9 @@ Bool RTCharacterPartyQuestBegin(
 		RTNpcRef Npc = RTRuntimeGetNpcByWorldNpcID(Runtime, QuestNpc->WorldID, QuestNpc->NpcID);
 		if (!Npc) return false;
 
-		if (!RTMovementIsInRange(Runtime, &Character->Movement, Npc->X, Npc->Y)) {
-			return false;
-		}
+		//if (!RTMovementIsInRange(Runtime, &Character->Movement, Npc->X, Npc->Y)) {
+		//	return false;
+		//}
 
 		QuestSlot->NpcActionIndex = QuestNpc->NpcActionOrder;
 
@@ -751,9 +751,9 @@ Bool RTCharacterPartyQuestClear(
 	RTNpcRef Npc = RTRuntimeGetNpcByWorldNpcID(Runtime, QuestNpc->WorldID, QuestNpc->NpcID);
 	if (!Npc) return false;
 
-	if (!RTMovementIsInRange(Runtime, &Character->Movement, Npc->X, Npc->Y)) {
-		return false;
-	}
+	//if (!RTMovementIsInRange(Runtime, &Character->Movement, Npc->X, Npc->Y)) {
+	//	return false;
+	//}
 
 	if (QuestNpc->ActionType != 6) {
 		return false;
