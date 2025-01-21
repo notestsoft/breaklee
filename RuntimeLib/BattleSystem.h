@@ -427,6 +427,15 @@ Int64 RTCalculateBaseHP(
 	Int64 DeltaHP2
 );
 
+Int64 RTCalculateBaseMP(
+	Int64 SkillRank,
+	Int64 BaseMP,
+	Int64 DeltaMP,
+	Int64 Level,
+	Int64 BattleRank,
+	Int64 DeltaMP2
+);
+
 Int32 RTCalculateSPReward(
 	Int32 SkillExp,
 	Int32 ComboLevel,

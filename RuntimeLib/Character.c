@@ -46,7 +46,14 @@ Void RTCharacterInitializeBattleStyleLevel(
 		Character->Data.StyleInfo.Style.BattleRank,
 		LevelFormula->DeltaHP2
 	);
-	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX] = (Int64)LevelFormula->BaseMP + (Int64)LevelFormula->DeltaMP * (Character->Data.Info.Level - 1) / 10;
+	Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_MAX] = RTCalculateBaseMP(
+		Character->Data.Info.SkillRank,
+		LevelFormula->BaseMP,
+		LevelFormula->DeltaMP,
+		Character->Data.Info.Level,
+		Character->Data.StyleInfo.Style.BattleRank,
+		0
+	);
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_MAX] = SpiritPointLimitData->Value;
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_MAX] = 0;
 	Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_MAX] = RageLimitLevelData->Value;
@@ -77,7 +84,7 @@ Void RTCharacterInitializeBattleStyleClass(
 	for (Int Index = 0; Index < ClassFormulaIndexCount; Index++) {
 		Character->Attributes.Values[ClassFormulaIndices[Index].AttributeIndex] += (
 			(Int64)Character->Data.StyleInfo.Style.BattleRank * ClassFormulaIndices[Index].Values[0] + ClassFormulaIndices[Index].Values[1]
-			);
+		);
 	}
 }
 

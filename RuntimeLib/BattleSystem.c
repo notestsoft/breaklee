@@ -495,6 +495,21 @@ Int64 RTCalculateBaseHP(
 	return BaseValue + LevelBonus + SkillRankBonus + (BattleRank > 7 ? BattleRankBonus : 0);
 }
 
+Int64 RTCalculateBaseMP(
+	Int64 SkillRank,
+	Int64 BaseMP,
+	Int64 DeltaMP,
+	Int64 Level,
+	Int64 BattleRank,
+	Int64 DeltaMP2
+) {
+	Int64 BaseValue = BaseMP - 15;
+	Int64 LevelBonus = (Level - 1) * DeltaMP / 10;
+	Int64 SkillRankBonus = (SkillRank + 1) * SkillRank * 15 / 2;
+	Int64 BattleRankBonus = ((BattleRank * 5 - 14) * BattleRank + 9) * DeltaMP2 / 500;
+	return BaseValue + LevelBonus + SkillRankBonus + (BattleRank > 7 ? BattleRankBonus : 0);
+}
+
 Int32 RTCalculateSPReward(
 	Int32 SkillExp,
 	Int32 ComboLevel,
