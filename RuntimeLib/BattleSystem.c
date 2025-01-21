@@ -473,6 +473,10 @@ static inline RTFinalBattleAttributes CalculateFinalBattleAttributes(
 	);
 
 	Result.BlockRate = _CalculateFinalBlockRate(AttackerLevel, DefenderLevel, AttackRate, DefenseRate);
+	Result.CriticalRate *= 10000;
+
+	Int64 RemainingRate = 1000000 - Result.MissRate;
+	Result.BlockRate = (Result.BlockRate * 1000000) / RemainingRate;
 	return Result;
 }
 
@@ -533,19 +537,20 @@ RTBattleResult RTCalculateNormalAttackResult(
 
 //	Int32 LevelDifference = CalculateLevelDifference(AttackerLevel, DefenderLevel);
 //	Int32 LevelDifferencePenalty = CalculateLevelDifferencePenalty(AttackerLevel, DefenderLevel);
-
-	Int32 Rate = RandomRange(&Attacker->Seed, 0, 1000000);
-	if (Rate < Attributes.BlockRate) {
-		Result.AttackType = RUNTIME_ATTACK_TYPE_BLOCK;
-	}
-	else if (Rate < Attributes.BlockRate + Attributes.MissRate) {
+	
+	Int32 Seed = PlatformGetTickCount();
+	Int32 Rate = RandomRange(&Seed, 0, 1000000);
+	if (Rate < Attributes.MissRate) {
 		Result.AttackType = RUNTIME_ATTACK_TYPE_MISS;
 	}
+	else if (Rate < Attributes.MissRate + Attributes.BlockRate) {
+		Result.AttackType = RUNTIME_ATTACK_TYPE_BLOCK;
+	}
 	else {
-		if (Rate < Attributes.CriticalRate * 10000) {
+		Rate = RandomRange(&Seed, 0, 1000000);
+		if (Rate < Attributes.CriticalRate) {
 			Result.AttackType = RUNTIME_ATTACK_TYPE_CRITICAL;
-		}
-		else {
+		} else {
 			Result.AttackType = RUNTIME_ATTACK_TYPE_NORMAL;
 		}
 	}
