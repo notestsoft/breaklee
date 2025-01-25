@@ -156,6 +156,17 @@ struct _RTPosition {
 };
 typedef struct _RTPosition RTPosition;
 
+union _RTShortDate {
+    struct {
+        UInt16 Year : 7;
+        UInt16 Month : 4;
+        UInt16 Day : 5;
+    };
+
+    UInt16 RawValue;
+};
+typedef union _RTShortDate RTShortDate;
+
 #pragma pack(pop)
 
 EXTERN_C_END
