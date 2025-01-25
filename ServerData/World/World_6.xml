@@ -136,6 +136,7 @@
 		<Mob MobIndex="132" SpeciesIndex="262" X="184" Y="216" Width="11" Height="11" SpawnInterval="160000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="133" SpeciesIndex="262" X="179" Y="161" Width="11" Height="11" SpawnInterval="160000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="134" SpeciesIndex="262" X="202" Y="115" Width="11" Height="11" SpawnInterval="160000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="135" SpeciesIndex="3424" X="35" Y="222" Width="1" Height="1" SpawnInterval="0" SpawnDefault="0" MissionGate="0" PerfectDrop="0" MobPatternIndex="717" Script=""/>
 	</MobPool>
 	<CommonDropPool MinMobLevel="90" MaxMobLevel="200">
 		<Item ItemID="692" ItemOption="10625" ItemDuration="0" OptionPoolID="0" Rate="0.40000000000000000"/>

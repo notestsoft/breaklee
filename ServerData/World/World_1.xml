@@ -140,27 +140,27 @@
 		<Mob MobIndex="136" SpeciesIndex="41" X="146" Y="30" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="137" SpeciesIndex="2" X="155" Y="25" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="138" SpeciesIndex="41" X="162" Y="37" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="139" SpeciesIndex="226" X="166" Y="51" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="140" SpeciesIndex="227" X="176" Y="55" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="141" SpeciesIndex="226" X="174" Y="45" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="142" SpeciesIndex="227" X="185" Y="59" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="143" SpeciesIndex="226" X="191" Y="52" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="144" SpeciesIndex="226" X="183" Y="45" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="145" SpeciesIndex="226" X="186" Y="37" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="146" SpeciesIndex="226" X="185" Y="26" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="147" SpeciesIndex="227" X="177" Y="24" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="148" SpeciesIndex="226" X="195" Y="29" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="149" SpeciesIndex="227" X="211" Y="48" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="139" SpeciesIndex="3109" X="166" Y="51" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="140" SpeciesIndex="3110" X="176" Y="55" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="141" SpeciesIndex="3109" X="174" Y="45" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="142" SpeciesIndex="3110" X="185" Y="59" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="143" SpeciesIndex="3109" X="191" Y="52" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="144" SpeciesIndex="3109" X="183" Y="45" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="145" SpeciesIndex="3109" X="186" Y="37" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="146" SpeciesIndex="3109" X="185" Y="26" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="147" SpeciesIndex="3110" X="177" Y="24" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="148" SpeciesIndex="3109" X="195" Y="29" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="149" SpeciesIndex="3110" X="211" Y="48" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="150" SpeciesIndex="79" X="217" Y="69" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="151" SpeciesIndex="79" X="218" Y="56" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="152" SpeciesIndex="79" X="229" Y="57" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="153" SpeciesIndex="79" X="223" Y="46" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="154" SpeciesIndex="79" X="229" Y="46" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="155" SpeciesIndex="227" X="226" Y="35" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="155" SpeciesIndex="3110" X="226" Y="35" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="156" SpeciesIndex="79" X="236" Y="31" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="157" SpeciesIndex="79" X="228" Y="21" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="158" SpeciesIndex="227" X="213" Y="21" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="159" SpeciesIndex="227" X="214" Y="12" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="158" SpeciesIndex="3110" X="213" Y="21" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="159" SpeciesIndex="3110" X="214" Y="12" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="160" SpeciesIndex="195" X="231" Y="106" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="161" SpeciesIndex="195" X="227" Y="96" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="162" SpeciesIndex="195" X="225" Y="85" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
@@ -182,35 +182,35 @@
 		<Mob MobIndex="178" SpeciesIndex="225" X="217" Y="132" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="179" SpeciesIndex="79" X="231" Y="135" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="180" SpeciesIndex="79" X="227" Y="147" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="181" SpeciesIndex="227" X="216" Y="151" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="181" SpeciesIndex="3110" X="216" Y="151" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="182" SpeciesIndex="79" X="226" Y="158" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="183" SpeciesIndex="227" X="208" Y="157" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="183" SpeciesIndex="3110" X="208" Y="157" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="184" SpeciesIndex="79" X="212" Y="166" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="185" SpeciesIndex="79" X="222" Y="167" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="186" SpeciesIndex="227" X="228" Y="178" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="187" SpeciesIndex="227" X="216" Y="179" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="186" SpeciesIndex="3110" X="228" Y="178" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="187" SpeciesIndex="3110" X="216" Y="179" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="188" SpeciesIndex="79" X="206" Y="185" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="189" SpeciesIndex="79" X="211" Y="195" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="190" SpeciesIndex="79" X="220" Y="197" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="191" SpeciesIndex="227" X="224" Y="194" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="192" SpeciesIndex="226" X="233" Y="208" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="193" SpeciesIndex="227" X="233" Y="220" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="194" SpeciesIndex="227" X="230" Y="222" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="195" SpeciesIndex="226" X="221" Y="212" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="196" SpeciesIndex="226" X="220" Y="229" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="197" SpeciesIndex="227" X="211" Y="234" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="198" SpeciesIndex="227" X="202" Y="236" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="199" SpeciesIndex="226" X="178" Y="222" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="191" SpeciesIndex="3110" X="224" Y="194" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="192" SpeciesIndex="3109" X="233" Y="208" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="193" SpeciesIndex="3110" X="233" Y="220" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="194" SpeciesIndex="3110" X="230" Y="222" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="195" SpeciesIndex="3109" X="221" Y="212" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="196" SpeciesIndex="3109" X="220" Y="229" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="197" SpeciesIndex="3110" X="211" Y="234" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="198" SpeciesIndex="3110" X="202" Y="236" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="199" SpeciesIndex="3109" X="178" Y="222" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="200" SpeciesIndex="177" X="156" Y="236" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="201" SpeciesIndex="177" X="161" Y="228" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="202" SpeciesIndex="177" X="156" Y="227" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="203" SpeciesIndex="226" X="168" Y="214" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="203" SpeciesIndex="3109" X="168" Y="214" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="204" SpeciesIndex="177" X="172" Y="208" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="205" SpeciesIndex="177" X="160" Y="206" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="206" SpeciesIndex="226" X="153" Y="201" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="206" SpeciesIndex="3109" X="153" Y="201" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="207" SpeciesIndex="177" X="163" Y="193" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="208" SpeciesIndex="177" X="174" Y="194" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-		<Mob MobIndex="209" SpeciesIndex="226" X="161" Y="185" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
+		<Mob MobIndex="209" SpeciesIndex="3109" X="161" Y="185" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="210" SpeciesIndex="177" X="170" Y="181" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="211" SpeciesIndex="177" X="177" Y="175" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="212" SpeciesIndex="177" X="162" Y="176" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
@@ -227,13 +227,6 @@
 		<Mob MobIndex="223" SpeciesIndex="176" X="140" Y="90" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="224" SpeciesIndex="176" X="113" Y="73" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
 		<Mob MobIndex="225" SpeciesIndex="176" X="135" Y="70" Width="11" Height="11" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatternIndex="0" Script=""/>
-
-        <Mob MobIndex="226" SpeciesIndex="3104" X="42" Y="128" Width="1" Height="1" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatrolIndex="1" MobPatternIndex="0" Script=""/>        
-        <Mob MobIndex="227" SpeciesIndex="768" X="14" Y="96" Width="1" Height="1" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatrolIndex="2" MobPatternIndex="0" Script=""/>        
-        <Mob MobIndex="228" SpeciesIndex="2716" X="19" Y="110" Width="1" Height="1" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatrolIndex="3" MobPatternIndex="0" Script=""/>        
-        <Mob MobIndex="229" SpeciesIndex="454" X="18" Y="108" Width="1" Height="1" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatrolIndex="4" MobPatternIndex="0" Script=""/>        
-        <Mob MobIndex="230" SpeciesIndex="454" X="20" Y="108" Width="1" Height="1" SpawnInterval="12000" SpawnDefault="1" MissionGate="0" PerfectDrop="0" MobPatrolIndex="5" MobPatternIndex="0" Script=""/>        
-
 	</MobPool>
 	<CommonDropPool MinMobLevel="1" MaxMobLevel="7">
 		<Item ItemID="16" ItemOption="0" ItemDuration="0" OptionPoolID="1" Rate="0.70875000000000000"/>
