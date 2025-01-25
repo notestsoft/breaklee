@@ -644,36 +644,6 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_SKILL_GROUP_WING,
     Int32 CurrentSP;
 )
 
-
-CLIENT_PROTOCOL_STRUCT(S2C_DATA_SKILL_TO_CHARACTER_TARGET,
-    UInt32 CharacterId;
-    UInt8 AttackType;
-    UInt32 AppliedDamage;
-    UInt32 TotalDamage;
-    UInt32 AdditionalDamage;
-    UInt64 HP;
-    CSC_POSITION PositionSet;
-    UInt32 BfxType;
-    UInt32 BfxDuration;
-    UInt8 Unknown3;
-)
-
-CLIENT_PROTOCOL_STRUCT(S2C_DATA_SKILL_GROUP_ATTACK,
-    UInt64 CharacterHP;
-    UInt32 CharacterMP;
-    UInt16 CharacterSP;
-    UInt64 AccumulatedExp;
-    Int32 Unknown2;
-    Int32 Unknown3;
-    UInt64 ReceivedSkillExp;
-    Int32 Unknown4;
-    UInt8 Unknown5;
-    UInt64 CharacterMaxHP;
-    UInt32 ReflectDamage;
-    UInt8 TargetCount;
-    S2C_DATA_SKILL_TO_CHARACTER_TARGET Data[0];
-)
-
 CLIENT_PROTOCOL(S2C, SKILL_TO_CHARACTER, DEFAULT, 175,
     UInt16 SkillIndex;
     UInt8 Data[0];

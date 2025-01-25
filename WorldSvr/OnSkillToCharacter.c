@@ -90,7 +90,6 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 			C2S_DATA_SKILL_TO_CHARACTER_TARGET* Target = &PacketData->Data[Index];
 			S2C_DATA_SKILL_TO_CHARACTER_TARGET* TargetResponse = PacketBufferAppendStruct(ResponsePacketBuffer, S2C_DATA_SKILL_TO_CHARACTER_TARGET);
 			
-
 			RTCharacterRef TargetCharacter = RTWorldManagerGetCharacter(Runtime->WorldManager, Target->Entity);
 			ClientContextRef TargetClient = ServerGetClientByIndex(Context, TargetCharacter->CharacterIndex, NULL);
 
@@ -98,7 +97,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 			if (!TargetClient) continue;
 			if (!RTCharacterIsAlive(Runtime, TargetCharacter)) continue;
 
-			TargetResponse->CharacterId = TargetCharacter->CharacterIndex;
+			TargetResponse->CharacterIndex = TargetCharacter->CharacterIndex;
 
 			RTBattleResult Result = RTCalculateSkillAttackResult(
 				Runtime,
@@ -130,9 +129,6 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 			TargetResponse->HP = TargetCharacter->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT]; //- (UInt32)Result.AppliedDamage;
 			TargetResponse->Unknown3 = (UInt32)Result.IsDead;
 
-	
-
-
 			if (TargetClient) {
 				S2C_DATA_NFY_SKILLTOMTON* NotificationTomTon = PacketBufferInit(SocketGetNextPacketBuffer(Context->ClientSocket), S2C, NFY_SKILLTOMTON);
 				NotificationTomTon->SkillIndex = Response->SkillIndex;
@@ -149,18 +145,11 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		ResponseData->CharacterMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
 		ResponseData->CharacterSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
 
-		ResponseData->Unknown4 = -1;
 		ResponseData->CharacterMaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
 		ResponseData->AccumulatedExp = Character->Data.Info.Exp;
-		ResponseData->Unknown2 = Character->Data.OverlordMasteryInfo.Info.Exp;
+		ResponseData->AccumulatedOxp = Character->Data.OverlordMasteryInfo.Info.Exp;
 		ResponseData->ReceivedSkillExp = ReceivedSkillExp;
-		//ResponseData->AXP = Character->Data.AbilityInfo.Info.Axp;
-		//ResponseData->AP = Character->Data.AbilityInfo.Info.AP;
 		ResponseData->TargetCount = TargetCount;
-		//ResponseData->Unknown5 = 0xFFFFFF;
-
-
-
 
 		S2C_DATA_NFY_SKILL_TO_CHARACTER* Notification = PacketBufferInit(NotificationPacketBuffer, S2C, NFY_SKILL_TO_CHARACTER);
 		Notification->SkillIndex = Response->SkillIndex;
@@ -170,21 +159,19 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 		NotificationData->TargetCount = ResponseData->TargetCount;
 		NotificationData->CharacterIndex = (UInt32)Character->CharacterIndex;
 		NotificationData->PositionSet.X = PacketData->PositionSet.X;
-		//->PositionSet.Y = PacketData->PositionSet.Y;
+		NotificationData->PositionSet.Y = PacketData->PositionSet.Y;
 		NotificationData->CharacterHP = ResponseData->CharacterHP;
-		//NotificationData->Shield = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_ABSOLUTE_DAMAGE];
+		NotificationData->Shield = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_ABSOLUTE_DAMAGE];
 
 		for (Int Index = 0; Index < TargetCount; Index++) {
 			S2C_DATA_SKILL_TO_CHARACTER_TARGET* TargetResponse = &ResponseData->Data[Index];
 			S2C_DATA_NFY_SKILL_TO_CHARACTER_TARGET* TargetNotification = 
 				PacketBufferAppendStruct(NotificationPacketBuffer, S2C_DATA_NFY_SKILL_TO_CHARACTER_TARGET);
 
-
-			TargetNotification->CharacterIndex = (UInt32)TargetResponse->CharacterId;
+			TargetNotification->CharacterIndex = (UInt32)TargetResponse->CharacterIndex;
 			TargetNotification->AttackType = TargetResponse->AttackType;
 			TargetNotification->HP = TargetResponse->HP;
 			TargetNotification->Unknown3 = TargetResponse->Unknown3;
-
 		}
 
 		SocketSend(Socket, Connection, Response);
@@ -197,6 +184,7 @@ CLIENT_PROCEDURE_BINDING(SKILL_TO_CHARACTER) {
 			Character->Data.Info.PositionY,
 			Notification
 		);
+		return;
 
 	} else if (SkillData->SkillGroup == RUNTIME_SKILL_GROUP_MOVEMENT) {
 		Timestamp CooldownInterval = RTCharacterGetCooldownInterval(Runtime, Character, SkillData->CooldownIndex);
