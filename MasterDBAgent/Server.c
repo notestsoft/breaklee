@@ -20,12 +20,12 @@ Void ServerLoadMigrationData(
             CString MigrationFilePath = PathCombineNoAlloc(Config.Database.MigrationDataPath, MigrationFileName);
             if (!CLFileExists(MigrationFilePath)) Fatal("Migration file not found: %s", MigrationFilePath);
 
-            FileRef File = FileOpen(FilePath);
-            if (!File) Fatal("Error loading migration file: %s", MigrationFilePath);
+            FileRef MigrationFile = FileOpen(MigrationFilePath);
+            if (!MigrationFile) Fatal("Error loading migration file: %s", MigrationFilePath);
 
             CString MigrationQuery = NULL;
             Int32 MigrationQueryLength = 0;
-            if (!FileRead(File, (UInt8**)&MigrationQuery, &MigrationQueryLength)) Fatal("Error loading migration file: %s", MigrationFilePath);
+            if (!FileRead(MigrationFile, (UInt8**)&MigrationQuery, &MigrationQueryLength)) Fatal("Error loading migration file: %s", MigrationFilePath);
 
             Info("Running migration: %s", MigrationFileName);
 
@@ -40,7 +40,7 @@ Void ServerLoadMigrationData(
             }
 
             free(MigrationQuery);
-            FileClose(File);
+            FileClose(MigrationFile);
         }
         else {
             Error("Invalid directive: %s\n", MigrationDirective);
