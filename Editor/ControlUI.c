@@ -5,11 +5,11 @@ Void UnloadArchive(
 	EditorContextRef Context,
 	ControlUIStateRef State
 ) {
-	if (!Context->Archive) return;
+	if (!Context->CanvasView->Content) return;
 
-	switch (Context->ArchiveItemType) {
+	switch (Context->CanvasView->ContentType) {
 	case UI_ITEM_LIST_EBM: {
-		EBMArchiveDestroy((EBMArchiveRef)Context->Archive);
+		EBMArchiveDestroy((EBMArchiveRef)Context->CanvasView->Content);
 		break;
 	}
 
@@ -22,7 +22,27 @@ Void UnloadArchive(
 	}
 
 	case UI_ITEM_LIST_MCL: {
-		MCLArchiveDestroy((MCLArchiveRef)Context->Archive);
+		MCLArchiveDestroy((MCLArchiveRef)Context->CanvasView->Content);
+		break;
+	}
+
+	case UI_ITEM_LIST_QD1: {
+		MCLArchiveDestroy((MCLArchiveRef)Context->CanvasView->Content);
+		break;
+	}
+
+	case UI_ITEM_LIST_MD1: {
+		MCLArchiveDestroy((MCLArchiveRef)Context->CanvasView->Content);
+		break;
+	}
+
+	case UI_ITEM_LIST_MD2: {
+		MCLArchiveDestroy((MCLArchiveRef)Context->CanvasView->Content);
+		break;
+	}
+
+	case UI_ITEM_LIST_MOB: {
+		EBMArchiveDestroy((EBMArchiveRef)Context->CanvasView->Content);
 		break;
 	}
 
@@ -30,8 +50,7 @@ Void UnloadArchive(
 		break;
 	}
 
-	Context->ArchiveItemType = -1;
-	Context->Archive = NULL;
+	UIViewSetContent(Context->CanvasView, -1, NULL);
 }
 
 Void LoadArchive(
@@ -43,11 +62,11 @@ Void LoadArchive(
 	UnloadArchive(Context, State);
 
 	switch (ArchiveItemType) {
-	case UI_ITEM_LIST_EBM: {
+	case UI_ITEM_LIST_EBM:
+	case UI_ITEM_LIST_MOB: {
 		EBMArchiveRef Archive = EBMArchiveCreate(Context->Allocator);
 		if (EBMArchiveLoadFromFile(Context->ShaderEBM, Archive, FilePath)) {
-			Context->ArchiveItemType = ArchiveItemType;
-			Context->Archive = Archive;
+			UIViewSetContent(Context->CanvasView, UI_ITEM_LIST_EBM, Archive);
 			EBMArchiveSetupCamera(Context, Archive);
 
 			if (Context->ModelList) UIListDestroy(Context->ModelList);
@@ -61,8 +80,8 @@ Void LoadArchive(
 
 			if (Context->AnimationList) UIListDestroy(Context->AnimationList);
 			Context->AnimationList = UIListCreate(Context->Allocator, sizeof(Int32));
-			Context->AnimationIndex = -1;
-
+			
+			Archive->AnimationIndex = -1;
 			for (Int32 Index = 0; Index < ArrayGetElementCount(Archive->Animations); Index += 1) {
 				EBMAnimationRef Animation = (EBMAnimationRef)ArrayGetElementAtIndex(Archive->Animations, Index);
 				UIListAppendItem(Context->AnimationList, Animation->Name, (UInt8*)&Index, sizeof(Int32));
@@ -86,8 +105,7 @@ Void LoadArchive(
 	case UI_ITEM_LIST_MCL: {
 		MCLArchiveRef Archive = MCLArchiveCreate(Context->Allocator);
 		if (MCLArchiveLoadFromFile(Context, Archive, FilePath)) {
-			Context->ArchiveItemType = ArchiveItemType;
-			Context->Archive = Archive;
+			UIViewSetContent(Context->CanvasView, UI_ITEM_LIST_MCL, Archive);
 		}
 		else {
 			MCLArchiveDestroy(Archive);
@@ -106,34 +124,6 @@ Void ControlUIUpdateDungeonListItems(
 	ControlUIStateRef State,
 	CString SearchQuery
 ) {
-	Int Offset = 0;
-	State->DungeonListItems[Offset] = '\0';
-	Int IndexOffset = 0;
-	for (Int Index = 0; Index < ArrayGetElementCount(Context->MissionDungeons); Index += 1) {
-		MissionDungeonDataRef Data = (MissionDungeonDataRef)ArrayGetElementAtIndex(Context->MissionDungeons, Index);
-		State->DungeonListTargets[Index] = IndexOffset;
-
-		Int DungeonIndex = Data->QDungeonIdx;
-		CString Name = DictionaryLookup(Context->MissionDungeonNames, &DungeonIndex);
-		if (Name) {
-			if (strlen(SearchQuery) > 0 && !strstr(Name, SearchQuery)) continue;
-
-			sprintf(&State->DungeonListItems[Offset], "%s;", Name);
-			Offset += strlen(Name) + 1;
-			State->DungeonListItems[Offset] = '\0';
-		}
-		else {
-			Char TempName[64] = { 0 };
-			sprintf(TempName, "dungeon_%d;", Data->QDungeonIdx);
-			if (strlen(SearchQuery) > 0 && !strstr(TempName, SearchQuery)) continue;
-
-			sprintf(&State->DungeonListItems[Offset], "%s;", TempName);
-			Offset += strlen(TempName) + 1;
-			State->DungeonListItems[Offset] = '\0';
-		}
-
-		IndexOffset += 1;
-	}
 }
 
 Void OnFilesList(
@@ -164,30 +154,62 @@ Void ControlUIInit(
     local_20b8 = ".gls";
     local_2078 = ".mfx";
 	*/
-	CStringCopySafe(State->ToolbarText, sizeof(State->ToolbarText), "ebm;efx;eps;mcl;qd1;md1;md2");
+	CStringCopySafe(State->ToolbarText, sizeof(State->ToolbarText), "ebm;efx;eps;mcl;qd1;md1;md2;mob");
 	State->ToolbarActiveIndex = 0;
-	ControlUIUpdateDungeonListItems(Context, State, State->SearchBoxText);
-	State->DungeonListActiveName = NULL;
 
-	State->EbmItemList = UIListCreate(Context->Allocator, PLATFORM_PATH_MAX);
-	State->EfxItemList = UIListCreate(Context->Allocator, PLATFORM_PATH_MAX);
-	State->EpsItemList = UIListCreate(Context->Allocator, PLATFORM_PATH_MAX);
-	State->MclItemList = UIListCreate(Context->Allocator, PLATFORM_PATH_MAX);
-	State->Qd1ItemList = UIListCreate(Context->Allocator, PLATFORM_PATH_MAX);
-	State->Md1ItemList = UIListCreate(Context->Allocator, PLATFORM_PATH_MAX);
-	State->Md2ItemList = UIListCreate(Context->Allocator, PLATFORM_PATH_MAX);
-	State->IndexToItemList[UI_ITEM_LIST_EBM] = State->EbmItemList;
-	State->IndexToItemList[UI_ITEM_LIST_EFX] = State->EfxItemList;
-	State->IndexToItemList[UI_ITEM_LIST_EPS] = State->EpsItemList;
-	State->IndexToItemList[UI_ITEM_LIST_MCL] = State->MclItemList;
-	State->IndexToItemList[UI_ITEM_LIST_QD1] = State->Qd1ItemList;
-	State->IndexToItemList[UI_ITEM_LIST_MD1] = State->Md1ItemList;
-	State->IndexToItemList[UI_ITEM_LIST_MD2] = State->Md2ItemList;
+	for (Int Index = 0; Index < UI_ITEM_LIST_COUNT; Index += 1) {
+		State->ItemLists[Index] = UIListCreate(Context->Allocator, PLATFORM_PATH_MAX);
+	}
 
-	FilesList(Context->Config.Editor.ClientDataPath, "*.ebm", true, OnFilesList, State->EbmItemList);
-	FilesList(Context->Config.Editor.ClientDataPath, "*.efx", true, OnFilesList, State->EfxItemList);
-	FilesList(Context->Config.Editor.ClientDataPath, "*.eps", true, OnFilesList, State->EpsItemList);
-	FilesList(Context->Config.Editor.ClientDataPath, "*.mcl", true, OnFilesList, State->MclItemList);
+	FilesList(Context->Config.Editor.ClientDataPath, "*.ebm", true, OnFilesList, State->ItemLists[UI_ITEM_LIST_EBM]);
+	FilesList(Context->Config.Editor.ClientDataPath, "*.efx", true, OnFilesList, State->ItemLists[UI_ITEM_LIST_EFX]);
+	FilesList(Context->Config.Editor.ClientDataPath, "*.eps", true, OnFilesList, State->ItemLists[UI_ITEM_LIST_EPS]);
+	FilesList(Context->Config.Editor.ClientDataPath, "*.mcl", true, OnFilesList, State->ItemLists[UI_ITEM_LIST_MCL]);
+
+	for (Int32 Index = 0; Index < ArrayGetElementCount(Context->MissionDungeons1); Index += 1) {
+		MissionDungeonDataRef DungeonData = (MissionDungeonDataRef)ArrayGetElementAtIndex(Context->MissionDungeons1, Index);
+
+		Int DungeonIndex = DungeonData->QDungeonIdx;
+		CString Name = DictionaryLookup(Context->MissionDungeonNames, &DungeonIndex);
+		if (Name) {
+			UIListAppendItem(State->ItemLists[UI_ITEM_LIST_MD1], Name, &Index, sizeof(Index));
+		}
+		else {
+			Char TempName[64] = { 0 };
+			sprintf(TempName, "dungeon_%d;", DungeonData->QDungeonIdx);
+			UIListAppendItem(State->ItemLists[UI_ITEM_LIST_MD1], Name, &Index, sizeof(Index));
+		}
+	}
+
+	for (Int32 Index = 0; Index < ArrayGetElementCount(Context->MissionDungeons2); Index += 1) {
+		MissionDungeonDataRef DungeonData = (MissionDungeonDataRef)ArrayGetElementAtIndex(Context->MissionDungeons2, Index);
+
+		Int DungeonIndex = DungeonData->QDungeonIdx;
+		CString Name = DictionaryLookup(Context->MissionDungeonNames, &DungeonIndex);
+		if (Name) {
+			UIListAppendItem(State->ItemLists[UI_ITEM_LIST_MD2], Name, &Index, sizeof(Index));
+		}
+		else {
+			Char TempName[64] = { 0 };
+			sprintf(TempName, "dungeon_%d;", DungeonData->QDungeonIdx);
+			UIListAppendItem(State->ItemLists[UI_ITEM_LIST_MD2], Name, &Index, sizeof(Index));
+		}
+	}
+
+	for (Int Index = 0; Index < Context->MobSpeciesCount; Index += 1) {
+		CString Name = DictionaryLookup(Context->MobSpeciesNames, Context->MobSpeciesData[Index].TextName);
+		if (Name) {
+			UIListAppendItem(State->ItemLists[UI_ITEM_LIST_MOB], Name, &Index, sizeof(Index));
+		}
+		else {
+			if (strlen(Context->MobSpeciesData[Index].TextName) > 0) {
+				UIListAppendItem(State->ItemLists[UI_ITEM_LIST_MOB], Context->MobSpeciesData[Index].TextName, &Index, sizeof(Index));
+			}
+			else {
+				UIListAppendItem(State->ItemLists[UI_ITEM_LIST_MOB], "<null>", &Index, sizeof(Index));
+			}
+		}
+	}
 }
 
 Void ControlUIDeinit(
@@ -195,13 +217,10 @@ Void ControlUIDeinit(
 	ControlUIStateRef State
 ) {
 	UnloadArchive(Context, State);
-	UIListDestroy(State->EbmItemList);
-	UIListDestroy(State->EfxItemList);
-	UIListDestroy(State->EpsItemList);
-	UIListDestroy(State->MclItemList);
-	UIListDestroy(State->Qd1ItemList);
-	UIListDestroy(State->Md1ItemList);
-	UIListDestroy(State->Md2ItemList);
+	
+	for (Int Index = 0; Index < UI_ITEM_LIST_COUNT; Index += 1) {
+		UIListDestroy(State->ItemLists[Index]);
+	}
 }
 
 float GetLuminance(Color color) {
@@ -239,7 +258,7 @@ Void ControlUIDraw(
     GuiPanel(PanelFrame, NULL);
 
     Rectangle ToolbarFrame = { 8, 8, 24, 24 };
-	if (!Context->Archive) {
+	if (!Context->CanvasView->Content) {
 		GuiToggleGroup(ToolbarFrame, State->ToolbarText, &State->ToolbarActiveIndex);
 	}
 	else {
@@ -249,8 +268,8 @@ Void ControlUIDraw(
 	}
 
 	Rectangle SearchBoxFrame = { 8, 40, 272, 24 };
-	if (State->ToolbarActiveIndex >= 0 && !Context->Archive) {
-		UIListRef List = State->IndexToItemList[State->ToolbarActiveIndex];
+	if (State->ToolbarActiveIndex >= 0 && !Context->CanvasView->Content) {
+		UIListRef List = State->ItemLists[State->ToolbarActiveIndex];
 		Rectangle ListFrame = { 0, 72, 288, Context->Config.Screen.Height - 72 };
 		UIListItemRef Selection = NULL;
 
@@ -264,20 +283,51 @@ Void ControlUIDraw(
 		}
 
 		if (UIListDraw(Context, List, ListFrame, &Selection)) {
-			CString FilePath = (CString)UIListItemGetData(Selection);
-			LoadArchive(Context, State, FilePath, State->ToolbarActiveIndex);
+			if (State->ToolbarActiveIndex == UI_ITEM_LIST_QD1) {
+			}
+			else if (State->ToolbarActiveIndex == UI_ITEM_LIST_MD1) {
+				Int32 Index = *(Int32*)UIListItemGetData(Selection);
+				MissionDungeonDataRef Data = (MissionDungeonDataRef)ArrayGetElementAtIndex(Context->MissionDungeons1, Index);
+				Int DungeonIndex = Data->QDungeonIdx;
+				CString FileName = DictionaryLookup(Context->MissionDungeonFiles, &DungeonIndex);
+				if (FileName) {
+					CString FilePath = PathCombineAll(Context->Config.Editor.ClientDataPath, "Map", FileName, NULL);
+					LoadArchive(Context, State, FilePath, UI_ITEM_LIST_MCL);
+				}
+			}
+			else if (State->ToolbarActiveIndex == UI_ITEM_LIST_MD2) {
+				Int32 Index = *(Int32*)UIListItemGetData(Selection);
+				MissionDungeonDataRef Data = (MissionDungeonDataRef)ArrayGetElementAtIndex(Context->MissionDungeons2, Index);
+				Int DungeonIndex = Data->QDungeonIdx;
+				CString FileName = DictionaryLookup(Context->MissionDungeonFiles, &DungeonIndex);
+				if (FileName) {
+					CString FilePath = PathCombineAll(Context->Config.Editor.ClientDataPath, "Map", FileName, NULL);
+					LoadArchive(Context, State, FilePath, UI_ITEM_LIST_MCL);
+				}
+			}
+			else if (State->ToolbarActiveIndex == UI_ITEM_LIST_MOB) {
+				Int32 Index = *(Int32*)UIListItemGetData(Selection);
+				MobSpeciesDataRef MobData = (MobSpeciesDataRef)&Context->MobSpeciesData[Index];
+				CString FilePath = PathCombineAll(Context->Config.Editor.ClientDataPath, MobData->FileName, NULL);
+				LoadArchive(Context, State, FilePath, UI_ITEM_LIST_MOB);
+			}
+			else {
+				CString FilePath = (CString)UIListItemGetData(Selection);
+				LoadArchive(Context, State, FilePath, State->ToolbarActiveIndex);
 
-			if (State->ToolbarActiveIndex == UI_ITEM_LIST_MCL) {
-				Context->Camera.position = (Vector3){ 0.0f, 128.0f, 0.0f };
-				Context->Camera.target = (Vector3){ 128.0f, 0.0f, 128.0f };
-				Context->Camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
-				Context->Camera.fovy = 45.0f;
-				Context->Camera.projection = CAMERA_PERSPECTIVE;
+				if (State->ToolbarActiveIndex == UI_ITEM_LIST_MCL) {
+					Context->Camera.position = (Vector3){ 0.0f, 128.0f, 0.0f };
+					Context->Camera.target = (Vector3){ 128.0f, 0.0f, 128.0f };
+					Context->Camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
+					Context->Camera.fovy = 45.0f;
+					Context->Camera.projection = CAMERA_PERSPECTIVE;
+				}
 			}
 		}
 	}
 
-	if (Context->Archive && Context->ArchiveItemType == UI_ITEM_LIST_EBM) {
+	/*
+	if (Context->Archive && (Context->ArchiveItemType == UI_ITEM_LIST_EBM || Context->ArchiveItemType == UI_ITEM_LIST_MOB)) {
 		EBMArchiveRef Archive = (EBMArchiveRef)Context->Archive;
 
 		Rectangle ListFrame = { 0, 72, 288, Context->Config.Screen.Height - 72 };
@@ -288,8 +338,8 @@ Void ControlUIDraw(
 //		}
 
 		if (UIListDraw(Context, Context->AnimationList, ListFrame, &Selection)) {
-			Context->AnimationIndex = *(Int32*)UIListItemGetData(Selection);
-			Archive->ElapsedTime = 0.0f;
+			Int32 AnimationIndex = *(Int32*)UIListItemGetData(Selection);
+			EBMArchiveStartAnimationAtIndex(Archive, AnimationIndex);
 		}
 
 		Char Value[128] = { 0 };
@@ -378,7 +428,10 @@ Void ControlUIDraw(
 			}
 		}
 	}
-	
+	*/
+
+
+
 	/*
 	if (State->ToolbarActiveIndex == 0) {		
 		Int32 SearchQueryTextLength = strlen(State->SearchBoxText);

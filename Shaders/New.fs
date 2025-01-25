@@ -28,6 +28,11 @@ uniform float materialStrength; // Emission strength
 out vec4 finalColor;
 
 void main() {
+    vec4 color0 = texture(texture0, fragTexCoord);
+    vec4 color1 = texture(texture1, fragTexCoord2);
+    vec4 combinedTextureColor = color0 + color1 * vec4(texBlendFactor);
+    if (combinedTextureColor.a < 0.005) discard;
+
         // Normalize the normal vector
     vec3 normal = normalize(fragNormal);
     
@@ -52,10 +57,6 @@ void main() {
     
     // Combine all lighting components
     vec3 lighting = ambient + diffuse + specular + emission;
-
-    vec4 color0 = texture(texture0, fragTexCoord);
-    vec4 color1 = texture(texture1, fragTexCoord2);
-    vec4 combinedTextureColor = color0 + color1 * vec4(texBlendFactor);
 
     // Apply lighting to the texture color (multiply lighting with texture color)
     vec3 finalLightingColor = combinedTextureColor.rgb * lighting;

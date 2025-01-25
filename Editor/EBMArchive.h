@@ -1,10 +1,33 @@
 #pragma once
 
 #include "Base.h"
+#include "EBMShader.h"
 
 EXTERN_C_BEGIN
 
 #pragma pack(push, 1)
+
+struct _EBMShader {
+	Shader Shader;
+	Int32 UniformLocationTime;
+	Int32 UniformLocationTexScroll;
+	Int32 UniformLocationTexScroll2;
+	Int32 UniformLocationTexFaceted;
+	Int32 UniformLocationTexFaceted2;
+	Int32 UniformLocationBlendOp;
+	Int32 UniformLocationSrcBlend;
+	Int32 UniformLocationDestBlend;
+	Int32 UniformLocationTexBlendFactor;
+	Int32 UniformLocationLightDir;
+	Int32 UniformLocationLightIntensity;
+	Int32 UniformLocationCameraPosition;
+	Int32 UniformLocationMaterialAmbient;
+	Int32 UniformLocationMaterialDiffuse;
+	Int32 UniformLocationMaterialSpecular;
+	Int32 UniformLocationMaterialEmission;
+	Int32 UniformLocationMaterialStrength;
+};
+typedef struct _EBMShader EBMShader;
 
 enum {
 	EBM_CHUNK_TYPE_MATERIAL = 0x41470201,
@@ -150,6 +173,9 @@ struct _EBMArchive {
 	ArrayRef Meshes;
 	ArrayRef SkinBones;
 	ArrayRef Animations;
+	Bool IsColorBlendEnabled;
+	Matrix Transform;
+	Int32 AnimationIndex;
 	Float32 ElapsedTime;
 };
 typedef struct _EBMArchive* EBMArchiveRef;
@@ -165,7 +191,7 @@ Void EBMArchiveDestroy(
 );
 
 Bool EBMArchiveLoadFromFile(
-	Shader Shader,
+	EBMShader Shader,
 	EBMArchiveRef Archive,
 	CString FilePath
 );
@@ -175,8 +201,24 @@ Void EBMArchiveSetupCamera(
 	EBMArchiveRef Archive
 );
 
+Void EBMArchiveStartAnimation(
+	EBMArchiveRef Archive,
+	CString Name
+);
+
+Void EBMArchiveStartAnimationAtIndex(
+	EBMArchiveRef Archive,
+	Int32 AnimationIndex
+);
+
+RayCollision EBMArchiveTraceRay(
+	EBMArchiveRef Archive,
+	Ray Ray
+);
+
 Void EBMArchiveDraw(
 	EditorContextRef Context,
+	Rectangle Frame,
 	EBMArchiveRef Archive
 );
 

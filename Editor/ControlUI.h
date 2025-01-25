@@ -2,6 +2,7 @@
 
 #include "Base.h"
 #include "UIList.h"
+#include "UIView.h"
 
 EXTERN_C_BEGIN
 
@@ -13,6 +14,7 @@ enum {
 	UI_ITEM_LIST_QD1,
 	UI_ITEM_LIST_MD1,
 	UI_ITEM_LIST_MD2,
+	UI_ITEM_LIST_MOB,
 	UI_ITEM_LIST_COUNT,
 };
 
@@ -27,14 +29,7 @@ struct _ControlUIState {
 	Int32 DungeonListActive;
 	CString DungeonListActiveName;
 
-	UIListRef EbmItemList;
-	UIListRef EfxItemList;
-	UIListRef EpsItemList;
-	UIListRef MclItemList;
-	UIListRef Qd1ItemList;
-	UIListRef Md1ItemList;
-	UIListRef Md2ItemList;
-	UIListRef IndexToItemList[UI_ITEM_LIST_COUNT];
+	UIListRef ItemLists[UI_ITEM_LIST_COUNT];
 };
 typedef struct _ControlUIState* ControlUIStateRef;
 

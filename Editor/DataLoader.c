@@ -54,6 +54,7 @@ Void LoadMissionDungeonFiles(
 
 Void LoadMissionDungeonData(
     EditorContextRef Context,
+    ArrayRef MissionDungeons,
     CString FileName
 ) {
     CString FilePath = PathCombineNoAlloc(Context->Config.Editor.ServerDataPath, FileName);
@@ -64,7 +65,7 @@ Void LoadMissionDungeonData(
     if (!Table) Fatal("Table '%s' not found in file '%s'!", "MD", FileName);
 
     for (Int RowIndex = 0; RowIndex < CLTableGetRowCount(Table); RowIndex += 1) {
-        MissionDungeonDataRef Data = (MissionDungeonDataRef)ArrayAppendUninitializedElement(Context->MissionDungeons);
+        MissionDungeonDataRef Data = (MissionDungeonDataRef)ArrayAppendUninitializedElement(MissionDungeons);
         if (!CLTableGetValueInt32(Table, "MD", RowIndex, &Data->RowIndex)) goto error;
         if (!CLTableGetValueInt32(Table, "QDungeonIdx", RowIndex, &Data->QDungeonIdx)) goto error;
         if (!CLTableGetValueInt32(Table, "InstanceLimit", RowIndex, &Data->InstanceLimit)) goto error;

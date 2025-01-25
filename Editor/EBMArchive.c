@@ -3,6 +3,8 @@
 #include "EBMShader.h"
 #include "MeshUtil.h"
 
+// TODO: Check all versions for issues. 1005 is not working correctly.
+
 EBMArchiveRef EBMArchiveCreate(
 	AllocatorRef Allocator
 ) {
@@ -10,13 +12,17 @@ EBMArchiveRef EBMArchiveCreate(
 	memset(Archive, 0, sizeof(struct _EBMArchive));
 	Archive->Allocator = Allocator;
 	Archive->Magic = 3;
-	Archive->Version = 1005;
+	Archive->Version = 1008;
 	Archive->ScalePercentage = 100;
 	Archive->Materials = ArrayCreateEmpty(Allocator, sizeof(struct _EBMMaterial), 8);
 	Archive->Bones = ArrayCreateEmpty(Allocator, sizeof(struct _EBMBone), 8);
 	Archive->Meshes = ArrayCreateEmpty(Allocator, sizeof(struct _EBMMesh), 8);
 	Archive->SkinBones = ArrayCreateEmpty(Allocator, sizeof(struct _EBMSkinBone), 8);
 	Archive->Animations = ArrayCreateEmpty(Allocator, sizeof(struct _EBMAnimation), 8);
+	Archive->Transform = MatrixIdentity();
+	Archive->IsColorBlendEnabled = false;
+	Archive->AnimationIndex = -1;
+	Archive->ElapsedTime = 0.0f;
 	return Archive;
 }
 
@@ -106,7 +112,7 @@ EBMBoneRef EBMArchiveGetBone(
 }
 
 Bool EBMArchiveLoadFromFile(
-	Shader Shader,
+	EBMShader Shader,
 	EBMArchiveRef Archive,
 	CString FilePath
 ) {
@@ -330,6 +336,11 @@ Bool EBMArchiveLoadFromFile(
 
 				memcpy(Mesh->Mesh.animVertices, Mesh->Mesh.vertices, sizeof(Float32) * Mesh->Mesh.vertexCount * 3);
 				memcpy(Mesh->Mesh.animNormals, Mesh->Mesh.normals, sizeof(Float32) * Mesh->Mesh.vertexCount * 3);
+
+				for (Int Index = 0; Index < Mesh->Mesh.vertexCount; Index += 1) {
+					Mesh->Mesh.animVertices[Index * 3 + 2] *= -1;
+					Mesh->Mesh.animNormals[Index * 3 + 2] *= -1;
+				}
 
 				for (Int Index = 0; Index < Mesh->Mesh.triangleCount; Index += 1) {
 					Mesh->Mesh.indices[Index * 3 + 0] = *(UInt16*)&Source[SourceOffset];
@@ -681,6 +692,31 @@ void PrintMatrix(Matrix M) {
 		M.m0, M.m1, M.m2, M.m3, M.m4, M.m5, M.m6, M.m7, M.m8, M.m9, M.m10, M.m11, M.m12, M.m13, M.m14, M.m15);
 }
 
+Void EBMArchiveStartAnimation(
+	EBMArchiveRef Archive,
+	CString Name
+) {
+	Archive->AnimationIndex = -1;
+	Archive->ElapsedTime = 0.0f;
+
+	for (Int Index = 0; Index < ArrayGetElementCount(Archive->Animations); Index += 1) {
+		EBMAnimationRef Animation = (EBMAnimationRef)ArrayGetElementAtIndex(Archive->Animations, Index);
+		if (!CStringIsEqual(Animation->Name, Name)) continue;
+
+		EBMArchiveStartAnimationAtIndex(Archive, Index);
+		break;
+	}
+}
+
+Void EBMArchiveStartAnimationAtIndex(
+	EBMArchiveRef Archive,
+	Int32 AnimationIndex
+) {
+	assert(AnimationIndex >= 0 && AnimationIndex < ArrayGetElementCount(Archive->Animations));
+	Archive->AnimationIndex = AnimationIndex;
+	Archive->ElapsedTime = 0.0f;
+}
+
 Void EBMArchiveUpdateAnimation(
 	EBMArchiveRef Archive,
 	CString Name,
@@ -944,12 +980,41 @@ Void EBMArchiveDrawBone(
 	}
 }
 
+RayCollision EBMArchiveTraceRay(
+	EBMArchiveRef Archive,
+	Ray Ray
+) {
+	Matrix Transform = Archive->Transform;
+	Transform = MatrixMultiply(Transform, MatrixScale(1.0f / 100, 1.0f / 100, 1.0f / 100));
+
+	BoundingBox Bounds = {
+		.min = Vector3Transform(Archive->BoundsMin, Transform),
+		.max = Vector3Transform(Archive->BoundsMax, Transform)
+	};
+
+	RayCollision Collision = GetRayCollisionBox(Ray, Bounds);
+	if (!Collision.hit) return Collision;
+
+	for (Int Index = 0; Index < ArrayGetElementCount(Archive->Meshes); Index += 1) {
+		EBMMeshRef Mesh = (EBMMeshRef)ArrayGetElementAtIndex(Archive->Meshes, Index);
+		//Bounds = GetMeshBoundingBox(Mesh->Mesh);
+
+		Collision = GetRayCollisionMesh(Ray, Mesh->Mesh, Transform);
+		if (Collision.hit) return Collision;
+	}
+
+	return Collision;
+}
+
 Void EBMArchiveDraw(
 	EditorContextRef Context,
+	Rectangle Frame,
 	EBMArchiveRef Archive
 ) {
-	if (Context->AnimationIndex >= 0) {
-		EBMAnimationRef Animation = (EBMAnimationRef)ArrayGetElementAtIndex(Archive->Animations, Context->AnimationIndex);
+	if (!Archive->IsColorBlendEnabled) rlDisableColorBlend();
+
+	if (Archive->AnimationIndex >= 0) {
+		EBMAnimationRef Animation = (EBMAnimationRef)ArrayGetElementAtIndex(Archive->Animations, Archive->AnimationIndex);
 		Archive->ElapsedTime += GetFrameTime();
 		if (Archive->ElapsedTime > Animation->Duration) {
 			//kMutationGetGlobalBoneMatrix += 1;
@@ -962,7 +1027,7 @@ Void EBMArchiveDraw(
 				kMutationLocalBoneMatrix = 0;
 			}
 			
-			Trace("Mutation(%d, %d)", kMutationGetGlobalBoneMatrix, kMutationLocalBoneMatrix);
+			// Trace("Mutation(%d, %d)", kMutationGetGlobalBoneMatrix, kMutationLocalBoneMatrix);
 		}
 
 		Archive->ElapsedTime = fmodf(Archive->ElapsedTime, Animation->Duration);
@@ -970,14 +1035,14 @@ Void EBMArchiveDraw(
 	}
 
 	Material Material = LoadMaterialDefault();
-	Matrix Transform = MatrixIdentity();
+	Matrix Transform = Archive->Transform;
 	Transform = MatrixMultiply(Transform, MatrixScale(1.0f / 100, 1.0f / 100, 1.0f / 100));
 	Transform = MatrixMultiply(Transform, MatrixScale((Float32)Archive->ScalePercentage / 100, (Float32)Archive->ScalePercentage / 100, (Float32)Archive->ScalePercentage / 100));
 
 	Float32 Width = Archive->BoundsMax.x - Archive->BoundsMin.x;
 	Float32 Height = Archive->BoundsMax.y - Archive->BoundsMin.y;
 	Float32 Depth = Archive->BoundsMax.z - Archive->BoundsMin.z;
-
+	/*
 	Int CellCount = 8;
 	Float32 CellSize = MAX(Width, MAX(Height, Depth)) * Archive->ScalePercentage / (100 * 100 * CellCount);
 	Float32 SideLength = CellSize * CellCount;
@@ -990,8 +1055,8 @@ Void EBMArchiveDraw(
 		End = (Vector3){ CellSize * Offset, 0, SideLength };
 		DrawLine3D(Start, End, LIME);
 	}
-
-	BeginShaderMode(Context->ShaderEBM);
+	*/
+	BeginShaderMode(Context->ShaderEBM.Shader);
 	{
 		for (Int MeshIndex = 0; MeshIndex < ArrayGetElementCount(Archive->Meshes); MeshIndex += 1) {
 			EBMMeshRef Mesh = (EBMMeshRef)ArrayGetElementAtIndex(Archive->Meshes, MeshIndex);
@@ -1001,7 +1066,7 @@ Void EBMArchiveDraw(
 			MeshTransform = MatrixMultiply(MeshTransform, Transform);
 
 			EBMMaterialRef MeshMaterial = (EBMMaterialRef)ArrayGetElementAtIndex(Archive->Materials, Mesh->MaterialIndex);
-			Material.shader = Context->ShaderEBM;
+			Material.shader = Context->ShaderEBM.Shader;
 
 			SetTextureWrap(MeshMaterial->TextureMain.Texture.Texture, RL_TEXTURE_WRAP_CLAMP);
 			SetMaterialTexture(&Material, MATERIAL_MAP_DIFFUSE, MeshMaterial->TextureMain.Texture.Texture);
@@ -1018,14 +1083,19 @@ Void EBMArchiveDraw(
 				SetMaterialTexture(&Material, MATERIAL_MAP_SPECULAR, Default);
 			}
 
+			//BeginBlendMode(BLEND_ALPHA);
+
 			EBMShaderSetMaterial(Context, Context->ShaderEBM, MeshMaterial, BlendMaterial, MeshTransform);
 			DrawMesh(Mesh->Mesh, Material, MeshTransform);
 
+			//EndBlendMode();
+			/*
 			if (Context->ModelIndex == MeshIndex) {
 				EndShaderMode();
 				DrawMeshWireframe(Mesh->Mesh, MeshTransform);
 				BeginShaderMode(Context->ShaderEBM);
 			}
+			*/
 		}
 	}
 	EndShaderMode();
@@ -1052,11 +1122,49 @@ Void EBMArchiveDraw(
 		//EBMArchiveDrawBone(Context, Archive, Bone, Transform, 0);
 	}
 
-	Transform = MatrixIdentity();
+	Transform = Archive->Transform;
 	Transform = MatrixMultiply(Transform, MatrixScale(1.0f / 100, 1.0f / 100, 1.0f / 100));
 
 	BoundingBox Bounds;
-	Bounds.min = Vector3Transform(Archive->BoundsMin, Transform);
-	Bounds.max = Vector3Transform(Archive->BoundsMax, Transform);
-	DrawBoundingBox(Bounds, RED);
+	Bounds.min = Archive->BoundsMin;
+	Bounds.max = Archive->BoundsMax;
+	//Bounds.min = Vector3Transform(Archive->BoundsMin, Transform);
+	//Bounds.max = Vector3Transform(Archive->BoundsMax, Transform);
+//	DrawBoundingBox(Bounds, RED);
+	// Define the corners of the bounding box
+	Vector3 corners[8] = {
+		Bounds.min,
+		{Bounds.max.x, Bounds.min.y, Bounds.min.z},
+		{Bounds.min.x, Bounds.max.y, Bounds.min.z},
+		{Bounds.max.x, Bounds.max.y, Bounds.min.z},
+		{Bounds.min.x, Bounds.min.y, Bounds.max.z},
+		{Bounds.max.x, Bounds.min.y, Bounds.max.z},
+		{Bounds.min.x, Bounds.max.y, Bounds.max.z},
+		Bounds.max
+	};
+
+	// Transform the corners
+	for (int i = 0; i < 8; i++) {
+		corners[i] = Vector3Transform(corners[i], Transform);
+	}
+
+	/*// Draw the edges of the bounding box
+	DrawLine3D(corners[0], corners[1], RED); // Bottom face
+	DrawLine3D(corners[1], corners[3], RED);
+	DrawLine3D(corners[3], corners[2], RED);
+	DrawLine3D(corners[2], corners[0], RED);
+
+
+	DrawLine3D(corners[4], corners[5], RED); // Top face
+	DrawLine3D(corners[5], corners[7], RED);
+	DrawLine3D(corners[7], corners[6], RED);
+	DrawLine3D(corners[6], corners[4], RED);
+
+	DrawLine3D(corners[0], corners[4], RED); // Side edges
+	DrawLine3D(corners[1], corners[5], RED);
+	DrawLine3D(corners[2], corners[6], RED);
+	DrawLine3D(corners[3], corners[7], RED);
+	*/
+
+	if (!Archive->IsColorBlendEnabled) rlEnableColorBlend();
 }

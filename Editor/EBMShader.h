@@ -5,13 +5,13 @@
 
 EXTERN_C_BEGIN
 
-Shader EBMShaderLoad(
+EBMShader EBMShaderLoad(
 	EditorContextRef Context
 );
 
 Void EBMShaderSetMaterial(
 	EditorContextRef Context,
-	Shader Shader,
+	EBMShader Shader,
 	EBMMaterialRef Material,
 	EBMMaterialRef BlendMaterial,
 	Matrix ModelMatrix

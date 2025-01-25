@@ -19,7 +19,7 @@ Void UIListDestroy(
 UIListItemRef UIListAppendItem(
 	UIListRef List,
 	CString Name,
-	UInt8* Data,
+	Void* Data,
 	Int32 DataLength
 );
 

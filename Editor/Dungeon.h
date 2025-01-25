@@ -1,55 +1,8 @@
 #pragma once
 
 #include "Base.h"
-#include "Config.h"
-#include "ControlUI.h"
-#include "EBMShader.h"
-#include "MCLArchive.h"
 
 EXTERN_C_BEGIN
-
-enum {
-    EDITOR_STATE_INIT,
-};
-
-struct _EditorState {
-    Int State;
-    union {
-        struct { UInt8 Padding; } Init;
-    };
-};
-typedef struct _EditorState EditorState;
-
-#pragma pack(push, 1)
-
-struct _MobSpeciesData {
-    Char FileName[60];
-    Char TextName[34];
-    Int32 Scale;
-    Float32 Radius;
-    Float32 MovementSpeed;
-    Float32 MovementAnimationSpeed;
-    Float32 ChaseSpeed;
-    Float32 ChaseAnimationSpeed;
-    Float32 unk6;
-    Int32 ShowDeath;
-    Int32 ShowSpawn;
-    Int32 AlphaDeath;
-    Int32 AlphaSpawn;
-    Float32 DefaultSkillTime;
-    Int32 Group1;
-    Int32 Group2;
-    Int32 Property;
-    Float32 SpecialSkillTime;
-    Int16 Level;
-    Int32 Bex;
-    Int16 ServerBossType;
-    Int16 Color;
-    Int32 ServerBoss;
-};
-typedef struct _MobSpeciesData* MobSpeciesDataRef;
-
-#pragma pack(pop)
 
 struct _MissionDungeonData {
     Int32 RowIndex;
@@ -230,31 +183,9 @@ struct _ClientImmuneData {
 };
 typedef struct _ClientImmuneData* ClientImmuneDataRef;
 
-struct _EditorContext {
+struct _DungeonData {
     AllocatorRef Allocator;
-    EditorConfig Config;
-    EditorState State;
-    Camera Camera;
-    struct _ControlUIState ControlState;
-
-    UIListRef ModelList;
-    Int32 ModelIndex;
-    UIListRef AnimationList;
-    EBMShader ShaderEBM;
-    ArrayRef Views2D;
-    ArrayRef Views3D;
-    UIViewRef CanvasView;
-
-    DictionaryRef MissionDungeonNames;
-    DictionaryRef MissionDungeonFiles;
-
-    Int32 MobSpeciesCount;
-    struct _MobSpeciesData* MobSpeciesData;
-    DictionaryRef MobSpeciesNames;
-
-    ArrayRef QuestDungeons1;
-    ArrayRef MissionDungeons1;
-    ArrayRef MissionDungeons2;
+    struct _MissionDungeonData DungeonData;
     ArrayRef PatternParts;
     ArrayRef TimeControls;
     ArrayRef ArenaDefences;
@@ -270,5 +201,6 @@ struct _EditorContext {
     ArrayRef MissionDungeonTimerValues;
     ArrayRef ClientImmunes;
 };
+typedef struct _DungeonData* DungeonDataRef;
 
 EXTERN_C_END

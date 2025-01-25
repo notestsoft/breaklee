@@ -81,6 +81,8 @@ struct _MCLObject {
 	Quaternion Rotation;
 	Vector3 Scale;
 	Int32 ModelIndex;
+	Int32 TileX;
+	Int32 TileY;
 };
 typedef struct _MCLObject MCLObject;
 typedef struct _MCLObject* MCLObjectRef;
@@ -149,8 +151,14 @@ Bool MCLArchiveLoadFromFile(
 	CString FilePath
 );
 
+RayCollision MCLArchiveTraceRay(
+	MCLArchiveRef Archive,
+	Ray Ray
+);
+
 Void DrawTerrain(
 	EditorContextRef Context,
+	Rectangle Frame,
 	MCLArchiveRef Archive
 );
 

@@ -248,7 +248,7 @@ Bool MCLArchiveLoadFromFile(
 	}
 
 	// Generate mesh and model from heightmap
-	Mesh heightmapMesh = GenMeshHeightmap(heightmapImage, (Vector3) { 25600.0f, 25600.0f / 16, 25600.0f});
+	Mesh heightmapMesh = GenMeshHeightmap(heightmapImage, (Vector3) { 25600.0f, 25600.0f / 8, 25600.0f});
 	Archive->HeightMapModel = LoadModelFromMesh(heightmapMesh);
 
 	// Set a texture for the heightmap model (optional)
@@ -551,9 +551,13 @@ Bool MCLArchiveLoadFromFile(
 			if (!EBMArchiveLoadFromFile(Context->ShaderEBM, Model->Archive, FilePath)) {
 				Warn("Loading model %s failed!", FilePath);
 			}
+			else {
+				EBMArchiveStartAnimation(Model->Archive, "idle__");
+			}
 		}
 		else if (CStringHasFileExtension(Model->Name, ".ewt") || CStringHasFileExtension(Model->Name, ".EWT")) {
 			Model->IsWater = true;
+			Model->Archive->IsColorBlendEnabled = true;
 
 			EBMMeshRef Mesh = (EBMMeshRef)ArrayAppendUninitializedElement(Model->Archive->Meshes);
 			memset(Mesh, 0, sizeof(struct _EBMMesh));
@@ -561,9 +565,15 @@ Bool MCLArchiveLoadFromFile(
 			EBMMaterialRef Material = (EBMMaterialRef)ArrayAppendUninitializedElement(Model->Archive->Materials);
 			memset(Material, 0, sizeof(struct _EBMMaterial));
 
-			Material->TextureMain.Texture.Image = GenImageColor(32, 32, (Color) { 0x5A, 0xBC, 0xD8, 0x90 });
+			Material->Properties.Ambient = (Vector4){ 1, 1, 1, 1 };
+			Material->Properties.Diffuse = (Vector4){ 1, 1, 1, 1 };
+			Material->Properties.Specular = (Vector4){ 1, 1, 1, 1 };
+			Material->Properties.Emission = (Vector4){ 0, 0, 0, 0 };
+			Material->Properties.Strength = 0;
+			Material->TextureMain.Texture.Image = GenImageColor(128, 128, (Color) { 0x5A, 0xBC, 0xD8, 0x90 });
 			ImageFormat(&Material->TextureMain.Texture.Image, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
 			Material->TextureMain.Texture.Texture = LoadTextureFromImage(Material->TextureMain.Texture.Image);
+			Material->TextureBlend.MaterialIndex = -1;
 
 			CString FilePath = PathCombineAll(Context->Config.Editor.ClientDataPath, "Object", Model->Name, NULL);
 			UInt8 Source[32];
@@ -575,53 +585,14 @@ Bool MCLArchiveLoadFromFile(
 			if (SourceLength > 0) {
 				Archive->WaterLevel = *(UInt8*)&Source[0];
 
-				Float32 Vertices[] = {
-				   Model->BoundsMin.x, Model->BoundsMin.y, Model->BoundsMax.z,
-				   Model->BoundsMax.x, Model->BoundsMin.y, Model->BoundsMax.z,
-				   Model->BoundsMax.x, Model->BoundsMax.y, Model->BoundsMax.z,
-				   Model->BoundsMin.x, Model->BoundsMax.y, Model->BoundsMax.z,
-				   Model->BoundsMin.x, Model->BoundsMin.y, Model->BoundsMin.z,
-				   Model->BoundsMin.x, Model->BoundsMax.y, Model->BoundsMin.z,
-				   Model->BoundsMax.x, Model->BoundsMax.y, Model->BoundsMin.z,
-				   Model->BoundsMax.x, Model->BoundsMin.y, Model->BoundsMin.z,
-				   Model->BoundsMin.x, Model->BoundsMax.y, Model->BoundsMin.z,
-				   Model->BoundsMin.x, Model->BoundsMax.y, Model->BoundsMax.z,
-				   Model->BoundsMax.x, Model->BoundsMax.y, Model->BoundsMax.z,
-				   Model->BoundsMax.x, Model->BoundsMax.y, Model->BoundsMin.z,
-				   Model->BoundsMin.x, Model->BoundsMin.y, Model->BoundsMin.z,
-				   Model->BoundsMax.x, Model->BoundsMin.y, Model->BoundsMin.z,
-				   Model->BoundsMax.x, Model->BoundsMin.y, Model->BoundsMax.z,
-				   Model->BoundsMin.x, Model->BoundsMin.y, Model->BoundsMax.z,
-				   Model->BoundsMax.x, Model->BoundsMin.y, Model->BoundsMin.z,
-				   Model->BoundsMax.x, Model->BoundsMax.y, Model->BoundsMin.z,
-				   Model->BoundsMax.x, Model->BoundsMax.y, Model->BoundsMax.z,
-				   Model->BoundsMax.x, Model->BoundsMin.y, Model->BoundsMax.z,
-				   Model->BoundsMin.x, Model->BoundsMin.y, Model->BoundsMin.z,
-				   Model->BoundsMin.x, Model->BoundsMin.y, Model->BoundsMax.z,
-				   Model->BoundsMin.x, Model->BoundsMax.y, Model->BoundsMax.z,
-				   Model->BoundsMin.x, Model->BoundsMax.y, Model->BoundsMin.z,
-				};
-
-				Mesh->Mesh.vertices = (float*)RL_MALLOC(sizeof(Vertices));
-				memcpy(Mesh->Mesh.vertices, Vertices, sizeof(Vertices));
-
-				Mesh->Mesh.indices = (unsigned short*)RL_MALLOC(36 * sizeof(unsigned short));
-
-				Int QuadCount = 0;
-				for (Int Index = 0; Index < 36; Index += 6) {
-					Mesh->Mesh.indices[Index] = 4 * QuadCount;
-					Mesh->Mesh.indices[Index + 1] = 4 * QuadCount + 1;
-					Mesh->Mesh.indices[Index + 2] = 4 * QuadCount + 2;
-					Mesh->Mesh.indices[Index + 3] = 4 * QuadCount;
-					Mesh->Mesh.indices[Index + 4] = 4 * QuadCount + 2;
-					Mesh->Mesh.indices[Index + 5] = 4 * QuadCount + 3;
-					QuadCount++;
+				Mesh->Mesh = GenMeshCube(Model->BoundsMax.x - Model->BoundsMin.x, Model->BoundsMax.y - Model->BoundsMin.y, Model->BoundsMax.z - Model->BoundsMin.z);
+				for (Int Index = 0; Index < Mesh->Mesh.vertexCount; Index += 1) {
+					Mesh->Mesh.vertices[Index * 3 + 0] += Model->BoundsMin.x;
+					Mesh->Mesh.vertices[Index * 3 + 1] += Model->BoundsMin.y;
+					Mesh->Mesh.vertices[Index * 3 + 2] += Model->BoundsMin.z;
 				}
 
-				Mesh->Mesh.vertexCount = 24;
-				Mesh->Mesh.triangleCount = 12;
-
-				UploadMesh(&Mesh->Mesh, false);
+				UploadMesh(&Mesh->Mesh, true);
 			}
 
 			FileClose(File);
@@ -644,12 +615,14 @@ Bool MCLArchiveLoadFromFile(
 		SourceOffset += NameLength;
 
 		Object->Object.Position = *(Vector3*)&Source[SourceOffset];
+		Object->Object.TileX = Object->Object.Position.x / 100;
+		Object->Object.TileY = Object->Object.Position.z / 100;
 		Object->Object.Position.z = 25600.0f - Object->Object.Position.z;
 		SourceOffset += sizeof(Object->Object.Position);
 
-		Object->Object.Rotation = *(Quaternion*)&Source[SourceOffset];
-		Object->Object.Rotation.z = -Object->Object.Rotation.z;
-		Object->Object.Rotation.w = -Object->Object.Rotation.w;
+		Object->Object.Rotation = QuaternionInvert(*(Quaternion*)&Source[SourceOffset]);
+		//Object->Object.Rotation.z = -Object->Object.Rotation.z;
+		//Object->Object.Rotation.w = -Object->Object.Rotation.w;
 		SourceOffset += sizeof(Object->Object.Rotation);
 
 		Object->Object.Scale = *(Vector3*)&Source[SourceOffset];
@@ -679,12 +652,14 @@ Bool MCLArchiveLoadFromFile(
 		MCLObjectRef Object = (MCLObjectRef)ArrayAppendUninitializedElement(Archive->StaticObjects);
 
 		Object->Position = *(Vector3*)&Source[SourceOffset];
+		Object->TileX = Object->Position.x / 100;
+		Object->TileY = Object->Position.z / 100;
 		Object->Position.z = 25600.0f - Object->Position.z;
 		SourceOffset += sizeof(Object->Position);
 
-		Object->Rotation = *(Quaternion*)&Source[SourceOffset];
-		Object->Rotation.z = -Object->Rotation.z;
-		Object->Rotation.w = -Object->Rotation.w;
+		Object->Rotation = QuaternionInvert(*(Quaternion*)&Source[SourceOffset]);
+		//Object->Rotation.z = -Object->Rotation.z;
+		//Object->Rotation.w = -Object->Rotation.w;
 		SourceOffset += sizeof(Object->Rotation);
 
 		Object->Scale = *(Vector3*)&Source[SourceOffset];
@@ -711,12 +686,14 @@ Bool MCLArchiveLoadFromFile(
 			MCLObjectRef Object = (MCLObjectRef)ArrayAppendUninitializedElement(Archive->EnvironmentObjects);
 
 			Object->Position = *(Vector3*)&Source[SourceOffset];
+			Object->TileX = Object->Position.x / 100;
+			Object->TileY = Object->Position.z / 100;
 			Object->Position.z = 25600.0f - Object->Position.z;
 			SourceOffset += sizeof(Object->Position);
 
-			Object->Rotation = *(Quaternion*)&Source[SourceOffset];
-			Object->Rotation.z = -Object->Rotation.z;
-			Object->Rotation.w = -Object->Rotation.w;
+			Object->Rotation = QuaternionInvert(*(Quaternion*)&Source[SourceOffset]);			
+			//Object->Rotation.z = -Object->Rotation.z;
+			//Object->Rotation.w = -Object->Rotation.w;
 			SourceOffset += sizeof(Object->Rotation);
 
 			Object->Scale = *(Vector3*)&Source[SourceOffset];
@@ -780,14 +757,259 @@ error:
 	return false;
 }
 
+static Int kMutationBase = 3;
+static Int kMutationAlt1 = 0;
+static Int kMutationAlt2 = 0;
+static Int kFrame = 0;
+
+Float32 CalculateOffsetY(
+	MCLArchiveRef Archive,
+	MCLObjectRef Object,
+	MCLModelRef Model
+) {
+	if (Model->IsWater) return 0;
+
+	Matrix Transform = MatrixIdentity();
+	Transform = MatrixMultiply(Transform, MatrixScale(Object->Scale.x, Object->Scale.y, Object->Scale.z));
+	Transform = MatrixMultiply(Transform, QuaternionToMatrix(Object->Rotation));
+	Vector3 Min = Vector3Transform(Model->BoundsMin, Transform);
+	Vector3 Max = Vector3Transform(Model->BoundsMax, Transform);
+	Vector3 Up = (Vector3){ 0, (Model->BoundsMax.y - Model->BoundsMin.y), 0 };
+	Up = Vector3Transform(Up, Transform);
+	
+	Float Dx =  (Max.x - Min.x) * 0.5;
+	Float Dy = (Max.z - Min.z) * 0.5;
+	//Dx = (Model->BoundsMax.x - Model->BoundsMin.x) * 0.5;
+	//Dy = (Model->BoundsMax.z - Model->BoundsMax.z) * 0.5;
+
+	UInt16 TilePositionX = (UInt16)MAX(0, MIN(256, (Object->Position.x + Up.x) / 100));
+	UInt16 TilePositionY = (UInt16)MAX(0, MIN(256, (Object->Position.z + Up.z) / 100));
+	TilePositionX = (UInt16)MAX(0, MIN(256, Object->Position.x / 100));
+	TilePositionY = (UInt16)MAX(0, MIN(256, Object->Position.z / 100));
+	Float32 TileHeight = Archive->HeightMap[(TilePositionX) * 257 + (256 - (TilePositionY))];
+	//Float32 TileHeight = Archive->HeightMap[Object->TileX * 257 + Object->TileY];
+
+	Float32 Offset = TileHeight;
+
+	if (TileHeight < Archive->WaterLevel) { // Wrong calc!!!
+		Offset = Archive->WaterLevel;
+
+		if (Model->Archive->Options.Unknown1 & 0b10000) {
+		}
+		else {
+			Offset -= Object->Position.y;
+		}
+	}
+	return Offset;
+
+	if (TileHeight < Archive->WaterLevel) {
+		return Archive->WaterLevel + TileHeight;
+		return MAX(Archive->WaterLevel, TileHeight) * Object->Scale.y * 0;
+		return- Archive->WaterLevel - Object->Position.y + TileHeight;
+		//return Archive->WaterLevel - Object->Position.y + TileHeight;
+	}
+	else {
+		return TileHeight;
+	}
+
+	return Archive->WaterLevel - Object->Position.y - (Max.y - Min.y) * 0.5;
+
+	return TileHeight;
+	return MAX(TileHeight, Archive->WaterLevel);
+
+	Float32 OffsetY = 0;
+	if (TileHeight < Archive->WaterLevel) {
+
+		if (Model->Archive->Options.Unknown1 & 0b10000) {
+			return 0;
+			OffsetY -= (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5 * Object->Scale.y;
+			//OffsetY += Model->BoundsMin.y * Object->Scale.y * 4;
+		}
+		else {
+			//OffsetY += (Model->BoundsMin.y + (0.0f - Model->BoundsMax.y)) * 0.5;
+			//OffsetY -= (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5 * Object->Scale.y;
+			//OffsetY = Object->Position.y * -Object->Scale.y + Archive->WaterLevel + TileHeight;
+			//OffsetY = (Model->BoundsMax.y - Model->BoundsMin.y) * Object->Scale.y + TileHeight + Archive->WaterLevel;
+			//OffsetY -= (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5 * Object->Scale.y;
+			//OffsetY += 1;
+			if (OffsetY > 256) {
+				OffsetY = 0;
+			}
+		}
+
+		return (MAX(TileHeight, Archive->WaterLevel) - Object->Position.y - OffsetY);
+	}
+
+	return MAX(TileHeight, Archive->WaterLevel) + OffsetY;
+	return 256 - Object->Position.y + TileHeight;
+	
+	
+	return TileHeight;
+	return 3600 - Object->Position.y;
+	return 256 - Object->Position.y + TileHeight; // Archive->WaterLevel - (Model->BoundsMin.y) * Object->Scale.y * 2
+
+	if (kMutationBase == 1) {
+		OffsetY += Archive->WaterLevel;
+	}
+
+	if (kMutationBase == 2) {
+		OffsetY -= Archive->WaterLevel;
+	}
+
+	if (kMutationBase == 3) {
+		OffsetY += Model->BoundsMin.y;
+	}
+
+	if (kMutationBase == 4) {
+		OffsetY -= Model->BoundsMin.y;
+	}
+
+	if (kMutationBase == 5) {
+		OffsetY += Model->BoundsMax.y;
+	}
+
+	if (kMutationBase == 6) {
+		OffsetY -= Model->BoundsMax.y;
+	}
+
+	if (kMutationBase == 7) {
+		OffsetY += Model->BoundsMax.y - Model->BoundsMin.y;
+	}
+
+	if (kMutationBase == 8) {
+		OffsetY -= Model->BoundsMax.y - Model->BoundsMin.y;
+	}
+
+	if (kMutationBase == 9) {
+		OffsetY += (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5f;
+	}
+
+	if (kMutationBase == 10) {
+		OffsetY -= (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5f;
+	}
+
+	if (kMutationBase == 11) {
+		OffsetY += (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5f * Object->Scale.y;
+	}
+
+	if (kMutationBase == 12) {
+		OffsetY -= (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5f * Object->Scale.y;
+	}
+
+	if (TileHeight < 0) {
+		Trace("Yes");
+	}
+
+	if (TileHeight < Archive->WaterLevel) {
+		OffsetY = TileHeight + Archive->WaterLevel + (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5 * Object->Scale.y + Object->Position.y * -Object->Scale.y;
+		Float32 MyHeight = (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5;
+		OffsetY = TileHeight + Archive->WaterLevel + MyHeight * Object->Scale.y;
+		OffsetY = (-Model->BoundsMin.y + (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5) * Object->Scale.y + Object->Position.y * -Object->Scale.y;
+		OffsetY = Object->Position.y * -Object->Scale.y;
+		//			OffsetY = Object->Position.y * -Object->Scale.y - (Model->BoundsMax.y - Model->BoundsMin.y) * (Model->BoundsMax.y - Model->BoundsMin.y) / Model->BoundsMax.y * Object->Scale.y;
+		//			OffsetY = Object->Position.y * -Object->Scale.y;
+
+					//OffsetY = Object->Position.y * -Object->Scale.y + Archive->WaterLevel + TileHeight;
+
+					/*
+					if (Model->Archive->Options.Unknown2 & 0b100) { // Optional Culling or Alpha (z-test player)
+						// OffsetY += (Model->BoundsMax.y + Model->BoundsMin.y) * 0.5 * Object->Scale.y;
+					}
+					else
+					*/
+
+		OffsetY += TileHeight;
+		//OffsetY -= (Model->BoundsMax.y - Model->BoundsMin.y) * 0.06666 * Object->Scale.y;
+
+		if (Model->Archive->Options.Unknown1 & 0b10000) {
+			OffsetY -= (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5 * Object->Scale.y;
+			//OffsetY += Model->BoundsMin.y * Object->Scale.y * 4;
+		}
+		else {
+			OffsetY -= (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5;
+			//OffsetY += (Model->BoundsMin.y + (0.0f - Model->BoundsMax.y)) * 0.5 * Object->Scale.y;
+			//OffsetY -= (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5 * Object->Scale.y;
+			//OffsetY = Object->Position.y * -Object->Scale.y + Archive->WaterLevel + TileHeight;
+			//OffsetY = (Model->BoundsMax.y - Model->BoundsMin.y) * Object->Scale.y + TileHeight + Archive->WaterLevel;
+		}
+	}
+
+	//  ((Model->BoundsMax.y - Model->BoundsMin.y) * 0.5 + Model->BoundsMin.y)
+	//OffsetY += (Model->BoundsMin.y + (0.0f - Model->BoundsMax.y)) * 0.5 * Object->Scale.y;
+	//Rotation = QuaternionInvert(Rotation);
+
+	//OffsetY +=  (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5 * Object->Scale.y;
+	//OffsetY += (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5;
+	return OffsetY;
+}
+
+RayCollision MCLArchiveTraceRay(
+	MCLArchiveRef Archive,
+	Ray Ray
+) {
+	RayCollision Collision = { 
+		.hit = false,
+		.distance = FLT_MAX,
+		.point = (Vector3){ 0, 0, 0 },
+		.normal = (Vector3){ 0, 0, 0 }
+	};
+
+	for (Int Index = 0; Index < ArrayGetElementCount(Archive->InteractiveObjects); Index += 1) {
+		MCLInteractiveObjectRef Object = (MCLInteractiveObjectRef)ArrayGetElementAtIndex(Archive->InteractiveObjects, Index);
+		MCLModelRef Model = (MCLModelRef)ArrayGetElementAtIndex(Archive->Models, Object->Object.ModelIndex);
+		RayCollision NextCollision = EBMArchiveTraceRay(Model->Archive, Ray);
+		if (NextCollision.hit && NextCollision.distance < Collision.distance) Collision = NextCollision;
+	}
+
+	for (Int Index = 0; Index < ArrayGetElementCount(Archive->StaticObjects); Index += 1) {
+		MCLObjectRef Object = (MCLObjectRef)ArrayGetElementAtIndex(Archive->StaticObjects, Index);
+		MCLModelRef Model = (MCLModelRef)ArrayGetElementAtIndex(Archive->Models, Object->ModelIndex);
+		RayCollision NextCollision = EBMArchiveTraceRay(Model->Archive, Ray);
+		if (NextCollision.hit && NextCollision.distance < Collision.distance) Collision = NextCollision;
+	}
+
+	for (Int Index = 0; Index < ArrayGetElementCount(Archive->EnvironmentObjects); Index += 1) {
+		MCLObjectRef Object = (MCLObjectRef)ArrayGetElementAtIndex(Archive->EnvironmentObjects, Index);
+		MCLModelRef Model = (MCLModelRef)ArrayGetElementAtIndex(Archive->Models, Object->ModelIndex);
+		RayCollision NextCollision = EBMArchiveTraceRay(Model->Archive, Ray);
+		if (NextCollision.hit && NextCollision.distance < Collision.distance) Collision = NextCollision;
+	}
+
+	return Collision;
+}
+
 Void DrawTerrain(
 	EditorContextRef Context,
+	Rectangle Frame,
 	MCLArchiveRef Archive
 ) {
+	kFrame += 1;
+	if (kFrame > 120) {
+		kFrame = 0;
+		//kMutationBase += 1;
+		if (kMutationBase > 12) {
+			kMutationBase = 0;
+			kMutationAlt1 += 1;
+		}
+
+		if (kMutationAlt1 > 1) {
+			kMutationAlt1 = 0;
+			kMutationAlt2 += 1;
+		}
+
+		if (kMutationAlt2 > 1) {
+			kMutationAlt2 = 0;
+		}
+
+		Trace("Mutation(%d, %d, %d)", kMutationBase, kMutationAlt1, kMutationAlt2);
+	}
+
+
 	Material Material = LoadMaterialDefault();
 	Matrix Transform = MatrixIdentity();
-	Transform = MatrixMultiply(Transform, MatrixScale(1.0f / 100, 1.0f / 100, 1.0f / 100));
-	Transform = MatrixMultiply(Transform, MatrixTranslate(0.0f, 1.8f, 0.0f));
+	Transform = MatrixMultiply(Transform, MatrixTranslate(0.0f, Archive->WaterLevel, 0.0f));
+	Transform = MatrixMultiply(Transform, MatrixScale(1.0f / 100, 1.0f / 100, 1.0f / 100)); 
+	//Transform = MatrixMultiply(Transform, MatrixTranslate(0.0f, -1.8f, 0.0f));
 
 	Bool IsTracingObject = IsMouseButtonReleased(MOUSE_BUTTON_LEFT);
 	Ray Ray = GetMouseRay(GetMousePosition(), Context->Camera);
@@ -811,157 +1033,61 @@ Void DrawTerrain(
 		}
 	}
 
-	Transform = MatrixMultiply(Transform, MatrixTranslate(0.0f, -1.8f, 0.0f));
-	Transform = MatrixMultiply(Transform, MatrixTranslate(0.0f, Archive->WaterLevel / 64, 0.0f));
+	Transform = MatrixIdentity();
+	//Transform = MatrixMultiply(Transform, MatrixTranslate(0.0f, Archive->WaterLevel / 64, 0.0f));
 	//Transform = MatrixMultiply(Transform, MatrixTranslate(0.0f, -0.5f, 0.0f));
 
 	for (Int Index = 0; Index < ArrayGetElementCount(Archive->InteractiveObjects); Index += 1) {
 		MCLInteractiveObjectRef Object = (MCLInteractiveObjectRef)ArrayGetElementAtIndex(Archive->InteractiveObjects, Index);
 		MCLModelRef Model = (MCLModelRef)ArrayGetElementAtIndex(Archive->Models, Object->Object.ModelIndex);
 
-		Float32 OffsetY = 0;
-		UInt16 TilePositionX = (UInt16)MAX(0, MIN(256, Object->Object.Position.x / 256));
-		UInt16 TilePositionY = (UInt16)MAX(0, MIN(256, Object->Object.Position.z / 256));
-		Float32 TileHeight = Archive->HeightMap[(256 - TilePositionY) * 257 + TilePositionX];
-		
-		Matrix ModelTransform = MatrixIdentity();
-		ModelTransform = MatrixMultiply(ModelTransform, MatrixScale(Object->Object.Scale.x, Object->Object.Scale.y, Object->Object.Scale.z));
-		ModelTransform = MatrixMultiply(ModelTransform, MatrixScale(100.0f / Model->Archive->ScalePercentage, 100.0f / Model->Archive->ScalePercentage, 100.0f / Model->Archive->ScalePercentage));
-		ModelTransform = MatrixMultiply(ModelTransform, QuaternionToMatrix(Object->Object.Rotation));
-		ModelTransform = MatrixMultiply(ModelTransform, MatrixTranslate(Object->Object.Position.x, OffsetY + Object->Object.Position.y, Object->Object.Position.z));
-		ModelTransform = MatrixMultiply(ModelTransform, Transform);
+		Float32 OffsetY = CalculateOffsetY(Archive, &Object->Object, Model);
+		Model->Archive->Transform = Transform;
+		Model->Archive->Transform = MatrixMultiply(Model->Archive->Transform, MatrixScale(Object->Object.Scale.x, Object->Object.Scale.y, Object->Object.Scale.z));
+		Model->Archive->Transform = MatrixMultiply(Model->Archive->Transform, QuaternionToMatrix(Object->Object.Rotation));
+		Model->Archive->Transform = MatrixMultiply(Model->Archive->Transform, MatrixTranslate(Object->Object.Position.x, OffsetY + Object->Object.Position.y, Object->Object.Position.z));
+		EBMArchiveDraw(Context, Frame, Model->Archive);
 
-		for (Int MeshIndex = 0; MeshIndex < ArrayGetElementCount(Model->Archive->Meshes); MeshIndex += 1) {
-			EBMMeshRef Mesh = (EBMMeshRef)ArrayGetElementAtIndex(Model->Archive->Meshes, MeshIndex);
-			EBMMaterialRef MeshMaterial = (EBMMaterialRef)ArrayGetElementAtIndex(Model->Archive->Materials, Mesh->MaterialIndex);
-
-			SetMaterialTexture(&Material, MATERIAL_MAP_DIFFUSE, MeshMaterial->TextureMain.Texture.Texture);
-			DrawMesh(Mesh->Mesh, Material, ModelTransform);
-
-			BoundingBox Bounds;
-			Bounds.min = Vector3Transform(Model->BoundsMin, ModelTransform);
-			Bounds.max = Vector3Transform(Model->BoundsMax, ModelTransform);
-			DrawBoundingBox(Bounds, RED);
-		}
+		Matrix Transform = MatrixIdentity();
+		Transform = MatrixMultiply(Transform, MatrixTranslate(0.0f, Archive->WaterLevel, 0.0f));
+		Transform = MatrixMultiply(Transform, MatrixScale(1.0f / 100, 1.0f / 100, 1.0f / 100));
+		Vector3 Position = Vector3Transform(Object->Object.Position, Transform);
+		//DrawSphere(Position, 0.3f, BLUE);
 	}
 
 	for (Int Index = 0; Index < ArrayGetElementCount(Archive->StaticObjects); Index += 1) {
 		MCLObjectRef Object = (MCLObjectRef)ArrayGetElementAtIndex(Archive->StaticObjects, Index);
 		MCLModelRef Model = (MCLModelRef)ArrayGetElementAtIndex(Archive->Models, Object->ModelIndex);
 
-		Quaternion Rotation = Object->Rotation;
-		Float32 OffsetY = 0;
-		UInt16 TilePositionX = (UInt16)MAX(0, MIN(256, Object->Position.x / 256));
-		UInt16 TilePositionY = (UInt16)MAX(0, MIN(256, Object->Position.z / 256));
-		Float32 TileHeight = Archive->HeightMap[(256 - TilePositionY) * 257 + TilePositionX];
-		Vector3 Position = Object->Position;
+		Float32 OffsetY = CalculateOffsetY(Archive, Object, Model);
+		Model->Archive->Transform = Transform;
+		Model->Archive->Transform = MatrixMultiply(Model->Archive->Transform, MatrixScale(Object->Scale.x, Object->Scale.y, Object->Scale.z));
+		Model->Archive->Transform = MatrixMultiply(Model->Archive->Transform, QuaternionToMatrix(Object->Rotation));
+		Model->Archive->Transform = MatrixMultiply(Model->Archive->Transform, MatrixTranslate(Object->Position.x, OffsetY + Object->Position.y, Object->Position.z));
+		EBMArchiveDraw(Context, Frame, Model->Archive);
 
-		Matrix ModelTransform = MatrixIdentity();
-		ModelTransform = MatrixMultiply(ModelTransform, MatrixScale(Object->Scale.x, Object->Scale.y, Object->Scale.z));
-		ModelTransform = MatrixMultiply(ModelTransform, MatrixScale(100.0f / Model->Archive->ScalePercentage, 100.0f / Model->Archive->ScalePercentage, 100.0f / Model->Archive->ScalePercentage));
-		ModelTransform = MatrixMultiply(ModelTransform, QuaternionToMatrix(Rotation));
-		ModelTransform = MatrixMultiply(ModelTransform, MatrixTranslate(Position.x, OffsetY + Position.y, Position.z));
-		ModelTransform = MatrixMultiply(ModelTransform, Transform);
-
-		for (Int MeshIndex = 0; MeshIndex < ArrayGetElementCount(Model->Archive->Meshes); MeshIndex += 1) {
-			EBMMeshRef Mesh = (EBMMeshRef)ArrayGetElementAtIndex(Model->Archive->Meshes, MeshIndex);
-			EBMMaterialRef MeshMaterial = (EBMMaterialRef)ArrayGetElementAtIndex(Model->Archive->Materials, Mesh->MaterialIndex);
-
-			SetMaterialTexture(&Material, MATERIAL_MAP_DIFFUSE, MeshMaterial->TextureMain.Texture.Texture);
-			DrawMesh(Mesh->Mesh, Material, ModelTransform);
-
-			BoundingBox Bounds;
-			Bounds.min = Vector3Transform(Model->BoundsMin, ModelTransform);
-			Bounds.max = Vector3Transform(Model->BoundsMax, ModelTransform);
-			DrawBoundingBox(Bounds, RED);
-		}
-	}
-
-	static Int Frames = 0;
-	Frames++;
-	static Int Flip = 0;
-	static Bool Flipp0 = false;
-	if (Frames > 60) {
-		Flipp0 = !Flipp0;
-		Flip += 1;
-		Frames = 0;
-		Trace("Flip: %d", Flip);
+		Matrix Transform = MatrixIdentity();
+		Transform = MatrixMultiply(Transform, MatrixTranslate(0.0f, Archive->WaterLevel, 0.0f));
+		Transform = MatrixMultiply(Transform, MatrixScale(1.0f / 100, 1.0f / 100, 1.0f / 100));
+		Vector3 Position = Vector3Transform(Object->Position, Transform);
+		//DrawSphere(Position, 0.3f, BLUE);
 	}
 
 	for (Int Index = 0; Index < ArrayGetElementCount(Archive->EnvironmentObjects); Index += 1) {
 		MCLObjectRef Object = (MCLObjectRef)ArrayGetElementAtIndex(Archive->EnvironmentObjects, Index);
 		MCLModelRef Model = (MCLModelRef)ArrayGetElementAtIndex(Archive->Models, Object->ModelIndex);
 
-		Float32 OffsetY = 0;
-		UInt16 TilePositionX = (UInt16)MAX(0, MIN(256, Object->Position.x / 256));
-		UInt16 TilePositionY = (UInt16)MAX(0, MIN(256, Object->Position.z / 256));
-		Float32 TileHeight = Archive->HeightMap[(256 - TilePositionY) * 257 + TilePositionX];
-		if (TileHeight < Archive->WaterLevel && !Model->IsWater) {
-			OffsetY = TileHeight + Archive->WaterLevel + (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5 * Object->Scale.y + Object->Position.y * -Object->Scale.y;
-			Float32 MyHeight = (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5;
-			OffsetY = TileHeight + Archive->WaterLevel + MyHeight * Object->Scale.y;
-			OffsetY = (-Model->BoundsMin.y + (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5) * Object->Scale.y + Object->Position.y * -Object->Scale.y;
-			OffsetY = Object->Position.y * -Object->Scale.y;
-//			OffsetY = Object->Position.y * -Object->Scale.y - (Model->BoundsMax.y - Model->BoundsMin.y) * (Model->BoundsMax.y - Model->BoundsMin.y) / Model->BoundsMax.y * Object->Scale.y;
-//			OffsetY = Object->Position.y * -Object->Scale.y;
-			
-			//OffsetY = Object->Position.y * -Object->Scale.y + Archive->WaterLevel + TileHeight;
+		Float32 OffsetY = CalculateOffsetY(Archive, Object, Model);
+		Model->Archive->Transform = Transform;
+		Model->Archive->Transform = MatrixMultiply(Model->Archive->Transform, MatrixScale(Object->Scale.x, Object->Scale.y, Object->Scale.z));
+		Model->Archive->Transform = MatrixMultiply(Model->Archive->Transform, QuaternionToMatrix(Object->Rotation));
+		Model->Archive->Transform = MatrixMultiply(Model->Archive->Transform, MatrixTranslate(Object->Position.x, OffsetY + Object->Position.y, Object->Position.z));
+		EBMArchiveDraw(Context, Frame, Model->Archive);
 
-			/*
-			if (Model->Archive->Options.Unknown2 & 0b100) { // Optional Culling or Alpha (z-test player)
-				// OffsetY += (Model->BoundsMax.y + Model->BoundsMin.y) * 0.5 * Object->Scale.y;
-			}
-			else 
-			*/
-
-			OffsetY += TileHeight;
-			OffsetY += Archive->WaterLevel;
-			//OffsetY -= (Model->BoundsMax.y - Model->BoundsMin.y) * 0.06666 * Object->Scale.y;
-
-			if (Model->Archive->Options.Unknown1 & 0b10000) {
-				OffsetY -= (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5 * Object->Scale.y;
-				//OffsetY += Model->BoundsMin.y * Object->Scale.y * 4;
-			} 
-			else {
-				OffsetY -= (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5;
-				//OffsetY += (Model->BoundsMin.y + (0.0f - Model->BoundsMax.y)) * 0.5 * Object->Scale.y;
-				//OffsetY -= (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5 * Object->Scale.y;
-				//OffsetY = Object->Position.y * -Object->Scale.y + Archive->WaterLevel + TileHeight;
-				//OffsetY = (Model->BoundsMax.y - Model->BoundsMin.y) * Object->Scale.y + TileHeight + Archive->WaterLevel;
-			}
-		}
-
-		Quaternion Rotation = Object->Rotation;
-		if (Flipp0) {
-		}
-		//  ((Model->BoundsMax.y - Model->BoundsMin.y) * 0.5 + Model->BoundsMin.y)
-		//OffsetY += (Model->BoundsMin.y + (0.0f - Model->BoundsMax.y)) * 0.5 * Object->Scale.y;
-		OffsetY += (Model->BoundsMax.y - Model->BoundsMin.y) * 0.5 * Object->Scale.y;
-
-		Matrix ModelTransform = MatrixIdentity();
-		ModelTransform = MatrixMultiply(ModelTransform, MatrixScale(Object->Scale.x, Object->Scale.y, Object->Scale.z));
-		ModelTransform = MatrixMultiply(ModelTransform, MatrixScale(100.0f / Model->Archive->ScalePercentage, 100.0f / Model->Archive->ScalePercentage, 100.0f / Model->Archive->ScalePercentage));
-		ModelTransform = MatrixMultiply(ModelTransform, QuaternionToMatrix(Rotation));
-		ModelTransform = MatrixMultiply(ModelTransform, MatrixTranslate(Object->Position.x, OffsetY + Object->Position.y, Object->Position.z));
-		ModelTransform = MatrixMultiply(ModelTransform, Transform);
-
-		for (Int MeshIndex = 0; MeshIndex < ArrayGetElementCount(Model->Archive->Meshes); MeshIndex += 1) {
-			EBMMeshRef Mesh = (EBMMeshRef)ArrayGetElementAtIndex(Model->Archive->Meshes, MeshIndex);
-			EBMMaterialRef MeshMaterial = (EBMMaterialRef)ArrayGetElementAtIndex(Model->Archive->Materials, Mesh->MaterialIndex);
-			SetMaterialTexture(&Material, MATERIAL_MAP_DIFFUSE, MeshMaterial->TextureMain.Texture.Texture);
-			DrawMesh(Mesh->Mesh, Material, ModelTransform);
-
-			BoundingBox Bounds;
-			Bounds.min = Vector3Transform(Model->BoundsMin, ModelTransform);
-			Bounds.max = Vector3Transform(Model->BoundsMax, ModelTransform);
-			DrawBoundingBox(Bounds, RED);
-
-			if (IsTracingObject) {
-				RayCollision Collision = GetRayCollisionBox(Ray, Bounds);
-				if (Collision.hit) {
-					Trace(Model->Name);
-				}
-			}
-		}
+		Matrix Transform = MatrixIdentity();
+		Transform = MatrixMultiply(Transform, MatrixTranslate(0.0f, Archive->WaterLevel, 0.0f));
+		Transform = MatrixMultiply(Transform, MatrixScale(1.0f / 100, 1.0f / 100, 1.0f / 100));
+		Vector3 Position = Vector3Transform(Object->Position, Transform);
+		//DrawSphere(Position, 0.3f, BLUE);
 	}
 }

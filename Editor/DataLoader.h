@@ -16,6 +16,7 @@ Void LoadMissionDungeonFiles(
 
 Void LoadMissionDungeonData(
     EditorContextRef Context,
+    ArrayRef MissionDungeons,
     CString FileName
 );
 
