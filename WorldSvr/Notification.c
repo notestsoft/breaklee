@@ -218,6 +218,10 @@ NOTIFICATION_PROCEDURE_BINDING(CHARACTER_FORCE_WING_EXP) {
     }
 }
 
+NOTIFICATION_PROCEDURE_BINDING(MOB_ATTACK_SIGNAL) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
 NOTIFICATION_PROCEDURE_BINDING(MOB_PATTERN_SPECIAL_ACTION) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
