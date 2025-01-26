@@ -1803,49 +1803,116 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemCrest) {
 	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 
-RUNTIME_ITEM_PROCEDURE_BINDING(RTItemLotto) { 
-	RTDataLotteryItemPoolRef ItemPool = RTRuntimeDataLotteryItemPoolGet(Runtime->Context, ItemData->Lottery.PoolID);
-	if (!ItemPool) return RUNTIME_ITEM_USE_RESULT_FAILED;
+RUNTIME_ITEM_PROCEDURE_BINDING(RTItemLotto) {
+	struct {
+		UInt16 MaterialInventorySlotCount;
+		UInt16 MaterialInventorySlotIndex[0];
+	} *Data = Payload;
 
-	Int32 Seed = (Int32)PlatformGetTickCount();
-	Int32 RandomRate = RandomRange(&Seed, 0, INT32_MAX);
-	Int32 RandomRateOffset = 0;
+	Int32 MaterialInventorySlotIndex = 0;
+	Int64 ConsumableMaterialCount[RUNTIME_MAX_LOTTERY_MATERIAL_COUNT] = { 0 };
+	for (Int MaterialIndex = 0; MaterialIndex < RUNTIME_MAX_LOTTERY_MATERIAL_COUNT; MaterialIndex += 1) {
+		if (ItemData->Lottery.MaterialItems[MaterialIndex].ItemID < 1) continue;
 
-	// TODO: Option[0] = Item1, Option[1] = Maybe Perfect Drop?, Option[2] = ?, Option[3] = ?, Option[4] = Item2, ...
-	for (Int Index = 0; Index < ItemPool->LotteryItemPoolItemCount; Index += 1) {
-		RTDataLotteryItemPoolItemRef Item = &ItemPool->LotteryItemPoolItemList[Index];
-		if (RandomRate <= Item->Rate + RandomRateOffset || Index + 1 == ItemPool->LotteryItemPoolItemCount) {
-			struct _RTItemSlot CreatedItemSlot = { 0 };
-			CreatedItemSlot.Item.Serial = Item->ItemID;
-			CreatedItemSlot.ItemOptions = Item->ItemOption;
-			CreatedItemSlot.ItemDuration.Serial = Item->ItemDuration;
-			CreatedItemSlot.SlotIndex = RTInventoryGetNextFreeSlotIndex(Runtime, &Character->Data.TemporaryInventoryInfo);
-			if (!RTInventoryInsertSlot(Runtime, &Character->Data.TemporaryInventoryInfo, &CreatedItemSlot)) return RUNTIME_ITEM_USE_RESULT_FAILED;
-
-			NOTIFICATION_DATA_CREATE_ITEM* Notification = RTNotificationInit(CREATE_ITEM);
-			Notification->ItemType = 0;
-			Notification->ItemCount = 1;
-
-			NOTIFICATION_DATA_CREATE_ITEM_SLOT* NotificationItem = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CREATE_ITEM_SLOT);
-			NotificationItem->ItemID = CreatedItemSlot.Item.Serial;
-			NotificationItem->ItemOptions = CreatedItemSlot.ItemOptions;
-			NotificationItem->SlotIndex = CreatedItemSlot.SlotIndex + RUNTIME_INVENTORY_TOTAL_SIZE;
-			NotificationItem->ItemDuration = CreatedItemSlot.ItemDuration.Serial;
-
-			RTNotificationDispatchToCharacter(Notification, Character);
-
-			RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
-
-			Character->SyncMask.TemporaryInventoryInfo = true;
-			Character->SyncMask.InventoryInfo = true;
-
-			return RUNTIME_ITEM_USE_RESULT_SUCCESS;
+		while (MaterialInventorySlotIndex < Data->MaterialInventorySlotCount &&
+			ConsumableMaterialCount[MaterialIndex] < ItemData->Lottery.MaterialItems[MaterialIndex].ItemCount) {
+			ConsumableMaterialCount[MaterialIndex] += RTInventoryGetConsumableItemCount(
+				Runtime,
+				&Character->Data.InventoryInfo,
+				ItemData->Lottery.MaterialItems[MaterialIndex].ItemID,
+				ItemData->Lottery.MaterialItems[MaterialIndex].ItemOptions,
+				Data->MaterialInventorySlotIndex[MaterialInventorySlotIndex]
+			);
+			MaterialInventorySlotIndex += 1;
 		}
-
-		RandomRateOffset += Item->Rate;
 	}
 
-	return RUNTIME_ITEM_USE_RESULT_FAILED;
+	for (Int MaterialIndex = 0; MaterialIndex < RUNTIME_MAX_LOTTERY_MATERIAL_COUNT; MaterialIndex += 1) {
+		if (ItemData->Lottery.MaterialItems[MaterialIndex].ItemID < 1) continue;
+		if (ConsumableMaterialCount[MaterialIndex] >= ItemData->Lottery.MaterialItems[MaterialIndex].ItemCount) continue;
+
+		return RUNTIME_ITEM_USE_RESULT_FAILED;
+	}
+
+	MaterialInventorySlotIndex = 0;
+	Int64 ConsumedMaterialCount[RUNTIME_MAX_LOTTERY_MATERIAL_COUNT] = { 0 };
+	for (Int MaterialIndex = 0; MaterialIndex < RUNTIME_MAX_LOTTERY_MATERIAL_COUNT; MaterialIndex += 1) {
+		if (ItemData->Lottery.MaterialItems[MaterialIndex].ItemID < 1) continue;
+
+		while (MaterialInventorySlotIndex < Data->MaterialInventorySlotCount &&
+			ConsumedMaterialCount[MaterialIndex] < ItemData->Lottery.MaterialItems[MaterialIndex].ItemCount) {
+			Int64 RequiredItemCount = MAX(0, (Int64)ItemData->Lottery.MaterialItems[MaterialIndex].ItemCount - ConsumedMaterialCount[MaterialIndex]);
+			ConsumedMaterialCount[MaterialIndex] += RTInventoryConsumeItem(
+				Runtime,
+				&Character->Data.InventoryInfo,
+				ItemData->Lottery.MaterialItems[MaterialIndex].ItemID,
+				ItemData->Lottery.MaterialItems[MaterialIndex].ItemOptions,
+				RequiredItemCount,
+				Data->MaterialInventorySlotIndex[MaterialInventorySlotIndex]
+			);
+			MaterialInventorySlotIndex += 1;
+		}
+	}
+
+	Int32 LotteryPoolIDs[] = {
+		ItemData->Lottery.PoolID1,
+		ItemData->Lottery.PoolID2,
+		ItemData->Lottery.PoolID3,
+		ItemData->Lottery.PoolID4,
+		ItemData->Lottery.PoolID5,
+		ItemData->Lottery.PoolID6,
+		ItemData->Lottery.PoolID7,
+		ItemData->Lottery.PoolID8,
+		ItemData->Lottery.PoolID9,
+		ItemData->Lottery.PoolID10,
+	};
+	Int32 LotteryPoolIDCount = sizeof(LotteryPoolIDs) / sizeof(LotteryPoolIDs[0]);
+
+	NOTIFICATION_DATA_CREATE_ITEM* Notification = RTNotificationInit(CREATE_ITEM);
+	Notification->ItemType = 0;
+	Notification->ItemCount = 0;
+
+	for (Int PoolIndex = 0; PoolIndex < LotteryPoolIDCount; PoolIndex += 1) {
+		Int32 PoolID = LotteryPoolIDs[PoolIndex];
+		if (PoolID < 1) continue;
+
+		RTDataLotteryItemPoolRef ItemPool = RTRuntimeDataLotteryItemPoolGet(Runtime->Context, PoolID + 15);
+		if (!ItemPool) continue;
+
+		Int32 Seed = (Int32)PlatformGetTickCount();
+		Int32 RandomRate = RandomRange(&Seed, 0, INT32_MAX);
+		Int32 RandomRateOffset = 0;
+
+		for (Int Index = 0; Index < ItemPool->LotteryItemPoolItemCount; Index += 1) {
+			RTDataLotteryItemPoolItemRef Item = &ItemPool->LotteryItemPoolItemList[Index];
+			if (RandomRate <= Item->Rate + RandomRateOffset || Index + 1 == ItemPool->LotteryItemPoolItemCount) {
+				struct _RTItemSlot CreatedItemSlot = { 0 };
+				CreatedItemSlot.Item.Serial = Item->ItemID;
+				CreatedItemSlot.ItemOptions = Item->ItemOption;
+				CreatedItemSlot.ItemDuration.Serial = Item->ItemDuration;
+				CreatedItemSlot.SlotIndex = RTInventoryGetNextFreeSlotIndex(Runtime, &Character->Data.TemporaryInventoryInfo);
+				RTInventoryInsertSlot(Runtime, &Character->Data.TemporaryInventoryInfo, &CreatedItemSlot);
+				Character->SyncMask.TemporaryInventoryInfo = true;
+
+				Notification->ItemCount += 1;
+				NOTIFICATION_DATA_CREATE_ITEM_SLOT* NotificationItem = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CREATE_ITEM_SLOT);
+				NotificationItem->ItemID = CreatedItemSlot.Item.Serial;
+				NotificationItem->ItemOptions = CreatedItemSlot.ItemOptions;
+				NotificationItem->SlotIndex = CreatedItemSlot.SlotIndex + RUNTIME_INVENTORY_TOTAL_SIZE;
+				NotificationItem->ItemDuration = CreatedItemSlot.ItemDuration.Serial;
+				break;
+			}
+
+			RandomRateOffset += Item->Rate;
+		}
+	}
+
+	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);
+	Character->SyncMask.InventoryInfo = true;
+	
+	if (Notification->ItemCount > 0) RTNotificationDispatchToCharacter(Notification, Character);
+
+	return RUNTIME_ITEM_USE_RESULT_SUCCESS;
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemCoreEnhancer) {

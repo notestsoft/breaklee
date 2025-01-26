@@ -136,6 +136,8 @@ enum {
 #define RUNTIME_QUEST_ITEM_COUNT_MASK		0x0000007F
 #define RUNTIME_SHORT_ITEM_COUNT_MASK	0x0000FFFF
 
+#define RUNTIME_MAX_LOTTERY_MATERIAL_COUNT	3
+
 #define RTQuestItemOptions(Index, Count) ((Index << RUNTIME_QUEST_ITEM_INDEX_EXPONENT) | Count)
 #define RTQuestItemGetOptions(ItemOptions) ((ItemOptions & RUNTIME_QUEST_ITEM_INDEX_MASK) >> RUNTIME_QUEST_ITEM_INDEX_EXPONENT)
 #define RTQuestItemGetCount(ItemOptions) (ItemOptions & RUNTIME_QUEST_ITEM_COUNT_MASK)
@@ -300,8 +302,25 @@ struct _RTItemData {
 		} TransformationCard;
 
 		struct {
-			Int32 PoolID;
+			Int32 PoolID1;
+			Int32 PoolID2;
 			Int32 Unknown1;
+			Int32 Unknown2;
+			Int32 PoolID3;
+			Int32 PoolID4;
+			Int32 PoolID5;
+			Int32 PoolID6;
+			Int32 PoolID7;
+			Int32 PoolID8;
+			Int32 PoolID9;
+			Int32 PoolID10;
+			Int32 Unknown3;
+
+			struct {
+				UInt32 ItemID;
+				UInt32 ItemOptions;
+				UInt32 ItemCount;
+			} MaterialItems[RUNTIME_MAX_LOTTERY_MATERIAL_COUNT];
 		} Lottery;
 
 		struct {
