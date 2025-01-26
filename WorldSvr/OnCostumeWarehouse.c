@@ -45,10 +45,55 @@ error:
 	SocketDisconnect(Socket, Connection);
 }
 
+CLIENT_PROCEDURE_BINDING(COSTUME_WAREHOUSE_SHOPPING) {
+	if (!Character) goto error;
+
+	S2C_DATA_COSTUME_WAREHOUSE_SHOPPING* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, COSTUME_WAREHOUSE_SHOPPING);
+
+	Response->Result = 1;
+
+	SocketSend(Socket, Connection, Response);
+	return;
+
+error:
+	SocketDisconnect(Socket, Connection);
+}
+
+CLIENT_PROCEDURE_BINDING(COSTUME_WAREHOUSE_PURCHASE) {
+	if (!Character) goto error;
+
+	S2C_DATA_COSTUME_WAREHOUSE_PURCHASE* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, COSTUME_WAREHOUSE_PURCHASE);
+
+	Response->Success = 1;
+
+	SocketSend(Socket, Connection, Response);
+	return;
+
+error:
+	SocketDisconnect(Socket, Connection);
+}
+
+CLIENT_PROCEDURE_BINDING(COSTUME_WAREHOUSE_APPLY) {
+	if (!Character) goto error;
+
+	S2C_DATA_COSTUME_WAREHOUSE_APPLY* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, COSTUME_WAREHOUSE_APPLY);
+
+	Response->Success = 1;
+
+	SocketSend(Socket, Connection, Response);
+	return;
+
+error:
+	SocketDisconnect(Socket, Connection);
+}
+
 CLIENT_PROCEDURE_BINDING(COSTUME_WAREHOUSE_NAME_SET) {
 	if (!Character) goto error;
 
 	S2C_DATA_COSTUME_WAREHOUSE_NAME_SET* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, COSTUME_WAREHOUSE_NAME_SET);
+
+	Response->Result = 1;
+
 	SocketSend(Socket, Connection, Response);
 	return;
 
