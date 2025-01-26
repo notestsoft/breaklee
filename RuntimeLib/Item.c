@@ -2,6 +2,7 @@
 #include "Force.h"
 #include "Item.h"
 #include "Inventory.h"
+#include "OptionPool.h"
 #include "Runtime.h"
 #include "NotificationProtocol.h"
 #include "NotificationManager.h"
@@ -1886,10 +1887,18 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemLotto) {
 		for (Int Index = 0; Index < ItemPool->LotteryItemPoolItemCount; Index += 1) {
 			RTDataLotteryItemPoolItemRef Item = &ItemPool->LotteryItemPoolItemList[Index];
 			if (RandomRate <= Item->Rate + RandomRateOffset || Index + 1 == ItemPool->LotteryItemPoolItemCount) {
+				RTDropResult Result = {
+					.ItemID = Item->ItemID,
+					.ItemOptions = Item->ItemOption,
+					.ItemDuration = Item->ItemDuration,
+					.ItemProperty = { .Serial = 0 }
+				};
+				RTOptionPoolManagerCalculateOptions(Runtime, Runtime->OptionPoolManager, Item->OptionPoolIndex, &Result);
+
 				struct _RTItemSlot CreatedItemSlot = { 0 };
-				CreatedItemSlot.Item.Serial = Item->ItemID;
-				CreatedItemSlot.ItemOptions = Item->ItemOption;
-				CreatedItemSlot.ItemDuration.Serial = Item->ItemDuration;
+				CreatedItemSlot.Item = Result.ItemID;
+				CreatedItemSlot.ItemOptions = Result.ItemOptions;
+				CreatedItemSlot.ItemDuration = Result.ItemDuration;
 				CreatedItemSlot.SlotIndex = RTInventoryGetNextFreeSlotIndex(Runtime, &Character->Data.TemporaryInventoryInfo);
 				RTInventoryInsertSlot(Runtime, &Character->Data.TemporaryInventoryInfo, &CreatedItemSlot);
 				Character->SyncMask.TemporaryInventoryInfo = true;
