@@ -1857,15 +1857,15 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemLotto) {
 
 	Int32 LotteryPoolIDs[] = {
 		ItemData->Lottery.PoolID1,
-		ItemData->Lottery.PoolID2,
+		// ItemData->Lottery.PoolID2,
 		ItemData->Lottery.PoolID3,
-		ItemData->Lottery.PoolID4,
+		// ItemData->Lottery.PoolID4,
 		ItemData->Lottery.PoolID5,
-		ItemData->Lottery.PoolID6,
+		// ItemData->Lottery.PoolID6,
 		ItemData->Lottery.PoolID7,
-		ItemData->Lottery.PoolID8,
+		// ItemData->Lottery.PoolID8,
 		ItemData->Lottery.PoolID9,
-		ItemData->Lottery.PoolID10,
+		// ItemData->Lottery.PoolID10,
 	};
 	Int32 LotteryPoolIDCount = sizeof(LotteryPoolIDs) / sizeof(LotteryPoolIDs[0]);
 
@@ -1893,6 +1893,16 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemLotto) {
 					.ItemDuration = Item->ItemDuration,
 					.ItemProperty = { .Serial = 0 }
 				};
+
+				RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, Result.ItemID.ID);
+				if (ItemData->MaxStackSize > 1) {
+					UInt64 ItemStackSizeMask = RTItemDataGetStackSizeMask(ItemData);
+					UInt64 ItemStackSize = Result.ItemOptions & ItemStackSizeMask;
+					if (ItemStackSize < 1) {
+						Result.ItemOptions |= 1;
+					}
+				}
+
 				RTOptionPoolManagerCalculateOptions(Runtime, Runtime->OptionPoolManager, Item->OptionPoolIndex, &Result);
 
 				struct _RTItemSlot CreatedItemSlot = { 0 };
