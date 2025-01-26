@@ -45,4 +45,16 @@ struct _RTCharacterCostumeInfo {
 
 #pragma pack(pop)
 
+Bool RTCharacterIsCostumeUnlocked(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt32 CostumeItemID
+);
+
+Bool RTCharacterUnlockCostume(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt32 CostumeItemID
+);
+
 EXTERN_C_END
