@@ -491,3 +491,38 @@ Void SendPartyData(
 		SocketSend(Context->ClientSocket, Client->Connection, Notification);
 	}
 }
+
+CLIENT_PROCEDURE_BINDING(MESSAGE_PARTY) {
+	if (!Character) goto error;
+
+	Int32 PacketLength = sizeof(C2S_DATA_MESSAGE_PARTY) + Packet->PayloadLength;
+	if (Packet->Length != PacketLength) goto error;
+
+	RTPartyRef Party = RTRuntimeGetParty(Runtime, Character->PartyID);
+	if (!Party) goto error;
+	if (Party->PartyType == RUNTIME_PARTY_TYPE_SOLO_DUNGEON) goto error;
+
+	PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
+	S2C_DATA_NFY_MESSAGE_PARTY* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_MESSAGE_PARTY);
+	Notification->CharacterIndex = Character->CharacterIndex;
+	Notification->PayloadLength = Packet->PayloadLength;
+	PacketBufferAppendCopy(PacketBuffer, Packet->Payload, Packet->PayloadLength);
+
+	IPC_W2P_DATA_BROADCAST_TO_PARTY* Request = IPCPacketBufferInit(Context->IPCSocket->PacketBuffer, W2P, BROADCAST_TO_PARTY);
+	Request->Header.Source = Context->IPCSocket->NodeID;
+	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+	Request->Header.Target.Type = IPC_TYPE_PARTY;
+	Request->PartyID = Party->ID;
+	Request->Length = PacketGetLength(
+		Context->ClientSocket->ProtocolIdentifier,
+		Context->ClientSocket->ProtocolVersion,
+		Context->ClientSocket->ProtocolExtension,
+		Notification
+	);
+	IPCPacketBufferAppendCopy(Context->IPCSocket->PacketBuffer, Notification, Request->Length);
+	IPCSocketUnicast(Context->IPCSocket, Request);
+	return;
+
+error:
+	SocketDisconnect(Socket, Connection);
+}
