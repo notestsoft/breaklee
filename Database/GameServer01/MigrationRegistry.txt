@@ -132,3 +132,7 @@ AddMigration 0131_CreateUpdateAuctionItemIncrease.sql
 AddMigration 0132_CreateUpdateAuctionItemDecrease.sql
 AddMigration 0133_CreateSyncBattleMode.sql
 AddMigration 0134_CreateSyncBuff.sql
+AddMigration 0135_CreateCashInventory.sql
+AddMigration 0136_CreateInsertCashInventoryItem.sql
+AddMigration 0137_CreateDeleteCashInventoryItem.sql
+AddMigration 0138_CreateGetCashInventory.sql

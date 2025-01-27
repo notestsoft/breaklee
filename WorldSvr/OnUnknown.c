@@ -5,17 +5,6 @@
 #include "Notification.h"
 #include "Server.h"
 
-CLIENT_PROCEDURE_BINDING(GET_CASH_INVENTORY) {
-	if (!Character) goto error;
-
-	S2C_DATA_GET_CASH_INVENTORY* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, GET_CASH_INVENTORY);
-	SocketSend(Socket, Connection, Response);
-	return;
-
-error:
-	SocketDisconnect(Socket, Connection);
-}
-
 CLIENT_PROCEDURE_BINDING(UNKNOWN_2559) {
 	if (!Character) goto error;
 

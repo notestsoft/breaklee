@@ -736,6 +736,38 @@ IPC_PROTOCOL(D2W, AUCTION_UNREGISTER_ITEM,
 	UInt16 InventorySlotIndex[0];
 )
 
+IPC_PROTOCOL(W2D, GET_CASH_INVENTORY,
+	Int32 AccountID;
+)
+
+IPC_PROTOCOL_STRUCT(IPC_DATA_GET_CASH_INVENTORY_SLOT,
+	Int32 TransactionID;
+	UInt64 ItemID;
+	UInt64 ItemOptions;
+	UInt8 ItemDurationIndex;
+)
+
+IPC_PROTOCOL(D2W, GET_CASH_INVENTORY,
+	UInt8 Result;
+	Int16 ItemCount;
+	IPC_DATA_GET_CASH_INVENTORY_SLOT ItemSlots[0];
+)
+
+IPC_PROTOCOL(W2D, CASH_INVENTORY_RECEIVE_ITEM,
+	Int32 AccountID;
+	Int32 TransactionID;
+	UInt16 InventorySlotIndex;
+)
+
+IPC_PROTOCOL(D2W, CASH_INVENTORY_RECEIVE_ITEM,
+	Int32 TransactionID;
+	UInt64 ItemID;
+	UInt64 ItemOptions;
+	UInt16 InventorySlotIndex;
+	RTItemDuration ItemDuration;
+	UInt32 Unknown1;
+)
+
 IPC_PROTOCOL_STRUCT(IPC_W2D_DATA_AUCTION_UPDATE_ITEM_INCREASE,
 	UInt16 InventorySlotCount;
 	struct _RTInventoryInfo InventoryInfo;

@@ -558,7 +558,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->AuctionServerAddress.Port = Context->Config.AuctionSvr.Port;
     memcpy(Response->PartyServerAddress.Host, Context->Config.PartySvr.Host, strlen(Context->Config.PartySvr.Host));
     Response->PartyServerAddress.Port = Context->Config.PartySvr.Port;
-    Response->UnknownPort = 0;
+    Response->PartyServerUDPPort = 0;
     Response->CharacterStyleInfo = Character->Data.StyleInfo;
     memcpy(&Response->ResearchSupportInfo, &Character->Data.ResearchSupportInfo, sizeof(struct _RTCharacterResearchSupportInfo));
     Response->NameLength = strlen(Character->Name) + 1;
