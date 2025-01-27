@@ -22,8 +22,9 @@ Bool RTCharacterConsumeReturnStone(
 
             if (ItemSlot->ItemOptions < 1) {
                 RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SlotIndex);
-                Character->SyncMask.InventoryInfo = true;
             }
+
+            Character->SyncMask.InventoryInfo = true;
         }
         else {
             RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SlotIndex);
