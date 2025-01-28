@@ -1628,6 +1628,11 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemStackablePotion) {
 		break;
 	}
 
+	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_MYTH_EXP: {
+		if (Character->Data.MythMasteryInfo.Info.Level < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
+		RTCharacterMythMasteryAddExp(Runtime, Character, TotalAmount);
+		break;
+	}
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_GOLD_MERIT_EXP: {
 		RTCharacterGoldMeritMasteryAddExp(Runtime, Character, TotalAmount);
 

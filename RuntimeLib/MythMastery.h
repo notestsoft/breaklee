@@ -31,4 +31,51 @@ struct _RTCharacterMythMasteryInfo {
 
 #pragma pack(pop)
 
+Float RTCharacterMythMasteryGetExpPenaltyMultiplier(
+    RTRuntimeRef Runtime,
+    Int32 RebirthCount
+);
+
+Void RTCharacterMythMasteryAddExp(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt64 Exp
+);
+
+Int32 RTCharacterMythMasteryGetRepeatBonus(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Bool RTCharacterMythMasteryCheckEligibleForRepeatBonus(
+    RTRuntimeRef Runtime,
+    Int32 MythLevel
+);
+
+Int32 RTCharacterMythMasteryGetMaximumLevel(
+    RTRuntimeRef Runtime
+);
+
+UInt64 RTCharacterMythMasteryGetMaximumExp(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+UInt64 RTCharacterMythMasteryGetCumulativeLevelUpExp(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Bool RTCharacterMythMasteryGetCanRebirth(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Bool RTCharacterMythMasteryGetCanOpenPage(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 MasteryIndex,
+    Int32 LockGroup
+);
+
 EXTERN_C_END

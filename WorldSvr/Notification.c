@@ -274,6 +274,14 @@ NOTIFICATION_PROCEDURE_BINDING(DIAMOND_MERIT_MASTERY_OPEN_SLOT) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 
+NOTIFICATION_PROCEDURE_BINDING(MYTH_GAIN_XP) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
+NOTIFICATION_PROCEDURE_BINDING(MYTH_POINTS) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
 Void BroadcastUserList(
     ServerRef Server,
     ServerContextRef Context

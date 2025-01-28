@@ -4436,6 +4436,65 @@ CLIENT_PROTOCOL(S2C, NFY_DUNGEON_DROP_LIST, DEFAULT, 2849,
     S2C_DATA_NFY_DUNGEON_DROP_LIST_ITEM Items[MAX_DUNGEON_DROP_LIST_ITEM_COUNT];
 )
 
+CLIENT_PROTOCOL(C2S, MYTH_ROLL_SLOT, DEFAULT, 2959,
+    UInt8 MasteryIndex;
+    UInt8 SlotIndex;
+)
+
+CLIENT_PROTOCOL(S2C, MYTH_ROLL_SLOT, DEFAULT, 2959,
+    UInt32 MythPoints;
+    UInt32 HolyPower;
+    UInt8 MasteryIndex;
+    UInt8 SlotIndex;
+    UInt8 TierIndex;
+    UInt8 TierLevel;
+    UInt32 StatOption;
+    UInt32 StatValue;
+    UInt32 ValueType;
+    UInt32 StigmaGrade;
+    UInt32 StigmaXP;
+    UInt32 ErrorCode;
+)
+
+CLIENT_PROTOCOL(C2S, MYTH_REROLL_SLOT, DEFAULT, 2960,
+    UInt8 bAcceptTransform; //0 = keep, 1 = reroll
+    UInt8 MasteryIndex;
+    UInt8 SlotIndex;
+    UInt8 Unknown1;
+    UInt8 Unknown2;
+    UInt8 Unknown3;
+    UInt8 Unknown4;
+    UInt8 Unknown5;
+    UInt8 Unknown6;
+)
+
+CLIENT_PROTOCOL(S2C, MYTH_REROLL_SLOT, DEFAULT, 2960,
+    UInt8 MasteryIndex;
+    UInt8 SlotIndex;
+    UInt8 TierIndex;
+    UInt8 TierLevel;
+    UInt32 StatOption;
+    UInt32 StatValue;
+    UInt32 ValueType;
+    UInt32 HolyPower;
+    UInt32 ErrorCode;
+)
+
+CLIENT_PROTOCOL(C2S, MYTH_OPEN_LOCK, DEFAULT, 2961,
+    UInt8 MasteryIndex;
+    UInt8 LockGroupIndex;
+)
+
+CLIENT_PROTOCOL(S2C, MYTH_OPEN_LOCK, DEFAULT, 2961,
+    UInt8 MasteryIndex;
+    UInt8 LockGroupIndex;
+    UInt32 ErrorCode; //not 100% but fairly confident
+)
+
+CLIENT_PROTOCOL(S2C, NFY_MYTH_XP, DEFAULT, 2963,
+    UInt64 MythXP;
+)
+
 CLIENT_PROTOCOL(C2S, ROLL_FORCEWING_ARRIVAL_SKILL, DEFAULT, 2965,
     UInt8 SkillSlotIndex;
     UInt32 Unknown1;
