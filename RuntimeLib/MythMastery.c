@@ -206,7 +206,7 @@ Bool RTCharacterMythMasteryGetCanRebirth(
 	return Character->Data.MythMasteryInfo.Info.Level >= MythResetRef->RequiredLevel;
 }
 
-Bool RTCharacterMythMasteryGetCanOpenPage(
+Bool RTCharacterMythMasteryGetCanOpenLockGroup(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
 	Int32 MasteryIndex,
@@ -216,10 +216,8 @@ Bool RTCharacterMythMasteryGetCanOpenPage(
 	RTDataMythLockInfoRef MythLockInfoRef = RTRuntimeDataMythLockInfoGet(MythLockPageRef, LockGroup);
 
 	if (MythLockInfoRef->OpenScore <= Character->Data.MythMasteryInfo.Info.HolyPower) {
-		Warn("true");
 		return true;
 	}
 
-	Warn("false");
 	return false;
 }

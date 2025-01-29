@@ -71,7 +71,7 @@ Bool RTCharacterMythMasteryGetCanRebirth(
     RTCharacterRef Character
 );
 
-Bool RTCharacterMythMasteryGetCanOpenPage(
+Bool RTCharacterMythMasteryGetCanOpenLockGroup(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     Int32 MasteryIndex,

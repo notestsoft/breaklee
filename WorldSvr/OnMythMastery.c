@@ -13,7 +13,7 @@ CLIENT_PROCEDURE_BINDING(MYTH_ROLL_SLOT) {
 
 	S2C_DATA_MYTH_ROLL_SLOT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MYTH_ROLL_SLOT);
 	Response->MythPoints = Character->Data.MythMasteryInfo.Info.Points;
-	Response->HolyPower = Character->Data.MythMasteryInfo.Info.HolyPower;;
+	Response->HolyPower = Character->Data.MythMasteryInfo.Info.HolyPower;
 	Response->MasteryIndex = Packet->MasteryIndex;
 	Response->SlotIndex = Packet->SlotIndex;
 	Response->TierIndex = 53;
@@ -68,7 +68,7 @@ CLIENT_PROCEDURE_BINDING(MYTH_OPEN_LOCK) {
 
 	S2C_DATA_MYTH_OPEN_LOCK* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MYTH_OPEN_LOCK);
 
-	if (RTCharacterMythMasteryGetCanOpenPage(Runtime, Character, Packet->MasteryIndex, Packet->LockGroupIndex)) {
+	if (RTCharacterMythMasteryGetCanOpenLockGroup(Runtime, Character, Packet->MasteryIndex, Packet->LockGroupIndex)) {
 		Response->MasteryIndex = Packet->MasteryIndex;
 		Response->LockGroupIndex = MythLockInfoRef->LockGroup;
 		Response->ErrorCode = 0;
