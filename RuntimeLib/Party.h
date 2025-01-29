@@ -26,7 +26,7 @@ struct _RTPartyMemberInfo {
     UInt8 Unknown2;
     UInt8 WorldServerIndex;
     UInt8 BattleStyleIndex;
-    Int32 WorldIndex;
+    Int32 OnlineStatus;
     UInt16 OverlordLevel;
     Int32 MythRebirth;
     Int32 MythHolyPower;
