@@ -25,6 +25,25 @@ CLIENT_PROCEDURE_BINDING(MYTH_ROLL_SLOT) {
 	Response->StigmaXP = 500;
 	Response->ErrorCode = 0;
 
+	// test myth resurrect up
+	// resets client XP to 0
+	// resets client lvl to 1
+	// increases resurrection points
+	//NOTIFICATION_DATA_CHARACTER_DATA* LevelUpNotification = RTNotificationInit(CHARACTER_DATA);
+	//LevelUpNotification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_MYTH_RESURRECT;
+	//LevelUpNotification->Level = 1;
+	//RTNotificationDispatchToNearby(LevelUpNotification, Character->Movement.WorldChunk);
+
+	// this adds this item to inventory
+	NOTIFICATION_DATA_MYTH_RESURRECT* ResNotification = RTNotificationInit(MYTH_RESURRECT);
+	ResNotification->Unknown0 = 1;
+	ResNotification->ItemId = 33562089;
+	ResNotification->ItemCount = 35;
+	ResNotification->Unknown1 = 0;
+	ResNotification->InventorySlotIndex = 41;
+	ResNotification->Unknown2 = 1;
+	RTNotificationDispatchToCharacter(ResNotification, Character);
+
 	SocketSend(Socket, Connection, Response);
 	return;
 

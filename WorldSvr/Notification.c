@@ -282,6 +282,10 @@ NOTIFICATION_PROCEDURE_BINDING(MYTH_POINTS) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 
+NOTIFICATION_PROCEDURE_BINDING(MYTH_RESURRECT) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
 Void BroadcastUserList(
     ServerRef Server,
     ServerContextRef Context

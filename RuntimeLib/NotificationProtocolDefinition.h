@@ -772,6 +772,15 @@ NOTIFICATION_PROTOCOL(MYTH_GAIN_XP, 2963,
     UInt64 MythXP;
 )
 
+NOTIFICATION_PROTOCOL(MYTH_RESURRECT, 2964,
+    UInt32 Unknown0;
+    UInt64 ItemId;
+    UInt32 ItemCount;
+    UInt32 Unknown1;
+    UInt16 InventorySlotIndex;
+    UInt32 Unknown2;
+)
+
 NOTIFICATION_PROTOCOL(DIAMOND_MERIT_MASTERY_OPEN_SLOT, 3036,
     Int32 MasteryIndex[3];
 )

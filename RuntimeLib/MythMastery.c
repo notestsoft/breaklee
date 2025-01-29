@@ -39,34 +39,58 @@ Void RTCharacterMythMasteryAddExp(
 		// if next level doesnt exist, we are at max level, so exit the loop
 		if (!NextLevel) break;
 
-		// add points from passing current level
-		Character->Data.MythMasteryInfo.Info.Level = NextLevel->MythLevel;
-		// update the level first before calling this function
-		Character->Data.MythMasteryInfo.Info.Points += CurrentLevel->MythPoints + RTCharacterMythMasteryGetRepeatBonus(Runtime, Character);
+		RTCharacterMythMasteryAddMythLevel(Runtime, Character, 1);
 
 		// add onto required exp since we just leveled up
 		RequiredCumulativeExp += NextLevel->RequiredExp * RebirthPenaltyExpMultiplier;
-
-		// notify level up (actual MLV number change on client)
-		NOTIFICATION_DATA_CHARACTER_DATA* LevelUpNotification = RTNotificationInit(CHARACTER_DATA);
-		LevelUpNotification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_MYTH_LEVEL;
-		LevelUpNotification->Level = NextLevel->MythLevel;
-		RTNotificationDispatchToNearby(LevelUpNotification, Character->Movement.WorldChunk);
-
-		// notify myth points
-		NOTIFICATION_DATA_MYTH_POINTS* NotificationPersonal = RTNotificationInit(MYTH_POINTS);
-		NotificationPersonal->MythPoints = Character->Data.MythMasteryInfo.Info.Points;
-		RTNotificationDispatchToCharacter(NotificationPersonal, Character);
 	}
-
-	// write to db
-	Character->SyncMask.MythMasteryInfo = true;
 
 	// notify XP gained
 	// FIXME TODO: Does not appear in game log: Gained MXP (bottom right message log)
 	NOTIFICATION_DATA_MYTH_GAIN_XP* Notification = RTNotificationInit(MYTH_GAIN_XP);
 	Notification->MythXP = Character->Data.MythMasteryInfo.Info.Exp;
 	RTNotificationDispatchToCharacter(Notification, Character);
+}
+
+Void RTCharacterMythMasteryAddMythLevel(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 LevelsGiven
+) {
+	RTDataMythLevelRef CurrentLevel = RTRuntimeDataMythLevelGet(Runtime->Context, Character->Data.MythMasteryInfo.Info.Level);
+	assert(CurrentLevel);
+
+	RTDataMythLevelRef NextLevel = RTRuntimeDataMythLevelGet(Runtime->Context, Character->Data.MythMasteryInfo.Info.Level + 1);
+	assert(NextLevel);
+
+	// process each level up individually
+	for (Int Index = 0; Index < LevelsGiven; Index++) {
+		// add points from passing current level
+		Character->Data.MythMasteryInfo.Info.Level = NextLevel->MythLevel;
+		// update level before calling this func
+		// this func also calls SyncMask update
+		RTCharacterMythMasteryAddMythPoints(Runtime, Character, CurrentLevel->MythPoints + RTCharacterMythMasteryGetRepeatBonus(Runtime, Character));
+
+		// notify level up (actual MLV number change on client)
+		NOTIFICATION_DATA_CHARACTER_DATA* LevelUpNotification = RTNotificationInit(CHARACTER_DATA);
+		LevelUpNotification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_MYTH_LEVEL;
+		LevelUpNotification->Level = NextLevel->MythLevel;
+		RTNotificationDispatchToNearby(LevelUpNotification, Character->Movement.WorldChunk);
+	}
+}
+
+Void RTCharacterMythMasteryAddMythPoints(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 GiveAmount
+) {
+	Character->Data.MythMasteryInfo.Info.Points += GiveAmount;
+	Character->SyncMask.MythMasteryInfo = true;
+
+	// notify myth points
+	NOTIFICATION_DATA_MYTH_POINTS* NotificationPersonal = RTNotificationInit(MYTH_POINTS);
+	NotificationPersonal->MythPoints = Character->Data.MythMasteryInfo.Info.Points;
+	RTNotificationDispatchToCharacter(NotificationPersonal, Character);
 }
 
 Float RTCharacterMythMasteryGetExpPenaltyMultiplier(

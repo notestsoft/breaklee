@@ -31,15 +31,27 @@ struct _RTCharacterMythMasteryInfo {
 
 #pragma pack(pop)
 
-Float RTCharacterMythMasteryGetExpPenaltyMultiplier(
-    RTRuntimeRef Runtime,
-    Int32 RebirthCount
-);
-
 Void RTCharacterMythMasteryAddExp(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     UInt64 Exp
+);
+
+Void RTCharacterMythMasteryAddMythLevel(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 GiveAmount
+);
+
+Void RTCharacterMythMasteryAddMythPoints(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 GiveAmount
+);
+
+Float RTCharacterMythMasteryGetExpPenaltyMultiplier(
+    RTRuntimeRef Runtime,
+    Int32 RebirthCount
 );
 
 Int32 RTCharacterMythMasteryGetRepeatBonus(
