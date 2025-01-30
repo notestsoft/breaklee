@@ -1,0 +1,72 @@
+<MythMastery>
+	<SlotGroupPool>
+		<Pool ID="1">
+			<SlotGroup ID="1" SlotValuePoolIndex="1" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="0" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="3" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="4" />
+			</SlotGroup>
+		</Pool>
+	</SlotGroupPool>
+	<SlotValuePoolGroup>
+		<!-- Rate adds up to 100000 -->
+		<!-- 1000 Rate is 1%, 10000 is 10% -->
+		<!-- ValueType 1 = add, 2 = percent -->
+		<Pool ID="1">
+			<!-- PVE Ignore Accuracy 20000 -->
+			<MythSlotValue ForceID="211" Value="1" ValueType="1" Grade="1" Rate="1000" />
+			<MythSlotValue ForceID="211" Value="2" ValueType="1" Grade="2" Rate="2000" />
+			<MythSlotValue ForceID="211" Value="3" ValueType="1" Grade="3" Rate="3000" />
+			<MythSlotValue ForceID="211" Value="4" ValueType="1" Grade="4" Rate="4000" />
+			<MythSlotValue ForceID="211" Value="5" ValueType="1" Grade="5" Rate="3000" />
+			<MythSlotValue ForceID="211" Value="6" ValueType="1" Grade="6" Rate="3000" />
+			<MythSlotValue ForceID="211" Value="7" ValueType="1" Grade="7" Rate="2000" />
+			<MythSlotValue ForceID="211" Value="9" ValueType="1" Grade="8" Rate="1000" />
+			<MythSlotValue ForceID="211" Value="12" ValueType="1" Grade="9" Rate="600" />
+			<MythSlotValue ForceID="211" Value="16" ValueType="1" Grade="10" Rate="400" />
+			<!-- PVP Ignore Accuracy 20000 -->
+			<MythSlotValue ForceID="210" Value="1" ValueType="1" Grade="1" Rate="1000" />
+			<MythSlotValue ForceID="210" Value="2" ValueType="1" Grade="2" Rate="2000" />
+			<MythSlotValue ForceID="210" Value="3" ValueType="1" Grade="3" Rate="3000" />
+			<MythSlotValue ForceID="210" Value="4" ValueType="1" Grade="4" Rate="4000" />
+			<MythSlotValue ForceID="210" Value="5" ValueType="1" Grade="5" Rate="3000" />
+			<MythSlotValue ForceID="210" Value="6" ValueType="1" Grade="6" Rate="3000" />
+			<MythSlotValue ForceID="210" Value="7" ValueType="1" Grade="7" Rate="2000" />
+			<MythSlotValue ForceID="210" Value="9" ValueType="1" Grade="8" Rate="1000" />
+			<MythSlotValue ForceID="210" Value="12" ValueType="1" Grade="9" Rate="600" />
+			<MythSlotValue ForceID="210" Value="16" ValueType="1" Grade="10" Rate="400" />
+			<!-- PVP Cancel Ignore Damage Reduction 15000 -->
+			<MythSlotValue ForceID="204" Value="1" ValueType="1" Grade="1" Rate="3750" />
+			<MythSlotValue ForceID="204" Value="2" ValueType="1" Grade="2" Rate="6450" />
+			<MythSlotValue ForceID="204" Value="3" ValueType="1" Grade="3" Rate="3750" />
+			<MythSlotValue ForceID="204" Value="5" ValueType="1" Grade="4" Rate="750" />
+			<MythSlotValue ForceID="204" Value="8" ValueType="1" Grade="5" Rate="300" />
+			<!-- PVE Cancel Ignore Damage Reduction 15000 -->
+			<MythSlotValue ForceID="205" Value="1" ValueType="1" Grade="1" Rate="3750" />
+			<MythSlotValue ForceID="205" Value="2" ValueType="1" Grade="2" Rate="6450" />
+			<MythSlotValue ForceID="205" Value="3" ValueType="1" Grade="3" Rate="3750" />
+			<MythSlotValue ForceID="205" Value="5" ValueType="1" Grade="4" Rate="750" />
+			<MythSlotValue ForceID="205" Value="8" ValueType="1" Grade="5" Rate="300" />
+			<!-- HP 20000 -->
+			<MythSlotValue ForceID="1" Value="5" ValueType="1" Grade="1" Rate="10000" />
+			<MythSlotValue ForceID="1" Value="10" ValueType="1" Grade="2" Rate="8180" />
+			<MythSlotValue ForceID="1" Value="15" ValueType="1" Grade="3" Rate="1600" />
+			<MythSlotValue ForceID="1" Value="20" ValueType="1" Grade="4" Rate="200" />
+			<MythSlotValue ForceID="1" Value="30" ValueType="1" Grade="5" Rate="20" />
+			<!-- PVE Defense 5000 -->
+			<MythSlotValue ForceID="155" Value="1" ValueType="1" Grade="1" Rate="2750" />
+			<MythSlotValue ForceID="155" Value="2" ValueType="1" Grade="2" Rate="2017" />
+			<MythSlotValue ForceID="155" Value="3" ValueType="1" Grade="3" Rate="200" />
+			<MythSlotValue ForceID="155" Value="5" ValueType="1" Grade="4" Rate="30" />
+			<MythSlotValue ForceID="155" Value="8" ValueType="1" Grade="5" Rate="3" />
+			<!-- PVP Defense 5000 -->
+			<MythSlotValue ForceID="189" Value="1" ValueType="1" Grade="1" Rate="2750" />
+			<MythSlotValue ForceID="189" Value="2" ValueType="1" Grade="2" Rate="2017" />
+			<MythSlotValue ForceID="189" Value="3" ValueType="1" Grade="3" Rate="200" />
+			<MythSlotValue ForceID="189" Value="5" ValueType="1" Grade="4" Rate="30" />
+			<MythSlotValue ForceID="189" Value="8" ValueType="1" Grade="5" Rate="3" />
+		</Pool>
+		<Pool ID="2">
+		</Pool>
+	</SlotValuePoolGroup>
+</MythMastery>

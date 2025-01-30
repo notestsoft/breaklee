@@ -31,6 +31,11 @@ struct _RTCharacterMythMasteryInfo {
 
 #pragma pack(pop)
 
+Void RTCharacterMythMasteryEnable(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
 Void RTCharacterMythMasteryAddExp(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
@@ -40,18 +45,18 @@ Void RTCharacterMythMasteryAddExp(
 Void RTCharacterMythMasteryAddMythLevel(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    Int32 GiveAmount
+    Int32 LevelsGiven
 );
 
 Void RTCharacterMythMasteryAddMythPoints(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    Int32 GiveAmount
+    Int32 PointsGiven
 );
 
 Float RTCharacterMythMasteryGetExpPenaltyMultiplier(
     RTRuntimeRef Runtime,
-    Int32 RebirthCount
+    Int32 CharacterRebirthCount
 );
 
 Int32 RTCharacterMythMasteryGetRepeatBonus(
@@ -86,6 +91,13 @@ Bool RTCharacterMythMasteryGetCanRebirth(
 Bool RTCharacterMythMasteryGetCanOpenLockGroup(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
+    Int32 MasteryIndex,
+    Int32 LockGroup
+);
+
+Bool RTCharacterMythMasteryGetIsSlotOccupied(
+    RTRuntimeRef Runtime,
+    RTCharacterRef,
     Int32 MasteryIndex,
     Int32 LockGroup
 );

@@ -68,3 +68,34 @@ RUNTIME_DATA_TYPE_INDEX(MythLockPage, Int32, MasteryIndex)
 RUNTIME_DATA_TYPE_INDEX_CHILD(MythLockPage, MythLockInfo, Int32, LockGroup)
 
 RUNTIME_DATA_FILE_END
+
+RUNTIME_DATA_FILE_BEGIN(DIR_PATH(Character, MythMastery.xml))
+
+RUNTIME_DATA_TYPE_BEGIN(MythSlotGroupPool, "MythMastery.SlotGroupPool.Pool")
+RUNTIME_DATA_PROPERTY(Int32, GroupID, "ID")
+RUNTIME_DATA_PROPERTY(Int32, MythSlotValuePoolID, "SlotValuePoolIndex")
+	RUNTIME_DATA_TYPE_BEGIN_CHILD(MythSlotGroup, "SlotGroup")
+	RUNTIME_DATA_PROPERTY(Int32, GroupID, "ID")
+	RUNTIME_DATA_TYPE_BEGIN_CHILD(MythSlotIndexGroup, "SlotIndexGroup")
+		RUNTIME_DATA_PROPERTY(UInt32, MasteryIndex, "MasteryIndex")
+		RUNTIME_DATA_PROPERTY(UInt32, SlotIndex, "SlotIndex")
+	RUNTIME_DATA_TYPE_END_CHILD(MythSlotIndexGroup)
+RUNTIME_DATA_TYPE_END_CHILD(MythSlotGroup)
+RUNTIME_DATA_TYPE_END(MythSlotGroupPool)
+RUNTIME_DATA_TYPE_INDEX(MythSlotGroupPool, Int32, GroupID)
+RUNTIME_DATA_TYPE_INDEX_CHILD(MythSlotGroupPool, MythSlotGroup, UInt32, GroupID)
+
+RUNTIME_DATA_TYPE_BEGIN(MythSlotGroupValuePool, "MythMastery.SlotValuePoolGroup.Pool")
+RUNTIME_DATA_PROPERTY(Int32, PoolID, "ID")
+RUNTIME_DATA_TYPE_BEGIN_CHILD(MythSlotValuePool, "MythSlotValue")
+	RUNTIME_DATA_PROPERTY(UInt32, ForceCode, "ForceID")
+	RUNTIME_DATA_PROPERTY(UInt32, Value, "Value")
+	RUNTIME_DATA_PROPERTY(UInt32, ValueType, "ValueType")
+	RUNTIME_DATA_PROPERTY(UInt32, Grade, "Grade")
+	RUNTIME_DATA_PROPERTY(UInt32, Chance, "Rate")
+RUNTIME_DATA_TYPE_END_CHILD(MythSlotValuePool)
+RUNTIME_DATA_TYPE_END(MythSlotGroupValuePool)
+RUNTIME_DATA_TYPE_INDEX(MythSlotValuePool, Int32, PoolID)
+RUNTIME_DATA_TYPE_INDEX_CHILD(MythSlotGroupValuePool, MythSlotValuePool, UInt32, PoolID)
+
+RUNTIME_DATA_FILE_END

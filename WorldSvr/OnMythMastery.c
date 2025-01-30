@@ -51,24 +51,21 @@ error:
 	SocketDisconnect(Socket, Connection);
 }
 
-CLIENT_PROCEDURE_BINDING(MYTH_REROLL_SLOT) {
+CLIENT_PROCEDURE_BINDING(MYTH_FINISH_ROLL_SLOT) {
 	if (!Character || Character->Data.MythMasteryInfo.Info.Level < 1) goto error;
 
 	Info("Myth rollback slot");
 
-	S2C_DATA_MYTH_REROLL_SLOT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MYTH_REROLL_SLOT);
+	if (Packet->UndoThisRoll == 0) {
+
+	}
+
+	S2C_DATA_MYTH_FINISH_ROLL_SLOT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MYTH_FINISH_ROLL_SLOT);
 	Response->MasteryIndex = Packet->MasteryIndex;
 	Response->SlotIndex = Packet->SlotIndex;
 	Response->TierIndex = 53;
-	if (Packet->bAcceptTransform == true)
-		Response->TierLevel = 5;
-	else 
-		Response->TierLevel = 3;
+	Response->TierLevel = 3;
 	Response->StatOption = 180;
-	if (Packet->bAcceptTransform == true)
-		Response->StatValue = 5;
-	else
-		Response->StatValue = 3;
 	Response->ValueType = 1;
 	Response->HolyPower = Character->Data.MythMasteryInfo.Info.HolyPower;
 	Response->ErrorCode = 0;
@@ -99,7 +96,7 @@ CLIENT_PROCEDURE_BINDING(MYTH_OPEN_LOCK) {
 	else {
 		Response->MasteryIndex = 0;
 		Response->LockGroupIndex = 0;
-		Response->ErrorCode = 1; //gives random error on client but fine for now
+		Response->ErrorCode = 1; //gives random error on client, but doesnt matter since normal players can't even get here
 	}
 	
 	SocketSend(Socket, Connection, Response);

@@ -5,6 +5,23 @@
 #include "NotificationManager.h"
 #include "NotificationProtocolDefinition.h"
 
+Void RTCharacterMythMasteryEnable(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+	if (Character->Data.MythMasteryInfo.Info.Level > 0) return;
+
+	// add points from passing current level
+	Character->Data.MythMasteryInfo.Info.Level = 1;
+	Character->SyncMask.MythMasteryInfo = true;
+
+	// notify level up (actual MLV number change on client)
+	NOTIFICATION_DATA_CHARACTER_DATA* LevelUpNotification = RTNotificationInit(CHARACTER_DATA);
+	LevelUpNotification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_MYTH_LEVEL;
+	LevelUpNotification->Level = 1;
+	RTNotificationDispatchToNearby(LevelUpNotification, Character->Movement.WorldChunk);
+}
+
 Void RTCharacterMythMasteryAddExp(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
@@ -82,9 +99,9 @@ Void RTCharacterMythMasteryAddMythLevel(
 Void RTCharacterMythMasteryAddMythPoints(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
-	Int32 GiveAmount
+	Int32 PointsGiven
 ) {
-	Character->Data.MythMasteryInfo.Info.Points += GiveAmount;
+	Character->Data.MythMasteryInfo.Info.Points += PointsGiven;
 	Character->SyncMask.MythMasteryInfo = true;
 
 	// notify myth points
@@ -95,7 +112,7 @@ Void RTCharacterMythMasteryAddMythPoints(
 
 Float RTCharacterMythMasteryGetExpPenaltyMultiplier(
 	RTRuntimeRef Runtime,
-	Int32 RebirthCount
+	Int32 CharacterRebirthCount
 ) {
 	RTDataMythRepeatPenaltyRef MythRepeatPenaltyRef = RTRuntimeDataMythRepeatPenaltyGet(Runtime->Context);
 	Float PenaltyPercentPerRebirth = 0.f;
@@ -108,12 +125,12 @@ Float RTCharacterMythMasteryGetExpPenaltyMultiplier(
 	// cap the rebirth count at the limit
 	// 0 or negative to disable the limit
 	if (MythRepeatPenaltyRef->Limit > 0) {
-		RebirthCount = MIN(MythRepeatPenaltyRef->Limit, RebirthCount);
+		CharacterRebirthCount = MIN(MythRepeatPenaltyRef->Limit, CharacterRebirthCount);
 	}
 
 	// 10 AddMxp = 1.0% increase
 	// adjust for amount of rebirths
-	PenaltyPercentPerRebirth = MythRepeatPenaltyRef->AddMxp * RebirthCount;
+	PenaltyPercentPerRebirth = MythRepeatPenaltyRef->AddMxp * CharacterRebirthCount;
 	PenaltyPercentPerRebirth = PenaltyPercentPerRebirth / 1000.f;
 
 	// min of 1
@@ -239,9 +256,19 @@ Bool RTCharacterMythMasteryGetCanOpenLockGroup(
 	RTDataMythLockPageRef MythLockPageRef = RTRuntimeDataMythLockPageGet(Runtime->Context, MasteryIndex);
 	RTDataMythLockInfoRef MythLockInfoRef = RTRuntimeDataMythLockInfoGet(MythLockPageRef, LockGroup);
 
+	// TODO: client does check allowing only the next one to be open, we should check that too though
 	if (MythLockInfoRef->OpenScore <= Character->Data.MythMasteryInfo.Info.HolyPower) {
 		return true;
 	}
 
 	return false;
+}
+
+Bool RTCharacterMythMasteryGetSlotOccupied(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 MasteryIndex,
+	Int32 SlotIndex
+) {
+	return true;
 }

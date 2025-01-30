@@ -4456,8 +4456,8 @@ CLIENT_PROTOCOL(S2C, MYTH_ROLL_SLOT, DEFAULT, 2959,
     UInt32 ErrorCode;
 )
 
-CLIENT_PROTOCOL(C2S, MYTH_REROLL_SLOT, DEFAULT, 2960,
-    UInt8 bAcceptTransform; //0 = keep, 1 = reroll
+CLIENT_PROTOCOL(C2S, MYTH_FINISH_ROLL_SLOT, DEFAULT, 2960,
+    UInt8 UndoThisRoll; //0 = keep, 1 = reroll
     UInt8 MasteryIndex;
     UInt8 SlotIndex;
     UInt8 Unknown1;
@@ -4468,7 +4468,7 @@ CLIENT_PROTOCOL(C2S, MYTH_REROLL_SLOT, DEFAULT, 2960,
     UInt8 Unknown6;
 )
 
-CLIENT_PROTOCOL(S2C, MYTH_REROLL_SLOT, DEFAULT, 2960,
+CLIENT_PROTOCOL(S2C, MYTH_FINISH_ROLL_SLOT, DEFAULT, 2960,
     UInt8 MasteryIndex;
     UInt8 SlotIndex;
     UInt8 TierIndex;
