@@ -16,5 +16,19 @@ CLIENT_PROCEDURE_BINDING(GET_FORCEGEM_PRICE_POOL) {
 		ResponseData->Price = ResponseData->Price;
 	}
 
+	// Temporary Myth resurrect price insert
+	// TODO: Remove this garbage
+	Int32 MaxMythLevel = RTCharacterMythMasteryGetMaximumLevel(Runtime);
+	RTDataMythRebirthPenaltyRef MythRebirthPenaltyRef = RTRuntimeDataMythRebirthPenaltyGet(Runtime->Context);
+
+	for (Int Index = 0; Index < 5; Index++) {
+		Response->Count += 1;
+		S2C_DATA_GET_FORCEGEM_PRICE* ResponseData = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_GET_FORCEGEM_PRICE);
+		ResponseData->PoolIndex = 32;
+		ResponseData->PriceIndex = 95 + Index;
+		ResponseData->Price = (100 - ResponseData->PriceIndex) * MythRebirthPenaltyRef->PenaltyPerMissingLevel;
+
+	}
+
 	SocketSend(Socket, Connection, Response);
 }

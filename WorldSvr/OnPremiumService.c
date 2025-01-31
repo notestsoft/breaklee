@@ -147,6 +147,8 @@ CLIENT_PROCEDURE_BINDING(PURCHASE_PREMIUM_SERVICE) {
             goto error;
         }
 
+        RTCharacterMythMasteryRebirth(Runtime, Character);
+
         Response->Result = 0;
     }
 
