@@ -11,6 +11,7 @@ struct _RTTradeMemberContext {
     Bool IsConfirmed;
     Bool IsInventoryReady;
     UInt8 TradeInventorySlotCount;
+    Bool TradeInventorySlotFlags[RUNTIME_MAX_TRADE_INVENTORY_SIZE];
     UInt16 TradeInventorySlots[RUNTIME_MAX_TRADE_INVENTORY_SIZE];
     UInt8 InventorySlotCount;
     UInt16 InventorySlots[RUNTIME_MAX_TRADE_INVENTORY_SIZE];
@@ -422,12 +423,13 @@ UInt8 RTTradeManagerAddItems(
     for (Int Index = 0; Index < InventorySlotCount; Index += 1) {
         UInt16 InventorySlotIndex = TradeInventorySlotIndex[Index];
         if (InventorySlotIndex >= RUNTIME_MAX_TRADE_INVENTORY_SIZE) goto error;
-        if (MemberContext->TradeInventorySlots[InventorySlotIndex]) goto error;
+        if (MemberContext->TradeInventorySlotFlags[InventorySlotIndex]) goto error;
 
         RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, SourceInventorySlotIndex[Index]);
         if (!ItemSlot) goto error;
         if (ItemSlot->Item.IsAccountBinding || ItemSlot->Item.IsCharacterBinding || ItemSlot->Item.IsProtected) goto error;
 
+        MemberContext->TradeInventorySlotFlags[InventorySlotIndex] = true;
         MemberContext->TradeInventorySlots[InventorySlotIndex] = SourceInventorySlotIndex[Index];
 
         Notification->ItemCount += 1;
@@ -582,7 +584,7 @@ Bool RTTradeManagerSetInventorySlots(
         struct _RTItemSlot TargetTempInventorySlots[RUNTIME_MAX_TRADE_INVENTORY_SIZE] = { 0 };
 
         for (Int Index = 0; Index < RUNTIME_MAX_TRADE_INVENTORY_SIZE; Index += 1) {
-            if (TradeContext->Source.TradeInventorySlots[Index]) {
+            if (TradeContext->Source.TradeInventorySlotFlags[Index]) {
                 RTInventoryRemoveSlot(
                     Runtime,
                     &Source->Data.InventoryInfo,
@@ -592,7 +594,7 @@ Bool RTTradeManagerSetInventorySlots(
                 SourceTempInventorySlotCount += 1;
             }
 
-            if (TradeContext->Target.TradeInventorySlots[Index]) {
+            if (TradeContext->Target.TradeInventorySlotFlags[Index]) {
                 RTInventoryRemoveSlot(
                     Runtime,
                     &Target->Data.InventoryInfo,
@@ -604,10 +606,12 @@ Bool RTTradeManagerSetInventorySlots(
         }
 
         for (Int Index = 0; Index < SourceTempInventorySlotCount; Index += 1) {
+            SourceTempInventorySlots[Index].SlotIndex = TradeContext->Target.InventorySlots[Index];
             RTInventorySetSlot(Runtime, &Target->Data.InventoryInfo, &SourceTempInventorySlots[Index]);
         }
 
         for (Int Index = 0; Index < TargetTempInventorySlotCount; Index += 1) {
+            TargetTempInventorySlots[Index].SlotIndex = TradeContext->Source.InventorySlots[Index];
             RTInventorySetSlot(Runtime, &Source->Data.InventoryInfo, &TargetTempInventorySlots[Index]);
         }
 
