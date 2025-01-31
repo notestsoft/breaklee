@@ -36,12 +36,21 @@ RTCostumePageRef RTCharacterGetCostumePage(
     RTCharacterRef Character,
     Int32 PresetIndex
 ) {
-    for (Int Index = 0; Index < RUNTIME_CHARACTER_MAX_COSTUME_PAGE_COUNT; Index += 1) {
+    if (PresetIndex >= RUNTIME_CHARACTER_MAX_COSTUME_PAGE_COUNT) return NULL;
+
+    for (Int Index = 0; Index < Character->Data.CostumeInfo.Info.PageCount; Index += 1) {
         RTCostumePageRef Page = &Character->Data.CostumeInfo.Pages[Index];
         if (Page->PageIndex == PresetIndex) return Page;
     }
 
-    return NULL;
+    if (Character->Data.CostumeInfo.Info.PageCount >= RUNTIME_CHARACTER_MAX_COSTUME_PAGE_COUNT) return NULL;
+
+    RTCostumePageRef Page = &Character->Data.CostumeInfo.Pages[Character->Data.CostumeInfo.Info.PageCount];
+    memset(Page, 0, sizeof(struct _RTCostumePage));
+    Page->PageIndex = PresetIndex;
+    Character->Data.CostumeInfo.Info.PageCount += 1;
+    Character->SyncMask.CostumeInfo = true;
+    return Page;
 }
 
 Bool RTCharacterSetCostumePreset(
@@ -50,8 +59,6 @@ Bool RTCharacterSetCostumePreset(
     Int32 PresetIndex,
     UInt32* CostumeSlots
 ) {
-    RTCostumePageRef CurrentCostumePage = RTCharacterGetCostumePage(Runtime, Character, Character->Data.CostumeInfo.Info.ActivePageIndex);
-
     RTCostumePageRef CostumePage = RTCharacterGetCostumePage(Runtime, Character, PresetIndex);
     if (!CostumePage) return false;
 
@@ -61,23 +68,32 @@ Bool RTCharacterSetCostumePreset(
     }
     
     UInt16 EquipmentSlots[] = {
-        RUNTIME_EQUIPMENT_SLOT_INDEX_COSTUME_APPLIED,
+        RUNTIME_EQUIPMENT_SLOT_INDEX_COSTUME_DISPLAY,
         RUNTIME_EQUIPMENT_SLOT_INDEX_COSTUME_DISPLAY_HELMET,
-        RUNTIME_EQUIPMENT_SLOT_INDEX_COSTUME_DISPLAY_WEAPON_RIGHT,
         RUNTIME_EQUIPMENT_SLOT_INDEX_COSTUME_DISPLAY_WEAPON_LEFT,
-        RUNTIME_EQUIPMENT_SLOT_INDEX_COSTUME_APPLIED_FORCE_WING,
+        RUNTIME_EQUIPMENT_SLOT_INDEX_COSTUME_DISPLAY_WEAPON_RIGHT,
+        RUNTIME_EQUIPMENT_SLOT_INDEX_COSTUME_DISPLAY_FORCE_WING,
         RUNTIME_EQUIPMENT_SLOT_INDEX_COSTUME_DISPLAY_VEHICLE,
         RUNTIME_EQUIPMENT_SLOT_INDEX_PET_DISPLAY,
     };
 
-    for (Int Index = 0; Index < RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT; Index += 1) {
-        if (CurrentCostumePage && CurrentCostumePage->CostumeSlots[Index] > 0) {
-            NOTIFICATION_DATA_CHARACTER_ITEM_UNEQUIP* Notification = RTNotificationInit(CHARACTER_ITEM_UNEQUIP);
-            Notification->CharacterIndex = Character->CharacterIndex;
-            Notification->EquipmentSlotIndex = EquipmentSlots[Index];
-            RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
+    RTCostumePageRef CurrentCostumePage = RTCharacterGetCostumePage(Runtime, Character, Character->Data.CostumeInfo.Info.ActivePageIndex);
+    if (CurrentCostumePage) {
+        for (Int Index = 0; Index < RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT; Index += 1) {
+            if (CurrentCostumePage && CurrentCostumePage->CostumeSlots[Index] > 0) {
+                NOTIFICATION_DATA_CHARACTER_ITEM_UNEQUIP* Notification = RTNotificationInit(CHARACTER_ITEM_UNEQUIP);
+                Notification->CharacterIndex = Character->CharacterIndex;
+                Notification->EquipmentSlotIndex = EquipmentSlots[Index];
+                RTNotificationDispatchToNearby(Notification, Character->Movement.WorldChunk);
+            }
         }
+    }
 
+    memcpy(CostumePage->CostumeSlots, CostumeSlots, sizeof(UInt32) * RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT);
+    Character->SyncMask.CostumeInfo = true;
+    RTCharacterSetActiveCostumePreset(Runtime, Character, PresetIndex);
+
+    for (Int Index = 0; Index < RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT; Index += 1) {
         if (CostumePage->CostumeSlots[Index] > 0) {
             NOTIFICATION_DATA_CHARACTER_ITEM_EQUIP* Notification = RTNotificationInit(CHARACTER_ITEM_EQUIP);
             Notification->CharacterIndex = Character->CharacterIndex;
@@ -87,9 +103,6 @@ Bool RTCharacterSetCostumePreset(
         }
     }
 
-    memcpy(CostumePage->CostumeSlots, CostumeSlots, sizeof(UInt32) * RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT);
-    Character->SyncMask.CostumeInfo = true;
-    RTCharacterSetActiveCostumePreset(Runtime, Character, PresetIndex);
     return true;
 }
 

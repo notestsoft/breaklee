@@ -72,8 +72,10 @@ Void RTNotificationAppendCharacterSpawnIndex(
         NotificationSlot->ItemDuration = ItemSlot->ItemDuration.Serial;
     }
 
+    RTCostumePageRef CostumePage = RTCharacterGetCostumePage(Runtime, Character, Character->Data.CostumeInfo.Info.ActivePageIndex);
     for (Int Index = 0; Index < RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT; Index += 1) {
         NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT* Slot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_CHARACTERS_SPAWN_EQUIPMENT_SLOT);
+        if (CostumePage) Slot->ItemID = CostumePage->CostumeSlots[Index];
         Slot->EquipmentSlotIndex = Index;
     }
 

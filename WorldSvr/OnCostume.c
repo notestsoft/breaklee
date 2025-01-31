@@ -97,9 +97,7 @@ CLIENT_PROCEDURE_BINDING(COSTUME_WAREHOUSE_SHOPPING) {
 	if (!Character) goto error;
 
 	S2C_DATA_COSTUME_WAREHOUSE_SHOPPING* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, COSTUME_WAREHOUSE_SHOPPING);
-
 	Response->Result = 1;
-
 	SocketSend(Socket, Connection, Response);
 	return;
 
@@ -116,18 +114,30 @@ CLIENT_PROCEDURE_BINDING(COSTUME_WAREHOUSE_PURCHASE) {
 	S2C_DATA_COSTUME_WAREHOUSE_PURCHASE* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, COSTUME_WAREHOUSE_PURCHASE);
 	Response->Success = 1;
 
+	UInt32 TotalMillagePrice = 0;
 	UInt32 TotalForceGemPrice = 0;
 	for (Int Index = 0; Index < Packet->ItemCount; Index += 1) {
 		RTDataCostumeWarehousePriceRef CostumePrice = RTRuntimeDataCostumeWarehousePriceGet(Runtime->Context, Packet->ItemSlots[Index].ItemID);
-		TotalForceGemPrice += CostumePrice->PriceForceGem;
+		if (Packet->ItemSlots[Index].PriceType == C2S_DATA_COSTUME_WAREHOUSE_PURCHASE_PRICE_TYPE_MILLAGE) {
+			TotalMillagePrice += CostumePrice->PriceMillage;
+		}
+		else if (Packet->ItemSlots[Index].PriceType == C2S_DATA_COSTUME_WAREHOUSE_PURCHASE_PRICE_TYPE_FORCEGEM) {
+			TotalForceGemPrice += CostumePrice->PriceForceGem;
+		}
+		else {
+			goto error;
+		}		
 	}
 	
+	if (Character->Data.CostumeWarehouseInfo.Info.MillagePoints < TotalMillagePrice) goto error;
 	if (Character->Data.AccountInfo.ForceGem < TotalForceGemPrice) goto error;
 
 	for (Int Index = 0; Index < Packet->ItemCount; Index += 1) {
 		if (!RTCharacterUnlockCostume(Runtime, Character, Packet->ItemSlots[Index].ItemID)) goto error;
 	}
 
+	Character->Data.CostumeWarehouseInfo.Info.MillagePoints -= TotalMillagePrice;
+	Character->SyncMask.CostumeWarehouseInfo = true;
 	Character->Data.AccountInfo.ForceGem -= TotalForceGemPrice;
 	Character->SyncMask.AccountInfo = true;
 
