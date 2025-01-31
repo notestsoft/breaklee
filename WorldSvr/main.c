@@ -183,6 +183,7 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     ServerContext.Runtime->Config.DailyResetTimeHour = Config.WorldSvr.DailyResetTimeHour;
     ServerContext.Runtime->Config.DailyResetTimeMinute = Config.WorldSvr.DailyResetTimeMinute;
     ServerContext.Runtime->Config.UpgradePointDuration = Config.WorldSvr.UpgradePointDuration;
+    ServerContext.Runtime->Config.SecretShopResetInterval = Config.WorldSvr.SecretShopResetInterval;
     ServerContext.ItemScriptRegistry = IndexDictionaryCreate(Allocator, 8);
 
     ConvertLocalToUtcAt(

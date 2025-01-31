@@ -49,6 +49,7 @@ struct _RTRuntimeConfig {
     Int32 DailyResetTimeHour;
     Int32 DailyResetTimeMinute;
     Timestamp UpgradePointDuration;
+    Timestamp SecretShopResetInterval;
 };
 
 struct _RTRuntime {

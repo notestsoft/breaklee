@@ -137,3 +137,5 @@ AddMigration 0136_CreateCashInventory.sql
 AddMigration 0137_CreateInsertCashInventoryItem.sql
 AddMigration 0138_CreateDeleteCashInventoryItem.sql
 AddMigration 0139_CreateGetCashInventory.sql
+AddMigration 0140_CreateGuild.sql
+AddMigration 0141_CreateInsertGuild.sql

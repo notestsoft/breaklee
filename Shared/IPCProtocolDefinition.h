@@ -866,6 +866,19 @@ IPC_PROTOCOL(M2N, FORCE_DISCONNECT,
 	Int32 AccountID;
 )
 
+IPC_PROTOCOL(W2D, GUILD_CREATE,
+	Int32 CharacterIndex;
+	Char GuildName[MAX_GUILDNAME_LENGTH + 1];
+)
+
+IPC_PROTOCOL(D2W, GUILD_CREATE,
+	Int32 Result;
+	Int32 Unknown1;
+	Char GuildName[MAX_GUILDNAME_LENGTH + 1];
+	Int32 GuildIndex;
+	Int64 GuildCurrency;
+)
+
 #undef IPC_PROTOCOL_ENUM
 #undef IPC_PROTOCOL_STRUCT
 #undef IPC_PROTOCOL
