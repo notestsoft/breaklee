@@ -18,7 +18,6 @@ CLIENT_PROCEDURE_BINDING(GET_FORCEGEM_PRICE_POOL) {
 
 	// Temporary Myth resurrect price insert
 	// TODO: Remove this garbage
-	Int32 MaxMythLevel = RTCharacterMythMasteryGetMaximumLevel(Runtime);
 	RTDataMythRebirthPenaltyRef MythRebirthPenaltyRef = RTRuntimeDataMythRebirthPenaltyGet(Runtime->Context);
 
 	for (Int Index = 0; Index < 5; Index++) {
@@ -27,7 +26,6 @@ CLIENT_PROCEDURE_BINDING(GET_FORCEGEM_PRICE_POOL) {
 		ResponseData->PoolIndex = 32;
 		ResponseData->PriceIndex = 95 + Index;
 		ResponseData->Price = (100 - ResponseData->PriceIndex) * MythRebirthPenaltyRef->PenaltyPerMissingLevel;
-
 	}
 
 	SocketSend(Socket, Connection, Response);
