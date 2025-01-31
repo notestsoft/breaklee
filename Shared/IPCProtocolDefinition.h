@@ -270,7 +270,7 @@ IPC_PROTOCOL_STRUCT(IPC_D2W_DATA_INITIALIZE_CHARACTER,
 	struct _RTCraftInfo CraftInfo;
 	struct _RTRequestCraftInfo RequestCraftInfo;
 	struct _RTCooldownInfo CooldownInfo;
-	struct _RTUpgradeInfo UpgradeInfo;
+	struct _RTCharacterUpgradeInfo UpgradeInfo;
 	struct _RTGoldMeritMasteryInfo GoldMeritMasteryInfo;
 	struct _RTPlatinumMeritMasteryInfo PlatinumMeritMasteryInfo;
 	struct _RTDiamondMeritMasteryInfo DiamondMeritMasteryInfo;

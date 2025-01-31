@@ -265,7 +265,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         Memory += Length;
     }
 
-    struct _RTUpgradeInfo UpgradeInfo;
+    Character->Data.UpgradeInfo = Packet->Character.UpgradeInfo;
 
     Character->Data.GoldMeritMasteryInfo.Info = Packet->Character.GoldMeritMasteryInfo;
     if (Packet->Character.GoldMeritMasteryInfo.SlotCount > 0) {

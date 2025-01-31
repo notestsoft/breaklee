@@ -64,12 +64,23 @@ enum {
     RUNTIME_DIVINE_UPGRADE_RESULT_ERROR     = 4,
 };
 
-struct _RTUpgradeInfo {
+struct _RTCharacterUpgradeInfo {
     Int32 UpgradePoints;
     Timestamp UpgradePointTimestamp;
 };
 
 #pragma pack(pop)
+
+Int32 RTCharacterGetUpgradePoints(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Void RTCharacterSetUpgradePoints(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 UpgradePoints
+);
 
 Int32 RTItemUpgradeNormal(
     RTRuntimeRef Runtime,

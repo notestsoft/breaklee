@@ -179,7 +179,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_INT16, &Response->Character.CooldownInfo.SlotCount,
         DB_TYPE_INT32, &Response->Character.CooldownInfo.SpiritRaiseCooldown,
         DB_TYPE_INT32, &Response->Character.UpgradeInfo.UpgradePoints,
-        DB_TYPE_INT64, &Response->Character.UpgradeInfo.UpgradePointTimestamp,
+        DB_TYPE_UINT64, &Response->Character.UpgradeInfo.UpgradePointTimestamp,
         DB_TYPE_INT32, &Response->Character.GoldMeritMasteryInfo.SlotCount,
         DB_TYPE_INT32, &Response->Character.GoldMeritMasteryInfo.Exp,
         DB_TYPE_INT32, &Response->Character.GoldMeritMasteryInfo.Points,

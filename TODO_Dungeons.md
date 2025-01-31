@@ -1,15 +1,11 @@
 TODO:
 - RequestCraftInfo
-- MythMasteryInfo
 - TranscendenceInfo
 - InventoryInfo
 - UpgradeInfo
 - CraftInfo
-- CostumeWarehouseInfo
-- CostumeInfo
 - ExplorationInfo
 - PresetInfo
-- MercenaryInfo
 - AuraMasteryInfo
 - BlessingBeadInfo
 - PremiumServiceInfo
@@ -24,12 +20,13 @@ TODO:
 - AchievementInfo
 - AchievementExtendedInfo
 - GuildRewardSlots
-- UnknownTempInventoryCount
-- TempInventory
-- DungeonBookmarkEnabled
-- DungeonBookmarkInfo
+- MercenaryInfo
 - Unknown3
 - Unknown1
 - Unknown2
 - Unknown2111
 - Unknown32
+- DungeonBookmarkEnabled
+- DungeonBookmarkInfo
+- UnknownTempInventoryCount
+- TempInventory

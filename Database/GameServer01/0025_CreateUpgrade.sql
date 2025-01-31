@@ -1,7 +1,7 @@
 CREATE TABLE Upgrade (
     CharacterID INT NOT NULL,
     Point INT NOT NULL DEFAULT 0,
-    Timestamp BIGINT NOT NULL DEFAULT 0,
+    Timestamp BIGINT UNSIGNED NOT NULL DEFAULT 0,
     
     PRIMARY KEY (CharacterID),
 

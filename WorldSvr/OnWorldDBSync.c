@@ -199,6 +199,10 @@ Void ServerSyncCharacter(
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.CooldownInfo.Slots, sizeof(struct _RTCooldownSlot) * Character->Data.CooldownInfo.Info.SlotCount);
 	}
 
+	if (Character->SyncMask.UpgradeInfo) {
+		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.UpgradeInfo, sizeof(struct _RTCharacterUpgradeInfo));
+	}
+
 	if (Character->SyncMask.VehicleInventoryInfo) {
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.VehicleInventoryInfo.Info, sizeof(struct _RTVehicleInventoryInfo));
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.VehicleInventoryInfo.Slots, sizeof(struct _RTItemSlot) * Character->Data.VehicleInventoryInfo.Info.SlotCount);

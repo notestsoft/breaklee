@@ -42,6 +42,7 @@ CHARACTER_DATA_PROTOCOL(struct _RTCharacterAchievementExtendedInfo, AchievementE
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterCraftData, CraftInfo)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterRequestCraftInfo, RequestCraftInfo)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterCooldownInfo, CooldownInfo)
+CHARACTER_DATA_PROTOCOL(struct _RTCharacterUpgradeInfo, UpgradeInfo)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterVehicleInventoryInfo, VehicleInventoryInfo)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterWarpServiceInfo, WarpServiceInfo)
 CHARACTER_DATA_PROTOCOL(struct _RTCharacterOverlordMasteryInfo, OverlordMasteryInfo)

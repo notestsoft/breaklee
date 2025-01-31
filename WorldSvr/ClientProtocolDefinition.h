@@ -247,7 +247,7 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     Int32 Unknown3;
     struct _RTRequestCraftInfo RequestCraftInfo;
     struct _RTCooldownInfo CooldownInfo;
-    struct _RTUpgradeInfo UpgradeInfo;
+    struct _RTCharacterUpgradeInfo UpgradeInfo;
     struct _RTGoldMeritMasteryInfo GoldMeritMasteryInfo;
     struct _RTPlatinumMeritMasteryInfo PlatinumMeritMasteryInfo;
     struct _RTDiamondMeritMasteryInfo DiamondMeritMasteryInfo;
@@ -3733,9 +3733,7 @@ CLIENT_PROTOCOL(C2S, SET_SETTINGS_MACROS, DEFAULT, 2505,
 )
 
 CLIENT_PROTOCOL(S2C, UPDATE_UPGRADE_POINTS, DEFAULT, 2506,
-    Int32 UpgradePoint;
-    UInt32 Timestamp;
-    UInt32 Unknown1;
+    struct _RTCharacterUpgradeInfo UpgradeInfo;
 )
 
 CLIENT_PROTOCOL(S2C, NFY_BUDDY_POINTS, DEFAULT, 2518,
