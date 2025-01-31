@@ -31,4 +31,85 @@ struct _RTCharacterMythMasteryInfo {
 
 #pragma pack(pop)
 
+Void RTCharacterMythMasteryEnable(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Void RTCharacterMythMasteryAddExp(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt64 Exp
+);
+
+Void RTCharacterMythMasteryAddMythLevel(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 LevelsGiven
+);
+
+Void RTCharacterMythMasteryAddMythPoints(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 PointsGiven
+);
+
+Float RTCharacterMythMasteryGetExpPenaltyMultiplier(
+    RTRuntimeRef Runtime,
+    Int32 CharacterRebirthCount
+);
+
+Int32 RTCharacterMythMasteryGetRepeatBonus(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Bool RTCharacterMythMasteryCheckEligibleForRepeatBonus(
+    RTRuntimeRef Runtime,
+    Int32 MythLevel
+);
+
+Int32 RTCharacterMythMasteryGetMaximumLevel(
+    RTRuntimeRef Runtime
+);
+
+UInt64 RTCharacterMythMasteryGetMaximumExp(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+UInt64 RTCharacterMythMasteryGetCumulativeLevelUpExp(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Bool RTCharacterMythMasteryRebirth(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Bool RTCharacterMythMasteryGetCanRebirth(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+UInt32 RTCharacterMythMasteryGetRebirthGemCost(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Bool RTCharacterMythMasteryGetCanOpenLockGroup(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 MasteryIndex,
+    Int32 LockGroup
+);
+
+Bool RTCharacterMythMasteryGetSlotOccupied(
+    RTRuntimeRef Runtime,
+    RTCharacterRef,
+    Int32 MasteryIndex,
+    Int32 LockGroup
+);
+
 EXTERN_C_END

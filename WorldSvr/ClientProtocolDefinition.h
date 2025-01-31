@@ -3882,6 +3882,7 @@ CLIENT_PROTOCOL(S2C, UNKNOWN_2566, DEFAULT, 2566,
 CLIENT_PROTOCOL_ENUM(
     CSC_PURCHASE_PREMIUM_SERVICE_TYPE_PARTY_MEMBER_WARP     = 4,
     CSC_PURCHASE_PREMIUM_SERVICE_TYPE_GIFTBOX_COMPLETE      = 23,
+    CSC_PURCHASE_PREMIUM_SERVICE_TYPE_MYTH_RESURRECT        = 32,
     CSC_PURCHASE_PREMIUM_SERVICE_TYPE_ANIMAMASTERY_RESET    = 41,
 )
 
@@ -4462,6 +4463,65 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_DUNGEON_DROP_LIST_ITEM,
 CLIENT_PROTOCOL(S2C, NFY_DUNGEON_DROP_LIST, DEFAULT, 2849,
     Int32 DungeonIndex;
     S2C_DATA_NFY_DUNGEON_DROP_LIST_ITEM Items[MAX_DUNGEON_DROP_LIST_ITEM_COUNT];
+)
+
+CLIENT_PROTOCOL(C2S, MYTH_ROLL_SLOT, DEFAULT, 2959,
+    UInt8 MasteryIndex;
+    UInt8 SlotIndex;
+)
+
+CLIENT_PROTOCOL(S2C, MYTH_ROLL_SLOT, DEFAULT, 2959,
+    UInt32 MythPoints;
+    UInt32 HolyPower;
+    UInt8 MasteryIndex;
+    UInt8 SlotIndex;
+    UInt8 TierIndex;
+    UInt8 TierLevel;
+    UInt32 StatOption;
+    UInt32 StatValue;
+    UInt32 ValueType;
+    UInt32 StigmaGrade;
+    UInt32 StigmaXP;
+    UInt32 ErrorCode;
+)
+
+CLIENT_PROTOCOL(C2S, MYTH_FINISH_ROLL_SLOT, DEFAULT, 2960,
+    UInt8 UndoThisRoll; //0 = keep, 1 = reroll
+    UInt8 MasteryIndex;
+    UInt8 SlotIndex;
+    UInt8 Unknown1;
+    UInt8 Unknown2;
+    UInt8 Unknown3;
+    UInt8 Unknown4;
+    UInt8 Unknown5;
+    UInt8 Unknown6;
+)
+
+CLIENT_PROTOCOL(S2C, MYTH_FINISH_ROLL_SLOT, DEFAULT, 2960,
+    UInt8 MasteryIndex;
+    UInt8 SlotIndex;
+    UInt8 TierIndex;
+    UInt8 TierLevel;
+    UInt32 StatOption;
+    UInt32 StatValue;
+    UInt32 ValueType;
+    UInt32 HolyPower;
+    UInt32 ErrorCode;
+)
+
+CLIENT_PROTOCOL(C2S, MYTH_OPEN_LOCK, DEFAULT, 2961,
+    UInt8 MasteryIndex;
+    UInt8 LockGroupIndex;
+)
+
+CLIENT_PROTOCOL(S2C, MYTH_OPEN_LOCK, DEFAULT, 2961,
+    UInt8 MasteryIndex;
+    UInt8 LockGroupIndex;
+    UInt32 ErrorCode; //not 100% but fairly confident
+)
+
+CLIENT_PROTOCOL(S2C, NFY_MYTH_XP, DEFAULT, 2963,
+    UInt64 MythXP;
 )
 
 CLIENT_PROTOCOL(C2S, ROLL_FORCEWING_ARRIVAL_SKILL, DEFAULT, 2965,

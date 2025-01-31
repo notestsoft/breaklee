@@ -139,6 +139,17 @@ CLIENT_PROCEDURE_BINDING(PURCHASE_PREMIUM_SERVICE) {
         GiftBoxSlot->ResetCount += 1;
     }
 
+    if (Packet->ServiceType == CSC_PURCHASE_PREMIUM_SERVICE_TYPE_MYTH_RESURRECT) {
+        UInt32 GemCost = RTCharacterMythMasteryGetRebirthGemCost(Runtime, Character);
+
+        if (!RTCharacterConsumeForceGem(Runtime, Character, GemCost) || !RTCharacterMythMasteryGetCanRebirth(Runtime, Character)) {
+            //TODO: handle error
+            goto error;
+        }
+
+        Response->Result = 0;
+    }
+
     Response->ForceGemCount = Character->Data.AccountInfo.ForceGem;
     Response->Unknown1 = 0;
     SocketSend(Socket, Connection, Response);
