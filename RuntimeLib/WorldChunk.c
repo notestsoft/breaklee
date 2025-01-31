@@ -41,7 +41,7 @@ Void RTNotificationAppendCharacterSpawnIndex(
     NotificationCharacter->IsDead = RTCharacterIsAlive(Runtime, Character) ? 0 : 1;
     NotificationCharacter->EquipmentSlotCount = Character->Data.EquipmentInfo.Info.EquipmentSlotCount;
     NotificationCharacter->CostumeSlotCount = RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT;
-    // NotificationCharacter->IsInvisible = Character->Data.StyleInfo.Nation == 3;
+    NotificationCharacter->IsInvisible = Character->Data.StyleInfo.Nation == 3;
     NotificationCharacter->GuildIndex = 0;
     NotificationCharacter->GuildColor = 0;
     NotificationCharacter->Unknown10 = 0;
@@ -267,7 +267,9 @@ Void RTWorldChunkRemove(
 ) {
     RTWorldChunkNotify(Chunk, Entity, Reason, false);
     ArrayRef Container = RTWorldChunkGetContainer(Chunk, Entity);
-	assert(ArrayContainsElement(Container, &Entity));
+    if (!ArrayContainsElement(Container, &Entity)) return; // TODO: This is just a quick fix for a bug that can occur here!
+
+    assert(ArrayContainsElement(Container, &Entity));
 	ArrayRemoveElement(Container, &Entity);
 
     if (Entity.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) {

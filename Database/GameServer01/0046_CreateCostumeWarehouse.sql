@@ -1,6 +1,7 @@
 CREATE TABLE CostumeWarehouse (
     AccountID INT NOT NULL,
-    SlotCount INT NOT NULL DEFAULT 0,             
+    SlotCount INT NOT NULL DEFAULT 0,
+    MillagePoints INT NOT NULL DEFAULT 0,
     SlotData BLOB NOT NULL, 
     
     PRIMARY KEY (AccountID),

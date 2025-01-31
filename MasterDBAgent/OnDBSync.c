@@ -184,6 +184,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 				"SyncCostumeWarehouse",
 				DB_INPUT_INT32(Packet->AccountID),
 				DB_INPUT_INT32(Info->SlotCount),
+				DB_INPUT_INT32(Info->MillagePoints),
 				DB_INPUT_DATA(Slots, SlotsLength),
 				DB_PARAM_END
 			)) {

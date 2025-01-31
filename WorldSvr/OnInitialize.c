@@ -999,37 +999,30 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     }
 
     Response->CostumeWarehouseInfo = Character->Data.CostumeWarehouseInfo.Info;
+    if (Character->Data.CostumeWarehouseInfo.Info.SlotCount > 0) {
+        PacketBufferAppendCopy(
+            PacketBuffer,
+            Character->Data.CostumeWarehouseInfo.Slots,
+            sizeof(struct _RTAccountCostumeSlot) * Character->Data.CostumeWarehouseInfo.Info.SlotCount
+        );
+    }
 
     Response->CostumeInfo = Character->Data.CostumeInfo.Info;
-    /*
-    
-struct _RTAccountCostumeSlot {
-    UInt32 ItemID;
-    UInt32 Unknown1;
-};
+    if (Character->Data.CostumeInfo.Info.PageCount > 0) {
+        PacketBufferAppendCopy(
+            PacketBuffer,
+            Character->Data.CostumeInfo.Pages,
+            sizeof(struct _RTCostumePage) * Character->Data.CostumeInfo.Info.PageCount
+        );
+    }
 
-struct _RTCostumePage {
-    Int32 PageIndex;
-    UInt32 CostumeSlots[RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT];
-};
-
-struct _RTAppliedCostumeSlot {
-    UInt32 ItemID;
-};
-
-struct _RTCharacterCostumeWarehouseInfo {
-    Int32 AccountCostumeSlotCount;
-    struct _RTAccountCostumeSlot AccountCostumeSlots[RUNTIME_CHARACTER_MAX_ACCOUNT_COSTUME_SLOT_COUNT];
-};
-
-struct _RTCharacterCostumeInfo {
-    Int32 ActivePageIndex;
-    Int32 PageCount;
-    struct _RTCostumePage Pages[RUNTIME_CHARACTER_MAX_COSTUME_PAGE_COUNT];
-    Int32 AppliedSlotCount;
-    struct _RTAppliedCostumeSlot AppliedSlots[RUNTIME_CHARACTER_MAX_COSTUME_PAGE_SLOT_COUNT];
-};
-*/
+    if (Character->Data.CostumeInfo.Info.AppliedSlotCount > 0) {
+        PacketBufferAppendCopy(
+            PacketBuffer,
+            Character->Data.CostumeInfo.AppliedSlots,
+            sizeof(struct _RTAppliedCostumeSlot) * Character->Data.CostumeInfo.Info.AppliedSlotCount
+        );
+    }
 
     Response->AnimaMasteryInfo = Character->Data.AnimaMasteryInfo.Info;
     if (Character->Data.AnimaMasteryInfo.Info.PresetCount > 0) {

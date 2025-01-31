@@ -268,6 +268,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_INT32, &Response->Character.EventPassInfo.MissionSlotCount,
         DB_TYPE_INT32, &Response->Character.EventPassInfo.RewardSlotCount,
         DB_TYPE_INT32, &Response->Character.CostumeWarehouseInfo.SlotCount,
+        DB_TYPE_INT32, &Response->Character.CostumeWarehouseInfo.MillagePoints,
         DB_TYPE_INT32, &Response->Character.CostumeInfo.PageCount,
         DB_TYPE_INT32, &Response->Character.CostumeInfo.AppliedSlotCount,
         DB_TYPE_INT32, &Response->Character.CostumeInfo.ActivePageIndex,

@@ -259,7 +259,7 @@ Void ServerSyncCharacter(
 	if (Character->SyncMask.CostumeInfo) {
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.CostumeInfo.Info, sizeof(struct _RTCostumeInfo));
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.CostumeInfo.Pages, sizeof(struct _RTCostumePage) * Character->Data.CostumeInfo.Info.PageCount);
-		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.CostumeInfo.AppliedSlots, sizeof(struct _RTCostumePage) * Character->Data.CostumeInfo.Info.AppliedSlotCount);
+		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.CostumeInfo.AppliedSlots, sizeof(struct _RTAppliedCostumeSlot) * Character->Data.CostumeInfo.Info.AppliedSlotCount);
 	}
 
 	if (Character->SyncMask.TemporaryInventoryInfo) {
