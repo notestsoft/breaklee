@@ -5,179 +5,179 @@
 		<Pool ID="1">
 			<!-- DEFENSE SECTION -->
 			<SlotGroup ID="1" SlotValuePoolIndex="1">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="0" />
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="3" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="1" />
 				<SlotIndexGroup MasteryIndex="0" SlotIndex="4" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="5" />
 			</SlotGroup>
 			<SlotGroup ID="2" SlotValuePoolIndex="2">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="16" />
 				<SlotIndexGroup MasteryIndex="0" SlotIndex="17" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="18" />
 			</SlotGroup>
 			<SlotGroup ID="3" SlotValuePoolIndex="3">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="31" />
 				<SlotIndexGroup MasteryIndex="0" SlotIndex="32" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="33" />
 			</SlotGroup>
 			<SlotGroup ID="4" SlotValuePoolIndex="4">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="46" />
 				<SlotIndexGroup MasteryIndex="0" SlotIndex="47" />
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="52" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="48" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="53" />
 			</SlotGroup>
 			<SlotGroup ID="5" SlotValuePoolIndex="5">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="60" />
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="69" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="61" />
 				<SlotIndexGroup MasteryIndex="0" SlotIndex="70" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="71" />
 			</SlotGroup>
 			<SlotGroup ID="6" SlotValuePoolIndex="6">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="9" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="10" />
 			</SlotGroup>
 			<SlotGroup ID="7" SlotValuePoolIndex="7">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="24" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="25" />
 			</SlotGroup>
 			<SlotGroup ID="8" SlotValuePoolIndex="8">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="39" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="40" />
 			</SlotGroup>
 			<SlotGroup ID="9" SlotValuePoolIndex="9">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="59" />
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="61" />
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="66" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="60" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="62" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="67" />
 			</SlotGroup>
 			<SlotGroup ID="10" SlotValuePoolIndex="10">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="74" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="75" />
 			</SlotGroup>
 
 			<!-- Start Fixed Slots -->
 			<SlotGroup ID="1001" SlotValuePoolIndex="1001">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="10" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="11" />
 			</SlotGroup>
 			<SlotGroup ID="1002" SlotValuePoolIndex="1002">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="25" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="26" />
 			</SlotGroup>
 			<SlotGroup ID="1003" SlotValuePoolIndex="1003">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="40" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="41" />
 			</SlotGroup>
 			<SlotGroup ID="1004" SlotValuePoolIndex="1004">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="53" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="54" />
 			</SlotGroup>
 			<!-- END DEFENSE SECTION -->
 
 			<!-- ATTACK SECTION -->
 			<SlotGroup ID="11" SlotValuePoolIndex="11">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="2" />
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="7" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="3" />
 				<SlotIndexGroup MasteryIndex="0" SlotIndex="8" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="9" />
 			</SlotGroup>
 			<SlotGroup ID="12" SlotValuePoolIndex="12">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="22" />
 				<SlotIndexGroup MasteryIndex="0" SlotIndex="23" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="24" />
 			</SlotGroup>
 			<SlotGroup ID="13" SlotValuePoolIndex="13">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="37" />
 				<SlotIndexGroup MasteryIndex="0" SlotIndex="38" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="39" />
 			</SlotGroup>
 			<SlotGroup ID="14" SlotValuePoolIndex="14">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="50" />
 				<SlotIndexGroup MasteryIndex="0" SlotIndex="51" />
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="58" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="52" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="59" />
 			</SlotGroup>
 			<SlotGroup ID="15" SlotValuePoolIndex="15">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="63" />
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="65" />
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="68" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="64" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="66" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="69" />
 			</SlotGroup>
 			<SlotGroup ID="16" SlotValuePoolIndex="16">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="64" />
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="73" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="65" />
 				<SlotIndexGroup MasteryIndex="0" SlotIndex="74" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="75" />
 			</SlotGroup>
 			<SlotGroup ID="17" SlotValuePoolIndex="17">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="15" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="16" />
 			</SlotGroup>
 			<SlotGroup ID="18" SlotValuePoolIndex="18">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="30" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="31" />
 			</SlotGroup>
 			<SlotGroup ID="19" SlotValuePoolIndex="19">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="46" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="47" />
 			</SlotGroup>
 			<SlotGroup ID="20" SlotValuePoolIndex="20">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="77" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="78" />
 			</SlotGroup>
 			<!-- Start Fixed Slots -->
 			<SlotGroup ID="2001" SlotValuePoolIndex="2001">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="14" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="15" />
 			</SlotGroup>
 			<SlotGroup ID="2002" SlotValuePoolIndex="2002">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="29" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="30" />
 			</SlotGroup>
 			<SlotGroup ID="2003" SlotValuePoolIndex="2003">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="44" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="45" />
 			</SlotGroup>
 			<SlotGroup ID="2004" SlotValuePoolIndex="2004">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="57" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="58" />
 			</SlotGroup>
 			<!-- END ATTACK SECTION -->
 
 			<!-- MIXED SECTION -->
 			<SlotGroup ID="21" SlotValuePoolIndex="21">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="1" />
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="5" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="2" />
 				<SlotIndexGroup MasteryIndex="0" SlotIndex="6" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="7" />
 			</SlotGroup>
 			<SlotGroup ID="22" SlotValuePoolIndex="22">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="18" />
 				<SlotIndexGroup MasteryIndex="0" SlotIndex="19" />
 				<SlotIndexGroup MasteryIndex="0" SlotIndex="20" />
 				<SlotIndexGroup MasteryIndex="0" SlotIndex="21" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="22" />
 			</SlotGroup>
 			<SlotGroup ID="23" SlotValuePoolIndex="23">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="33" />
 				<SlotIndexGroup MasteryIndex="0" SlotIndex="34" />
 				<SlotIndexGroup MasteryIndex="0" SlotIndex="35" />
 				<SlotIndexGroup MasteryIndex="0" SlotIndex="36" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="37" />
 			</SlotGroup>
 			<SlotGroup ID="24" SlotValuePoolIndex="24">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="48" />
 				<SlotIndexGroup MasteryIndex="0" SlotIndex="49" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="50" />
 			</SlotGroup>
 			<SlotGroup ID="25" SlotValuePoolIndex="25">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="62" />
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="71" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="63" />
 				<SlotIndexGroup MasteryIndex="0" SlotIndex="72" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="73" />
 			</SlotGroup>
 			<SlotGroup ID="26" SlotValuePoolIndex="26">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="11" />
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="23" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="12" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="24" />
 			</SlotGroup>
 			<SlotGroup ID="27" SlotValuePoolIndex="27">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="26" />
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="28" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="27" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="29" />
 			</SlotGroup>
 			<SlotGroup ID="28" SlotValuePoolIndex="28">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="41" />
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="43" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="42" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="44" />
 			</SlotGroup>
 			<SlotGroup ID="29" SlotValuePoolIndex="29">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="54" />
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="56" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="55" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="57" />
 			</SlotGroup>
 			<SlotGroup ID="30" SlotValuePoolIndex="30">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="67" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="68" />
 			</SlotGroup>
 			<SlotGroup ID="31" SlotValuePoolIndex="31">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="76" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="77" />
 			</SlotGroup>
 
 			<!-- Start Fixed Slots -->
 			<SlotGroup ID="3001" SlotValuePoolIndex="3001">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="12" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="13" />
 			</SlotGroup>
 			<SlotGroup ID="3002" SlotValuePoolIndex="3002">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="27" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="28" />
 			</SlotGroup>
 			<SlotGroup ID="3003" SlotValuePoolIndex="3003">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="42" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="43" />
 			</SlotGroup>
 			<SlotGroup ID="3004" SlotValuePoolIndex="3004">
-				<SlotIndexGroup MasteryIndex="0" SlotIndex="55" />
+				<SlotIndexGroup MasteryIndex="0" SlotIndex="56" />
 			</SlotGroup>
 			<!-- END MIXED SECTION -->
 		</Pool>
