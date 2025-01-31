@@ -86,7 +86,7 @@ Void RTCharacterMythMasteryAddMythLevel(
 		Character->Data.MythMasteryInfo.Info.Level = NextLevel->MythLevel;
 		// update level before calling this func
 		// this func also calls SyncMask update
-		RTCharacterMythMasteryAddMythPoints(Runtime, Character, CurrentLevel->MythPoints + RTCharacterMythMasteryGetRepeatBonus(Runtime, Character));
+		RTCharacterMythMasteryAddMythPoints(Runtime, Character, CurrentLevel->MythPoints);
 
 		// notify level up (actual MLV number change on client)
 		NOTIFICATION_DATA_CHARACTER_DATA* LevelUpNotification = RTNotificationInit(CHARACTER_DATA);
@@ -137,13 +137,13 @@ Float RTCharacterMythMasteryGetExpPenaltyMultiplier(
 	return MAX(1.f + PenaltyPercentPerRebirth, 1.f);
 }
 
-// assumes the characters level info is already updated
+// assumes the characters rebirth info is already updated
 Int32 RTCharacterMythMasteryGetRepeatBonus(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character
 ) {
 	RTDataMythRepeatRef MythRepeatBonusRef = RTRuntimeDataMythRepeatGet(Runtime->Context);
-	Bool IsEligibleForBonus = RTCharacterMythMasteryCheckEligibleForRepeatBonus(Runtime, Character->Data.MythMasteryInfo.Info.Level);
+	Bool IsEligibleForBonus = RTCharacterMythMasteryCheckEligibleForRepeatBonus(Runtime, Character->Data.MythMasteryInfo.Info.Rebirth);
 
 	if (!IsEligibleForBonus || !MythRepeatBonusRef) {
 		return 0;
@@ -154,7 +154,7 @@ Int32 RTCharacterMythMasteryGetRepeatBonus(
 
 Bool RTCharacterMythMasteryCheckEligibleForRepeatBonus(
 	RTRuntimeRef Runtime,
-	Int32 MythLevel
+	Int32 RebirthCount
 ) {
 	RTDataMythRepeatRef MythRepeatBonusRef = RTRuntimeDataMythRepeatGet(Runtime->Context);
 	Int32 Remainder = 0;
@@ -165,7 +165,7 @@ Bool RTCharacterMythMasteryCheckEligibleForRepeatBonus(
 	}
 
 	// Repeat condition could be something like 5, so give the bonus every 5 levels
-	Remainder = MythLevel % MythRepeatBonusRef->RepeatCondition;
+	Remainder = RebirthCount % MythRepeatBonusRef->RepeatCondition;
 
 	return Remainder == 0;
 }
@@ -228,6 +228,49 @@ UInt64 RTCharacterMythMasteryGetCumulativeLevelUpExp(
 	return ExpNeeded;
 }
 
+// does NOT check force gem price!
+Bool RTCharacterMythMasteryRebirth(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+	if (!RTCharacterMythMasteryGetCanRebirth(Runtime, Character)) {
+		return false;
+	}
+
+	Int32 RebirthReward = RTCharacterMythMasteryGetRepeatBonus(Runtime, Character);
+
+	if (RebirthReward > 0) {
+		RTCharacterMythMasteryAddMythPoints(Runtime, Character, RebirthReward);
+	}
+
+	// update level and sync
+	Character->Data.MythMasteryInfo.Info.Rebirth += 1;
+	Character->Data.MythMasteryInfo.Info.Exp = 0;
+	Character->Data.MythMasteryInfo.Info.Level = 1;
+	Character->SyncMask.MythMasteryInfo = true;
+
+	// myth resurrect up
+	// resets client XP to 0
+	// resets client lvl to 1
+	// increases resurrection points
+	NOTIFICATION_DATA_CHARACTER_DATA* LevelUpNotification = RTNotificationInit(CHARACTER_DATA);
+	LevelUpNotification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_MYTH_RESURRECT;
+	LevelUpNotification->Level = 1;
+	RTNotificationDispatchToNearby(LevelUpNotification, Character->Movement.WorldChunk);
+
+	// this adds item to inventory
+	NOTIFICATION_DATA_MYTH_RESURRECT_REWARD* ResNotification = RTNotificationInit(MYTH_RESURRECT_REWARD);
+	ResNotification->Result = 1;
+	ResNotification->ItemId = 33562089;
+	ResNotification->ItemOptions = 35;
+	ResNotification->InventorySlotIndex = 41;
+	ResNotification->Unknown2 = 1;
+	RTNotificationDispatchToCharacter(ResNotification, Character);
+
+	return true;
+}
+
+// does NOT check force gem price!
 Bool RTCharacterMythMasteryGetCanRebirth(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character
@@ -245,6 +288,27 @@ Bool RTCharacterMythMasteryGetCanRebirth(
 	}
 
 	return Character->Data.MythMasteryInfo.Info.Level >= MythResetRef->RequiredLevel;
+}
+
+UInt32 RTCharacterMythMasteryGetRebirthGemCost(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+	Int32 MaxLevel = RTCharacterMythMasteryGetMaximumLevel(Runtime);
+	if (Character->Data.MythMasteryInfo.Info.Level == MaxLevel) {
+		return 0;
+	}
+
+	RTDataMythRebirthPenaltyRef MythRebirthPenaltyRef = RTRuntimeDataMythRebirthPenaltyGet(Runtime->Context);
+
+	if (!MythRebirthPenaltyRef) {
+		return 0;
+	}
+
+	Int32 MissingLevels = MaxLevel - Character->Data.MythMasteryInfo.Info.Level;
+	Int32 GemCost = MythRebirthPenaltyRef->PenaltyPerMissingLevel * MissingLevels;
+
+	return GemCost;
 }
 
 Bool RTCharacterMythMasteryGetCanOpenLockGroup(

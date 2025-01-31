@@ -83,7 +83,17 @@ UInt64 RTCharacterMythMasteryGetCumulativeLevelUpExp(
     RTCharacterRef Character
 );
 
+Bool RTCharacterMythMasteryRebirth(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
 Bool RTCharacterMythMasteryGetCanRebirth(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+UInt32 RTCharacterMythMasteryGetRebirthGemCost(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
 );
@@ -95,7 +105,7 @@ Bool RTCharacterMythMasteryGetCanOpenLockGroup(
     Int32 LockGroup
 );
 
-Bool RTCharacterMythMasteryGetIsSlotOccupied(
+Bool RTCharacterMythMasteryGetSlotOccupied(
     RTRuntimeRef Runtime,
     RTCharacterRef,
     Int32 MasteryIndex,

@@ -282,7 +282,7 @@ NOTIFICATION_PROCEDURE_BINDING(MYTH_POINTS) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 
-NOTIFICATION_PROCEDURE_BINDING(MYTH_RESURRECT) {
+NOTIFICATION_PROCEDURE_BINDING(MYTH_RESURRECT_REWARD) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 

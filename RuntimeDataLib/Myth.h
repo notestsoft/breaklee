@@ -71,11 +71,16 @@ RUNTIME_DATA_FILE_END
 
 RUNTIME_DATA_FILE_BEGIN(DIR_PATH(Character, MythMastery.xml))
 
+RUNTIME_DATA_TYPE_BEGIN(MythRebirthPenalty, "MythMastery.RebirthEarlyPenalty")
+	RUNTIME_DATA_PROPERTY(Int32, PenaltyPerMissingLevel, "AddGemPenaltyPerMissingLevel")
+RUNTIME_DATA_TYPE_END(MythRebirthPenalty)
+RUNTIME_DATA_TYPE_INDEX_SINGLE(MythRebirthPenalty)
+
 RUNTIME_DATA_TYPE_BEGIN(MythSlotGroupPool, "MythMastery.SlotGroupPool.Pool")
 RUNTIME_DATA_PROPERTY(Int32, GroupID, "ID")
-RUNTIME_DATA_PROPERTY(Int32, MythSlotValuePoolID, "SlotValuePoolIndex")
-	RUNTIME_DATA_TYPE_BEGIN_CHILD(MythSlotGroup, "SlotGroup")
+RUNTIME_DATA_TYPE_BEGIN_CHILD(MythSlotGroup, "SlotGroup")
 	RUNTIME_DATA_PROPERTY(Int32, GroupID, "ID")
+	RUNTIME_DATA_PROPERTY(Int32, MythSlotValuePoolID, "SlotValuePoolIndex")
 	RUNTIME_DATA_TYPE_BEGIN_CHILD(MythSlotIndexGroup, "SlotIndexGroup")
 		RUNTIME_DATA_PROPERTY(UInt32, MasteryIndex, "MasteryIndex")
 		RUNTIME_DATA_PROPERTY(UInt32, SlotIndex, "SlotIndex")
@@ -95,7 +100,6 @@ RUNTIME_DATA_TYPE_BEGIN_CHILD(MythSlotValuePool, "MythSlotValue")
 	RUNTIME_DATA_PROPERTY(UInt32, Chance, "Rate")
 RUNTIME_DATA_TYPE_END_CHILD(MythSlotValuePool)
 RUNTIME_DATA_TYPE_END(MythSlotGroupValuePool)
-RUNTIME_DATA_TYPE_INDEX(MythSlotValuePool, Int32, PoolID)
-RUNTIME_DATA_TYPE_INDEX_CHILD(MythSlotGroupValuePool, MythSlotValuePool, UInt32, PoolID)
+RUNTIME_DATA_TYPE_INDEX(MythSlotGroupValuePool, Int32, PoolID)
 
 RUNTIME_DATA_FILE_END

@@ -772,11 +772,10 @@ NOTIFICATION_PROTOCOL(MYTH_GAIN_XP, 2963,
     UInt64 MythXP;
 )
 
-NOTIFICATION_PROTOCOL(MYTH_RESURRECT, 2964,
-    UInt32 Unknown0;
+NOTIFICATION_PROTOCOL(MYTH_RESURRECT_REWARD, 2964,
+    UInt32 Result;
     UInt64 ItemId;
-    UInt32 ItemCount;
-    UInt32 Unknown1;
+    UInt64 ItemOptions;
     UInt16 InventorySlotIndex;
     UInt32 Unknown2;
 )
