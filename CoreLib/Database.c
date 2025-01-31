@@ -582,6 +582,8 @@ entry:
 			BufferLength = va_arg(Arguments, SQLLEN);
 		}
 
+		memset(Buffer, 0, BufferLength);
+
 		Trace("DatabaseHandleReadNext: Fetching column %d with data type %d, buffer size %lld", ColumnIndex, DataType, BufferLength);
 		ReturnCode = SQLGetData(Statement, ColumnIndex++, DataMapping.NativeType, Buffer, BufferLength, NULL);
 		if (!SQL_SUCCEEDED(ReturnCode)) {
