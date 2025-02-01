@@ -76,6 +76,11 @@ RUNTIME_DATA_TYPE_BEGIN(MythRebirthPenalty, "MythMastery.RebirthEarlyPenalty")
 RUNTIME_DATA_TYPE_END(MythRebirthPenalty)
 RUNTIME_DATA_TYPE_INDEX_SINGLE(MythRebirthPenalty)
 
+RUNTIME_DATA_TYPE_BEGIN(MythStart, "MythMastery.MythStart")
+	RUNTIME_DATA_PROPERTY(Int32, InitialPoints, "InitialPoints")
+RUNTIME_DATA_TYPE_END(MythStart)
+RUNTIME_DATA_TYPE_INDEX_SINGLE(MythStart)
+
 RUNTIME_DATA_TYPE_BEGIN(MythMasterySlotGroup, "MythMastery.SlotGroupPoolNew.MythSlotDefinition")
 	RUNTIME_DATA_PROPERTY(Int32, MasteryIndex, "MasteryIndex")
 	RUNTIME_DATA_PROPERTY(Int32, SlotIndex, "SlotIndex")
