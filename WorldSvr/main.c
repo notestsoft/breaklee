@@ -163,6 +163,8 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
         Config.WorldSvr.MaxPartyCount,
         Config.WorldSvr.MaxTradeDistance,
         Config.WorldSvr.TradeRequestTimeout,
+        Config.WorldSvr.PvPRequestTimeout,
+        Config.WorldSvr.MaxPvPDistance,
         &ServerContext
     );
     ServerContext.Runtime->Environment.IsPKEnabled = Config.Environment.IsPKEnabled;

@@ -10,6 +10,7 @@
 #include "Runtime.h"
 #include "Script.h"
 #include "TradeManager.h"
+#include "PvPManager.h"
 #include "World.h"
 #include "WorldManager.h"
 
@@ -18,6 +19,8 @@ RTRuntimeRef RTRuntimeCreate(
     Int MaxPartyCount,
     Int32 MaxTradeDistance,
     Timestamp TradeRequestTimeout,
+    Timestamp PvPRequestTimeout,
+    Int32 MaxPvPDistance,
     Void* UserData
 ) {
     RTRuntimeRef Runtime = (RTRuntimeRef)AllocatorAllocate(Allocator, sizeof(struct _RTRuntime));
@@ -48,6 +51,13 @@ RTRuntimeRef RTRuntimeCreate(
         MaxTradeDistance,
         TradeRequestTimeout
     );
+    Runtime->PvPManager = RTPvPManagerCreate(
+        Runtime,
+        RUNTIME_MEMORY_MAX_CHARACTER_COUNT,
+        MaxPvPDistance,
+        PvPRequestTimeout
+    );
+
     Runtime->NotificationManager = RTNotificationManagerCreate(Runtime);
     Runtime->OptionPoolManager = RTOptionPoolManagerCreate(Runtime->Allocator);
     Runtime->DropTable.WorldDropPool = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTDropItem), 8);

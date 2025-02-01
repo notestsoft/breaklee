@@ -150,6 +150,7 @@ Void SendLoginSuccess(
     S2C_DATA_AUTHENTICATE_EXTENSION_13* Extension = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_AUTHENTICATE_EXTENSION_13);
     Extension->AccountID = Client->AccountID;
     Extension->GroupIndex = Context->Config.Login.GroupIndex;
+    Extension->ServerIndex = 18;
     memcpy(Extension->AuthKey, Client->SessionKey, MAX_SESSIONKEY_LENGTH);
 
     Int32 ServerCount = 0;
@@ -309,6 +310,7 @@ authenticate:
         S2C_DATA_AUTHENTICATE_EXTENSION_13* Extension = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_AUTHENTICATE_EXTENSION_13);
         Extension->AccountID = Client->AccountID;
         Extension->GroupIndex = Context->Config.Login.GroupIndex;
+        Extension->ServerIndex = 18;
         SocketSend(Socket, Connection, Response);
         return;
     }
