@@ -55,6 +55,7 @@
 #include <RuntimeLib/PersonalShop.h>
 #include <RuntimeLib/PremiumService.h>
 #include <RuntimeLib/Preset.h>
+#include <RuntimeLib/PvPManager.h>
 #include <RuntimeLib/Quest.h>
 #include <RuntimeLib/Quickslot.h>
 #include <RuntimeLib/Recovery.h>

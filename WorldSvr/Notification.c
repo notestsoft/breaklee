@@ -129,6 +129,18 @@ NOTIFICATION_PROCEDURE_BINDING(DUNGEON_PATTERN_PART_COMPLETED) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 
+NOTIFICATION_PROCEDURE_BINDING(PVP_REQUEST) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
+NOTIFICATION_PROCEDURE_BINDING(PVP_RESPONSE) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
+NOTIFICATION_PROCEDURE_BINDING(PVP_HP_INFO) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
 NOTIFICATION_PROCEDURE_BINDING(HONOR_POINT_CHANGE) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
