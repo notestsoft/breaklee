@@ -4,17 +4,32 @@
 #include "NotificationProtocol.h"
 #include "NotificationManager.h"
 
+enum {
+	RUNTIME_MYTH_ENABLE_QUEST_IDX = 3663,
+};
+
+Void RTCharacterMythMasteryFinishQuest(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 QuestIndex
+) {
+	if (QuestIndex != RUNTIME_MYTH_ENABLE_QUEST_IDX || Character->Data.MythMasteryInfo.Info.Level > 0)
+		return;
+
+	RTCharacterMythMasteryEnable(Runtime, Character);
+}
+
 Void RTCharacterMythMasteryEnable(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character
 ) {
 	if (Character->Data.MythMasteryInfo.Info.Level > 0) return;
 
-	//Int32 InitialPoints = Int32 RTData
+	RTDataMythStartRef MythStartRef = RTRuntimeDataMythStartGet(Runtime->Context);
+	assert(MythStartRef);
 
-	// add points from passing current level
+	// init to level 1
 	Character->Data.MythMasteryInfo.Info.Level = 1;
-	Character->Data.MythMasteryInfo.Info.Points = 3;
 	Character->SyncMask.MythMasteryInfo = true;
 
 	// notify level up (actual MLV number change on client)
@@ -22,6 +37,9 @@ Void RTCharacterMythMasteryEnable(
 	LevelUpNotification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_MYTH_LEVEL;
 	LevelUpNotification->Level = 1;
 	RTNotificationDispatchToNearby(LevelUpNotification, Character->Movement.WorldChunk);
+	 
+	// add initial myth points
+	RTCharacterMythMasteryAddMythPoints(Runtime, Character, MythStartRef->InitialPoints);
 }
 
 Void RTCharacterMythMasteryAddExp(
@@ -60,18 +78,6 @@ Void RTCharacterMythMasteryAddExp(
 		// add onto required exp since we just leveled up
 		RequiredCumulativeExp += NextLevel->RequiredExp * RebirthPenaltyExpMultiplier;
 	}
-
-	//struct _RTMythMasterySlot TestSlot = { 0 };
-	//TestSlot.MasteryIndex = 0;
-	//estSlot.SlotIndex = 0;
-	//TestSlot.TierIndex = 1;
-	//TestSlot.TierLevel = 2;
-	//TestSlot.StatOption = 1;
-	//TestSlot.StatValue = 10;
-	//estSlot.ValueType = 1;
-
-	//Character->Data.MythMasteryInfo.Slots[0] = TestSlot;
-	//Character->SyncMask.MythMasteryInfo = true;
 
 	// notify XP gained
 	// FIXME TODO: Does not appear in game log: Gained MXP (bottom right message log)
@@ -250,7 +256,7 @@ Bool RTCharacterMythMasteryRebirth(
 
 	Int32 RebirthReward = RTCharacterMythMasteryGetRepeatBonus(Runtime, Character);
 
-	if (RebirthReward > 0) {
+	if (RebirthReward && RebirthReward > 0) {
 		RTCharacterMythMasteryAddMythPoints(Runtime, Character, RebirthReward);
 	}
 
@@ -462,3 +468,10 @@ Bool RTCharacterMythMasteryGetSlotOccupied(
 	return RTCharacterMythMasteryGetSlot(Runtime, Character, MasteryIndex, SlotIndex) != NULL;
 }
 
+Void RTCharacterMythMasteryAssertHolyPoints(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+	Int32 PointsFromSlots = 0;
+	Int32 PointsFromMythGrade = 0;
+}

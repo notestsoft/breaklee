@@ -38,6 +38,12 @@ struct _RTCharacterMythMasteryInfo {
 
 #pragma pack(pop)
 
+Void RTCharacterMythMasteryFinishQuest(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 QuestIndex
+);
+
 Void RTCharacterMythMasteryEnable(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
