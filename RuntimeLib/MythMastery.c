@@ -5,14 +5,47 @@
 #include "NotificationManager.h"
 #include "NotificationProtocolDefinition.h"
 
+
+/*
+Rolls single option from the pool.
+
+params:
+- __POOL__ - pool to roll from.
+- __COUNT__ - number of options in the pool.
+- __GET_CHANCE__ - (*PoolItemType) -> Float32 - callback to get the chance of the option.
+- __RESULT_REF__ - pointer to the result.
+*/
+#define ROLL_POOL(__POOL__, __COUNT__, __GET_CHANCE__, __RESULT_REF__)    \
+    {                                                                     \
+        Float32 MaxRandomValue = 0;                                         \
+        for (Int Index = 0; Index < __COUNT__; Index += 1) {            \
+            MaxRandomValue += __GET_CHANCE__(&__POOL__[Index]);           \
+        }                                                                 \
+                                                                          \
+        Float32 RandomValue = RandomFloat(0, MaxRandomValue);        \
+        Float32 CumulativeChance = 0;                                       \
+                                                                          \
+        for (Int Index = 0; Index < __COUNT__; Index += 1) {            \
+            CumulativeChance += __GET_CHANCE__(&__POOL__[Index]);         \
+            if (RandomValue < CumulativeChance) {                         \
+                __RESULT_REF__ = &__POOL__[Index];                        \
+                break;                                                    \
+            }                                                             \
+        }                                                                 \
+    }
+
+
 Void RTCharacterMythMasteryEnable(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character
 ) {
 	if (Character->Data.MythMasteryInfo.Info.Level > 0) return;
 
+	//Int32 InitialPoints = Int32 RTData
+
 	// add points from passing current level
 	Character->Data.MythMasteryInfo.Info.Level = 1;
+	Character->Data.MythMasteryInfo.Info.Points = 3;
 	Character->SyncMask.MythMasteryInfo = true;
 
 	// notify level up (actual MLV number change on client)
@@ -61,6 +94,18 @@ Void RTCharacterMythMasteryAddExp(
 		// add onto required exp since we just leveled up
 		RequiredCumulativeExp += NextLevel->RequiredExp * RebirthPenaltyExpMultiplier;
 	}
+
+	//struct _RTMythMasterySlot TestSlot = { 0 };
+	//TestSlot.MasteryIndex = 0;
+	//estSlot.SlotIndex = 0;
+	//TestSlot.TierIndex = 1;
+	//TestSlot.TierLevel = 2;
+	//TestSlot.StatOption = 1;
+	//TestSlot.StatValue = 10;
+	//estSlot.ValueType = 1;
+
+	//Character->Data.MythMasteryInfo.Slots[0] = TestSlot;
+	//Character->SyncMask.MythMasteryInfo = true;
 
 	// notify XP gained
 	// FIXME TODO: Does not appear in game log: Gained MXP (bottom right message log)
@@ -311,6 +356,119 @@ UInt32 RTCharacterMythMasteryGetRebirthGemCost(
 	return GemCost;
 }
 
+RTMythMasterySlotRef RTCharacterMythMasteryGetSlot(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 MasteryIndex,
+	Int32 SlotIndex
+) {
+	RTMythMasterySlotRef OutSlot = NULL;
+
+	for (UInt32 i = 0; i < Character->Data.MythMasteryInfo.Info.PropertySlotCount; i++) {
+		RTMythMasterySlotRef Slot = &Character->Data.MythMasteryInfo.Slots[i];
+		if (Slot->MasteryIndex == MasteryIndex && Slot->SlotIndex == SlotIndex) {
+			OutSlot = Slot;
+			break;
+		}
+	}
+
+	return OutSlot;
+}
+
+Void RTCharacterMythMasterySetSlot(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 MasteryIndex,
+	Int32 SlotIndex,
+	RTDataMythMasterySlotRef NewSlotValues
+) {
+	if (!RTCharacterMythMasteryGetSlot(Runtime, Character, MasteryIndex, SlotIndex)) {
+		assert(Character->Data.MythMasteryInfo.Info.PropertySlotCount <= RUNTIME_CHARACTER_MAX_MYTH_SLOT_COUNT);
+		RTMythMasterySlotRef NewSlot = &Character->Data.MythMasteryInfo.Slots[Character->Data.MythMasteryInfo.Info.PropertySlotCount];
+		NewSlot->StatOption = NewSlotValues->ForceCode;
+		NewSlot->StatValue = NewSlotValues->Value;
+		NewSlot->ValueType = NewSlotValues->ValueType;
+		NewSlot->Tier = NewSlotValues->Tier;
+		NewSlot->Grade = NewSlotValues->Grade;
+	}
+
+	for (UInt32 i = 0; i < Character->Data.MythMasteryInfo.Info.PropertySlotCount; i++) {
+		RTMythMasterySlotRef Slot = &Character->Data.MythMasteryInfo.Slots[i];
+		if (Slot->MasteryIndex == MasteryIndex && Slot->SlotIndex == SlotIndex) {
+			Character->Data.MythMasteryInfo.Slots[i].StatOption = NewSlotValues->ForceCode;
+			Character->Data.MythMasteryInfo.Slots[i].StatValue = NewSlotValues->Value;
+			Character->Data.MythMasteryInfo.Slots[i].ValueType = NewSlotValues->ValueType;
+			Character->Data.MythMasteryInfo.Slots[i].Tier = NewSlotValues->Tier;
+			Character->Data.MythMasteryInfo.Slots[i].Grade = NewSlotValues->Grade;
+			break;
+		}
+	}
+
+	Character->SyncMask.MythMasteryInfo = true;
+
+	//return OutSlot;
+}
+
+Float32 GetMythSlotValueChance(RTDataMythMasterySlotRef MythSlot) {
+	return MythSlot->Chance;
+}
+
+RTDataMythMasterySlotRef RTCharacterMythMasteryRollSlot(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 MasteryIndex,
+	Int32 SlotIndex
+) {
+	if (!Character || Character->Data.MythMasteryInfo.Info.Level == 0) {
+		return NULL;
+	}
+
+	// all groups are currently in this pool, i don't know why
+	RTDataMythSlotGroupPoolRef MythSlotGroupPoolRef = RTRuntimeDataMythSlotGroupPoolGet(Runtime->Context);
+	RTDataMythSlotGroupRef MythSlotGroupRef = NULL;
+
+	// loop all slot groups
+	for (UInt32 SlotGroups = 0; SlotGroups < MythSlotGroupPoolRef->MythSlotGroupCount; SlotGroups++) {
+		RTDataMythSlotGroupRef SlotGroup = &MythSlotGroupPoolRef->MythSlotGroupList[SlotGroups];
+
+		// this group has our slot indexes
+		if (SlotGroup->MasteryIndex == MasteryIndex && SlotGroup->SlotIndex == SlotIndex) {
+			// pass along
+			MythSlotGroupRef = SlotGroup;
+			break;
+		}
+	}
+	if (!MythSlotGroupRef) return NULL;
+
+	// get the slot value group for our slot
+	RTDataMythSlotValuePoolRef MythSlotValuePool = RTRuntimeDataMythSlotValuePoolGet(Runtime->Context);
+	RTDataMythMasterySlotRef AvailableSlots[RUNTIME_CHARACTER_MAX_MYTH_SLOT_COUNT];
+
+	UInt32 SlotsIndex = 0;
+	for (SlotsIndex = 0; SlotsIndex < Character->Data.MythMasteryInfo.Info.PropertySlotCount; SlotsIndex++) {
+		RTDataMythMasterySlotRef SlotValue = &MythSlotValuePool->MythMasterySlotList[SlotsIndex];
+
+		if (SlotValue->OptPoolID == MythSlotGroupRef->OptPoolID) {
+			AvailableSlots[SlotsIndex] = SlotValue;
+		}
+	}
+
+	// finally, roll the slot value from our proper slot group value pool
+	RTDataMythMasterySlotRef MythSlotValue = NULL;
+	ROLL_POOL(
+		AvailableSlots,
+		SlotsIndex + 1,
+		GetMythSlotValueChance,
+		MythSlotValue
+	);
+	if (!MythSlotValue) return NULL;
+
+	//assert(Character->Data.MythMasteryInfo.Info.PropertySlotCount <= RUNTIME_CHARACTER_MAX_MYTH_SLOT_COUNT);
+	//RTMythMasterySlotRef ReturnSlot = &Character->Data.MythMasteryInfo.Slots[Character->Data.MythMasteryInfo.Info.PropertySlotCount];
+
+	return MythSlotValue;
+}
+
 Bool RTCharacterMythMasteryGetCanOpenLockGroup(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
@@ -319,8 +477,13 @@ Bool RTCharacterMythMasteryGetCanOpenLockGroup(
 ) {
 	RTDataMythLockPageRef MythLockPageRef = RTRuntimeDataMythLockPageGet(Runtime->Context, MasteryIndex);
 	RTDataMythLockInfoRef MythLockInfoRef = RTRuntimeDataMythLockInfoGet(MythLockPageRef, LockGroup);
+	RTDataMythLockInfoRef PrevMythLockInfoRef = RTRuntimeDataMythLockInfoGet(MythLockPageRef, MAX(LockGroup - 1, 0));
 
-	// TODO: client does check allowing only the next one to be open, we should check that too though
+	// sanity check on only 1 progression at a time, a bit ugly
+	if (PrevMythLockInfoRef && PrevMythLockInfoRef != MythLockInfoRef && MythLockInfoRef->LockGroup - PrevMythLockInfoRef->LockGroup != 1) {
+		return false;
+	}
+
 	if (MythLockInfoRef->OpenScore <= Character->Data.MythMasteryInfo.Info.HolyPower) {
 		return true;
 	}
@@ -334,5 +497,10 @@ Bool RTCharacterMythMasteryGetSlotOccupied(
 	Int32 MasteryIndex,
 	Int32 SlotIndex
 ) {
-	return true;
+	if (Character->Data.MythMasteryInfo.Info.PropertySlotCount == 0) {
+		return false;
+	}
+
+	return RTCharacterMythMasteryGetSlot(Runtime, Character, MasteryIndex, SlotIndex) != NULL;
 }
+

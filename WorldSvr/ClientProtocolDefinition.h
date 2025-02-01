@@ -4461,8 +4461,8 @@ CLIENT_PROTOCOL(C2S, MYTH_FINISH_ROLL_SLOT, DEFAULT, 2960,
     UInt8 UndoThisRoll; //0 = keep, 1 = reroll
     UInt8 MasteryIndex;
     UInt8 SlotIndex;
-    UInt8 Unknown1;
-    UInt8 Unknown2;
+    UInt8 Unknown1; // stat option or value or value type
+    UInt8 Unknown2; // or stigma?
     UInt8 Unknown3;
     UInt8 Unknown4;
     UInt8 Unknown5;

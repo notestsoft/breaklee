@@ -8,21 +8,26 @@
 CLIENT_PROCEDURE_BINDING(MYTH_ROLL_SLOT) {
 	if (!Character || Character->Data.MythMasteryInfo.Info.Level < 1) goto error;
 
-	Int32 Seed = (Int32)PlatformGetTickCount();                       
-	Int32 RandomValue = RandomRange(&Seed, 1, 5);
+	RTDataMythMasterySlotRef SlotValue = RTCharacterMythMasteryRollSlot(Runtime, Character, Packet->MasteryIndex, Packet->SlotIndex);
+	if (!SlotValue) {
+		Error("Slot value returned NULL");
+		return;
+	}
+
+	RTCharacterMythMasterySetSlot(Runtime, Character, Packet->MasteryIndex, Packet->SlotIndex, SlotValue);
 
 	S2C_DATA_MYTH_ROLL_SLOT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MYTH_ROLL_SLOT);
 	Response->MythPoints = Character->Data.MythMasteryInfo.Info.Points;
 	Response->HolyPower = Character->Data.MythMasteryInfo.Info.HolyPower;
 	Response->MasteryIndex = Packet->MasteryIndex;
 	Response->SlotIndex = Packet->SlotIndex;
-	Response->TierIndex = 53;
-	Response->TierLevel = 5;
-	Response->StatOption = 180;
-	Response->StatValue = RandomValue;
-	Response->ValueType = 1;
-	Response->StigmaGrade = 1;
-	Response->StigmaXP = 500;
+	Response->TierIndex = SlotValue->Tier;
+	Response->TierLevel = SlotValue->Grade;
+	Response->StatOption = SlotValue->ForceCode;
+	Response->StatValue = SlotValue->Value;
+	Response->ValueType = SlotValue->ValueType;
+	Response->StigmaGrade = Character->Data.MythMasteryInfo.Info.StigmaGrade;
+	Response->StigmaXP = Character->Data.MythMasteryInfo.Info.StigmaExp;
 	Response->ErrorCode = 0;
 
 	SocketSend(Socket, Connection, Response);

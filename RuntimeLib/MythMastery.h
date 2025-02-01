@@ -8,7 +8,13 @@ EXTERN_C_BEGIN
 #pragma pack(push, 1)
 
 struct _RTMythMasterySlot {
-    UInt8 Data[16];
+    UInt8 MasteryIndex;
+    UInt8 SlotIndex;
+    UInt8 Tier; //related to group index in UI
+    UInt8 Grade;
+    UInt32 StatOption;
+    UInt32 StatValue;
+    UInt32 ValueType;
 };
 
 struct _RTMythMasteryInfo {
@@ -30,6 +36,10 @@ struct _RTCharacterMythMasteryInfo {
 };
 
 #pragma pack(pop)
+
+Float32 GetMythSlotValueChance(
+    RTDataMythMasterySlotRef MythSlot
+);
 
 Void RTCharacterMythMasteryEnable(
     RTRuntimeRef Runtime,
@@ -96,6 +106,28 @@ Bool RTCharacterMythMasteryGetCanRebirth(
 UInt32 RTCharacterMythMasteryGetRebirthGemCost(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
+);
+
+RTMythMasterySlotRef RTCharacterMythMasteryGetSlot(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 MasteryIndex,
+    Int32 SlotIndex
+);
+
+Void RTCharacterMythMasterySetSlot(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 MasteryIndex,
+    Int32 SlotIndex,
+    RTDataMythMasterySlotRef NewSlotValues
+);
+
+RTDataMythMasterySlotRef RTCharacterMythMasteryRollSlot(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 MasteryIndex,
+    Int32 SlotIndex
 );
 
 Bool RTCharacterMythMasteryGetCanOpenLockGroup(
