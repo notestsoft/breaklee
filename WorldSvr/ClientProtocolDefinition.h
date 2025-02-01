@@ -4445,13 +4445,7 @@ CLIENT_PROTOCOL(C2S, MYTH_ROLL_SLOT, DEFAULT, 2959,
 CLIENT_PROTOCOL(S2C, MYTH_ROLL_SLOT, DEFAULT, 2959,
     UInt32 MythPoints;
     UInt32 HolyPower;
-    UInt8 MasteryIndex;
-    UInt8 SlotIndex;
-    UInt8 TierIndex;
-    UInt8 TierLevel;
-    UInt32 StatOption;
-    UInt32 StatValue;
-    UInt32 ValueType;
+    struct _RTMythMasterySlot MasterySlot;
     UInt32 StigmaGrade;
     UInt32 StigmaXP;
     UInt32 ErrorCode;

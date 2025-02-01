@@ -424,8 +424,8 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     }
 
     Character->Data.MythMasteryInfo.Info = Packet->Character.MythMasteryInfo;
-    if (Packet->Character.MythMasteryInfo.PropertySlotCount > 0) {
-        Int32 Length = sizeof(struct _RTMythMasterySlot) * Packet->Character.MythMasteryInfo.PropertySlotCount;
+    if (Packet->Character.MythMasteryInfo.MasterySlotCount > 0) {
+        Int32 Length = sizeof(struct _RTMythMasterySlot) * Packet->Character.MythMasteryInfo.MasterySlotCount;
         memcpy(Character->Data.MythMasteryInfo.Slots, Memory, Length);
         Memory += Length;
     }
@@ -956,11 +956,11 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     }
 
     Response->MythMasteryInfo = Character->Data.MythMasteryInfo.Info;
-    if (Character->Data.MythMasteryInfo.Info.PropertySlotCount > 0) {
+    if (Character->Data.MythMasteryInfo.Info.MasterySlotCount > 0) {
         PacketBufferAppendCopy(
             PacketBuffer,
             Character->Data.MythMasteryInfo.Slots,
-            sizeof(struct _RTMythMasterySlot) * Character->Data.MythMasteryInfo.Info.PropertySlotCount
+            sizeof(struct _RTMythMasterySlot) * Character->Data.MythMasteryInfo.Info.MasterySlotCount
         );
     }
 

@@ -8,28 +8,16 @@
 CLIENT_PROCEDURE_BINDING(MYTH_ROLL_SLOT) {
 	if (!Character || Character->Data.MythMasteryInfo.Info.Level < 1) goto error;
 
-	RTDataMythMasterySlotRef SlotValue = RTCharacterMythMasteryRollSlot(Runtime, Character, Packet->MasteryIndex, Packet->SlotIndex);
-	if (!SlotValue) {
-		Error("Slot value returned NULL");
-		return;
-	}
-
-	RTCharacterMythMasterySetSlot(Runtime, Character, Packet->MasteryIndex, Packet->SlotIndex, SlotValue);
+	RTMythMasterySlotRef MasterySlot = RTCharacterMythMasteryRollSlot(Runtime, Character, Packet->MasteryIndex, Packet->SlotIndex);
+	if (!MasterySlot) goto error;
 
 	S2C_DATA_MYTH_ROLL_SLOT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MYTH_ROLL_SLOT);
 	Response->MythPoints = Character->Data.MythMasteryInfo.Info.Points;
 	Response->HolyPower = Character->Data.MythMasteryInfo.Info.HolyPower;
-	Response->MasteryIndex = Packet->MasteryIndex;
-	Response->SlotIndex = Packet->SlotIndex;
-	Response->TierIndex = SlotValue->Tier;
-	Response->TierLevel = SlotValue->Grade;
-	Response->StatOption = SlotValue->ForceCode;
-	Response->StatValue = SlotValue->Value;
-	Response->ValueType = SlotValue->ValueType;
+	memcpy(&Response->MasterySlot, MasterySlot, sizeof(struct _RTMythMasterySlot));
 	Response->StigmaGrade = Character->Data.MythMasteryInfo.Info.StigmaGrade;
 	Response->StigmaXP = Character->Data.MythMasteryInfo.Info.StigmaExp;
 	Response->ErrorCode = 0;
-
 	SocketSend(Socket, Connection, Response);
 	return;
 
@@ -70,7 +58,7 @@ CLIENT_PROCEDURE_BINDING(MYTH_OPEN_LOCK) {
 
 	S2C_DATA_MYTH_OPEN_LOCK* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MYTH_OPEN_LOCK);
 
-	if (RTCharacterMythMasteryGetCanOpenLockGroup(Runtime, Character, Packet->MasteryIndex, Packet->LockGroupIndex)) {
+	if (RTCharacterMythMasteryCanOpenLockGroup(Runtime, Character, Packet->MasteryIndex, Packet->LockGroupIndex)) {
 		Response->MasteryIndex = Packet->MasteryIndex;
 		Response->LockGroupIndex = MythLockInfoRef->LockGroup;
 		Response->ErrorCode = 0;

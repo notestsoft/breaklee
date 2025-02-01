@@ -248,7 +248,7 @@ Void ServerSyncCharacter(
 
 	if (Character->SyncMask.MythMasteryInfo) {
 		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, &Character->Data.MythMasteryInfo.Info, sizeof(struct _RTMythMasteryInfo));
-		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.MythMasteryInfo.Slots, sizeof(struct _RTMythMasterySlot) * Character->Data.MythMasteryInfo.Info.PropertySlotCount);
+		IPCPacketBufferAppendCopy(Server->IPCSocket->PacketBuffer, Character->Data.MythMasteryInfo.Slots, sizeof(struct _RTMythMasterySlot) * Character->Data.MythMasteryInfo.Info.MasterySlotCount);
 	}
 
 	if (Character->SyncMask.NewbieSupportInfo) {

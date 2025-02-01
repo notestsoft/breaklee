@@ -63,23 +63,20 @@ Void RTCharacterMythMasteryAddExp(
 	if (Character->Data.MythMasteryInfo.Info.Level < 1) return;
 
 	// get current level info
-	RTDataMythLevelRef CurrentLevel = RTRuntimeDataMythLevelGet(Runtime->Context, Character->Data.MythMasteryInfo.Info.Level);
-	assert(CurrentLevel);
+	RTDataMythLevelRef CurrentMythLevel = RTRuntimeDataMythLevelGet(Runtime->Context, Character->Data.MythMasteryInfo.Info.Level);
+	assert(CurrentMythLevel);
 
 	Float RebirthPenaltyExpMultiplier = RTCharacterMythMasteryGetExpPenaltyMultiplier(Runtime, Character->Data.MythMasteryInfo.Info.Rebirth);
 
 	// check how much we need to pass current level
 	UInt64 RequiredCumulativeExp = RTCharacterMythMasteryGetCumulativeLevelUpExp(Runtime, Character);
+	UInt64 MaxCumulativeExp = RTCharacterMythMasteryGetMaximumExp(Runtime, Character);
 
 	// add to exp
-	Character->Data.MythMasteryInfo.Info.Exp += Exp;
-
-	UInt64 MaxXP = RTCharacterMythMasteryGetMaximumExp(Runtime, Character);
-
-	// cap the exp to the max
-	if (Character->Data.MythMasteryInfo.Info.Exp > MaxXP) {
-		Character->Data.MythMasteryInfo.Info.Exp = MaxXP;
-	}
+	Character->Data.MythMasteryInfo.Info.Exp = MIN(
+		Character->Data.MythMasteryInfo.Info.Exp + Exp,
+		MaxCumulativeExp
+	);
 
 	// level gain loop, enter here when we surpass required exp
 	while (RequiredCumulativeExp <= Character->Data.MythMasteryInfo.Info.Exp) {
@@ -117,26 +114,33 @@ Void RTCharacterMythMasteryAddExp(
 Void RTCharacterMythMasteryAddMythLevel(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
-	Int32 LevelsGiven
+	Int32 Levels
 ) {
-	RTDataMythLevelRef CurrentLevel = RTRuntimeDataMythLevelGet(Runtime->Context, Character->Data.MythMasteryInfo.Info.Level);
-	assert(CurrentLevel);
+	Int32 TotalPointReward = 0;
+	Int32 TargetLevel = Character->Data.MythMasteryInfo.Info.Level;
 
-	RTDataMythLevelRef NextLevel = RTRuntimeDataMythLevelGet(Runtime->Context, Character->Data.MythMasteryInfo.Info.Level + 1);
-	assert(NextLevel);
+	for (Int Index = 0; Index < Levels; Index += 1) {
+		RTDataMythLevelRef CurrentLevel = RTRuntimeDataMythLevelGet(Runtime->Context, TargetLevel);
+		assert(CurrentLevel);
 
-	// process each level up individually
-	for (Int Index = 0; Index < LevelsGiven; Index++) {
-		// add points from passing current level
-		Character->Data.MythMasteryInfo.Info.Level = NextLevel->MythLevel;
-		// update level before calling this func
-		// this func also calls SyncMask update
-		RTCharacterMythMasteryAddMythPoints(Runtime, Character, CurrentLevel->MythPoints);
+		RTDataMythLevelRef NextLevel = RTRuntimeDataMythLevelGet(Runtime->Context, TargetLevel + 1);
+		if (!NextLevel) break;
 
-		// notify level up (actual MLV number change on client)
+		TotalPointReward += CurrentLevel->MythPoints;
+		TargetLevel = NextLevel->MythLevel;
+	}
+
+	// add points from passing current level
+	RTCharacterMythMasteryAddMythPoints(Runtime, Character, TotalPointReward);
+
+	// notify level up (actual MLV number change on client)
+	if (Character->Data.MythMasteryInfo.Info.Level != TargetLevel) {
+		Character->Data.MythMasteryInfo.Info.Level = TargetLevel;
+		Character->SyncMask.MythMasteryInfo = true;
+
 		NOTIFICATION_DATA_CHARACTER_DATA* LevelUpNotification = RTNotificationInit(CHARACTER_DATA);
 		LevelUpNotification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_MYTH_LEVEL;
-		LevelUpNotification->Level = NextLevel->MythLevel;
+		LevelUpNotification->Level = Character->Data.MythMasteryInfo.Info.Level;
 		RTNotificationDispatchToNearby(LevelUpNotification, Character->Movement.WorldChunk);
 	}
 }
@@ -144,9 +148,11 @@ Void RTCharacterMythMasteryAddMythLevel(
 Void RTCharacterMythMasteryAddMythPoints(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
-	Int32 PointsGiven
+	Int32 Points
 ) {
-	Character->Data.MythMasteryInfo.Info.Points += PointsGiven;
+	if (Points < 1) return;
+
+	Character->Data.MythMasteryInfo.Info.Points += Points;
 	Character->SyncMask.MythMasteryInfo = true;
 
 	// notify myth points
@@ -157,25 +163,23 @@ Void RTCharacterMythMasteryAddMythPoints(
 
 Float RTCharacterMythMasteryGetExpPenaltyMultiplier(
 	RTRuntimeRef Runtime,
-	Int32 CharacterRebirthCount
+	Int32 RebirthCount
 ) {
-	RTDataMythRepeatPenaltyRef MythRepeatPenaltyRef = RTRuntimeDataMythRepeatPenaltyGet(Runtime->Context);
-	Float PenaltyPercentPerRebirth = 0.f;
-
-	if (!MythRepeatPenaltyRef || MythRepeatPenaltyRef->Limit < 0) {
+	RTDataMythRepeatPenaltyRef MythRepeatPenalty = RTRuntimeDataMythRepeatPenaltyGet(Runtime->Context);
+	if (!MythRepeatPenalty || MythRepeatPenalty->Limit < 0) {
 		Error("RTCharacterMythMasteryGetExpPenaltyMultiplier function ref was null or illegal! Failing gracefully.");
 		return 0;
 	}
 
 	// cap the rebirth count at the limit
 	// 0 or negative to disable the limit
-	if (MythRepeatPenaltyRef->Limit > 0) {
-		CharacterRebirthCount = MIN(MythRepeatPenaltyRef->Limit, CharacterRebirthCount);
+	if (MythRepeatPenalty->Limit > 0) {
+		RebirthCount = MIN(MythRepeatPenalty->Limit, RebirthCount);
 	}
 
 	// 10 AddMxp = 1.0% increase
 	// adjust for amount of rebirths
-	PenaltyPercentPerRebirth = MythRepeatPenaltyRef->AddMxp * CharacterRebirthCount;
+	Float PenaltyPercentPerRebirth = MythRepeatPenalty->AddMxp * RebirthCount;
 	PenaltyPercentPerRebirth = PenaltyPercentPerRebirth / 1000.f;
 
 	// min of 1
@@ -187,45 +191,38 @@ Int32 RTCharacterMythMasteryGetRepeatBonus(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character
 ) {
-	RTDataMythRepeatRef MythRepeatBonusRef = RTRuntimeDataMythRepeatGet(Runtime->Context);
+	RTDataMythRepeatRef MythRepeatBonus = RTRuntimeDataMythRepeatGet(Runtime->Context);
 	Bool IsEligibleForBonus = RTCharacterMythMasteryCheckEligibleForRepeatBonus(Runtime, Character->Data.MythMasteryInfo.Info.Rebirth);
+	if (!IsEligibleForBonus || !MythRepeatBonus) return 0;
 
-	if (!IsEligibleForBonus || !MythRepeatBonusRef) {
-		return 0;
-	}
-
-	return MythRepeatBonusRef->BonusPoints;
+	return MythRepeatBonus->BonusPoints;
 }
 
 Bool RTCharacterMythMasteryCheckEligibleForRepeatBonus(
 	RTRuntimeRef Runtime,
 	Int32 RebirthCount
 ) {
-	RTDataMythRepeatRef MythRepeatBonusRef = RTRuntimeDataMythRepeatGet(Runtime->Context);
-	Int32 Remainder = 0;
-
-	if (!MythRepeatBonusRef || MythRepeatBonusRef->RepeatCondition <= 0) {
+	RTDataMythRepeatRef MythRepeatBonus = RTRuntimeDataMythRepeatGet(Runtime->Context);
+	if (!MythRepeatBonus || MythRepeatBonus->RepeatCondition <= 0) {
 		Error("RTCharacterMythMasteryCheckEligibleForRepeatBonus function ref was null or illegal! Failing gracefully.");
 		return false;
 	}
 
 	// Repeat condition could be something like 5, so give the bonus every 5 levels
-	Remainder = RebirthCount % MythRepeatBonusRef->RepeatCondition;
-
+	Int32 Remainder = RebirthCount % MythRepeatBonus->RepeatCondition;
 	return Remainder == 0;
 }
 
 Int32 RTCharacterMythMasteryGetMaximumLevel(
 	RTRuntimeRef Runtime
 ) {
-	RTDataMythMaxRef MythMaxRef = RTRuntimeDataMythMaxGet(Runtime->Context);
-
-	if (!MythMaxRef || MythMaxRef->MaxMythLevel <= 0) {
+	RTDataMythMaxRef MythMax = RTRuntimeDataMythMaxGet(Runtime->Context);
+	if (!MythMax || MythMax->MaxMythLevel <= 0) {
 		Error("RTCharacterMythMasteryGetMaximumLevel function ref was null or illegal! Failing gracefully.");
 		return 100;
 	}
 
-	return MythMaxRef->MaxMythLevel;
+	return MythMax->MaxMythLevel;
 }
 
 UInt64 RTCharacterMythMasteryGetMaximumExp(
@@ -237,13 +234,13 @@ UInt64 RTCharacterMythMasteryGetMaximumExp(
 	Float ExpPenaltyMultiplier = RTCharacterMythMasteryGetExpPenaltyMultiplier(Runtime, Character->Data.MythMasteryInfo.Info.Rebirth);
 
 	// from 1 to max
-	for (int Index = 1; Index < MaxLevel + 1; Index++) {
-		RTDataMythLevelRef PrevLevelRef = RTRuntimeDataMythLevelGet(Runtime->Context, Index);
+	for (Int Index = 1; Index < MaxLevel + 1; Index += 1) {
+		RTDataMythLevelRef PrevLevel = RTRuntimeDataMythLevelGet(Runtime->Context, Index);
 
 		// no more to go back
-		if (!PrevLevelRef) break;
+		if (!PrevLevel) break;
 
-		ExpNeeded += PrevLevelRef->RequiredExp;
+		ExpNeeded += PrevLevel->RequiredExp;
 	}
 
 	// add penalty from rebirth count
@@ -261,13 +258,13 @@ UInt64 RTCharacterMythMasteryGetCumulativeLevelUpExp(
 	// 100% displayed XP = prev XP + required XP of current
 
 	// from 1 to current level
-	for (int Index = 1; Index < Character->Data.MythMasteryInfo.Info.Level + 1; Index++) {
-		RTDataMythLevelRef PrevMythLevelRef = RTRuntimeDataMythLevelGet(Runtime->Context, Index);
+	for (Int Index = 1; Index < Character->Data.MythMasteryInfo.Info.Level + 1; Index += 1) {
+		RTDataMythLevelRef PrevMythLevel = RTRuntimeDataMythLevelGet(Runtime->Context, Index);
 
 		// no more to go back
-		if (!PrevMythLevelRef) break;
+		if (!PrevMythLevel) break;
 
-		ExpNeeded += PrevMythLevelRef->RequiredExp * RTCharacterMythMasteryGetExpPenaltyMultiplier(Runtime, Character->Data.MythMasteryInfo.Info.Rebirth);
+		ExpNeeded += PrevMythLevel->RequiredExp * RTCharacterMythMasteryGetExpPenaltyMultiplier(Runtime, Character->Data.MythMasteryInfo.Info.Rebirth);
 	}
 
 	return ExpNeeded;
@@ -320,19 +317,18 @@ Bool RTCharacterMythMasteryGetCanRebirth(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character
 ) {
-	RTDataMythResetRef MythResetRef = RTRuntimeDataMythResetGet(Runtime->Context);
-
-	if (!MythResetRef) {
+	RTDataMythResetRef MythReset = RTRuntimeDataMythResetGet(Runtime->Context);
+	if (!MythReset) {
 		Error("RTCharacterMythMasteryGetCanRebirth function ref was null or illegal! Failing gracefully.");
 		return false;
 	}
 
 	// allow 0 or negative to disable the min
-	if (MythResetRef->RequiredLevel <= 0) {
+	if (MythReset->RequiredLevel <= 0) {
 		return true;
 	}
 
-	return Character->Data.MythMasteryInfo.Info.Level >= MythResetRef->RequiredLevel;
+	return Character->Data.MythMasteryInfo.Info.Level >= MythReset->RequiredLevel;
 }
 
 UInt32 RTCharacterMythMasteryGetRebirthGemCost(
@@ -344,14 +340,14 @@ UInt32 RTCharacterMythMasteryGetRebirthGemCost(
 		return 0;
 	}
 
-	RTDataMythRebirthPenaltyRef MythRebirthPenaltyRef = RTRuntimeDataMythRebirthPenaltyGet(Runtime->Context);
+	RTDataMythRebirthPenaltyRef MythRebirthPenalty = RTRuntimeDataMythRebirthPenaltyGet(Runtime->Context);
 
-	if (!MythRebirthPenaltyRef) {
+	if (!MythRebirthPenalty) {
 		return 0;
 	}
 
 	Int32 MissingLevels = MaxLevel - Character->Data.MythMasteryInfo.Info.Level;
-	Int32 GemCost = MythRebirthPenaltyRef->PenaltyPerMissingLevel * MissingLevels;
+	Int32 GemCost = MythRebirthPenalty->PenaltyPerMissingLevel * MissingLevels;
 
 	return GemCost;
 }
@@ -362,17 +358,12 @@ RTMythMasterySlotRef RTCharacterMythMasteryGetSlot(
 	Int32 MasteryIndex,
 	Int32 SlotIndex
 ) {
-	RTMythMasterySlotRef OutSlot = NULL;
-
-	for (UInt32 i = 0; i < Character->Data.MythMasteryInfo.Info.PropertySlotCount; i++) {
-		RTMythMasterySlotRef Slot = &Character->Data.MythMasteryInfo.Slots[i];
-		if (Slot->MasteryIndex == MasteryIndex && Slot->SlotIndex == SlotIndex) {
-			OutSlot = Slot;
-			break;
-		}
+	for (Int Index = 0; Index < Character->Data.MythMasteryInfo.Info.MasterySlotCount; Index += 1) {
+		RTMythMasterySlotRef MasterySlot = &Character->Data.MythMasteryInfo.Slots[Index];
+		if (MasterySlot->MasteryIndex == MasteryIndex && MasterySlot->SlotIndex == SlotIndex) return MasterySlot;
 	}
 
-	return OutSlot;
+	return NULL;
 }
 
 Void RTCharacterMythMasterySetSlot(
@@ -380,40 +371,32 @@ Void RTCharacterMythMasterySetSlot(
 	RTCharacterRef Character,
 	Int32 MasteryIndex,
 	Int32 SlotIndex,
-	RTDataMythMasterySlotRef NewSlotValues
+	Int32 Tier,
+	Int32 Grade,
+	Int32 ForceEffectIndex,
+	Int32 ForceValue,
+	Int32 ForceValueType
 ) {
-	if (!RTCharacterMythMasteryGetSlot(Runtime, Character, MasteryIndex, SlotIndex)) {
-		assert(Character->Data.MythMasteryInfo.Info.PropertySlotCount <= RUNTIME_CHARACTER_MAX_MYTH_SLOT_COUNT);
-		RTMythMasterySlotRef NewSlot = &Character->Data.MythMasteryInfo.Slots[Character->Data.MythMasteryInfo.Info.PropertySlotCount];
-		NewSlot->StatOption = NewSlotValues->ForceCode;
-		NewSlot->StatValue = NewSlotValues->Value;
-		NewSlot->ValueType = NewSlotValues->ValueType;
-		NewSlot->Tier = NewSlotValues->Tier;
-		NewSlot->Grade = NewSlotValues->Grade;
+	RTMythMasterySlotRef MasterySlot = RTCharacterMythMasteryGetSlot(Runtime, Character, MasteryIndex, SlotIndex);
+	if (!MasterySlot) {
+		assert(Character->Data.MythMasteryInfo.Info.MasterySlotCount <= RUNTIME_CHARACTER_MAX_MYTH_SLOT_COUNT);
+
+		MasterySlot = &Character->Data.MythMasteryInfo.Slots[Character->Data.MythMasteryInfo.Info.MasterySlotCount];
+		memset(MasterySlot, 0, sizeof(struct _RTMythMasterySlot));
+		MasterySlot->MasteryIndex = MasteryIndex;
+		MasterySlot->SlotIndex = SlotIndex;
 	}
 
-	for (UInt32 i = 0; i < Character->Data.MythMasteryInfo.Info.PropertySlotCount; i++) {
-		RTMythMasterySlotRef Slot = &Character->Data.MythMasteryInfo.Slots[i];
-		if (Slot->MasteryIndex == MasteryIndex && Slot->SlotIndex == SlotIndex) {
-			Character->Data.MythMasteryInfo.Slots[i].StatOption = NewSlotValues->ForceCode;
-			Character->Data.MythMasteryInfo.Slots[i].StatValue = NewSlotValues->Value;
-			Character->Data.MythMasteryInfo.Slots[i].ValueType = NewSlotValues->ValueType;
-			Character->Data.MythMasteryInfo.Slots[i].Tier = NewSlotValues->Tier;
-			Character->Data.MythMasteryInfo.Slots[i].Grade = NewSlotValues->Grade;
-			break;
-		}
-	}
-
+	assert(MasterySlot);
+	MasterySlot->Tier = Tier;
+	MasterySlot->Grade = Grade;
+	MasterySlot->ForceEffectIndex = ForceEffectIndex;
+	MasterySlot->ForceValue = ForceValue;
+	MasterySlot->ForceValueType = ForceValueType;
 	Character->SyncMask.MythMasteryInfo = true;
-
-	//return OutSlot;
 }
 
-Float32 GetMythSlotValueChance(RTDataMythMasterySlotRef MythSlot) {
-	return MythSlot->Chance;
-}
-
-RTDataMythMasterySlotRef RTCharacterMythMasteryRollSlot(
+RTMythMasterySlotRef RTCharacterMythMasteryRollSlot(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
 	Int32 MasteryIndex,
@@ -424,37 +407,36 @@ RTDataMythMasterySlotRef RTCharacterMythMasteryRollSlot(
 	}
 
 	// all groups are currently in this pool, i don't know why
-	RTDataMythSlotGroupPoolRef MythSlotGroupPoolRef = RTRuntimeDataMythSlotGroupPoolGet(Runtime->Context);
-	RTDataMythSlotGroupRef MythSlotGroupRef = NULL;
+	RTDataMythSlotGroupPoolRef MythSlotGroupPool = RTRuntimeDataMythSlotGroupPoolGet(Runtime->Context);
+	RTDataMythSlotGroupRef MythSlotGroup = NULL;
 
 	// loop all slot groups
-	for (UInt32 SlotGroups = 0; SlotGroups < MythSlotGroupPoolRef->MythSlotGroupCount; SlotGroups++) {
-		RTDataMythSlotGroupRef SlotGroup = &MythSlotGroupPoolRef->MythSlotGroupList[SlotGroups];
+	for (Int SlotGroupIndex = 0; SlotGroupIndex < MythSlotGroupPool->MythSlotGroupCount; SlotGroupIndex++) {
+		RTDataMythSlotGroupRef SlotGroup = &MythSlotGroupPool->MythSlotGroupList[SlotGroupIndex];
 
 		// this group has our slot indexes
 		if (SlotGroup->MasteryIndex == MasteryIndex && SlotGroup->SlotIndex == SlotIndex) {
 			// pass along
-			MythSlotGroupRef = SlotGroup;
+			MythSlotGroup = SlotGroup;
 			break;
 		}
 	}
-	if (!MythSlotGroupRef) return NULL;
+	if (!MythSlotGroup) return NULL;
 
 	// get the slot value group for our slot
 	RTDataMythSlotValuePoolRef MythSlotValuePool = RTRuntimeDataMythSlotValuePoolGet(Runtime->Context);
-	RTDataMythMasterySlotRef AvailableSlots[RUNTIME_CHARACTER_MAX_MYTH_SLOT_COUNT];
+	RTDataMythMasterySlotRef AvailableSlots[RUNTIME_CHARACTER_MAX_MYTH_SLOT_COUNT] = { 0 };
 
-	UInt32 SlotsIndex = 0;
-	for (SlotsIndex = 0; SlotsIndex < Character->Data.MythMasteryInfo.Info.PropertySlotCount; SlotsIndex++) {
+	Int SlotsIndex = 0;
+	for (SlotsIndex = 0; SlotsIndex < Character->Data.MythMasteryInfo.Info.MasterySlotCount; SlotsIndex += 1) {
 		RTDataMythMasterySlotRef SlotValue = &MythSlotValuePool->MythMasterySlotList[SlotsIndex];
-
-		if (SlotValue->OptPoolID == MythSlotGroupRef->OptPoolID) {
+		if (SlotValue->OptPoolID == MythSlotGroup->OptPoolID) {
 			AvailableSlots[SlotsIndex] = SlotValue;
 		}
 	}
-
 	// finally, roll the slot value from our proper slot group value pool
 	RTDataMythMasterySlotRef MythSlotValue = NULL;
+/*
 	ROLL_POOL(
 		AvailableSlots,
 		SlotsIndex + 1,
@@ -462,33 +444,30 @@ RTDataMythMasterySlotRef RTCharacterMythMasteryRollSlot(
 		MythSlotValue
 	);
 	if (!MythSlotValue) return NULL;
-
+	*/
 	//assert(Character->Data.MythMasteryInfo.Info.PropertySlotCount <= RUNTIME_CHARACTER_MAX_MYTH_SLOT_COUNT);
 	//RTMythMasterySlotRef ReturnSlot = &Character->Data.MythMasteryInfo.Slots[Character->Data.MythMasteryInfo.Info.PropertySlotCount];
 
 	return MythSlotValue;
 }
 
-Bool RTCharacterMythMasteryGetCanOpenLockGroup(
+Bool RTCharacterMythMasteryCanOpenLockGroup(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
 	Int32 MasteryIndex,
 	Int32 LockGroup
 ) {
-	RTDataMythLockPageRef MythLockPageRef = RTRuntimeDataMythLockPageGet(Runtime->Context, MasteryIndex);
-	RTDataMythLockInfoRef MythLockInfoRef = RTRuntimeDataMythLockInfoGet(MythLockPageRef, LockGroup);
-	RTDataMythLockInfoRef PrevMythLockInfoRef = RTRuntimeDataMythLockInfoGet(MythLockPageRef, MAX(LockGroup - 1, 0));
+	RTDataMythLockPageRef LockPage = RTRuntimeDataMythLockPageGet(Runtime->Context, MasteryIndex);
+	RTDataMythLockInfoRef LockInfo = RTRuntimeDataMythLockInfoGet(LockPage, LockGroup);
+	if (LockInfo->OpenScore > Character->Data.MythMasteryInfo.Info.HolyPower) return false;
 
 	// sanity check on only 1 progression at a time, a bit ugly
-	if (PrevMythLockInfoRef && PrevMythLockInfoRef != MythLockInfoRef && MythLockInfoRef->LockGroup - PrevMythLockInfoRef->LockGroup != 1) {
+	RTDataMythLockInfoRef PreviousLockInfo = RTRuntimeDataMythLockInfoGet(LockPage, MAX(0, LockGroup - 1));
+	if (PreviousLockInfo && PreviousLockInfo != LockInfo && LockInfo->LockGroup - PreviousLockInfo->LockGroup != 1) {
 		return false;
 	}
 
-	if (MythLockInfoRef->OpenScore <= Character->Data.MythMasteryInfo.Info.HolyPower) {
-		return true;
-	}
-
-	return false;
+	return true;
 }
 
 Bool RTCharacterMythMasteryGetSlotOccupied(
@@ -497,10 +476,6 @@ Bool RTCharacterMythMasteryGetSlotOccupied(
 	Int32 MasteryIndex,
 	Int32 SlotIndex
 ) {
-	if (Character->Data.MythMasteryInfo.Info.PropertySlotCount == 0) {
-		return false;
-	}
-
 	return RTCharacterMythMasteryGetSlot(Runtime, Character, MasteryIndex, SlotIndex) != NULL;
 }
 

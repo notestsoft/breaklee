@@ -849,7 +849,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 
 		if (Packet->SyncMask.MythMasteryInfo) {
 			ReadMemory(struct _RTMythMasteryInfo, Info, 1);
-			ReadMemory(struct _RTMythMasterySlot, Slots, Info->PropertySlotCount);
+			ReadMemory(struct _RTMythMasterySlot, Slots, Info->MasterySlotCount);
 
 			if (!DatabaseCallProcedure(
 				Context->Database,
@@ -861,7 +861,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 				DB_INPUT_UINT64(Info->Exp),
 				DB_INPUT_INT32(Info->Points),
 				DB_INPUT_INT32(Info->UnlockedPageCount),
-				DB_INPUT_UINT8(Info->PropertySlotCount),
+				DB_INPUT_UINT8(Info->MasterySlotCount),
 				DB_INPUT_INT32(Info->StigmaGrade),
 				DB_INPUT_INT32(Info->StigmaExp),
 				DB_INPUT_DATA(Slots, SlotsLength),

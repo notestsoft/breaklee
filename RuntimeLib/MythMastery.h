@@ -12,9 +12,9 @@ struct _RTMythMasterySlot {
     UInt8 SlotIndex;
     UInt8 Tier; //related to group index in UI
     UInt8 Grade;
-    UInt32 StatOption;
-    UInt32 StatValue;
-    UInt32 ValueType;
+    UInt32 ForceEffectIndex;
+    UInt32 ForceValue;
+    UInt32 ForceValueType;
 };
 
 struct _RTMythMasteryInfo {
@@ -24,8 +24,8 @@ struct _RTMythMasteryInfo {
     UInt64 Exp;
     Int32 Points;
     Int32 UnlockedPageCount;
-    UInt8 Unknown1[13];
-    UInt8 PropertySlotCount;
+    UInt8 Unknown1[13]; // TODO: Check what this data means, by putting random values!
+    UInt8 MasterySlotCount;
     Int32 StigmaGrade;
     Int32 StigmaExp;
 };
@@ -120,17 +120,21 @@ Void RTCharacterMythMasterySetSlot(
     RTCharacterRef Character,
     Int32 MasteryIndex,
     Int32 SlotIndex,
-    RTDataMythMasterySlotRef NewSlotValues
+    Int32 Tier,
+    Int32 Grade,
+    Int32 ForceEffectIndex,
+    Int32 ForceValue,
+    Int32 ForceValueType
 );
 
-RTDataMythMasterySlotRef RTCharacterMythMasteryRollSlot(
+RTMythMasterySlotRef RTCharacterMythMasteryRollSlot(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     Int32 MasteryIndex,
     Int32 SlotIndex
 );
 
-Bool RTCharacterMythMasteryGetCanOpenLockGroup(
+Bool RTCharacterMythMasteryCanOpenLockGroup(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     Int32 MasteryIndex,
