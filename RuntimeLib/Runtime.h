@@ -48,6 +48,8 @@ struct _RTRuntimeConfig {
     CString ScriptFilePath;
     Int32 DailyResetTimeHour;
     Int32 DailyResetTimeMinute;
+    Timestamp UpgradePointDuration;
+    Timestamp SecretShopResetInterval;
 };
 
 struct _RTRuntime {

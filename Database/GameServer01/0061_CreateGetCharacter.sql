@@ -238,6 +238,7 @@ BEGIN
         EventPass.MissionSlotCount,
         EventPass.RewardSlotCount,
         CostumeWarehouse.SlotCount,
+        CostumeWarehouse.MillagePoints,
         Costume.PageCount,
         Costume.AppliedSlotCount,
         Costume.ActivePageIndex,

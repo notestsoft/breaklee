@@ -22,7 +22,7 @@ CLIENT_PROCEDURE_BINDING(PARTY_INVITE) {
 	Request->Source.Unknown2 = 0;
 	Request->Source.WorldServerIndex = Context->Config.WorldSvr.NodeIndex;
 	Request->Source.BattleStyleIndex = BattleStyleIndex;
-	Request->Source.WorldIndex = Character->Data.Info.WorldIndex;
+	Request->Source.OnlineStatus = 1;
 	Request->Source.OverlordLevel = Character->Data.OverlordMasteryInfo.Info.Level;
 	Request->Source.MythRebirth = Character->Data.MythMasteryInfo.Info.Rebirth;
 	Request->Source.MythHolyPower = Character->Data.MythMasteryInfo.Info.HolyPower;
@@ -93,7 +93,7 @@ IPC_PROCEDURE_BINDING(P2W, PARTY_INVITE) {
 	Response->Target.Unknown2 = 0;
 	Response->Target.WorldServerIndex = Context->Config.WorldSvr.NodeIndex;
 	Response->Target.BattleStyleIndex = BattleStyleIndex;
-	Response->Target.WorldIndex = TargetCharacter->Data.Info.WorldIndex;
+	Response->Target.OnlineStatus = 1;
 	Response->Target.OverlordLevel = TargetCharacter->Data.OverlordMasteryInfo.Info.Level;
 	Response->Target.MythRebirth = TargetCharacter->Data.MythMasteryInfo.Info.Rebirth;
 	Response->Target.MythHolyPower = TargetCharacter->Data.MythMasteryInfo.Info.HolyPower;
@@ -456,7 +456,7 @@ Void SendPartyData(
 			MemberInfo->Unknown2 = 0;
 			MemberInfo->WorldServerIndex = Context->Config.WorldSvr.NodeIndex;
 			MemberInfo->BattleStyleIndex = BattleStyleIndex;
-			MemberInfo->WorldIndex = Character->Data.Info.WorldIndex;
+			MemberInfo->OnlineStatus = 1;
 			MemberInfo->OverlordLevel = Character->Data.OverlordMasteryInfo.Info.Level;
 			MemberInfo->MythRebirth = Character->Data.MythMasteryInfo.Info.Rebirth;
 			MemberInfo->MythHolyPower = Character->Data.MythMasteryInfo.Info.HolyPower;
@@ -490,4 +490,39 @@ Void SendPartyData(
 		if (!Client) continue;
 		SocketSend(Context->ClientSocket, Client->Connection, Notification);
 	}
+}
+
+CLIENT_PROCEDURE_BINDING(MESSAGE_PARTY) {
+	if (!Character) goto error;
+
+	Int32 PacketLength = sizeof(C2S_DATA_MESSAGE_PARTY) + Packet->PayloadLength;
+	if (Packet->Length != PacketLength) goto error;
+
+	RTPartyRef Party = RTRuntimeGetParty(Runtime, Character->PartyID);
+	if (!Party) goto error;
+	if (Party->PartyType == RUNTIME_PARTY_TYPE_SOLO_DUNGEON) goto error;
+
+	PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Socket);
+	S2C_DATA_NFY_MESSAGE_PARTY* Notification = PacketBufferInit(PacketBuffer, S2C, NFY_MESSAGE_PARTY);
+	Notification->CharacterIndex = Character->CharacterIndex;
+	Notification->PayloadLength = Packet->PayloadLength;
+	PacketBufferAppendCopy(PacketBuffer, Packet->Payload, Packet->PayloadLength);
+
+	IPC_W2P_DATA_BROADCAST_TO_PARTY* Request = IPCPacketBufferInit(Context->IPCSocket->PacketBuffer, W2P, BROADCAST_TO_PARTY);
+	Request->Header.Source = Context->IPCSocket->NodeID;
+	Request->Header.Target.Group = Context->Config.WorldSvr.GroupIndex;
+	Request->Header.Target.Type = IPC_TYPE_PARTY;
+	Request->PartyID = Party->ID;
+	Request->Length = PacketGetLength(
+		Context->ClientSocket->ProtocolIdentifier,
+		Context->ClientSocket->ProtocolVersion,
+		Context->ClientSocket->ProtocolExtension,
+		Notification
+	);
+	IPCPacketBufferAppendCopy(Context->IPCSocket->PacketBuffer, Notification, Request->Length);
+	IPCSocketUnicast(Context->IPCSocket, Request);
+	return;
+
+error:
+	SocketDisconnect(Socket, Connection);
 }

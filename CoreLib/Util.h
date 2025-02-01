@@ -37,7 +37,7 @@ UInt NextPowerOfTwo(
 
 Void SetTimestampOffset(Timestamp Offset);
 
-Void ConvertLocalToUtcAt(Int32 * Hour, Int32 * Minute);
+Void ConvertLocalToUtcAt(Int32 *Hour, Int32 *Minute);
 
 Timestamp GetTimestamp();
 

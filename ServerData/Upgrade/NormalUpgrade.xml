@@ -1,137 +1,131 @@
 <enchant>
-    <enchant_grade>
-        <enchant_grade_value item_grade="1" cost_grade="1" />
-        <enchant_grade_value item_grade="2" cost_grade="1" />
-        <enchant_grade_value item_grade="3" cost_grade="1" />
-        <enchant_grade_value item_grade="4" cost_grade="1" />
-        <enchant_grade_value item_grade="5" cost_grade="5" />
-        <enchant_grade_value item_grade="6" cost_grade="5" />
-        <enchant_grade_value item_grade="7" cost_grade="5" />
-        <enchant_grade_value item_grade="8" cost_grade="8" />
-        <enchant_grade_value item_grade="9" cost_grade="8" />
-        <enchant_grade_value item_grade="10" cost_grade="8" />
-        <enchant_grade_value item_grade="11" cost_grade="11" />
-        <enchant_grade_value item_grade="12" cost_grade="11" />
-        <enchant_grade_value item_grade="13" cost_grade="11" />
-        <enchant_grade_value item_grade="14" cost_grade="14" />
-        <enchant_grade_value item_grade="15" cost_grade="14" />
-    </enchant_grade>
-
-    <enchant_grade_change>
-        <enchant_grade_change_value item_type="190" item_grade="1" cost_grade="8" />
-        <enchant_grade_change_value item_type="190" item_grade="2" cost_grade="8" />
-        <enchant_grade_change_value item_type="190" item_grade="3" cost_grade="8" />
-    </enchant_grade_change>
-
-    <enchant_extend_grade>
-        <enchant_grade_value item_grade="1" cost_grade="1" />
-        <enchant_grade_value item_grade="2" cost_grade="1" />
-        <enchant_grade_value item_grade="3" cost_grade="1" />
-        <enchant_grade_value item_grade="4" cost_grade="4" />
-        <enchant_grade_value item_grade="5" cost_grade="5" />
-        <enchant_grade_value item_grade="6" cost_grade="5" />
-        <enchant_grade_value item_grade="7" cost_grade="5" />
-        <enchant_grade_value item_grade="8" cost_grade="8" />
-        <enchant_grade_value item_grade="9" cost_grade="8" />
-        <enchant_grade_value item_grade="10" cost_grade="8" />
-        <enchant_grade_value item_grade="11" cost_grade="11" />
-        <enchant_grade_value item_grade="12" cost_grade="11" />
-        <enchant_grade_value item_grade="13" cost_grade="11" />
-        <enchant_grade_value item_grade="14" cost_grade="14" />
-        <enchant_grade_value item_grade="15" cost_grade="14" />
-    </enchant_extend_grade>
-
-    <enchant_rate>
-        <enchant_rate_type type="0">
-            <enchant_rate_value level="0" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="1" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="2" rates="900,0,100,0,0,0" />
-            <enchant_rate_value level="3" rates="800,0,0,200,0,0" />
-            <enchant_rate_value level="4" rates="700,0,0,300,0,0" />
-            <enchant_rate_value level="5" rates="610,0,0,390,0,0" />
-            <enchant_rate_value level="6" rates="500,0,0,210,290,0" />
-            <enchant_rate_value level="7" rates="400,0,0,200,400,0" />
-            <enchant_rate_value level="8" rates="380,0,0,190,430,0" />
-            <enchant_rate_value level="9" rates="340,0,0,160,500,0" />
-            <enchant_rate_value level="10" rates="300,0,0,160,540,0" />
-            <enchant_rate_value level="11" rates="300,0,0,160,540,0" />
-            <enchant_rate_value level="12" rates="300,0,0,140,560,0" />
-            <enchant_rate_value level="13" rates="300,0,0,140,560,0" />
-            <enchant_rate_value level="14" rates="300,0,0,140,560,0" />
-            <enchant_rate_value level="15" rates="350,0,650,0,0,0" />
-            <enchant_rate_value level="16" rates="250,0,540,210,0,0" />
-            <enchant_rate_value level="17" rates="200,0,500,200,100,0" />
-            <enchant_rate_value level="18" rates="100,0,500,200,100,100" />
-            <enchant_rate_value level="19" rates="50,0,0,430,310,210" />
-        </enchant_rate_type>
-
-        <enchant_rate_type type="1">
-            <enchant_rate_value level="0" rates="0,1000,0,0,0,0" />
-            <enchant_rate_value level="1" rates="0,1000,0,0,0,0" />
-            <enchant_rate_value level="2" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="3" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="4" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="5" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="6" rates="504,0,496,0,0,0" />
-            <enchant_rate_value level="7" rates="404,0,596,0,0,0" />
-            <enchant_rate_value level="8" rates="385,0,195,420,0,0" />
-            <enchant_rate_value level="9" rates="345,0,165,490,0,0" />
-            <enchant_rate_value level="10" rates="306,0,166,528,0,0" />
-            <enchant_rate_value level="11" rates="307,0,167,526,0,0" />
-            <enchant_rate_value level="12" rates="308,0,148,544,0,0" />
-            <enchant_rate_value level="13" rates="309,0,149,542,0,0" />
-            <enchant_rate_value level="14" rates="310,0,0,690,0,0" />
-            <enchant_rate_value level="15" rates="750,0,250,0,0,0" />
-            <enchant_rate_value level="16" rates="690,0,210,100,0,0" />
-            <enchant_rate_value level="17" rates="440,0,0,560,0,0" />
-            <enchant_rate_value level="18" rates="250,0,0,750,0,0" />
-            <enchant_rate_value level="19" rates="200,0,0,800,0,0" />
-        </enchant_rate_type>
-
-        <enchant_rate_type type="2">
-            <enchant_rate_value level="0" rates="0,1000,0,0,0,0" />
-            <enchant_rate_value level="1" rates="0,1000,0,0,0,0" />
-            <enchant_rate_value level="2" rates="980,20,0,0,0,0" />
-            <enchant_rate_value level="3" rates="980,20,0,0,0,0" />
-            <enchant_rate_value level="4" rates="970,30,0,0,0,0" />
-            <enchant_rate_value level="5" rates="970,30,0,0,0,0" />
-            <enchant_rate_value level="6" rates="500,40,460,0,0,0" />
-            <enchant_rate_value level="7" rates="400,40,560,0,0,0" />
-            <enchant_rate_value level="8" rates="380,50,190,380,0,0" />
-            <enchant_rate_value level="9" rates="340,50,200,410,0,0" />
-            <enchant_rate_value level="10" rates="300,60,210,430,0,0" />
-            <enchant_rate_value level="11" rates="300,70,210,420,0,0" />
-            <enchant_rate_value level="12" rates="300,80,210,410,0,0" />
-            <enchant_rate_value level="13" rates="300,90,200,410,0,0" />
-            <enchant_rate_value level="14" rates="300,100,0,600,0,0" />
-            <enchant_rate_value level="15" rates="500,400,100,0,0,0" />
-            <enchant_rate_value level="16" rates="495,300,130,75,0,0" />
-            <enchant_rate_value level="17" rates="360,100,360,180,0" />
-            <enchant_rate_value level="18" rates="200,50,500,250,0,0" />
-            <enchant_rate_value level="19" rates="50,0,0,430,310,210" />
-        </enchant_rate_type>
-
-        <enchant_rate_type type="3">
-            <enchant_rate_value level="0" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="1" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="2" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="3" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="4" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="5" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="6" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="7" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="8" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="9" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="10" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="11" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="12" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="13" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="14" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="15" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="16" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="17" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="18" rates="1000,0,0,0,0,0" />
-            <enchant_rate_value level="19" rates="1000,0,0,0,0,0" />
-        </enchant_rate_type>
-    </enchant_rate>
+	<enchant_grade>
+		<enchant_grade_value item_grade="1" cost_grade="1" />
+		<enchant_grade_value item_grade="2" cost_grade="1" />
+		<enchant_grade_value item_grade="3" cost_grade="1" />
+		<enchant_grade_value item_grade="4" cost_grade="1" />
+		<enchant_grade_value item_grade="5" cost_grade="5" />
+		<enchant_grade_value item_grade="6" cost_grade="5" />
+		<enchant_grade_value item_grade="7" cost_grade="5" />
+		<enchant_grade_value item_grade="8" cost_grade="8" />
+		<enchant_grade_value item_grade="9" cost_grade="8" />
+		<enchant_grade_value item_grade="10" cost_grade="8" />
+		<enchant_grade_value item_grade="11" cost_grade="11" />
+		<enchant_grade_value item_grade="12" cost_grade="11" />
+		<enchant_grade_value item_grade="13" cost_grade="11" />
+		<enchant_grade_value item_grade="14" cost_grade="14" />
+		<enchant_grade_value item_grade="15" cost_grade="14" />
+	</enchant_grade>
+	<enchant_grade_change>
+		<enchant_grade_change_value item_type="190" item_grade="1" cost_grade="8" />
+		<enchant_grade_change_value item_type="190" item_grade="2" cost_grade="8" />
+		<enchant_grade_change_value item_type="190" item_grade="3" cost_grade="8" />
+	</enchant_grade_change>
+	<enchant_extend_grade>
+		<enchant_grade_value item_grade="1" cost_grade="1" />
+		<enchant_grade_value item_grade="2" cost_grade="1" />
+		<enchant_grade_value item_grade="3" cost_grade="1" />
+		<enchant_grade_value item_grade="4" cost_grade="4" />
+		<enchant_grade_value item_grade="5" cost_grade="5" />
+		<enchant_grade_value item_grade="6" cost_grade="5" />
+		<enchant_grade_value item_grade="7" cost_grade="5" />
+		<enchant_grade_value item_grade="8" cost_grade="8" />
+		<enchant_grade_value item_grade="9" cost_grade="8" />
+		<enchant_grade_value item_grade="10" cost_grade="8" />
+		<enchant_grade_value item_grade="11" cost_grade="11" />
+		<enchant_grade_value item_grade="12" cost_grade="11" />
+		<enchant_grade_value item_grade="13" cost_grade="11" />
+		<enchant_grade_value item_grade="14" cost_grade="14" />
+		<enchant_grade_value item_grade="15" cost_grade="14" />
+	</enchant_extend_grade>
+	<enchant_rate>
+		<enchant_rate_type type="0">
+			<enchant_rate_value level="0" rates="1000,0,0,0,0,0" points="0" />
+			<enchant_rate_value level="1" rates="1000,0,0,0,0,0" points="100" />
+			<enchant_rate_value level="2" rates="900,0,100,0,0,0" points="200" />
+			<enchant_rate_value level="3" rates="800,0,0,200,0,0" points="300" />
+			<enchant_rate_value level="4" rates="700,0,0,300,0,0" points="400" />
+			<enchant_rate_value level="5" rates="610,0,0,390,0,0" points="500" />
+			<enchant_rate_value level="6" rates="500,0,0,210,290,0" points="600" />
+			<enchant_rate_value level="7" rates="400,0,0,200,400,0" points="700" />
+			<enchant_rate_value level="8" rates="380,0,0,190,430,0" points="800" />
+			<enchant_rate_value level="9" rates="340,0,0,160,500,0" points="900" />
+			<enchant_rate_value level="10" rates="300,0,0,160,540,0" points="1000" />
+			<enchant_rate_value level="11" rates="300,0,0,160,540,0" points="1100" />
+			<enchant_rate_value level="12" rates="300,0,0,140,560,0" points="1200" />
+			<enchant_rate_value level="13" rates="300,0,0,140,560,0" points="1300" />
+			<enchant_rate_value level="14" rates="300,0,0,140,560,0" points="1400" />
+			<enchant_rate_value level="15" rates="350,0,650,0,0,0" points="1000" />
+			<enchant_rate_value level="16" rates="250,0,540,210,0,0" points="1050" />
+			<enchant_rate_value level="17" rates="200,0,500,200,100,0" points="1100" />
+			<enchant_rate_value level="18" rates="100,0,500,200,100,100" points="1150" />
+			<enchant_rate_value level="19" rates="50,0,0,430,310,210" points="1200" />
+		</enchant_rate_type>
+		<enchant_rate_type type="1">
+			<enchant_rate_value level="0" rates="0,1000,0,0,0,0" points="0" />
+			<enchant_rate_value level="1" rates="0,1000,0,0,0,0" points="100" />
+			<enchant_rate_value level="2" rates="1000,0,0,0,0,0" points="200" />
+			<enchant_rate_value level="3" rates="1000,0,0,0,0,0" points="300" />
+			<enchant_rate_value level="4" rates="1000,0,0,0,0,0" points="400" />
+			<enchant_rate_value level="5" rates="1000,0,0,0,0,0" points="500" />
+			<enchant_rate_value level="6" rates="504,0,496,0,0,0" points="600" />
+			<enchant_rate_value level="7" rates="404,0,596,0,0,0" points="700" />
+			<enchant_rate_value level="8" rates="385,0,195,420,0,0" points="800" />
+			<enchant_rate_value level="9" rates="345,0,165,490,0,0" points="900" />
+			<enchant_rate_value level="10" rates="306,0,166,528,0,0" points="1000" />
+			<enchant_rate_value level="11" rates="307,0,167,526,0,0" points="1100" />
+			<enchant_rate_value level="12" rates="308,0,148,544,0,0" points="1200" />
+			<enchant_rate_value level="13" rates="309,0,149,542,0,0" points="1300" />
+			<enchant_rate_value level="14" rates="310,0,0,690,0,0" points="1400" />
+			<enchant_rate_value level="15" rates="750,0,250,0,0,0" points="1000" />
+			<enchant_rate_value level="16" rates="690,0,210,100,0,0" points="1050" />
+			<enchant_rate_value level="17" rates="440,0,0,560,0,0" points="1100" />
+			<enchant_rate_value level="18" rates="250,0,0,750,0,0" points="1150" />
+			<enchant_rate_value level="19" rates="200,0,0,800,0,0" points="1200" />
+		</enchant_rate_type>
+		<enchant_rate_type type="2">
+			<enchant_rate_value level="0" rates="0,1000,0,0,0,0" points="0" />
+			<enchant_rate_value level="1" rates="0,1000,0,0,0,0" points="100" />
+			<enchant_rate_value level="2" rates="980,20,0,0,0,0" points="200" />
+			<enchant_rate_value level="3" rates="980,20,0,0,0,0" points="300" />
+			<enchant_rate_value level="4" rates="970,30,0,0,0,0" points="400" />
+			<enchant_rate_value level="5" rates="970,30,0,0,0,0" points="500" />
+			<enchant_rate_value level="6" rates="500,40,460,0,0,0" points="600" />
+			<enchant_rate_value level="7" rates="400,40,560,0,0,0" points="700" />
+			<enchant_rate_value level="8" rates="380,50,190,380,0,0" points="800" />
+			<enchant_rate_value level="9" rates="340,50,200,410,0,0" points="900" />
+			<enchant_rate_value level="10" rates="300,60,210,430,0,0" points="1000" />
+			<enchant_rate_value level="11" rates="300,70,210,420,0,0" points="1100" />
+			<enchant_rate_value level="12" rates="300,80,210,410,0,0" points="1200" />
+			<enchant_rate_value level="13" rates="300,90,200,410,0,0" points="1300" />
+			<enchant_rate_value level="14" rates="300,100,0,600,0,0" points="1400" />
+			<enchant_rate_value level="15" rates="500,400,100,0,0,0" points="1000" />
+			<enchant_rate_value level="16" rates="495,300,130,75,0,0" points="1050" />
+			<enchant_rate_value level="17" rates="360,100,360,180,0" points="1100" />
+			<enchant_rate_value level="18" rates="200,50,500,250,0,0" points="1150" />
+			<enchant_rate_value level="19" rates="50,0,0,430,310,210" points="1200" />
+		</enchant_rate_type>
+		<enchant_rate_type type="3">
+			<enchant_rate_value level="0" rates="1000,0,0,0,0,0" points="0" />
+			<enchant_rate_value level="1" rates="1000,0,0,0,0,0" points="100" />
+			<enchant_rate_value level="2" rates="1000,0,0,0,0,0" points="200" />
+			<enchant_rate_value level="3" rates="1000,0,0,0,0,0" points="300" />
+			<enchant_rate_value level="4" rates="1000,0,0,0,0,0" points="400" />
+			<enchant_rate_value level="5" rates="1000,0,0,0,0,0" points="500" />
+			<enchant_rate_value level="6" rates="1000,0,0,0,0,0" points="600" />
+			<enchant_rate_value level="7" rates="1000,0,0,0,0,0" points="700" />
+			<enchant_rate_value level="8" rates="1000,0,0,0,0,0" points="800" />
+			<enchant_rate_value level="9" rates="1000,0,0,0,0,0" points="900" />
+			<enchant_rate_value level="10" rates="1000,0,0,0,0,0" points="1000" />
+			<enchant_rate_value level="11" rates="1000,0,0,0,0,0" points="1100" />
+			<enchant_rate_value level="12" rates="1000,0,0,0,0,0" points="1200" />
+			<enchant_rate_value level="13" rates="1000,0,0,0,0,0" points="1300" />
+			<enchant_rate_value level="14" rates="1000,0,0,0,0,0" points="1400" />
+			<enchant_rate_value level="15" rates="1000,0,0,0,0,0" points="1000" />
+			<enchant_rate_value level="16" rates="1000,0,0,0,0,0" points="1050" />
+			<enchant_rate_value level="17" rates="1000,0,0,0,0,0" points="1100" />
+			<enchant_rate_value level="18" rates="1000,0,0,0,0,0" points="1150" />
+			<enchant_rate_value level="19" rates="1000,0,0,0,0,0" points="1200" />
+		</enchant_rate_type>
+	</enchant_rate>
 </enchant>

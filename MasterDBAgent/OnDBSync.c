@@ -184,6 +184,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 				"SyncCostumeWarehouse",
 				DB_INPUT_INT32(Packet->AccountID),
 				DB_INPUT_INT32(Info->SlotCount),
+				DB_INPUT_INT32(Info->MillagePoints),
 				DB_INPUT_DATA(Slots, SlotsLength),
 				DB_PARAM_END
 			)) {
@@ -682,6 +683,21 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 			}
 		}
 
+		if (Packet->SyncMask.UpgradeInfo) {
+			ReadMemory(struct _RTCharacterUpgradeInfo, Info, 1);
+
+			if (!DatabaseCallProcedure(
+				Context->Database,
+				"SyncUpgrade",
+				DB_INPUT_INT32(Packet->CharacterIndex),
+				DB_INPUT_INT32(Info->UpgradePoints),
+				DB_INPUT_UINT64(Info->UpgradePointTimestamp),
+				DB_PARAM_END
+			)) {
+				Response->SyncMaskFailed.UpgradeInfo = true;
+			}
+		}
+
 		if (Packet->SyncMask.VehicleInventoryInfo) {
 			ReadMemory(struct _RTVehicleInventoryInfo, Info, 1);
 			ReadMemory(struct _RTItemSlot, Slots, Info->SlotCount);
@@ -947,7 +963,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 
 			if (!DatabaseCallProcedure(
 				Context->Database,
-				"SyncRecovery",
+				"SyncPreset",
 				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_DATA(&Info->Configurations[0], sizeof(Info->Configurations)),
 				DB_INPUT_INT32(Info->ActiveEquipmentPresetIndex),
@@ -981,7 +997,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 
 			if (!DatabaseCallProcedure(
 				Context->Database,
-				"SyncAuraMastery",
+				"SyncSecretShop",
 				DB_INPUT_INT32(Packet->CharacterIndex),
 				DB_INPUT_UINT8(Info->RefreshCost),
 				DB_INPUT_DATA(&Info->Slots[0], sizeof(Info->Slots)),

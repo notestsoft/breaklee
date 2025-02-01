@@ -513,7 +513,7 @@ RTWorldContextRef RTRuntimeOpenDungeon(
         Member.IsEventDungeon = false;
         Member.WorldServerIndex = 0;
         Member.BattleStyleIndex = Character->Data.StyleInfo.Style.BattleStyle | (Character->Data.StyleInfo.Style.ExtendedBattleStyle << 3);
-        Member.WorldIndex = Character->Data.Info.WorldIndex;
+        Member.OnlineStatus = 1;
         Member.OverlordLevel = Character->Data.OverlordMasteryInfo.Info.Level;
         Member.MythRebirth = Character->Data.MythMasteryInfo.Info.Rebirth;
         Member.MythHolyPower = Character->Data.MythMasteryInfo.Info.HolyPower;

@@ -151,7 +151,7 @@ Void RTOptionPoolManagerAddForceOptionSlot(
     Float64 Rate
 ) {
     RTOptionPoolRef OptionPool = RTOptionPoolManagerGetOptionPool(OptionPoolManager, PoolIndex);
-    RTOptionPoolValueRef Value = (RTOptionPoolValueRef)ArrayAppendUninitializedElement(OptionPool->ForceSlots);
+    RTOptionPoolValueRef Value = (RTOptionPoolValueRef)ArrayAppendUninitializedElement(OptionPool->ForceOptionSlots);
     Value->Value = Count;
     Value->Rate = (Int32)(Rate / 100.0 * INT32_MAX);
 }
@@ -218,18 +218,27 @@ Void RTOptionPoolManagerCalculateOptions(
 
     RTItemOptions ItemOptions = { .Serial = DropResult->ItemOptions };
 
-    RTOptionPoolValueRef EpicLevelValue = RTCalculateOptionPoolValue(OptionPool->EpicLevels, &Seed);
-    if (EpicLevelValue && EpicLevelValue->Value > 0) {
-        Int OptionIndex = EpicLevelValue->Value << 16 | ItemData->ItemType;
-        ArrayRef EpicOptions = (ArrayRef)DictionaryLookup(OptionPool->EpicOptions, &OptionIndex);
-        RTOptionPoolValueRef EpicOptionValue = RTCalculateOptionPoolValue(EpicOptions, &Seed);
-        if (EpicOptionValue && EpicOptionValue->Value > 0) {
-            RTItemOptionSlot Slot = {
-                .ForceIndex = EpicOptionValue->Value,
-                .ForceLevel = EpicLevelValue->Value,
-                .IsEpic = true
-            };
-            RTItemOptionAppendSlot(&ItemOptions, Slot, DropResult->ItemID.IsAccountBinding);
+    RTDataUniqueOptionPoolItemRef UniqueOptionPool = RTRuntimeDataUniqueOptionPoolItemGet(
+        Runtime->Context, 
+        DropResult->ItemID.Serial & RUNTIME_ITEM_MASK_INDEX
+    );
+    Int32 EpicOptionCount = (UniqueOptionPool) ? 3 : 1;
+    for (Int Index = 0; Index < EpicOptionCount; Index += 1) {
+        RTOptionPoolValueRef EpicLevelValue = RTCalculateOptionPoolValue(OptionPool->EpicLevels, &Seed);
+        if (EpicLevelValue && EpicLevelValue->Value > 0) {
+            Int OptionIndex = EpicLevelValue->Value << 16 | ItemData->ItemType;
+            ArrayRef EpicOptions = (ArrayRef)DictionaryLookup(OptionPool->EpicOptions, &OptionIndex);
+            if (!EpicOptions) continue;
+
+            RTOptionPoolValueRef EpicOptionValue = RTCalculateOptionPoolValue(EpicOptions, &Seed);
+            if (EpicOptionValue && EpicOptionValue->Value > 0) {
+                RTItemOptionSlot Slot = {
+                    .ForceIndex = EpicOptionValue->Value,
+                    .ForceLevel = EpicLevelValue->Value,
+                    .IsEpic = true
+                };
+                RTItemOptionAppendSlot(&ItemOptions, Slot, DropResult->ItemID.IsAccountBinding);
+            }
         }
     }
 
@@ -243,6 +252,8 @@ Void RTOptionPoolManagerCalculateOptions(
         for (Int SlotIndex = 0; SlotIndex < ForceOptionSlotValue->Value; SlotIndex += 1) {
             Int OptionIndex = ItemData->ItemType;
             ArrayRef ForceOptions = (ArrayRef)DictionaryLookup(OptionPool->ForceOptions, &OptionIndex);
+            if (!ForceOptions) continue;
+
             RTOptionPoolValueRef ForceOptionValue = RTCalculateOptionPoolValue(ForceOptions, &Seed);
             if (ForceOptionValue && ForceOptionValue->Value > 0) {
                 RTItemOptionSlot Slot = {

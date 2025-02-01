@@ -342,17 +342,16 @@ Int64 RTInventoryGetConsumableItemCount(
 	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, Inventory, InventorySlotIndex);
 	if (!ItemSlot) return 0;
 	if ((ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX) != RequiredItemID) return 0;
-	if (RequiredItemOptions > 0 && ItemSlot->ItemOptions != RequiredItemOptions) return 0;
 
 	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
 	if (!ItemData) return 0;
 
+	UInt64 ItemOptionsOffset = RTItemDataGetItemOptionsOffset(ItemData);
 	UInt64 StackSizeMask = RTItemDataGetStackSizeMask(ItemData);
-	if (StackSizeMask > 0) {
-		return (Int)(ItemSlot->ItemOptions & StackSizeMask);
-	}
+	UInt64 ItemOptions = (ItemSlot->ItemOptions & ~StackSizeMask) >> ItemOptionsOffset;
+	if (RequiredItemOptions > 0 && RequiredItemOptions != ItemOptions) return 0;
 
-	return 1;
+	return (StackSizeMask > 0) ? (Int)(ItemSlot->ItemOptions & StackSizeMask) : 1;
 }
 
 Int64 RTInventoryConsumeItem(
@@ -366,7 +365,7 @@ Int64 RTInventoryConsumeItem(
 	RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, Inventory, InventorySlotIndex);
 	assert(ItemSlot);
 	assert((ItemSlot->Item.ID & RUNTIME_ITEM_MASK_INDEX) == RequiredItemID);
-	assert(RequiredItemOptions == 0 || ItemSlot->ItemOptions == RequiredItemOptions);
+	//	assert(RequiredItemOptions == 0 || ItemSlot->ItemOptions == RequiredItemOptions);
 
 	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
 	assert(ItemData);

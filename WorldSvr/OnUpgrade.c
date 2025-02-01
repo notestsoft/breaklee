@@ -340,14 +340,16 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
     ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
 
 	Int32 Seed = (Int32)PlatformGetTickCount();
-	Int32 UpgradePoint = Client->UpgradePoint;
+	Int32 UpgradePoints = RTCharacterGetUpgradePoints(Runtime, Character);
 	Int32 Result = RTItemUpgradeNormal(
 		Runtime,
 		ItemSlot,
 		UpgradeType,
-		&UpgradePoint,
+		&UpgradePoints,
 		&Seed
 	);
+
+	RTCharacterSetUpgradePoints(Runtime, Character, UpgradePoints);
 
 	Int32 ConsumedSafeCount = 0;
 	if (Result != RUNTIME_UPGRADE_RESULT_UPGRADE_1 &&
@@ -382,12 +384,10 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_ITEM_LEVEL) {
 		}
 	}
 
-	Client->UpgradePoint = UpgradePoint;
 	Character->SyncMask.InventoryInfo = true;
 
 	S2C_DATA_UPDATE_UPGRADE_POINTS* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, UPDATE_UPGRADE_POINTS);
-	Notification->UpgradePoint = Client->UpgradePoint;
-	Notification->Timestamp = (UInt32)GetTimestampMs() + 1000 * 60 * 60;
+	Notification->UpgradeInfo = Character->Data.UpgradeInfo;
 	SocketSend(Socket, Connection, Notification);
 
 	S2C_DATA_UPGRADE_ITEM_LEVEL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, UPGRADE_ITEM_LEVEL);
@@ -639,15 +639,17 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_CHAOS_LEVEL) {
 	ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
 
 	Int32 Seed = (Int32)PlatformGetTickCount();
-	Int32 UpgradePoint = Client->UpgradePoint;
+	Int32 UpgradePoints = RTCharacterGetUpgradePoints(Runtime, Character);
 	Bool DestroyItem = false;
 	Int32 Result = RTItemUpgradeChaos(
 		Runtime,
 		ItemSlot,
-		&UpgradePoint,
+		&UpgradePoints,
 		&Seed,
 		&DestroyItem
 	);
+
+	RTCharacterSetUpgradePoints(Runtime, Character, UpgradePoints);
 
 	Int32 ConsumedSafeCount = 0;
 	if (Result != RUNTIME_CHAOS_UPGRADE_RESULT_UPGRADE) {
@@ -700,12 +702,10 @@ CLIENT_PROCEDURE_BINDING(UPGRADE_CHAOS_LEVEL) {
 		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, Packet->InventorySlotIndex);
 	}
 
-	Client->UpgradePoint = UpgradePoint;
 	Character->SyncMask.InventoryInfo = true;
 
 	S2C_DATA_UPDATE_UPGRADE_POINTS* Notification = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, UPDATE_UPGRADE_POINTS);
-	Notification->UpgradePoint = Client->UpgradePoint;
-	Notification->Timestamp = (UInt32)GetTimestampMs() + 1000 * 60 * 60;
+	Notification->UpgradeInfo = Character->Data.UpgradeInfo;
 	SocketSend(Socket, Connection, Notification);
 
 	S2C_DATA_UPGRADE_CHAOS_LEVEL* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, UPGRADE_CHAOS_LEVEL);

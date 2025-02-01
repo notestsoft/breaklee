@@ -270,7 +270,7 @@ IPC_PROTOCOL_STRUCT(IPC_D2W_DATA_INITIALIZE_CHARACTER,
 	struct _RTCraftInfo CraftInfo;
 	struct _RTRequestCraftInfo RequestCraftInfo;
 	struct _RTCooldownInfo CooldownInfo;
-	struct _RTUpgradeInfo UpgradeInfo;
+	struct _RTCharacterUpgradeInfo UpgradeInfo;
 	struct _RTGoldMeritMasteryInfo GoldMeritMasteryInfo;
 	struct _RTPlatinumMeritMasteryInfo PlatinumMeritMasteryInfo;
 	struct _RTDiamondMeritMasteryInfo DiamondMeritMasteryInfo;
@@ -736,6 +736,38 @@ IPC_PROTOCOL(D2W, AUCTION_UNREGISTER_ITEM,
 	UInt16 InventorySlotIndex[0];
 )
 
+IPC_PROTOCOL(W2D, GET_CASH_INVENTORY,
+	Int32 AccountID;
+)
+
+IPC_PROTOCOL_STRUCT(IPC_DATA_GET_CASH_INVENTORY_SLOT,
+	Int32 TransactionID;
+	UInt64 ItemID;
+	UInt64 ItemOptions;
+	UInt8 ItemDurationIndex;
+)
+
+IPC_PROTOCOL(D2W, GET_CASH_INVENTORY,
+	UInt8 Result;
+	Int16 ItemCount;
+	IPC_DATA_GET_CASH_INVENTORY_SLOT ItemSlots[0];
+)
+
+IPC_PROTOCOL(W2D, CASH_INVENTORY_RECEIVE_ITEM,
+	Int32 AccountID;
+	Int32 TransactionID;
+	UInt16 InventorySlotIndex;
+)
+
+IPC_PROTOCOL(D2W, CASH_INVENTORY_RECEIVE_ITEM,
+	Int32 TransactionID;
+	UInt64 ItemID;
+	UInt64 ItemOptions;
+	UInt16 InventorySlotIndex;
+	RTItemDuration ItemDuration;
+	UInt32 Unknown1;
+)
+
 IPC_PROTOCOL_STRUCT(IPC_W2D_DATA_AUCTION_UPDATE_ITEM_INCREASE,
 	UInt16 InventorySlotCount;
 	struct _RTInventoryInfo InventoryInfo;
@@ -832,6 +864,19 @@ IPC_PROTOCOL(L2M, FORCE_DISCONNECT,
 IPC_PROTOCOL(M2N, FORCE_DISCONNECT,
 	Int SourceConnectionID;
 	Int32 AccountID;
+)
+
+IPC_PROTOCOL(W2D, GUILD_CREATE,
+	Int32 CharacterIndex;
+	Char GuildName[MAX_GUILDNAME_LENGTH + 1];
+)
+
+IPC_PROTOCOL(D2W, GUILD_CREATE,
+	Int32 Result;
+	Int32 Unknown1;
+	Char GuildName[MAX_GUILDNAME_LENGTH + 1];
+	Int32 GuildIndex;
+	Int64 GuildCurrency;
 )
 
 #undef IPC_PROTOCOL_ENUM

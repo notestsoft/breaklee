@@ -23,6 +23,7 @@ struct _RTAppliedCostumeSlot {
 
 struct _RTCostumeWarehouseInfo {
     Int32 SlotCount;
+    Int32 MillagePoints;
 };
 
 struct _RTCharacterCostumeWarehouseInfo {
@@ -31,7 +32,6 @@ struct _RTCharacterCostumeWarehouseInfo {
 };
 
 struct _RTCostumeInfo {
-    Int32 Unknown1;
     Int32 PageCount;
     Int32 AppliedSlotCount;
     Int32 ActivePageIndex;
@@ -44,5 +44,36 @@ struct _RTCharacterCostumeInfo {
 };
 
 #pragma pack(pop)
+
+Bool RTCharacterIsCostumeUnlocked(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt32 CostumeItemID
+);
+
+Bool RTCharacterUnlockCostume(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt32 CostumeItemID
+);
+
+RTCostumePageRef RTCharacterGetCostumePage(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 PresetIndex
+);
+
+Bool RTCharacterSetCostumePreset(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 PresetIndex,
+    UInt32* CostumeSlots
+);
+
+Bool RTCharacterSetActiveCostumePreset(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 PresetIndex
+);
 
 EXTERN_C_END

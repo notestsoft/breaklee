@@ -137,6 +137,19 @@ RUNTIME_DATA_TYPE_BEGIN(ForceCodeRateBase, "cabal.force_core.fcore_success_rate"
 RUNTIME_DATA_TYPE_END(ForceCodeRateBase)
 RUNTIME_DATA_TYPE_INDEX_SINGLE(ForceCodeRateBase)
 
+RUNTIME_DATA_TYPE_BEGIN(UniqueOptionPoolItem, "cabal.Unique_option_pool.unique_item")
+	RUNTIME_DATA_PROPERTY(UInt64, ItemID, "item_index")
+	RUNTIME_DATA_TYPE_BEGIN_CHILD(UniqueOptionPoolItemForce, "force_code")
+		RUNTIME_DATA_PROPERTY(Int32, ForceEffectIndex, "force_code")
+		RUNTIME_DATA_TYPE_BEGIN_CHILD(UniqueOptionPoolItemForceValue, "unique_value")
+			RUNTIME_DATA_PROPERTY(Int32, Index, "Order")
+			RUNTIME_DATA_PROPERTY(Int32, ForceValue, "Value")
+			RUNTIME_DATA_PROPERTY(Int32, ForceValueType, "Value_type")
+		RUNTIME_DATA_TYPE_END_CHILD(UniqueOptionPoolItemForceValue)
+	RUNTIME_DATA_TYPE_END_CHILD(UniqueOptionPoolItemForce)
+RUNTIME_DATA_TYPE_END(UniqueOptionPoolItem)
+RUNTIME_DATA_TYPE_INDEX(UniqueOptionPoolItem, UInt64, ItemID)
+
 RUNTIME_DATA_FILE_END
 
 RUNTIME_DATA_FILE_BEGIN(DIR_PATH(Upgrade, EpicOptionPool.xml))

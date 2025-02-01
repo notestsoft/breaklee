@@ -480,6 +480,7 @@ Void RTCharacterInitialize(
 		RUNTIME_WORLD_TILE_WALL
 	);
 	RTCharacterInitializeCooldowns(Runtime, Character);
+	RTCharacterInitializeSecretShop(Runtime, Character);
 	RTCharacterUpdateGiftBox(Runtime, Character);
 }
 
@@ -532,6 +533,7 @@ Void RTCharacterUpdate(
 	RTCharacterUpdateMeritMastery(Runtime, Character, false);
 	RTCharacterUpdateBuffs(Runtime, Character, false);
 	RTCharacterUpdateCooldowns(Runtime, Character, false);
+	RTCharacterUpdateSecretShop(Runtime, Character, false);
 }
 
 Bool RTCharacterIsAlive(

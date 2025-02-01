@@ -9,18 +9,17 @@
 //       else everything will be fucked up due to lost packets
 
 #define C2S_COMMAND(__NAME__, __COMMAND__)                                                                                       \
-Void SERVER_PROC_ ## __NAME__(                                                                                                   \
-    ServerRef Server,                                                                                                            \
-    Void *ServerContext,                                                                                                         \
-    SocketRef Socket,                                                                                                            \
-    SocketConnectionRef Connection,                                                                                              \
-    Void *ConnectionContext,                                                                                                     \
-    Void *Packet                                                                                                                 \
-) {                                                                                                                              \
-    ServerContextRef Context = (ServerContextRef)ServerContext;                                                                  \
-    ClientContextRef Client = (ClientContextRef)ConnectionContext;                                                               \
-    RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Client->CharacterIndex);        \
-    PROC_ ## __NAME__(Server, Context, Socket, Connection, Client, Context->Runtime, Character, (C2S_DATA_ ## __NAME__*)Packet); \
+Void SERVER_PROC_ ## __NAME__(                                                                      \
+    ServerRef Server,                                                                               \
+    Void *ServerContext,                                                                            \
+    SocketRef Socket,                                                                               \
+    SocketConnectionRef Connection,                                                                 \
+    Void *ConnectionContext,                                                                        \
+    Void *Packet                                                                                    \
+) {                                                                                                 \
+    ServerContextRef Context = (ServerContextRef)ServerContext;                                     \
+    ClientContextRef Client = (ClientContextRef)ConnectionContext;                                  \
+    PROC_ ## __NAME__(Server, Context, Socket, Connection, Client, (C2S_DATA_ ## __NAME__*)Packet); \
 }
 #include "ClientCommands.h"
 

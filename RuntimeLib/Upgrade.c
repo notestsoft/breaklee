@@ -1,6 +1,36 @@
 #include "Runtime.h"
 #include "Upgrade.h"
 
+Int32 RTCharacterGetUpgradePoints(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+) {
+    Timestamp CurrentTimestamp = GetTimestampMs();
+    // TODO: Add a reset timer for resetting instead
+    if (Character->Data.UpgradeInfo.UpgradePointTimestamp <= CurrentTimestamp &&
+        Character->Data.UpgradeInfo.UpgradePoints > 0) {
+        Character->Data.UpgradeInfo.UpgradePoints = 0;
+        Character->Data.UpgradeInfo.UpgradePointTimestamp = 0;
+        Character->SyncMask.UpgradeInfo = true;
+        return 0;
+    }
+
+    return Character->Data.UpgradeInfo.UpgradePoints;
+}
+
+Void RTCharacterSetUpgradePoints(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 UpgradePoints
+) {
+    if (UpgradePoints == Character->Data.UpgradeInfo.UpgradePoints) return;
+
+    Character->Data.UpgradeInfo.UpgradePoints = UpgradePoints;
+    Character->Data.UpgradeInfo.UpgradePointTimestamp = GetTimestampMs();
+    if (UpgradePoints > 0) Character->Data.UpgradeInfo.UpgradePointTimestamp += Runtime->Config.UpgradePointDuration;
+    Character->SyncMask.UpgradeInfo = true;
+}
+
 Int32 RTItemUpgradeNormal(
     RTRuntimeRef Runtime,
     RTItemSlotRef Item,
@@ -46,31 +76,27 @@ Int32 RTItemUpgradeNormal(
 
     CurrentRate += UpgradeRateValue->Rates[RUNTIME_UPGRADE_RATE_TYPE_DOWNGRADE_0];
     if (Value < CurrentRate) {
-        // TODO: Calculate the item upgrade level based point addition
-        *UpgradePoint += Item->Item.UpgradeLevel * 100;
+        *UpgradePoint += UpgradeRateValue->UpgradePoints;
         return RUNTIME_UPGRADE_RESULT_DOWNGRADE_0;
     }
 
     CurrentRate += UpgradeRateValue->Rates[RUNTIME_UPGRADE_RATE_TYPE_DOWNGRADE_1];
     if (Value < CurrentRate) {
-        // TODO: Calculate the item upgrade level based point addition
-        *UpgradePoint += Item->Item.UpgradeLevel * 100;
+        *UpgradePoint += UpgradeRateValue->UpgradePoints;
         Item->Item.UpgradeLevel -= 1;
         return RUNTIME_UPGRADE_RESULT_DOWNGRADE_1;
     }
 
     CurrentRate += UpgradeRateValue->Rates[RUNTIME_UPGRADE_RATE_TYPE_DOWNGRADE_2];
     if (Value < CurrentRate) {
-        // TODO: Calculate the item upgrade level based point addition
-        *UpgradePoint += Item->Item.UpgradeLevel * 100;
+        *UpgradePoint += UpgradeRateValue->UpgradePoints;
         Item->Item.UpgradeLevel -= 2;
         return RUNTIME_UPGRADE_RESULT_DOWNGRADE_2;
     }
 
     CurrentRate += UpgradeRateValue->Rates[RUNTIME_UPGRADE_RATE_TYPE_DOWNGRADE_RESET];
     if (Value <= CurrentRate) {
-        // TODO: Calculate the item upgrade level based point addition
-        *UpgradePoint += Item->Item.UpgradeLevel * 100;
+        *UpgradePoint += UpgradeRateValue->UpgradePoints;
         Item->Item.UpgradeLevel -= 3;
         return RUNTIME_UPGRADE_RESULT_DOWNGRADE_3;
     }
@@ -104,7 +130,7 @@ Int32 RTItemUpgradeChaos(
     for (Int Index = 0; Index < RUNTIME_DATA_UPGRADE_RATE_VALUE_COUNT; Index += 1) {
         TotalRate += UpgradeRateValue->Rates[Index];
     }
-
+    
     /*
     Int32 UpgradePointRate = 3000 * (*UpgradePoint) / (3000 + (*UpgradePoint));
     TotalRate += UpgradePointRate;
@@ -124,8 +150,7 @@ Int32 RTItemUpgradeChaos(
 
     CurrentRate += UpgradeRateValue->Rates[RUNTIME_CHAOS_UPGRADE_RATE_TYPE_DOWNGRADE_RESET];
     if (Value < CurrentRate) {
-        // TODO: Calculate the item upgrade level based point addition
-        *UpgradePoint += Item->Item.UpgradeLevel * 100;
+        *UpgradePoint += UpgradeRateValue->UpgradePoints;
 
         if (UpgradeMain->CheckLevel > 0) {
             Item->Item.UpgradeLevel = 0;
@@ -139,31 +164,27 @@ Int32 RTItemUpgradeChaos(
 
     CurrentRate += UpgradeRateValue->Rates[RUNTIME_CHAOS_UPGRADE_RATE_TYPE_DOWNGRADE_0];
     if (Value < CurrentRate) {
-        // TODO: Calculate the item upgrade level based point addition
-        *UpgradePoint += Item->Item.UpgradeLevel * 100;
+        *UpgradePoint += UpgradeRateValue->UpgradePoints;
         return RUNTIME_CHAOS_UPGRADE_RESULT_DOWNGRADE_0;
     }
 
     CurrentRate += UpgradeRateValue->Rates[RUNTIME_CHAOS_UPGRADE_RATE_TYPE_DOWNGRADE_1];
     if (Value < CurrentRate) {
-        // TODO: Calculate the item upgrade level based point addition
-        *UpgradePoint += Item->Item.UpgradeLevel * 100;
+        *UpgradePoint += UpgradeRateValue->UpgradePoints;
         Item->Item.UpgradeLevel -= 1;
         return RUNTIME_CHAOS_UPGRADE_RESULT_DOWNGRADE_1;
     }
 
     CurrentRate += UpgradeRateValue->Rates[RUNTIME_CHAOS_UPGRADE_RATE_TYPE_DOWNGRADE_2];
     if (Value < CurrentRate) {
-        // TODO: Calculate the item upgrade level based point addition
-        *UpgradePoint += Item->Item.UpgradeLevel * 100;
+        *UpgradePoint += UpgradeRateValue->UpgradePoints;
         Item->Item.UpgradeLevel -= 2;
         return RUNTIME_CHAOS_UPGRADE_RESULT_DOWNGRADE_2;
     }
 
     CurrentRate += UpgradeRateValue->Rates[RUNTIME_CHAOS_UPGRADE_RATE_TYPE_DOWNGRADE_3];
     if (Value <= CurrentRate) {
-        // TODO: Calculate the item upgrade level based point addition
-        *UpgradePoint += Item->Item.UpgradeLevel * 100;
+        *UpgradePoint += UpgradeRateValue->UpgradePoints;
         Item->Item.UpgradeLevel -= 3;
         return RUNTIME_CHAOS_UPGRADE_RESULT_DOWNGRADE_3;
     }

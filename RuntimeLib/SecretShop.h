@@ -21,4 +21,15 @@ struct _RTCharacterSecretShopData {
 
 #pragma pack(pop)
 
+Void RTCharacterInitializeSecretShop(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Void RTCharacterUpdateSecretShop(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Bool ForceUpdate
+);
+
 EXTERN_C_END
