@@ -24,7 +24,7 @@ struct _RTMythMasteryInfo {
     UInt64 Exp;
     Int32 Points;
     Int32 UnlockedPageCount;
-    UInt8 Unknown1[13]; // TODO: Check what this data means, by putting random values!
+    UInt8 Unknown[13];
     UInt8 MasterySlotCount;
     Int32 StigmaGrade;
     Int32 StigmaExp;
@@ -33,13 +33,10 @@ struct _RTMythMasteryInfo {
 struct _RTCharacterMythMasteryInfo {
     struct _RTMythMasteryInfo Info;
     struct _RTMythMasterySlot Slots[RUNTIME_CHARACTER_MAX_MYTH_SLOT_COUNT];
+    struct _RTMythMasterySlot TemporarySlot; // This must be in the unknown[13] but idk
 };
 
 #pragma pack(pop)
-
-Float32 GetMythSlotValueChance(
-    RTDataMythMasterySlotRef MythSlot
-);
 
 Void RTCharacterMythMasteryEnable(
     RTRuntimeRef Runtime,
@@ -115,6 +112,13 @@ RTMythMasterySlotRef RTCharacterMythMasteryGetSlot(
     Int32 SlotIndex
 );
 
+RTMythMasterySlotRef RTCharacterMythMasteryGetOrCreateSlot(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 MasteryIndex,
+    Int32 SlotIndex
+);
+
 Void RTCharacterMythMasterySetSlot(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
@@ -127,11 +131,17 @@ Void RTCharacterMythMasterySetSlot(
     Int32 ForceValueType
 );
 
-RTMythMasterySlotRef RTCharacterMythMasteryRollSlot(
+Bool RTCharacterMythMasteryRollSlot(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    RTMythMasterySlotRef MasterySlot
+);
+
+Bool RTCharacterMythMasteryCanOpenLockGroup(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     Int32 MasteryIndex,
-    Int32 SlotIndex
+    Int32 LockGroup
 );
 
 Bool RTCharacterMythMasteryCanOpenLockGroup(

@@ -8,16 +8,18 @@
 CLIENT_PROCEDURE_BINDING(MYTH_ROLL_SLOT) {
 	if (!Character || Character->Data.MythMasteryInfo.Info.Level < 1) goto error;
 
-	RTMythMasterySlotRef MasterySlot = RTCharacterMythMasteryRollSlot(Runtime, Character, Packet->MasteryIndex, Packet->SlotIndex);
+	RTMythMasterySlotRef MasterySlot = RTCharacterMythMasteryGetOrCreateSlot(Runtime, Character, Packet->MasteryIndex, Packet->SlotIndex);
 	if (!MasterySlot) goto error;
+
+	Bool Success = RTCharacterMythMasteryRollSlot(Runtime, Character, MasterySlot);
 
 	S2C_DATA_MYTH_ROLL_SLOT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MYTH_ROLL_SLOT);
 	Response->MythPoints = Character->Data.MythMasteryInfo.Info.Points;
 	Response->HolyPower = Character->Data.MythMasteryInfo.Info.HolyPower;
-	memcpy(&Response->MasterySlot, MasterySlot, sizeof(struct _RTMythMasterySlot));
+	if (MasterySlot) memcpy(&Response->MasterySlot, MasterySlot, sizeof(struct _RTMythMasterySlot));
 	Response->StigmaGrade = Character->Data.MythMasteryInfo.Info.StigmaGrade;
 	Response->StigmaXP = Character->Data.MythMasteryInfo.Info.StigmaExp;
-	Response->ErrorCode = 0;
+	Response->ErrorCode = Success ? 0 : 1;
 	SocketSend(Socket, Connection, Response);
 	return;
 

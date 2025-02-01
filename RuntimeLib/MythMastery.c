@@ -3,37 +3,6 @@
 #include "Runtime.h"
 #include "NotificationProtocol.h"
 #include "NotificationManager.h"
-#include "NotificationProtocolDefinition.h"
-
-
-/*
-Rolls single option from the pool.
-
-params:
-- __POOL__ - pool to roll from.
-- __COUNT__ - number of options in the pool.
-- __GET_CHANCE__ - (*PoolItemType) -> Float32 - callback to get the chance of the option.
-- __RESULT_REF__ - pointer to the result.
-*/
-#define ROLL_POOL(__POOL__, __COUNT__, __GET_CHANCE__, __RESULT_REF__)    \
-    {                                                                     \
-        Float32 MaxRandomValue = 0;                                         \
-        for (Int Index = 0; Index < __COUNT__; Index += 1) {            \
-            MaxRandomValue += __GET_CHANCE__(&__POOL__[Index]);           \
-        }                                                                 \
-                                                                          \
-        Float32 RandomValue = RandomFloat(0, MaxRandomValue);        \
-        Float32 CumulativeChance = 0;                                       \
-                                                                          \
-        for (Int Index = 0; Index < __COUNT__; Index += 1) {            \
-            CumulativeChance += __GET_CHANCE__(&__POOL__[Index]);         \
-            if (RandomValue < CumulativeChance) {                         \
-                __RESULT_REF__ = &__POOL__[Index];                        \
-                break;                                                    \
-            }                                                             \
-        }                                                                 \
-    }
-
 
 Void RTCharacterMythMasteryEnable(
 	RTRuntimeRef Runtime,
@@ -366,6 +335,33 @@ RTMythMasterySlotRef RTCharacterMythMasteryGetSlot(
 	return NULL;
 }
 
+RTMythMasterySlotRef RTCharacterMythMasteryGetOrCreateSlot(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 MasteryIndex,
+	Int32 SlotIndex
+) {
+	if (Character->Data.MythMasteryInfo.Info.Level < 1) return NULL;
+
+	RTMythMasterySlotRef MasterySlot = RTCharacterMythMasteryGetSlot(Runtime, Character, MasteryIndex, SlotIndex);
+	if (MasterySlot) return MasterySlot;
+
+	RTDataMythSlotPageRef MasterySlotPage = RTRuntimeDataMythSlotPageGet(Runtime->Context, MasteryIndex);
+	if (!MasterySlotPage) return NULL;
+
+	RTDataMythSlotInfoRef MasterySlotInfo = RTRuntimeDataMythSlotInfoGet(MasterySlotPage, SlotIndex);
+	if (!MasterySlotInfo) return NULL;
+
+	assert(Character->Data.MythMasteryInfo.Info.MasterySlotCount <= RUNTIME_CHARACTER_MAX_MYTH_SLOT_COUNT);
+	MasterySlot = &Character->Data.MythMasteryInfo.Slots[Character->Data.MythMasteryInfo.Info.MasterySlotCount];
+	memset(MasterySlot, 0, sizeof(struct _RTMythMasterySlot));
+	MasterySlot->MasteryIndex = MasteryIndex;
+	MasterySlot->SlotIndex = SlotIndex;
+	Character->Data.MythMasteryInfo.Info.MasterySlotCount += 1;
+	Character->SyncMask.MythMasteryInfo = true;
+	return MasterySlot;
+}
+
 Void RTCharacterMythMasterySetSlot(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
@@ -396,59 +392,46 @@ Void RTCharacterMythMasterySetSlot(
 	Character->SyncMask.MythMasteryInfo = true;
 }
 
-RTMythMasterySlotRef RTCharacterMythMasteryRollSlot(
+Bool RTCharacterMythMasteryRollSlot(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
-	Int32 MasteryIndex,
-	Int32 SlotIndex
+	RTMythMasterySlotRef MasterySlot
 ) {
-	if (!Character || Character->Data.MythMasteryInfo.Info.Level == 0) {
-		return NULL;
-	}
+	if (Character->Data.MythMasteryInfo.Info.Level < 1) return false;
 
-	// all groups are currently in this pool, i don't know why
-	RTDataMythSlotGroupPoolRef MythSlotGroupPool = RTRuntimeDataMythSlotGroupPoolGet(Runtime->Context);
-	RTDataMythSlotGroupRef MythSlotGroup = NULL;
-
-	// loop all slot groups
-	for (Int SlotGroupIndex = 0; SlotGroupIndex < MythSlotGroupPool->MythSlotGroupCount; SlotGroupIndex++) {
-		RTDataMythSlotGroupRef SlotGroup = &MythSlotGroupPool->MythSlotGroupList[SlotGroupIndex];
-
-		// this group has our slot indexes
-		if (SlotGroup->MasteryIndex == MasteryIndex && SlotGroup->SlotIndex == SlotIndex) {
-			// pass along
-			MythSlotGroup = SlotGroup;
-			break;
-		}
-	}
-	if (!MythSlotGroup) return NULL;
-
-	// get the slot value group for our slot
-	RTDataMythSlotValuePoolRef MythSlotValuePool = RTRuntimeDataMythSlotValuePoolGet(Runtime->Context);
-	RTDataMythMasterySlotRef AvailableSlots[RUNTIME_CHARACTER_MAX_MYTH_SLOT_COUNT] = { 0 };
-
-	Int SlotsIndex = 0;
-	for (SlotsIndex = 0; SlotsIndex < Character->Data.MythMasteryInfo.Info.MasterySlotCount; SlotsIndex += 1) {
-		RTDataMythMasterySlotRef SlotValue = &MythSlotValuePool->MythMasterySlotList[SlotsIndex];
-		if (SlotValue->OptPoolID == MythSlotGroup->OptPoolID) {
-			AvailableSlots[SlotsIndex] = SlotValue;
-		}
-	}
-	// finally, roll the slot value from our proper slot group value pool
-	RTDataMythMasterySlotRef MythSlotValue = NULL;
-/*
-	ROLL_POOL(
-		AvailableSlots,
-		SlotsIndex + 1,
-		GetMythSlotValueChance,
-		MythSlotValue
+	RTDataMythMasterySlotGroupRef MasterySlotGroup = RTRuntimeDataMythMasterySlotGroupGet(
+		Runtime->Context,
+		MasterySlot->MasteryIndex,
+		MasterySlot->SlotIndex
 	);
-	if (!MythSlotValue) return NULL;
-	*/
-	//assert(Character->Data.MythMasteryInfo.Info.PropertySlotCount <= RUNTIME_CHARACTER_MAX_MYTH_SLOT_COUNT);
-	//RTMythMasterySlotRef ReturnSlot = &Character->Data.MythMasteryInfo.Slots[Character->Data.MythMasteryInfo.Info.PropertySlotCount];
+	if (!MasterySlotGroup) return false;
 
-	return MythSlotValue;
+	RTDataMythMasterySlotValuePoolRef MasterySlotValuePool = RTRuntimeDataMythMasterySlotValuePoolGet(Runtime->Context, MasterySlotGroup->PoolID);
+	if (!MasterySlotValuePool) return false;
+
+	// TODO: Validate and consume Myth Points
+
+	Int32 Seed = (Int32)PlatformGetTickCount();
+	Int32 RateValue = RandomRange(&Seed, 0, INT32_MAX);
+	Int32 RateOffset = 0;
+
+	for (Int Index = 0; Index < MasterySlotValuePool->MythMasterySlotValueCount; Index += 1) {
+		RTDataMythMasterySlotValueRef MasterySlotValue = &MasterySlotValuePool->MythMasterySlotValueList[Index];
+		Int32 Rate = MasterySlotValue->Rate * INT32_MAX / 100;
+		if (RateValue <= Rate + RateOffset) {
+			MasterySlot->Tier = MasterySlotValue->Tier;
+			MasterySlot->Grade = MasterySlotValue->Grade;
+			MasterySlot->ForceEffectIndex = MasterySlotValue->ForceEffectIndex;
+			MasterySlot->ForceValue = MasterySlotValue->ForceValue;
+			MasterySlot->ForceValueType = MasterySlotValue->ForceValueType;
+			Character->SyncMask.MythMasteryInfo = true;
+			return true;
+		}
+
+		RateOffset += Rate;
+	}
+
+	return false;
 }
 
 Bool RTCharacterMythMasteryCanOpenLockGroup(
