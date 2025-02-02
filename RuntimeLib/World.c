@@ -504,21 +504,25 @@ Void RTWorldDespawnMob(
     if (!RTEntityIsNull(Mob->DropOwner) && Mob->DropOwner.EntityType == RUNTIME_ENTITY_TYPE_CHARACTER) { // TODO: Why do we check here if the mob has a drop owner?
         RTCharacterRef Character = RTWorldManagerGetCharacter(WorldContext->WorldManager, Mob->DropOwner);
         if (Character) {
+        
+           
+            for (int i = 0;i <= (rand() % RUNTIME_DROP_MAX_ITENS);i++) {
+                RTDropResult DropItem = { 0 };
+                if (RTCalculateDrop(Runtime, WorldContext, Mob, Character, &DropItem)) {
+                    RTWorldSpawnItem(
+                        Runtime,
+                        WorldContext,
+                        Mob->ID,
+                        Character->Movement.PositionCurrent.X,
+                        Character->Movement.PositionCurrent.Y,
+                        DropItem
+                    );
+                }
+            }
+            
+            RTDropCurrency(Runtime, WorldContext, Mob, Character);
             RTDropResult Drop = { 0 };
-
-            if (RTCalculateDrop(Runtime, WorldContext, Mob, Character, &Drop)) {
-                RTWorldSpawnItem(
-                    Runtime,
-                    WorldContext,
-                    Mob->ID,
-                    Character->Movement.PositionCurrent.X,
-                    Character->Movement.PositionCurrent.Y,
-                    Drop
-                );
-            }
-            else {
-                RTDropCurrency(Runtime, WorldContext, Mob, Character);
-            }
+            
 
             if (RTCalculateQuestDrop(Runtime, WorldContext, Mob, Character, &Drop)) {
                 RTWorldSpawnItem(

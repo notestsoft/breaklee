@@ -1028,8 +1028,10 @@ Bool RTCharacterBattleRankUp(
 Void RTCharacterAddExp(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
-	UInt64 Exp
+	UInt64 ExpValue
 ) {
+	UInt64 Exp = ExpValue * RUNTIME_EXP_RATE_MULTIPLIER;
+
 	UInt64 Axp = (Exp / 100) * Character->AbilityExpRate;
 	RTCharacterAddAbilityExp(Runtime, Character, Axp);
 

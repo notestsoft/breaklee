@@ -528,6 +528,8 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     S2C_DATA_INITIALIZE* Response = PacketBufferInitExtended(PacketBuffer, S2C, INITIALIZE);
     /* Server Info */
     Response->WorldType = (UInt32)Runtime->Environment.RawValue;
+   // Response->WorldType = 5497558143056;
+    //war (UInt32)Runtime->Environment.RawValue;
     Response->IsWarehousePasswordSet = Packet->Character.IsWarehousePasswordSet;
     Response->IsInventoryPasswordSet = Packet->Character.IsInventoryPasswordSet;
     Response->IsWarehouseLocked = Packet->Character.IsWarehouseLocked;
@@ -538,7 +540,9 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->Server.MaxPlayerCount = Context->Config.WorldSvr.MaxConnectionCount;
     memcpy(Response->Server.Address.Host, Context->Config.WorldSvr.Host, strlen(Context->Config.WorldSvr.Host));
     Response->Server.Address.Port = Context->Config.WorldSvr.Port;
+    //Response->Server.WorldType = 5497558143056;
     Response->Server.WorldType = Runtime->Environment.RawValue;
+        // war
     Response->Entity = Character->ID;
     Response->CharacterInfo = Character->Data.Info;
     // TODO: Check if max hp or base hp is requested here...

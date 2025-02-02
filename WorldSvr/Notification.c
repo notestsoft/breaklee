@@ -315,6 +315,8 @@ Void BroadcastUserList(
     CStringCopySafe(Notification->Host, 64 + 1, Context->Config.WorldSvr.Host);
     Notification->Port = Context->Config.WorldSvr.Port;
     Notification->Type = (UInt32)Context->Runtime->Environment.RawValue;
+   // Notification->Type = 5497558143056;
+    //war
     IPCSocketUnicast(Server->IPCSocket, Notification);
 }
 

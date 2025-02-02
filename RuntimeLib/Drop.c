@@ -14,21 +14,24 @@ Bool RTDropPoolRollItem(
     RTDropResultRef Result
 ) {
     for (Int DropIndex = 0; DropIndex < ArrayGetElementCount(DropPool); DropIndex += 1) {
+
         RTDropItemRef DropItem = (RTDropItemRef)ArrayGetElementAtIndex(DropPool, DropIndex);
         if (MobLevel > 0 && DropItem->MinMobLevel > MobLevel) continue;
         if (MobLevel > 0 && DropItem->MaxMobLevel < MobLevel) continue;
-        if (DropRateValue <= *DropRateOffset + DropItem->DropRate) {
-            Result->ItemID = DropItem->ItemID;
-            Result->ItemOptions = DropItem->ItemOptions;
-            Result->ItemDuration.DurationIndex = DropItem->DurationIndex;
-            RTOptionPoolManagerCalculateOptions(Runtime, Runtime->OptionPoolManager, DropItem->OptionPoolIndex, Result);
-            return true;
-        }
 
-        *DropRateOffset += DropItem->DropRate;
+        if (DropRateValue <= *DropRateOffset + (DropItem->DropRate*RUNTIME_DROP_RATE_MULTIPLIER)) {
+            if (Result->ItemID.ID > 0 && (rand() % 100) <= 50 || Result->ItemID.ID == 0) {
+                Result->ItemID = DropItem->ItemID;
+                Result->ItemOptions = DropItem->ItemOptions;
+                Result->ItemDuration.DurationIndex = DropItem->DurationIndex;
+                RTOptionPoolManagerCalculateOptions(Runtime, Runtime->OptionPoolManager, DropItem->OptionPoolIndex, Result);
+            }
+        }
+        *DropRateOffset += (DropItem->DropRate * RUNTIME_DROP_RATE_MULTIPLIER);
     }
 
-    return false;
+    return Result->ItemID.ID != 0;
+
 }
 
 Bool RTCalculateDrop(
@@ -87,7 +90,7 @@ Bool RTDropCurrency(
     Int64 CurrencyDropRate = RUNTIME_DROP_BASE_CURRENCY_RATE + Character->Attributes.Values[RUNTIME_ATTRIBUTE_ALZ_DROP_RATE];
     Int64 CurrencyBombDropRate = RUNTIME_DROP_BASE_CURRENCY_BOMB_RATE + Character->Attributes.Values[RUNTIME_ATTRIBUTE_ALZ_BOMB_RATE];
 
-    Int64 MaxCurrencyDropRate = 10000;
+    Int64 MaxCurrencyDropRate = 1000;
     MaxCurrencyDropRate += Character->Attributes.Values[RUNTIME_ATTRIBUTE_ALZ_DROP_RATE];
     MaxCurrencyDropRate += Character->Attributes.Values[RUNTIME_ATTRIBUTE_ALZ_BOMB_RATE];
     Int64 FinalCurrencyDropRate = INT16_MAX / MaxCurrencyDropRate * CurrencyDropRate;
