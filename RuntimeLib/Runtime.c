@@ -503,6 +503,11 @@ RTWorldContextRef RTRuntimeOpenDungeon(
     Int DungeonIndex
 ) {
     RTWorldDataRef WorldData = RTWorldDataGet(Runtime->WorldManager, WorldIndex);
+    if (!WorldData) {
+        Error("WorldData(%d) not found!", WorldIndex);
+        return NULL;
+    }
+
     assert(
         WorldData->Type == RUNTIME_WORLD_TYPE_QUEST_DUNGEON ||
         WorldData->Type == RUNTIME_WORLD_TYPE_DUNGEON
@@ -510,6 +515,10 @@ RTWorldContextRef RTRuntimeOpenDungeon(
 
     // TODO: Cleanup previous dungeon, for now we assert to avoid to open a dungeon in a dungeon?
     RTWorldContextRef CurrentWorld = RTRuntimeGetWorldByCharacter(Runtime, Character);
+    if (CurrentWorld->WorldData->Type == RUNTIME_WORLD_TYPE_QUEST_DUNGEON) {
+        Error("RTRuntimeOpenDungeon(%d, %d) wrong world type!", WorldIndex, DungeonIndex);
+        return NULL;
+    }
     assert(CurrentWorld->WorldData->Type != RUNTIME_WORLD_TYPE_QUEST_DUNGEON);
 
     if (RTWorldContextPartyIsFull(Runtime->WorldManager)) return NULL;

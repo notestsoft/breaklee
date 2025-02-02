@@ -270,7 +270,14 @@ Bool RTRuntimeWarpCharacter(
             // TODO: Check if user is currently in dungeon and next dungeon index for success is matching
 
             RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, DungeonIndex);
+            if (!DungeonData) {
+                Error(
+                    "Warp(DungeonIndex=%d) quest dungeon data not found",
+                    DungeonIndex
+                );
 
+                return false;
+            }
             // TODO: Check and remove EntryItem
 
             if (Character->Data.Info.Level < DungeonData->EntryConditionLevel) return false;
@@ -551,6 +558,18 @@ Bool RTRuntimeWarpCharacter(
         if (!RTCharacterHasQuestDungeon(Runtime, Character, Warp->TargetID)) return false;
 
         RTDungeonDataRef QuestDungeonData = RTRuntimeGetDungeonDataByID(Runtime, Warp->TargetID);
+        if (!QuestDungeonData) {
+            Error(
+                "Warp(Index=%d, WorldID=%d, NpcID=%d, TargetID=%d, QuestID=%d) quest dungeon data not found", 
+                Warp->Index,
+                Warp->WorldID,
+                Warp->NpcID,
+                Warp->TargetID,
+                Warp->QuestID
+            );
+
+            return false;
+        }
 
         // TODO: Check and remove EntryItem
 
@@ -599,6 +618,18 @@ Bool RTRuntimeWarpCharacter(
         // TODO: Check if user is currently in dungeon and next dungeon index for success is matching
 
         RTDungeonDataRef DungeonData = RTRuntimeGetDungeonDataByID(Runtime, Warp->TargetID);
+        if (!DungeonData) {
+            Error(
+                "Warp(Index=%d, WorldID=%d, NpcID=%d, TargetID=%d, QuestID=%d) quest dungeon data not found",
+                Warp->Index,
+                Warp->WorldID,
+                Warp->NpcID,
+                Warp->TargetID,
+                Warp->QuestID
+            );
+
+            return false;
+        }
 
         // TODO: Check and remove EntryItem
 
