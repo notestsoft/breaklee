@@ -1693,4 +1693,232 @@
 			<Value SlotType="9" ForceEffectIndex="5" ForceValue="30" ForceValueType="1" Grade="10" Tier="44" Rate="0.001" />
 		</Pool>
 	</MasterySlotValuePool>
+
+	<RewardTiers>
+		<SlotTier Tier="1">
+		  <Level Lv="1" Point="360"/>
+		  <Level Lv="2" Point="600"/>
+		</SlotTier>
+		<SlotTier Tier="2">
+		  <Level Lv="1" Point="240"/>
+		  <Level Lv="2" Point="360"/>
+		  <Level Lv="3" Point="600"/>
+		</SlotTier>
+		<SlotTier Tier="3">
+		  <Level Lv="1" Point="150"/>
+		  <Level Lv="2" Point="180"/>
+		  <Level Lv="3" Point="240"/>
+		  <Level Lv="4" Point="360"/>
+		  <Level Lv="5" Point="600"/>
+		</SlotTier>
+		<SlotTier Tier="4">
+		  <Level Lv="1" Point="120"/>
+		  <Level Lv="2" Point="150"/>
+		  <Level Lv="3" Point="180"/>
+		  <Level Lv="4" Point="195"/>
+		  <Level Lv="5" Point="210"/>
+		  <Level Lv="6" Point="225"/>
+		  <Level Lv="7" Point="240"/>
+		  <Level Lv="8" Point="300"/>
+		  <Level Lv="9" Point="360"/>
+		  <Level Lv="10" Point="600"/>
+		</SlotTier>
+		<SlotTier Tier="11">
+		  <Level Lv="1" Point="300"/>
+		  <Level Lv="2" Point="500"/>
+		</SlotTier>
+		<SlotTier Tier="12">
+		  <Level Lv="1" Point="200"/>
+		  <Level Lv="2" Point="300"/>
+		  <Level Lv="3" Point="500"/>
+		</SlotTier>
+		<SlotTier Tier="13">
+		  <Level Lv="1" Point="125"/>
+		  <Level Lv="2" Point="150"/>
+		  <Level Lv="3" Point="200"/>
+		  <Level Lv="4" Point="300"/>
+		  <Level Lv="5" Point="500"/>
+		</SlotTier>
+		<SlotTier Tier="14">
+		  <Level Lv="1" Point="100"/>
+		  <Level Lv="2" Point="125"/>
+		  <Level Lv="3" Point="150"/>
+		  <Level Lv="4" Point="163"/>
+		  <Level Lv="5" Point="175"/>
+		  <Level Lv="6" Point="188"/>
+		  <Level Lv="7" Point="200"/>
+		  <Level Lv="8" Point="250"/>
+		  <Level Lv="9" Point="300"/>
+		  <Level Lv="10" Point="500"/>
+		</SlotTier>
+		<SlotTier Tier="21">
+		  <Level Lv="1" Point="276"/>
+		  <Level Lv="2" Point="460"/>
+		</SlotTier>
+		<SlotTier Tier="22">
+		  <Level Lv="1" Point="184"/>
+		  <Level Lv="2" Point="276"/>
+		  <Level Lv="3" Point="460"/>
+		</SlotTier>
+		<SlotTier Tier="23">
+		  <Level Lv="1" Point="115"/>
+		  <Level Lv="2" Point="138"/>
+		  <Level Lv="3" Point="184"/>
+		  <Level Lv="4" Point="276"/>
+		  <Level Lv="5" Point="460"/>
+		</SlotTier>
+		<SlotTier Tier="24">
+		  <Level Lv="1" Point="92"/>
+		  <Level Lv="2" Point="115"/>
+		  <Level Lv="3" Point="138"/>
+		  <Level Lv="4" Point="150"/>
+		  <Level Lv="5" Point="161"/>
+		  <Level Lv="6" Point="173"/>
+		  <Level Lv="7" Point="184"/>
+		  <Level Lv="8" Point="230"/>
+		  <Level Lv="9" Point="276"/>
+		  <Level Lv="10" Point="460"/>
+		</SlotTier>
+		<SlotTier Tier="31">
+		  <Level Lv="1" Point="240"/>
+		  <Level Lv="2" Point="400"/>
+		</SlotTier>
+		<SlotTier Tier="32">
+		  <Level Lv="1" Point="160"/>
+		  <Level Lv="2" Point="240"/>
+		  <Level Lv="3" Point="400"/>
+		</SlotTier>
+		<SlotTier Tier="33">
+		  <Level Lv="1" Point="100"/>
+		  <Level Lv="2" Point="120"/>
+		  <Level Lv="3" Point="160"/>
+		  <Level Lv="4" Point="240"/>
+		  <Level Lv="5" Point="400"/>
+		</SlotTier>
+		<SlotTier Tier="34">
+		  <Level Lv="1" Point="80"/>
+		  <Level Lv="2" Point="100"/>
+		  <Level Lv="3" Point="120"/>
+		  <Level Lv="4" Point="130"/>
+		  <Level Lv="5" Point="140"/>
+		  <Level Lv="6" Point="150"/>
+		  <Level Lv="7" Point="160"/>
+		  <Level Lv="8" Point="200"/>
+		  <Level Lv="9" Point="240"/>
+		  <Level Lv="10" Point="400"/>
+		</SlotTier>
+		<SlotTier Tier="41">
+		  <Level Lv="1" Point="168"/>
+		  <Level Lv="2" Point="280"/>
+		</SlotTier>
+		<SlotTier Tier="42">
+		  <Level Lv="1" Point="112"/>
+		  <Level Lv="2" Point="168"/>
+		  <Level Lv="3" Point="280"/>
+		</SlotTier>
+		<SlotTier Tier="43">
+		  <Level Lv="1" Point="70"/>
+		  <Level Lv="2" Point="84"/>
+		  <Level Lv="3" Point="112"/>
+		  <Level Lv="4" Point="168"/>
+		  <Level Lv="5" Point="280"/>
+		</SlotTier>
+		<SlotTier Tier="44">
+		  <Level Lv="1" Point="56"/>
+		  <Level Lv="2" Point="70"/>
+		  <Level Lv="3" Point="84"/>
+		  <Level Lv="4" Point="91"/>
+		  <Level Lv="5" Point="98"/>
+		  <Level Lv="6" Point="105"/>
+		  <Level Lv="7" Point="112"/>
+		  <Level Lv="8" Point="140"/>
+		  <Level Lv="9" Point="168"/>
+		  <Level Lv="10" Point="280"/>
+		</SlotTier>
+		<SlotTier Tier="51">
+		  <Level Lv="1" Point="144"/>
+		  <Level Lv="2" Point="240"/>
+		</SlotTier>
+		<SlotTier Tier="52">
+		  <Level Lv="1" Point="96"/>
+		  <Level Lv="2" Point="144"/>
+		  <Level Lv="3" Point="240"/>
+		</SlotTier>
+		<SlotTier Tier="53">
+		  <Level Lv="1" Point="60"/>
+		  <Level Lv="2" Point="72"/>
+		  <Level Lv="3" Point="96"/>
+		  <Level Lv="4" Point="144"/>
+		  <Level Lv="5" Point="240"/>
+		</SlotTier>
+		<SlotTier Tier="54">
+		  <Level Lv="1" Point="48"/>
+		  <Level Lv="2" Point="60"/>
+		  <Level Lv="3" Point="72"/>
+		  <Level Lv="4" Point="78"/>
+		  <Level Lv="5" Point="84"/>
+		  <Level Lv="6" Point="90"/>
+		  <Level Lv="7" Point="96"/>
+		  <Level Lv="8" Point="120"/>
+		  <Level Lv="9" Point="144"/>
+		  <Level Lv="10" Point="240"/>
+		</SlotTier>
+		<SlotTier Tier="61">
+		  <Level Lv="1" Point="132"/>
+		  <Level Lv="2" Point="220"/>
+		</SlotTier>
+		<SlotTier Tier="62">
+		  <Level Lv="1" Point="88"/>
+		  <Level Lv="2" Point="132"/>
+		  <Level Lv="3" Point="220"/>
+		</SlotTier>
+		<SlotTier Tier="63">
+		  <Level Lv="1" Point="55"/>
+		  <Level Lv="2" Point="66"/>
+		  <Level Lv="3" Point="88"/>
+		  <Level Lv="4" Point="132"/>
+		  <Level Lv="5" Point="220"/>
+		</SlotTier>
+		<SlotTier Tier="64">
+		  <Level Lv="1" Point="44"/>
+		  <Level Lv="2" Point="55"/>
+		  <Level Lv="3" Point="66"/>
+		  <Level Lv="4" Point="72"/>
+		  <Level Lv="5" Point="77"/>
+		  <Level Lv="6" Point="83"/>
+		  <Level Lv="7" Point="88"/>
+		  <Level Lv="8" Point="110"/>
+		  <Level Lv="9" Point="132"/>
+		  <Level Lv="10" Point="220"/>
+		</SlotTier>
+		<SlotTier Tier="71">
+		  <Level Lv="1" Point="120"/>
+		  <Level Lv="2" Point="200"/>
+		</SlotTier>
+		<SlotTier Tier="72">
+		  <Level Lv="1" Point="80"/>
+		  <Level Lv="2" Point="120"/>
+		  <Level Lv="3" Point="200"/>
+		</SlotTier>
+		<SlotTier Tier="73">
+		  <Level Lv="1" Point="50"/>
+		  <Level Lv="2" Point="60"/>
+		  <Level Lv="3" Point="80"/>
+		  <Level Lv="4" Point="120"/>
+		  <Level Lv="5" Point="200"/>
+		</SlotTier>
+		<SlotTier Tier="74">
+		  <Level Lv="1" Point="40"/>
+		  <Level Lv="2" Point="50"/>
+		  <Level Lv="3" Point="60"/>
+		  <Level Lv="4" Point="65"/>
+		  <Level Lv="5" Point="70"/>
+		  <Level Lv="6" Point="75"/>
+		  <Level Lv="7" Point="80"/>
+		  <Level Lv="8" Point="100"/>
+		  <Level Lv="9" Point="120"/>
+		  <Level Lv="10" Point="200"/>
+		</SlotTier>
+	</RewardTiers>
+
 </MythMastery>
