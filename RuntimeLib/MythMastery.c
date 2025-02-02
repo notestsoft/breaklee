@@ -13,8 +13,7 @@ Void RTCharacterMythMasteryFinishQuest(
 	RTCharacterRef Character,
 	Int32 QuestIndex
 ) {
-	if (QuestIndex != RUNTIME_MYTH_ENABLE_QUEST_IDX || Character->Data.MythMasteryInfo.Info.Level > 0)
-		return;
+	if (QuestIndex != RUNTIME_MYTH_ENABLE_QUEST_IDX || Character->Data.MythMasteryInfo.Info.Level > 0) return;
 
 	RTCharacterMythMasteryEnable(Runtime, Character);
 }
@@ -40,6 +39,28 @@ Void RTCharacterMythMasteryEnable(
 	 
 	// add initial myth points
 	RTCharacterMythMasteryAddMythPoints(Runtime, Character, MythStartRef->InitialPoints);
+}
+
+Void RTCharacterMythMasteryStigmaEnable(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+	if (Character->Data.MythMasteryInfo.Info.StigmaGrade > 0) return;
+
+	RTDataMythStigmaOpenRef MythStigmaOpenRef = RTRuntimeDataMythStigmaOpenGet(Runtime->Context);
+	assert(MythStigmaOpenRef);
+
+	// add backwards check just in case
+	if (MythStigmaOpenRef->RequiredSlot < Character->Data.MythMasteryInfo.Info.MasterySlotCount) {
+		return;
+	}
+
+	// init to level 1
+	// this should only be called when rolling NEW slot
+	// the packet notifiying of stigma must be done there
+	Character->Data.MythMasteryInfo.Info.StigmaExp = 1;
+	Character->Data.MythMasteryInfo.Info.StigmaGrade = 1;
+	Character->SyncMask.MythMasteryInfo = true;
 }
 
 Void RTCharacterMythMasteryAddExp(
@@ -349,22 +370,36 @@ RTMythMasterySlotRef RTCharacterMythMasteryGetOrCreateSlot(
 ) {
 	if (Character->Data.MythMasteryInfo.Info.Level < 1) return NULL;
 
+	// get slot ends here
 	RTMythMasterySlotRef MasterySlot = RTCharacterMythMasteryGetSlot(Runtime, Character, MasteryIndex, SlotIndex);
 	if (MasterySlot) return MasterySlot;
 
+	// here and below we are opening slot for first time
 	RTDataMythSlotPageRef MasterySlotPage = RTRuntimeDataMythSlotPageGet(Runtime->Context, MasteryIndex);
 	if (!MasterySlotPage) return NULL;
 
 	RTDataMythSlotInfoRef MasterySlotInfo = RTRuntimeDataMythSlotInfoGet(MasterySlotPage, SlotIndex);
 	if (!MasterySlotInfo) return NULL;
 
+	if (Character->Data.MythMasteryInfo.Info.Points <= MasterySlotInfo->UnlockCost || !RTCharacterMythMasteryGetPrerequisiteMetForSlot(Runtime, Character, MasteryIndex, MasterySlotInfo->PrerequisiteSlot, MasterySlotInfo->PrerequisiteSlot2)) {
+		return NULL;
+	}
+
 	assert(Character->Data.MythMasteryInfo.Info.MasterySlotCount <= RUNTIME_CHARACTER_MAX_MYTH_SLOT_COUNT);
+
 	MasterySlot = &Character->Data.MythMasteryInfo.Slots[Character->Data.MythMasteryInfo.Info.MasterySlotCount];
 	memset(MasterySlot, 0, sizeof(struct _RTMythMasterySlot));
 	MasterySlot->MasteryIndex = MasteryIndex;
 	MasterySlot->SlotIndex = SlotIndex;
 	Character->Data.MythMasteryInfo.Info.MasterySlotCount += 1;
+
+	// hook here since MasterySlotCount is only incremented in this function
+	// if you unlock slots else where, please call this!!!
+	RTCharacterMythMasteryStigmaEnable(Runtime, Character);
+	RTCharacterMythMasteryAssertHolyPoints(Runtime, Character);
+
 	Character->SyncMask.MythMasteryInfo = true;
+
 	return MasterySlot;
 }
 
@@ -395,6 +430,7 @@ Void RTCharacterMythMasterySetSlot(
 	MasterySlot->ForceEffectIndex = ForceEffectIndex;
 	MasterySlot->ForceValue = ForceValue;
 	MasterySlot->ForceValueType = ForceValueType;
+	RTCharacterMythMasteryAssertHolyPoints(Runtime, Character);
 	Character->SyncMask.MythMasteryInfo = true;
 }
 
@@ -415,7 +451,11 @@ Bool RTCharacterMythMasteryRollSlot(
 	RTDataMythMasterySlotValuePoolRef MasterySlotValuePool = RTRuntimeDataMythMasterySlotValuePoolGet(Runtime->Context, MasterySlotGroup->PoolID);
 	if (!MasterySlotValuePool) return false;
 
-	// TODO: Validate and consume Myth Points
+	Int32 SlotRollPrice = MasterySlotGroup->UnlockCost;
+
+	if (Character->Data.MythMasteryInfo.Info.Points < SlotRollPrice) {
+		return false;
+	}
 
 	Int32 Seed = (Int32)PlatformGetTickCount();
 	Int32 RateValue = RandomRange(&Seed, 0, INT32_MAX);
@@ -431,6 +471,9 @@ Bool RTCharacterMythMasteryRollSlot(
 			MasterySlot->ForceValue = MasterySlotValue->ForceValue;
 			MasterySlot->ForceValueType = MasterySlotValue->ForceValueType;
 			Character->SyncMask.MythMasteryInfo = true;
+			Character->Data.MythMasteryInfo.Info.Points -= SlotRollPrice;
+			RTCharacterMythMasteryAddStigmaExp(Runtime, Character, SlotRollPrice);
+			RTCharacterMythMasteryAssertHolyPoints(Runtime, Character);
 			return true;
 		}
 
@@ -474,4 +517,93 @@ Void RTCharacterMythMasteryAssertHolyPoints(
 ) {
 	Int32 PointsFromSlots = 0;
 	Int32 PointsFromMythGrade = 0;
+
+	// stigma -- COUNTS AS BONUS, DO NOT SEND/COUNT
+	//for (Int32 Index = 0; Index < Character->Data.MythMasteryInfo.Info.StigmaGrade; Index++) {
+	//	RTDataStigmaInfoRef MythStigmaInfo = RTRuntimeDataStigmaInfoGet(Runtime->Context, Index);
+	//	assert(MythStigmaInfo);
+	//	// stop at our level. we must exceed the grade to collect it's points
+	//	if (MythStigmaInfo->Grade >= Character->Data.MythMasteryInfo.Info.StigmaGrade) break;
+
+	//	PointsFromMythGrade += MythStigmaInfo->AwardedHolyPoint;
+	//}
+
+	RTDataMythLockPageRef MythLockPageInfo = RTRuntimeDataMythLockPageGet(Runtime->Context, 0);
+
+	// lock group
+	for (Int32 Index = 0; Index < MythLockPageInfo->MythLockInfoCount; Index++) {
+		// stop at above our level. we must match or be greater than page count 1st
+		if (Character->Data.MythMasteryInfo.Info.UnlockedPageCount < MythLockPageInfo->MythLockInfoList[Index].LockGroup) break;
+
+		PointsFromSlots += MythLockPageInfo->MythLockInfoList[Index].BonusScore;
+	}
+
+	// slots
+	// TODO make flexible with mastery index
+	for (Int32 Index = 0; Index < RUNTIME_CHARACTER_MAX_MYTH_SLOT_COUNT; Index++) {
+		RTMythMasterySlotRef CurrentSlot = RTCharacterMythMasteryGetSlot(Runtime, Character, 0, Index);
+
+		// not sure if this will exit too early with break, but wont hurt to use continue only
+		if (!CurrentSlot) continue;
+
+		PointsFromSlots += RTCharacterMythMasteryGetSlotHolyValue(Runtime, Character, CurrentSlot);
+	}
+
+	Character->Data.MythMasteryInfo.Info.HolyPower = PointsFromMythGrade + PointsFromSlots;
+	Character->SyncMask.MythMasteryInfo = true;
+}
+
+Int32 RTCharacterMythMasteryGetSlotHolyValue(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	RTMythMasterySlotRef Slot
+) {
+	RTDataMythSlotTierRewardRef MythSlotTierReward = RTRuntimeDataMythSlotTierRewardGet(Runtime->Context, Slot->Tier);
+	if (!MythSlotTierReward) return false;
+
+	RTDataMythTierLevelRef MythTierLevel = RTRuntimeDataMythTierLevelGet(MythSlotTierReward, Slot->Grade);
+
+	return MythTierLevel->Points;
+}
+
+Void RTCharacterMythMasteryAddStigmaExp(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 ExpAmount
+) {
+	if (Character->Data.MythMasteryInfo.Info.StigmaGrade < 1) return;
+
+	Int32 CurrentExp = Character->Data.MythMasteryInfo.Info.StigmaExp + ExpAmount;
+
+	// get current level
+	RTDataStigmaInfoRef MythStigmaInfo = RTRuntimeDataStigmaInfoGet(Runtime->Context, Character->Data.MythMasteryInfo.Info.StigmaGrade);
+	assert(MythStigmaInfo);
+
+	Int32 ExpForLevelup = MythStigmaInfo->RequiredExp;
+
+	while (CurrentExp >= ExpForLevelup) {
+		CurrentExp -= ExpForLevelup;
+
+		// this function only calls when rolling slot
+		// holy power and stigma XP will be updated on the slot return
+		Character->Data.MythMasteryInfo.Info.StigmaGrade++;
+		Character->Data.MythMasteryInfo.Info.HolyPower += MythStigmaInfo->AwardedHolyPoint;
+
+		// prepare next loop
+		MythStigmaInfo = RTRuntimeDataStigmaInfoGet(Runtime->Context, Character->Data.MythMasteryInfo.Info.StigmaGrade);
+		ExpForLevelup = MythStigmaInfo->RequiredExp;
+	}
+
+	Character->Data.MythMasteryInfo.Info.StigmaExp = CurrentExp;
+	Character->SyncMask.MythMasteryInfo = true;
+}
+
+static Bool RTCharacterMythMasteryGetPrerequisiteMetForSlot(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 MasteryIndex,
+	Int32 SlotIndex1,
+	Int32 SlotIndex2
+) {
+	return RTCharacterMythMasteryGetSlotOccupied(Runtime, Character, MasteryIndex, SlotIndex1) && RTCharacterMythMasteryGetSlotOccupied(Runtime, Character, MasteryIndex, SlotIndex2);
 }

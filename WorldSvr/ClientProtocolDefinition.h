@@ -4499,15 +4499,11 @@ CLIENT_PROTOCOL(S2C, MYTH_ROLL_SLOT, DEFAULT, 2959,
 )
 
 CLIENT_PROTOCOL(C2S, MYTH_FINISH_ROLL_SLOT, DEFAULT, 2960,
-    UInt8 UndoThisRoll; //0 = keep, 1 = reroll
+    UInt8 RollbackToTempSlot; //1 = revert to temp slot
     UInt8 MasteryIndex;
     UInt8 SlotIndex;
-    UInt8 Unknown1; // stat option or value or value type
-    UInt8 Unknown2; // or stigma?
-    UInt8 Unknown3;
-    UInt8 Unknown4;
-    UInt8 Unknown5;
-    UInt8 Unknown6;
+    UInt16 InventorySlotCount;
+    UInt16 InventorySlotIndex[0];
 )
 
 CLIENT_PROTOCOL(S2C, MYTH_FINISH_ROLL_SLOT, DEFAULT, 2960,

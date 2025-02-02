@@ -164,4 +164,23 @@ Bool RTCharacterMythMasteryGetSlotOccupied(
     Int32 LockGroup
 );
 
+Void RTCharacterMythMasteryAssertHolyPoints(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Void RTCharacterMythMasteryAddStigmaExp(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 ExpAmount
+);
+
+static Bool RTCharacterMythMasteryGetPrerequisiteMetForSlot(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 MasteryIndex,
+    Int32 SlotIndex1,
+    Int32 SlotIndex2
+);
+
 EXTERN_C_END

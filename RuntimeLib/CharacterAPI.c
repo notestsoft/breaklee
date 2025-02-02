@@ -416,6 +416,34 @@ Int32 lua_RTCharacterSetStats(lua_State* State) {
     return 0;
 }
 
+Int32 lua_RTCharacterEnableMyth(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    RTCharacterMythMasteryEnable(Runtime, Character);
+
+    return 0;
+}
+
+Int32 lua_RTCharacterAddMythPoints(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    RTCharacterMythMasteryAddMythPoints(Runtime, Character, (Int32)luaL_checkinteger(State, 2));
+
+    return 0;
+}
+
 Void RTScriptBindCharacterAPI(
 	RTScriptRef Script
 ) {
@@ -446,6 +474,8 @@ Void RTScriptBindCharacterAPI(
         "AddSkillSlot", lua_RTCharacterAddSkillSlot,
         "SetNation", lua_RTCharacterSetNation,
         "SetStats", lua_RTCharacterSetStats,
+        "EnableMyth", lua_RTCharacterEnableMyth,
+        "AddMythPoints", lua_RTCharacterAddMythPoints,
         NULL
     );
 }

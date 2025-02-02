@@ -8,6 +8,14 @@
 CLIENT_PROCEDURE_BINDING(MYTH_ROLL_SLOT) {
 	if (!Character || Character->Data.MythMasteryInfo.Info.Level < 1) goto error;
 
+	// copy existing slot into temporary slot
+	if (RTCharacterMythMasteryGetSlotOccupied(Runtime, Character, Packet->MasteryIndex, Packet->SlotIndex)) {
+		RTMythMasterySlotRef OldSlot = RTCharacterMythMasteryGetSlot(Runtime, Character, Packet->MasteryIndex, Packet->SlotIndex);
+
+		if (!OldSlot) goto error;
+		memcpy(&Character->Data.MythMasteryInfo.TemporarySlot, OldSlot, sizeof(struct _RTMythMasterySlot));
+	}
+
 	RTMythMasterySlotRef MasterySlot = RTCharacterMythMasteryGetOrCreateSlot(Runtime, Character, Packet->MasteryIndex, Packet->SlotIndex);
 	if (!MasterySlot) goto error;
 
@@ -30,19 +38,39 @@ error:
 CLIENT_PROCEDURE_BINDING(MYTH_FINISH_ROLL_SLOT) {
 	if (!Character || Character->Data.MythMasteryInfo.Info.Level < 1) goto error;
 
-	Info("Myth rollback slot");
+	S2C_DATA_MYTH_FINISH_ROLL_SLOT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MYTH_FINISH_ROLL_SLOT);
 
-	if (Packet->UndoThisRoll == 0) {
+	// if 0, revert to cached. 1 == accept new
 
+	// rollback
+	if (Packet->RollbackToTempSlot == 1) {
+		assert(&Character->Data.MythMasteryInfo.TemporarySlot);
+
+		struct _RTMythMasterySlot MasterySlot;
+		memcpy(&MasterySlot, &Character->Data.MythMasteryInfo.TemporarySlot, sizeof(struct _RTMythMasterySlot));
+
+		RTCharacterMythMasterySetSlot(Runtime, Character, MasterySlot.MasteryIndex, MasterySlot.SlotIndex, MasterySlot.Tier, MasterySlot.Grade, MasterySlot.ForceEffectIndex, MasterySlot.ForceValue, MasterySlot.ForceValueType);
+		
+		Response->MasteryIndex = Character->Data.MythMasteryInfo.TemporarySlot.MasteryIndex;
+		Response->SlotIndex = Character->Data.MythMasteryInfo.TemporarySlot.SlotIndex;
+		Response->TierIndex = Character->Data.MythMasteryInfo.TemporarySlot.Tier;
+		Response->TierLevel = Character->Data.MythMasteryInfo.TemporarySlot.Grade;
+		Response->StatOption = Character->Data.MythMasteryInfo.TemporarySlot.ForceEffectIndex;
+		Response->StatValue = Character->Data.MythMasteryInfo.TemporarySlot.ForceValue;
+		Response->ValueType = Character->Data.MythMasteryInfo.TemporarySlot.ForceValueType;
+		Response->HolyPower = Character->Data.MythMasteryInfo.Info.HolyPower;
+		Response->ErrorCode = 0;
+		SocketSend(Socket, Connection, Response);
+		return;
 	}
 
-	S2C_DATA_MYTH_FINISH_ROLL_SLOT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MYTH_FINISH_ROLL_SLOT);
-	Response->MasteryIndex = Packet->MasteryIndex;
-	Response->SlotIndex = Packet->SlotIndex;
-	Response->TierIndex = 53;
-	Response->TierLevel = 3;
-	Response->StatOption = 180;
-	Response->ValueType = 1;
+	// accept slot
+	Response->MasteryIndex = 0;
+	Response->SlotIndex = 0;
+	Response->TierIndex = 0;
+	Response->TierLevel = 0;
+	Response->StatOption = 0;
+	Response->ValueType = 0;
 	Response->HolyPower = Character->Data.MythMasteryInfo.Info.HolyPower;
 	Response->ErrorCode = 0;
 	SocketSend(Socket, Connection, Response);
