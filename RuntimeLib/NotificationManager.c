@@ -100,8 +100,13 @@ Void RTNotificationManagerDispatchToNearby(
     RTRuntimeRef Runtime = WorldChunk->WorldContext->WorldManager->Runtime;
     if (!RTEntityIsNull(WorldChunk->WorldContext->Party)) {
         RTPartyRef Party = RTRuntimeGetParty(Runtime, WorldChunk->WorldContext->Party);
-        RTNotificationManagerDispatchToParty(NotificationManager, Notification, Party);
-        return;
+        if (Party) {
+            RTNotificationManagerDispatchToParty(NotificationManager, Notification, Party);
+            return;
+        }
+        else {
+            Error("Party(%d) expected but not found!", WorldChunk->WorldContext->Party.EntityIndex);
+        }
     }
 
     Int32 StartChunkX = MAX(0, MIN(RUNTIME_WORLD_CHUNK_COUNT - 1, WorldChunk->ChunkX - RUNTIME_WORLD_CHUNK_VISIBLE_RADIUS));
