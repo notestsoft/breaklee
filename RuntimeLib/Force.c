@@ -278,6 +278,9 @@ Void RTRuntimeInitForceEffectFormulas(
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_ATTACK_RATE_UP_PVP, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_ATTACK_RATE_PVP);
 
+    Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_ATTACK_RATE_UP_PVE, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
+    RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_ATTACK_RATE_PVE);
+    
     Formula = RTRuntimeAddForceEffectFormula(Runtime, RUNTIME_FORCE_EFFECT_DEFENSE_RATE_UP_1, RTForceEffectApplyIncreaseAttribute, RTForceEffectCancelIncreaseAttribute);
     RTForceEffectFormulaBindAttribute(Formula, RUNTIME_ATTRIBUTE_DEFENSE_RATE);
 
