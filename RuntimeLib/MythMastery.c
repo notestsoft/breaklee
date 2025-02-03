@@ -277,7 +277,7 @@ Bool RTCharacterMythMasteryRebirth(
 
 	Int32 RebirthReward = RTCharacterMythMasteryGetRepeatBonus(Runtime, Character);
 
-	if (RebirthReward && RebirthReward > 0) {
+	if (RebirthReward > 0) {
 		RTCharacterMythMasteryAddMythPoints(Runtime, Character, RebirthReward);
 	}
 
@@ -518,7 +518,7 @@ Void RTCharacterMythMasteryAssertHolyPoints(
 	Int32 PointsFromSlots = 0;
 	Int32 PointsFromMythGrade = 0;
 
-	// stigma -- COUNTS AS BONUS, DO NOT SEND/COUNT
+	// stigma -- COUNTS AS BONUS, DO NOT SEND TO CLIENT. IT CALCULATES CLIENT SIDE
 	//for (Int32 Index = 0; Index < Character->Data.MythMasteryInfo.Info.StigmaGrade; Index++) {
 	//	RTDataStigmaInfoRef MythStigmaInfo = RTRuntimeDataStigmaInfoGet(Runtime->Context, Index);
 	//	assert(MythStigmaInfo);
@@ -605,5 +605,87 @@ static Bool RTCharacterMythMasteryGetPrerequisiteMetForSlot(
 	Int32 SlotIndex1,
 	Int32 SlotIndex2
 ) {
-	return RTCharacterMythMasteryGetSlotOccupied(Runtime, Character, MasteryIndex, SlotIndex1) && RTCharacterMythMasteryGetSlotOccupied(Runtime, Character, MasteryIndex, SlotIndex2);
+	// if 0 then prereq doesn't exist and is an initial open slot
+	// check index first, faster
+	Bool Slot1Full = SlotIndex1 == 0 || RTCharacterMythMasteryGetSlotOccupied(Runtime, Character, MasteryIndex, SlotIndex1);
+	Bool Slot2Full = SlotIndex2 == 0 || RTCharacterMythMasteryGetSlotOccupied(Runtime, Character, MasteryIndex, SlotIndex2);
+
+	return Slot1Full && Slot2Full;
 }
+
+Void RTCharacterMythDebugResetSlots(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+	if (Character->Data.MythMasteryInfo.Info.MasterySlotCount == 0) return;
+
+	RTMythMasterySlotRef FirstSlot = &Character->Data.MythMasteryInfo.Slots[0];
+	memset(FirstSlot, 0, sizeof(struct _RTMythMasterySlot) * RUNTIME_CHARACTER_MAX_MYTH_SLOT_COUNT);
+
+	Character->Data.MythMasteryInfo.Info.MasterySlotCount = 0;
+	Character->SyncMask.MythMasteryInfo = true;
+}
+
+Bool RTCharacterMythMasteryRollback(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	RTMythMasterySlotRef Slot,
+	UInt16 InventoryIndexCount,
+	UInt16 InventoryIndexs[]
+) {
+	RTDataMythMasterySlotGroupRef SlotPage = RTRuntimeDataMythMasterySlotGroupGet(Runtime->Context, Slot->MasteryIndex, Slot->SlotIndex);
+
+	if (!SlotPage) {
+		return false;
+	}
+
+	UInt64 RestoreItemID = RTCharacterMythMasteryGetRestoreItemID(Runtime);
+	Int32 RestoreItemAmount = SlotPage->RestoreCost;
+	Int64 FoundItemAmount = 0;
+	Int64 ItemCounts[] = { 0 };
+
+	for (Int32 Index = 0; Index < InventoryIndexCount; Index++) {
+		Int64 ItemCount = RTInventoryGetConsumableItemCount(Runtime, &Character->Data.InventoryInfo, RestoreItemID, 0, InventoryIndexs[Index]);
+		FoundItemAmount += ItemCount;
+		ItemCounts[Index] = ItemCount;
+	}
+
+	if (FoundItemAmount < SlotPage->RestoreCost) return false;
+
+	for (Int32 Index = 0; Index < InventoryIndexCount; Index++) {
+		RTInventoryConsumeStackableItems(Runtime, &Character->Data.InventoryInfo, RestoreItemID, ItemCounts[Index], InventoryIndexCount, InventoryIndexs[Index]);
+	}
+
+	return true;
+}
+
+UInt32 RTCharacterMythMasteryGetRestoreItemID(
+	RTRuntimeRef Runtime
+) {
+	RTDataMythRestoreItemRef MythRestoreItemRef = RTRuntimeDataMythRestoreItemGet(Runtime->Context);
+	if (!MythRestoreItemRef) {
+		return 0;
+	}
+
+	return MythRestoreItemRef->ItemID;
+}
+
+/*
+if (!RTInventoryCanConsumeStackableItems(
+	Runtime,
+	&Character->Data.InventoryInfo,
+	GradeLevelData->ExtraMaterialItemID,
+	GradeLevelData->RequiredExtraMaterialItemCount,
+	InventorySlotCount2,
+	InventorySlotIndex2
+)) return false;
+
+RTInventoryConsumeStackableItems(
+	Runtime,
+	&Character->Data.InventoryInfo,
+	GradeInfoData->MaterialItemID,
+	GradeLevelData->RequiredMaterialItemCount,
+	InventorySlotCount1,
+	InventorySlotIndex1
+);
+*/

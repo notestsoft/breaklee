@@ -40,10 +40,28 @@ CLIENT_PROCEDURE_BINDING(MYTH_FINISH_ROLL_SLOT) {
 
 	S2C_DATA_MYTH_FINISH_ROLL_SLOT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MYTH_FINISH_ROLL_SLOT);
 
-	// if 0, revert to cached. 1 == accept new
+	// if 0, revert to temporary. 1 == return with holypower & errorcode
+
+	// not sure but shouldnt allow client to determine array size. also shouldnt split currency that much realistically
+	UInt16 InventoryIndexCount = MIN(Packet->InventorySlotCount, 5);
+	UInt16 InventoryPositions[5] = {};
+
+	//Packet->InventorySlotIndex;
+
+	for (Int32 Index = 0; Index < InventoryIndexCount; Index++) {
+		//memset(&InventoryPositions[Index], &Packet->InventorySlotIndex[Index], sizeof(UInt16));
+		//Warn("positions %u", InventoryPositions[Index]);
+		InventoryPositions[Index] = Packet->InventorySlotIndex[Index];
+	}
+
+	Bool RollbackSuccess = false;
+	
+	if (Packet->RollbackToTempSlot == 1) {
+		RollbackSuccess = RTCharacterMythMasteryRollback(Runtime, Character, &Character->Data.MythMasteryInfo.TemporarySlot);
+	}
 
 	// rollback
-	if (Packet->RollbackToTempSlot == 1) {
+	if (Packet->RollbackToTempSlot == 1 && RollbackSuccess) {
 		assert(&Character->Data.MythMasteryInfo.TemporarySlot);
 
 		struct _RTMythMasterySlot MasterySlot;
@@ -73,6 +91,9 @@ CLIENT_PROCEDURE_BINDING(MYTH_FINISH_ROLL_SLOT) {
 	Response->ValueType = 0;
 	Response->HolyPower = Character->Data.MythMasteryInfo.Info.HolyPower;
 	Response->ErrorCode = 0;
+
+	if (Packet->RollbackToTempSlot == 1)
+		Response->ErrorCode = RollbackSuccess ? 0 : 1;
 	SocketSend(Socket, Connection, Response);
 	return;
 

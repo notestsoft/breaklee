@@ -183,4 +183,14 @@ static Bool RTCharacterMythMasteryGetPrerequisiteMetForSlot(
     Int32 SlotIndex2
 );
 
+Bool RTCharacterMythMasteryRollback(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    RTMythMasterySlotRef Slot
+);
+
+UInt32 RTCharacterMythMasteryGetRestoreItemID(
+    RTRuntimeRef Runtime
+);
+
 EXTERN_C_END
