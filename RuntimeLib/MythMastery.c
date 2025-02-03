@@ -491,7 +491,8 @@ Bool RTCharacterMythMasteryCanOpenLockGroup(
 ) {
 	RTDataMythLockPageRef LockPage = RTRuntimeDataMythLockPageGet(Runtime->Context, MasteryIndex);
 	RTDataMythLockInfoRef LockInfo = RTRuntimeDataMythLockInfoGet(LockPage, LockGroup);
-	if (LockInfo->OpenScore > Character->Data.MythMasteryInfo.Info.HolyPower) return false;
+
+	if (LockInfo->OpenScore > RTCharacterMythMasteryGetRealHolyPoints(Runtime, Character)) return false;
 
 	// sanity check on only 1 progression at a time, a bit ugly
 	RTDataMythLockInfoRef PreviousLockInfo = RTRuntimeDataMythLockInfoGet(LockPage, MAX(0, LockGroup - 1));
@@ -511,6 +512,15 @@ Bool RTCharacterMythMasteryGetSlotOccupied(
 	return RTCharacterMythMasteryGetSlot(Runtime, Character, MasteryIndex, SlotIndex) != NULL;
 }
 
+// used for serverside only
+// for calculating myth grade (bonus like Seraphim, Metatron etc)
+Int32 RTCharacterMythMasteryGetRealHolyPoints(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+	return Character->Data.MythMasteryInfo.Info.HolyPower + Character->Data.MythMasteryInfo.BonusHolyPower;
+}
+
 Void RTCharacterMythMasteryAssertHolyPoints(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character
@@ -519,14 +529,14 @@ Void RTCharacterMythMasteryAssertHolyPoints(
 	Int32 PointsFromMythGrade = 0;
 
 	// stigma -- COUNTS AS BONUS, DO NOT SEND TO CLIENT. IT CALCULATES CLIENT SIDE
-	//for (Int32 Index = 0; Index < Character->Data.MythMasteryInfo.Info.StigmaGrade; Index++) {
-	//	RTDataStigmaInfoRef MythStigmaInfo = RTRuntimeDataStigmaInfoGet(Runtime->Context, Index);
-	//	assert(MythStigmaInfo);
-	//	// stop at our level. we must exceed the grade to collect it's points
-	//	if (MythStigmaInfo->Grade >= Character->Data.MythMasteryInfo.Info.StigmaGrade) break;
+	for (Int32 Index = 0; Index < Character->Data.MythMasteryInfo.Info.StigmaGrade; Index++) {
+		RTDataStigmaInfoRef MythStigmaInfo = RTRuntimeDataStigmaInfoGet(Runtime->Context, Index);
+		assert(MythStigmaInfo);
+		// stop at our level. we must exceed the grade to collect it's points
+		if (MythStigmaInfo->Grade >= Character->Data.MythMasteryInfo.Info.StigmaGrade) break;
 
-	//	PointsFromMythGrade += MythStigmaInfo->AwardedHolyPoint;
-	//}
+		PointsFromMythGrade += MythStigmaInfo->AwardedHolyPoint;
+	}
 
 	RTDataMythLockPageRef MythLockPageInfo = RTRuntimeDataMythLockPageGet(Runtime->Context, 0);
 
@@ -549,7 +559,8 @@ Void RTCharacterMythMasteryAssertHolyPoints(
 		PointsFromSlots += RTCharacterMythMasteryGetSlotHolyValue(Runtime, Character, CurrentSlot);
 	}
 
-	Character->Data.MythMasteryInfo.Info.HolyPower = PointsFromMythGrade + PointsFromSlots;
+	Character->Data.MythMasteryInfo.Info.HolyPower = PointsFromSlots;
+	Character->Data.MythMasteryInfo.BonusHolyPower = PointsFromMythGrade;
 	Character->SyncMask.MythMasteryInfo = true;
 }
 
@@ -669,23 +680,3 @@ UInt32 RTCharacterMythMasteryGetRestoreItemID(
 
 	return MythRestoreItemRef->ItemID;
 }
-
-/*
-if (!RTInventoryCanConsumeStackableItems(
-	Runtime,
-	&Character->Data.InventoryInfo,
-	GradeLevelData->ExtraMaterialItemID,
-	GradeLevelData->RequiredExtraMaterialItemCount,
-	InventorySlotCount2,
-	InventorySlotIndex2
-)) return false;
-
-RTInventoryConsumeStackableItems(
-	Runtime,
-	&Character->Data.InventoryInfo,
-	GradeInfoData->MaterialItemID,
-	GradeLevelData->RequiredMaterialItemCount,
-	InventorySlotCount1,
-	InventorySlotIndex1
-);
-*/

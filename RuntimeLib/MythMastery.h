@@ -34,6 +34,7 @@ struct _RTCharacterMythMasteryInfo {
     struct _RTMythMasteryInfo Info;
     struct _RTMythMasterySlot Slots[RUNTIME_CHARACTER_MAX_MYTH_SLOT_COUNT];
     struct _RTMythMasterySlot TemporarySlot; // This must be in the unknown[13] but idk
+    Int32 BonusHolyPower;
 };
 
 #pragma pack(pop)
@@ -162,6 +163,11 @@ Bool RTCharacterMythMasteryGetSlotOccupied(
     RTCharacterRef,
     Int32 MasteryIndex,
     Int32 LockGroup
+);
+
+Int32 RTCharacterMythMasteryGetRealHolyPoints(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
 );
 
 Void RTCharacterMythMasteryAssertHolyPoints(
