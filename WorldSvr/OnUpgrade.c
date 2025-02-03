@@ -739,14 +739,29 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_ITEM_LEVEL) {
 	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
 	if (!ItemData) goto error;
 
-	RTDataDivineUpgradeMainRef DivineUpgradeMain = RTRuntimeDataDivineUpgradeMainGet(Runtime->Context, ItemData->ItemGrade, ItemData->ItemType);
-	if (!DivineUpgradeMain) goto error;
+	// convert other HELMED2 to HELMED
+	Int32 ItemTypeOverride = ItemData->ItemType;
+	if (ItemTypeOverride == RUNTIME_ITEM_TYPE_HELMED2) {
+		ItemTypeOverride = RUNTIME_ITEM_TYPE_HELMED1;
+	}
+
+	RTDataDivineUpgradeMainRef DivineUpgradeMain = RTRuntimeDataDivineUpgradeMainGet(Runtime->Context, ItemData->ItemGrade, ItemTypeOverride);
+	if (!DivineUpgradeMain) {
+		Warn("Failed to get divine upgrade main for divine up");
+		goto error;
+	}
 
 	RTDataDivineUpgradeGroupCostRef GroupCost = RTRuntimeDataDivineUpgradeGroupCostGet(Runtime->Context, DivineUpgradeMain->Group);
-	if (!GroupCost) goto error;
+	if (!GroupCost) {
+		Warn("Failed to get group cost for divine up");
+		goto error;
+	}
 
 	RTDataDivineUpgradeGroupCostLevelRef GroupCostLevel = RTRuntimeDataDivineUpgradeGroupCostLevelGet(GroupCost, ItemSlot->Item.DivineLevel);
-	if (!GroupCostLevel) goto error;
+	if (!GroupCostLevel) {
+		Warn("Failed to get group cost level for divine up");
+		goto error;
+	}
 
 	RTItemSlotRef CoreSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, CoreSlotIndices[0]);
 	assert(CoreSlot);
@@ -866,16 +881,35 @@ CLIENT_PROCEDURE_BINDING(DIVINE_UPGRADE_SEAL) {
 	if (!TargetSlot) goto error;
 
 	RTItemDataRef TargetData = RTRuntimeGetItemDataByIndex(Runtime, TargetSlot->Item.ID);
-	if (!TargetData) goto error;
+	if (!TargetData) {
+		Error("Failed to item data in divine upgrade!");
+		goto error;
+	}
 
-	RTDataDivineUpgradeMainRef DivineUpgradeMain = RTRuntimeDataDivineUpgradeMainGet(Runtime->Context, TargetData->ItemGrade, TargetData->ItemType);
-	if (!DivineUpgradeMain) goto error;
+	// convert other HELMED2 to HELMED
+	Int32 ItemTypeOverride = TargetData->ItemType;
+	if (ItemTypeOverride == RUNTIME_ITEM_TYPE_HELMED2) {
+		ItemTypeOverride = RUNTIME_ITEM_TYPE_HELMED1;
+	}
+
+	RTDataDivineUpgradeMainRef DivineUpgradeMain = RTRuntimeDataDivineUpgradeMainGet(Runtime->Context, TargetData->ItemGrade, ItemTypeOverride);
+	if (!DivineUpgradeMain) {
+		Error("Failed to get divine upgrade main for %d", ItemTypeOverride);
+		goto error;
+	}
 
 	RTItemOptions SourceItemOptions = { .Serial = SourceSlot->ItemOptions };
 	if (SourceSlot->ItemOptions) {
 		if (TargetSlot->Item.DivineLevel > 0) goto error;
-		if (SourceItemOptions.DivineSeal.ItemCategory != DivineUpgradeMain->ItemCategory) goto error;
-		if (SourceItemOptions.DivineSeal.ItemGrade != TargetData->ItemGrade) goto error;
+		if (SourceItemOptions.DivineSeal.ItemCategory != DivineUpgradeMain->ItemCategory) {
+			// view orb, blade and chakram as same
+			if (SourceItemOptions.DivineSeal.ItemCategory == RUNTIME_ITEM_CATEGORY_WEAPON_FORCE_CONTROLLER || SourceItemOptions.DivineSeal.ItemCategory == RUNTIME_ITEM_CATEGORY_WEAPON_ONE_HAND || SourceItemOptions.DivineSeal.ItemCategory == RUNTIME_ITEM_TYPE_CHAKRAM && (DivineUpgradeMain->ItemCategory == RUNTIME_ITEM_CATEGORY_WEAPON_FORCE_CONTROLLER || DivineUpgradeMain->ItemCategory == RUNTIME_ITEM_CATEGORY_WEAPON_ONE_HAND || DivineUpgradeMain->ItemCategory == RUNTIME_ITEM_TYPE_CHAKRAM)) {}
+			else
+				goto error;
+		}
+		if (SourceItemOptions.DivineSeal.ItemGrade != TargetData->ItemGrade) {
+			goto error;
+		}
 
 		TargetSlot->Item.DivineLevel = SourceItemOptions.DivineSeal.ItemLevel;
 		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, SourceSlot->SlotIndex);
