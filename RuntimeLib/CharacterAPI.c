@@ -458,6 +458,24 @@ Int32 lua_RTCharacterResetMythSlots(lua_State* State) {
     return 0;
 }
 
+Int32 lua_RTCharacterResetHonorMedalSlots(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    RTCharacterDebugDeleteHonorMedalCategory(Runtime, Character, 1);
+    RTCharacterDebugDeleteHonorMedalCategory(Runtime, Character, 2);
+    RTCharacterDebugDeleteHonorMedalCategory(Runtime, Character, 3);
+    RTCharacterDebugDeleteHonorMedalCategory(Runtime, Character, 4);
+    RTCharacterDebugDeleteHonorMedalCategory(Runtime, Character, 5);
+
+    return 0;
+}
+
 Void RTScriptBindCharacterAPI(
 	RTScriptRef Script
 ) {
@@ -491,6 +509,7 @@ Void RTScriptBindCharacterAPI(
         "EnableMyth", lua_RTCharacterEnableMyth,
         "AddMythPoints", lua_RTCharacterAddMythPoints,
         "ClearMythSlots", lua_RTCharacterResetMythSlots,
+        "ClearHonorMedalSlots", lua_RTCharacterResetHonorMedalSlots,
         NULL
     );
 }

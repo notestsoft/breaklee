@@ -28,5 +28,13 @@ CLIENT_PROCEDURE_BINDING(GET_FORCEGEM_PRICE_POOL) {
 		ResponseData->Price = (100 - ResponseData->PriceIndex) * MythRebirthPenaltyRef->PenaltyPerMissingLevel;
 	}
 
+	for (Int Index = 0; Index < 5; Index++) {
+		Response->Count += 1;
+		S2C_DATA_GET_FORCEGEM_PRICE* ResponseData = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_GET_FORCEGEM_PRICE);
+		ResponseData->PoolIndex = 17;
+		ResponseData->PriceIndex = 0 + Index;
+		ResponseData->Price = 5 + (Index * 5);
+	}
+
 	SocketSend(Socket, Connection, Response);
 }
