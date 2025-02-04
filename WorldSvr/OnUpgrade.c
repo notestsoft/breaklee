@@ -120,10 +120,11 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 		ForceCoreBaseCode = &ForceCoreBase->ForceCoreBaseCodeList[RandomIndex];
 	}
 	else {
-		ForceCoreBaseCode = RTRuntimeDataForceCoreBaseCodeGet(ForceCoreBase, MainScrollOptions.OptionScroll.ForceEffectIndex);
+		ForceCoreBaseCode = RTRuntimeDataForceCoreBaseCodeGet(ForceCoreBase, IsOneHandedWeapon ? MainScrollOptions.OptionScroll.ForceEffectIndex : RTItemUpgradeGet2HForceEffectIndex(MainScrollOptions.OptionScroll.ForceEffectIndex));
 	}
 
 	if (!ForceCoreBaseCode) {
+		Error("NO FORCE CORE BASE CODE FOUND FOR FORCE OPTION ADD EffectIndex: %u", MainScrollOptions.OptionScroll.ForceEffectIndex);
 		goto error;
 	}
 
