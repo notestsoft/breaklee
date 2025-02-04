@@ -561,6 +561,7 @@ Void RTCharacterMythMasteryAssertHolyPoints(
 
 	Character->Data.MythMasteryInfo.Info.HolyPower = PointsFromSlots;
 	Character->Data.MythMasteryInfo.BonusHolyPower = PointsFromMythGrade;
+	RTCharacterInitializeAttributes(Runtime, Character);
 	Character->SyncMask.MythMasteryInfo = true;
 }
 
@@ -603,6 +604,7 @@ Void RTCharacterMythMasteryAddStigmaExp(
 		// prepare next loop
 		MythStigmaInfo = RTRuntimeDataStigmaInfoGet(Runtime->Context, Character->Data.MythMasteryInfo.Info.StigmaGrade);
 		ExpForLevelup = MythStigmaInfo->RequiredExp;
+		RTCharacterMythMasteryAssertHolyPoints(Runtime, Character);
 	}
 
 	Character->Data.MythMasteryInfo.Info.StigmaExp = CurrentExp;
@@ -635,6 +637,7 @@ Void RTCharacterMythDebugResetSlots(
 
 	Character->Data.MythMasteryInfo.Info.MasterySlotCount = 0;
 	Character->SyncMask.MythMasteryInfo = true;
+	RTCharacterInitializeAttributes(Runtime, Character);
 }
 
 Bool RTCharacterMythMasteryRollback(

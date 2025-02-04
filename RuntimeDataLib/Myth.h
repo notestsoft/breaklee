@@ -79,6 +79,15 @@ RUNTIME_DATA_TYPE_END(MythLockPage)
 RUNTIME_DATA_TYPE_INDEX(MythLockPage, Int32, MasteryIndex)
 RUNTIME_DATA_TYPE_INDEX_CHILD(MythLockPage, MythLockInfo, Int32, LockGroup)
 
+RUNTIME_DATA_TYPE_BEGIN(MythGrade, "Myth.Grade.GradeInfo")
+	RUNTIME_DATA_PROPERTY(Int32, Grade, "GradeID")
+	RUNTIME_DATA_PROPERTY(Int32, RequiredPoints, "GradePoint")
+	RUNTIME_DATA_PROPERTY(Int32, ForceCode, "ForceID")
+	RUNTIME_DATA_PROPERTY(Int32, ForceValueType, "Value_type")
+	RUNTIME_DATA_PROPERTY(Int32, ForceValue, "Value")
+RUNTIME_DATA_TYPE_END(MythGrade)
+RUNTIME_DATA_TYPE_INDEX(MythGrade, Int32, Grade)
+
 RUNTIME_DATA_FILE_END
 
 RUNTIME_DATA_FILE_BEGIN(DIR_PATH(Character, MythMastery.xml))

@@ -175,4 +175,5 @@ Void RTCharacterDebugDeleteHonorMedalCategory(
     }
 
     Character->SyncMask.HonorMedalInfo = true;
+    RTCharacterInitializeAttributes(Runtime, Character);
 }

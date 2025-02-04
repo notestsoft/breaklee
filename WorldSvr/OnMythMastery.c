@@ -28,6 +28,7 @@ CLIENT_PROCEDURE_BINDING(MYTH_ROLL_SLOT) {
 	Response->StigmaGrade = Character->Data.MythMasteryInfo.Info.StigmaGrade;
 	Response->StigmaXP = Character->Data.MythMasteryInfo.Info.StigmaExp;
 	Response->ErrorCode = Success ? 0 : 1;
+	RTCharacterInitializeAttributes(Runtime, Character);
 	SocketSend(Socket, Connection, Response);
 	return;
 
@@ -94,6 +95,7 @@ CLIENT_PROCEDURE_BINDING(MYTH_FINISH_ROLL_SLOT) {
 
 	if (Packet->RollbackToTempSlot == 1)
 		Response->ErrorCode = RollbackSuccess ? 0 : 1;
+	RTCharacterInitializeAttributes(Runtime, Character);
 	SocketSend(Socket, Connection, Response);
 	return;
 
@@ -115,8 +117,8 @@ CLIENT_PROCEDURE_BINDING(MYTH_OPEN_LOCK) {
 		Response->ErrorCode = 0;
 
 		Character->Data.MythMasteryInfo.Info.UnlockedPageCount = MythLockInfoRef->LockGroup;
-		Character->Data.MythMasteryInfo.Info.HolyPower += MythLockInfoRef->BonusScore;
-		Character->SyncMask.MythMasteryInfo = true;
+		RTCharacterMythMasteryAssertHolyPoints(Runtime, Character);
+		//assert sets sync mask
 	}
 	else {
 		Response->MasteryIndex = 0;
