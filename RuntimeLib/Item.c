@@ -1415,35 +1415,53 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemDivineConverter) {
 	struct _RTItemConverterPayload* Data = Payload;
 
 	RTItemSlotRef TargetItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Data->TargetSlotIndex);
-	if (!TargetItemSlot) return RUNTIME_ITEM_USE_RESULT_FAILED;
+	if (!TargetItemSlot) {
+		return RUNTIME_ITEM_USE_RESULT_FAILED;
+	}
 
 	RTItemDataRef TargetItemData = RTRuntimeGetItemDataByIndex(Runtime, TargetItemSlot->Item.ID);
-	if (!TargetItemData) return RUNTIME_ITEM_USE_RESULT_FAILED;
+	if (!TargetItemData) {
+		return RUNTIME_ITEM_USE_RESULT_FAILED;
+	}
 
 	// TODO: Check divine converter subtype from Options[0]
 	//	1 = Weapon
 	//	2 = Armor
 	//	3 = Bike
 
+	// convert other HELMED2 to HELMED
+	Int32 ItemTypeOverride = TargetItemData->ItemType;
+	if (ItemTypeOverride == RUNTIME_ITEM_TYPE_HELMED2) {
+		ItemTypeOverride = RUNTIME_ITEM_TYPE_HELMED1;
+	}
+
 	RTDataDivineUpgradeMainRef UpgradeMain = RTRuntimeDataDivineUpgradeMainGet(
 		Runtime->Context,
 		TargetItemData->ItemGrade,
-		TargetItemData->ItemType
+		ItemTypeOverride
 	);
-	if (!UpgradeMain) return RUNTIME_ITEM_USE_RESULT_FAILED;
+	if (!UpgradeMain) {
+		return RUNTIME_ITEM_USE_RESULT_FAILED;
+	}
 
 	RTDataDivineUpgradeGroupCostRef UpgradeGroupCost = RTRuntimeDataDivineUpgradeGroupCostGet(
 		Runtime->Context,
 		UpgradeMain->Group
 	);
-	if (!UpgradeGroupCost) return RUNTIME_ITEM_USE_RESULT_FAILED;
+	if (!UpgradeGroupCost) {
+		return RUNTIME_ITEM_USE_RESULT_FAILED;
+	}
 
 	RTDataDivineUpgradeGroupCostLevelRef UpgradeGroupCostLevel = RTRuntimeDataDivineUpgradeGroupCostLevelGet(
 		UpgradeGroupCost,
 		TargetItemSlot->Item.DivineLevel
 	);
-	if (!UpgradeGroupCostLevel) return RUNTIME_ITEM_USE_RESULT_FAILED;
-	if (UpgradeGroupCostLevel->RequiredCoreCount > 0 || UpgradeGroupCostLevel->RequiredSafeCount > 0) return RUNTIME_ITEM_USE_RESULT_FAILED;
+	if (!UpgradeGroupCostLevel) {
+		return RUNTIME_ITEM_USE_RESULT_FAILED;
+	}
+	if (UpgradeGroupCostLevel->RequiredCoreCount > 0 || UpgradeGroupCostLevel->RequiredSafeCount > 0) {
+		return RUNTIME_ITEM_USE_RESULT_FAILED;
+	}
 
 	TargetItemSlot->Item.DivineLevel += 1;
 	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, ItemSlot->SlotIndex);

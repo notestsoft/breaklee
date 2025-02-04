@@ -479,6 +479,7 @@ Bool ParseAttributeRTDataItemType(
         { "GLOVE", RUNTIME_ITEM_TYPE_GLOVES },
         { "BOOT", RUNTIME_ITEM_TYPE_BOOTS },
         { "HELM", RUNTIME_ITEM_TYPE_HELMED1 },
+        { "HELM2", RUNTIME_ITEM_TYPE_HELMED2 },
         { "BIKE", RUNTIME_ITEM_TYPE_VEHICLE_BIKE },
         { "CHAKRAM", RUNTIME_ITEM_TYPE_CHAKRAM },
         { "AMULET", RUNTIME_ITEM_TYPE_AMULET },
@@ -652,6 +653,9 @@ Bool ParseAttributeRTDataItemCategory(
     else if (strcmp(Data->Data, "HELM") == 0) {
         *Result = RUNTIME_ITEM_CATEGORY_HELMED;
     }
+    else if (strcmp(Data->Data, "HELM2") == 0) {
+        *Result = RUNTIME_ITEM_CATEGORY_HELMED;
+    }
     else if (strcmp(Data->Data, "BIKE") == 0) {
         *Result = RUNTIME_ITEM_CATEGORY_VEHICLE_BIKE;
     }
@@ -702,6 +706,9 @@ Bool ParseAttributeRTDataItemGroup(
         *Result = RUNTIME_ITEM_GROUP_ARMOR;
     }
     else if (strcmp(Data->Data, "HELM") == 0) {
+        *Result = RUNTIME_ITEM_GROUP_ARMOR;
+    }
+    else if (strcmp(Data->Data, "HELM2") == 0) {
         *Result = RUNTIME_ITEM_GROUP_ARMOR;
     }
     else if (strcmp(Data->Data, "BIKE") == 0) {

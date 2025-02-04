@@ -200,10 +200,19 @@ Int32 RTItemUpgradeDivine(
     Int32* ResultLevel
 ) {
     RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, Item->Item.ID);
-    if (!ItemData) return RUNTIME_DIVINE_UPGRADE_RESULT_ERROR;
+    if (!ItemData) {
+        return RUNTIME_DIVINE_UPGRADE_RESULT_ERROR;
+    }
 
-    RTDataDivineUpgradeMainRef UpgradeMain = RTRuntimeDataDivineUpgradeMainGet(Runtime->Context, ItemData->ItemGrade, ItemData->ItemType);
-    if (!UpgradeMain) return RUNTIME_DIVINE_UPGRADE_RESULT_ERROR;
+    // convert other HELMED2 to HELMED
+    Int32 ItemTypeOverride = ItemData->ItemType;
+    if (ItemTypeOverride == RUNTIME_ITEM_TYPE_HELMED2) {
+        ItemTypeOverride = RUNTIME_ITEM_TYPE_HELMED1;
+    }
+
+    RTDataDivineUpgradeMainRef UpgradeMain = RTRuntimeDataDivineUpgradeMainGet(Runtime->Context, ItemData->ItemGrade, ItemTypeOverride);
+    if (!UpgradeMain)
+        return RUNTIME_DIVINE_UPGRADE_RESULT_ERROR;
 
     RTDataDivineUpgradeGroupRateRef UpgradeGroupRate = RTRuntimeDataDivineUpgradeGroupRateGet(Runtime->Context, UpgradeMain->Group);
     if (!UpgradeGroupRate) return RUNTIME_DIVINE_UPGRADE_RESULT_ERROR;

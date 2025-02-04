@@ -38,4 +38,9 @@ RTOverlordMasterySlotRef RTCharacterGetOverlordMasterySlot(
     Int32 MasteryIndex
 );
 
+Void RTCharacterDebugClearOverlordMasterySlots(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
 EXTERN_C_END
