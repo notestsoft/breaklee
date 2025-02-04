@@ -71,4 +71,6 @@ Void RTCharacterDebugClearOverlordMasterySlots(
 
 	Character->Data.OverlordMasteryInfo.Info.SlotCount = 0;
 	Character->SyncMask.OverlordMasteryInfo = true;
+
+	RTCharacterInitializeAttributes(Runtime, Character);
 }
