@@ -105,4 +105,8 @@ Int32 RTItemUpgradeDivine(
     Int32* ResultLevel
 );
 
+Int32 RTItemUpgradeGet2HForceEffectIndex(
+    Int32 InForceIndex
+);
+
 EXTERN_C_END
