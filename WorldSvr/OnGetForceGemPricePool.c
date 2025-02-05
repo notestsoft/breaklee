@@ -20,11 +20,11 @@ CLIENT_PROCEDURE_BINDING(GET_FORCEGEM_PRICE_POOL) {
 	// TODO: Remove this garbage
 	RTDataMythRebirthPenaltyRef MythRebirthPenaltyRef = RTRuntimeDataMythRebirthPenaltyGet(Runtime->Context);
 
-	for (Int Index = 0; Index < 5; Index++) {
+	for (Int Index = 0; Index < 6; Index++) {
 		Response->Count += 1;
 		S2C_DATA_GET_FORCEGEM_PRICE* ResponseData = PacketBufferAppendStruct(PacketBuffer, S2C_DATA_GET_FORCEGEM_PRICE);
 		ResponseData->PoolIndex = 32;
-		ResponseData->PriceIndex = 95 + Index;
+		ResponseData->PriceIndex = 95 + Index; // the myth level
 		ResponseData->Price = (100 - ResponseData->PriceIndex) * MythRebirthPenaltyRef->PenaltyPerMissingLevel;
 	}
 

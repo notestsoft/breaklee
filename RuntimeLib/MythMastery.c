@@ -290,13 +290,15 @@ Bool RTCharacterMythMasteryRebirth(
 	// myth resurrect up
 	// resets client XP to 0
 	// resets client lvl to 1
-	// increases resurrection points
+	// sets resurrection count
 	NOTIFICATION_DATA_CHARACTER_DATA* LevelUpNotification = RTNotificationInit(CHARACTER_DATA);
 	LevelUpNotification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_MYTH_RESURRECT;
-	LevelUpNotification->Level = 1;
+	LevelUpNotification->Level = Character->Data.MythMasteryInfo.Info.Rebirth;
 	RTNotificationDispatchToNearby(LevelUpNotification, Character->Movement.WorldChunk);
 
+	//TODO: Send this packet and add item to server side inventory
 	// this adds item to inventory
+	/*
 	NOTIFICATION_DATA_MYTH_RESURRECT_REWARD* ResNotification = RTNotificationInit(MYTH_RESURRECT_REWARD);
 	ResNotification->Result = 1;
 	ResNotification->ItemId = 33562089;
@@ -304,6 +306,7 @@ Bool RTCharacterMythMasteryRebirth(
 	ResNotification->InventorySlotIndex = 41;
 	ResNotification->Unknown2 = 1;
 	RTNotificationDispatchToCharacter(ResNotification, Character);
+	*/
 
 	return true;
 }
@@ -643,10 +646,11 @@ Void RTCharacterMythDebugResetSlots(
 Bool RTCharacterMythMasteryRollback(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
-	RTMythMasterySlotRef Slot,
-	UInt16 InventoryIndexCount,
-	UInt16 InventoryIndexs[]
+	RTMythMasterySlotRef Slot
 ) {
+	return true;
+	//TODO: Check item is in inventory and consume
+	/*
 	RTDataMythMasterySlotGroupRef SlotPage = RTRuntimeDataMythMasterySlotGroupGet(Runtime->Context, Slot->MasteryIndex, Slot->SlotIndex);
 
 	if (!SlotPage) {
@@ -671,6 +675,7 @@ Bool RTCharacterMythMasteryRollback(
 	}
 
 	return true;
+	*/
 }
 
 UInt32 RTCharacterMythMasteryGetRestoreItemID(
