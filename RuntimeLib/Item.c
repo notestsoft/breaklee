@@ -906,7 +906,6 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSkillBook) {
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemImmediateReward) {
-	ItemData->
 	Warn("ItemData Option0: %d", ItemData->Options[0]);
 	switch (ItemData->Options[0]) {
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_ALZ:

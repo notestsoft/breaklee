@@ -7,7 +7,10 @@
 
 CLIENT_PROCEDURE_BINDING(ATTACK_TO_MOB) {
 	if (!Character) goto error;
-	if (!RTCharacterIsAlive(Runtime, Character)) goto error;
+	if (!RTCharacterIsAlive(Runtime, Character)) {
+		Error("Tried to hit mob while character dead!!!");
+		goto error;
+	}
 	if (Packet->EntityIDType != RUNTIME_ENTITY_TYPE_MOB) goto error;
 
 	// TODO: Check if mob is in attack range (auto miss target)
@@ -15,8 +18,14 @@ CLIENT_PROCEDURE_BINDING(ATTACK_TO_MOB) {
 
     RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
 	RTMobRef Mob = RTWorldContextGetMob(World, Packet->Entity);
-	if (!Mob) goto error;
-	if (Mob->IsDead) goto error; // TODO: (auto miss target)
+	if (!Mob) {
+		Error("Tried to hit nonexistent mob!!!");
+		goto error;
+	}
+	if (Mob->IsDead) {
+		Error("Tried to hit dead mob!!!");
+		goto error; // TODO: (auto miss target)
+	}
 
 	RTBattleResult Result = RTCalculateNormalAttackResult(
 		Runtime,

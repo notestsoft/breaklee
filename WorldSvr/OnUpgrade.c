@@ -16,27 +16,43 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 	if (!ItemSlot) goto error;
 
 	RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, ItemSlot->Item.ID);
-	if (!ItemData) goto error;
+	if (!ItemData) {
+		Error("Failed to get item data for slotting!");
+		goto error;
+	}
 
 	RTDataUpgradeGradeRef UpgradeGrade = RTRuntimeDataUpgradeGradeGet(Runtime->Context, ItemData->ItemGrade);
-	if (!UpgradeGrade) goto error;
+	if (!UpgradeGrade) {
+		Error("Failed to get upgrade grade for slotting!");
+		goto error;
+	}
 
 	Int32 CostGrade = UpgradeGrade->CostGrade;
 
 	RTDataUpgradeGradeChangeRef UpgradeGradeChange = RTRuntimeDataUpgradeGradeChangeGet(Runtime->Context, ItemData->ItemType, ItemData->ItemGrade);
 	if (UpgradeGradeChange) {
+		Error("Failed to get upgrade grade change for slotting!");
 		CostGrade = UpgradeGradeChange->CostGrade;
 	}
 
 	for (Int SlotIndex = 0; SlotIndex < Packet->ForceCoreCount; SlotIndex += 1) {
 		RTItemSlotRef ForceCoreSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->ForceCoreSlotIndices[SlotIndex]);
-		if (!ForceCoreSlot) goto error;
+		if (!ForceCoreSlot) {
+			Error("Failed to get force core slot for slotting!");
+			goto error;
+		}
 		
 		RTItemDataRef ForceCoreData = RTRuntimeGetItemDataByIndex(Runtime, ForceCoreSlot->Item.ID);
-		if (!ForceCoreData) goto error;
+		if (!ForceCoreData) {
+			Error("Failed to get force core data for slotting!");
+			goto error;
+		}
 
 		if (ForceCoreData->ItemType != RUNTIME_ITEM_TYPE_FORCE_CORE) goto error;
-		if (ForceCoreData->ItemGrade != CostGrade) goto error;
+		if (ForceCoreData->ItemGrade != CostGrade) {
+			Error("Got wrong force core data item grade compared to cost grade!");
+			goto error;
+		}
 	}
 
 	RTItemOptions ItemOptions = { 0 };
@@ -47,9 +63,15 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 	if (FilledSlotCount >= TotalSlotCount) goto error;
 
 	RTDataForceCodeCostRef ForceCodeCost = RTRuntimeDataForceCodeCostGet(Runtime->Context, CostGrade, FilledSlotCount);
-	if (!ForceCodeCost) goto error;
+	if (!ForceCodeCost) {
+		Error("Failed to get force code cost for slotting!");
+		goto error;
+	}
 
-	if (Character->Data.Info.Alz < ForceCodeCost->CurrencyCost) goto error;
+	if (Character->Data.Info.Alz < ForceCodeCost->CurrencyCost) {
+		Error("Tried to slot item with too little Alz!");
+		goto error;
+	}
 
 	Bool IsOneHandedWeapon = (
 		ItemData->ItemType == RUNTIME_ITEM_TYPE_WEAPON_ONE_HAND ||
@@ -58,12 +80,20 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 	);
 	Int32 ItemType = IsOneHandedWeapon ? RUNTIME_ITEM_TYPE_WEAPON_ONE_HAND : ItemData->ItemType;
 
+	if (ItemType == RUNTIME_ITEM_TYPE_HELMED2) {
+		ItemType = RUNTIME_ITEM_TYPE_HELMED1;
+	}
+
 	Bool IsTwoHandedWeapon = (
 		ItemData->ItemType == RUNTIME_ITEM_TYPE_WEAPON_TWO_HAND
 	);
 
 	RTDataForceCoreBaseRef ForceCoreBase = RTRuntimeDataForceCoreBaseGet(Runtime->Context, ItemData->ItemGrade, ItemType);
-	if (!ForceCoreBase) goto error;
+	if (!ForceCoreBase) {
+		Error("Failed to get force core base for slotting!");
+		Error("ItemGrade: %d ItemType: %d", ItemData->ItemGrade, ItemType);
+		goto error;
+	}
 
 	RTItemSlotRef FixedScrollSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, Packet->OptionScrollSlotIndex);
 	RTItemDataRef FixedScrollData = NULL;
@@ -149,7 +179,7 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 
 	SuccessRate *= Packet->ForceCoreCount;
 	
-	RTDataForceCodeRateRef ForceCodeRate = RTRuntimeDataForceCodeRateGet(Runtime->Context, ItemData->ItemType, FilledSlotCount, ItemSlot->Item.UpgradeLevel);
+	RTDataForceCodeRateRef ForceCodeRate = RTRuntimeDataForceCodeRateGet(Runtime->Context, ItemType, FilledSlotCount, ItemSlot->Item.UpgradeLevel);
 	if (!ForceCodeRate) goto error;
 
 	Int32 EqualSlotCount = RTItemOptionGetForceSlotCount(ItemOptions, ForceCoreBaseCode->ForceIndex);
