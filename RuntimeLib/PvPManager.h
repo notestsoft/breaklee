@@ -36,9 +36,9 @@ Void RTPvPManagerUpdate(
 
 RTPvPContextRef RTPvPManagerCreateContext(
     RTPvPManagerRef PvPManager,
-    UInt8 PvpType,
     UInt32 SourceCharacterIndex,
-    UInt32 TargetCharacterIndex
+    UInt32 TargetCharacterIndex,
+    UInt8 PvpType
 );
 
 Bool RTPvPManagerDestroyContext(
