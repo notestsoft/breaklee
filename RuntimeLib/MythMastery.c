@@ -380,7 +380,9 @@ RTMythMasterySlotRef RTCharacterMythMasteryGetSlot(
 ) {
 	for (Int Index = 0; Index < Character->Data.MythMasteryInfo.Info.MasterySlotCount; Index += 1) {
 		RTMythMasterySlotRef MasterySlot = &Character->Data.MythMasteryInfo.Slots[Index];
-		if (MasterySlot->MasteryIndex == MasteryIndex && MasterySlot->SlotIndex == SlotIndex) return MasterySlot;
+		if (MasterySlot->MasteryIndex == MasteryIndex && MasterySlot->SlotIndex == SlotIndex) {
+			return MasterySlot;
+		}
 	}
 
 	return NULL;
@@ -396,16 +398,27 @@ RTMythMasterySlotRef RTCharacterMythMasteryGetOrCreateSlot(
 
 	// get slot ends here
 	RTMythMasterySlotRef MasterySlot = RTCharacterMythMasteryGetSlot(Runtime, Character, MasteryIndex, SlotIndex);
-	if (MasterySlot) return MasterySlot;
+	if (MasterySlot) {
+		Error("Get/Create failed on MasterySlot");
+		return MasterySlot;
+	}
 
 	// here and below we are opening slot for first time
 	RTDataMythSlotPageRef MasterySlotPage = RTRuntimeDataMythSlotPageGet(Runtime->Context, MasteryIndex);
-	if (!MasterySlotPage) return NULL;
+	if (!MasterySlotPage) {
+		Error("No myth mastery slot page!");
+		return NULL;
+	}
 
 	RTDataMythSlotInfoRef MasterySlotInfo = RTRuntimeDataMythSlotInfoGet(MasterySlotPage, SlotIndex);
-	if (!MasterySlotInfo) return NULL;
+	if (!MasterySlotInfo) {
+		Error("No myth mastery slot info!");
+		return NULL;
+	}
 
-	if (Character->Data.MythMasteryInfo.Info.Points <= MasterySlotInfo->UnlockCost || !RTCharacterMythMasteryGetPrerequisiteMetForSlot(Runtime, Character, MasteryIndex, MasterySlotInfo->PrerequisiteSlot, MasterySlotInfo->PrerequisiteSlot2)) {
+	if (Character->Data.MythMasteryInfo.Info.Points < MasterySlotInfo->UnlockCost || !RTCharacterMythMasteryGetPrerequisiteMetForSlot(Runtime, Character, MasteryIndex, MasterySlotInfo->PrerequisiteSlot, MasterySlotInfo->PrerequisiteSlot2)) {
+		Error("Points: %d Required Points: %d", Character->Data.MythMasteryInfo.Info.Points, MasterySlotInfo->UnlockCost);
+		Error("Failed prereq while creating slot!");
 		return NULL;
 	}
 
@@ -470,10 +483,16 @@ Bool RTCharacterMythMasteryRollSlot(
 		MasterySlot->MasteryIndex,
 		MasterySlot->SlotIndex
 	);
-	if (!MasterySlotGroup) return false;
+	if (!MasterySlotGroup) {
+		Error("No myth mastery slot group!");
+		return false;
+	}
 
 	RTDataMythMasterySlotValuePoolRef MasterySlotValuePool = RTRuntimeDataMythMasterySlotValuePoolGet(Runtime->Context, MasterySlotGroup->PoolID);
-	if (!MasterySlotValuePool) return false;
+	if (!MasterySlotValuePool) {
+		Error("No myth mastery slot value pool !");
+		return false;
+	}
 
 	Int32 SlotRollPrice = MasterySlotGroup->UnlockCost;
 
@@ -635,7 +654,7 @@ Void RTCharacterMythMasteryAddStigmaExp(
 	Character->SyncMask.MythMasteryInfo = true;
 }
 
-static Bool RTCharacterMythMasteryGetPrerequisiteMetForSlot(
+Bool RTCharacterMythMasteryGetPrerequisiteMetForSlot(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
 	Int32 MasteryIndex,

@@ -12,12 +12,18 @@ CLIENT_PROCEDURE_BINDING(MYTH_ROLL_SLOT) {
 	if (RTCharacterMythMasteryGetSlotOccupied(Runtime, Character, Packet->MasteryIndex, Packet->SlotIndex)) {
 		RTMythMasterySlotRef OldSlot = RTCharacterMythMasteryGetSlot(Runtime, Character, Packet->MasteryIndex, Packet->SlotIndex);
 
-		if (!OldSlot) goto error;
+		if (!OldSlot) {
+			Error("No old slot but slot occupied");
+			goto error;
+		}
 		memcpy(&Character->Data.MythMasteryInfo.TemporarySlot, OldSlot, sizeof(struct _RTMythMasterySlot));
 	}
 
 	RTMythMasterySlotRef MasterySlot = RTCharacterMythMasteryGetOrCreateSlot(Runtime, Character, Packet->MasteryIndex, Packet->SlotIndex);
-	if (!MasterySlot) goto error;
+	if (!MasterySlot) {
+		Error("Tried to get/create slot and failed!!!");
+		goto error;
+	}
 
 	Bool Success = RTCharacterMythMasteryRollSlot(Runtime, Character, MasterySlot);
 
