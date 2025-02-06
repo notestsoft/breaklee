@@ -555,10 +555,13 @@ RTBattleResult RTCalculateNormalAttackResult(
 	
 	Int32 Seed = PlatformGetTickCount();
 	Int32 Rate = RandomRange(&Seed, 0, 1000000);
-	if (Rate < Attributes.MissRate) {
+	// TODO: Fix rates
+	// Don't allow block/miss from normal chance in bm3 fatal hit and combo
+	// disable miss/block temporarily
+	if (false) { //Rate < Attributes.MissRate
 		Result.AttackType = RUNTIME_ATTACK_TYPE_MISS;
 	}
-	else if (Rate < Attributes.MissRate + Attributes.BlockRate) {
+	else if (false) { //Rate < Attributes.MissRate + Attributes.BlockRate
 		Result.AttackType = RUNTIME_ATTACK_TYPE_BLOCK;
 	}
 	else {
