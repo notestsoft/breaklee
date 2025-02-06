@@ -105,6 +105,27 @@ Void RTCharacterMythMasteryAddExp(
 	NOTIFICATION_DATA_MYTH_GAIN_XP* Notification = RTNotificationInit(MYTH_GAIN_XP);
 	Notification->MythXP = Character->Data.MythMasteryInfo.Info.Exp;
 	RTNotificationDispatchToCharacter(Notification, Character);
+
+	Character->SyncMask.MythMasteryInfo = true;
+}
+
+Void RTCharacterMythMasteryAddExpPercent(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 ExpPercent
+) {
+	if (Character->Data.MythMasteryInfo.Info.Level < 1) return;
+
+	// get current level info
+	RTDataMythLevelRef CurrentMythLevel = RTRuntimeDataMythLevelGet(Runtime->Context, Character->Data.MythMasteryInfo.Info.Level);
+	assert(CurrentMythLevel);
+
+	UInt64 GivenEXP = (CurrentMythLevel->RequiredExp * (UInt64)ExpPercent) / 100;
+
+	// Add myth XP penalty mod
+	GivenEXP *= RTCharacterMythMasteryGetExpPenaltyMultiplier(Runtime, Character->Data.MythMasteryInfo.Info.Rebirth);
+
+	RTCharacterMythMasteryAddExp(Runtime, Character, GivenEXP);
 }
 
 Void RTCharacterMythMasteryAddMythLevel(

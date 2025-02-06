@@ -906,6 +906,8 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemSkillBook) {
 }
 
 RUNTIME_ITEM_PROCEDURE_BINDING(RTItemImmediateReward) {
+	ItemData->
+	Warn("ItemData Option0: %d", ItemData->Options[0]);
 	switch (ItemData->Options[0]) {
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_ALZ:
 		Character->Data.Info.Alz += ItemSlot->ItemOptions;
@@ -946,6 +948,13 @@ RUNTIME_ITEM_PROCEDURE_BINDING(RTItemImmediateReward) {
 	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_OXP: {
 		if (Character->Data.OverlordMasteryInfo.Info.Level < 1) return RUNTIME_ITEM_USE_RESULT_FAILED;
 		RTCharacterAddOverlordExp(Runtime, Character, ItemSlot->ItemOptions);
+		break;
+	}
+
+	case RUNTIME_ITEM_SUBTYPE_IMMEDIATE_REWARD_MYTH_EXP: {
+		//TODO: Check MLV requirement before allowing usage
+		if (Character->Data.MythMasteryInfo.Info.Level < 1 || Character->Data.MythMasteryInfo.Info.Level == 100) return RUNTIME_ITEM_USE_RESULT_FAILED;
+		RTCharacterMythMasteryAddExpPercent(Runtime, Character, ItemSlot->ItemOptions);
 		break;
 	}
 

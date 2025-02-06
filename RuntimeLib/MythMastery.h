@@ -56,6 +56,12 @@ Void RTCharacterMythMasteryAddExp(
     UInt64 Exp
 );
 
+Void RTCharacterMythMasteryAddExpPercent(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 ExpPercent
+);
+
 Void RTCharacterMythMasteryAddMythLevel(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
