@@ -35,7 +35,7 @@ Void RTCharacterMythMasteryEnable(
 	NOTIFICATION_DATA_CHARACTER_DATA* LevelUpNotification = RTNotificationInit(CHARACTER_DATA);
 	LevelUpNotification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_MYTH_LEVEL;
 	LevelUpNotification->Level = 1;
-	RTNotificationDispatchToNearby(LevelUpNotification, Character->Movement.WorldChunk);
+	RTNotificationDispatchToCharacter(LevelUpNotification, Character);
 	 
 	// add initial myth points
 	RTCharacterMythMasteryAddMythPoints(Runtime, Character, MythStartRef->InitialPoints);
@@ -158,7 +158,7 @@ Void RTCharacterMythMasteryAddMythLevel(
 		NOTIFICATION_DATA_CHARACTER_DATA* LevelUpNotification = RTNotificationInit(CHARACTER_DATA);
 		LevelUpNotification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_MYTH_LEVEL;
 		LevelUpNotification->Level = Character->Data.MythMasteryInfo.Info.Level;
-		RTNotificationDispatchToNearby(LevelUpNotification, Character->Movement.WorldChunk);
+		RTNotificationDispatchToCharacter(LevelUpNotification, Character);
 	}
 }
 
@@ -315,7 +315,7 @@ Bool RTCharacterMythMasteryRebirth(
 	NOTIFICATION_DATA_CHARACTER_DATA* LevelUpNotification = RTNotificationInit(CHARACTER_DATA);
 	LevelUpNotification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_MYTH_RESURRECT;
 	LevelUpNotification->Level = Character->Data.MythMasteryInfo.Info.Rebirth;
-	RTNotificationDispatchToNearby(LevelUpNotification, Character->Movement.WorldChunk);
+	RTNotificationDispatchToCharacter(LevelUpNotification, Character);
 
 	//TODO: Send this packet and add item to server side inventory
 	// this adds item to inventory
