@@ -65,6 +65,12 @@ Void RTCharacterDataDecodeAbility(
     MemoryBufferRef MemoryBuffer
 );
 
+Int32 RTCharacterGetEssenceAbilitySlotIndex(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt32 AbilityID
+);
+
 RTEssenceAbilitySlotRef RTCharacterGetEssenceAbilitySlot(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
@@ -93,6 +99,12 @@ Bool RTCharacterRemoveEssenceAbility(
     UInt32 AbilityID
 );
 
+Int32 RTCharacterGetBlendedAbilitySlotIndex(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt32 AbilityID
+);
+
 Bool RTCharacterAddBlendedAbility(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
@@ -110,6 +122,12 @@ Bool RTCharacterUpgradeBlendedAbility(
 );
 
 Bool RTCharacterRemoveBlendedAbility(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt32 AbilityID
+);
+
+Int32 RTCharacterGetKarmaAbilitySlotIndex(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     UInt32 AbilityID

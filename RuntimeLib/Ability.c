@@ -23,6 +23,21 @@ Void RTCharacterDataDecodeAbility(
 	MemoryBufferReadBytesCopy(MemoryBuffer, CharacterData->AbilityInfo.KarmaAbilitySlots, sizeof(struct _RTKarmaAbilitySlot) * CharacterData->AbilityInfo.Info.KarmaAbilityCount);
 }
 
+Int32 RTCharacterGetEssenceAbilitySlotIndex(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	UInt32 AbilityID
+) {
+	for (Int Index = 0; Index < Character->Data.AbilityInfo.Info.EssenceAbilityCount; Index += 1) {
+		RTEssenceAbilitySlotRef AbilitySlot = &Character->Data.AbilityInfo.EssenceAbilitySlots[Index];
+		if (AbilitySlot->AbilityID != AbilityID) continue;
+
+		return Index;
+	}
+
+	return -1;
+}
+
 RTEssenceAbilitySlotRef RTCharacterGetEssenceAbilitySlot(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
@@ -221,7 +236,7 @@ Bool RTCharacterRemoveEssenceAbility(
 	RTEssenceAbilitySlotRef AbilitySlot = RTCharacterGetEssenceAbilitySlot(Runtime, Character, AbilityID);
 	if (!AbilitySlot) return false;
 
-	Int32 SlotIndex = (Int32)(AbilitySlot - &Character->Data.AbilityInfo.EssenceAbilitySlots[0]) / sizeof(struct _RTEssenceAbilitySlot);
+	Int32 SlotIndex = RTCharacterGetEssenceAbilitySlotIndex(Runtime, Character, AbilityID);
 
 	Character->Data.AbilityInfo.Info.EssenceAbilityCount -= 1;
 	
@@ -238,6 +253,21 @@ Bool RTCharacterRemoveEssenceAbility(
 	RTCharacterInitializeAttributes(Runtime, Character);
 
 	return true;
+}
+
+Int32 RTCharacterGetBlendedAbilitySlotIndex(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	UInt32 AbilityID
+) {
+	for (Int Index = 0; Index < Character->Data.AbilityInfo.Info.BlendedAbilityCount; Index += 1) {
+		RTBlendedAbilitySlotRef AbilitySlot = &Character->Data.AbilityInfo.BlendedAbilitySlots[Index];
+		if (AbilitySlot->AbilityID != AbilityID) continue;
+
+		return Index;
+	}
+
+	return -1;
 }
 
 RTBlendedAbilitySlotRef RTCharacterGetBlendedAbilitySlot(
@@ -332,7 +362,7 @@ Bool RTCharacterRemoveBlendedAbility(
 	RTBlendedAbilitySlotRef AbilitySlot = RTCharacterGetBlendedAbilitySlot(Runtime, Character, AbilityID);
 	if (!AbilitySlot) return false;
 
-	Int32 SlotIndex = (Int32)(AbilitySlot - &Character->Data.AbilityInfo.BlendedAbilitySlots[0]) / sizeof(struct _RTBlendedAbilitySlot);
+	Int32 SlotIndex = RTCharacterGetBlendedAbilitySlotIndex(Runtime, Character, AbilityID);
 
 	Character->Data.AbilityInfo.Info.BlendedAbilityCount -= 1;
 
@@ -349,6 +379,21 @@ Bool RTCharacterRemoveBlendedAbility(
 	RTCharacterInitializeAttributes(Runtime, Character);
 
 	return true;
+}
+
+Int32 RTCharacterGetKarmaAbilitySlotIndex(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	UInt32 AbilityID
+) {
+	for (Int Index = 0; Index < Character->Data.AbilityInfo.Info.KarmaAbilityCount; Index += 1) {
+		RTKarmaAbilitySlotRef AbilitySlot = &Character->Data.AbilityInfo.KarmaAbilitySlots[Index];
+		if (AbilitySlot->AbilityID != AbilityID) continue;
+
+		return Index;
+	}
+
+	return -1;
 }
 
 RTKarmaAbilitySlotRef RTCharacterGetKarmaAbilitySlot(
@@ -549,7 +594,7 @@ Bool RTCharacterRemoveKarmaAbility(
 	RTKarmaAbilitySlotRef AbilitySlot = RTCharacterGetKarmaAbilitySlot(Runtime, Character, AbilityID);
 	if (!AbilitySlot) return false;
 
-	Int32 SlotIndex = (Int32)(AbilitySlot - &Character->Data.AbilityInfo.KarmaAbilitySlots[0]) / sizeof(struct _RTKarmaAbilitySlot);
+	Int32 SlotIndex = RTCharacterGetKarmaAbilitySlotIndex(Runtime, Character, AbilityID);
 
 	Character->Data.AbilityInfo.Info.KarmaAbilityCount -= 1;
 
