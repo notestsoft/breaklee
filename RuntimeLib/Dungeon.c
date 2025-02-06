@@ -92,6 +92,8 @@ Bool RTDungeonStart(
 
     if (DungeonData->TimerData.Active && DungeonData->TimerData.ItemID > 0) {
         RTPartyRef Party = RTRuntimeGetParty(Runtime, WorldContext->Party);
+        // TODO: We can run into the issue that the party is NULL here!
+        // The World has an associated Party but the party is not retrieved!
         assert(Party);
 
         NOTIFICATION_DATA_DUNGEON_TIMER_INFO* Notification = RTNotificationInit(DUNGEON_TIMER_INFO);

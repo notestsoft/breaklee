@@ -10,6 +10,7 @@
 #include "Runtime.h"
 #include "Script.h"
 #include "TradeManager.h"
+#include "PvPManager.h"
 #include "World.h"
 #include "WorldManager.h"
 
@@ -18,6 +19,8 @@ RTRuntimeRef RTRuntimeCreate(
     Int MaxPartyCount,
     Int32 MaxTradeDistance,
     Timestamp TradeRequestTimeout,
+    Timestamp PvPRequestTimeout,
+    Int32 MaxPvPDistance,
     Void* UserData
 ) {
     RTRuntimeRef Runtime = (RTRuntimeRef)AllocatorAllocate(Allocator, sizeof(struct _RTRuntime));
@@ -48,6 +51,13 @@ RTRuntimeRef RTRuntimeCreate(
         MaxTradeDistance,
         TradeRequestTimeout
     );
+    Runtime->PvPManager = RTPvPManagerCreate(
+        Runtime,
+        RUNTIME_MEMORY_MAX_CHARACTER_COUNT,
+        MaxPvPDistance,
+        PvPRequestTimeout
+    );
+
     Runtime->NotificationManager = RTNotificationManagerCreate(Runtime);
     Runtime->OptionPoolManager = RTOptionPoolManagerCreate(Runtime->Allocator);
     Runtime->DropTable.WorldDropPool = ArrayCreateEmpty(Runtime->Allocator, sizeof(struct _RTDropItem), 8);
@@ -493,6 +503,11 @@ RTWorldContextRef RTRuntimeOpenDungeon(
     Int DungeonIndex
 ) {
     RTWorldDataRef WorldData = RTWorldDataGet(Runtime->WorldManager, WorldIndex);
+    if (!WorldData) {
+        Error("WorldData(%d) not found!", WorldIndex);
+        return NULL;
+    }
+
     assert(
         WorldData->Type == RUNTIME_WORLD_TYPE_QUEST_DUNGEON ||
         WorldData->Type == RUNTIME_WORLD_TYPE_DUNGEON
@@ -500,6 +515,10 @@ RTWorldContextRef RTRuntimeOpenDungeon(
 
     // TODO: Cleanup previous dungeon, for now we assert to avoid to open a dungeon in a dungeon?
     RTWorldContextRef CurrentWorld = RTRuntimeGetWorldByCharacter(Runtime, Character);
+    if (CurrentWorld->WorldData->Type == RUNTIME_WORLD_TYPE_QUEST_DUNGEON) {
+        Error("RTRuntimeOpenDungeon(%d, %d) wrong world type!", WorldIndex, DungeonIndex);
+        return NULL;
+    }
     assert(CurrentWorld->WorldData->Type != RUNTIME_WORLD_TYPE_QUEST_DUNGEON);
 
     if (RTWorldContextPartyIsFull(Runtime->WorldManager)) return NULL;

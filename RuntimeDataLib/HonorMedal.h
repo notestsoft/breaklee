@@ -81,6 +81,7 @@ RUNTIME_DATA_TYPE_BEGIN(HonorMedalValueCategory, "honor_medal_main.honor_medal_v
 	RUNTIME_DATA_TYPE_END_CHILD(HonorMedalValueMedal)
 RUNTIME_DATA_TYPE_END(HonorMedalValueCategory)
 RUNTIME_DATA_TYPE_INDEX(HonorMedalValueCategory, Int32, Category)
+RUNTIME_DATA_TYPE_INDEX_CHILD_PAIR(HonorMedalValueCategory, HonorMedalValueMedal, Int32, Group, Int32, ForceID)
 
 RUNTIME_DATA_TYPE_BEGIN(HonorMedalSeal, "honor_medal_main.honor_medal_seal.medal_seal")
 	RUNTIME_DATA_PROPERTY(Int32, Option, "option")

@@ -476,6 +476,20 @@ Int32 lua_RTCharacterResetHonorMedalSlots(lua_State* State) {
     return 0;
 }
 
+Int32 lua_RTCharacterResetOVLSlots(lua_State* State) {
+    lua_getfield(State, 1, "_Runtime");
+    RTRuntimeRef Runtime = (RTRuntimeRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    lua_getfield(State, 1, "_Object");
+    RTCharacterRef Character = (RTCharacterRef)lua_touserdata(State, -1);
+    lua_pop(State, 1);
+
+    RTCharacterDebugClearOverlordMasterySlots(Runtime, Character);
+
+    return 0;
+}
+
 Void RTScriptBindCharacterAPI(
 	RTScriptRef Script
 ) {
@@ -510,6 +524,7 @@ Void RTScriptBindCharacterAPI(
         "AddMythPoints", lua_RTCharacterAddMythPoints,
         "ClearMythSlots", lua_RTCharacterResetMythSlots,
         "ClearHonorMedalSlots", lua_RTCharacterResetHonorMedalSlots,
+        "ResetOverlordSlots", lua_RTCharacterResetOVLSlots,
         NULL
     );
 }

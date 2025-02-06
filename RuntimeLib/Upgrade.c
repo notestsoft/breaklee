@@ -200,10 +200,19 @@ Int32 RTItemUpgradeDivine(
     Int32* ResultLevel
 ) {
     RTItemDataRef ItemData = RTRuntimeGetItemDataByIndex(Runtime, Item->Item.ID);
-    if (!ItemData) return RUNTIME_DIVINE_UPGRADE_RESULT_ERROR;
+    if (!ItemData) {
+        return RUNTIME_DIVINE_UPGRADE_RESULT_ERROR;
+    }
 
-    RTDataDivineUpgradeMainRef UpgradeMain = RTRuntimeDataDivineUpgradeMainGet(Runtime->Context, ItemData->ItemGrade, ItemData->ItemType);
-    if (!UpgradeMain) return RUNTIME_DIVINE_UPGRADE_RESULT_ERROR;
+    // convert other HELMED2 to HELMED
+    Int32 ItemTypeOverride = ItemData->ItemType;
+    if (ItemTypeOverride == RUNTIME_ITEM_TYPE_HELMED2) {
+        ItemTypeOverride = RUNTIME_ITEM_TYPE_HELMED1;
+    }
+
+    RTDataDivineUpgradeMainRef UpgradeMain = RTRuntimeDataDivineUpgradeMainGet(Runtime->Context, ItemData->ItemGrade, ItemTypeOverride);
+    if (!UpgradeMain)
+        return RUNTIME_DIVINE_UPGRADE_RESULT_ERROR;
 
     RTDataDivineUpgradeGroupRateRef UpgradeGroupRate = RTRuntimeDataDivineUpgradeGroupRateGet(Runtime->Context, UpgradeMain->Group);
     if (!UpgradeGroupRate) return RUNTIME_DIVINE_UPGRADE_RESULT_ERROR;
@@ -267,4 +276,58 @@ Int32 RTItemUpgradeDivine(
     Warn("Random range calculation should always result in perfect ranged matches!");
     *ResultLevel = 0;
     return RUNTIME_DIVINE_UPGRADE_RESULT_ERROR;
+}
+
+Int32 RTItemUpgradeGet2HForceEffectIndex(
+    Int32 InForceIndex
+) {
+    switch (InForceIndex) {
+    case 3:
+        return 23;
+        break;
+    case 4:
+        return 24;
+        break;
+    case 6:
+        return 26;
+        break;
+    case 8:
+        return 28;
+        break;
+    case 9:
+        return 29;
+        break;
+    case 51:
+        return 52;
+        break;
+    case 41:
+        return 42;
+        break;
+    case 30:
+        return 31;
+        break;
+    case 32:
+        return 33;
+        break;
+    case 113:
+        return 115;
+        break;
+    case 10:
+        return 11;
+        break;
+    case 39:
+        return 40;
+        break;
+    case 43:
+        return 44;
+        break;
+    case 49:
+        return 50;
+        break;
+    case 114:
+        return 116;
+        break;
+    }
+
+    return 0;
 }

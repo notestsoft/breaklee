@@ -132,6 +132,7 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_ROLL_SLOT) {
     Response->ForceEffectIndex = Slot->ForceEffectIndex;
     Response->WExp = Character->Data.Info.Wexp;
     Response->AP = Character->Data.AbilityInfo.Info.AP;
+    RTCharacterInitializeAttributes(Runtime, Character);
     SocketSend(Socket, Connection, Response);
     return;
 
@@ -217,6 +218,7 @@ CLIENT_PROCEDURE_BINDING(HONOR_MEDAL_SEALING) {
         Response->ItemSerial = 0;
     }
 
+    RTCharacterInitializeAttributes(Runtime, Character);
     SocketSend(Socket, Connection, Response);
     return;
 

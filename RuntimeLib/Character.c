@@ -314,7 +314,73 @@ Void RTCharacterInitializeHonorMedalMastery(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character
 ) {
-	// TODO: Honor medal values
+	if (Character->Data.HonorMedalInfo.Info.Grade == 0) return;
+
+	for (Int Index = 0; Index < Character->Data.HonorMedalInfo.Info.SlotCount; Index += 1) {
+		RTHonorMedalSlotRef MasterySlot = &Character->Data.HonorMedalInfo.Slots[Index];
+		if (!MasterySlot->IsUnlocked || MasterySlot->ForceEffectIndex == 0) continue;
+
+		RTDataHonorMedalValueCategoryRef HonorMedalValueCategory = RTRuntimeDataHonorMedalValueCategoryGet(Runtime->Context, MasterySlot->CategoryIndex);
+		if (!HonorMedalValueCategory) {
+			Error("Failed to find honor medal value category while initing character stats!");
+			continue;
+		}
+
+		// actual values of our slot
+		RTDataHonorMedalValueMedalRef HonorMedalValue = RTRuntimeDataHonorMedalValueMedalGet(HonorMedalValueCategory, MasterySlot->GroupIndex, MasterySlot->ForceEffectIndex);
+		assert(HonorMedalValue);
+
+		Int32 ForceEffect = MasterySlot->ForceEffectIndex;
+		Int32 ForceValueType = HonorMedalValue->ValueType;
+		Int32 ForceValue = 0;
+
+		switch (Character->Data.HonorMedalInfo.Info.Grade) {
+			case 1:
+				ForceValue = HonorMedalValue->Value1;
+			break;
+			case 2:
+				ForceValue = HonorMedalValue->Value2;
+			break;
+			case 3:
+				ForceValue = HonorMedalValue->Value3;
+			break;
+			case 4:
+				ForceValue = HonorMedalValue->Value4;
+			break;
+			case 5:
+				ForceValue = HonorMedalValue->Value5;
+			break;
+			case 6:
+				ForceValue = HonorMedalValue->Value6;
+			break;
+			case 7:
+				ForceValue = HonorMedalValue->Value7;
+			break;
+			case 8:
+				ForceValue = HonorMedalValue->Value8;
+			break;
+			case 9:
+				ForceValue = HonorMedalValue->Value9;
+			break;
+			case 10:
+				ForceValue = HonorMedalValue->Value10;
+			break;
+		}
+
+		if (ForceValue == 0) {
+			Error("Tried to apply 0 stat in honor medal; this should never happen!");
+			return;
+		}
+
+		RTCharacterApplyForceEffect(
+			Runtime,
+			Character,
+			kEntityIDNull,
+			ForceEffect,
+			ForceValue,
+			ForceValueType
+		);
+	}
 }
 
 Void RTCharacterInitializeForceWingMastery(

@@ -61,6 +61,7 @@ struct _RTRuntime {
     RTScriptManagerRef ScriptManager;
     RTWorldManagerRef WorldManager;
     RTTradeManagerRef TradeManager;
+    RTPvPManagerRef PvPManager;
     RTNotificationManagerRef NotificationManager;
     RTOptionPoolManagerRef OptionPoolManager;
     Int32 SlopeFormulaDataCount;
@@ -101,6 +102,8 @@ RTRuntimeRef RTRuntimeCreate(
     Int MaxPartyCount,
     Int32 MaxTradeDistance,
     Timestamp TradeRequestTimeout,
+    Timestamp PvPRequestTimeout,
+    Int32 MaxPvPDistance,
     Void* UserData
 );
 

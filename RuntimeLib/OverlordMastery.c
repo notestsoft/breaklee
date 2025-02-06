@@ -58,3 +58,19 @@ RTOverlordMasterySlotRef RTCharacterGetOverlordMasterySlot(
 
 	return NULL;
 }
+
+Void RTCharacterDebugClearOverlordMasterySlots(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+	if (Character->Data.OverlordMasteryInfo.Info.SlotCount == 0) return;
+
+	RTOverlordMasterySlotRef FirstSlot = &Character->Data.OverlordMasteryInfo.Slots[0];
+
+	memset(FirstSlot, 0, sizeof(struct _RTOverlordMasterySlot) * RUNTIME_CHARACTER_MAX_OVERLORD_MASTERY_SLOT_COUNT);
+
+	Character->Data.OverlordMasteryInfo.Info.SlotCount = 0;
+	Character->SyncMask.OverlordMasteryInfo = true;
+
+	RTCharacterInitializeAttributes(Runtime, Character);
+}

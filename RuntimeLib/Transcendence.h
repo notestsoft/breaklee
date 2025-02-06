@@ -27,4 +27,10 @@ struct _RTCharacterTranscendenceInfo {
 
 #pragma pack(pop)
 
+Void RTCharacterAddTranscendencePoints(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 Points
+);
+
 EXTERN_C_END

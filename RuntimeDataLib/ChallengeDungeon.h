@@ -42,7 +42,7 @@ RUNTIME_DATA_TYPE_INDEX(ChallengeDungeonClearBuff, Int32, BuffIndex)
 
 RUNTIME_DATA_TYPE_BEGIN(ChallengeDungeonRewardToken, "cabal.RewardToken.RewardToken")
 	RUNTIME_DATA_PROPERTY(Int32, Score, "Score")
-	RUNTIME_DATA_PROPERTY(UInt64, ItemIndex, "ItemIndex")
+	RUNTIME_DATA_PROPERTY(UInt64, ItemID, "Itemkind")
 	RUNTIME_DATA_PROPERTY(UInt64, ItemOptions, "ItemOption")
 RUNTIME_DATA_TYPE_END(ChallengeDungeonRewardToken)
 
