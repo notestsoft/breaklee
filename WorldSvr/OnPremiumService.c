@@ -147,6 +147,25 @@ CLIENT_PROCEDURE_BINDING(PURCHASE_PREMIUM_SERVICE) {
             goto error;
         }
 
+        RTCharacterMythMasteryRebirth(Runtime, Character);
+
+        Response->Result = 0;
+    }
+
+    if (Packet->ServiceType == CSC_PURCHASE_PREMIUM_SERVICE_TYPE_HONOR_MEDAL_RESET) {
+        Int32 PacketLength = sizeof(C2S_DATA_PURCHASE_PREMIUM_SERVICE) + sizeof(C2S_DATA_PURCHASE_PREMIUM_SERVICE_HONOR_MEDAL_RESET);
+        if (Packet->Length != PacketLength) goto error;
+
+        C2S_DATA_PURCHASE_PREMIUM_SERVICE_HONOR_MEDAL_RESET* Data = (C2S_DATA_PURCHASE_PREMIUM_SERVICE_HONOR_MEDAL_RESET*)&Packet->Data[0];
+        UInt32 GemCost = 5 * Data->GroupIndex;
+
+        if (!RTCharacterConsumeForceGem(Runtime, Character, GemCost)) {
+            //TODO: handle error
+            goto error;
+        }
+
+        RTCharacterDebugDeleteHonorMedalCategory(Runtime, Character, Data->GroupIndex + 1);
+
         Response->Result = 0;
     }
 

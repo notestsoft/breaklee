@@ -128,6 +128,7 @@ typedef struct _RTScriptManager* RTScriptManagerRef;
 typedef struct _RTCooldownSlot* RTCooldownSlotRef;
 typedef struct _RTSkillSlot* RTSkillSlotRef;
 typedef struct _RTStellarMasterySlot* RTStellarMasterySlotRef;
+typedef struct _RTMythMasterySlot* RTMythMasterySlotRef;
 typedef struct _RTTradeContext* RTTradeContextRef;
 typedef struct _RTTradeMemberContext* RTTradeMemberContextRef;
 typedef struct _RTTradeManager* RTTradeManagerRef;

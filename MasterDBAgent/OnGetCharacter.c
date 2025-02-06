@@ -257,7 +257,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         DB_TYPE_INT64, &Response->Character.MythMasteryInfo.Exp,
         DB_TYPE_INT32, &Response->Character.MythMasteryInfo.Points,
         DB_TYPE_INT32, &Response->Character.MythMasteryInfo.UnlockedPageCount,
-        DB_TYPE_UINT8, &Response->Character.MythMasteryInfo.PropertySlotCount,
+        DB_TYPE_UINT8, &Response->Character.MythMasteryInfo.MasterySlotCount,
         DB_TYPE_INT32, &Response->Character.MythMasteryInfo.StigmaGrade,
         DB_TYPE_INT32, &Response->Character.MythMasteryInfo.StigmaExp,
         DB_TYPE_INT64, &Response->Character.NewbieSupportInfo.Timestamp,
@@ -418,7 +418,7 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, TranscendenceSlots, sizeof(struct _RTTranscendenceSlot) * Response->Character.TranscendenceInfo.SlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, DamageBoosterSlots, sizeof(struct _RTDamageBoosterSlot) * Response->Character.DamageBoosterInfo.SlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, StellarMasterySlots, sizeof(struct _RTStellarMasterySlot) * Response->Character.StellarMasteryInfo.SlotCount);
-    IPCPacketBufferAppendCopy(Connection->PacketBuffer, MythMasterySlots, sizeof(struct _RTMythMasterySlot) * Response->Character.MythMasteryInfo.PropertySlotCount);
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, MythMasterySlots, sizeof(struct _RTMythMasterySlot) * Response->Character.MythMasteryInfo.MasterySlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, NewbieSupportSlots, sizeof(struct _RTNewbieSupportSlot) * Response->Character.NewbieSupportInfo.SlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, EventPassMissionPages, sizeof(struct _RTEventPassMissionPage) * Response->Character.EventPassInfo.MissionPageCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, EventPassMissionSlots, sizeof(struct _RTEventPassMissionSlot) * Response->Character.EventPassInfo.MissionSlotCount);

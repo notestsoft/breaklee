@@ -153,3 +153,27 @@ RTHonorMedalSlotRef RTCharacterGetHonorMedalSlot(
 
     return NULL;
 }
+
+Void RTCharacterDebugDeleteHonorMedalCategory(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 GroupIndex
+) {
+    Int32 CategoryIndex = 0;
+    RTDataHonorMedalSlotCountCategoryRef SlotCountCategory = RTRuntimeDataHonorMedalSlotCountCategoryGet(Runtime->Context, CategoryIndex);
+    if (!SlotCountCategory) return;
+
+    RTDataHonorMedalSlotCountMedalRef SlotCountMedal = RTRuntimeDataHonorMedalSlotCountMedalGet(SlotCountCategory, GroupIndex);
+    if (!SlotCountMedal) return;
+
+    for (Int SlotIndex = 0; SlotIndex < SlotCountMedal->SlotCount; SlotIndex += 1) {
+        RTHonorMedalSlotRef MedalSlot = RTCharacterGetHonorMedalSlot(Runtime, Character, CategoryIndex, GroupIndex, SlotIndex);
+        if (!MedalSlot) continue;
+        if (!MedalSlot->IsUnlocked) continue;
+
+        MedalSlot->ForceEffectIndex = 0;
+    }
+
+    Character->SyncMask.HonorMedalInfo = true;
+    RTCharacterInitializeAttributes(Runtime, Character);
+}

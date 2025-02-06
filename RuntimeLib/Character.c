@@ -420,7 +420,25 @@ Void RTCharacterInitializeMythMastery(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character
 ) {
-	// TODO: Myth mastery values
+	// Slots
+	for (Int Index = 0; Index < Character->Data.MythMasteryInfo.Info.MasterySlotCount; Index += 1) {
+		RTMythMasterySlotRef MasterySlot = &Character->Data.MythMasteryInfo.Slots[Index];
+		if (!MasterySlot) continue;
+
+		RTCharacterApplyForceEffect(Runtime, Character, kEntityIDNull, MasterySlot->ForceEffectIndex, MasterySlot->ForceValue, MasterySlot->ForceValueType);
+	}
+
+	// Holy Point Grade/Checkpoint
+	Int32 HolyPoints = RTCharacterMythMasteryGetRealHolyPoints(Runtime, Character);
+	// TODO: Get the real limit
+	for (Int32 Index = 1; Index < 15; Index++) {
+		RTDataMythGradeRef MythGrade = RTRuntimeDataMythGradeGet(Runtime->Context, Index);
+		if (!MythGrade || MythGrade->RequiredPoints > HolyPoints) {
+			continue;
+		}
+
+		RTCharacterApplyForceEffect(Runtime, Character, kEntityIDNull, MythGrade->ForceCode, MythGrade->ForceValue, MythGrade->ForceValueType);
+	}
 }
 
 // TODO: Split this up to resources and runtime attributes!!!

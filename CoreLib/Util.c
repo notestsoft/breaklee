@@ -205,6 +205,10 @@ UInt32 SwapUInt32(
     return (Value << 16) | (Value >> 16);
 }
 
+Float32 RandomFloat(Float32 min, Float32 max) {
+    return ((max - min) * ((Float32)rand() / RAND_MAX)) + min;
+}
+
 Int32 Random(Int32* Seed) {
     *Seed = ((*Seed * 1103515245) + 12345) & 0x7fffffff;
     return *Seed;

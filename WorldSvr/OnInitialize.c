@@ -424,8 +424,8 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     }
 
     Character->Data.MythMasteryInfo.Info = Packet->Character.MythMasteryInfo;
-    if (Packet->Character.MythMasteryInfo.PropertySlotCount > 0) {
-        Int32 Length = sizeof(struct _RTMythMasterySlot) * Packet->Character.MythMasteryInfo.PropertySlotCount;
+    if (Packet->Character.MythMasteryInfo.MasterySlotCount > 0) {
+        Int32 Length = sizeof(struct _RTMythMasterySlot) * Packet->Character.MythMasteryInfo.MasterySlotCount;
         memcpy(Character->Data.MythMasteryInfo.Slots, Memory, Length);
         Memory += Length;
     }
@@ -956,11 +956,11 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     }
 
     Response->MythMasteryInfo = Character->Data.MythMasteryInfo.Info;
-    if (Character->Data.MythMasteryInfo.Info.PropertySlotCount > 0) {
+    if (Character->Data.MythMasteryInfo.Info.MasterySlotCount > 0) {
         PacketBufferAppendCopy(
             PacketBuffer,
             Character->Data.MythMasteryInfo.Slots,
-            sizeof(struct _RTMythMasterySlot) * Character->Data.MythMasteryInfo.Info.PropertySlotCount
+            sizeof(struct _RTMythMasterySlot) * Character->Data.MythMasteryInfo.Info.MasterySlotCount
         );
     }
 
@@ -1041,10 +1041,34 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
         );
     }
 
+//    Response->MythMasteryInfo.HasRolledMasterySlot = 1;
+//    Response->MythMasteryInfo.RolledMasterySlot.MasteryIndex = 0;
+//    Response->MythMasteryInfo.RolledMasterySlot.SlotIndex = 1;
+//    Response->MythMasteryInfo.RolledMasterySlot.Tier = 74;
+//    Response->MythMasteryInfo.RolledMasterySlot.Grade = 1;
+//    Response->MythMasteryInfo.RolledMasterySlot.ForceEffectIndex = 211;
+//    Response->MythMasteryInfo.RolledMasterySlot.ForceValue = 1;
+//    Response->MythMasteryInfo.RolledMasterySlot.ForceValueType = 1;
+//    Response->MythMasteryInfo.Unknown[0] = 1;
+//    Response->MythMasteryInfo.Unknown[1] = 0;
+//    Response->MythMasteryInfo.Unknown[2] = 1;
+//    Response->MythMasteryInfo.Unknown[3] = 74;
+//    Response->MythMasteryInfo.Unknown[4] = 1;
+//    Response->MythMasteryInfo.Unknown[5] = 211;
+//    Response->MythMasteryInfo.Unknown[9] = 1;
     SocketSend(Context->ClientSocket, ClientConnection, Response);
 
     RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Runtime, Character);
     RTWorldSpawnCharacter(Runtime, WorldContext, Character->ID);
+
+    // Rename Card
+    // RTRuntimeDataEventHotReload(Runtime->Context, "Event\\Events45.xml");
+
+    // Hero Leap
+    // RTRuntimeDataEventHotReload(Runtime->Context, "Event\\Events106.xml");
+
+    // Lottery
+    // RTRuntimeDataEventHotReload(Runtime->Context, "Event\\Events34.xml");
 
     // TODO: Move event data to database and trigger request on init
     SendEventInfo(Context, Client);

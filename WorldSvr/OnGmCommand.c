@@ -7,7 +7,12 @@
 
 CLIENT_PROCEDURE_BINDING(GM_COMMAND) {
     if (!Character) goto error;
-    if (Character->Data.StyleInfo.Nation != 3) goto error;
+
+    if (Character->Data.StyleInfo.Nation != 3) {
+        Warn("Player sent GM command while not nation 3, disconnecting. (%u)", Packet->GmCommand);
+
+        goto error;
+    }
 
     if (Packet->Command == 4) {
     }

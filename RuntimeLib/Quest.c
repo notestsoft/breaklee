@@ -404,6 +404,8 @@ Bool RTCharacterQuestClear(
 	RTCharacterQuestFlagSet(Character, QuestIndex);
 	RTCharacterRemoveQuestSlot(Runtime, Character, QuestSlotIndex);
 
+	RTCharacterMythMasteryFinishQuest(Runtime, Character, QuestIndex);
+
 	return true;
 }
 

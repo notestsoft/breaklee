@@ -78,4 +78,10 @@ RTHonorMedalSlotRef RTCharacterGetHonorMedalSlot(
     Int32 SlotIndex
 );
 
+Void RTCharacterDebugDeleteHonorMedalCategory(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 GroupIndex
+);
+
 EXTERN_C_END

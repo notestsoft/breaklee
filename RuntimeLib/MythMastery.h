@@ -8,7 +8,13 @@ EXTERN_C_BEGIN
 #pragma pack(push, 1)
 
 struct _RTMythMasterySlot {
-    UInt8 Data[16];
+    UInt8 MasteryIndex;
+    UInt8 SlotIndex;
+    UInt8 Tier; //related to group index in UI
+    UInt8 Grade;
+    UInt32 ForceEffectIndex;
+    UInt32 ForceValue;
+    UInt32 ForceValueType;
 };
 
 struct _RTMythMasteryInfo {
@@ -18,8 +24,8 @@ struct _RTMythMasteryInfo {
     UInt64 Exp;
     Int32 Points;
     Int32 UnlockedPageCount;
-    UInt8 Unknown1[13];
-    UInt8 PropertySlotCount;
+    UInt8 Unknown[13];
+    UInt8 MasterySlotCount;
     Int32 StigmaGrade;
     Int32 StigmaExp;
 };
@@ -27,9 +33,17 @@ struct _RTMythMasteryInfo {
 struct _RTCharacterMythMasteryInfo {
     struct _RTMythMasteryInfo Info;
     struct _RTMythMasterySlot Slots[RUNTIME_CHARACTER_MAX_MYTH_SLOT_COUNT];
+    struct _RTMythMasterySlot TemporarySlot; // This must be in the unknown[13] but idk
+    Int32 BonusHolyPower;
 };
 
 #pragma pack(pop)
+
+Void RTCharacterMythMasteryFinishQuest(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 QuestIndex
+);
 
 Void RTCharacterMythMasteryEnable(
     RTRuntimeRef Runtime,
@@ -98,7 +112,46 @@ UInt32 RTCharacterMythMasteryGetRebirthGemCost(
     RTCharacterRef Character
 );
 
-Bool RTCharacterMythMasteryGetCanOpenLockGroup(
+RTMythMasterySlotRef RTCharacterMythMasteryGetSlot(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 MasteryIndex,
+    Int32 SlotIndex
+);
+
+RTMythMasterySlotRef RTCharacterMythMasteryGetOrCreateSlot(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 MasteryIndex,
+    Int32 SlotIndex
+);
+
+Void RTCharacterMythMasterySetSlot(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 MasteryIndex,
+    Int32 SlotIndex,
+    Int32 Tier,
+    Int32 Grade,
+    Int32 ForceEffectIndex,
+    Int32 ForceValue,
+    Int32 ForceValueType
+);
+
+Bool RTCharacterMythMasteryRollSlot(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    RTMythMasterySlotRef MasterySlot
+);
+
+Bool RTCharacterMythMasteryCanOpenLockGroup(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 MasteryIndex,
+    Int32 LockGroup
+);
+
+Bool RTCharacterMythMasteryCanOpenLockGroup(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     Int32 MasteryIndex,
@@ -110,6 +163,40 @@ Bool RTCharacterMythMasteryGetSlotOccupied(
     RTCharacterRef,
     Int32 MasteryIndex,
     Int32 LockGroup
+);
+
+Int32 RTCharacterMythMasteryGetRealHolyPoints(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Void RTCharacterMythMasteryAssertHolyPoints(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Void RTCharacterMythMasteryAddStigmaExp(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 ExpAmount
+);
+
+static Bool RTCharacterMythMasteryGetPrerequisiteMetForSlot(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 MasteryIndex,
+    Int32 SlotIndex1,
+    Int32 SlotIndex2
+);
+
+Bool RTCharacterMythMasteryRollback(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    RTMythMasterySlotRef Slot
+);
+
+UInt32 RTCharacterMythMasteryGetRestoreItemID(
+    RTRuntimeRef Runtime
 );
 
 EXTERN_C_END
