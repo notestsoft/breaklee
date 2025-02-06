@@ -58,6 +58,10 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 	);
 	Int32 ItemType = IsOneHandedWeapon ? RUNTIME_ITEM_TYPE_WEAPON_ONE_HAND : ItemData->ItemType;
 
+	Bool IsTwoHandedWeapon = (
+		ItemData->ItemType == RUNTIME_ITEM_TYPE_WEAPON_TWO_HAND
+	);
+
 	RTDataForceCoreBaseRef ForceCoreBase = RTRuntimeDataForceCoreBaseGet(Runtime->Context, ItemData->ItemGrade, ItemType);
 	if (!ForceCoreBase) goto error;
 
@@ -120,11 +124,13 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 		ForceCoreBaseCode = &ForceCoreBase->ForceCoreBaseCodeList[RandomIndex];
 	}
 	else {
-		ForceCoreBaseCode = RTRuntimeDataForceCoreBaseCodeGet(ForceCoreBase, IsOneHandedWeapon ? MainScrollOptions.OptionScroll.ForceEffectIndex : RTItemUpgradeGet2HForceEffectIndex(MainScrollOptions.OptionScroll.ForceEffectIndex));
+		ForceCoreBaseCode = RTRuntimeDataForceCoreBaseCodeGet(ForceCoreBase, IsTwoHandedWeapon ? RTItemUpgradeGet2HForceEffectIndex(MainScrollOptions.OptionScroll.ForceEffectIndex) : MainScrollOptions.OptionScroll.ForceEffectIndex);
 	}
 
 	if (!ForceCoreBaseCode) {
-		Error("NO FORCE CORE BASE CODE FOUND FOR FORCE OPTION ADD EffectIndex: %u", MainScrollOptions.OptionScroll.ForceEffectIndex);
+		Error("Failed apply slot on ItemType: %d", ItemData->ItemType);
+		Error("Failed apply slot on ItemGrade: %d", ItemData->ItemGrade);
+		Error("NO FORCE CORE BASE CODE FOUND FOR FORCE OPTION ADD EffectIndex: %u", IsTwoHandedWeapon ? RTItemUpgradeGet2HForceEffectIndex(MainScrollOptions.OptionScroll.ForceEffectIndex) : MainScrollOptions.OptionScroll.ForceEffectIndex);
 		goto error;
 	}
 
