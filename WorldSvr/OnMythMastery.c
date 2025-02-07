@@ -45,68 +45,75 @@ error:
 CLIENT_PROCEDURE_BINDING(MYTH_FINISH_ROLL_SLOT) {
 	if (!Character || Character->Data.MythMasteryInfo.Info.Level < 1) goto error;
 
+	Int PacketLength = sizeof(C2S_DATA_MYTH_FINISH_ROLL_SLOT) + Packet->InventorySlotCount * sizeof(UInt16);
+	if (Packet->Length < PacketLength) goto error;
+
 	S2C_DATA_MYTH_FINISH_ROLL_SLOT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MYTH_FINISH_ROLL_SLOT);
 
-	// if 0, revert to temporary. 1 == return with holypower & errorcode
+	RTMythMasterySlotRef MasterySlot = NULL;
+	if (Packet->IsRollback) {
+		RTDataMythMasterySlotGroupRef SlotPage = RTRuntimeDataMythMasterySlotGroupGet(
+			Runtime->Context,
+			Character->Data.MythMasteryInfo.TemporarySlot.MasteryIndex,
+			Character->Data.MythMasteryInfo.TemporarySlot.SlotIndex
+		);
+		if (!SlotPage) goto error;
 
-	// not sure but shouldnt allow client to determine array size. also shouldnt split currency that much realistically
-	UInt16 InventoryIndexCount = MIN(Packet->InventorySlotCount, 5);
-	UInt16 InventoryPositions[5] = {};
-
-	//Packet->InventorySlotIndex;
-
-	for (Int32 Index = 0; Index < InventoryIndexCount; Index++) {
-		//memset(&InventoryPositions[Index], &Packet->InventorySlotIndex[Index], sizeof(UInt16));
-		//Warn("positions %u", InventoryPositions[Index]);
-		InventoryPositions[Index] = Packet->InventorySlotIndex[Index];
-	}
-
-	Bool RollbackSuccess = false;
-	
-	if (Packet->RollbackToTempSlot == 1) {
-		RollbackSuccess = RTCharacterMythMasteryRollback(Runtime, Character, &Character->Data.MythMasteryInfo.TemporarySlot);
-	}
-
-	// rollback
-	if (Packet->RollbackToTempSlot == 1 && RollbackSuccess) {
-		assert(&Character->Data.MythMasteryInfo.TemporarySlot);
-
-		struct _RTMythMasterySlot MasterySlot;
-		memcpy(&MasterySlot, &Character->Data.MythMasteryInfo.TemporarySlot, sizeof(struct _RTMythMasterySlot));
-
-		RTCharacterMythMasterySetSlot(Runtime, Character, MasterySlot.MasteryIndex, MasterySlot.SlotIndex, MasterySlot.Tier, MasterySlot.Grade, MasterySlot.ForceEffectIndex, MasterySlot.ForceValue, MasterySlot.ForceValueType);
+		UInt64 MythRestoreItemID = RTCharacterMythMasteryGetRestoreItemID(Runtime);
 		
-		Response->MasteryIndex = Character->Data.MythMasteryInfo.TemporarySlot.MasteryIndex;
-		Response->SlotIndex = Character->Data.MythMasteryInfo.TemporarySlot.SlotIndex;
-		Response->TierIndex = Character->Data.MythMasteryInfo.TemporarySlot.Tier;
-		Response->TierLevel = Character->Data.MythMasteryInfo.TemporarySlot.Grade;
-		Response->StatOption = Character->Data.MythMasteryInfo.TemporarySlot.ForceEffectIndex;
-		Response->StatValue = Character->Data.MythMasteryInfo.TemporarySlot.ForceValue;
-		Response->ValueType = Character->Data.MythMasteryInfo.TemporarySlot.ForceValueType;
-		Response->HolyPower = Character->Data.MythMasteryInfo.Info.HolyPower;
-		Response->ErrorCode = 0;
-		SocketSend(Socket, Connection, Response);
-		return;
+		Int64 TotalConsumableItemCount = 0;
+		for (Int Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
+			TotalConsumableItemCount += RTInventoryGetConsumableItemCount(
+				Runtime,
+				&Character->Data.InventoryInfo,
+				MythRestoreItemID,
+				0,
+				Packet->InventorySlotIndex[Index]
+			);
+		}
+		if (TotalConsumableItemCount < SlotPage->RestoreCost) goto error;
+
+		Int64 RemainingItemCount = TotalConsumableItemCount;
+		for (Int Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
+			RemainingItemCount -= RTInventoryConsumeItem(
+				Runtime,
+				&Character->Data.InventoryInfo,
+				MythRestoreItemID,
+				0,
+				RemainingItemCount,
+				Packet->InventorySlotIndex[Index]
+			);
+		}
+		assert(RemainingItemCount <= 0);
+
+		Character->SyncMask.InventoryInfo = true;
+
+		MasterySlot = RTCharacterMythMasterySetSlot(
+			Runtime, 
+			Character, 
+			Character->Data.MythMasteryInfo.TemporarySlot.MasteryIndex,
+			Character->Data.MythMasteryInfo.TemporarySlot.SlotIndex, 
+			Character->Data.MythMasteryInfo.TemporarySlot.Tier, 
+			Character->Data.MythMasteryInfo.TemporarySlot.Grade, 
+			Character->Data.MythMasteryInfo.TemporarySlot.ForceEffectIndex,
+			Character->Data.MythMasteryInfo.TemporarySlot.ForceValue, 
+			Character->Data.MythMasteryInfo.TemporarySlot.ForceValueType
+		);
+		memset(&Character->Data.MythMasteryInfo.TemporarySlot, 0, sizeof(struct _RTMythMasterySlot));
 	}
 
-	// accept slot
-	Response->MasteryIndex = 0;
-	Response->SlotIndex = 0;
-	Response->TierIndex = 0;
-	Response->TierLevel = 0;
-	Response->StatOption = 0;
-	Response->ValueType = 0;
+	if (MasterySlot) memcpy(&Response->MasterySlot, MasterySlot, sizeof(struct _RTMythMasterySlot));
 	Response->HolyPower = Character->Data.MythMasteryInfo.Info.HolyPower;
 	Response->ErrorCode = 0;
-
-	if (Packet->RollbackToTempSlot == 1)
-		Response->ErrorCode = RollbackSuccess ? 0 : 1;
-	RTCharacterInitializeAttributes(Runtime, Character);
 	SocketSend(Socket, Connection, Response);
 	return;
 
 error:
-	SocketDisconnect(Socket, Connection);
+	{
+		S2C_DATA_MYTH_FINISH_ROLL_SLOT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, MYTH_FINISH_ROLL_SLOT);
+		Response->ErrorCode = 1;
+		SocketSend(Socket, Connection, Response);
+	}
 }
 
 CLIENT_PROCEDURE_BINDING(MYTH_OPEN_LOCK) {

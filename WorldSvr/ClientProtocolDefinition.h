@@ -4494,7 +4494,7 @@ CLIENT_PROTOCOL(S2C, MYTH_ROLL_SLOT, DEFAULT, 2959,
 )
 
 CLIENT_PROTOCOL(C2S, MYTH_FINISH_ROLL_SLOT, DEFAULT, 2960,
-    UInt8 RollbackToTempSlot; //1 = revert to temp slot
+    UInt8 IsRollback; //1 = revert to temp slot
     UInt8 MasteryIndex;
     UInt8 SlotIndex;
     UInt16 InventorySlotCount;
@@ -4502,13 +4502,7 @@ CLIENT_PROTOCOL(C2S, MYTH_FINISH_ROLL_SLOT, DEFAULT, 2960,
 )
 
 CLIENT_PROTOCOL(S2C, MYTH_FINISH_ROLL_SLOT, DEFAULT, 2960,
-    UInt8 MasteryIndex;
-    UInt8 SlotIndex;
-    UInt8 TierIndex;
-    UInt8 TierLevel;
-    UInt32 StatOption;
-    UInt32 StatValue;
-    UInt32 ValueType;
+    struct _RTMythMasterySlot MasterySlot;
     UInt32 HolyPower;
     UInt32 ErrorCode;
 )

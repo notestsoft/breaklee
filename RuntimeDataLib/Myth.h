@@ -37,7 +37,7 @@ RUNTIME_DATA_TYPE_END(MythRepeatPenalty)
 RUNTIME_DATA_TYPE_INDEX_SINGLE(MythRepeatPenalty)
 
 RUNTIME_DATA_TYPE_BEGIN(MythRestoreItem, "Myth.Restore.RestoreItem")
-	RUNTIME_DATA_PROPERTY(UInt32, ItemID, "itemidx")
+	RUNTIME_DATA_PROPERTY(UInt64, ItemID, "itemidx")
 RUNTIME_DATA_TYPE_END(MythRestoreItem)
 RUNTIME_DATA_TYPE_INDEX_SINGLE(MythRestoreItem)
 

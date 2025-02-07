@@ -440,7 +440,7 @@ RTMythMasterySlotRef RTCharacterMythMasteryGetOrCreateSlot(
 	return MasterySlot;
 }
 
-Void RTCharacterMythMasterySetSlot(
+RTMythMasterySlotRef RTCharacterMythMasterySetSlot(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
 	Int32 MasteryIndex,
@@ -468,7 +468,9 @@ Void RTCharacterMythMasterySetSlot(
 	MasterySlot->ForceValue = ForceValue;
 	MasterySlot->ForceValueType = ForceValueType;
 	RTCharacterMythMasteryAssertHolyPoints(Runtime, Character);
+	RTCharacterInitializeAttributes(Runtime, Character);
 	Character->SyncMask.MythMasteryInfo = true;
+	return MasterySlot;
 }
 
 Bool RTCharacterMythMasteryRollSlot(
@@ -508,6 +510,7 @@ Bool RTCharacterMythMasteryRollSlot(
 		RTDataMythMasterySlotValueRef MasterySlotValue = &MasterySlotValuePool->MythMasterySlotValueList[Index];
 		Int32 Rate = MasterySlotValue->Rate * INT32_MAX / 100;
 		if (RateValue <= Rate + RateOffset) {
+			memcpy(&Character->Data.MythMasteryInfo.TemporarySlot, MasterySlot, sizeof(struct _RTMythMasterySlot));
 			MasterySlot->Tier = MasterySlotValue->Tier;
 			MasterySlot->Grade = MasterySlotValue->Grade;
 			MasterySlot->ForceEffectIndex = MasterySlotValue->ForceEffectIndex;
@@ -517,6 +520,7 @@ Bool RTCharacterMythMasteryRollSlot(
 			Character->Data.MythMasteryInfo.Info.Points -= SlotRollPrice;
 			RTCharacterMythMasteryAddStigmaExp(Runtime, Character, SlotRollPrice);
 			RTCharacterMythMasteryAssertHolyPoints(Runtime, Character);
+			RTCharacterInitializeAttributes(Runtime, Character);
 			return true;
 		}
 
@@ -718,13 +722,9 @@ Bool RTCharacterMythMasteryRollback(
 	*/
 }
 
-UInt32 RTCharacterMythMasteryGetRestoreItemID(
+UInt64 RTCharacterMythMasteryGetRestoreItemID(
 	RTRuntimeRef Runtime
 ) {
 	RTDataMythRestoreItemRef MythRestoreItemRef = RTRuntimeDataMythRestoreItemGet(Runtime->Context);
-	if (!MythRestoreItemRef) {
-		return 0;
-	}
-
-	return MythRestoreItemRef->ItemID;
+	return MythRestoreItemRef ? MythRestoreItemRef->ItemID : 0;
 }

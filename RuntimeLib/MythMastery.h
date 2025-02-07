@@ -132,7 +132,7 @@ RTMythMasterySlotRef RTCharacterMythMasteryGetOrCreateSlot(
     Int32 SlotIndex
 );
 
-Void RTCharacterMythMasterySetSlot(
+RTMythMasterySlotRef RTCharacterMythMasterySetSlot(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     Int32 MasteryIndex,
@@ -201,7 +201,7 @@ Bool RTCharacterMythMasteryRollback(
     RTMythMasterySlotRef Slot
 );
 
-UInt32 RTCharacterMythMasteryGetRestoreItemID(
+UInt64 RTCharacterMythMasteryGetRestoreItemID(
     RTRuntimeRef Runtime
 );
 
