@@ -433,8 +433,10 @@ RTMythMasterySlotRef RTCharacterMythMasteryGetOrCreateSlot(
 	}
 
 	if (Character->Data.MythMasteryInfo.Info.Points < MasterySlotInfo->UnlockCost || !RTCharacterMythMasteryGetPrerequisiteMetForSlot(Runtime, Character, MasteryIndex, MasterySlotInfo->PrerequisiteSlot, MasterySlotInfo->PrerequisiteSlot2)) {
+		Error("Slot Index: %d", SlotIndex);
 		Error("Points: %d Required Points: %d", Character->Data.MythMasteryInfo.Info.Points, MasterySlotInfo->UnlockCost);
 		Error("Failed prereq while creating slot!");
+		Error("Slot1: %d, Slot2: %d", MasterySlotInfo->PrerequisiteSlot, MasterySlotInfo->PrerequisiteSlot2);
 		return NULL;
 	}
 
@@ -686,7 +688,7 @@ Bool RTCharacterMythMasteryGetPrerequisiteMetForSlot(
 	Bool Slot1Full = SlotIndex1 == 0 || RTCharacterMythMasteryGetSlotOccupied(Runtime, Character, MasteryIndex, SlotIndex1);
 	Bool Slot2Full = SlotIndex2 == 0 || RTCharacterMythMasteryGetSlotOccupied(Runtime, Character, MasteryIndex, SlotIndex2);
 
-	return Slot1Full && Slot2Full;
+	return Slot1Full || Slot2Full;
 }
 
 Void RTCharacterMythDebugResetSlots(
