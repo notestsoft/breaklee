@@ -413,7 +413,27 @@ Void RTCharacterInitializeStellarMastery(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character
 ) {
-	// TODO: Stellar mastery values
+	// Slot values
+	for (Int Index = 0; Index < Character->Data.StellarMasteryInfo.Info.SlotCount; Index += 1) {
+		RTStellarMasterySlotRef MasterySlot = &Character->Data.StellarMasteryInfo.Slots[Index];
+		// double check because why not
+		if (!MasterySlot || MasterySlot->ForceValue == 0) continue;
+
+		RTCharacterApplyForceEffect(Runtime, Character, kEntityIDNull, MasterySlot->ForceEffect, MasterySlot->ForceValue, MasterySlot->ForceValueType);
+	}
+
+	// Link effect / matching colours per lines
+	for (Int32 Index = 1; Index < 6; Index++) {
+		RTDataStellarLineGradeInformationRef LineBonus = RTStellarMasteryGetLineEffect(Runtime, Character, Index);
+
+		//Warn("Checking line bonus for %d", Index);
+
+		if (!LineBonus) continue;
+
+		//Warn("Adding force effects %u %u Value: %u %u", LineBonus->ForceEffect1, LineBonus->ForceEffect2, LineBonus->ForceValue1, LineBonus->ForceValue2);
+		RTCharacterApplyForceEffect(Runtime, Character, kEntityIDNull, LineBonus->ForceEffect1, LineBonus->ForceValue1, LineBonus->ForceType1);
+		RTCharacterApplyForceEffect(Runtime, Character, kEntityIDNull, LineBonus->ForceEffect2, LineBonus->ForceValue2, LineBonus->ForceType2);
+	}
 }
 
 Void RTCharacterInitializeMythMastery(

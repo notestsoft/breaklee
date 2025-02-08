@@ -53,7 +53,6 @@ RTDataStellarLineGradeRef RTDataStellarMasteryGetLineGrade(
 	return OutGrade;
 }
 
-
 RTStellarMasterySlotRef RTCharacterStellarMasteryGetSlot(
 	RTCharacterRef Character,
 	UInt8 GroupID,
@@ -173,4 +172,47 @@ Void RTStellarMasteryRollLinkGrade(
     if (!StellarLink) return;
 
 	MasterySlot->LinkGrade = StellarLink->Grade;
+}
+
+RTDataStellarLineGradeInformationRef RTStellarMasteryGetLineEffect(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 Line
+) {
+	bool AllSame = true;
+	Int32 LastGrade = 0;
+	Int32 SlotCount = 4;
+
+	if (Line > 1) {
+		SlotCount += (Line - 1) * 2;
+	}
+
+	RTDataStellarLinkEffectRef GroupLineInfo = RTRuntimeDataStellarLinkEffectGet(Runtime->Context, 1);
+	RTDataStellarLineLinkRef StellarLine = RTRuntimeDataStellarLineLinkGet(GroupLineInfo, Line);
+
+	for (Int Index = 0; Index < SlotCount; Index++) {
+		RTStellarMasterySlotRef Slot = RTCharacterStellarMasteryGetSlot(Character, 1, Line, Index);
+
+		// requires all slots
+		if (!Slot) {
+			AllSame = false;
+			break;
+		}
+
+		// first one
+		if (LastGrade == 0) {
+			LastGrade = Slot->LinkGrade;
+			continue;
+		}
+
+		// rest of them
+		if (LastGrade != Slot->LinkGrade) {
+			AllSame = false;
+			break;
+		}
+	}
+
+	RTDataStellarLineGradeInformationRef GradeInfo = RTRuntimeDataStellarLineGradeInformationGet(StellarLine, LastGrade);
+
+	return AllSame ? GradeInfo : NULL;
 }

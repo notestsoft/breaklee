@@ -77,6 +77,12 @@ Void RTStellarMasteryRollForceEffect(
     RTStellarMasterySlotRef MasterySlot
 );
 
+RTDataStellarLineGradeInformationRef RTStellarMasteryGetLineEffect(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    Int32 Line
+);
+
 
 #pragma pack(pop)
 
