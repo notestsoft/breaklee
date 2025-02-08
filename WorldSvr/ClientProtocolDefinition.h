@@ -3896,6 +3896,12 @@ CLIENT_PROTOCOL_STRUCT(C2S_DATA_PURCHASE_PREMIUM_SERVICE_HONOR_MEDAL_RESET,
     Int32 GroupIndex;
 )
 
+CLIENT_PROTOCOL_STRUCT(CSC_DATA_PURCHASE_PREMIUM_SERVICE_TYPE_MYTH_RESURRECT,
+    Int32 MythLevel;
+    Int32 InventorySlotCount;
+    UInt16 InventorySlotIndex[0];
+)
+
 CLIENT_PROTOCOL(C2S, PURCHASE_PREMIUM_SERVICE, DEFAULT, 2569,
     Int32 ServiceType;
     UInt8 Data[0];
@@ -4497,7 +4503,7 @@ CLIENT_PROTOCOL(C2S, MYTH_FINISH_ROLL_SLOT, DEFAULT, 2960,
     UInt8 IsRollback; //1 = revert to temp slot
     UInt8 MasteryIndex;
     UInt8 SlotIndex;
-    UInt16 InventorySlotCount;
+    UInt32 InventorySlotCount;
     UInt16 InventorySlotIndex[0];
 )
 

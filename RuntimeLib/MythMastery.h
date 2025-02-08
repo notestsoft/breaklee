@@ -105,7 +105,8 @@ UInt64 RTCharacterMythMasteryGetCumulativeLevelUpExp(
 
 Bool RTCharacterMythMasteryRebirth(
     RTRuntimeRef Runtime,
-    RTCharacterRef Character
+    RTCharacterRef Character,
+    UInt16 InventorySlotIndex
 );
 
 Bool RTCharacterMythMasteryGetCanRebirth(

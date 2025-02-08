@@ -140,6 +140,14 @@ CLIENT_PROCEDURE_BINDING(PURCHASE_PREMIUM_SERVICE) {
     }
 
     if (Packet->ServiceType == CSC_PURCHASE_PREMIUM_SERVICE_TYPE_MYTH_RESURRECT) {
+        CSC_DATA_PURCHASE_PREMIUM_SERVICE_TYPE_MYTH_RESURRECT* Data = (CSC_DATA_PURCHASE_PREMIUM_SERVICE_TYPE_MYTH_RESURRECT*)&Packet->Data[0];
+
+        Int32 PacketLength = sizeof(C2S_DATA_PURCHASE_PREMIUM_SERVICE) + sizeof(CSC_DATA_PURCHASE_PREMIUM_SERVICE_TYPE_MYTH_RESURRECT) + (Data->InventorySlotCount * sizeof(UInt16));
+
+        if (Packet->Length != PacketLength) {
+            goto error;
+        }
+
         UInt32 GemCost = RTCharacterMythMasteryGetRebirthGemCost(Runtime, Character);
 
         if (!RTCharacterConsumeForceGem(Runtime, Character, GemCost) || !RTCharacterMythMasteryGetCanRebirth(Runtime, Character)) {
@@ -147,7 +155,7 @@ CLIENT_PROCEDURE_BINDING(PURCHASE_PREMIUM_SERVICE) {
             goto error;
         }
 
-        RTCharacterMythMasteryRebirth(Runtime, Character);
+        RTCharacterMythMasteryRebirth(Runtime, Character, Data->InventorySlotIndex[0]);
 
         Response->Result = 0;
     }

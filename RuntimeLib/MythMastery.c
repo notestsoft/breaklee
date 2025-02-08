@@ -290,7 +290,8 @@ UInt64 RTCharacterMythMasteryGetCumulativeLevelUpExp(
 // does NOT check force gem price!
 Bool RTCharacterMythMasteryRebirth(
 	RTRuntimeRef Runtime,
-	RTCharacterRef Character
+	RTCharacterRef Character,
+	UInt16 InventorySlotIndex
 ) {
 	if (!RTCharacterMythMasteryGetCanRebirth(Runtime, Character)) {
 		return false;
@@ -319,15 +320,31 @@ Bool RTCharacterMythMasteryRebirth(
 
 	//TODO: Send this packet and add item to server side inventory
 	// this adds item to inventory
-	/*
+
+	Int32 RewardItemCount = 30;
+
+	struct _RTItemSlot Slot = { 0 };
+	Slot.Item.ID = RTCharacterMythMasteryGetRestoreItemID(Runtime);
+	Slot.ItemOptions = RewardItemCount;
+	Slot.SlotIndex = InventorySlotIndex;
+	if (RTInventorySetSlot(Runtime, &Character->Data.InventoryInfo, &Slot)) {
+		RTItemSlotRef InventorySlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, InventorySlotIndex);
+		assert(InventorySlot);
+	}
+	else
+	{
+		return false;
+	}
+	
 	NOTIFICATION_DATA_MYTH_RESURRECT_REWARD* ResNotification = RTNotificationInit(MYTH_RESURRECT_REWARD);
 	ResNotification->Result = 1;
-	ResNotification->ItemId = 33562089;
-	ResNotification->ItemOptions = 35;
-	ResNotification->InventorySlotIndex = 41;
+	ResNotification->ItemId = RTCharacterMythMasteryGetRestoreItemID(Runtime);
+	ResNotification->ItemOptions = RewardItemCount;
+	ResNotification->InventorySlotIndex = InventorySlotIndex;
 	ResNotification->Unknown2 = 1;
 	RTNotificationDispatchToCharacter(ResNotification, Character);
-	*/
+
+	Character->SyncMask.InventoryInfo = true;
 
 	return true;
 }
@@ -399,7 +416,6 @@ RTMythMasterySlotRef RTCharacterMythMasteryGetOrCreateSlot(
 	// get slot ends here
 	RTMythMasterySlotRef MasterySlot = RTCharacterMythMasteryGetSlot(Runtime, Character, MasteryIndex, SlotIndex);
 	if (MasterySlot) {
-		Error("Get/Create failed on MasterySlot");
 		return MasterySlot;
 	}
 

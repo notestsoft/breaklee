@@ -57,7 +57,10 @@ CLIENT_PROCEDURE_BINDING(MYTH_FINISH_ROLL_SLOT) {
 			Character->Data.MythMasteryInfo.TemporarySlot.MasteryIndex,
 			Character->Data.MythMasteryInfo.TemporarySlot.SlotIndex
 		);
-		if (!SlotPage) goto error;
+		if (!SlotPage) {
+			Error("Slot page is none when rolling back slot!");
+			goto error;
+		}
 
 		UInt64 MythRestoreItemID = RTCharacterMythMasteryGetRestoreItemID(Runtime);
 		
@@ -71,9 +74,12 @@ CLIENT_PROCEDURE_BINDING(MYTH_FINISH_ROLL_SLOT) {
 				Packet->InventorySlotIndex[Index]
 			);
 		}
-		if (TotalConsumableItemCount < SlotPage->RestoreCost) goto error;
+		if (TotalConsumableItemCount < SlotPage->RestoreCost) {
+			Error("Rollback insufficient restore cost!");
+			goto error;
+		}
 
-		Int64 RemainingItemCount = TotalConsumableItemCount;
+		Int64 RemainingItemCount = SlotPage->RestoreCost;
 		for (Int Index = 0; Index < Packet->InventorySlotCount; Index += 1) {
 			RemainingItemCount -= RTInventoryConsumeItem(
 				Runtime,
