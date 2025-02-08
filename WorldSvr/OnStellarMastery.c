@@ -13,6 +13,9 @@ CLIENT_PROCEDURE_BINDING(STELLAR_LINK_IMPRINT_SLOT) {
 	memcpy(&kInventoryInfoBackup, &Character->Data.InventoryInfo, sizeof(struct _RTCharacterInventoryInfo));
 	memcpy(&kStellarMasteryInfoBackup, &Character->Data.StellarMasteryInfo, sizeof(struct _RTCharacterStellarMasteryInfo));
 
+	//Warn("GroupID: %u, SlotLine %u, SlotIndex %u", Packet->GroupID, Packet->SlotLine, Packet->SlotIndex);
+	//Warn("Material Count %u", Packet->MaterialCount);
+
 	S2C_DATA_STELLAR_LINK_IMPRINT_SLOT* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, STELLAR_LINK_IMPRINT_SLOT);
 	// TODO: send error codes instead of disconnecting
 

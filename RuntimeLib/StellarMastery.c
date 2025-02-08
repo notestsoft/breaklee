@@ -125,7 +125,11 @@ Void RTStellarMasteryRollForceEffect(
 	RTDataStellarLineGradeRef StellarLineGrade,
 	RTStellarMasterySlotRef MasterySlot
 ) {
-	RTDataStellarForceValuePoolRef StellarForceValuePool = RTRuntimeDataStellarForceValuePoolGet(Runtime->Context, StellarLineGrade->Grade);
+	RTDataStellarForceValuePoolRef StellarForceValuePool = RTRuntimeDataStellarForceValuePoolGet(Runtime->Context, MasterySlot->SlotLine);
+
+	//Warn("Slot line: %d", MasterySlot->SlotLine);
+	//Warn("Stellar force value pool: %d", StellarForceValuePool->PoolID);
+
 	RTDataStellarForceValueRef StellarForceValue = NULL;
 	ROLL_POOL(
 		StellarForceValuePool->StellarForceValueList,
@@ -134,6 +138,8 @@ Void RTStellarMasteryRollForceEffect(
 		StellarForceValue
 	);
     if (!StellarForceValue) return;
+
+	//Warn("Stellar force value: %d", StellarForceValue->StellarForcePoolID);
     
 	RTDataStellarForcePoolRef StellarForcePool = RTRuntimeDataStellarForcePoolGet(Runtime->Context, StellarForceValue->StellarForcePoolID);
 
