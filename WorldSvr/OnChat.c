@@ -40,18 +40,15 @@ CLIENT_PROCEDURE_BINDING(MESSAGE_SHOUT) {
 	Notification1->Padding = 4294967295;
 	SocketSend(Context->ClientSocket, Client->Connection, Notification1);
 
-	// Initialize the packet structure
 	UInt16 NameLength = (UInt16)strlen(Character->Name);  // Length of player name
 	UInt16 MessageLength = Packet->PayloadLength;         // Length of the chat message
 
 	// Initialize message metadata with known values
 	UInt8 MessageMetadata[5] = { 0xFE, 0xFE, 0xA0, 0x14, 0x16 };
 
-	// Start building the packet buffer
 	PacketBufferRef PacketBuffer2 = SocketGetNextPacketBuffer(Socket);
 	S2C_DATA_NFY_MESSAGE_LOUD* Notification = PacketBufferInit(PacketBuffer2, S2C, NFY_MESSAGE_LOUD);
 
-	// boolean to determine if chat has an item linked
 	bool hasLink = false;
 	bool has2Links = false;
 	bool has3Links = false;
@@ -136,9 +133,7 @@ CLIENT_PROCEDURE_BINDING(MESSAGE_SHOUT) {
 	}
 
 	PacketBufferAppendCopy(PacketBuffer2, &Character->Name[0], NameLength);
-	// Append the packet data in the correct order
 
-	// 8. Payload (message content, dynamic length based on MessageLength)
 	PacketBufferAppendCopy(PacketBuffer2, &Packet->Payload[0], MessageLength);
 
 	BroadcastToAllClients(Context, Notification);
