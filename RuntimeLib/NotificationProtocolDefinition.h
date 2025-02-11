@@ -516,6 +516,12 @@ NOTIFICATION_PROTOCOL(PVP_RESPONSE, 333,
     UInt8 PvpResult;
 )
 
+NOTIFICATION_PROTOCOL(PVP_END, 335,
+    UInt8 PvpType;
+    UInt8 PvpResult;
+)
+
+
 NOTIFICATION_PROTOCOL(PVP_HP_INFO, 340,
     UInt32 CharacterIndex;
     Int64 CurrentHP;

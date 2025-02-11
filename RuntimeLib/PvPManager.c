@@ -59,7 +59,6 @@ Void RTPvPManagerDestroy(
     RTPvPManagerRef PvPManager
 ) {
     // TODO: Check if all running PvPs have to be cleaned up!!!
-
     DictionaryDestroy(PvPManager->CharacterToPvPContext);
     ArrayDestroy(PvPManager->ContextPoolIndices);
     MemoryPoolDestroy(PvPManager->ContextPool);
@@ -67,41 +66,32 @@ Void RTPvPManagerDestroy(
 }
 
 Void RTPvPManagerUpdate(
-    RTPvPManagerRef PvPManager
+    RTPvPManagerRef PvPManager,
+    RTPvPContextRef PvPContext,
+    RTCharacterRef Character
 ) {
-    // TODO: Maybe add position verifications here...
-    // TODO: Update request timeouts
-    Timestamp CurrentTimestamp = GetTimestampMs();
-    if (PvPManager->NextRequestTimeout <= CurrentTimestamp) {
-        PvPManager->NextRequestTimeout = UINT64_MAX;
 
-        for (Int Index = 0; Index < ArrayGetElementCount(PvPManager->ContextPoolIndices); Index += 1) {
-            Int PoolIndex = *(Int*)ArrayGetElementAtIndex(PvPManager->ContextPoolIndices, Index);
-            assert(MemoryPoolIsReserved(PvPManager->ContextPool, PoolIndex));
-            RTPvPContextRef PvPContext = (RTPvPContextRef)MemoryPoolFetch(PvPManager->ContextPool, PoolIndex);
-            if (PvPContext->IsActive) continue;
-            if (PvPContext->RequestTimeout > CurrentTimestamp) {
-                PvPManager->NextRequestTimeout = MIN(PvPManager->NextRequestTimeout, PvPContext->RequestTimeout);
-                continue;
-            }
+    RTRuntimeRef Runtime = PvPManager->Runtime;
 
-            ArrayAppendElement(PvPManager->ContextPoolIndicesToRemove, &PoolIndex);
-        }
+    UInt32 OtherCharacterIndex = PvPContext->Source.CharacterIndex == Character->CharacterIndex ? PvPContext->Target.CharacterIndex : PvPContext->Source.CharacterIndex;
 
-        for (Int Index = 0; Index < ArrayGetElementCount(PvPManager->ContextPoolIndicesToRemove); Index += 1) {
-            Int PoolIndex = *(Int*)ArrayGetElementAtIndex(PvPManager->ContextPoolIndicesToRemove, Index);
+    RTCharacterRef Source = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, OtherCharacterIndex);
+    if (!Source) goto error;
 
-            assert(MemoryPoolIsReserved(PvPManager->ContextPool, PoolIndex));
-            RTPvPContextRef PvPContext = (RTPvPContextRef)MemoryPoolFetch(PvPManager->ContextPool, PoolIndex);
-            /*RTPvPManagerDestroyContext(
-                PvPManager,
-                PvPContext->Source.CharacterIndex,
-             //   NOTIFICATION_PvP_EVENT_TYPE_CANCEL_PvP
-            );*/
-        }
+    if (PvPContext->PvpType == PVP_TYPE_PERSON) {
 
-        ArrayRemoveAllElements(PvPManager->ContextPoolIndicesToRemove, true);
+        NOTIFICATION_DATA_PVP_HP_INFO* NotificationHp = RTNotificationInit(PVP_HP_INFO);
+        NotificationHp->CharacterIndex = Character->CharacterIndex;
+        NotificationHp->CurrentHP = Character->Data.Info.CurrentHP;
+        NotificationHp->MaxHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
+        RTNotificationDispatchToCharacter(NotificationHp, Source);
     }
+
+    return 0;
+
+error:
+    return 1;
+   
 }
 
 RTPvPContextRef RTPvPManagerCreateContext(
@@ -146,32 +136,11 @@ RTPvPContextRef RTPvPManagerCreateContext(
 
 Bool RTPvPManagerDestroyContext(
     RTPvPManagerRef PvPManager,
-    UInt32 SourceCharacterIndex,
-    UInt8 EventType
+    UInt32 SourceCharacterIndex
 ) {
     RTRuntimeRef Runtime = PvPManager->Runtime;
     RTPvPContextRef PvPContext = RTPvPManagerGetContextByCharacter(PvPManager, SourceCharacterIndex);
     if (!PvPContext) return false;
-
-    UInt8 TargetEventType = EventType;
- //   if (TargetEventType != NOTIFICATION_PvP_EVENT_TYPE_CANCEL_PvP_END &&
-  //      TargetEventType != NOTIFICATION_PvP_EVENT_TYPE_PvP_END) {
-    //    TargetEventType = NOTIFICATION_PvP_EVENT_TYPE_CANCEL_PvP;
-   // }
-
-    RTCharacterRef Source = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, PvPContext->Source.CharacterIndex);
-    if (Source) {
-     //   NOTIFICATION_DATA_PvP_EVENT* Notification = RTNotificationInit(PvP_EVENT);
-    //    Notification->EventType = TargetEventType;
-    //    RTNotificationDispatchToCharacter(Notification, Source);
-    }
-
-    RTCharacterRef Target = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, PvPContext->Target.CharacterIndex);
-    if (Target) {
-     //   NOTIFICATION_DATA_PvP_EVENT* Notification = RTNotificationInit(PvP_EVENT);
-    //    Notification->EventType = TargetEventType;
-    //    RTNotificationDispatchToCharacter(Notification, Target);
-    }
 
     Int SourceIndex = PvPContext->Source.CharacterIndex;
     Int TargetIndex = PvPContext->Target.CharacterIndex;
@@ -271,27 +240,12 @@ UInt8 RTPvPManagerRequestPvPResponse(
 
     if (PvpType == PVP_TYPE_PERSON) {
         {
-
-
-
             NOTIFICATION_DATA_PVP_RESPONSE* Notification = RTNotificationInit(PVP_RESPONSE);
             Notification->CharacterIndex = Target->CharacterIndex;
             Notification->PvpType = PvpType;
             Notification->PvpResult = ResultType;
             RTNotificationDispatchToCharacter(Notification, Source);
-
-            NOTIFICATION_DATA_PVP_HP_INFO* NotificationHp = RTNotificationInit(PVP_HP_INFO);
-            NotificationHp->CharacterIndex = Target->CharacterIndex;
-            NotificationHp->CurrentHP = Target->Data.Info.CurrentHP;
-            NotificationHp->MaxHP = Target->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
-            RTNotificationDispatchToCharacter(NotificationHp, Source);
-            
-
-            NOTIFICATION_DATA_PVP_HP_INFO* NotificationHpOther = RTNotificationInit(PVP_HP_INFO);
-            NotificationHpOther->CharacterIndex = Source->CharacterIndex;
-            NotificationHpOther->CurrentHP = Source->Data.Info.CurrentHP;
-            NotificationHpOther->MaxHP = Source->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
-            RTNotificationDispatchToCharacter(NotificationHpOther, Target);
+          
         }
     }
     else {
@@ -305,164 +259,80 @@ error:
  //   return NOTIFICATION_PvP_EVENT_TYPE_CANCEL_PvP;
 }
 
-UInt8 RTPvPManagerClosePvP(
+UInt8 RTPvPManagerStartPvP(
     RTPvPManagerRef PvPManager,
-    RTCharacterRef Character,
-    UInt8 EventType
-) {
-    return 1;
-}
-
-UInt8 RTPvPManagerAddItems(
-    RTPvPManagerRef PvPManager,
-    RTCharacterRef Character,
-    Int32 InventorySlotCount,
-    UInt16* SourceInventorySlotIndex,
-    UInt16* PvPInventorySlotIndex
+    RTCharacterRef Target
 ) {
     RTRuntimeRef Runtime = PvPManager->Runtime;
-    RTPvPContextRef PvPContext = RTPvPManagerGetContextByCharacter(PvPManager, Character->CharacterIndex);
+    //  Bool IsAccepted = (EventType == NOTIFICATION_PvP_EVENT_TYPE_REQUEST_ACCEPT);
+
+    RTPvPContextRef PvPContext = RTPvPManagerGetContextByCharacter(PvPManager, Target->CharacterIndex);
     if (!PvPContext) goto error;
 
     RTCharacterRef Source = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, PvPContext->Source.CharacterIndex);
     if (!Source) goto error;
 
-    RTCharacterRef Target = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, PvPContext->Target.CharacterIndex);
-    if (!Target) goto error;
+    if (PvPContext->PvpType == PVP_TYPE_PERSON) {
 
-    RTPvPMemberContextRef MemberContext = RTPvPContextGetMemberContext(PvPContext, Character->CharacterIndex);
-    if (!MemberContext) goto error;
+        NOTIFICATION_DATA_PVP_HP_INFO* NotificationHp = RTNotificationInit(PVP_HP_INFO);
+        NotificationHp->CharacterIndex = Target->CharacterIndex;
+        NotificationHp->CurrentHP = Target->Data.Info.CurrentHP;
+        NotificationHp->MaxHP = Target->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
+        RTNotificationDispatchToCharacter(NotificationHp, Source);
 
-   // NOTIFICATION_DATA_PvP_ADD_ITEMS* Notification = RTNotificationInit(PvP_ADD_ITEMS);
-  /* Notification->ItemCount = 0;
 
-    // TODO: Check if source inventory slots are used multiple times!
-
-    for (Int Index = 0; Index < InventorySlotCount; Index += 1) {
-        UInt16 InventorySlotIndex = PvPInventorySlotIndex[Index];
-        if (InventorySlotIndex >= RUNTIME_MAX_PvP_INVENTORY_SIZE) goto error;
-        if (MemberContext->PvPInventorySlots[InventorySlotIndex]) goto error;
-
-        RTItemSlotRef ItemSlot = RTInventoryGetSlot(Runtime, &Character->Data.InventoryInfo, SourceInventorySlotIndex[Index]);
-        if (!ItemSlot) goto error;
-        if (ItemSlot->Item.IsAccountBinding || ItemSlot->Item.IsCharacterBinding || ItemSlot->Item.IsProtected) goto error;
-
-        MemberContext->PvPInventorySlots[InventorySlotIndex] = SourceInventorySlotIndex[Index];
-
-        Notification->ItemCount += 1;
-        NOTIFICATION_DATA_PvP_ADD_ITEMS_SLOT* NotificationSlot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_PvP_ADD_ITEMS_SLOT);
-        NotificationSlot->ItemID = ItemSlot->Item.Serial;
-        NotificationSlot->ItemOptions = ItemSlot->ItemOptions;
-        NotificationSlot->SlotIndex = InventorySlotIndex;
-        NotificationSlot->ItemDuration = ItemSlot->ItemDuration.Serial;
+        NOTIFICATION_DATA_PVP_HP_INFO* NotificationHpOther = RTNotificationInit(PVP_HP_INFO);
+        NotificationHpOther->CharacterIndex = Source->CharacterIndex;
+        NotificationHpOther->CurrentHP = Source->Data.Info.CurrentHP;
+        NotificationHpOther->MaxHP = Source->Attributes.Values[RUNTIME_ATTRIBUTE_HP_MAX];
+        RTNotificationDispatchToCharacter(NotificationHpOther, Target);
     }
 
-    MemberContext->PvPInventorySlotCount += InventorySlotCount;
-
-    if (Character->CharacterIndex == Source->CharacterIndex) {
-        RTNotificationDispatchToCharacter(Notification, Target);
-    }
-    else if (Character->CharacterIndex == Target->CharacterIndex) {
-        RTNotificationDispatchToCharacter(Notification, Source);
-    }
-
-    PvPContext->Source.IsReady = false;
-    PvPContext->Source.IsConfirmed = false;
-    PvPContext->Source.IsInventoryReady = false;
-
- {
-        NOTIFICATION_DATA_PvP_EVENT* Notification = RTNotificationInit(PvP_EVENT);
-        Notification->EventType = NOTIFICATION_PvP_EVENT_TYPE_CANCEL_SUBMIT;
-        RTNotificationDispatchToCharacter(Notification, Source);
-    }
-
-    PvPContext->Target.IsReady = false;
-    PvPContext->Target.IsConfirmed = false;
-    PvPContext->Target.IsInventoryReady = false;
-
-  {
-        NOTIFICATION_DATA_PvP_EVENT* Notification = RTNotificationInit(PvP_EVENT);
-        Notification->EventType = NOTIFICATION_PvP_EVENT_TYPE_CANCEL_SUBMIT;
-        RTNotificationDispatchToCharacter(Notification, Target);
-    }*/
-
-    return;//NOTIFICATION_PvP_EVENT_TYPE_ADD_ITEM;
+    return 0;
 
 error:
-    // TODO: Check which event type to return for blocking the cancellation!
-    return;// NOTIFICATION_PvP_EVENT_TYPE_CANCEL_PvP;
+    return 1;
 }
 
-UInt8 RTPvPManagerAddCurrency(
+UInt8 RTPvPManagerEndPvP(
     RTPvPManagerRef PvPManager,
     RTCharacterRef Character,
-    UInt64 Currency
+    UInt8 PvpType,
+    UInt8 ResultType
 ) {
     RTRuntimeRef Runtime = PvPManager->Runtime;
+    //  Bool IsAccepted = (EventType == NOTIFICATION_PvP_EVENT_TYPE_REQUEST_ACCEPT);
+
     RTPvPContextRef PvPContext = RTPvPManagerGetContextByCharacter(PvPManager, Character->CharacterIndex);
-    /*if (!PvPContext) goto error;
+    if (!PvPContext) goto error;
 
-    RTCharacterRef Source = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, PvPContext->Source.CharacterIndex);
-    if (!Source) goto error;
 
-    RTCharacterRef Target = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, PvPContext->Target.CharacterIndex);
-    if (!Target) goto error;
+    if (PvpType == PVP_TYPE_PERSON) {
 
-    RTPvPMemberContextRef MemberContext = RTPvPContextGetMemberContext(PvPContext, Character->CharacterIndex);
-    if (!MemberContext) goto error;
+        UInt32 OtherCharacterIndex = PvPContext->Source.CharacterIndex == Character->CharacterIndex ? PvPContext->Target.CharacterIndex : PvPContext->Source.CharacterIndex;
 
-    if (Currency > Character->Data.Info.Alz) goto error;
+        RTCharacterRef Source = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, OtherCharacterIndex);
+        if (!Source) goto error;
 
-    MemberContext->Currency = Currency;
 
-    NOTIFICATION_DATA_PvP_ADD_ITEMS* Notification = RTNotificationInit(PvP_ADD_ITEMS);
-    Notification->ItemCount = 1;
-
-    NOTIFICATION_DATA_PvP_ADD_ITEMS_SLOT* NotificationSlot = RTNotificationAppendStruct(Notification, NOTIFICATION_DATA_PvP_ADD_ITEMS_SLOT);
-    NotificationSlot->ItemID = RUNTIME_ITEM_ID_CURRENCY;
-    NotificationSlot->ItemOptions = Currency;
-    NotificationSlot->SlotIndex = 0;
-    NotificationSlot->ItemDuration = 0;
-
-    if (Character->CharacterIndex == Source->CharacterIndex) {
-        RTNotificationDispatchToCharacter(Notification, Target);
-    }
-    else if (Character->CharacterIndex == Target->CharacterIndex) {
+        NOTIFICATION_DATA_PVP_END* Notification = RTNotificationInit(PVP_END);
+        Notification->PvpResult = ResultType;
+        Notification->PvpType = PvpType;
         RTNotificationDispatchToCharacter(Notification, Source);
+
     }
 
-    PvPContext->Source.IsReady = false;
-    PvPContext->Source.IsConfirmed = false;
-    PvPContext->Source.IsInventoryReady = false;
-
- 
-        NOTIFICATION_DATA_PvP_EVENT* Notification = RTNotificationInit(PvP_EVENT);
-        Notification->EventType = NOTIFICATION_PvP_EVENT_TYPE_CANCEL_SUBMIT;
-        RTNotificationDispatchToCharacter(Notification, Source);
-    }
-
-    PvPContext->Target.IsReady = false;
-    PvPContext->Target.IsConfirmed = false;
-    PvPContext->Target.IsInventoryReady = false;
-
-  
-        NOTIFICATION_DATA_PvP_EVENT* Notification = RTNotificationInit(PvP_EVENT);
-        Notification->EventType = NOTIFICATION_PvP_EVENT_TYPE_CANCEL_SUBMIT;
-        RTNotificationDispatchToCharacter(Notification, Target);
-    }*/
-
-    return;// NOTIFICATION_PvP_EVENT_TYPE_ADD_ITEM;
+    RTPvPManagerDestroyContext(PvPManager, PvPContext->Source.CharacterIndex);
+    return 0;
 
 error:
-    // TODO: Check which event type to return for blocking the cancellation!
-    return;// NOTIFICATION_PvP_EVENT_TYPE_CANCEL_PvP;
+    return 1;
 }
 
-Bool RTPvPManagerSetInventorySlots(
+UInt8 RTPvPManagerClosePvP(
     RTPvPManagerRef PvPManager,
     RTCharacterRef Character,
-    UInt8 InventorySlotCount,
-    UInt16* InventorySlotIndex
+    UInt8 EventType
 ) {
     return 1;
 }

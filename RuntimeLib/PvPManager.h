@@ -31,7 +31,9 @@ Void RTPvPManagerDestroy(
 );
 
 Void RTPvPManagerUpdate(
-    RTPvPManagerRef PvPManager
+    RTPvPManagerRef PvPManager,
+    RTPvPContextRef PvPContext,
+    RTCharacterRef Character
 );
 
 RTPvPContextRef RTPvPManagerCreateContext(
@@ -43,8 +45,7 @@ RTPvPContextRef RTPvPManagerCreateContext(
 
 Bool RTPvPManagerDestroyContext(
     RTPvPManagerRef PvPManager,
-    UInt32 SourceCharacterIndex,
-    UInt8 EventType
+    UInt32 SourceCharacterIndex
 );
 
 RTPvPContextRef RTPvPManagerGetContextByCharacter(
@@ -66,31 +67,22 @@ UInt8 RTPvPManagerRequestPvPResponse(
     UInt8 ResultType
 );
 
+UInt8 RTPvPManagerStartPvP(
+    RTPvPManagerRef PvPManager,
+    RTCharacterRef Target
+);
+
+UInt8 RTPvPManagerEndPvP(
+    RTPvPManagerRef PvPManager,
+    RTCharacterRef Character,
+    UInt8 PvpType,
+    UInt8 ResultType
+);
+
 UInt8 RTPvPManagerClosePvP(
     RTPvPManagerRef PvPManager,
     RTCharacterRef Character,
     UInt8 EventType
-);
-
-UInt8 RTPvPManagerAddItems(
-    RTPvPManagerRef PvPManager,
-    RTCharacterRef Character,
-    Int32 InventorySlotCount,
-    UInt16* SourceInventorySlotIndex,
-    UInt16* PvPInventorySlotIndex
-);
-
-UInt8 RTPvPManagerAddCurrency(
-    RTPvPManagerRef PvPManager,
-    RTCharacterRef Character,
-    UInt64 Currency
-);
-
-Bool RTPvPManagerSetInventorySlots(
-    RTPvPManagerRef PvPManager,
-    RTCharacterRef Character,
-    UInt8 InventorySlotCount,
-    UInt16* InventorySlotIndex
 );
 
 EXTERN_C_END
