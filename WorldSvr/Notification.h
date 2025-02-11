@@ -42,4 +42,9 @@ Void SendPartyData(
     RTPartyRef Party
 );
 
+Void BroadcastToAllClients(
+    ServerContextRef Context,
+    Void* Packet
+);
+
 EXTERN_C_END
