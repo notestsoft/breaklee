@@ -1021,6 +1021,21 @@ CLIENT_PROTOCOL(S2C, MESSAGE_NEARBY, DEFAULT, 217,
     UInt8 Payload[0];
 )
 
+CLIENT_PROTOCOL(S2C, MESSAGE_SHOUT, DEFAULT, 2232,
+    UInt8 Unknown1;
+    UInt32 Padding;
+)
+
+CLIENT_PROTOCOL(S2C, NFY_MESSAGE_LOUD, DEFAULT, 394,
+    UInt32 CharacterIndex;
+    UInt8 Nation;
+    UInt8 NameLength;
+    UInt16 Unknown1;
+    //Char *Name;  // Dynamic player name
+    //UInt16 MessageLength;
+    //UInt8 Payload[0]; // Chat message
+)
+
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_NFY_SKILL_TO_MOB_TARGET,
     RTEntityID Entity;
     UInt32 EntityIDType;
@@ -3486,6 +3501,15 @@ CLIENT_PROTOCOL(C2S, CANCEL_BATTLE_MODE_SYNERGY, DEFAULT, 2203,
 )
 
 CLIENT_PROTOCOL(S2C, NFY_CANCEL_BATTLE_MODE_SYNERGY, DEFAULT, 2204,
+)
+
+CLIENT_PROTOCOL(C2S, MESSAGE_SHOUT, DEFAULT, 2232,
+    UInt32 Unknown1;
+    UInt8 WorldSvrIdx;
+    UInt32 Unknown2;
+    UInt8 Unknown3;
+    UInt16 PayloadLength;
+    UInt8 Payload[0];
 )
 
 CLIENT_PROTOCOL(C2S, GUILD_CREATE, DEFAULT, 2233,
