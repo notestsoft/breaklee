@@ -129,8 +129,8 @@ NOTIFICATION_PROTOCOL_STRUCT(CHARACTERS_SPAWN_INDEX,
     RTEntityID Entity;
     UInt32 Level;
     UInt16 OverlordLevel;
-    UInt32 HolyPower;
     UInt32 Rebirth;
+    UInt32 HolyPower;
     UInt32 MythLevel;
     UInt8 ForceWingGrade;
     UInt8 ForceWingLevel;
