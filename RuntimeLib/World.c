@@ -157,7 +157,8 @@ Void* RTWorldContextGetEntityContext(
 Void RTWorldSpawnCharacterWithoutNotification(
     RTRuntimeRef Runtime,
     RTWorldContextRef WorldContext,
-    RTEntityID Entity
+    RTEntityID Entity,
+    bool isWarp
 ) {
     RTCharacterRef Character = RTWorldManagerGetCharacter(WorldContext->WorldManager, Entity);
     assert(Character);
@@ -172,16 +173,26 @@ Void RTWorldSpawnCharacterWithoutNotification(
     Character->Movement.WorldContext = WorldContext;
     Character->Movement.WorldChunk = WorldChunk;
     Character->Movement.Entity = Character->ID;
-
-    RTCharacterNotifyStatus(Runtime, Character);
+    RTCharacterNotifyStatus(Runtime, Character, isWarp);
 }
+
+#define RTWorldSpawnCharacterWithoutNotification_3args(Runtime, WorldContext, Entity) \
+    RTWorldSpawnCharacterWithoutNotification(Runtime, WorldContext, Entity, false)
+
+#define RTWorldSpawnCharacterWithoutNotification_4args(Runtime, WorldContext, Entity, isWarp) \
+    RTWorldSpawnCharacterWithoutNotification(Runtime, WorldContext, Entity, isWarp)
+
+// Argument-counting macro to pick the right version
+#define GET_MACRO(_1, _2, _3, _4, NAME, ...) NAME
+#define RTWorldSpawnCharacterWithoutNotificationMacro(...) \
+    GET_MACRO(__VA_ARGS__, RTWorldSpawnCharacterWithoutNotification_4args, RTWorldSpawnCharacterWithoutNotification_3args)(__VA_ARGS__)
 
 Void RTWorldSpawnCharacter(
     RTRuntimeRef Runtime,
     RTWorldContextRef WorldContext,
     RTEntityID Entity
 ) {
-    RTWorldSpawnCharacterWithoutNotification(Runtime, WorldContext, Entity);
+    RTWorldSpawnCharacterWithoutNotification(Runtime, WorldContext, Entity, false);
     RTCharacterRef Character = RTWorldManagerGetCharacter(WorldContext->WorldManager, Entity);
     assert(Character);
     
