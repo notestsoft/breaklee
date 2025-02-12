@@ -1422,6 +1422,18 @@ Void RTCharacterSetHP(
 	Character->Data.Info.CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
 	Character->SyncMask.Info = true;
 
+	// cancel battle mode and aura if active and just died
+	if (NewValue <= 0 && RTCharacterIsBattleModeActive(Runtime, Character))
+	{
+		RTCharacterCancelBattleMode(Runtime, Character);
+		RTCharacterCancelAuraMode(Runtime, Character);
+
+		NOTIFICATION_DATA_CHARACTER_DATA* Notification = RTNotificationInit(CHARACTER_DATA);
+		Notification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_SP_DECREASE_EX;
+		Notification->SP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+		RTNotificationDispatchToCharacter(Notification, Character);
+	}
+
 	RTRuntimeBroadcastCharacterData(
 		Runtime,
 		Character,
