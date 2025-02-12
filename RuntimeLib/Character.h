@@ -452,7 +452,8 @@ Void RTCharacterApplyDamage(
 
 Void RTCharacterNotifyStatus(
     RTRuntimeRef Runtime,
-    RTCharacterRef Character
+    RTCharacterRef Character,
+    bool isWarp
 );
 
 EXTERN_C_END
