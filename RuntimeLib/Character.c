@@ -1623,7 +1623,8 @@ Void RTCharacterApplyDamage(
 
 Void RTCharacterNotifyStatus(
 	RTRuntimeRef Runtime,
-	RTCharacterRef Character
+	RTCharacterRef Character,
+	bool isWarp
 ) {
 	NOTIFICATION_DATA_CHARACTER_STATUS* Notification = RTNotificationInit(CHARACTER_STATUS);
 	Notification->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
@@ -1641,9 +1642,18 @@ Void RTCharacterNotifyStatus(
 		Character->Data.BuffInfo.Info.ForceWingBuffCount +
 		Character->Data.BuffInfo.Info.FirePlaceBuffCount
 	);
-	if (BuffSlotCount > 0) {
+	if (BuffSlotCount > 0 && !isWarp) {
 		RTNotificationAppendCopy(Notification, &Character->Data.BuffInfo.Slots[0], sizeof(struct _RTBuffSlot) * BuffSlotCount);
 	}
 
 	RTNotificationDispatchToCharacter(Notification, Character);
 }
+
+#define RTCharacterNotifyStatus_2args(Runtime, Character) \
+    RTCharacterNotifyStatus(Runtime, Character, false)
+
+#define RTCharacterNotifyStatus_3args(Runtime, Character, isWarp) \
+    RTCharacterNotifyStatus(Runtime, Character, isWarp)
+
+#define RTCharacterNotifyStatusMacro(...) \
+    GET_MACRO(__VA_ARGS__, RTCharacterNotifyStatus_3args, RTCharacterNotifyStatus_2args)(__VA_ARGS__)
