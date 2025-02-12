@@ -1434,6 +1434,11 @@ Void RTCharacterSetHP(
 		RTNotificationDispatchToCharacter(Notification, Character);
 	}
 
+	if (NewValue <= 0)
+	{
+		RTCharacterRemoveAllBuffs(Runtime, Character);
+	}
+
 	RTRuntimeBroadcastCharacterData(
 		Runtime,
 		Character,
