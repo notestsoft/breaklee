@@ -35,7 +35,8 @@ CLIENT_PROCEDURE_BINDING(VIEW_EQUIPMENT_REQUEST)
 	IPCSocketUnicast(Server->IPCSocket, Request);
 
 error:
-    SocketDisconnect(Socket, Connection);
+	Warn("dc on first packet");
+    //SocketDisconnect(Socket, Connection);
 }
 
 IPC_PROCEDURE_BINDING(D2C, GET_CHARACTER_VIEW_EQUIPMENT)
@@ -59,7 +60,7 @@ IPC_PROCEDURE_BINDING(D2C, GET_CHARACTER_VIEW_EQUIPMENT)
 		Info("Error: Could not find client by index %d", Packet->RequestorCharacterID);
 		return;
 	}
-	SocketSend(Server->ClientSocket, Client2->Connection, Response);
+	SocketSend(Context->ClientSocket, Client2->Connection, Response);
 
 error:
 	Info("Error occurred on chat server when receiving packet from MasterDBServer for vieweq");

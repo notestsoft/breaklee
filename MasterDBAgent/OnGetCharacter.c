@@ -512,6 +512,7 @@ IPC_PROCEDURE_BINDING(C2D, GET_CHARACTER_VIEW_EQUIPMENT) {
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, &EquipmentSlots, sizeof(struct _RTItemSlot) * Response->EquipmentSlotCount);
     Response->Success = true;
     Info("Header Length: %d", Response->Header.Length);
+    Response->RequestorCharacterID = Packet->CharacterIndex;
     Info("MasterDBAgent: FinaL packet raw data. CharacterName: %s, Level: %d, Style: %d, OptionsDataLength: %d, EquipmentSlotCount: %d", (char*) Response->CharacterName, Response->Level, Response->Style, Response->OptionsDataLength, Response->EquipmentSlotCount);
     IPCSocketUnicast(Socket, Response);
     Info("Sending packet back to ChatSvr. Target: %d, TargetConnectionID: %d",
