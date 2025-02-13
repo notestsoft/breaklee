@@ -450,3 +450,76 @@ error:
 	Response->Success = false;
     IPCSocketUnicast(Socket, Response);
 }
+
+IPC_PROCEDURE_BINDING(C2D, GET_CHARACTER_VIEW_EQUIPMENT) {
+    Info("GET_CHARACTER_VIEW_EQUIPMENT packet received on MasterDBAgent.");
+    IPC_D2C_DATA_GET_CHARACTER_VIEW_EQUIPMENT* Response = IPCPacketBufferInit(Connection->PacketBuffer, D2C, GET_CHARACTER_VIEW_EQUIPMENT);
+    Response->Header.Source = Server->IPCSocket->NodeID;
+    Response->Header.Target = Packet->Header.Source;
+    Response->Header.TargetConnectionID = Packet->Header.SourceConnectionID;
+    Info("Header Length: %d", Response->Header.Length);
+    Info("NodeID: Index=%d, Group=%d, Type=%d",
+        Response->Header.Target.Index,
+        Response->Header.Target.Group,
+        Response->Header.Target.Type);
+    Info("TargetConnectionID: %d", Response->Header.TargetConnectionID);
+    struct _RTItemSlot EquipmentSlots[RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT] = { 0 };
+
+    // find the characterindex by character name
+    Int32 CharacterIndex = -1;
+    DatabaseHandleRef HandleGetIndex = DatabaseCallProcedureFetch(
+        Context->Database,
+        "GetCharacterIDByName",
+        DB_INPUT_STRING(Packet->CharacterName, 17),
+        DB_PARAM_END
+    );
+
+    if (!DatabaseHandleReadNext(
+        Context->Database,
+        HandleGetIndex,
+        DB_TYPE_INT32, &CharacterIndex,
+        DB_PARAM_END
+    )) {
+        goto error;
+    }
+
+    if (CharacterIndex == -1 || CharacterIndex == NULL) goto error;
+
+    DatabaseHandleRef Handle = DatabaseCallProcedureFetch(
+        Context->Database,
+        "GetCharacterViewEqData",
+        DB_INPUT_INT32(CharacterIndex),
+        DB_PARAM_END
+    );
+
+    if (!DatabaseHandleReadNext(
+        Context->Database,
+        Handle,
+        DB_TYPE_STRING, &Response->CharacterName, strlen(Packet->CharacterName),
+        DB_TYPE_INT32, &Response->Level,
+        DB_TYPE_INT32, &Response->Style,
+        DB_TYPE_INT32, &Response->OptionsDataLength,
+        DB_TYPE_UINT8, &Response->EquipmentSlotCount,
+        DB_TYPE_DATA, &EquipmentSlots[0], sizeof(struct _RTItemSlot) * Response->EquipmentSlotCount,
+        DB_TYPE_DATA, &Response->OptionsData[0], sizeof(Response->OptionsData),
+        DB_PARAM_END
+    )) {
+        goto error;
+    }
+    DatabaseHandleFlush(Context->Database, Handle);
+    DatabaseHandleFlush(Context->Database, HandleGetIndex);
+
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, &EquipmentSlots, sizeof(struct _RTItemSlot) * Response->EquipmentSlotCount);
+    Response->Success = true;
+    Info("Header Length: %d", Response->Header.Length);
+    Info("MasterDBAgent: FinaL packet raw data. CharacterName: %s, Level: %d, Style: %d, OptionsDataLength: %d, EquipmentSlotCount: %d", (char*) Response->CharacterName, Response->Level, Response->Style, Response->OptionsDataLength, Response->EquipmentSlotCount);
+    IPCSocketUnicast(Socket, Response);
+    Info("Sending packet back to ChatSvr. Target: %d, TargetConnectionID: %d",
+        Response->Header.Target, Response->Header.TargetConnectionID);
+    return;
+
+error:
+    Info("Error on MasterDBServer: GET_CHARACTER_VIEW_EQUIPMENT");
+    Response->Success = false;
+    IPCSocketUnicast(Socket, Response);
+}

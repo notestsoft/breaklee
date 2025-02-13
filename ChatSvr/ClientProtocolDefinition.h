@@ -69,7 +69,16 @@ CLIENT_PROTOCOL(C2S, VIEW_EQUIPMENT_REQUEST, DEFAULT, 2001,
 )
 
 CLIENT_PROTOCOL(S2C, VIEW_EQUIPMENT_RESPONSE, DEFAULT, 2004,
-    UInt32 Result;
+    UInt8 Result;
+    UInt8 Unknown1[3];
+    UInt8 CharacterName[17];
+    UInt8 Level;
+    UInt8 Unknown2[5];
+    UInt8 Class;
+    UInt32 AttackPower;
+    UInt32 DefensePower;
+    UInt8 ItemAmount;
+    UInt8 EquipmentData[0];
 )
 
 #undef CLIENT_PROTOCOL_ENUM

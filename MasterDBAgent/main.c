@@ -25,6 +25,9 @@ Void SERVER_IPC_ ## __NAMESPACE__ ## _PROC_ ## __NAME__(                    \
 #define IPC_A2D_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(A2D, __NAME__)
 #include "IPCCommands.h"
 
+#define IPC_C2D_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(C2D, __NAME__)
+#include "IPCCommands.h"
+
 #define IPC_W2D_COMMAND(__NAME__) IPC_COMMAND_CALLBACK(W2D, __NAME__)
 #include "IPCCommands.h"
 
@@ -93,6 +96,10 @@ Int32 main(Int32 argc, CString* argv) {
 
 #define IPC_A2D_COMMAND(__NAME__) \
     IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_A2D_ ## __NAME__, &SERVER_IPC_A2D_PROC_ ## __NAME__);
+#include "IPCCommands.h"
+
+#define IPC_C2D_COMMAND(__NAME__) \
+    IPCSocketRegisterCommandCallback(Server->IPCSocket, IPC_C2D_ ## __NAME__, &SERVER_IPC_C2D_PROC_ ## __NAME__);
 #include "IPCCommands.h"
 
 #define IPC_W2D_COMMAND(__NAME__) \
