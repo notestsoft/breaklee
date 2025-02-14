@@ -457,7 +457,7 @@ Bool RTRuntimeWarpCharacter(
             RUNTIME_WORLD_TILE_WALL
         );
 
-        RTWorldSpawnCharacterWithoutNotification(Runtime, TargetWorld, Entity, false);
+        RTWorldSpawnCharacterWithoutNotification(Runtime, TargetWorld, Entity, true);
 
         return true;
     }
@@ -500,7 +500,7 @@ Bool RTRuntimeWarpCharacter(
             RUNTIME_WORLD_TILE_WALL
         );
 
-        RTWorldSpawnCharacterWithoutNotification(Runtime, TargetWorld, Entity, false);
+        RTWorldSpawnCharacterWithoutNotification(Runtime, TargetWorld, Entity, true);
 
         return true;
     }
@@ -546,7 +546,7 @@ Bool RTRuntimeWarpCharacter(
             RUNTIME_WORLD_TILE_WALL
         );
 
-        RTWorldSpawnCharacterWithoutNotification(Runtime, TargetWorld, Entity, false);
+        RTWorldSpawnCharacterWithoutNotification(Runtime, TargetWorld, Entity, true);
 
         return true;
     }
@@ -601,7 +601,7 @@ Bool RTRuntimeWarpCharacter(
             RUNTIME_WORLD_TILE_WALL
         );
 
-        RTWorldSpawnCharacterWithoutNotification(Runtime, DungeonWorld, Entity, false);
+        RTWorldSpawnCharacterWithoutNotification(Runtime, DungeonWorld, Entity, true);
 
         /*
         Int32 FailWarpNpcID;
@@ -662,7 +662,7 @@ Bool RTRuntimeWarpCharacter(
             RUNTIME_WORLD_TILE_WALL
         );
 
-        RTWorldSpawnCharacterWithoutNotification(Runtime, DungeonWorld, Entity, false);
+        RTWorldSpawnCharacterWithoutNotification(Runtime, DungeonWorld, Entity, true);
 
         /*
         Int32 FailWarpNpcID;
