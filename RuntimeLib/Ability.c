@@ -124,7 +124,21 @@ Bool RTCharacterAddEssenceAbility(
 	AbilitySlot->Level = AbilityCostLevel->Level;
 	AbilitySlot->Unknown1 = 0;
 
-	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, InventorySlotIndex);
+	// the rune itself
+	if (ItemSlot->ItemOptions == 1) {
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, InventorySlotIndex);
+	}
+	else {
+		RTInventoryConsumeItem(
+			Runtime,
+			&Character->Data.InventoryInfo,
+			ItemSlot->Item.ID,
+			0,
+			1,
+			InventorySlotIndex
+		);
+	}
+
 	Character->Data.AbilityInfo.Info.AP -= AbilityCostLevel->AP;
 	Character->SyncMask.AbilityInfo = true;
 	Character->SyncMask.InventoryInfo = true;
@@ -481,7 +495,21 @@ Bool RTCharacterAddKarmaAbility(
 	AbilitySlot->AbilityID = ItemSlot->Item.ID;
 	AbilitySlot->Level = AbilityCostLevel->Level;
 
-	RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, InventorySlotIndex);
+	// the rune itself
+	if (ItemSlot->ItemOptions == 1) {
+		RTInventoryClearSlot(Runtime, &Character->Data.InventoryInfo, InventorySlotIndex);
+	}
+	else {
+		RTInventoryConsumeItem(
+			Runtime,
+			&Character->Data.InventoryInfo,
+			ItemSlot->Item.ID,
+			0,
+			1,
+			InventorySlotIndex
+		);
+	}
+
 	Character->Data.AbilityInfo.Info.AP -= AbilityCostLevel->AP;
 	Character->SyncMask.AbilityInfo = true;
 	Character->SyncMask.InventoryInfo = true;
@@ -562,6 +590,7 @@ Bool RTCharacterUpgradeKarmaAbility(
 				Cost[CostIndex].RemainingCount -= ConsumedCount;
 				ItemSlot->ItemOptions -= ConsumedCount;
 				DeleteItem = (ItemSlot->ItemOptions < 1);
+				Warn("ConsumedCount: %d", ConsumedCount);
 			}
 			else {
 				Int32 ConsumedCount = MIN(Cost[CostIndex].RemainingCount, 1);

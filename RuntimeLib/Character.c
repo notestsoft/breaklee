@@ -1422,6 +1422,23 @@ Void RTCharacterSetHP(
 	Character->Data.Info.CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
 	Character->SyncMask.Info = true;
 
+	// cancel battle mode and aura if active and just died
+	if (NewValue <= 0 && RTCharacterIsBattleModeActive(Runtime, Character))
+	{
+		RTCharacterCancelBattleMode(Runtime, Character);
+		RTCharacterCancelAuraMode(Runtime, Character);
+
+		NOTIFICATION_DATA_CHARACTER_DATA* Notification = RTNotificationInit(CHARACTER_DATA);
+		Notification->Type = NOTIFICATION_CHARACTER_DATA_TYPE_SP_DECREASE_EX;
+		Notification->SP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+		RTNotificationDispatchToCharacter(Notification, Character);
+	}
+
+	if (NewValue <= 0)
+	{
+		RTCharacterRemoveAllBuffs(Runtime, Character);
+	}
+
 	RTRuntimeBroadcastCharacterData(
 		Runtime,
 		Character,
@@ -1623,7 +1640,8 @@ Void RTCharacterApplyDamage(
 
 Void RTCharacterNotifyStatus(
 	RTRuntimeRef Runtime,
-	RTCharacterRef Character
+	RTCharacterRef Character,
+	bool isWarp
 ) {
 	NOTIFICATION_DATA_CHARACTER_STATUS* Notification = RTNotificationInit(CHARACTER_STATUS);
 	Notification->CurrentHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
@@ -1641,9 +1659,18 @@ Void RTCharacterNotifyStatus(
 		Character->Data.BuffInfo.Info.ForceWingBuffCount +
 		Character->Data.BuffInfo.Info.FirePlaceBuffCount
 	);
-	if (BuffSlotCount > 0) {
+	if (BuffSlotCount > 0 && !isWarp) {
 		RTNotificationAppendCopy(Notification, &Character->Data.BuffInfo.Slots[0], sizeof(struct _RTBuffSlot) * BuffSlotCount);
 	}
 
 	RTNotificationDispatchToCharacter(Notification, Character);
 }
+
+#define RTCharacterNotifyStatus_2args(Runtime, Character) \
+    RTCharacterNotifyStatus(Runtime, Character, false)
+
+#define RTCharacterNotifyStatus_3args(Runtime, Character, isWarp) \
+    RTCharacterNotifyStatus(Runtime, Character, isWarp)
+
+#define RTCharacterNotifyStatusMacro(...) \
+    GET_MACRO(__VA_ARGS__, RTCharacterNotifyStatus_3args, RTCharacterNotifyStatus_2args)(__VA_ARGS__)

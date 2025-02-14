@@ -405,3 +405,17 @@ Void BroadcastToWorld(
         &Arguments
     );
 }
+
+Void BroadcastToAllClients(
+    ServerContextRef Context,
+    Void* Packet
+) {
+    SocketConnectionIteratorRef Iterator = SocketGetConnectionIterator(Context->ClientSocket);
+    while (Iterator) {
+        SocketConnectionRef Connection = SocketConnectionIteratorFetch(Context->ClientSocket, Iterator);
+        Iterator = SocketConnectionIteratorNext(Context->ClientSocket, Iterator);
+
+        // Send the packet to the current connection
+        SocketSend(Context->ClientSocket, Connection, Packet);
+    }
+}

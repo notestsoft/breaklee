@@ -135,7 +135,8 @@ Void* RTWorldContextGetEntityContext(
 Void RTWorldSpawnCharacterWithoutNotification(
     RTRuntimeRef Runtime,
     RTWorldContextRef World,
-    RTEntityID Entity
+    RTEntityID Entity,
+    bool isWarp
 );
 
 Void RTWorldSpawnCharacter(
