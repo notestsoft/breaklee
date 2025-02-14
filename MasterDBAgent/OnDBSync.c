@@ -265,7 +265,7 @@ IPC_PROCEDURE_BINDING(W2D, DBSYNC) {
 				DB_INPUT_INT64(Info->CurrentSP),
 				DB_INPUT_INT64(Info->CurrentBP),
 				DB_INPUT_INT64(Info->CurrentRage),
-				DB_INPUT_INT64(Info->DP),
+				DB_INPUT_UINT32(Info->DP),
 				DB_INPUT_UINT64(Info->DPDuration),
 				DB_INPUT_UINT8(Info->SkillRank),
 				DB_INPUT_UINT16(Info->SkillLevel),

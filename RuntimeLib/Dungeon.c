@@ -211,6 +211,7 @@ Bool RTDungeonEnd(
         World->Active = false;
         World->Closed = true;
         World->Cleared = true;
+        Int32 DPReward = RTDungeonGetDungeonPointReward(World);
 
         RTPartyRef Party = RTRuntimeGetParty(Runtime, World->Party);
         if (Party) {
@@ -221,6 +222,8 @@ Bool RTDungeonEnd(
                 if (Character->Data.Info.DungeonIndex != DungeonData->DungeonIndex) continue;
 
                 RTCharacterDungeonQuestFlagClear(Character, DungeonData->DungeonIndex);
+
+                RTCharacterAddDP(World->WorldManager->Runtime, Character, DPReward);
             }
         }
 
@@ -469,4 +472,27 @@ Void RTDungeonUpdateTimerItemCount(
     Notification->Drop.ItemID = DungeonData->TimerData.ItemID;
     Notification->Drop.ItemCount = WorldContext->TimerItemCount;
     RTNotificationDispatchToParty(Notification, Party);
+}
+
+Int32 RTDungeonGetDungeonPointReward(
+    RTWorldContextRef WorldContext
+) {
+    RTRuntimeRef Runtime = WorldContext->WorldManager->Runtime;
+    assert(Runtime);
+
+    // should change this to a generic struct or something
+    RTDataDungeonPointRef DP = RTRuntimeDataDungeonPointGet(Runtime->Context, WorldContext->DungeonIndex);
+
+    if (DP) {
+        return DP->DungeonPoints;
+    }
+
+    RTDataDungeonPoint2Ref DPSecond = RTRuntimeDataDungeonPoint2Get(Runtime->Context, WorldContext->DungeonIndex);
+
+    if (!DPSecond) {
+        Error("Cleared dungeon %d and failed to get DP reward.", WorldContext->DungeonIndex);
+        return 0;
+    }
+
+    return DPSecond->DungeonPoints;
 }

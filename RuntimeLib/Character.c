@@ -1623,6 +1623,47 @@ Bool RTCharacterConsumeRage(
 	return true;
 }
 
+Void RTCharacterAddDP(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Int32 DP
+) {
+	Timestamp CurrentTimestamp = GetTimestamp();//GetTimestampMs();
+
+	Warn("Current dp: %d", Character->Data.Info.DP);
+
+	Warn("give dp %d", DP);
+	Character->Data.Info.DP += DP;
+	// TODO: Add dynamic or configable DP duration, hardcoded to 24hours
+	Character->Data.Info.DPDuration = 108000;
+
+	// 1 -> 20000 ??? = 12-31
+	// 21600 = 00:00
+	// 21700 = 00:01
+	// 22000 = 00:06
+	// 22500 = 00:15
+	// 25000 = 00:56
+	// 30000 = 02:20
+	// 40000 = 05:06
+	// 50000 = 07:53
+	// 86400 = 18:00
+	// 90000 = 19:00
+	// 100000 = 21:46
+	// 108000 = 00:00
+	// 150000 = 11:40
+	// 200000 = 01:33
+	// 300000 = 05:20
+	// 600000 = 16:40
+	// 123456 = 04:17
+
+	Character->SyncMask.Info = true;
+
+	NOTIFICATION_DATA_DUNGEON_POINTS* Notification = RTNotificationInit(DUNGEON_POINTS);
+	Notification->DP = Character->Data.Info.DP;
+	Notification->ResetTime = Character->Data.Info.DPDuration;
+	RTNotificationDispatchToCharacter(Notification, Character);
+}
+
 Void RTCharacterApplyDamage(
 	RTRuntimeRef Runtime,
 	RTCharacterRef Character,
