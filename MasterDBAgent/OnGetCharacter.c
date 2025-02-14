@@ -452,17 +452,10 @@ error:
 }
 
 IPC_PROCEDURE_BINDING(C2D, GET_CHARACTER_VIEW_EQUIPMENT) {
-    Info("GET_CHARACTER_VIEW_EQUIPMENT packet received on MasterDBAgent.");
     IPC_D2C_DATA_GET_CHARACTER_VIEW_EQUIPMENT* Response = IPCPacketBufferInit(Connection->PacketBuffer, D2C, GET_CHARACTER_VIEW_EQUIPMENT);
     Response->Header.Source = Server->IPCSocket->NodeID;
     Response->Header.Target = Packet->Header.Source;
     Response->Header.TargetConnectionID = Packet->Header.SourceConnectionID;
-    Info("Header Length: %d", Response->Header.Length);
-    Info("NodeID: Index=%d, Group=%d, Type=%d",
-        Response->Header.Target.Index,
-        Response->Header.Target.Group,
-        Response->Header.Target.Type);
-    Info("TargetConnectionID: %d", Response->Header.TargetConnectionID);
     struct _RTItemSlot EquipmentSlots[RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT] = { 0 };
 
     // find the characterindex by character name
@@ -494,7 +487,7 @@ IPC_PROCEDURE_BINDING(C2D, GET_CHARACTER_VIEW_EQUIPMENT) {
     if (!DatabaseHandleReadNext(
         Context->Database,
         Handle,
-        DB_TYPE_STRING, &Response->CharacterName, strlen(Packet->CharacterName),
+        DB_TYPE_STRING, &Response->CharacterName, strlen(Packet->CharacterName)+1,
         DB_TYPE_INT32, &Response->Level,
         DB_TYPE_INT32, &Response->Style,
         DB_TYPE_INT32, &Response->OptionsDataLength,
@@ -505,17 +498,13 @@ IPC_PROCEDURE_BINDING(C2D, GET_CHARACTER_VIEW_EQUIPMENT) {
     )) {
         goto error;
     }
-    Info("Size of RTItemSlot * SlotCount (%d): %d", Response->EquipmentSlotCount, sizeof(struct _RTItemSlot) * Response->EquipmentSlotCount);
     DatabaseHandleFlush(Context->Database, Handle);
     DatabaseHandleFlush(Context->Database, HandleGetIndex);
+
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, &EquipmentSlots, sizeof(struct _RTItemSlot) * Response->EquipmentSlotCount);
     Response->Success = true;
-    Info("Header Length: %d", Response->Header.Length);
     Response->RequestorCharacterID = Packet->CharacterIndex;
-    Info("MasterDBAgent: FinaL packet raw data. CharacterName: %s, Level: %d, Style: %d, OptionsDataLength: %d, EquipmentSlotCount: %d", (char*) Response->CharacterName, Response->Level, Response->Style, Response->OptionsDataLength, Response->EquipmentSlotCount);
     IPCSocketUnicast(Socket, Response);
-    Info("Sending packet back to ChatSvr. Target: %d, TargetConnectionID: %d",
-        Response->Header.Target, Response->Header.TargetConnectionID);
     return;
 
 error:
