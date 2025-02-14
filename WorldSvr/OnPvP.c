@@ -30,6 +30,9 @@ CLIENT_PROCEDURE_BINDING(PVP_RESPONSE) {
     Response->Result = RTPvPManagerRequestPvPResponse(Runtime->PvPManager, Character, Packet->PvpType, Packet->PvpResult);
     SocketSend(Socket, Connection, Response);
 
+    
+    RTPvPManagerStartPvP(Runtime->PvPManager, Character);
+
     return;
 
 error:
@@ -40,6 +43,11 @@ error:
 
 CLIENT_PROCEDURE_BINDING(PVP_REQUEST_END) {
     if (!Character) goto error;
+    if (!Character) return;
+
+    S2C_DATA_PVP_REQUEST_END* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, PVP_REQUEST_END);
+    Response->PvpResult = RTPvPManagerEndPvP(Runtime->PvPManager, Character, Packet->PvpType, Packet->PvpResult);
+    SocketSend(Socket, Connection, Response);
 
     return;
 

@@ -1618,19 +1618,13 @@ CLIENT_PROTOCOL(S2C, NFY_PVP_REQUEST_ACK, DEFAULT, 333,
     UInt8 Unknown2;
 )
 
-
 CLIENT_PROTOCOL(C2S, PVP_REQUEST_END, DEFAULT, 334,
-    UInt8 Unknown1;
-    UInt8 Unknown2;
+    UInt8 PvpType;
+    UInt8 PvpResult;
 )
 
 CLIENT_PROTOCOL(S2C, PVP_REQUEST_END, DEFAULT, 334,
-    UInt8 Result;
-)
-
-CLIENT_PROTOCOL(S2C, NFY_PVP_END, DEFAULT, 335,
-    UInt8 Unknown1;
-    UInt8 Unknown2;
+    UInt8 PvpResult;
 )
 
 CLIENT_PROTOCOL_ENUM(

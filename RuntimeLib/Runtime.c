@@ -21,14 +21,17 @@ RTRuntimeRef RTRuntimeCreate(
     Timestamp TradeRequestTimeout,
     Timestamp PvPRequestTimeout,
     Int32 MaxPvPDistance,
-    Void* UserData
-) {
+    Void *UserData)
+{
     RTRuntimeRef Runtime = (RTRuntimeRef)AllocatorAllocate(Allocator, sizeof(struct _RTRuntime));
-    if (!Runtime) Fatal("Memory allocation failed!");
+    if (!Runtime)
+        Fatal("Memory allocation failed!");
     memset(Runtime, 0, sizeof(struct _RTRuntime));
 
-    for (Int X = 0; X < RUNTIME_MOVEMENT_MAX_DISTANCE_LENGTH; X++) {
-        for (Int Y = 0; Y < RUNTIME_MOVEMENT_MAX_DISTANCE_LENGTH; Y++) {
+    for (Int X = 0; X < RUNTIME_MOVEMENT_MAX_DISTANCE_LENGTH; X++)
+    {
+        for (Int Y = 0; Y < RUNTIME_MOVEMENT_MAX_DISTANCE_LENGTH; Y++)
+        {
             Int Index = X + Y * RUNTIME_MOVEMENT_MAX_DISTANCE_LENGTH;
             Runtime->MovementDistanceCache[Index] = (Float32)sqrt((Float64)X * (Float64)X + (Float64)Y * (Float64)Y);
         }
@@ -43,20 +46,17 @@ RTRuntimeRef RTRuntimeCreate(
         RUNTIME_MEMORY_MAX_WORLD_DATA_COUNT,
         RUNTIME_MEMORY_MAX_GLOBAL_WORLD_CONTEXT_COUNT,
         RUNTIME_MEMORY_MAX_PARTY_WORLD_CONTEXT_COUNT,
-        RUNTIME_MEMORY_MAX_CHARACTER_COUNT
-    );
+        RUNTIME_MEMORY_MAX_CHARACTER_COUNT);
     Runtime->TradeManager = RTTradeManagerCreate(
-        Runtime, 
+        Runtime,
         RUNTIME_MEMORY_MAX_CHARACTER_COUNT,
         MaxTradeDistance,
-        TradeRequestTimeout
-    );
+        TradeRequestTimeout);
     Runtime->PvPManager = RTPvPManagerCreate(
         Runtime,
         RUNTIME_MEMORY_MAX_CHARACTER_COUNT,
         MaxPvPDistance,
-        PvPRequestTimeout
-    );
+        PvPRequestTimeout);
 
     Runtime->NotificationManager = RTNotificationManagerCreate(Runtime);
     Runtime->OptionPoolManager = RTOptionPoolManagerCreate(Runtime->Allocator);
@@ -74,35 +74,40 @@ RTRuntimeRef RTRuntimeCreate(
 }
 
 Void RTRuntimeDestroy(
-    RTRuntimeRef Runtime
-) {
+    RTRuntimeRef Runtime)
+{
     DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(Runtime->DungeonData);
-    while (Iterator.Key) {
+    while (Iterator.Key)
+    {
         RTDungeonDataRef DungeonData = DictionaryLookup(Runtime->DungeonData, Iterator.Key);
 
         DictionaryKeyIterator NodeIterator = DictionaryGetKeyIterator(DungeonData->TriggerGroups);
-        while (NodeIterator.Key) {
+        while (NodeIterator.Key)
+        {
             ArrayRef Array = DictionaryLookup(DungeonData->TriggerGroups, NodeIterator.Key);
             ArrayDealloc(Array);
             NodeIterator = DictionaryKeyIteratorNext(NodeIterator);
         }
 
         NodeIterator = DictionaryGetKeyIterator(DungeonData->ActionGroups);
-        while (NodeIterator.Key) {
+        while (NodeIterator.Key)
+        {
             ArrayRef Array = DictionaryLookup(DungeonData->ActionGroups, NodeIterator.Key);
             ArrayDealloc(Array);
             NodeIterator = DictionaryKeyIteratorNext(NodeIterator);
         }
 
         NodeIterator = DictionaryGetKeyIterator(DungeonData->DropTable.MobDropPool);
-        while (NodeIterator.Key) {
+        while (NodeIterator.Key)
+        {
             ArrayRef Array = DictionaryLookup(DungeonData->DropTable.MobDropPool, NodeIterator.Key);
             ArrayDealloc(Array);
             NodeIterator = DictionaryKeyIteratorNext(NodeIterator);
         }
 
         NodeIterator = DictionaryGetKeyIterator(DungeonData->DropTable.QuestDropPool);
-        while (NodeIterator.Key) {
+        while (NodeIterator.Key)
+        {
             ArrayRef Array = DictionaryLookup(DungeonData->DropTable.QuestDropPool, NodeIterator.Key);
             ArrayDealloc(Array);
             NodeIterator = DictionaryKeyIteratorNext(NodeIterator);
@@ -119,26 +124,32 @@ Void RTRuntimeDestroy(
     }
 
     Iterator = DictionaryGetKeyIterator(Runtime->PatternPartData);
-    while (Iterator.Key) {
+    while (Iterator.Key)
+    {
         RTMissionDungeonPatternPartDataRef PatternPartData = DictionaryLookup(Runtime->PatternPartData, Iterator.Key);
         ArrayDestroy(PatternPartData->MobTable);
         Iterator = DictionaryKeyIteratorNext(Iterator);
     }
 
-    for (Int Index = 0; Index < MemoryPoolGetBlockCount(Runtime->MobPatrolDataPool); Index += 1) {
-        if (!MemoryPoolIsReserved(Runtime->MobPatrolDataPool, Index)) continue;
+    for (Int Index = 0; Index < MemoryPoolGetBlockCount(Runtime->MobPatrolDataPool); Index += 1)
+    {
+        if (!MemoryPoolIsReserved(Runtime->MobPatrolDataPool, Index))
+            continue;
 
         RTMobPatrolDataRef MobPatrolData = (RTMobPatrolDataRef)MemoryPoolFetch(Runtime->MobPatrolDataPool, Index);
-        for (Int BranchIndex = 0; BranchIndex < ArrayGetElementCount(MobPatrolData->Branches); BranchIndex += 1) {
+        for (Int BranchIndex = 0; BranchIndex < ArrayGetElementCount(MobPatrolData->Branches); BranchIndex += 1)
+        {
             RTMobPatrolBranchDataRef BranchData = (RTMobPatrolBranchDataRef)ArrayGetElementAtIndex(MobPatrolData->Branches, BranchIndex);
             ArrayDestroy(BranchData->Waypoints);
         }
-        
+
         ArrayDestroy(MobPatrolData->Branches);
     }
 
-    for (Int Index = 0; Index < MemoryPoolGetBlockCount(Runtime->MobPatternDataPool); Index += 1) {
-        if (!MemoryPoolIsReserved(Runtime->MobPatternDataPool, Index)) continue;
+    for (Int Index = 0; Index < MemoryPoolGetBlockCount(Runtime->MobPatternDataPool); Index += 1)
+    {
+        if (!MemoryPoolIsReserved(Runtime->MobPatternDataPool, Index))
+            continue;
 
         RTMobPatternDataRef MobPattern = (RTMobPatternDataRef)MemoryPoolFetch(Runtime->MobPatternDataPool, Index);
         ArrayDestroy(MobPattern->MobPool);
@@ -156,7 +167,8 @@ Void RTRuntimeDestroy(
     RTNotificationManagerDestroy(Runtime->NotificationManager);
     RTOptionPoolManagerDestroy(Runtime->OptionPoolManager);
     RTScriptManagerDestroy(Runtime->ScriptManager);
-    if (Runtime->Context) RTRuntimeDataContextDestroy(Runtime->Context);
+    if (Runtime->Context)
+        RTRuntimeDataContextDestroy(Runtime->Context);
     RTWorldManagerDestroy(Runtime->WorldManager);
     AllocatorDeallocate(Runtime->Allocator, Runtime);
 }
@@ -164,8 +176,8 @@ Void RTRuntimeDestroy(
 Bool RTRuntimeLoadData(
     RTRuntimeRef Runtime,
     CString RuntimeDataPath,
-    CString ServerDataPath
-) {
+    CString ServerDataPath)
+{
     RTRuntimeInitForceEffectFormulas(Runtime);
 
     Bool Result = false;
@@ -174,12 +186,12 @@ Bool RTRuntimeLoadData(
 }
 
 Void RTRuntimeUpdate(
-    RTRuntimeRef Runtime
-) {
+    RTRuntimeRef Runtime)
+{
     RTWorldManagerUpdate(Runtime->WorldManager);
 
-    if (Runtime->Environment.IsRaidBossEnabled) {
-
+    if (Runtime->Environment.IsRaidBossEnabled)
+    {
     }
 
     /* Movement Debugging
@@ -193,11 +205,12 @@ Void RTRuntimeUpdate(
 }
 
 Timestamp RTRuntimeGetNextDailyResetTime(
-    RTRuntimeRef Runtime
-) {
+    RTRuntimeRef Runtime)
+{
     Timestamp CurrentTimestamp = GetTimestamp();
     Timestamp NextDailyResetTimestamp = GetTimestampAt(Runtime->Config.DailyResetTimeHour, Runtime->Config.DailyResetTimeMinute);
-    while (NextDailyResetTimestamp < CurrentTimestamp) {
+    while (NextDailyResetTimestamp < CurrentTimestamp)
+    {
         NextDailyResetTimestamp += 24ULL * 60 * 60;
     }
 
@@ -205,11 +218,12 @@ Timestamp RTRuntimeGetNextDailyResetTime(
 }
 
 Timestamp RTRuntimeGetNextDailyResetTimeMs(
-    RTRuntimeRef Runtime
-) {
+    RTRuntimeRef Runtime)
+{
     Timestamp CurrentTimestamp = GetTimestampMs();
     Timestamp NextDailyResetTimestamp = GetTimestampMsAt(Runtime->Config.DailyResetTimeHour, Runtime->Config.DailyResetTimeMinute);
-    while (NextDailyResetTimestamp < CurrentTimestamp) {
+    while (NextDailyResetTimestamp < CurrentTimestamp)
+    {
         NextDailyResetTimestamp += 24ULL * 60 * 60 * 1000;
     }
 
@@ -218,25 +232,27 @@ Timestamp RTRuntimeGetNextDailyResetTimeMs(
 
 RTWorldContextRef RTRuntimeGetWorldByID(
     RTRuntimeRef Runtime,
-    Int32 WorldID
-) {
+    Int32 WorldID)
+{
     return RTWorldContextGetGlobal(Runtime->WorldManager, WorldID);
 }
 
 RTWorldContextRef RTRuntimeGetWorldByParty(
     RTRuntimeRef Runtime,
-    RTEntityID PartyID
-) {
+    RTEntityID PartyID)
+{
     return RTWorldContextGetParty(Runtime->WorldManager, PartyID);
 }
 
 RTWorldContextRef RTRuntimeGetWorldByCharacter(
     RTRuntimeRef Runtime,
-    RTCharacterRef Character
-) {
-    if (!RTEntityIsNull(Character->PartyID)) {
+    RTCharacterRef Character)
+{
+    if (!RTEntityIsNull(Character->PartyID))
+    {
         RTWorldContextRef WorldContext = RTWorldContextGetParty(Runtime->WorldManager, Character->PartyID);
-        if (WorldContext && WorldContext->WorldData->WorldIndex == Character->Data.Info.WorldIndex) return WorldContext;
+        if (WorldContext && WorldContext->WorldData->WorldIndex == Character->Data.Info.WorldIndex)
+            return WorldContext;
     }
 
     return RTWorldContextGetGlobal(Runtime->WorldManager, Character->Data.Info.WorldIndex);
@@ -245,11 +261,13 @@ RTWorldContextRef RTRuntimeGetWorldByCharacter(
 RTNpcRef RTRuntimeGetNpcByWorldNpcID(
     RTRuntimeRef Runtime,
     Int32 WorldID,
-    Int32 NpcID
-) {
-    for (Int Index = 0; Index < Runtime->NpcCount; Index++) {
+    Int32 NpcID)
+{
+    for (Int Index = 0; Index < Runtime->NpcCount; Index++)
+    {
         RTNpcRef Npc = &Runtime->Npcs[Index];
-        if (Npc->WorldID == WorldID && Npc->ID == NpcID) return Npc;
+        if (Npc->WorldID == WorldID && Npc->ID == NpcID)
+            return Npc;
     }
 
     return NULL;
@@ -259,11 +277,13 @@ RTWarpRef RTRuntimeGetWarpByWorldNpcID(
     RTRuntimeRef Runtime,
     Int32 WorldID,
     Int32 NpcID,
-    Int32 WarpIndex
-) {
-    for (Int Index = 0; Index < Runtime->WarpCount; Index++) {
+    Int32 WarpIndex)
+{
+    for (Int Index = 0; Index < Runtime->WarpCount; Index++)
+    {
         RTWarpRef Warp = &Runtime->Warps[Index];
-        if (Warp->WorldID == WorldID && Warp->NpcID == NpcID && Warp->Index == WarpIndex) return Warp;
+        if (Warp->WorldID == WorldID && Warp->NpcID == NpcID && Warp->Index == WarpIndex)
+            return Warp;
     }
 
     return NULL;
@@ -272,40 +292,44 @@ RTWarpRef RTRuntimeGetWarpByWorldNpcID(
 RTWarpRef RTRuntimeGetWarpByIndex(
     RTRuntimeRef Runtime,
     Int32 WorldID,
-    Int32 WarpIndex
-) {
-    if (WarpIndex < 0 || WarpIndex >= Runtime->WarpCount) return NULL;
+    Int32 WarpIndex)
+{
+    if (WarpIndex < 0 || WarpIndex >= Runtime->WarpCount)
+        return NULL;
 
     return &Runtime->Warps[WarpIndex];
 }
 
 RTPartyRef RTRuntimeGetParty(
     RTRuntimeRef Runtime,
-    RTEntityID Entity
-) {
+    RTEntityID Entity)
+{
     return RTPartyManagerGetParty(Runtime->PartyManager, Entity);
 }
 
 RTWorldItemRef RTRuntimeGetItem(
     RTRuntimeRef Runtime,
-    RTEntityID Entity
-) {
+    RTEntityID Entity)
+{
     assert(Entity.EntityType == RUNTIME_ENTITY_TYPE_ITEM);
 
     RTWorldContextRef World = RTRuntimeGetWorldByID(Runtime, Entity.WorldIndex);
-    if (!World) return NULL;
+    if (!World)
+        return NULL;
 
     return RTWorldGetItemByEntity(Runtime, World, Entity);
 }
 
 RTItemDataRef RTRuntimeGetItemDataByIndex(
     RTRuntimeRef Runtime,
-    UInt32 ItemIndex
-) {
+    UInt32 ItemIndex)
+{
     UInt32 ItemID = (ItemIndex & RUNTIME_ITEM_MASK_INDEX);
-    for (Int Index = 0; Index < Runtime->ItemDataCount; Index++) {
+    for (Int Index = 0; Index < Runtime->ItemDataCount; Index++)
+    {
         RTItemDataRef Item = &Runtime->ItemData[Index];
-        if (Item->ItemID == ItemID) {
+        if (Item->ItemID == ItemID)
+        {
             return Item;
         }
     }
@@ -315,11 +339,13 @@ RTItemDataRef RTRuntimeGetItemDataByIndex(
 
 RTQuestDataRef RTRuntimeGetQuestByIndex(
     RTRuntimeRef Runtime,
-    Int32 QuestIndex
-) {
-    for (Int Index = 0; Index < Runtime->QuestDataCount; Index++) {
+    Int32 QuestIndex)
+{
+    for (Int Index = 0; Index < Runtime->QuestDataCount; Index++)
+    {
         RTQuestDataRef Quest = &Runtime->QuestData[Index];
-        if (Quest->ID == QuestIndex) {
+        if (Quest->ID == QuestIndex)
+        {
             return Quest;
         }
     }
@@ -329,13 +355,16 @@ RTQuestDataRef RTRuntimeGetQuestByIndex(
 
 RTQuestRewardItemSetDataRef RTRuntimeGetQuestRewardItemSetByIndex(
     RTRuntimeRef Runtime,
-    Int32 ItemSetIndex
-) {
-    if (ItemSetIndex < 1) return NULL;
+    Int32 ItemSetIndex)
+{
+    if (ItemSetIndex < 1)
+        return NULL;
 
-    for (Int Index = 0; Index < Runtime->QuestRewardItemSetDataCount; Index++) {
+    for (Int Index = 0; Index < Runtime->QuestRewardItemSetDataCount; Index++)
+    {
         RTQuestRewardItemSetDataRef ItemSet = &Runtime->QuestRewardItemSetData[Index];
-        if (ItemSet->ID == ItemSetIndex) {
+        if (ItemSet->ID == ItemSetIndex)
+        {
             return ItemSet;
         }
     }
@@ -347,14 +376,17 @@ RTQuestRewardItemDataRef RTRuntimeGetQuestRewardItemByIndex(
     RTRuntimeRef Runtime,
     Int32 ItemSetIndex,
     Int32 ItemIndex,
-    Int32 BattleStyleIndex
-) {
+    Int32 BattleStyleIndex)
+{
     RTQuestRewardItemSetDataRef ItemSet = RTRuntimeGetQuestRewardItemSetByIndex(Runtime, ItemSetIndex);
-    if (!ItemSet) return NULL;
+    if (!ItemSet)
+        return NULL;
 
-    for (Int Index = 0; Index < ItemSet->Count; Index++) {
+    for (Int Index = 0; Index < ItemSet->Count; Index++)
+    {
         RTQuestRewardItemDataRef Item = &ItemSet->Items[Index];
-        if (Item->Index == ItemIndex && (Item->BattleStyleIndex == BattleStyleIndex || Item->BattleStyleIndex == 0)) {
+        if (Item->Index == ItemIndex && (Item->BattleStyleIndex == BattleStyleIndex || Item->BattleStyleIndex == 0))
+        {
             return Item;
         }
     }
@@ -365,11 +397,13 @@ RTQuestRewardItemDataRef RTRuntimeGetQuestRewardItemByIndex(
 RTTrainerDataRef RTRuntimeGetTrainerByWorldNpcID(
     RTRuntimeRef Runtime,
     Int32 WorldID,
-    Int32 NpcID
-) {
-    for (Int Index = 0; Index < Runtime->TrainerDataCount; Index++) {
+    Int32 NpcID)
+{
+    for (Int Index = 0; Index < Runtime->TrainerDataCount; Index++)
+    {
         RTTrainerDataRef Trainer = &Runtime->TrainerData[Index];
-        if (Trainer->WorldID == WorldID && Trainer->NpcID == NpcID) {
+        if (Trainer->WorldID == WorldID && Trainer->NpcID == NpcID)
+        {
             return Trainer;
         }
     }
@@ -379,21 +413,24 @@ RTTrainerDataRef RTRuntimeGetTrainerByWorldNpcID(
 
 RTCharacterSkillDataRef RTRuntimeGetCharacterSkillDataByID(
     RTRuntimeRef Runtime,
-    Int32 SkillID
-) {
+    Int32 SkillID)
+{
     return MemoryPoolFetch(Runtime->SkillDataPool, SkillID);
 }
 
 RTSkillLevelDataRef RTRuntimeGetSkillLevelDataByID(
     RTRuntimeRef Runtime,
     Int32 SkillID,
-    Int32 SkillLevel
-) {
+    Int32 SkillLevel)
+{
     RTCharacterSkillDataRef SkillData = RTRuntimeGetCharacterSkillDataByID(Runtime, SkillID);
-    if (!SkillData) return NULL;
+    if (!SkillData)
+        return NULL;
 
-    for (Int Index = 0; Index < SkillData->SkillLevelCount; Index++) {
-        if (SkillData->SkillLevels[Index].StartLevel <= SkillLevel && SkillLevel <= SkillData->SkillLevels[Index].EndLevel) {
+    for (Int Index = 0; Index < SkillData->SkillLevelCount; Index++)
+    {
+        if (SkillData->SkillLevels[Index].StartLevel <= SkillLevel && SkillLevel <= SkillData->SkillLevels[Index].EndLevel)
+        {
             return &SkillData->SkillLevels[Index];
         }
     }
@@ -403,18 +440,17 @@ RTSkillLevelDataRef RTRuntimeGetSkillLevelDataByID(
 
 RTBattleStyleLevelFormulaDataRef RTRuntimeGetBattleStyleLevelFormulaData(
     RTRuntimeRef Runtime,
-    Int32 BattleStyleIndex
-) {
+    Int32 BattleStyleIndex)
+{
     assert(RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MIN <= BattleStyleIndex && BattleStyleIndex <= RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX);
 
     return &Runtime->BattleStyleLevelFormulaData[BattleStyleIndex - 1];
-
 }
 
 RTBattleStyleClassFormulaDataRef RTRuntimeGetBattleStyleClassFormulaData(
     RTRuntimeRef Runtime,
-    Int32 BattleStyleIndex
-) {
+    Int32 BattleStyleIndex)
+{
     assert(RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MIN <= BattleStyleIndex && BattleStyleIndex <= RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX);
 
     return &Runtime->BattleStyleClassFormulaData[BattleStyleIndex - 1];
@@ -423,15 +459,17 @@ RTBattleStyleClassFormulaDataRef RTRuntimeGetBattleStyleClassFormulaData(
 RTBattleStyleSlopeDataRef RTRuntimeGetBattleStyleSlopeData(
     RTRuntimeRef Runtime,
     Int32 SlopeID,
-    Int64 Penalty
-) {
+    Int64 Penalty)
+{
     RTBattleStyleSlopeFormulaDataRef Formula = RTRuntimeGetBattleStyleSlopeFormulaData(Runtime, SlopeID);
     assert(Formula && Formula->SlopeCount > 0);
 
     Int32 SlopePenalty = 0;
     Int32 SlopeIndex = 0;
-    for (Int Index = 0; Index < Formula->SlopeCount; Index++) {
-        if (Formula->Slopes[Index].Penalty <= Penalty && Formula->Slopes[Index].Penalty >= SlopePenalty) {
+    for (Int Index = 0; Index < Formula->SlopeCount; Index++)
+    {
+        if (Formula->Slopes[Index].Penalty <= Penalty && Formula->Slopes[Index].Penalty >= SlopePenalty)
+        {
             SlopePenalty = Formula->Slopes[Index].Penalty;
             SlopeIndex = Index;
         }
@@ -442,10 +480,12 @@ RTBattleStyleSlopeDataRef RTRuntimeGetBattleStyleSlopeData(
 
 RTBattleStyleSlopeFormulaDataRef RTRuntimeGetBattleStyleSlopeFormulaData(
     RTRuntimeRef Runtime,
-    Int32 SlopeID
-) {
-    for (Int Index = 0; Index < Runtime->SlopeFormulaDataCount; Index++) {
-        if (Runtime->BattleStyleSlopeFormulaData[Index].SlopeID == SlopeID) {
+    Int32 SlopeID)
+{
+    for (Int Index = 0; Index < Runtime->SlopeFormulaDataCount; Index++)
+    {
+        if (Runtime->BattleStyleSlopeFormulaData[Index].SlopeID == SlopeID)
+        {
             return &Runtime->BattleStyleSlopeFormulaData[Index];
         }
     }
@@ -455,8 +495,8 @@ RTBattleStyleSlopeFormulaDataRef RTRuntimeGetBattleStyleSlopeFormulaData(
 
 RTBattleStyleStatsFormulaDataRef RTRuntimeGetBattleStyleStatsFormulaData(
     RTRuntimeRef Runtime,
-    Int32 BattleStyleIndex
-) {
+    Int32 BattleStyleIndex)
+{
     assert(RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MIN <= BattleStyleIndex && BattleStyleIndex <= RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX);
 
     return &Runtime->BattleStyleStatsFormulaData[BattleStyleIndex - 1];
@@ -465,13 +505,15 @@ RTBattleStyleStatsFormulaDataRef RTRuntimeGetBattleStyleStatsFormulaData(
 RTBattleStyleSkillRankDataRef RTRuntimeGetBattleStyleSkillRankData(
     RTRuntimeRef Runtime,
     Int32 BattleStyleIndex,
-    Int32 SkillRank
-) {
+    Int32 SkillRank)
+{
     assert(RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MIN <= BattleStyleIndex && BattleStyleIndex <= RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX);
 
     RTBattleStyleSkillFormulaDataRef FormulaData = &Runtime->BattleStyleSkillFormulaData[BattleStyleIndex - 1];
-    for (Int Index = 0; Index < FormulaData->SkillRankCount; Index++) {
-        if (FormulaData->SkillRanks[Index].SkillRank == SkillRank) {
+    for (Int Index = 0; Index < FormulaData->SkillRankCount; Index++)
+    {
+        if (FormulaData->SkillRanks[Index].SkillRank == SkillRank)
+        {
             return &FormulaData->SkillRanks[Index];
         }
     }
@@ -482,13 +524,15 @@ RTBattleStyleSkillRankDataRef RTRuntimeGetBattleStyleSkillRankData(
 RTBattleStyleRankDataRef RTRuntimeGetBattleStyleRankData(
     RTRuntimeRef Runtime,
     Int32 BattleStyleIndex,
-    Int32 Level
-) {
+    Int32 Level)
+{
     assert(RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MIN <= BattleStyleIndex && BattleStyleIndex <= RUNTIME_DATA_CHARACTER_BATTLE_STYLE_INDEX_MAX);
 
     RTBattleStyleRankFormulaDataRef FormulaData = &Runtime->BattleStyleRankFormulaData[BattleStyleIndex - 1];
-    for (Int Index = 0; Index < FormulaData->RankCount; Index++) {
-        if (FormulaData->Ranks[Index].Level == Level) {
+    for (Int Index = 0; Index < FormulaData->RankCount; Index++)
+    {
+        if (FormulaData->Ranks[Index].Level == Level)
+        {
             return &FormulaData->Ranks[Index];
         }
     }
@@ -500,31 +544,34 @@ RTWorldContextRef RTRuntimeOpenDungeon(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
     Int WorldIndex,
-    Int DungeonIndex
-) {
+    Int DungeonIndex)
+{
     RTWorldDataRef WorldData = RTWorldDataGet(Runtime->WorldManager, WorldIndex);
-    if (!WorldData) {
+    if (!WorldData)
+    {
         Error("WorldData(%d) not found!", WorldIndex);
         return NULL;
     }
 
     assert(
         WorldData->Type == RUNTIME_WORLD_TYPE_QUEST_DUNGEON ||
-        WorldData->Type == RUNTIME_WORLD_TYPE_DUNGEON
-    );
+        WorldData->Type == RUNTIME_WORLD_TYPE_DUNGEON);
 
     // TODO: Cleanup previous dungeon, for now we assert to avoid to open a dungeon in a dungeon?
     RTWorldContextRef CurrentWorld = RTRuntimeGetWorldByCharacter(Runtime, Character);
-    if (CurrentWorld->WorldData->Type == RUNTIME_WORLD_TYPE_QUEST_DUNGEON) {
+    if (CurrentWorld->WorldData->Type == RUNTIME_WORLD_TYPE_QUEST_DUNGEON)
+    {
         Error("RTRuntimeOpenDungeon(%d, %d) wrong world type!", WorldIndex, DungeonIndex);
         return NULL;
     }
     assert(CurrentWorld->WorldData->Type != RUNTIME_WORLD_TYPE_QUEST_DUNGEON);
 
-    if (RTWorldContextPartyIsFull(Runtime->WorldManager)) return NULL;
+    if (RTWorldContextPartyIsFull(Runtime->WorldManager))
+        return NULL;
 
-    if (RTEntityIsNull(Character->PartyID)) {
-        struct _RTPartyMemberInfo Member = { 0 };
+    if (RTEntityIsNull(Character->PartyID))
+    {
+        struct _RTPartyMemberInfo Member = {0};
         Member.CharacterIndex = (UInt32)Character->CharacterIndex;
         Member.Level = (Int32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_LEVEL];
         Member.DungeonIndex = DungeonIndex;
@@ -541,7 +588,7 @@ RTWorldContextRef RTRuntimeOpenDungeon(
         Member.ForceWingLevel = Character->Data.ForceWingInfo.Info.Level;
         Member.NameLength = strlen(Character->Name);
         memcpy(Member.Name, Character->Name, Member.NameLength);
-        
+
         RTPartyRef Party = RTPartyManagerCreateParty(Runtime->PartyManager, &Member, RUNTIME_PARTY_TYPE_SOLO_DUNGEON);
         Character->PartyID = Party->ID;
     }
@@ -551,37 +598,44 @@ RTWorldContextRef RTRuntimeOpenDungeon(
 
 Void RTRuntimeCloseDungeon(
     RTRuntimeRef Runtime,
-    RTCharacterRef Character
-) {
+    RTCharacterRef Character)
+{
     assert(!RTEntityIsNull(Character->PartyID) && Character->PartyID.EntityType == RUNTIME_ENTITY_TYPE_PARTY);
 
     RTWorldContextRef WorldContext = RTWorldContextGetParty(Runtime->WorldManager, Character->PartyID);
-    if (!WorldContext) return;
+    if (!WorldContext)
+        return;
 
     RTPartyRef Party = RTRuntimeGetParty(Runtime, Character->PartyID);
     assert(Party);
 
-    if (Party->PartyType == RUNTIME_PARTY_TYPE_SOLO_DUNGEON) {
+    if (Party->PartyType == RUNTIME_PARTY_TYPE_SOLO_DUNGEON)
+    {
         assert(WorldContext->DungeonIndex != Character->Data.Info.DungeonIndex);
 
         RTWorldContextDestroyParty(Runtime->WorldManager, Character->PartyID);
         RTPartyManagerDestroyParty(Runtime->PartyManager, Party);
         Character->PartyID = kEntityIDNull;
     }
-    else {
+    else
+    {
         Bool IsDungeonActive = false;
 
-        for (Int Index = 0; Index < Party->MemberCount; Index += 1) {
+        for (Int Index = 0; Index < Party->MemberCount; Index += 1)
+        {
             RTCharacterRef Member = RTWorldManagerGetCharacterByIndex(Runtime->WorldManager, Party->Members[Index].CharacterIndex);
-            if (!Member) continue;
+            if (!Member)
+                continue;
             if (Member->Data.Info.WorldIndex == WorldContext->WorldData->WorldIndex &&
-                Member->Data.Info.DungeonIndex == WorldContext->DungeonIndex) {
+                Member->Data.Info.DungeonIndex == WorldContext->DungeonIndex)
+            {
                 IsDungeonActive = true;
                 break;
             }
         }
 
-        if (!IsDungeonActive) {
+        if (!IsDungeonActive)
+        {
             RTWorldContextDestroyParty(Runtime->WorldManager, Character->PartyID);
         }
     }
@@ -589,114 +643,141 @@ Void RTRuntimeCloseDungeon(
 
 RTDungeonDataRef RTRuntimeGetDungeonDataByID(
     RTRuntimeRef Runtime,
-    Int DungeonIndex
-) {
+    Int DungeonIndex)
+{
     return (RTDungeonDataRef)DictionaryLookup(Runtime->DungeonData, &DungeonIndex);
 }
 
 RTMissionDungeonPatternPartDataRef RTRuntimeGetPatternPartByID(
     RTRuntimeRef Runtime,
-    Int PatternPartIndex
-) {
+    Int PatternPartIndex)
+{
     return (RTMissionDungeonPatternPartDataRef)DictionaryLookup(Runtime->PatternPartData, &PatternPartIndex);
 }
 
 Void RTRuntimeBroadcastCharacterData(
     RTRuntimeRef Runtime,
     RTCharacterRef Character,
-    UInt32 Type
-) {
-    NOTIFICATION_DATA_CHARACTER_DATA* Notification = RTNotificationInit(CHARACTER_DATA);
+    UInt32 Type)
+{
+    NOTIFICATION_DATA_CHARACTER_DATA *Notification = RTNotificationInit(CHARACTER_DATA);
     Notification->Type = Type;
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_HPPOTION) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_HPPOTION)
+    {
         Notification->HPAfterPotion = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
     }
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_MPPOTION) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_MPPOTION)
+    {
         // TODO: Check if this is also padded like HPAfterPotion
         Notification->MP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
     }
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_HP) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_HP)
+    {
         Notification->HP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
     }
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_MP) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_MP)
+    {
         Notification->MP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
     }
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_SP) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_SP)
+    {
         Notification->SP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
     }
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_SP_INCREASE) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_SP_INCREASE)
+    {
         assert(false && "Implementation missing!");
     }
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_SP_DECREASE) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_SP_DECREASE)
+    {
         assert(false && "Implementation missing!");
     }
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_EXP) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_EXP)
+    {
         assert(false && "Implementation missing!");
     }
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_RANK) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_RANK)
+    {
         Notification->SkillRank = Character->Data.Info.SkillRank;
     }
 
     assert(Notification->Type != NOTIFICATION_CHARACTER_DATA_TYPE_LEVEL);
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_SP_DECREASE_EX) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_SP_DECREASE_EX)
+    {
         assert(false && "Implementation missing!");
     }
 
     assert(Notification->Type != NOTIFICATION_CHARACTER_DATA_TYPE_BUFF_POTION);
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_REPUTATION) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_REPUTATION)
+    {
         assert(false && "Implementation missing!");
     }
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_GUIDITEMFX) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_GUIDITEMFX)
+    {
         assert(false && "Implementation missing!");
     }
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_RESURRECTION) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_RESURRECTION)
+    {
         assert(false && "Implementation missing!");
     }
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_PENALTY_EXP) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_PENALTY_EXP)
+    {
         assert(false && "Implementation missing!");
     }
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_DAMAGE_CELL) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_DAMAGE_CELL)
+    {
         Notification->HP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
     }
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_DEFFICIENCY) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_DEFFICIENCY)
+    {
         Notification->HP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
     }
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_AUTH_HP_POTION) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_AUTH_HP_POTION)
+    {
         assert(false && "Implementation missing!");
     }
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_RAGE) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_RAGE)
+    {
         Notification->Rage = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_RAGE_CURRENT];
     }
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_OVERLORD_LEVEL) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_OVERLORD_LEVEL)
+    {
         Notification->Level = Character->Data.OverlordMasteryInfo.Info.Level;
     }
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_HONOR_MEDAL) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_HONOR_MEDAL)
+    {
         Notification->HonorMedalGrade = RTCharacterGetHonorMedalGrade(Runtime, Character, 0);
         Notification->HonorPoints = Character->Data.Info.HonorPoint;
     }
 
-    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_BP) {
+    if (Notification->Type == NOTIFICATION_CHARACTER_DATA_TYPE_BP)
+    {
         Notification->BP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_BP_CURRENT];
+    }
+
+    RTPvPContextRef PvPContext = RTPvPManagerGetContextByCharacter(Runtime->PvPManager, Character->CharacterIndex);
+    if (PvPContext)
+    {
+        RTPvPManagerUpdate(Runtime->PvPManager, PvPContext, Character);
     }
 
     RTNotificationDispatchToCharacter(Notification, Character);

@@ -141,6 +141,10 @@ NOTIFICATION_PROCEDURE_BINDING(PVP_HP_INFO) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
 
+NOTIFICATION_PROCEDURE_BINDING(PVP_END) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
 NOTIFICATION_PROCEDURE_BINDING(HONOR_POINT_CHANGE) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 }
