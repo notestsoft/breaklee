@@ -325,7 +325,7 @@ IPC_PROTOCOL(D2C, GET_CHARACTER_VIEW_EQUIPMENT,
 	UInt32 Style;
 	UInt32 OptionsDataLength;
 	UInt8 EquipmentSlotCount;
-	UInt8 OptionsData[1024];
+	UInt8 OptionsData[RUNTIME_MAX_SETTINGS_DATA_LENGTH];
 	UInt8 EquipmentData[0];
 )
 

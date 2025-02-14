@@ -491,7 +491,6 @@ IPC_PROCEDURE_BINDING(C2D, GET_CHARACTER_VIEW_EQUIPMENT) {
         DB_INPUT_INT32(CharacterIndex),
         DB_PARAM_END
     );
-
     if (!DatabaseHandleReadNext(
         Context->Database,
         Handle,
@@ -500,15 +499,15 @@ IPC_PROCEDURE_BINDING(C2D, GET_CHARACTER_VIEW_EQUIPMENT) {
         DB_TYPE_INT32, &Response->Style,
         DB_TYPE_INT32, &Response->OptionsDataLength,
         DB_TYPE_UINT8, &Response->EquipmentSlotCount,
-        DB_TYPE_DATA, &EquipmentSlots[0], sizeof(struct _RTItemSlot) * Response->EquipmentSlotCount,
+        DB_TYPE_DATA, &EquipmentSlots[0], sizeof(EquipmentSlots),
         DB_TYPE_DATA, &Response->OptionsData[0], sizeof(Response->OptionsData),
         DB_PARAM_END
     )) {
         goto error;
     }
+    Info("Size of RTItemSlot * SlotCount (%d): %d", Response->EquipmentSlotCount, sizeof(struct _RTItemSlot) * Response->EquipmentSlotCount);
     DatabaseHandleFlush(Context->Database, Handle);
     DatabaseHandleFlush(Context->Database, HandleGetIndex);
-
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, &EquipmentSlots, sizeof(struct _RTItemSlot) * Response->EquipmentSlotCount);
     Response->Success = true;
     Info("Header Length: %d", Response->Header.Length);
