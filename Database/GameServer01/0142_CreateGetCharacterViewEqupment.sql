@@ -33,7 +33,10 @@ BEGIN
     SELECT 
     	  characters.Name AS 'Name',
         Characters.Level AS Level,
-        MOD(Characters.Style, 8) AS Style,
+    	  CASE
+        WHEN (Style & 0x0F) >= 10 THEN (Style & 0x0F) - 8
+        ELSE (Style & 0x0F)
+    	  END AS Style,
         Settings.OptionsDataLength,
         Equipment.EquipmentSlotCount,
         Equipment.EquipmentSlotData,
