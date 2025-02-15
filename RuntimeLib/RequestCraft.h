@@ -55,4 +55,19 @@ Bool RTCharacterRegisterRequestCraftRecipe(
     RTRequestCraftInventorySlotRef InventorySlots
 );
 
+Bool RTCharacterAddRequestCraftFavorite(
+    RTCharacterRef Character,
+    Int32 CraftCode
+);
+
+Bool RTCharacterRemoveRequestCraftFavorite(
+    RTCharacterRef Character,
+    Int32 CraftCode
+);
+
+Bool RTCharacterIsRequestCraftRecipeFavorited(
+    RTCharacterRef Character, 
+    Int32 CraftCode
+);
+
 EXTERN_C_END

@@ -3,6 +3,7 @@
 #include "ClientSocket.h"
 #include "Notification.h"
 #include "Server.h"
+#include "RuntimeLib/RequestCraft.h"
 
 CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_REGISTER) {
 	if (!Character) goto error;
@@ -86,3 +87,24 @@ CLIENT_PROTOCOL(S2C, REQUEST_CRAFT_UPDATE, 2252, 13133,
 	UInt8 Success;
 )
 */
+
+CLIENT_PROCEDURE_BINDING(CHANGE_RECIPE_FAVORITE) {
+	//set character data for syncing
+	if (Packet->FavoriteStatus[0] == 0x01) {
+		RTCharacterFavoritedRequestCraftFlagSet(Character, Packet->CraftCode);
+	}
+	else {
+		RTCharacterFavoritedRequestCraftFlagClear(Character, Packet->CraftCode);
+	}
+
+	// send response back to client confirming we got the flag update
+	PacketBufferRef ClientPacketBuffer = SocketGetNextPacketBuffer(Socket);
+	S2C_DATA_CHANGE_RECIPE_FAVORITE* Response = PacketBufferInit(ClientPacketBuffer, S2C, CHANGE_RECIPE_FAVORITE);
+	Response->Unknown1 = 0x01;
+	memcpy(Response->FavoriteStatus, Packet->FavoriteStatus, sizeof(Packet->FavoriteStatus));
+	Response->CraftCode = Packet->CraftCode;
+	SocketSend(Socket, Connection, Response);
+	return;
+error:
+	Error("Something went wrong when changing a favorite request craft recipe.");
+}

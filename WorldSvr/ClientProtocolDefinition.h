@@ -3684,6 +3684,18 @@ CLIENT_PROTOCOL(S2C, UPGRADE_EXTREME_REPAIR, DEFAULT, 2310,
     UInt8 Result;
 )
 
+CLIENT_PROTOCOL(C2S, CHANGE_RECIPE_FAVORITE, DEFAULT, 2311,
+    UInt8 FavoriteStatus[4];
+    Int32 CraftCode;
+    UInt8 UnknownPadding1[4];
+)
+
+CLIENT_PROTOCOL(S2C, CHANGE_RECIPE_FAVORITE, DEFAULT, 2311,
+    UInt8 FavoriteStatus[4];
+    Int32 CraftCode;
+    UInt8 Unknown1;
+)
+
 CLIENT_PROTOCOL(C2S, TAKE_NEWBIE_REWARD, DEFAULT, 2319,
     UInt8 CategoryType;
     UInt8 ConditionValue1;

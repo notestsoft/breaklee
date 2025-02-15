@@ -30,6 +30,35 @@ Bool RTCharacterRegisteredRequestCraftFlagIsSet(
 	return (Character->Data.RequestCraftInfo.Info.RegisteredFlags[RequestCode / RUNTIME_CHARACTER_REQUEST_CRAFT_RECIPE_FLAG_SIZE] & (1 << (RequestCode % RUNTIME_CHARACTER_REQUEST_CRAFT_RECIPE_FLAG_SIZE))) > 0;
 }
 
+Void RTCharacterFavoritedRequestCraftFlagClear(
+	RTCharacterRef Character,
+	Int RequestCode
+) {
+	assert(0 <= RequestCode && RequestCode < RUNTIME_CHARACTER_REQUEST_CRAFT_RECIPE_FLAG_SIZE * RUNTIME_CHARACTER_MAX_REQUEST_CRAFT_RECIPE_COUNT);
+
+	Character->Data.RequestCraftInfo.Info.FavoriteFlags[RequestCode / RUNTIME_CHARACTER_QUEST_FLAG_SIZE] &= ~(1 << (RequestCode % RUNTIME_CHARACTER_REQUEST_CRAFT_RECIPE_FLAG_SIZE));
+	Character->SyncMask.RequestCraftInfo = true;
+}
+
+Void RTCharacterFavoritedRequestCraftFlagSet(
+	RTCharacterRef Character,
+	Int RequestCode
+) {
+	assert(0 <= RequestCode && RequestCode < RUNTIME_CHARACTER_REQUEST_CRAFT_RECIPE_FLAG_SIZE * RUNTIME_CHARACTER_MAX_REQUEST_CRAFT_RECIPE_COUNT);
+
+	Character->Data.RequestCraftInfo.Info.FavoriteFlags[RequestCode / RUNTIME_CHARACTER_REQUEST_CRAFT_RECIPE_FLAG_SIZE] |= (1 << (RequestCode % RUNTIME_CHARACTER_REQUEST_CRAFT_RECIPE_FLAG_SIZE));
+	Character->SyncMask.RequestCraftInfo = true;
+}
+
+Bool RTCharacterFavoritedRequestCraftFlagIsSet(
+	RTCharacterRef Character,
+	Int RequestCode
+) {
+	assert(0 <= RequestCode && RequestCode < RUNTIME_CHARACTER_REQUEST_CRAFT_RECIPE_FLAG_SIZE * RUNTIME_CHARACTER_MAX_REQUEST_CRAFT_RECIPE_COUNT);
+
+	return (Character->Data.RequestCraftInfo.Info.FavoriteFlags[RequestCode / RUNTIME_CHARACTER_REQUEST_CRAFT_RECIPE_FLAG_SIZE] & (1 << (RequestCode % RUNTIME_CHARACTER_REQUEST_CRAFT_RECIPE_FLAG_SIZE))) > 0;
+}
+
 Int RTCharacterGetRequestCraftLevel(
     RTRuntimeRef Runtime,
     RTCharacterRef Character
@@ -116,5 +145,25 @@ Bool RTCharacterRegisterRequestCraftRecipe(
 
 	RTCharacterRegisteredRequestCraftFlagSet(Character, RequestCode);
 
+	return true;
+}
+
+Bool RTCharacterIsRequestCraftRecipeFavorited(RTCharacterRef Character, Int32 CraftCode) {
+	return RTCharacterFavoritedRequestCraftFlagIsSet(Character, CraftCode);
+}
+
+Bool RTCharacterAddRequestCraftFavorite(
+	RTCharacterRef Character,
+	Int32 CraftCode
+) {
+	RTCharacterFavoritedRequestCraftFlagSet(Character, CraftCode);
+	return true;
+}
+
+Bool RTCharacterRemoveRequestCraftFavorite(
+	RTCharacterRef Character,
+	Int32 CraftCode
+) {
+	RTCharacterFavoritedRequestCraftFlagClear(Character, CraftCode);
 	return true;
 }
