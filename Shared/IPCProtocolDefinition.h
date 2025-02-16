@@ -203,6 +203,12 @@ IPC_PROTOCOL(W2D, GET_CHARACTER,
 	Int32 CharacterIndex;
 )
 
+IPC_PROTOCOL(C2D, GET_CHARACTER_VIEW_EQUIPMENT,
+	Int32 AccountID;
+	Int32 CharacterIndex;
+	Char CharacterName[17];
+)
+
 IPC_PROTOCOL_STRUCT(IPC_D2W_DATA_INITIALIZE_WAR_TIMER,
 	UInt32 TimeRemainingTimer;
 	UInt32 TimeAttackTimer;
@@ -309,6 +315,18 @@ IPC_PROTOCOL(D2W, GET_CHARACTER,
 	struct _RTCharacterSettingsInfo SettingsInfo;
 	struct _RTWarehouseInfo WarehouseInfo;
 	UInt8 Data[0];
+)
+
+IPC_PROTOCOL(D2C, GET_CHARACTER_VIEW_EQUIPMENT,
+	Bool Success;
+	Int32 RequestorCharacterID;
+	UInt8 CharacterName[17];
+	Int32 Level;
+	UInt32 Style;
+	UInt32 OptionsDataLength;
+	UInt8 EquipmentSlotCount;
+	UInt8 OptionsData[RUNTIME_MAX_SETTINGS_DATA_LENGTH];
+	UInt8 EquipmentData[0];
 )
 
 IPC_PROTOCOL(W2D, DELETE_CHARACTER,
@@ -783,14 +801,14 @@ IPC_PROTOCOL_STRUCT(IPC_W2D_DATA_AUCTION_UPDATE_ITEM_DECREASE,
 
 IPC_PROTOCOL(W2D, AUCTION_UPDATE_ITEM,
 	Int32 AccountID;
-	Int32 CharacterIndex;
-	UInt8 SlotIndex;
-	UInt16 ItemCount;
-	UInt8 ItemPriceType;
-	UInt64 ItemPrice;
-	Timestamp ExpirationTime;
-	Bool IsDecrease;
-	UInt8 Data[0];
+Int32 CharacterIndex;
+UInt8 SlotIndex;
+UInt16 ItemCount;
+UInt8 ItemPriceType;
+UInt64 ItemPrice;
+Timestamp ExpirationTime;
+Bool IsDecrease;
+UInt8 Data[0];
 )
 
 IPC_PROTOCOL_STRUCT(IPC_D2W_DATA_AUCTION_UPDATE_ITEM_INCREASE,
@@ -799,53 +817,53 @@ IPC_PROTOCOL_STRUCT(IPC_D2W_DATA_AUCTION_UPDATE_ITEM_INCREASE,
 
 IPC_PROTOCOL_STRUCT(IPC_D2W_DATA_AUCTION_UPDATE_ITEM_DECREASE,
 	struct _RTItemSlot ItemSlot;
-	UInt16 InventorySlotCount;
-	UInt16 InventorySlotIndex[0];
+UInt16 InventorySlotCount;
+UInt16 InventorySlotIndex[0];
 )
 
 IPC_PROTOCOL(D2W, AUCTION_UPDATE_ITEM,
 	UInt8 Result;
-	Timestamp ExpirationDate;
-	Bool IsDecrease;
-	UInt8 Data[0];
+Timestamp ExpirationDate;
+Bool IsDecrease;
+UInt8 Data[0];
 )
 
 IPC_PROTOCOL(W2D, AUCTION_BUY_ITEM,
 	Int32 AccountID;
-	Int32 CharacterIndex;
-	Int32 ItemAccountID;
-	UInt8 Unknown1;
-	UInt64 ItemID;
-	UInt64 ItemOptions;
-	UInt32 ItemOptionExtended;
-	UInt8 ItemPriceType;
-	Int64 ItemPrice;
-	Char ItemName[MAX_AUCTION_ITEM_NAME_LENGTH];
-	UInt16 InventorySlotCount;
-	UInt16 InventorySlotIndex[0];
+Int32 CharacterIndex;
+Int32 ItemAccountID;
+UInt8 Unknown1;
+UInt64 ItemID;
+UInt64 ItemOptions;
+UInt32 ItemOptionExtended;
+UInt8 ItemPriceType;
+Int64 ItemPrice;
+Char ItemName[MAX_AUCTION_ITEM_NAME_LENGTH];
+UInt16 InventorySlotCount;
+UInt16 InventorySlotIndex[0];
 )
 
 IPC_PROTOCOL(D2W, AUCTION_BUY_ITEM,
-	UInt8 Result; 
-	UInt64 ItemID;
-	UInt64 ItemOptions;
-	UInt32 ItemOptionExtended;
-	UInt8 ItemPriceType;
-	Int64 ItemPrice;
-	UInt16 InventorySlotCount;
-	UInt16 InventorySlotIndex[0];
+	UInt8 Result;
+UInt64 ItemID;
+UInt64 ItemOptions;
+UInt32 ItemOptionExtended;
+UInt8 ItemPriceType;
+Int64 ItemPrice;
+UInt16 InventorySlotCount;
+UInt16 InventorySlotIndex[0];
 )
 
 IPC_PROTOCOL(W2D, AUCTION_PROCEED_ITEM,
 	Int32 AccountID;
-	UInt8 SlotIndex;
-	Bool IsCommissionFree;
+UInt8 SlotIndex;
+Bool IsCommissionFree;
 )
 
 IPC_PROTOCOL(D2W, AUCTION_PROCEED_ITEM,
 	UInt8 Result;
-	Int32 SoldItemCount;
-	Int64 ReceivedAlz;
+Int32 SoldItemCount;
+Int64 ReceivedAlz;
 )
 
 IPC_PROTOCOL(W2C, CLIENT_CONNECT,
@@ -858,25 +876,25 @@ IPC_PROTOCOL(W2C, CLIENT_DISCONNECT,
 
 IPC_PROTOCOL(L2M, FORCE_DISCONNECT,
 	Int SourceConnectionID;
-	Int32 AccountID;
+Int32 AccountID;
 )
 
 IPC_PROTOCOL(M2N, FORCE_DISCONNECT,
 	Int SourceConnectionID;
-	Int32 AccountID;
+Int32 AccountID;
 )
 
 IPC_PROTOCOL(W2D, GUILD_CREATE,
 	Int32 CharacterIndex;
-	Char GuildName[MAX_GUILDNAME_LENGTH + 1];
+Char GuildName[MAX_GUILDNAME_LENGTH + 1];
 )
 
 IPC_PROTOCOL(D2W, GUILD_CREATE,
 	Int32 Result;
-	Int32 Unknown1;
-	Char GuildName[MAX_GUILDNAME_LENGTH + 1];
-	Int32 GuildIndex;
-	Int64 GuildCurrency;
+Int32 Unknown1;
+Char GuildName[MAX_GUILDNAME_LENGTH + 1];
+Int32 GuildIndex;
+Int64 GuildCurrency;
 )
 
 #undef IPC_PROTOCOL_ENUM

@@ -450,3 +450,65 @@ error:
 	Response->Success = false;
     IPCSocketUnicast(Socket, Response);
 }
+
+IPC_PROCEDURE_BINDING(C2D, GET_CHARACTER_VIEW_EQUIPMENT) {
+    IPC_D2C_DATA_GET_CHARACTER_VIEW_EQUIPMENT* Response = IPCPacketBufferInit(Connection->PacketBuffer, D2C, GET_CHARACTER_VIEW_EQUIPMENT);
+    Response->Header.Source = Server->IPCSocket->NodeID;
+    Response->Header.Target = Packet->Header.Source;
+    Response->Header.TargetConnectionID = Packet->Header.SourceConnectionID;
+    struct _RTItemSlot EquipmentSlots[RUNTIME_CHARACTER_MAX_EQUIPMENT_COUNT] = { 0 };
+
+    // find the characterindex by character name
+    Int32 CharacterIndex = -1;
+    DatabaseHandleRef HandleGetIndex = DatabaseCallProcedureFetch(
+        Context->Database,
+        "GetCharacterIDByName",
+        DB_INPUT_STRING(Packet->CharacterName, 17),
+        DB_PARAM_END
+    );
+
+    if (!DatabaseHandleReadNext(
+        Context->Database,
+        HandleGetIndex,
+        DB_TYPE_INT32, &CharacterIndex,
+        DB_PARAM_END
+    )) {
+        goto error;
+    }
+
+    if (CharacterIndex == -1 || CharacterIndex == NULL) goto error;
+
+    DatabaseHandleRef Handle = DatabaseCallProcedureFetch(
+        Context->Database,
+        "GetCharacterViewEqData",
+        DB_INPUT_INT32(CharacterIndex),
+        DB_PARAM_END
+    );
+    if (!DatabaseHandleReadNext(
+        Context->Database,
+        Handle,
+        DB_TYPE_STRING, &Response->CharacterName, strlen(Packet->CharacterName)+1,
+        DB_TYPE_INT32, &Response->Level,
+        DB_TYPE_INT32, &Response->Style,
+        DB_TYPE_INT32, &Response->OptionsDataLength,
+        DB_TYPE_UINT8, &Response->EquipmentSlotCount,
+        DB_TYPE_DATA, &EquipmentSlots[0], sizeof(EquipmentSlots),
+        DB_TYPE_DATA, &Response->OptionsData[0], sizeof(Response->OptionsData),
+        DB_PARAM_END
+    )) {
+        goto error;
+    }
+    DatabaseHandleFlush(Context->Database, Handle);
+    DatabaseHandleFlush(Context->Database, HandleGetIndex);
+
+    IPCPacketBufferAppendCopy(Connection->PacketBuffer, &EquipmentSlots, sizeof(struct _RTItemSlot) * Response->EquipmentSlotCount);
+    Response->Success = true;
+    Response->RequestorCharacterID = Packet->CharacterIndex;
+    IPCSocketUnicast(Socket, Response);
+    return;
+
+error:
+    Info("Error on MasterDBServer: GET_CHARACTER_VIEW_EQUIPMENT");
+    Response->Success = false;
+    IPCSocketUnicast(Socket, Response);
+}

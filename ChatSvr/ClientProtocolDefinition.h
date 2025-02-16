@@ -18,9 +18,9 @@
 
 CLIENT_PROTOCOL(S2C, NFY_ERROR, DEFAULT, 7,
     UInt16 ErrorCommand;
-    UInt16 ErrorSubCommand;
-    UInt16 ErrorCode;
-    UInt16 Unknown1;
+UInt16 ErrorSubCommand;
+UInt16 ErrorCode;
+UInt16 Unknown1;
 )
 
 CLIENT_PROTOCOL(C2S, CONNECT, DEFAULT, 401,
@@ -29,11 +29,11 @@ CLIENT_PROTOCOL(C2S, CONNECT, DEFAULT, 401,
 
 CLIENT_PROTOCOL(S2C, CONNECT, DEFAULT, 401,
     UInt32 XorKey;
-    UInt32 AuthKey;
-    UInt16 ConnectionID;
-    UInt16 XorKeyIndex;
-    UInt32 Unknown1;
-    UInt32 Unknown2;
+UInt32 AuthKey;
+UInt16 ConnectionID;
+UInt16 XorKeyIndex;
+UInt32 Unknown1;
+UInt32 Unknown2;
 )
 
 CLIENT_PROTOCOL(C2S, AUTH_ACCOUNT, DEFAULT, 402,
@@ -42,8 +42,8 @@ CLIENT_PROTOCOL(C2S, AUTH_ACCOUNT, DEFAULT, 402,
 
 CLIENT_PROTOCOL(S2C, AUTH_ACCOUNT, DEFAULT, 402,
     UInt32 CharacterIndex;
-    UInt32 GuildIndex;
-    UInt8 Result;
+UInt32 GuildIndex;
+UInt8 Result;
 )
 
 CLIENT_PROTOCOL(C2S, LOGIN, DEFAULT, 403,
@@ -56,12 +56,29 @@ CLIENT_PROTOCOL(S2C, LOGIN, DEFAULT, 403,
 
 CLIENT_PROTOCOL(S2C, AUCTION_ITEM_SOLD, DEFAULT, 501,
     UInt8 Unknown1;
-    UInt64 ItemID;
-    UInt64 ItemOptions;
-    UInt32 ItemDuration;
-    Int16 ItemCount;
-    Int64 ItemPrice;
-    UInt8 Unknown2[83];
+UInt64 ItemID;
+UInt64 ItemOptions;
+UInt32 ItemDuration;
+Int16 ItemCount;
+Int64 ItemPrice;
+UInt8 Unknown2[83];
+)
+
+CLIENT_PROTOCOL(C2S, VIEW_EQUIPMENT_REQUEST, DEFAULT, 2001,
+    UInt8 TargetName[17];
+)
+
+CLIENT_PROTOCOL(S2C, VIEW_EQUIPMENT_RESPONSE, DEFAULT, 2004,
+    UInt8 Result;
+    UInt8 Unknown1[3];
+    UInt8 CharacterName[17];
+    UInt8 Level;
+    UInt8 Unknown2[5];
+    UInt8 Class;
+    UInt32 AttackPower;
+    UInt32 DefensePower;
+    UInt8 ItemAmount;
+    UInt8 EquipmentData[0];
 )
 
 #undef CLIENT_PROTOCOL_ENUM
