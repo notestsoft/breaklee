@@ -46,12 +46,29 @@ CLIENT_PROTOCOL(C2S, REQUEST_CRAFT_START, 2250, 13133,
 */
 
 CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_START) {
+	// Steps for requesting a craft:
+	// 1. Ensure player has required items for recipe and that the slot requested is empty/not used.
+	// 2. Store the recipe in the database SlotData field with success or not by updating memory.
+	// 3. Send back success result to client of first START packet.
 	S2C_DATA_REQUEST_CRAFT_START* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, REQUEST_CRAFT_START);
-	Response->Result = 0;
+	if (!RTCharacterHasRequiredItemsForRecipe(Character, Runtime->Context, Runtime, (Int32)Packet->RequestCode, Packet->InventorySlotCount, Packet->InventorySlots)) {
+		return;
+	}
+	Info("Made it past has required items check.");
+	if (RTCharacterIsRequestSlotActive(Character, Packet->RequestSlotIndex)) {
+		goto error;
+	}
+	if (!RTCharacterHasOpenRequestSlot(Character)) {
+		return;
+	}
+	RTCharacterSetRequestSlotActive(Character, Runtime->Context, Runtime, Packet->RequestSlotIndex, Packet->RequestCode, Packet->InventorySlotCount, Packet->InventorySlots);
+	Info("Made it past is request slot active check.");
+	Response->Result = 1;
 	SocketSend(Socket, Connection, Response);
 	return;
 
 error:
+	Info("Error has occurred while starting a request craft.");
 	SocketDisconnect(Socket, Connection);
 }
 

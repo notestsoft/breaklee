@@ -1,5 +1,6 @@
 #include "RequestCraft.h"
 #include "Runtime.h"
+#include <time.h>
 
 Void RTCharacterRegisteredRequestCraftFlagClear(
 	RTCharacterRef Character,
@@ -166,4 +167,109 @@ Bool RTCharacterRemoveRequestCraftFavorite(
 ) {
 	RTCharacterFavoritedRequestCraftFlagClear(Character, CraftCode);
 	return true;
+}
+
+Bool RTCharacterHasRequiredItemsForRecipe(
+	RTCharacterRef Character,
+	RTRuntimeDataContextRef Context,
+	RTRuntimeRef Runtime,
+	Int32 RequestCode,
+	Int32 InventorySlotCount,
+	struct _RTRequestCraftInventorySlot InventoryItemIndexes[]
+) {
+	Bool HasItems = true;
+	for (int i = 0; i < InventorySlotCount; i++) {
+		Info("InventoryIndex loop index: %d first", i);
+		Int32 InvSlotIndex = InventoryItemIndexes[i].InventorySlotIndex;
+		struct _RTItemSlot ItemSlot = Character->Data.InventoryInfo.Slots[InvSlotIndex];
+		Info("InventoryIndex loop index: %d after ItemSlot found", i);
+		RTDataRequestCraftRecipeRef RecipeData = RTRuntimeDataRequestCraftRecipeGet(Context, RequestCode);
+		Info("InventoryIndex loop index: %d after get requestcraftrecipe config", i);
+		Info("Item data we are looking for: ItemID: %d, ItemOptions: %d, InvSlotIndex: %d", RecipeData->RequestCraftRecipeMaterialList[i].ItemIndex, RecipeData->RequestCraftRecipeMaterialList[i].ItemOption, InvSlotIndex);
+		if (RTInventoryGetConsumableItemCount(Runtime, &(Character->Data.InventoryInfo), RecipeData->RequestCraftRecipeMaterialList[i].ItemIndex, RecipeData->RequestCraftRecipeMaterialList[i].ItemOption, InvSlotIndex) < RecipeData->RequestCraftRecipeMaterialList[i].ItemCount) {
+			HasItems = false;
+			break;
+		}
+	}
+	return HasItems;
+}
+
+Bool RTCharacterIsRequestSlotActive(
+	RTCharacterRef Character,
+	Int SlotIndex
+) {
+	if (Character->Data.RequestCraftInfo.Slots[SlotIndex].RequestCode > 0) {
+		return true;
+	}
+	return false;
+}
+
+Bool RTCharacterHasOpenRequestSlot(
+	RTCharacterRef Character
+) {
+	if (Character->Data.RequestCraftInfo.Info.SlotCount < RUNTIME_CHARACTER_MAX_REQUEST_CRAFT_SLOT_COUNT) {
+		return true;
+	}
+	return false;
+}
+
+Void RTCharacterSetRequestSlotActive(
+	RTCharacterRef Character,
+	RTRuntimeDataContextRef Context,
+	RTRuntimeRef Runtime,
+	Int SlotIndex,
+	Int32 RequestCode,
+	Int32 InventorySlotCount,
+	struct _RTRequestCraftInventorySlot InventoryItemIndexes[]
+) {
+	// 1. Take away the required items.
+	RTDataRequestCraftRecipeRef RecipeData = RTRuntimeDataRequestCraftRecipeGet(Context, RequestCode);
+	// sanity checks
+	if (InventorySlotCount != RecipeData->RequestCraftRecipeMaterialCount) {
+		return;
+	}
+
+	for (int i = 0; i < RecipeData->RequestCraftRecipeMaterialCount; i++) {
+		struct _RTDataRequestCraftRecipeMaterial ItemMaterial = RecipeData->RequestCraftRecipeMaterialList[i];
+		Int64 AmountConsumed = 0;
+		Int32 InvSlotIndex = InventoryItemIndexes[i].InventorySlotIndex;
+		while (AmountConsumed < ItemMaterial.ItemCount) {
+			// TODO: get next inventory index of same next item each loop
+			AmountConsumed += RTInventoryConsumeItem(Runtime, &(Character->Data.InventoryInfo), ItemMaterial.ItemIndex, ItemMaterial.ItemOption, ItemMaterial.ItemCount - AmountConsumed, InvSlotIndex);
+		}
+	}
+	Character->SyncMask.InventoryInfo = true;
+	
+	// 2. Set data in the request slot.
+	Character->Data.RequestCraftInfo.Slots[SlotIndex].RequestCode = RequestCode;
+	Character->Data.RequestCraftInfo.Slots[SlotIndex].SlotIndex = SlotIndex;
+	Character->Data.RequestCraftInfo.Slots[SlotIndex].Timestamp = PlatformGetTickCount();
+	// RNG calculation
+	if (RTCharacterAttemptRequestCraftChance(RecipeData->SuccessRate)) {
+		Character->Data.RequestCraftInfo.Slots[SlotIndex].Result = 1;
+	}
+	else {
+		Character->Data.RequestCraftInfo.Slots[SlotIndex].Result = 0;
+	}
+	if (Character->Data.RequestCraftInfo.Slots[SlotIndex].Result == 1) {
+		Character->Data.RequestCraftInfo.Info.Exp += RecipeData->ResultExp;
+	}
+	Character->Data.RequestCraftInfo.Info.SlotCount += 1;
+	Character->SyncMask.RequestCraftInfo = true;
+	
+	return;
+error:
+	return;
+}
+
+Bool RTCharacterAttemptRequestCraftChance(
+	float rate
+) {
+	Int32 workingRate = rate / 10.0f;
+
+	if (workingRate < 0.0f) workingRate = 0.0f; 
+	if (workingRate > 100.0f) workingRate = 100.0f;
+
+	int roll = rand() % 100;
+	return roll < (int)workingRate;  
 }

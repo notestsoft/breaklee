@@ -3559,7 +3559,7 @@ CLIENT_PROTOCOL(C2S, REQUEST_CRAFT_START, DEFAULT, 2250,
     Int32 Unknown1; // - Maybe AuthCaptcha
     Int32 InventorySlotCount;
     struct _RTRequestCraftInventorySlot InventorySlots[0];
-    // UInt8 Unknown2[4168]; - Maybe AuthCaptcha
+    //UInt8 Unknown2[4168]; - Maybe AuthCaptcha
 )
 
 CLIENT_PROTOCOL(S2C, REQUEST_CRAFT_START, DEFAULT, 2250,

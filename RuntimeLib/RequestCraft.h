@@ -70,4 +70,36 @@ Bool RTCharacterIsRequestCraftRecipeFavorited(
     Int32 CraftCode
 );
 
+Bool RTCharacterHasRequiredItemsForRecipe(
+    RTCharacterRef Character,
+    RTRuntimeDataContextRef Context,
+    RTRuntimeRef Runtime,
+    Int32 RequestCode,
+    Int32 InventorySlotCount,
+    struct _RTRequestCraftInventorySlot InventoryItemIndexes[]
+);
+
+Bool RTCharacterIsRequestSlotActive(
+    RTCharacterRef Character,
+    Int SlotIndex
+);
+
+Bool RTCharacterHasOpenRequestSlot(
+    RTCharacterRef Character
+);
+
+Void RTCharacterSetRequestSlotActive(
+    RTCharacterRef Character,
+    RTRuntimeDataContextRef Context,
+    RTRuntimeRef Runtime,
+    Int SlotIndex,
+    Int32 RequestCode,
+    Int32 InventorySlotCount,
+    struct _RTRequestCraftInventorySlot InventoryItemIndexes[]
+);
+
+Bool RTCharacterAttemptRequestCraftChance(
+    float rate
+);
+
 EXTERN_C_END
