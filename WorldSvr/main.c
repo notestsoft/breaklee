@@ -131,6 +131,7 @@ Void ServerOnUpdate(
     ServerContextRef Context = (ServerContextRef)ServerContext;
     RTRuntimeUpdate(Context->Runtime);
     ServerSyncDB(Server, Context, false);
+    ServerRequestCountdown(Server, Context, Context->Runtime);
 
     Timestamp CurrentTimestamp = GetTimestampMs();
     if (Context->UserListBroadcastTimestamp < CurrentTimestamp) {

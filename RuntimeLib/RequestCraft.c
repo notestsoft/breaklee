@@ -198,7 +198,7 @@ Bool RTCharacterIsRequestSlotActive(
 	RTCharacterRef Character,
 	Int SlotIndex
 ) {
-	if (Character->Data.RequestCraftInfo.Slots[SlotIndex].RequestCode > 0) {
+	if (Character->Data.RequestCraftInfo.Info.SlotCount > SlotIndex) {
 		return true;
 	}
 	return false;
@@ -243,17 +243,9 @@ Void RTCharacterSetRequestSlotActive(
 	// 2. Set data in the request slot.
 	Character->Data.RequestCraftInfo.Slots[SlotIndex].RequestCode = RequestCode;
 	Character->Data.RequestCraftInfo.Slots[SlotIndex].SlotIndex = SlotIndex;
-	Character->Data.RequestCraftInfo.Slots[SlotIndex].Timestamp = PlatformGetTickCount();
-	// RNG calculation
-	if (RTCharacterAttemptRequestCraftChance(RecipeData->SuccessRate)) {
-		Character->Data.RequestCraftInfo.Slots[SlotIndex].Result = 1;
-	}
-	else {
-		Character->Data.RequestCraftInfo.Slots[SlotIndex].Result = 0;
-	}
-	if (Character->Data.RequestCraftInfo.Slots[SlotIndex].Result == 1) {
-		Character->Data.RequestCraftInfo.Info.Exp += RecipeData->ResultExp;
-	}
+	Character->Data.RequestCraftInfo.Slots[SlotIndex].Timestamp = RecipeData->Time;
+	Character->Data.RequestCraftInfo.Slots[SlotIndex].Result = 1;
+	
 	Character->Data.RequestCraftInfo.Info.SlotCount += 1;
 	Character->SyncMask.RequestCraftInfo = true;
 	
@@ -262,14 +254,83 @@ error:
 	return;
 }
 
-Bool RTCharacterAttemptRequestCraftChance(
-	float rate
+Bool RTCharacterClaimCraftSlot(
+	RTCharacterRef Character,
+	RTRuntimeDataContextRef Context,
+	RTRuntimeRef Runtime,
+	UInt32 SlotIndex,
+	Int32 RequestCode,
+	Int32 InventorySlotIndex
 ) {
-	Int32 workingRate = rate / 10.0f;
+	// make sure slot is complete
+	RTDataRequestCraftRecipeRef RecipeData = RTRuntimeDataRequestCraftRecipeGet(Context, RequestCode);
 
-	if (workingRate < 0.0f) workingRate = 0.0f; 
-	if (workingRate > 100.0f) workingRate = 100.0f;
+	if (Character->Data.RequestCraftInfo.Slots[SlotIndex].Result != 2) {
+		return false;
+	}
+	// slot is complete, add item to inventory data
+	struct _RTItemSlot ItemSlot = { 0 };
+	ItemSlot.Item.Serial = RecipeData->ResultItem[0];
+	ItemSlot.ItemOptions = RecipeData->ResultItem[1];
+	ItemSlot.Item.IsBroken = 0;
+	struct _RTItemDuration ItemDuration = { 0 };
+	ItemDuration.Serial = RecipeData->ResultItem[2];
+	ItemSlot.ItemDuration = ItemDuration;
+	ItemSlot.SlotIndex = InventorySlotIndex;
+	if (!RTInventorySetSlot(Runtime, &Character->Data.InventoryInfo, &ItemSlot)) return false;
+	
 
-	int roll = rand() % 100;
-	return roll < (int)workingRate;  
+	Character->SyncMask.InventoryInfo = true;
+
+	// clear the request slot
+	RTCharacterClearRequestSlot(Character, SlotIndex);
+	Character->SyncMask.RequestCraftInfo = true;
+
+	return true;
+}
+
+UInt8 RTCharacterGetRequestStatus(
+	RTCharacterRef Character,
+	UInt32 SlotIndex
+) {
+	if (SlotIndex < 0 || SlotIndex >= RUNTIME_CHARACTER_MAX_REQUEST_CRAFT_SLOT_COUNT) return 0;
+
+	return Character->Data.RequestCraftInfo.Slots[SlotIndex].Result;
+}
+
+Bool RTCharacterClearRequestSlot(
+	RTCharacterRef Character,
+	UInt32 SlotIndex
+) {
+	if (SlotIndex < 0 || SlotIndex >= RUNTIME_CHARACTER_MAX_REQUEST_CRAFT_SLOT_COUNT) return false;
+
+	Info("RequestClearSlot(%d)", SlotIndex);
+
+	/*Int32 RequestIndex = RTInventoryGetSlotIndex(
+		Runtime,
+		Inventory,
+		SlotIndex
+	);*/
+	Int32 RequestIndex = SlotIndex;
+	if (Character->Data.RequestCraftInfo.Slots[RequestIndex].SlotIndex != RequestIndex) {
+		Info("Memory misaligned request craft Slots array RequestIndex: %d, SlotIndex in slot: %d", RequestIndex, Character->Data.RequestCraftInfo.Slots[RequestIndex].SlotIndex);
+	}
+	if (RequestIndex < 0) return false;
+
+	Int32 TailLength = Character->Data.RequestCraftInfo.Info.SlotCount - RequestIndex - 1;
+	if (TailLength > 0) {
+		memmove(
+			&Character->Data.RequestCraftInfo.Slots[RequestIndex],
+			&Character->Data.RequestCraftInfo.Slots[RequestIndex + 1],
+			TailLength * sizeof(struct _RTRequestCraftSlot)
+		);
+	}
+
+	Character->Data.RequestCraftInfo.Info.SlotCount -= 1;
+	//struct _RTRequestCraftSlot Slot = Character->Data.RequestCraftInfo.Slots[RequestIndex];
+	//Slot.RequestCode = 0;
+	//Slot.Result = 0;
+	//Slot.Timestamp = 0;
+	Character->SyncMask.RequestCraftInfo = true;
+	return true;
 }

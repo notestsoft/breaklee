@@ -35,4 +35,23 @@ ClientContextRef ServerGetClientByIndex(
     CString CharacterName
 );
 
+Void ServerRequestCountdownCharacter(
+    ServerRef Server,
+    ServerContextRef Context,
+    RTRuntimeRef Runtime,
+    ClientContextRef Client,
+    SocketRef Socket,
+    RTCharacterRef Character
+);
+
+Void ServerRequestCountdown(
+    ServerRef Server,
+    ServerContextRef Context,
+    RTRuntimeRef Runtime
+);
+
+Bool ServerAttemptRollByChance(
+    float rate
+);
+
 EXTERN_C_END

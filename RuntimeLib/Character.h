@@ -215,6 +215,7 @@ struct _RTCharacter {
     struct _RTCharacterData Data;
     union _RTCharacterSyncMask SyncMask;
     Timestamp SyncTimestamp;
+    Timestamp RequestSyncTimestamp;
 
     struct _RTMovement Movement;
     struct _RTBattleAttributes Attributes;

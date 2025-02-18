@@ -98,8 +98,23 @@ Void RTCharacterSetRequestSlotActive(
     struct _RTRequestCraftInventorySlot InventoryItemIndexes[]
 );
 
-Bool RTCharacterAttemptRequestCraftChance(
-    float rate
+Bool RTCharacterClaimCraftSlot(
+    RTCharacterRef Character,
+    RTRuntimeDataContextRef Context,
+    RTRuntimeRef Runtime,
+    UInt32 SlotIndex,
+    Int32 RequestCode,
+    Int32 InventorySlotIndex
+);
+
+UInt8 RTCharacterGetRequestStatus(
+    RTCharacterRef Character,
+    UInt32 SlotIndex
+);
+
+Bool RTCharacterClearRequestSlot(
+    RTCharacterRef Character,
+    UInt32 SlotIndex
 );
 
 EXTERN_C_END

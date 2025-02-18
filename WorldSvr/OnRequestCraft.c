@@ -85,25 +85,30 @@ CLIENT_PROTOCOL(C2S, REQUEST_CRAFT_END, 2251, 13133,
 */
 
 CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_END) {
+	UInt8 ReturnStatus = 0;
+	UInt8 CraftStatus = RTCharacterGetRequestStatus(Character, Packet->RequestSlotIndex);
+	if (CraftStatus < 2) goto error;
+	if (Packet->InventorySlotCount < 1) goto error;
+	Info("Request Status: %d", CraftStatus);
+	if (CraftStatus == 2) 
+	{
+		Bool success = RTCharacterClaimCraftSlot(Character, Runtime->Context, Runtime, Packet->RequestSlotIndex, Packet->RequestCode, Packet->InventorySlots[0].InventorySlotIndex);
+		if (!success) {
+			ReturnStatus = 0;
+		}
+		else {
+			ReturnStatus = 1;
+		}
+	}
+	
 	S2C_DATA_REQUEST_CRAFT_END* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, REQUEST_CRAFT_END);
-	Response->Result = 0;
+	Response->Result = ReturnStatus;
 	SocketSend(Socket, Connection, Response);
 	return;
 
 error:
 	SocketDisconnect(Socket, Connection);
 }
-
-/*
-CLIENT_PROTOCOL(S2C, REQUEST_CRAFT_UPDATE, 2252, 13133,
-    S2C_DATA_SIGNATURE;
-	UInt32 ItemID;
-	UInt8 RequestSlotIndex;
-	UInt32 RequestCode;
-	UInt32 Amity;
-	UInt8 Success;
-)
-*/
 
 CLIENT_PROCEDURE_BINDING(CHANGE_RECIPE_FAVORITE) {
 	//set character data for syncing
@@ -124,4 +129,107 @@ CLIENT_PROCEDURE_BINDING(CHANGE_RECIPE_FAVORITE) {
 	return;
 error:
 	Error("Something went wrong when changing a favorite request craft recipe.");
+}
+
+Void ServerRequestCountdownCharacter(
+	ServerRef Server,
+	ServerContextRef Context,
+	RTRuntimeRef Runtime,
+	ClientContextRef Client,
+	SocketRef Socket,
+	RTCharacterRef Character
+) {
+	Character->RequestSyncTimestamp = GetTimestampMs();
+	
+	for (int i = 0; i < Character->Data.RequestCraftInfo.Info.SlotCount; i++) 
+	{
+		if (Character->Data.RequestCraftInfo.Slots[i].Result == 1) {
+			RTDataRequestCraftRecipeRef RecipeData = RTRuntimeDataRequestCraftRecipeGet(Runtime->Context, Character->Data.RequestCraftInfo.Slots[i].RequestCode);
+			Character->Data.RequestCraftInfo.Slots[i].Timestamp -= 1;
+			Info("Subtracted a second from slot Timestamp");
+			Character->SyncMask.RequestCraftInfo = true;
+			if (Character->Data.RequestCraftInfo.Slots[i].Timestamp <= 0) {
+				Character->Data.RequestCraftInfo.Slots[i].Timestamp = 0;
+				
+				// RNG calculation
+				if (ServerAttemptRollByChance(RecipeData->SuccessRate)) {
+					Character->Data.RequestCraftInfo.Slots[i].Result = 2;
+				}
+				else {
+					Character->Data.RequestCraftInfo.Slots[i].Result = 3;
+				}
+				if (Character->Data.RequestCraftInfo.Slots[i].Result == 2) {
+					Character->Data.RequestCraftInfo.Info.Exp += RecipeData->ResultExp;
+				}
+				// send update packet back
+				PacketBufferRef ClientPacketBuffer = SocketGetNextPacketBuffer(Socket);
+				S2C_DATA_REQUEST_CRAFT_UPDATE* Response = PacketBufferInit(ClientPacketBuffer, S2C, REQUEST_CRAFT_UPDATE);
+				if (Character->Data.RequestCraftInfo.Slots[i].Result == 2)
+				{
+					Response->Success = 1;
+				}
+				else {
+					Response->Success = 0;
+				}
+				Response->ItemID = RecipeData->ResultItem[0];
+				Response->RequestSlotIndex = Character->Data.RequestCraftInfo.Slots[i].SlotIndex;
+				Response->RequestCode = Character->Data.RequestCraftInfo.Slots[i].RequestCode;
+				Response->RequestCraftExp = RecipeData->ResultExp;
+
+				SocketSend(Socket, Client->Connection, Response);
+			}
+		}
+	}
+}
+
+/*
+CLIENT_PROTOCOL(S2C, REQUEST_CRAFT_UPDATE, 2252, 13133,
+	S2C_DATA_SIGNATURE;
+	UInt32 ItemID;
+	UInt8 RequestSlotIndex;
+	UInt32 RequestCode;
+	UInt32 Amity;
+	UInt8 Success;
+)
+*/
+
+Void ServerRequestCountdown(
+	ServerRef Server,
+	ServerContextRef Context,
+	RTRuntimeRef Runtime
+) {
+	Timestamp Timestamp = GetTimestampMs();
+
+	SocketConnectionIteratorRef Iterator = SocketGetConnectionIterator(Context->ClientSocket);
+	while (Iterator) {
+		SocketConnectionRef Connection = SocketConnectionIteratorFetch(Context->ClientSocket, Iterator);
+		
+		Iterator = SocketConnectionIteratorNext(Context->ClientSocket, Iterator);
+		if (Connection == NULL) continue;
+
+		ClientContextRef Client = (ClientContextRef)Connection->Userdata;
+		if (Client->CharacterIndex < 1) continue;
+
+		RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Client->CharacterIndex);
+		if (!Character) continue;
+
+		Bool PerformSync = 
+			(Timestamp - Character->RequestSyncTimestamp) >= Context->Config.WorldSvr.RequestCountdownTimer;
+
+		if (PerformSync) {
+			ServerRequestCountdownCharacter(Server, Context, Runtime, Client, Context->ClientSocket, Character);
+		}
+	}
+}
+
+Bool ServerAttemptRollByChance(
+	float rate
+) {
+	Int32 workingRate = rate / 10.0f;
+
+	if (workingRate < 0.0f) workingRate = 0.0f;
+	if (workingRate > 100.0f) workingRate = 100.0f;
+
+	int roll = rand() % 100;
+	return roll < (int)workingRate;
 }
