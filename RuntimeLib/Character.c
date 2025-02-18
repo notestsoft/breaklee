@@ -989,13 +989,12 @@ Bool RTCharacterMovementChangeChunk(
 	}
 
 	if (DeltaChunkX < -1 || DeltaChunkX > 1 || DeltaChunkY < -1 || DeltaChunkY > 1) {
+		Trace("ChunkDistanceError(%d, %d, %d, %d)", PositionChunkX, PositionChunkY, DeltaChunkX, DeltaChunkY);
 		return false;
 	}
 
 	RTMovementSetPosition(Runtime, &Character->Movement, PositionCurrentX, PositionCurrentY);
 
-	Character->Movement.PositionCurrent.X = PositionCurrentX;
-	Character->Movement.PositionCurrent.Y = PositionCurrentY;
 	Character->SyncMask.Info = true;
 
 	return true;
