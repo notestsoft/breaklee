@@ -346,33 +346,16 @@ Bool RTCharacterClearRequestSlot(
 ) {
 	if (SlotIndex < 0 || SlotIndex >= RUNTIME_CHARACTER_MAX_REQUEST_CRAFT_SLOT_COUNT) return false;
 
-	Info("RequestClearSlot(%d)", SlotIndex);
-
-	/*Int32 RequestIndex = RTInventoryGetSlotIndex(
-		Runtime,
-		Inventory,
-		SlotIndex
-	);*/
-	Int32 RequestIndex = SlotIndex;
-	if (Character->Data.RequestCraftInfo.Slots[RequestIndex].SlotIndex != RequestIndex) {
-		Info("Memory misaligned request craft Slots array RequestIndex: %d, SlotIndex in slot: %d", RequestIndex, Character->Data.RequestCraftInfo.Slots[RequestIndex].SlotIndex);
-	}
-	if (RequestIndex < 0) return false;
-
-	Int32 TailLength = Character->Data.RequestCraftInfo.Info.SlotCount - RequestIndex - 1;
+	Int32 TailLength = Character->Data.RequestCraftInfo.Info.SlotCount - SlotIndex - 1;
 	if (TailLength > 0) {
 		memmove(
-			&Character->Data.RequestCraftInfo.Slots[RequestIndex],
-			&Character->Data.RequestCraftInfo.Slots[RequestIndex + 1],
+			&Character->Data.RequestCraftInfo.Slots[SlotIndex],
+			&Character->Data.RequestCraftInfo.Slots[SlotIndex + 1],
 			TailLength * sizeof(struct _RTRequestCraftSlot)
 		);
 	}
 
 	Character->Data.RequestCraftInfo.Info.SlotCount -= 1;
-	//struct _RTRequestCraftSlot Slot = Character->Data.RequestCraftInfo.Slots[RequestIndex];
-	//Slot.RequestCode = 0;
-	//Slot.Result = 0;
-	//Slot.Timestamp = 0;
 	Character->SyncMask.RequestCraftInfo = true;
 	return true;
 }
