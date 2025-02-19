@@ -62,6 +62,7 @@ struct _RTRuntime {
     RTWorldManagerRef WorldManager;
     RTTradeManagerRef TradeManager;
     RTPvPManagerRef PvPManager;
+    RTInstantWarManagerRef InstantWarManager;
     RTNotificationManagerRef NotificationManager;
     RTOptionPoolManagerRef OptionPoolManager;
     Int32 SlopeFormulaDataCount;

@@ -323,6 +323,24 @@ Void BroadcastUserList(
     CStringCopySafe(Notification->Host, 64 + 1, Context->Config.WorldSvr.Host);
     Notification->Port = Context->Config.WorldSvr.Port;
     Notification->Type = (UInt32)Context->Runtime->Environment.RawValue;
+
+    if (Context->Runtime->InstantWarManager) {
+        Notification->Type = Context->Runtime->InstantWarManager->WorldType;
+        RTDataWarMapRef WarMap = Context->Runtime->InstantWarManager->WarMapRef;
+        Notification->LobbyPlayerCount = 0;
+        Notification->Unknown1 = 0;
+        Notification->CapellaPlayerCount = 0;
+        Notification->ProcyonPlayerCount = 0;
+        Notification->Unknown2 = 0;
+        Notification->CapellaPlayerCount2 = 0;
+        Notification->ProcyonPlayerCount2 = 0;
+        Notification->Unknown3 = 0;
+        Notification->MinLevel = WarMap->MinLv;
+        Notification->MaxLevel = WarMap->MaxLv - WarMap->MinLv;
+        Notification->MinRank = 1;
+        Notification->MaxRank = 9;
+    }  
+
     IPCSocketUnicast(Server->IPCSocket, Notification);
 }
 

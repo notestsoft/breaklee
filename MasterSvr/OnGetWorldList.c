@@ -29,6 +29,18 @@ IPC_PROCEDURE_BINDING(L2M, GET_WORLD_LIST) {
         CStringCopySafe(ServerGroupNode->Host, 64 + 1, WorldInfo->Host);
         ServerGroupNode->Port = WorldInfo->Port;
         ServerGroupNode->Type = WorldInfo->Type;
+        ServerGroupNode->LobbyPlayerCount = WorldInfo->LobbyPlayerCount;
+        ServerGroupNode->Unknown1 = WorldInfo->Unknown1;
+        ServerGroupNode->CapellaPlayerCount = WorldInfo->CapellaPlayerCount;
+        ServerGroupNode->ProcyonPlayerCount = WorldInfo->ProcyonPlayerCount;
+        ServerGroupNode->Unknown2 = WorldInfo->Unknown2;
+        ServerGroupNode->CapellaPlayerCount2 = WorldInfo->CapellaPlayerCount2;
+        ServerGroupNode->ProcyonPlayerCount2 = WorldInfo->ProcyonPlayerCount2;
+        ServerGroupNode->Unknown3 = WorldInfo->Unknown3;
+        ServerGroupNode->MinLevel = WorldInfo->MinLevel;
+        ServerGroupNode->MaxLevel = WorldInfo->MaxLevel;
+        ServerGroupNode->MinRank = WorldInfo->MinRank;
+        ServerGroupNode->MaxRank = WorldInfo->MaxRank;
 
         ServerGroup->NodeCount += 1;
     }

@@ -18,8 +18,8 @@ option(CONFIG_BUILD_TARGET_MASTER_DBAGENT "Build Master DB Agent" ON)
 option(CONFIG_BUILD_TARGET_MASTER_SVR "Build Master Server" ON)
 option(CONFIG_BUILD_TARGET_PARTY_SVR "Build Party Server" ON)
 option(CONFIG_BUILD_TARGET_WORLD_SVR "Build World Server" ON)
-option(CONFIG_BUILD_TARGET_CLIENT "Build Client" ON)
-option(CONFIG_BUILD_TARGET_EDITOR "Build Editor" ON)
+option(CONFIG_BUILD_TARGET_CLIENT "Build Client" OFF)
+option(CONFIG_BUILD_TARGET_EDITOR "Build Editor" OFF)
 
 include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 

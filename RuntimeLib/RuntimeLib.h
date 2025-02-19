@@ -33,6 +33,7 @@
 #include <RuntimeLib/Help.h>
 #include <RuntimeLib/HonorMedal.h>
 #include <RuntimeLib/HonorRank.h>
+#include <RuntimeLib/InstantWarManager.h>
 #include <RuntimeLib/Inventory.h>
 #include <RuntimeLib/Item.h>
 #include <RuntimeLib/Level.h>

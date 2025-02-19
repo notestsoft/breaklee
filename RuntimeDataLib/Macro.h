@@ -139,6 +139,7 @@
 #include "StyleMastery.h"
 #include "Title.h"
 #include "Transform.h"
+#include "War.h"
 #include "WarAdvantage.h"
 #include "Warp.h"
 

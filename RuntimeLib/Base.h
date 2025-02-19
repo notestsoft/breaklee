@@ -62,6 +62,7 @@ typedef struct _RTGiftBoxInfo* RTGiftBoxInfoRef;
 typedef struct _RTCharacterGiftboxInfo* RTCharacterGiftboxInfoRef;
 typedef struct _RTHonorMedalSlot* RTHonorMedalSlotRef;
 typedef struct _RTCharacterHonorMedalInfo* RTCharacterHonorMedalInfoRef;
+typedef struct _RTInstantWarManager* RTInstantWarManagerRef;
 typedef struct _RTItemData* RTItemDataRef;
 typedef struct _RTItemSlot* RTItemSlotRef;
 typedef struct _RTItemSlotAppearance* RTItemSlotAppearanceRef;

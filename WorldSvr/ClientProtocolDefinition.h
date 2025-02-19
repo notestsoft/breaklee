@@ -2163,6 +2163,21 @@ CLIENT_PROTOCOL(S2C, GM_COMMAND, DEFAULT, 490,
     UInt8 State;
 )
 
+CLIENT_PROTOCOL(C2S, WAR_INTOLOBBY, DEFAULT, 681,
+    UInt8 WarChannel;
+    UInt32 CharacterIndex;
+    UInt8 LobbyConnect;
+)
+
+CLIENT_PROTOCOL(S2C, WAR_INTOLOBBY, DEFAULT, 681,
+    UInt8 WarChannel;
+    UInt8 Result;
+    Char WorldHost[65];
+    UInt16 WorldPort;
+    UInt8 WorldServerID;
+    UInt64 EntryFee;
+)
+
 CLIENT_PROTOCOL_STRUCT(C2S_DATA_SKILL_TO_TARGET_BUFF_TARGET,
     RTEntityID TargetID;
     UInt8 TargetType;

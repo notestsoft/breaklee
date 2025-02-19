@@ -18,4 +18,16 @@ IPC_PROCEDURE_BINDING(W2M, NFY_WORLD_INFO) {
 	CStringCopySafe(WorldInfo->Host, 64 + 1, Packet->Host);
 	WorldInfo->Port = Packet->Port;
 	WorldInfo->Type = Packet->Type;
+	WorldInfo->LobbyPlayerCount = Packet->LobbyPlayerCount;
+	WorldInfo->Unknown1 = Packet->Unknown1;
+	WorldInfo->CapellaPlayerCount = Packet->CapellaPlayerCount;
+	WorldInfo->ProcyonPlayerCount = Packet->ProcyonPlayerCount;
+	WorldInfo->Unknown2 = Packet->Unknown2;
+	WorldInfo->CapellaPlayerCount2 = Packet->CapellaPlayerCount2;
+	WorldInfo->ProcyonPlayerCount2 = Packet->ProcyonPlayerCount2;
+	WorldInfo->Unknown3 = Packet->Unknown3;
+	WorldInfo->MinLevel = Packet->MinLevel;
+	WorldInfo->MaxLevel = Packet->MaxLevel;
+	WorldInfo->MinRank = Packet->MinRank;
+	WorldInfo->MaxRank = Packet->MaxRank;
 }

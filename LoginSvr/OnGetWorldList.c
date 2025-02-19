@@ -48,6 +48,19 @@ IPC_PROCEDURE_BINDING(M2L, GET_WORLD_LIST) {
                 memcpy(NotificationNode->WorldHost, (IsLocalHost) ? LocalHost : Node->Host, (IsLocalHost) ? sizeof(LocalHost) : sizeof(Node->Host));
                 NotificationNode->WorldPort = Node->Port;
                 NotificationNode->WorldType = Node->Type;
+                NotificationNode->LobbyPlayerCount = Node->LobbyPlayerCount;
+                NotificationNode->Unknown1 = Node->Unknown1;
+                NotificationNode->CapellaPlayerCount = Node->CapellaPlayerCount;
+                NotificationNode->ProcyonPlayerCount = Node->ProcyonPlayerCount;
+                NotificationNode->Unknown2 = Node->Unknown2;
+                NotificationNode->CapellaPlayerCount2 = Node->CapellaPlayerCount2;
+                NotificationNode->ProcyonPlayerCount2 = Node->ProcyonPlayerCount2;
+                NotificationNode->Unknown3 = Node->Unknown3;
+                NotificationNode->MinLevel = Node->MinLevel;
+                NotificationNode->MaxLevel = Node->MaxLevel;
+                NotificationNode->MinRank = Node->MinRank;
+                NotificationNode->MaxRank = Node->MaxRank;
+
             }
 
             NotificationGroup->WorldCount += 1;

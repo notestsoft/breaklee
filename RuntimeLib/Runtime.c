@@ -11,6 +11,7 @@
 #include "Script.h"
 #include "TradeManager.h"
 #include "PvPManager.h"
+#include "InstantWarManager.h"
 #include "World.h"
 #include "WorldManager.h"
 

@@ -96,7 +96,19 @@ IPC_PROTOCOL_STRUCT(IPC_M2L_DATA_SERVER_GROUP_NODE,
     UInt16 MaxPlayerCount;
     Char Host[64];
     UInt16 Port;
-    UInt32 Type;
+    UInt64 Type;
+	UInt16 LobbyPlayerCount;
+	UInt16 Unknown1;
+	UInt16 CapellaPlayerCount;
+	UInt16 ProcyonPlayerCount;
+	UInt32 Unknown2;
+	UInt16 CapellaPlayerCount2;
+	UInt16 ProcyonPlayerCount2;
+	UInt16 Unknown3;
+	UInt8 MinLevel;
+	UInt8 MaxLevel;
+	UInt8 MinRank;
+	UInt8 MaxRank;
 )
 
 IPC_PROTOCOL_STRUCT(IPC_M2L_DATA_SERVER_GROUP,
@@ -120,6 +132,18 @@ IPC_PROTOCOL_STRUCT(IPC_M2W_DATA_SERVER_GROUP_NODE,
 	Char Host[64];
 	UInt16 Port;
 	UInt32 Type;
+	UInt16 LobbyPlayerCount;
+	UInt16 Unknown1;
+	UInt16 CapellaPlayerCount;
+	UInt16 ProcyonPlayerCount;
+	UInt32 Unknown2;
+	UInt16 CapellaPlayerCount2;
+	UInt16 ProcyonPlayerCount2;
+	UInt16 Unknown3;
+	UInt8 MinLevel;
+	UInt8 MaxLevel;
+	UInt8 MinRank;
+	UInt8 MaxRank;
 )
 
 IPC_PROTOCOL(M2W, GET_WORLD_LIST,
@@ -132,7 +156,19 @@ IPC_PROTOCOL(W2M, NFY_WORLD_INFO,
 	UInt16 MaxPlayerCount;
 	Char Host[64];
 	UInt16 Port;
-	UInt32 Type;
+	UInt64 Type;
+	UInt16 LobbyPlayerCount;
+	UInt16 Unknown1;
+	UInt16 CapellaPlayerCount;
+	UInt16 ProcyonPlayerCount;
+	UInt32 Unknown2;
+	UInt16 CapellaPlayerCount2;
+	UInt16 ProcyonPlayerCount2;
+	UInt16 Unknown3;
+	UInt8 MinLevel;
+	UInt8 MaxLevel;
+	UInt8 MinRank;
+	UInt8 MaxRank;
 )
 
 IPC_PROTOCOL(W2L, VERIFY_PASSWORD,

@@ -105,6 +105,10 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Character->Data.StyleInfo = Packet->Character.CharacterStyleInfo;
     Character->Data.DailyResetInfo = Packet->Character.DailyResetInfo;
 
+    if (Runtime->InstantWarManager) {
+        RTInstantWarSetPosition(Runtime, Runtime->InstantWarManager, Character);
+    }
+
     UInt8* Memory = &Packet->Data[0];
 
     Character->Data.EquipmentInfo.Info = Packet->Character.EquipmentInfo;
@@ -527,7 +531,10 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     PacketBufferRef PacketBuffer = SocketGetNextPacketBuffer(Context->ClientSocket);
     S2C_DATA_INITIALIZE* Response = PacketBufferInitExtended(PacketBuffer, S2C, INITIALIZE);
     /* Server Info */
-    Response->WorldType = (UInt32)Runtime->Environment.RawValue;
+
+    //Response->WorldType = (UInt32)Context->Runtime->Config.IsInstantWar != 0 ? Context->Runtime->Config.IsInstantWar : Context->Runtime->Environment.RawValue;
+
+    Response->WorldType = (UInt32)Context->Runtime->Environment.RawValue;
     Response->IsWarehousePasswordSet = Packet->Character.IsWarehousePasswordSet;
     Response->IsInventoryPasswordSet = Packet->Character.IsInventoryPasswordSet;
     Response->IsWarehouseLocked = Packet->Character.IsWarehouseLocked;
@@ -538,7 +545,8 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->Server.MaxPlayerCount = Context->Config.WorldSvr.MaxConnectionCount;
     memcpy(Response->Server.Address.Host, Context->Config.WorldSvr.Host, strlen(Context->Config.WorldSvr.Host));
     Response->Server.Address.Port = Context->Config.WorldSvr.Port;
-    Response->Server.WorldType = Runtime->Environment.RawValue;
+    //Response->Server.WorldType = Context->Runtime->Config.IsInstantWar != 0 ? Context->Runtime->Config.IsInstantWar : Context->Runtime->Environment.RawValue;
+    Response->Server.WorldType = Context->Runtime->Environment.RawValue;
     Response->Entity = Character->ID;
     Response->CharacterInfo = Character->Data.Info;
     // TODO: Check if max hp or base hp is requested here...
@@ -1057,7 +1065,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 //    Response->MythMasteryInfo.Unknown[5] = 211;
 //    Response->MythMasteryInfo.Unknown[9] = 1;
     SocketSend(Context->ClientSocket, ClientConnection, Response);
-
+    
     RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Runtime, Character);
     RTWorldSpawnCharacter(Runtime, WorldContext, Character->ID);
 

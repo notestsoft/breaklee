@@ -12,7 +12,19 @@ struct _WorldInfo {
     UInt16 MaxPlayerCount;
     Char Host[64];
     UInt16 Port;
-    UInt32 Type;
+    UInt64 Type;
+    UInt16 LobbyPlayerCount;
+    UInt16 Unknown1;
+    UInt16 CapellaPlayerCount;
+    UInt16 ProcyonPlayerCount;
+    UInt32 Unknown2;
+    UInt16 CapellaPlayerCount2;
+    UInt16 ProcyonPlayerCount2;
+    UInt16 Unknown3;
+    UInt8 MinLevel;
+    UInt8 MaxLevel;
+    UInt8 MinRank;
+    UInt8 MaxRank;
 };
 typedef struct _WorldInfo* WorldInfoRef;
 

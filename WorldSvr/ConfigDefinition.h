@@ -72,6 +72,11 @@ CONFIG_PARAMETER(Bool, IsCostumeWarehouseEnabled, "Environment.IsCostumeWarehous
 CONFIG_PARAMETER(UInt64, AuctionExpirationTime, "Environment.AuctionExpirationTime", 604800)
 CONFIG_END(Environment)
 
+CONFIG_BEGIN(InstantWar)
+CONFIG_PARAMETER(UInt64, WorldType, "InstantWar.WorldType", 0)
+CONFIG_PARAMETER(UInt64, EntryValue, "InstantWar.EntryValue", 0)
+CONFIG_END(InstantWar)
+
 CONFIG_BEGIN(ChatSvr)
 CONFIG_PARAMETER_ARRAY(Char, PLATFORM_PATH_MAX, Host, "ChatSvr.Host", 127.0.0.1)
 CONFIG_PARAMETER(UInt16, Port, "ChatSvr.Port", 38170)

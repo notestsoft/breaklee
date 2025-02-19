@@ -181,6 +181,7 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     ServerContext.Runtime->Config.MinHonorPoint = Config.Environment.MinHonorPoint;
     ServerContext.Runtime->Config.MaxHonorPoint = Config.Environment.MaxHonorPoint;
     ServerContext.Runtime->Config.MaxInventoryCurrency = Config.Environment.MaxInventoryCurrency;
+
     ServerContext.Runtime->Config.ScriptFilePath = Config.WorldSvr.ScriptDataPath;
     ServerContext.Runtime->Config.DailyResetTimeHour = Config.WorldSvr.DailyResetTimeHour;
     ServerContext.Runtime->Config.DailyResetTimeMinute = Config.WorldSvr.DailyResetTimeMinute;
@@ -282,6 +283,14 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     
     RTRuntimeLoadData(ServerContext.Runtime, Config.WorldSvr.RuntimeDataPath, Config.WorldSvr.ServerDataPath);
     ServerLoadRuntimeData(Config, &ServerContext);
+    
+    if (Config.InstantWar.WorldType > 0) {
+        ServerContext.Runtime->InstantWarManager = RTInstantWarManagerCreate(
+            ServerContext.Runtime,
+            Config.InstantWar.WorldType,
+            Config.InstantWar.EntryValue);
+    };
+
     ServerLoadScriptData(Config, &ServerContext);
     ServerRun(Server);
 
