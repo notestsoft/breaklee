@@ -285,6 +285,7 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     ServerLoadRuntimeData(Config, &ServerContext);
     ServerLoadScriptData(Config, &ServerContext);
     ServerRun(Server);
+    RequestSyncTimestamp = GetTimestampMs();
 
     DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(ServerContext.ItemScriptRegistry);
     while (Iterator.Key) {

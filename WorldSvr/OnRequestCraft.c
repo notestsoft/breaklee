@@ -54,7 +54,6 @@ CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_START) {
 	if (!RTCharacterHasRequiredItemsForRecipe(Character, Runtime->Context, Runtime, (Int32)Packet->RequestCode, Packet->InventorySlotCount, Packet->InventorySlots)) {
 		return;
 	}
-	Info("Made it past has required items check.");
 	if (RTCharacterIsRequestSlotActive(Character, Packet->RequestSlotIndex)) {
 		goto error;
 	}
@@ -62,7 +61,6 @@ CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_START) {
 		return;
 	}
 	RTCharacterSetRequestSlotActive(Character, Runtime->Context, Runtime, Packet->RequestSlotIndex, Packet->RequestCode, Packet->InventorySlotCount, Packet->InventorySlots);
-	Info("Made it past is request slot active check.");
 	Response->Result = 1;
 	SocketSend(Socket, Connection, Response);
 	return;
@@ -88,8 +86,8 @@ CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_END) {
 	UInt8 ReturnStatus = 0;
 	UInt8 CraftStatus = RTCharacterGetRequestStatus(Character, Packet->RequestSlotIndex);
 	if (CraftStatus < 2) goto error;
-	if (Packet->InventorySlotCount < 1) goto error;
-	Info("Request Status: %d", CraftStatus);
+	if (Packet->InventorySlotCount < 1 && CraftStatus == 2) goto error;
+
 	if (CraftStatus == 2) 
 	{
 		Bool success = RTCharacterClaimCraftSlot(Character, Runtime->Context, Runtime, Packet->RequestSlotIndex, Packet->RequestCode, Packet->InventorySlots[0].InventorySlotIndex);
@@ -99,6 +97,12 @@ CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_END) {
 		else {
 			ReturnStatus = 1;
 		}
+	}
+	if (CraftStatus == 3)
+	{
+		RTCharacterClearRequestSlot(Character, Packet->InventorySlots[0].InventorySlotIndex);
+		Character->SyncMask.RequestCraftInfo = true;
+		ReturnStatus = 1;
 	}
 	
 	S2C_DATA_REQUEST_CRAFT_END* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, REQUEST_CRAFT_END);
@@ -139,20 +143,18 @@ Void ServerRequestCountdownCharacter(
 	SocketRef Socket,
 	RTCharacterRef Character
 ) {
-	Character->RequestSyncTimestamp = GetTimestampMs();
 	
 	for (int i = 0; i < Character->Data.RequestCraftInfo.Info.SlotCount; i++) 
 	{
 		if (Character->Data.RequestCraftInfo.Slots[i].Result == 1) {
 			RTDataRequestCraftRecipeRef RecipeData = RTRuntimeDataRequestCraftRecipeGet(Runtime->Context, Character->Data.RequestCraftInfo.Slots[i].RequestCode);
-			Character->Data.RequestCraftInfo.Slots[i].Timestamp -= 1;
-			Info("Subtracted a second from slot Timestamp");
+			Character->Data.RequestCraftInfo.Slots[i].Timestamp -= (Context->Config.WorldSvr.RequestCountdownTimer / 1000.0f);
 			Character->SyncMask.RequestCraftInfo = true;
 			if (Character->Data.RequestCraftInfo.Slots[i].Timestamp <= 0) {
 				Character->Data.RequestCraftInfo.Slots[i].Timestamp = 0;
 				
 				// RNG calculation
-				if (ServerAttemptRollByChance(RecipeData->SuccessRate)) {
+				if (ServerAttemptRollByChance(RecipeData->SuccessRate / 10.0f)) {
 					Character->Data.RequestCraftInfo.Slots[i].Result = 2;
 				}
 				else {
@@ -171,7 +173,7 @@ Void ServerRequestCountdownCharacter(
 				else {
 					Response->Success = 0;
 				}
-				Response->ItemID = RecipeData->ResultItem[0];
+				Response->ItemID = Client->CharacterIndex;
 				Response->RequestSlotIndex = Character->Data.RequestCraftInfo.Slots[i].SlotIndex;
 				Response->RequestCode = Character->Data.RequestCraftInfo.Slots[i].RequestCode;
 				Response->RequestCraftExp = RecipeData->ResultExp;
@@ -200,6 +202,12 @@ Void ServerRequestCountdown(
 ) {
 	Timestamp Timestamp = GetTimestampMs();
 
+	Bool PerformSync =
+		(Timestamp - RequestSyncTimestamp) >= Context->Config.WorldSvr.RequestCountdownTimer;
+
+	if (!PerformSync) return;
+	RequestSyncTimestamp = GetTimestampMs();
+
 	SocketConnectionIteratorRef Iterator = SocketGetConnectionIterator(Context->ClientSocket);
 	while (Iterator) {
 		SocketConnectionRef Connection = SocketConnectionIteratorFetch(Context->ClientSocket, Iterator);
@@ -213,9 +221,6 @@ Void ServerRequestCountdown(
 		RTCharacterRef Character = RTWorldManagerGetCharacterByIndex(Context->Runtime->WorldManager, Client->CharacterIndex);
 		if (!Character) continue;
 
-		Bool PerformSync = 
-			(Timestamp - Character->RequestSyncTimestamp) >= Context->Config.WorldSvr.RequestCountdownTimer;
-
 		if (PerformSync) {
 			ServerRequestCountdownCharacter(Server, Context, Runtime, Client, Context->ClientSocket, Character);
 		}
@@ -225,7 +230,7 @@ Void ServerRequestCountdown(
 Bool ServerAttemptRollByChance(
 	float rate
 ) {
-	Int32 workingRate = rate / 10.0f;
+	Int32 workingRate = rate;
 
 	if (workingRate < 0.0f) workingRate = 0.0f;
 	if (workingRate > 100.0f) workingRate = 100.0f;

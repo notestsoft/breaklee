@@ -5,6 +5,8 @@
 
 EXTERN_C_BEGIN
 
+Timestamp RequestSyncTimestamp;
+
 Void ServerSyncCharacter(
     ServerRef Server,
     ServerContextRef Context,
