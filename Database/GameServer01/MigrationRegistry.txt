@@ -139,3 +139,4 @@ AddMigration 0138_CreateDeleteCashInventoryItem.sql
 AddMigration 0139_CreateGetCashInventory.sql
 AddMigration 0140_CreateGuild.sql
 AddMigration 0141_CreateInsertGuild.sql
+AddMigration 0142_CreateGetCharacterViewEqupment.sql
