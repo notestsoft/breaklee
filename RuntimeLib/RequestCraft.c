@@ -94,7 +94,7 @@ Bool RTCharacterRegisterRequestCraftRecipe(
 
 	RTDataRequestCraftRecipeRef RecipeData = RTRuntimeDataRequestCraftRecipeGet(Runtime->Context, RequestCode);
 	if (!RecipeData) return false;
-	if (RecipeData->RegisterExp > Character->Data.RequestCraftInfo.Info.Exp) return false;
+	if (!RTCharacterHasAmityForRequest(Character, Runtime->Context, RequestCode)) return false;
 
 	Bool IsItemRegistration = (InventorySlotCount > 0);
 	Bool IsItemRequired = (
@@ -357,5 +357,16 @@ Bool RTCharacterClearRequestSlot(
 
 	Character->Data.RequestCraftInfo.Info.SlotCount -= 1;
 	Character->SyncMask.RequestCraftInfo = true;
+	return true;
+}
+
+Bool RTCharacterHasAmityForRequest(
+	RTCharacterRef Character,
+	RTRuntimeDataContextRef Context,
+	Int32 RequestCode
+) {
+	RTDataRequestCraftRecipeRef RecipeData = RTRuntimeDataRequestCraftRecipeGet(Context, RequestCode);
+	if (RecipeData->RegisterExp > Character->Data.RequestCraftInfo.Info.Exp) return false;
+
 	return true;
 }

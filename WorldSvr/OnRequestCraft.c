@@ -33,7 +33,10 @@ error:
 }
 
 CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_START) {
-	S2C_DATA_REQUEST_CRAFT_START* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, REQUEST_CRAFT_START);
+	// sanity and cheat checks
+	if (!RTCharacterHasAmityForRequest(Character, Runtime->Context, Packet->RequestCode)) {
+		goto error;
+	}
 	if (!RTCharacterHasRequiredItemsForRecipe(Character, Runtime->Context, Runtime, (Int32)Packet->RequestCode, Packet->InventorySlotCount, Packet->InventorySlots)) {
 		return;
 	}
@@ -43,6 +46,8 @@ CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_START) {
 	if (!RTCharacterHasOpenRequestSlot(Character)) {
 		return;
 	}
+
+	S2C_DATA_REQUEST_CRAFT_START* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, REQUEST_CRAFT_START);
 	RTCharacterSetRequestSlotActive(Character, Runtime->Context, Runtime, Packet->RequestSlotIndex, Packet->RequestCode, Packet->InventorySlotCount, Packet->InventorySlots);
 	Response->Result = 1;
 	SocketSend(Socket, Connection, Response);

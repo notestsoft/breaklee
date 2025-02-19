@@ -117,4 +117,10 @@ Bool RTCharacterClearRequestSlot(
     UInt32 SlotIndex
 );
 
+Bool RTCharacterHasAmityForRequest(
+    RTCharacterRef Character,
+    RTRuntimeDataContextRef Context,
+    Int32 RequestCode
+);
+
 EXTERN_C_END
