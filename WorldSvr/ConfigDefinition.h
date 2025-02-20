@@ -74,7 +74,6 @@ CONFIG_END(Environment)
 
 CONFIG_BEGIN(InstantWar)
 CONFIG_PARAMETER(UInt64, WorldType, "InstantWar.WorldType", 0)
-CONFIG_PARAMETER(UInt64, EntryValue, "InstantWar.EntryValue", 0)
 CONFIG_END(InstantWar)
 
 CONFIG_BEGIN(ChatSvr)

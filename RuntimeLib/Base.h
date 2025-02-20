@@ -27,6 +27,7 @@ typedef struct _RTBuffInfo* RTBuffInfoRef;
 typedef struct _RTBattleResult* RTBattleResultRef;
 typedef struct _RTCharacterInfo* RTCharacterInfoRef;
 typedef struct _RTCharacterData* RTCharacterDataRef;
+typedef struct _RTCharacterWarEntry* RTCharacterWarEntryRef;
 typedef struct _RTDailyQuestSlot* RTDailyQuestSlotRef;
 typedef struct _RTEquipmentLockSlot* RTEquipmentLockSlotRef;
 typedef struct _RTCharacterEquipmentData* RTCharacterEquipmentDataRef;

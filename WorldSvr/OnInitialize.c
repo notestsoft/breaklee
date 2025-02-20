@@ -105,10 +105,6 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Character->Data.StyleInfo = Packet->Character.CharacterStyleInfo;
     Character->Data.DailyResetInfo = Packet->Character.DailyResetInfo;
 
-    if (Runtime->InstantWarManager) {
-        RTInstantWarSetPosition(Runtime, Runtime->InstantWarManager, Character);
-    }
-
     UInt8* Memory = &Packet->Data[0];
 
     Character->Data.EquipmentInfo.Info = Packet->Character.EquipmentInfo;
@@ -524,6 +520,11 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     CStringCopySafe(Character->Name, RUNTIME_CHARACTER_MAX_NAME_LENGTH + 1, Packet->Character.Name);
 
+    if (Runtime->InstantWarManager) {
+        RTCharacterWarEntryRef WarEntry = RTInstantWarCharacterInitialize(Runtime, Runtime->InstantWarManager, Character);
+        if(!WarEntry) goto error;
+    }
+
     RTCharacterInitialize(Runtime, Character);
     
     Client->CharacterIndex = Packet->CharacterIndex;
@@ -572,6 +573,7 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     Response->NameLength = strlen(Character->Name) + 1;
     CString Name = (CString)PacketBufferAppend(PacketBuffer, strlen(Character->Name));
     memcpy(Name, Character->Name, strlen(Character->Name));
+
 
     Response->EquipmentInfo = Character->Data.EquipmentInfo.Info;
     if (Character->Data.EquipmentInfo.Info.EquipmentSlotCount > 0) {
@@ -1064,6 +1066,41 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 //    Response->MythMasteryInfo.Unknown[4] = 1;
 //    Response->MythMasteryInfo.Unknown[5] = 211;
 //    Response->MythMasteryInfo.Unknown[9] = 1;
+
+    if (Runtime->InstantWarManager) {
+
+        RTDataWarMapRef WarMap = Runtime->InstantWarManager->WarMapRef;
+        RTCharacterWarEntryRef WarEntry = RTInstantWarGetCharacterLobbyByIndex(Runtime, Runtime->InstantWarManager, Character->CharacterIndex, Character->Data.StyleInfo.Nation);
+
+        if (!WarEntry) goto error;
+
+        Response->War.LobbyEntryOrder = WarEntry->EntryOrder;
+        Response->War.LobbyTimer.TimeRemainingTimer = Runtime->InstantWarManager->LobbyTimeAttackRemaining;
+        Response->War.LobbyTimer.TimeAttackTimer = Runtime->InstantWarManager->LobbyTimeAttackSec;
+        Response->War.LobbyTimer.IsTimeAttackEnabled = Runtime->InstantWarManager->LobbyIsTimeAttackEnabled;
+        Response->War.BattleFieldTimer.TimeRemainingTimer = Runtime->InstantWarManager->BfTimeAttackRemaining;
+        Response->War.BattleFieldTimer.TimeAttackTimer = Runtime->InstantWarManager->BfTimeAttackSec;
+        Response->War.BattleFieldTimer.IsTimeAttackEnabled = Runtime->InstantWarManager->BfIsTimeAttackEnabled;
+        Response->War.CapellaScore = 500;
+        Response->War.ProcyonScore = 500;
+        Response->War.CapellaPoints = 5000;
+        Response->War.ProcyonPoints = 5000;
+
+        Response->War.EntryLimitPerNation = Runtime->InstantWarManager->EntryLimitPerNation;
+        Response->War.CapellaBattleFieldTicketCount = 76;
+        Response->War.ProcyonBattleFieldTicketCount = 76;
+
+        Response->WorldType = WarMap->WarType;
+        Response->Server.MinPlayerLevel = WarMap->MinLv;
+        Response->Server.MaxPlayerLevel = WarMap->MaxLv - WarMap->MinLv;
+        Response->Server.MinRank = 1;
+        Response->Server.MaxRank = 9;
+        Response->Server.WorldType = (UInt32) Runtime->InstantWarManager->WorldType;
+        Response->WarType = WarMap->Id;
+        Response->Unknown1A = 20;
+
+    }
+
     SocketSend(Context->ClientSocket, ClientConnection, Response);
     
     RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Runtime, Character);
@@ -1084,6 +1121,10 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
     SendGiftBoxPricePoolList(Context, Client);
     SendPremiumServiceList(Context, Context->ClientSocket, Client->Connection);
     BroadcastUserList(Server, Context);
+
+    if (Runtime->InstantWarManager) {
+        RTInstantWarNotifyWorldInOut(Runtime, Runtime->InstantWarManager, Character);
+    }
 
     IPC_W2P_DATA_CLIENT_CONNECT* Request = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2P, CLIENT_CONNECT);
     Request->Header.Source = Server->IPCSocket->NodeID;

@@ -245,6 +245,12 @@ Bool DictionaryContains(
     return DictionaryLookup(Dictionary, Key) != NULL;
 }
 
+Int DictionarySize(
+    DictionaryRef Dictionary
+) {
+    return Dictionary->ElementCount;
+}
+
 Void* DictionaryLookup(
     DictionaryRef Dictionary,
     Void* Key

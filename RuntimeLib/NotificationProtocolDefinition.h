@@ -638,6 +638,28 @@ NOTIFICATION_PROTOCOL(CHANGE_GENDER, 488,
     UInt8 Success;
 )
 
+NOTIFICATION_PROTOCOL(USERWORLDINOUT, 604,
+    UInt32 CharacterIndex;
+    RTEntityID Entity;
+    Int32 entryOrder;
+    Int32 countCapellaInLobby;
+    Int32 countProcyonInLobby;
+    Int32 countCapellaInBf;
+    Int32 countProcyonInBf;
+    UInt8 Unknown1[48];
+    Int32 Level;
+    UInt64 Exp;
+    UInt32 CharacterStyle;
+    UInt16 PartyID;
+    UInt8 PartyLeading;
+    UInt8 Nation;
+    UInt8 worldIdx;
+    UInt8 entered;
+    UInt8 Unknown2[11];
+    UInt8 NameLength;
+    Char Name[0];
+)
+
 NOTIFICATION_PROTOCOL(CHARACTER_SKILL_MASTERY_UPDATE, 760,
     UInt32 SkillRank;
     UInt32 SkillLevel;

@@ -143,13 +143,13 @@ CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_SERVER,
     UInt64 Unknown1;
     UInt64 Unknown2;
     UInt16 Unknown3;
-    UInt8 MaxPlayerLevel;
     UInt8 MinPlayerLevel;
-    UInt8 MaxRank;
+    UInt8 MaxPlayerLevel;
     UInt8 MinRank;
+    UInt8 MaxRank;
     UInt16 MaxPlayerCount;
     S2C_DATA_INITIALIZE_SERVER_ADDRESS Address;
-    UInt64 WorldType;
+    UInt32 WorldType;
 )
 
 CLIENT_PROTOCOL_STRUCT(S2C_DATA_INITIALIZE_QUEST_INDEX,
@@ -213,6 +213,12 @@ CLIENT_PROTOCOL(S2C, INITIALIZE, EXTENDED, 142,
     UInt8 IsInventoryLocked;
     UInt8 Unknown1A;
     S2C_DATA_INITIALIZE_SERVER Server;
+
+    UInt8 UnknownWar0;
+    UInt8 WarType;
+    UInt8 UnknownWar1;
+    UInt8 UnknownWar2;
+
     RTEntityID Entity;
     struct _RTCharacterInfo CharacterInfo;
     S2C_DATA_INITIALIZE_SERVER_ADDRESS ChatServerAddress;

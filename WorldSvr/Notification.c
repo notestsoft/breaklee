@@ -198,6 +198,10 @@ NOTIFICATION_PROCEDURE_BINDING(CHANGE_GENDER) {
     }
 }
 
+NOTIFICATION_PROCEDURE_BINDING(USERWORLDINOUT) {
+    SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
+}
+
 NOTIFICATION_PROCEDURE_BINDING(CHARACTER_SKILL_MASTERY_UPDATE) {
     SendRuntimeNotification(Socket, Connection, (RTNotificationRef)Notification);
 
@@ -325,15 +329,19 @@ Void BroadcastUserList(
     Notification->Type = (UInt32)Context->Runtime->Environment.RawValue;
 
     if (Context->Runtime->InstantWarManager) {
+
+        Int Capellas = DictionarySize(Context->Runtime->InstantWarManager->IndexToCharacterCapellaLobbyPoolIndex) + DictionarySize(Context->Runtime->InstantWarManager->IndexToCharacterCapellaBfPoolIndex);
+        Int Procyons = DictionarySize(Context->Runtime->InstantWarManager->IndexToCharacterProcyonLobbyPoolIndex) + DictionarySize(Context->Runtime->InstantWarManager->IndexToCharacterProcyonBfPoolIndex);
+
         Notification->Type = Context->Runtime->InstantWarManager->WorldType;
         RTDataWarMapRef WarMap = Context->Runtime->InstantWarManager->WarMapRef;
         Notification->LobbyPlayerCount = 0;
-        Notification->Unknown1 = 0;
-        Notification->CapellaPlayerCount = 0;
-        Notification->ProcyonPlayerCount = 0;
+        Notification->Unknown1 = 1;
+        Notification->CapellaPlayerCount = Capellas;
+        Notification->ProcyonPlayerCount = Procyons;
         Notification->Unknown2 = 0;
-        Notification->CapellaPlayerCount2 = 0;
-        Notification->ProcyonPlayerCount2 = 0;
+        Notification->CapellaPlayerCount2 =0;
+        Notification->ProcyonPlayerCount2 =0;
         Notification->Unknown3 = 0;
         Notification->MinLevel = WarMap->MinLv;
         Notification->MaxLevel = WarMap->MaxLv - WarMap->MinLv;

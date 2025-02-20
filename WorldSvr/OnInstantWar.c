@@ -15,7 +15,7 @@ CLIENT_PROCEDURE_BINDING(WAR_INTOLOBBY) {
     memcpy(Response->WorldHost, Context->Config.WorldSvr.Host, strlen(Context->Config.WorldSvr.Host));
     Response->WorldPort = Context->Config.WorldSvr.Port;
     Response->WorldServerID = Context->Config.WorldSvr.NodeIndex;
-    Response->EntryFee = Runtime->InstantWarManager->EntryValue;
+    Response->EntryFee = Runtime->InstantWarManager->WarMapRef->EntryExpenses;
 
     SocketSend(Socket, Connection, Response);
 }

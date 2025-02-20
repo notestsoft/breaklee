@@ -477,7 +477,7 @@
 			<repair_cost	hppercent="80"	repair_discount="60"	/>
 			<repair_cost	hppercent="90"	repair_discount="40"	/>
 		</ft_repair>
-		<war_map	warmap_id="1"	world_id="15"	minlv="52"	maxlv="79" war_type="1" lobby_world_id="16" special_ft_use="1"	reduce_build_atkft_time="60000"	war_rewardset_id="1"	entry_expenses="50000"	name_code="war_world15"	>
+		<war_map	warmap_id="1"	world_id="15"	minlv="52"	maxlv="79" war_type="1" lobby_world_id="16" max_user="140" lobby_time="300" bf_time="1800" special_ft_use="1"	reduce_build_atkft_time="60000"	war_rewardset_id="1"	entry_expenses="50000"	name_code="war_world15"	>
 			<war_mission	id="0"	r="45"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="0:0"	/>
 			<war_mission	id="1"	r="225"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="0:0"	/>
 			<war_mission	id="2"	r="90"	attack="0"	select="1"	target_off="0"	cells="191:216,191:215,191:214,191:213,191:212,191:211"	position="0:0"	/>
@@ -559,7 +559,7 @@
 				<ft_panel	ftpanel_id="136"	ftpanel_x="79"	ftpanel_y="203"	position="0:0"	/>
 			</fortress>
 		</war_map>
-		<war_map	warmap_id="2"	world_id="15"	minlv="80"	maxlv="109" war_type="1" lobby_world_id="16" special_ft_use="1"	reduce_build_atkft_time="60000"	war_rewardset_id="1"	entry_expenses="250000"	name_code="war_world15"	>
+		<war_map	warmap_id="2"	world_id="15"	minlv="80"	maxlv="109" war_type="1" lobby_world_id="16" max_user="140" lobby_time="300" bf_time="1800" special_ft_use="1"	reduce_build_atkft_time="60000"	war_rewardset_id="1"	entry_expenses="250000"	name_code="war_world15"	>
 			<war_mission	id="0"	r="45"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="0:0"	/>
 			<war_mission	id="1"	r="225"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="0:0"	/>
 			<war_mission	id="2"	r="90"	attack="0"	select="1"	target_off="0"	cells="191:216,191:215,191:214,191:213,191:212,191:211"	position="0:0"	/>
@@ -641,7 +641,7 @@
 				<ft_panel	ftpanel_id="136"	ftpanel_x="79"	ftpanel_y="203"	position="0:0"	/>
 			</fortress>
 		</war_map>
-		<war_map	warmap_id="3"	world_id="15"	minlv="110"	maxlv="139" war_type="1" lobby_world_id="16" special_ft_use="1"	reduce_build_atkft_time="60000"	war_rewardset_id="1"	entry_expenses="500000"	name_code="war_world15"	>
+		<war_map	warmap_id="3"	world_id="15"	minlv="110"	maxlv="139" war_type="1" lobby_world_id="16" max_user="140" lobby_time="300" bf_time="1800" special_ft_use="1"	reduce_build_atkft_time="60000"	war_rewardset_id="1"	entry_expenses="500000"	name_code="war_world15"	>
 			<war_mission	id="0"	r="45"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="0:0"	/>
 			<war_mission	id="1"	r="225"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="0:0"	/>
 			<war_mission	id="2"	r="90"	attack="0"	select="1"	target_off="0"	cells="191:216,191:215,191:214,191:213,191:212,191:211"	position="0:0"	/>
@@ -723,7 +723,7 @@
 				<ft_panel	ftpanel_id="136"	ftpanel_x="79"	ftpanel_y="203"	position="0:0"	/>
 			</fortress>
 		</war_map>
-		<war_map	warmap_id="4"	world_id="15"	minlv="140"	maxlv="169" war_type="1" lobby_world_id="16" special_ft_use="1"	reduce_build_atkft_time="48000"	war_rewardset_id="1"	entry_expenses="750000"	name_code="war_world15"	>
+		<war_map	warmap_id="4"	world_id="15"	minlv="140"	maxlv="169" war_type="1" lobby_world_id="16" max_user="140" lobby_time="300" bf_time="1800" special_ft_use="1"	reduce_build_atkft_time="48000"	war_rewardset_id="1"	entry_expenses="750000"	name_code="war_world15"	>
 			<war_mission	id="0"	r="45"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="0:0"	/>
 			<war_mission	id="1"	r="225"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="0:0"	/>
 			<war_mission	id="2"	r="90"	attack="0"	select="1"	target_off="0"	cells="191:216,191:215,191:214,191:213,191:212,191:211"	position="0:0"	/>
@@ -805,7 +805,7 @@
 				<ft_panel	ftpanel_id="136"	ftpanel_x="79"	ftpanel_y="203"	position="0:0"	/>
 			</fortress>
 		</war_map>
-		<war_map	warmap_id="5"	world_id="15"	minlv="170"	maxlv="199" war_type="1" lobby_world_id="16" special_ft_use="1"	reduce_build_atkft_time="20000"	war_rewardset_id="1"	entry_expenses="1000000"	name_code="war_world15"	>
+		<war_map	warmap_id="5"	world_id="15"	minlv="170"	maxlv="199" war_type="1" lobby_world_id="16" max_user="140" lobby_time="30" bf_time="1800" special_ft_use="1"	reduce_build_atkft_time="20000"	war_rewardset_id="1"	entry_expenses="1000000"	name_code="war_world15"	>
 			<war_mission	id="0"	r="45"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="0:0"	/>
 			<war_mission	id="1"	r="225"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="0:0"	/>
 			<war_mission	id="2"	r="90"	attack="0"	select="1"	target_off="0"	cells="191:216,191:215,191:214,191:213,191:212,191:211"	position="0:0"	/>
@@ -887,7 +887,7 @@
 				<ft_panel	ftpanel_id="136"	ftpanel_x="79"	ftpanel_y="203"	position="0:0"	/>
 			</fortress>
 		</war_map>
-		<war_map	warmap_id="6"	world_id="15"	minlv="170"	maxlv="199" war_type="1" lobby_world_id="16" special_ft_use="1"	reduce_build_atkft_time="20000"	war_rewardset_id="1"	entry_expenses="1000000"	name_code="war_world15"	>
+		<war_map	warmap_id="6"	world_id="15"	minlv="170"	maxlv="199" war_type="1" lobby_world_id="16" max_user="140" lobby_time="300" bf_time="1800" special_ft_use="1"	reduce_build_atkft_time="20000"	war_rewardset_id="1"	entry_expenses="1000000"	name_code="war_world15"	>
 			<war_mission	id="0"	r="45"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="0:0"	/>
 			<war_mission	id="1"	r="225"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="0:0"	/>
 			<war_mission	id="2"	r="90"	attack="0"	select="1"	target_off="0"	cells="191:216,191:215,191:214,191:213,191:212,191:211"	position="0:0"	/>
@@ -969,7 +969,7 @@
 				<ft_panel	ftpanel_id="136"	ftpanel_x="79"	ftpanel_y="203"	position="0:0"	/>
 			</fortress>
 		</war_map>
-		<war_map	warmap_id="7"	world_id="15"	minlv="200"	maxlv="200" war_type="1" lobby_world_id="16" special_ft_use="1"	reduce_build_atkft_time="10000"	war_rewardset_id="1"	entry_expenses="1250000"	name_code="war_world15"	>
+		<war_map	warmap_id="7"	world_id="15"	minlv="200"	maxlv="200" war_type="1" lobby_world_id="16" max_user="140" lobby_time="240" bf_time="1800" special_ft_use="1"	reduce_build_atkft_time="10000"	war_rewardset_id="1"	entry_expenses="1250000"	name_code="war_world15"	>
 			<war_mission	id="0"	r="45"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="0:0"	/>
 			<war_mission	id="1"	r="225"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="0:0"	/>
 			<war_mission	id="2"	r="90"	attack="0"	select="1"	target_off="0"	cells="191:216,191:215,191:214,191:213,191:212,191:211"	position="0:0"	/>
@@ -1051,7 +1051,7 @@
 				<ft_panel	ftpanel_id="136"	ftpanel_x="79"	ftpanel_y="203"	position="0:0"	/>
 			</fortress>
 		</war_map>
-		<war_map	warmap_id="8"	world_id="109"	minlv="200"	maxlv="200" war_type="1" lobby_world_id="16" special_ft_use="1"	reduce_build_atkft_time="10000"	war_rewardset_id="1"	entry_expenses="1250000"	name_code="war_world110"	>
+		<war_map	warmap_id="8"	world_id="109"	minlv="200"	maxlv="200" war_type="1" lobby_world_id="16" max_user="140" lobby_time="240" bf_time="1800" special_ft_use="1"	reduce_build_atkft_time="10000"	war_rewardset_id="1"	entry_expenses="1250000"	name_code="war_world110"	>
 			<war_mission	id="0"	r="0"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="22350:23810"	/>
 			<war_mission	id="1"	r="0"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="3150:1890"	/>
 			<war_mission	id="20"	r="0"	attack="0"	select="1"	target_off="0"	cells="10:46,11:46,12:46,13:46"	position="0:0"	/>
@@ -1118,7 +1118,7 @@
 				<ft_panel	ftpanel_id="48"	ftpanel_x="183"	ftpanel_y="87"	position="0:0"	/>
 			</fortress>
 		</war_map>
-		<war_map	warmap_id="9"	world_id="15"	minlv="200"	maxlv="200" war_type="1" lobby_world_id="16" special_ft_use="1"	reduce_build_atkft_time="10000"	war_rewardset_id="1"	entry_expenses="1250000"	name_code="war_world15"	>
+		<war_map	warmap_id="9"	world_id="15"	minlv="200"	maxlv="200" war_type="1" lobby_world_id="16" max_user="140" lobby_time="300" bf_time="1800" special_ft_use="1"	reduce_build_atkft_time="10000"	war_rewardset_id="1"	entry_expenses="1250000"	name_code="war_world15"	>
 			<war_mission	id="0"	r="45"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="0:0"	/>
 			<war_mission	id="1"	r="225"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="0:0"	/>
 			<war_mission	id="2"	r="90"	attack="0"	select="1"	target_off="0"	cells="191:216,191:215,191:214,191:213,191:212,191:211"	position="0:0"	/>
@@ -1200,7 +1200,7 @@
 				<ft_panel	ftpanel_id="136"	ftpanel_x="79"	ftpanel_y="203"	position="0:0"	/>
 			</fortress>
 		</war_map>
-		<war_map	warmap_id="10"	world_id="109"	minlv="200"	maxlv="200" war_type="1" lobby_world_id="16" special_ft_use="1"	reduce_build_atkft_time="10000"	war_rewardset_id="1"	entry_expenses="1250000"	name_code="war_world110"	>
+		<war_map	warmap_id="10"	world_id="109"	minlv="200"	maxlv="200" war_type="1" lobby_world_id="16" max_user="140" lobby_time="300" bf_time="1800" special_ft_use="1"	reduce_build_atkft_time="10000"	war_rewardset_id="1"	entry_expenses="1250000"	name_code="war_world110"	>
 			<war_mission	id="0"	r="0"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="22350:23810"	/>
 			<war_mission	id="1"	r="0"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="3150:1890"	/>
 			<war_mission	id="20"	r="0"	attack="0"	select="1"	target_off="0"	cells="10:46,11:46,12:46,13:46"	position="0:0"	/>
@@ -1267,7 +1267,7 @@
 				<ft_panel	ftpanel_id="48"	ftpanel_x="183"	ftpanel_y="87"	position="0:0"	/>
 			</fortress>
 		</war_map>
-		<war_map	warmap_id="11"	world_id="15"	minlv="170"	maxlv="199" war_type="1" lobby_world_id="16" special_ft_use="1"	reduce_build_atkft_time="10000"	war_rewardset_id="1"	entry_expenses="1000000"	name_code="war_world15"	>
+		<war_map	warmap_id="11"	world_id="15"	minlv="170"	maxlv="199" war_type="1" lobby_world_id="16" max_user="140" lobby_time="180" bf_time="1800" special_ft_use="1"	reduce_build_atkft_time="10000"	war_rewardset_id="1"	entry_expenses="1000000"	name_code="war_world15"	>
 			<war_mission	id="0"	r="45"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="0:0"	/>
 			<war_mission	id="1"	r="225"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="0:0"	/>
 			<war_mission	id="2"	r="90"	attack="0"	select="1"	target_off="0"	cells="191:216,191:215,191:214,191:213,191:212,191:211"	position="0:0"	/>
@@ -1349,7 +1349,7 @@
 				<ft_panel	ftpanel_id="136"	ftpanel_x="79"	ftpanel_y="203"	position="0:0"	/>
 			</fortress>
 		</war_map>
-		<war_map	warmap_id="12"	world_id="15"	minlv="200"	maxlv="200" war_type="1" lobby_world_id="16" special_ft_use="1"	reduce_build_atkft_time="10000"	war_rewardset_id="1"	entry_expenses="1250000"	name_code="war_world15"	>
+		<war_map	warmap_id="12"	world_id="15"	minlv="200"	maxlv="200" war_type="1" lobby_world_id="16" max_user="140" lobby_time="180" bf_time="1800" special_ft_use="1"	reduce_build_atkft_time="10000"	war_rewardset_id="1"	entry_expenses="1250000"	name_code="war_world15"	>
 			<war_mission	id="0"	r="45"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="0:0"	/>
 			<war_mission	id="1"	r="225"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="0:0"	/>
 			<war_mission	id="2"	r="90"	attack="0"	select="1"	target_off="0"	cells="191:216,191:215,191:214,191:213,191:212,191:211"	position="0:0"	/>
@@ -1431,7 +1431,7 @@
 				<ft_panel	ftpanel_id="136"	ftpanel_x="79"	ftpanel_y="203"	position="0:0"	/>
 			</fortress>
 		</war_map>
-		<war_map	warmap_id="13"	world_id="109"	minlv="200"	maxlv="200" war_type="1" lobby_world_id="16" special_ft_use="1"	reduce_build_atkft_time="10000"	war_rewardset_id="1"	entry_expenses="1250000"	name_code="war_world110"	>
+		<war_map	warmap_id="13"	world_id="109"	minlv="200"	maxlv="200" war_type="1" lobby_world_id="16" max_user="140" lobby_time="180" bf_time="1800" special_ft_use="1"	reduce_build_atkft_time="10000"	war_rewardset_id="1"	entry_expenses="1250000"	name_code="war_world110"	>
 			<war_mission	id="0"	r="0"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="22350:23810"	/>
 			<war_mission	id="1"	r="0"	attack="0"	select="1"	target_off="0"	cells="255:255"	position="3150:1890"	/>
 			<war_mission	id="20"	r="0"	attack="0"	select="1"	target_off="0"	cells="10:46,11:46,12:46,13:46"	position="0:0"	/>
@@ -1498,7 +1498,7 @@
 				<ft_panel	ftpanel_id="48"	ftpanel_x="183"	ftpanel_y="87"	position="0:0"	/>
 			</fortress>
 		</war_map>
-		<war_map	warmap_id="14"	world_id="158"	minlv="200"	maxlv="200" war_type="1" lobby_world_id="16" special_ft_use="1"	reduce_build_atkft_time="10000"	war_rewardset_id="1"	entry_expenses="1250000"	name_code="war_world159"	>
+		<war_map	warmap_id="14"	world_id="159"	minlv="200"	maxlv="200" war_type="1" lobby_world_id="158" max_user="140" lobby_time="240" bf_time="1800" special_ft_use="1"	reduce_build_atkft_time="10000"	war_rewardset_id="1"	entry_expenses="1250000"	name_code="war_world159"	>
 			<war_mission	id="0"	r="0"	attack="1"	select="1"	target_off="1"	cells="255:255"	position="10555:3514"	/>
 			<war_mission	id="1"	r="0"	attack="1"	select="1"	target_off="1"	cells="255:255"	position="10562:20531"	/>
 			<war_mission	id="2"	r="0"	attack="1"	select="1"	target_off="1"	cells="96:62,97:62,98:62,99:62,100:62,101:62"	position="9865:6171"	/>

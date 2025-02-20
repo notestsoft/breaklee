@@ -47,6 +47,10 @@ CLIENT_PROCEDURE_BINDING(DEINITIALIZE) {
             }
         }
 
+        if (Context->Runtime->InstantWarManager) {
+            RTInstantWarManagerDestroyCharacter(Context->Runtime, Context->Runtime->InstantWarManager, Character);
+        }
+
         RTWorldManagerDestroyCharacter(WorldContext->WorldManager, Client->CharacterIndex);
     }
 

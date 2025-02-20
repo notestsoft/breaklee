@@ -46,7 +46,11 @@ Void ClientSocketOnDisconnect(
             // TODO: @DungeonCleanUp Delete character dungeon instance and respawn to global world
             RTWorldContextRef WorldContext = RTRuntimeGetWorldByCharacter(Context->Runtime, Character);
             RTWorldDespawnCharacter(WorldContext->WorldManager->Runtime, WorldContext, Character->ID, RUNTIME_WORLD_CHUNK_UPDATE_REASON_INIT);
+            if (Context->Runtime->InstantWarManager) {
+                RTInstantWarManagerDestroyCharacter(Context->Runtime, Context->Runtime->InstantWarManager, Character);
+            }
             RTWorldManagerDestroyCharacter(WorldContext->WorldManager, Client->CharacterIndex);
+
         }
 
         IPC_W2P_DATA_CLIENT_DISCONNECT* RequestParty = IPCPacketBufferInit(Server->IPCSocket->PacketBuffer, W2P, CLIENT_DISCONNECT);

@@ -63,6 +63,10 @@ Bool DictionaryContains(
     Void *Key
 );
 
+Int DictionarySize(
+    DictionaryRef Dictionary
+);
+
 Void* DictionaryLookup(
     DictionaryRef Dictionary, 
     Void* Key

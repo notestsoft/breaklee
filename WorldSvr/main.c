@@ -137,6 +137,13 @@ Void ServerOnUpdate(
         Context->UserListBroadcastTimestamp = CurrentTimestamp + Context->Config.WorldSvr.UserListBroadcastInterval;
         BroadcastUserList(Server, Context);
     }
+
+    if (Context->Runtime->InstantWarManager) {
+        if (Context->Runtime->InstantWarManager->InstantWarTimestamp < CurrentTimestamp) {
+            Context->Runtime->InstantWarManager->InstantWarTimestamp = CurrentTimestamp + 1000;
+            RTInstantWarUpdate(Context->Runtime, Context->Runtime->InstantWarManager);
+        }
+    }
 }
 
 Int32 main(Int32 ArgumentCount, CString* Arguments) {
@@ -287,8 +294,7 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     if (Config.InstantWar.WorldType > 0) {
         ServerContext.Runtime->InstantWarManager = RTInstantWarManagerCreate(
             ServerContext.Runtime,
-            Config.InstantWar.WorldType,
-            Config.InstantWar.EntryValue);
+            Config.InstantWar.WorldType);
     };
 
     ServerLoadScriptData(Config, &ServerContext);
