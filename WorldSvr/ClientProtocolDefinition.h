@@ -3534,6 +3534,18 @@ CLIENT_PROTOCOL(S2C, NFY_ACHIEVEMENT_INFO, DEFAULT, 2224,
     UInt8 ForceGemReward;
 )
 
+CLIENT_PROTOCOL(C2S, PROF_CRAFT_REGISTER, DEFAULT, 2244,
+    UInt8 Slot;
+    UInt8 Category;
+    UInt32 Unknown1; // just 01 could be itemamount
+    UInt32 ItemInventorySlot;
+    UInt32 Unknown2; // Also 01 but could be option code for item cost
+)
+
+CLIENT_PROTOCOL(S2C, PROF_CRAFT_REGISTER, DEFAULT, 2244,
+    UInt8 Result;
+)
+
 CLIENT_PROTOCOL(S2C, NFY_CRAFT_ENERGY, DEFAULT, 2248,
     UInt32 Unknown1;
 )

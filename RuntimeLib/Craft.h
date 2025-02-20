@@ -28,4 +28,16 @@ struct _RTCharacterCraftData {
 
 #pragma pack(pop)
 
+Bool RTCharacterIsCraftSlotEmpty(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt8 SlotIndex
+);
+
+Bool RTCharacterIsCraftCategoryRegistered(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt8 Category
+);
+
 EXTERN_C_END
