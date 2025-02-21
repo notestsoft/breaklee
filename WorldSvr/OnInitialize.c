@@ -761,6 +761,13 @@ IPC_PROCEDURE_BINDING(D2W, GET_CHARACTER) {
 
     Response->CraftInfo = Character->Data.CraftInfo.Info;
     // TODO: CraftData
+    if (Character->Data.CraftInfo.Info.SlotCount > 0) {
+        PacketBufferAppendCopy(
+            PacketBuffer,
+            Character->Data.CraftInfo.Slots,
+            sizeof(struct _RTCraftSlot) * Character->Data.CraftInfo.Info.SlotCount
+        );
+    }
     
     Response->RequestCraftInfo = Character->Data.RequestCraftInfo.Info;
     if (Character->Data.RequestCraftInfo.Info.SlotCount > 0) {

@@ -40,4 +40,18 @@ Bool RTCharacterIsCraftCategoryRegistered(
     UInt8 Category
 );
 
+Int RTCharacterGetCraftArrayIndex(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt8 SlotIndex
+);
+
+Bool RTCharacterSetCraftSlot(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character,
+    UInt8 SlotIndex,
+    UInt8 Category,
+    UInt8 ItemInventorySlot
+);
+
 EXTERN_C_END

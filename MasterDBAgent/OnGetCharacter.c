@@ -1,5 +1,6 @@
 #include "IPCProtocol.h"
 #include "IPCProcedures.h"
+#include <stddef.h>
 
 IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
     IPC_D2W_DATA_GET_CHARACTER* Response = IPCPacketBufferInit(Connection->PacketBuffer, D2W, GET_CHARACTER);
@@ -371,7 +372,8 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
         goto error;
     }
     DatabaseHandleFlush(Context->Database, Handle);
-
+    Info("GetCharacter CraftSlots[0] CraftIndex: %d, CraftLevel: %d, SlotIndex: %d, Unknown1: %d", CraftSlots[0].CraftIndex, CraftSlots[0].CraftLevel, CraftSlots[0].SlotIndex, CraftSlots[0].Unknown1);
+    
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, EquipmentSlots, sizeof(struct _RTItemSlot) * Response->Character.EquipmentInfo.EquipmentSlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, EquipmentInventorySlots, sizeof(struct _RTItemSlot) * Response->Character.EquipmentInfo.InventorySlotCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, EquipmentLinkSlots, sizeof(struct _RTEquipmentLinkSlot) * Response->Character.EquipmentInfo.LinkSlotCount);
@@ -430,7 +432,6 @@ IPC_PROCEDURE_BINDING(W2D, GET_CHARACTER) {
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, AnimaMasteryPresetData, sizeof(struct _RTAnimaMasteryPresetData) * Response->Character.AnimaMasteryInfo.PresetCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, AnimaMasteryCategoryData, sizeof(struct _RTAnimaMasteryCategoryData) * Response->Character.AnimaMasteryInfo.StorageCount);
     IPCPacketBufferAppendCopy(Connection->PacketBuffer, WarehouseSlots, sizeof(struct _RTItemSlot) * Response->WarehouseInfo.SlotCount);
-
     Int32 BuffSlotCount = (
         Response->Character.BuffInfo.SkillBuffCount +
         Response->Character.BuffInfo.PotionBuffCount +
