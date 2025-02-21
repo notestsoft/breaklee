@@ -258,7 +258,7 @@ Void RTCharacterSetRequestSlotActive(
 	Int SlotIndex,
 	Int32 RequestCode,
 	Int32 InventorySlotCount,
-	struct _RTRequestCraftInventorySlot InventoryItemIndexes[]
+	struct _RTRequestCraftInventorySlot* InventoryItemIndexes
 ) {
 	// 1. Take away the required items.
 	RTDataRequestCraftRecipeRef RecipeData = RTRuntimeDataRequestCraftRecipeGet(Context, RequestCode);
@@ -393,4 +393,35 @@ Bool RTCharacterHasAmityForRequest(
 	if (RecipeData->RegisterExp > Character->Data.RequestCraftInfo.Info.Exp) return false;
 
 	return true;
+}
+
+Int32 RTRequestGetSlotIndex(
+	RTRuntimeRef Runtime,
+	RTCharacterRequestCraftInfoRef Requests,
+	Int32 SlotIndex
+) {
+	for (Int Index = 0; Index < Requests->Info.SlotCount; Index += 1) {
+		RTItemSlotRef Slot = &Requests->Slots[Index];
+		if (Slot->SlotIndex == SlotIndex) {
+			return Index;
+		}
+	}
+
+	return -1;
+}
+
+Int32 RTRequestGetNextFreeSlotIndex(
+	RTRuntimeRef Runtime,
+	RTCharacterRequestCraftInfoRef Requests
+) {
+	for (Int Index = 0; Index < Requests->Info.SlotCount - 1; Index += 1) {
+		RTItemSlotRef RequestSlot = &Requests->Slots[Index];
+		RTItemSlotRef NextRequestSlot = &Requests->Slots[Index + 1];
+		Int32 SlotOffset = NextRequestSlot->SlotIndex - RequestSlot->SlotIndex;
+		if (SlotOffset > 1) {
+			return RequestSlot->SlotIndex + 1;
+		}
+	}
+
+	return Requests->Info.SlotCount;
 }

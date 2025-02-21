@@ -95,7 +95,7 @@ Void RTCharacterSetRequestSlotActive(
     Int SlotIndex,
     Int32 RequestCode,
     Int32 InventorySlotCount,
-    struct _RTRequestCraftInventorySlot InventoryItemIndexes[]
+    struct _RTRequestCraftInventorySlot* InventoryItemIndexes
 );
 
 Bool RTCharacterClaimCraftSlot(
@@ -121,6 +121,17 @@ Bool RTCharacterHasAmityForRequest(
     RTCharacterRef Character,
     RTRuntimeDataContextRef Context,
     Int32 RequestCode
+);
+
+Int32 RTRequestGetSlotIndex(
+    RTRuntimeRef Runtime,
+    RTCharacterRequestCraftInfoRef Requests,
+    Int32 SlotIndex
+);
+
+Int32 RTRequestGetNextFreeSlotIndex(
+    RTRuntimeRef Runtime,
+    RTCharacterRequestCraftInfoRef Requests
 );
 
 EXTERN_C_END
