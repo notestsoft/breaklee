@@ -52,8 +52,4 @@ Void ServerRequestCountdown(
     RTRuntimeRef Runtime
 );
 
-Bool ServerAttemptRollByChance(
-    float rate
-);
-
 EXTERN_C_END

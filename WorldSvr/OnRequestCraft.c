@@ -3,6 +3,7 @@
 #include "ClientSocket.h"
 #include "Notification.h"
 #include "Server.h"
+#include "Enumerations.h"
 #include "RuntimeLib/RequestCraft.h"
 
 CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_REGISTER) {
@@ -34,17 +35,19 @@ error:
 
 CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_START) {
 	// sanity and cheat checks
+	if (!Character) goto error;
+
 	if (!RTCharacterHasAmityForRequest(Character, Runtime->Context, Packet->RequestCode)) {
 		goto error;
 	}
 	if (!RTCharacterHasRequiredItemsForRecipe(Character, Runtime->Context, Runtime, (Int32)Packet->RequestCode, Packet->InventorySlotCount, Packet->InventorySlots)) {
-		return;
+		goto error;
 	}
 	if (RTCharacterIsRequestSlotActive(Character, Packet->RequestSlotIndex)) {
 		goto error;
 	}
 	if (!RTCharacterHasOpenRequestSlot(Character)) {
-		return;
+		goto error;
 	}
 
 	S2C_DATA_REQUEST_CRAFT_START* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, REQUEST_CRAFT_START);
@@ -54,27 +57,34 @@ CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_START) {
 	return;
 
 error:
-	Info("Error has occurred while starting a request craft.");
-	SocketDisconnect(Socket, Connection);
+	{
+		Info("Error has occurred while starting a request craft.");
+		S2C_DATA_REQUEST_CRAFT_START* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, REQUEST_CRAFT_START);
+		Response->Result = 0;
+		SocketSend(Socket, Connection, Response);
+	}
 }
 
 CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_END) {
+	if (!Character) goto error;
+
 	UInt8 ReturnStatus = 0;
 	UInt8 CraftStatus = RTCharacterGetRequestStatus(Character, Packet->RequestSlotIndex);
-	if (CraftStatus < 2) goto error;
-	if (Packet->InventorySlotCount < 1 && CraftStatus == 2) goto error;
 
-	if (CraftStatus == 2) 
+	if (CraftStatus < REQUEST_CRAFT_STATUS_SUCCESS) goto error;
+	if (Packet->InventorySlotCount < 1 && CraftStatus == REQUEST_CRAFT_STATUS_SUCCESS) goto error;
+
+	if (CraftStatus == REQUEST_CRAFT_STATUS_SUCCESS) 
 	{
-		Bool success = RTCharacterClaimCraftSlot(Character, Runtime->Context, Runtime, Packet->RequestSlotIndex, Packet->RequestCode, Packet->InventorySlots[0].InventorySlotIndex);
-		if (!success) {
+		Bool Success = RTCharacterClaimCraftSlot(Character, Runtime->Context, Runtime, Packet->RequestSlotIndex, Packet->RequestCode, Packet->InventorySlots[0].InventorySlotIndex);
+		if (!Success) {
 			ReturnStatus = 0;
 		}
 		else {
 			ReturnStatus = 1;
 		}
 	}
-	if (CraftStatus == 3)
+	if (CraftStatus == REQUEST_CRAFT_STATUS_FAIL)
 	{
 		RTCharacterClearRequestSlot(Character, Packet->InventorySlots[0].InventorySlotIndex);
 		Character->SyncMask.RequestCraftInfo = true;
@@ -91,6 +101,8 @@ error:
 }
 
 CLIENT_PROCEDURE_BINDING(CHANGE_RECIPE_FAVORITE) {
+	if (!Character) goto error;
+
 	//set character data for syncing
 	if (Packet->FavoriteStatus[0] == 0x01) {
 		RTCharacterFavoritedRequestCraftFlagSet(Character, Packet->CraftCode);
@@ -100,8 +112,7 @@ CLIENT_PROCEDURE_BINDING(CHANGE_RECIPE_FAVORITE) {
 	}
 
 	// send response back to client confirming we got the flag update
-	PacketBufferRef ClientPacketBuffer = SocketGetNextPacketBuffer(Socket);
-	S2C_DATA_CHANGE_RECIPE_FAVORITE* Response = PacketBufferInit(ClientPacketBuffer, S2C, CHANGE_RECIPE_FAVORITE);
+	S2C_DATA_CHANGE_RECIPE_FAVORITE* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, CHANGE_RECIPE_FAVORITE);
 	Response->Unknown1 = 0x01;
 	memcpy(Response->FavoriteStatus, Packet->FavoriteStatus, sizeof(Packet->FavoriteStatus));
 	Response->CraftCode = Packet->CraftCode;
@@ -109,6 +120,7 @@ CLIENT_PROCEDURE_BINDING(CHANGE_RECIPE_FAVORITE) {
 	return;
 error:
 	Error("Something went wrong when changing a favorite request craft recipe.");
+	SocketDisconnect(Socket, Connection);
 }
 
 Void ServerRequestCountdownCharacter(
@@ -120,29 +132,37 @@ Void ServerRequestCountdownCharacter(
 	RTCharacterRef Character
 ) {
 	
-	for (int i = 0; i < Character->Data.RequestCraftInfo.Info.SlotCount; i++) 
+	for (Int Index = 0; Index < Character->Data.RequestCraftInfo.Info.SlotCount; Index++)
 	{
-		if (Character->Data.RequestCraftInfo.Slots[i].Result == 1) {
-			RTDataRequestCraftRecipeRef RecipeData = RTRuntimeDataRequestCraftRecipeGet(Runtime->Context, Character->Data.RequestCraftInfo.Slots[i].RequestCode);
-			Character->Data.RequestCraftInfo.Slots[i].Timestamp -= (Context->Config.WorldSvr.RequestCountdownTimer / 1000.0f);
+		if (Character->Data.RequestCraftInfo.Slots[Index].Result == 1) {
+			RTDataRequestCraftRecipeRef RecipeData = RTRuntimeDataRequestCraftRecipeGet(Runtime->Context, Character->Data.RequestCraftInfo.Slots[Index].RequestCode);
+			Character->Data.RequestCraftInfo.Slots[Index].Timestamp -= (Context->Config.WorldSvr.RequestCountdownTimer / 1000.0f);
 			Character->SyncMask.RequestCraftInfo = true;
-			if (Character->Data.RequestCraftInfo.Slots[i].Timestamp <= 0) {
-				Character->Data.RequestCraftInfo.Slots[i].Timestamp = 0;
+			if (Character->Data.RequestCraftInfo.Slots[Index].Timestamp <= 0) {
+				Character->Data.RequestCraftInfo.Slots[Index].Timestamp = 0;
 				
 				// RNG calculation
-				if (ServerAttemptRollByChance(RecipeData->SuccessRate / 10.0f)) {
-					Character->Data.RequestCraftInfo.Slots[i].Result = 2;
+				Float32 WorkingRate = RecipeData->SuccessRate / 10.0f;
+
+				if (WorkingRate < 0.0f) WorkingRate = 0.0f;
+				if (WorkingRate > 100.0f) WorkingRate = 100.0f;
+
+				Int roll = rand() % 100;
+				Bool result = roll < (Int)WorkingRate;
+
+				if (result) {
+					Character->Data.RequestCraftInfo.Slots[Index].Result = REQUEST_CRAFT_STATUS_SUCCESS;
 				}
 				else {
-					Character->Data.RequestCraftInfo.Slots[i].Result = 3;
+					Character->Data.RequestCraftInfo.Slots[Index].Result = REQUEST_CRAFT_STATUS_FAIL;
 				}
-				if (Character->Data.RequestCraftInfo.Slots[i].Result == 2) {
+				if (Character->Data.RequestCraftInfo.Slots[Index].Result == REQUEST_CRAFT_STATUS_SUCCESS) {
 					Character->Data.RequestCraftInfo.Info.Exp += RecipeData->ResultExp;
 				}
 				// send update packet back
 				PacketBufferRef ClientPacketBuffer = SocketGetNextPacketBuffer(Socket);
 				S2C_DATA_REQUEST_CRAFT_UPDATE* Response = PacketBufferInit(ClientPacketBuffer, S2C, REQUEST_CRAFT_UPDATE);
-				if (Character->Data.RequestCraftInfo.Slots[i].Result == 2)
+				if (Character->Data.RequestCraftInfo.Slots[Index].Result == REQUEST_CRAFT_STATUS_SUCCESS)
 				{
 					Response->Success = 1;
 				}
@@ -150,8 +170,8 @@ Void ServerRequestCountdownCharacter(
 					Response->Success = 0;
 				}
 				Response->ItemID = Client->CharacterIndex;
-				Response->RequestSlotIndex = Character->Data.RequestCraftInfo.Slots[i].SlotIndex;
-				Response->RequestCode = Character->Data.RequestCraftInfo.Slots[i].RequestCode;
+				Response->RequestSlotIndex = Character->Data.RequestCraftInfo.Slots[Index].SlotIndex;
+				Response->RequestCode = Character->Data.RequestCraftInfo.Slots[Index].RequestCode;
 				Response->RequestCraftExp = RecipeData->ResultExp;
 
 				SocketSend(Socket, Client->Connection, Response);
@@ -190,16 +210,4 @@ Void ServerRequestCountdown(
 			ServerRequestCountdownCharacter(Server, Context, Runtime, Client, Context->ClientSocket, Character);
 		}
 	}
-}
-
-Bool ServerAttemptRollByChance(
-	float rate
-) {
-	Int32 workingRate = rate;
-
-	if (workingRate < 0.0f) workingRate = 0.0f;
-	if (workingRate > 100.0f) workingRate = 100.0f;
-
-	int roll = rand() % 100;
-	return roll < (int)workingRate;
 }

@@ -57,17 +57,17 @@ Bool RTCharacterRegisterRequestCraftRecipe(
 
 Bool RTCharacterAddRequestCraftFavorite(
     RTCharacterRef Character,
-    Int32 CraftCode
+    Int32 RequestCode
 );
 
 Bool RTCharacterRemoveRequestCraftFavorite(
     RTCharacterRef Character,
-    Int32 CraftCode
+    Int32 RequestCode
 );
 
 Bool RTCharacterIsRequestCraftRecipeFavorited(
     RTCharacterRef Character, 
-    Int32 CraftCode
+    Int32 RequestCode
 );
 
 Bool RTCharacterHasRequiredItemsForRecipe(
@@ -76,7 +76,7 @@ Bool RTCharacterHasRequiredItemsForRecipe(
     RTRuntimeRef Runtime,
     Int32 RequestCode,
     Int32 InventorySlotCount,
-    struct _RTRequestCraftInventorySlot InventoryItemIndexes[]
+    struct _RTRequestCraftInventorySlot* InventoryItemIndexes
 );
 
 Bool RTCharacterIsRequestSlotActive(

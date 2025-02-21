@@ -1,6 +1,12 @@
 #include "RequestCraft.h"
 #include "Runtime.h"
-#include <time.h>
+
+enum {
+	REQUEST_CRAFT_STATUS_INACTIVE,
+	REQUEST_CRAFT_STATUS_IN_PROGRESS,
+	REQUEST_CRAFT_STATUS_SUCCESS,
+	REQUEST_CRAFT_STATUS_FAIL,
+};
 
 Void RTCharacterRegisteredRequestCraftFlagClear(
 	RTCharacterRef Character,
@@ -149,23 +155,25 @@ Bool RTCharacterRegisterRequestCraftRecipe(
 	return true;
 }
 
-Bool RTCharacterIsRequestCraftRecipeFavorited(RTCharacterRef Character, Int32 CraftCode) {
-	return RTCharacterFavoritedRequestCraftFlagIsSet(Character, CraftCode);
+Bool RTCharacterIsRequestCraftRecipeFavorited(RTCharacterRef Character, Int32 RequestCode) {
+	return RTCharacterFavoritedRequestCraftFlagIsSet(Character, RequestCode);
 }
 
 Bool RTCharacterAddRequestCraftFavorite(
 	RTCharacterRef Character,
-	Int32 CraftCode
+	Int32 RequestCode
 ) {
-	RTCharacterFavoritedRequestCraftFlagSet(Character, CraftCode);
+	if (RequestCode < 0 || RequestCode >= RUNTIME_CHARACTER_MAX_REQUEST_CRAFT_RECIPE_COUNT) return false;
+
+	RTCharacterFavoritedRequestCraftFlagSet(Character, RequestCode);
 	return true;
 }
 
 Bool RTCharacterRemoveRequestCraftFavorite(
 	RTCharacterRef Character,
-	Int32 CraftCode
+	Int32 RequestCode
 ) {
-	RTCharacterFavoritedRequestCraftFlagClear(Character, CraftCode);
+	RTCharacterFavoritedRequestCraftFlagClear(Character, RequestCode);
 	return true;
 }
 
@@ -183,38 +191,41 @@ Bool RTCharacterHasRequiredItemsForRecipe(
 	RTRuntimeRef Runtime,
 	Int32 RequestCode,
 	Int32 InventorySlotCount,
-	struct _RTRequestCraftInventorySlot InventoryItemIndexes[]
+	struct _RTRequestCraftInventorySlot* InventoryItemIndexes
 ) {
 	Bool HasItems = true;
 	RTDataRequestCraftRecipeRef RecipeData = RTRuntimeDataRequestCraftRecipeGet(Context, RequestCode);
-	struct MaterialOptionCodeTracker InventoryIndexOptionCodes[RUNTIME_INVENTORY_PAGE_SIZE * RUNTIME_INVENTORY_PAGE_COUNT] = { 0 };
-
-	// build option code array from recipe
-	for (int j = 0; j < RecipeData->RequestCraftRecipeMaterialCount; j++) {
-		InventoryIndexOptionCodes[j].ItemID = RecipeData->RequestCraftRecipeMaterialList[j].ItemIndex;
-		InventoryIndexOptionCodes[j].OptionCode = RecipeData->RequestCraftRecipeMaterialList[j].ItemOption;
-		InventoryIndexOptionCodes[j].CurrentEncounteredAmount = 0;
-		InventoryIndexOptionCodes[j].MaxEncounterAmount = RecipeData->RequestCraftRecipeMaterialList[j].ItemCount;
-	}
 
 	Int32 EncounteredOptionIndex = 0;
-	for (int i = 0; i < InventorySlotCount; i++) {
-		Int32 InvSlotIndex = InventoryItemIndexes[i].InventorySlotIndex;
+	Int32 CurrentEncounteredAmount = 0;
+
+	for (Int LoopIndex = 0; LoopIndex < InventorySlotCount; LoopIndex++) {
+		Int32 InvSlotIndex = InventoryItemIndexes[LoopIndex].InventorySlotIndex;
 		RTItemSlotRef InventoryItem = RTInventoryGetSlot(Runtime, &(Character->Data.InventoryInfo), InvSlotIndex);
-		if (InventoryIndexOptionCodes[EncounteredOptionIndex].ItemID != (InventoryItem->Item.ID & RUNTIME_ITEM_MASK_INDEX)) {
+
+		if (EncounteredOptionIndex >= RecipeData->RequestCraftRecipeMaterialCount) {
 			return false;
 		}
-		InventoryIndexOptionCodes[EncounteredOptionIndex].CurrentEncounteredAmount += InventoryItemIndexes[i].Count;
 
-		if (RTInventoryGetConsumableItemCount(Runtime, &(Character->Data.InventoryInfo), InventoryItem->Item.ID & RUNTIME_ITEM_MASK_INDEX, InventoryIndexOptionCodes[EncounteredOptionIndex].OptionCode, InvSlotIndex) < InventoryItemIndexes[i].Count) {
+		struct _RTDataRequestCraftRecipeMaterial* CurrentMaterial = &RecipeData->RequestCraftRecipeMaterialList[EncounteredOptionIndex];
+
+		if ((InventoryItem->Item.ID & RUNTIME_ITEM_MASK_INDEX) != CurrentMaterial->ItemIndex) {
+			return false;
+		}
+
+		CurrentEncounteredAmount += InventoryItemIndexes[LoopIndex].Count;
+
+		if (RTInventoryGetConsumableItemCount(Runtime, &Character->Data.InventoryInfo,
+			InventoryItem->Item.ID & RUNTIME_ITEM_MASK_INDEX, CurrentMaterial->ItemOption, InvSlotIndex) < InventoryItemIndexes[LoopIndex].Count) {
 			HasItems = false;
 			break;
 		}
-		if (InventoryIndexOptionCodes[EncounteredOptionIndex].CurrentEncounteredAmount == InventoryIndexOptionCodes[EncounteredOptionIndex].MaxEncounterAmount)
-		{
+
+		if (CurrentEncounteredAmount == CurrentMaterial->ItemCount) {
 			EncounteredOptionIndex++;
+			CurrentEncounteredAmount = 0;
 		}
-		else if (InventoryIndexOptionCodes[EncounteredOptionIndex].CurrentEncounteredAmount > InventoryIndexOptionCodes[EncounteredOptionIndex].MaxEncounterAmount) {
+		else if (CurrentEncounteredAmount > CurrentMaterial->ItemCount) {
 			return false;
 		}
 	}
@@ -251,32 +262,42 @@ Void RTCharacterSetRequestSlotActive(
 ) {
 	// 1. Take away the required items.
 	RTDataRequestCraftRecipeRef RecipeData = RTRuntimeDataRequestCraftRecipeGet(Context, RequestCode);
-	struct MaterialOptionCodeTracker InventoryIndexOptionCodes[RUNTIME_INVENTORY_PAGE_SIZE * RUNTIME_INVENTORY_PAGE_COUNT] = { 0 };
-	
-	// build option code array from recipe
-	for (int j = 0; j < RecipeData->RequestCraftRecipeMaterialCount; j++) {
-		InventoryIndexOptionCodes[j].ItemID = RecipeData->RequestCraftRecipeMaterialList[j].ItemIndex;
-		InventoryIndexOptionCodes[j].OptionCode = RecipeData->RequestCraftRecipeMaterialList[j].ItemOption;
-		InventoryIndexOptionCodes[j].CurrentEncounteredAmount = 0;
-		InventoryIndexOptionCodes[j].MaxEncounterAmount = RecipeData->RequestCraftRecipeMaterialList[j].ItemCount;
-	}
 
 	Int32 EncounteredOptionIndex = 0;
-	for (int i = 0; i < InventorySlotCount; i++) {
-		Int32 InvSlotIndex = InventoryItemIndexes[i].InventorySlotIndex;
-		RTItemSlotRef InventoryItem = RTInventoryGetSlot(Runtime, &(Character->Data.InventoryInfo), InvSlotIndex);
-		if (InventoryIndexOptionCodes[EncounteredOptionIndex].ItemID != (InventoryItem->Item.ID & RUNTIME_ITEM_MASK_INDEX)) {
-			return;
-		}
-		InventoryIndexOptionCodes[EncounteredOptionIndex].CurrentEncounteredAmount += InventoryItemIndexes[i].Count;
+	Int32 CurrentEncounteredAmount = 0;
 
-		RTInventoryConsumeItem(Runtime, &(Character->Data.InventoryInfo), InventoryItem->Item.ID & RUNTIME_ITEM_MASK_INDEX, InventoryIndexOptionCodes[EncounteredOptionIndex].OptionCode, InventoryItemIndexes[i].Count, InvSlotIndex);
-		if (InventoryIndexOptionCodes[EncounteredOptionIndex].CurrentEncounteredAmount == InventoryIndexOptionCodes[EncounteredOptionIndex].MaxEncounterAmount)
-		{
-			EncounteredOptionIndex++;
+	for (Int LoopIndex = 0; LoopIndex < InventorySlotCount; LoopIndex++) {
+		Int32 InvSlotIndex = InventoryItemIndexes[LoopIndex].InventorySlotIndex;
+		RTItemSlotRef InventoryItem = RTInventoryGetSlot(Runtime, &(Character->Data.InventoryInfo), InvSlotIndex);
+
+		// Get the current required material
+		if (EncounteredOptionIndex >= RecipeData->RequestCraftRecipeMaterialCount) {
+			return; // More items in inventory than required
 		}
-		else if (InventoryIndexOptionCodes[EncounteredOptionIndex].CurrentEncounteredAmount > InventoryIndexOptionCodes[EncounteredOptionIndex].MaxEncounterAmount) {
+
+		struct _RTDataRequestCraftRecipeMaterial* CurrentMaterial = &RecipeData->RequestCraftRecipeMaterialList[EncounteredOptionIndex];
+
+		// Check if current inventory item matches the required material
+		if ((InventoryItem->Item.ID & RUNTIME_ITEM_MASK_INDEX) != CurrentMaterial->ItemIndex) {
 			return;
+		}
+
+		CurrentEncounteredAmount += InventoryItemIndexes[LoopIndex].Count;
+
+		// Consume the required amount from inventory
+		RTInventoryConsumeItem(Runtime, &(Character->Data.InventoryInfo),
+			InventoryItem->Item.ID & RUNTIME_ITEM_MASK_INDEX,
+			CurrentMaterial->ItemOption,
+			InventoryItemIndexes[LoopIndex].Count,
+			InvSlotIndex);
+
+		// Check if we have met or exceeded the required amount for this material
+		if (CurrentEncounteredAmount == CurrentMaterial->ItemCount) {
+			EncounteredOptionIndex++;
+			CurrentEncounteredAmount = 0; // Reset counter for next material
+		}
+		else if (CurrentEncounteredAmount > CurrentMaterial->ItemCount) {
+			return; // More items consumed than required
 		}
 	}
 
@@ -286,7 +307,7 @@ Void RTCharacterSetRequestSlotActive(
 	Character->Data.RequestCraftInfo.Slots[SlotIndex].RequestCode = RequestCode;
 	Character->Data.RequestCraftInfo.Slots[SlotIndex].SlotIndex = SlotIndex;
 	Character->Data.RequestCraftInfo.Slots[SlotIndex].Timestamp = RecipeData->Time;
-	Character->Data.RequestCraftInfo.Slots[SlotIndex].Result = 1;
+	Character->Data.RequestCraftInfo.Slots[SlotIndex].Result = REQUEST_CRAFT_STATUS_IN_PROGRESS;
 	
 	Character->Data.RequestCraftInfo.Info.SlotCount += 1;
 	Character->SyncMask.RequestCraftInfo = true;
@@ -307,7 +328,10 @@ Bool RTCharacterClaimCraftSlot(
 	// make sure slot is complete
 	RTDataRequestCraftRecipeRef RecipeData = RTRuntimeDataRequestCraftRecipeGet(Context, RequestCode);
 
-	if (Character->Data.RequestCraftInfo.Slots[SlotIndex].Result != 2) {
+	if (Character->Data.RequestCraftInfo.Slots[SlotIndex].Result != REQUEST_CRAFT_STATUS_SUCCESS) {
+		return false;
+	}
+	if (Character->Data.RequestCraftInfo.Info.SlotCount <= SlotIndex) {
 		return false;
 	}
 	// slot is complete, add item to inventory data
