@@ -37,15 +37,19 @@ CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_START) {
 	// sanity and cheat checks
 	if (!Character) goto error;
 
-	Int32 ActualSlotIndex = RTRequestGetSlotIndex(Runtime, &Character->Data.RequestCraftInfo, Packet->RequestSlotIndex);
-	if (ActualSlotIndex < 0) ActualSlotIndex = RTRequestGetNextFreeSlotIndex(Runtime, &Character->Data.RequestCraftInfo);
+	Int32 ArrayIndex = RTRequestGetArrayIndex(Runtime, &Character->Data.RequestCraftInfo, Packet->RequestSlotIndex);
+	if (ArrayIndex < 0) {
+		ArrayIndex = Character->Data.RequestCraftInfo.Info.SlotCount;
+		Info("NextFreeSlotIndex: %d, ", ArrayIndex);
+	}
+	
 	if (!RTCharacterHasAmityForRequest(Character, Runtime->Context, Packet->RequestCode)) {
 		goto error;
 	}
 	if (!RTCharacterHasRequiredItemsForRecipe(Character, Runtime->Context, Runtime, (Int32)Packet->RequestCode, Packet->InventorySlotCount, Packet->InventorySlots)) {
 		goto error;
 	}
-	if (ActualSlotIndex >= 0 && RTCharacterIsRequestSlotActive(Character, ActualSlotIndex)) {
+	if (ArrayIndex >= 0 && RTCharacterIsRequestSlotActive(Character, ArrayIndex)) {
 		goto error;
 	}
 	if (!RTCharacterHasOpenRequestSlot(Character)) {
@@ -53,7 +57,7 @@ CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_START) {
 	}
 
 	S2C_DATA_REQUEST_CRAFT_START* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, REQUEST_CRAFT_START);
-	RTCharacterSetRequestSlotActive(Character, Runtime->Context, Runtime, ActualSlotIndex, Packet->RequestCode, Packet->InventorySlotCount, Packet->InventorySlots);
+	RTCharacterSetRequestSlotActive(Character, Runtime->Context, Runtime, Packet->RequestSlotIndex, ArrayIndex, Packet->RequestCode, Packet->InventorySlotCount, Packet->InventorySlots);
 	Response->Result = 1;
 	SocketSend(Socket, Connection, Response);
 	return;
@@ -71,14 +75,14 @@ CLIENT_PROCEDURE_BINDING(REQUEST_CRAFT_END) {
 	if (!Character) goto error;
 
 	UInt8 ReturnStatus = 0;
-	UInt8 CraftStatus = RTCharacterGetRequestStatus(Character, RTRequestGetSlotIndex(Runtime, &Character->Data.RequestCraftInfo, Packet->RequestSlotIndex));
+	UInt8 CraftStatus = RTCharacterGetRequestStatus(Character, RTRequestGetArrayIndex(Runtime, &Character->Data.RequestCraftInfo, Packet->RequestSlotIndex));
 
 	if (CraftStatus < REQUEST_CRAFT_STATUS_SUCCESS) goto error;
 	if (Packet->InventorySlotCount < 1 && CraftStatus == REQUEST_CRAFT_STATUS_SUCCESS) goto error;
 
 	if (CraftStatus == REQUEST_CRAFT_STATUS_SUCCESS) 
 	{
-		Bool Success = RTCharacterClaimCraftSlot(Character, Runtime->Context, Runtime, RTRequestGetSlotIndex(Runtime, &Character->Data.RequestCraftInfo, Packet->RequestSlotIndex), Packet->RequestCode, Packet->InventorySlots[0].InventorySlotIndex);
+		Bool Success = RTCharacterClaimCraftSlot(Character, Runtime->Context, Runtime, RTRequestGetArrayIndex(Runtime, &Character->Data.RequestCraftInfo, Packet->RequestSlotIndex), Packet->RequestCode, Packet->InventorySlots[0].InventorySlotIndex);
 		if (!Success) {
 			ReturnStatus = 0;
 		}

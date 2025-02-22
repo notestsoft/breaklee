@@ -256,6 +256,7 @@ Void RTCharacterSetRequestSlotActive(
 	RTRuntimeDataContextRef Context,
 	RTRuntimeRef Runtime,
 	Int SlotIndex,
+	Int ArrayIndex,
 	Int32 RequestCode,
 	Int32 InventorySlotCount,
 	struct _RTRequestCraftInventorySlot* InventoryItemIndexes
@@ -304,10 +305,10 @@ Void RTCharacterSetRequestSlotActive(
 	Character->SyncMask.InventoryInfo = true;
 	
 	// 2. Set data in the request slot.
-	Character->Data.RequestCraftInfo.Slots[SlotIndex].RequestCode = RequestCode;
-	Character->Data.RequestCraftInfo.Slots[SlotIndex].SlotIndex = SlotIndex;
-	Character->Data.RequestCraftInfo.Slots[SlotIndex].Timestamp = RecipeData->Time;
-	Character->Data.RequestCraftInfo.Slots[SlotIndex].Result = REQUEST_CRAFT_STATUS_IN_PROGRESS;
+	Character->Data.RequestCraftInfo.Slots[ArrayIndex].RequestCode = RequestCode;
+	Character->Data.RequestCraftInfo.Slots[ArrayIndex].SlotIndex = SlotIndex;
+	Character->Data.RequestCraftInfo.Slots[ArrayIndex].Timestamp = RecipeData->Time;
+	Character->Data.RequestCraftInfo.Slots[ArrayIndex].Result = REQUEST_CRAFT_STATUS_IN_PROGRESS;
 	
 	Character->Data.RequestCraftInfo.Info.SlotCount += 1;
 	Character->SyncMask.RequestCraftInfo = true;
@@ -325,15 +326,18 @@ Bool RTCharacterClaimCraftSlot(
 	Int32 RequestCode,
 	Int32 InventorySlotIndex
 ) {
-	// make sure slot is complete
-	RTDataRequestCraftRecipeRef RecipeData = RTRuntimeDataRequestCraftRecipeGet(Context, RequestCode);
+	if (SlotIndex < 0 || SlotIndex >= RUNTIME_CHARACTER_MAX_REQUEST_CRAFT_SLOT_COUNT) return false;
 
-	if (Character->Data.RequestCraftInfo.Slots[SlotIndex].Result != REQUEST_CRAFT_STATUS_SUCCESS) {
-		return false;
-	}
 	if (Character->Data.RequestCraftInfo.Info.SlotCount <= SlotIndex) {
 		return false;
 	}
+
+	// make sure slot is complete
+	RTDataRequestCraftRecipeRef RecipeData = RTRuntimeDataRequestCraftRecipeGet(Context, RequestCode);
+	if (Character->Data.RequestCraftInfo.Slots[SlotIndex].Result != REQUEST_CRAFT_STATUS_SUCCESS) {
+		return false;
+	}
+
 	// slot is complete, add item to inventory data
 	struct _RTItemSlot ItemSlot = { 0 };
 	ItemSlot.Item.Serial = RecipeData->ResultItem[0];
@@ -395,33 +399,17 @@ Bool RTCharacterHasAmityForRequest(
 	return true;
 }
 
-Int32 RTRequestGetSlotIndex(
+Int32 RTRequestGetArrayIndex(
 	RTRuntimeRef Runtime,
 	RTCharacterRequestCraftInfoRef Requests,
 	Int32 SlotIndex
 ) {
 	for (Int Index = 0; Index < Requests->Info.SlotCount; Index += 1) {
-		RTItemSlotRef Slot = &Requests->Slots[Index];
+		RTRequestCraftSlotRef Slot = &Requests->Slots[Index];
 		if (Slot->SlotIndex == SlotIndex) {
 			return Index;
 		}
 	}
 
 	return -1;
-}
-
-Int32 RTRequestGetNextFreeSlotIndex(
-	RTRuntimeRef Runtime,
-	RTCharacterRequestCraftInfoRef Requests
-) {
-	for (Int Index = 0; Index < Requests->Info.SlotCount - 1; Index += 1) {
-		RTItemSlotRef RequestSlot = &Requests->Slots[Index];
-		RTItemSlotRef NextRequestSlot = &Requests->Slots[Index + 1];
-		Int32 SlotOffset = NextRequestSlot->SlotIndex - RequestSlot->SlotIndex;
-		if (SlotOffset > 1) {
-			return RequestSlot->SlotIndex + 1;
-		}
-	}
-
-	return Requests->Info.SlotCount;
 }
