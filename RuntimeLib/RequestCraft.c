@@ -177,14 +177,6 @@ Bool RTCharacterRemoveRequestCraftFavorite(
 	return true;
 }
 
-
-struct MaterialOptionCodeTracker {
-	Int32 ItemID;
-	Int32 OptionCode;
-	Int32 CurrentEncounteredAmount;
-	Int32 MaxEncounterAmount;
-};
-
 Bool RTCharacterHasRequiredItemsForRecipe(
 	RTCharacterRef Character,
 	RTRuntimeDataContextRef Context,
@@ -271,34 +263,30 @@ Void RTCharacterSetRequestSlotActive(
 		Int32 InvSlotIndex = InventoryItemIndexes[LoopIndex].InventorySlotIndex;
 		RTItemSlotRef InventoryItem = RTInventoryGetSlot(Runtime, &(Character->Data.InventoryInfo), InvSlotIndex);
 
-		// Get the current required material
 		if (EncounteredOptionIndex >= RecipeData->RequestCraftRecipeMaterialCount) {
-			return; // More items in inventory than required
+			return;
 		}
 
 		struct _RTDataRequestCraftRecipeMaterial* CurrentMaterial = &RecipeData->RequestCraftRecipeMaterialList[EncounteredOptionIndex];
 
-		// Check if current inventory item matches the required material
 		if ((InventoryItem->Item.ID & RUNTIME_ITEM_MASK_INDEX) != CurrentMaterial->ItemIndex) {
 			return;
 		}
 
 		CurrentEncounteredAmount += InventoryItemIndexes[LoopIndex].Count;
 
-		// Consume the required amount from inventory
 		RTInventoryConsumeItem(Runtime, &(Character->Data.InventoryInfo),
 			InventoryItem->Item.ID & RUNTIME_ITEM_MASK_INDEX,
 			CurrentMaterial->ItemOption,
 			InventoryItemIndexes[LoopIndex].Count,
 			InvSlotIndex);
 
-		// Check if we have met or exceeded the required amount for this material
 		if (CurrentEncounteredAmount == CurrentMaterial->ItemCount) {
 			EncounteredOptionIndex++;
-			CurrentEncounteredAmount = 0; // Reset counter for next material
+			CurrentEncounteredAmount = 0;
 		}
 		else if (CurrentEncounteredAmount > CurrentMaterial->ItemCount) {
-			return; // More items consumed than required
+			return;
 		}
 	}
 

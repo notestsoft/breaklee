@@ -143,7 +143,6 @@ Void ServerRequestCountdownCharacter(
 		if (Character->Data.RequestCraftInfo.Slots[Index].Result == 1) {
 			RTDataRequestCraftRecipeRef RecipeData = RTRuntimeDataRequestCraftRecipeGet(Runtime->Context, Character->Data.RequestCraftInfo.Slots[Index].RequestCode);
 			Character->Data.RequestCraftInfo.Slots[Index].Timestamp -= (Context->Config.WorldSvr.RequestCountdownTimer / 1000.0f);
-			Character->SyncMask.RequestCraftInfo = true;
 			if (Character->Data.RequestCraftInfo.Slots[Index].Timestamp <= 0) {
 				Character->Data.RequestCraftInfo.Slots[Index].Timestamp = 0;
 				
@@ -153,21 +152,19 @@ Void ServerRequestCountdownCharacter(
 				if (WorkingRate < 0.0f) WorkingRate = 0.0f;
 				if (WorkingRate > 100.0f) WorkingRate = 100.0f;
 
-				Int roll = rand() % 100;
-				Bool result = roll < (Int)WorkingRate;
+				Int Roll = rand() % 100;
+				Bool Result = Roll < (Int)WorkingRate;
 
-				if (result) {
+				if (Result) {
 					Character->Data.RequestCraftInfo.Slots[Index].Result = REQUEST_CRAFT_STATUS_SUCCESS;
+					Character->Data.RequestCraftInfo.Info.Exp += RecipeData->ResultExp;
 				}
 				else {
 					Character->Data.RequestCraftInfo.Slots[Index].Result = REQUEST_CRAFT_STATUS_FAIL;
 				}
-				if (Character->Data.RequestCraftInfo.Slots[Index].Result == REQUEST_CRAFT_STATUS_SUCCESS) {
-					Character->Data.RequestCraftInfo.Info.Exp += RecipeData->ResultExp;
-				}
+
 				// send update packet back
-				PacketBufferRef ClientPacketBuffer = SocketGetNextPacketBuffer(Socket);
-				S2C_DATA_REQUEST_CRAFT_UPDATE* Response = PacketBufferInit(ClientPacketBuffer, S2C, REQUEST_CRAFT_UPDATE);
+				S2C_DATA_REQUEST_CRAFT_UPDATE* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, REQUEST_CRAFT_UPDATE);
 				if (Character->Data.RequestCraftInfo.Slots[Index].Result == REQUEST_CRAFT_STATUS_SUCCESS)
 				{
 					Response->Success = 1;
@@ -182,6 +179,7 @@ Void ServerRequestCountdownCharacter(
 
 				SocketSend(Socket, Client->Connection, Response);
 			}
+			Character->SyncMask.RequestCraftInfo = true;
 		}
 	}
 }
