@@ -19,12 +19,32 @@ CLIENT_PROCEDURE_BINDING(ATTACK_TO_MOB) {
     RTWorldContextRef World = RTRuntimeGetWorldByCharacter(Runtime, Character);
 	RTMobRef Mob = RTWorldContextGetMob(World, Packet->Entity);
 	if (!Mob) {
-		Error("Tried to hit nonexistent mob!!!");
-		goto error;
+		S2C_DATA_ATTACK_TO_MOB* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, ATTACK_TO_MOB);
+		Response->Entity = Packet->Entity;
+		Response->EntityIDType = Packet->EntityIDType;
+		Response->AttackType = RUNTIME_ATTACK_TYPE_TARGETERROR;
+		Response->AccumulatedExp = Character->Data.Info.Exp;
+		Response->AccumulatedOxp = Character->Data.OverlordMasteryInfo.Info.Exp;
+		Response->CharacterHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+		Response->CharacterMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+		Response->CharacterSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+		SocketSend(Socket, Connection, Response);
+		return;
 	}
+
 	if (Mob->IsDead) {
-		Error("Tried to hit dead mob!!!");
-		goto error; // TODO: (auto miss target)
+		S2C_DATA_ATTACK_TO_MOB* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, ATTACK_TO_MOB);
+		Response->Entity = Packet->Entity;
+		Response->EntityIDType = Packet->EntityIDType;
+		Response->AttackType = RUNTIME_ATTACK_TYPE_MOBSDEAD;
+		Response->AccumulatedExp = Character->Data.Info.Exp;
+		Response->AccumulatedOxp = Character->Data.OverlordMasteryInfo.Info.Exp;
+		Response->CharacterHP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+		Response->CharacterMP = (UInt32)Character->Attributes.Values[RUNTIME_ATTRIBUTE_MP_CURRENT];
+		Response->CharacterSP = Character->Attributes.Values[RUNTIME_ATTRIBUTE_SP_CURRENT];
+		Response->MobHP = Mob->Attributes.Values[RUNTIME_ATTRIBUTE_HP_CURRENT];
+		SocketSend(Socket, Connection, Response);
+		return;
 	}
 
 	RTBattleResult Result = RTCalculateNormalAttackResult(

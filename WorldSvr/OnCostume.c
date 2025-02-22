@@ -85,7 +85,6 @@ CLIENT_PROCEDURE_BINDING(COSTUME_WAREHOUSE_NAME_LIST) {
 
 	S2C_DATA_COSTUME_WAREHOUSE_NAME_LIST* Response = PacketBufferInit(SocketGetNextPacketBuffer(Socket), S2C, COSTUME_WAREHOUSE_NAME_LIST);
 	Response->ItemCount = 0;
-
 	SocketSend(Socket, Connection, Response);
 	return;
 

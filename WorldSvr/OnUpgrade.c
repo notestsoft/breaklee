@@ -31,7 +31,7 @@ CLIENT_PROCEDURE_BINDING(ADD_FORCE_SLOT_OPTION) {
 
 	RTDataUpgradeGradeChangeRef UpgradeGradeChange = RTRuntimeDataUpgradeGradeChangeGet(Runtime->Context, ItemData->ItemType, ItemData->ItemGrade);
 	if (UpgradeGradeChange) {
-		Error("Failed to get upgrade grade change for slotting!");
+		Error("Failed to get upgrade grade change for slotting! (%llu, %llu, %d, %d)", ItemSlot->Item.Serial, ItemSlot->ItemOptions, ItemData->ItemType, ItemData->ItemGrade);
 		CostGrade = UpgradeGradeChange->CostGrade;
 	}
 

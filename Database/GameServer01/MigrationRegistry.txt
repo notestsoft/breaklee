@@ -140,3 +140,4 @@ AddMigration 0139_CreateGetCashInventory.sql
 AddMigration 0140_CreateGuild.sql
 AddMigration 0141_CreateInsertGuild.sql
 AddMigration 0142_CreateGetCharacterViewEqupment.sql
+AddMigration 0143_CreateGetCharacterIDByName.sql
