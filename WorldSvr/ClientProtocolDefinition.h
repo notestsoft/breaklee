@@ -3559,7 +3559,7 @@ CLIENT_PROTOCOL(C2S, REQUEST_CRAFT_START, DEFAULT, 2250,
     Int32 Unknown1; // - Maybe AuthCaptcha
     Int32 InventorySlotCount;
     struct _RTRequestCraftInventorySlot InventorySlots[0];
-    // UInt8 Unknown2[4168]; - Maybe AuthCaptcha
+    //UInt8 Unknown2[4168]; - Maybe AuthCaptcha
 )
 
 CLIENT_PROTOCOL(S2C, REQUEST_CRAFT_START, DEFAULT, 2250,
@@ -3682,6 +3682,18 @@ CLIENT_PROTOCOL_ENUM(
 
 CLIENT_PROTOCOL(S2C, UPGRADE_EXTREME_REPAIR, DEFAULT, 2310,
     UInt8 Result;
+)
+
+CLIENT_PROTOCOL(C2S, CHANGE_RECIPE_FAVORITE, DEFAULT, 2311,
+    UInt8 FavoriteStatus[4];
+    Int32 CraftCode;
+    UInt8 UnknownPadding1[4];
+)
+
+CLIENT_PROTOCOL(S2C, CHANGE_RECIPE_FAVORITE, DEFAULT, 2311,
+    UInt8 FavoriteStatus[4];
+    Int32 CraftCode;
+    UInt8 Unknown1;
 )
 
 CLIENT_PROTOCOL(C2S, TAKE_NEWBIE_REWARD, DEFAULT, 2319,

@@ -55,4 +55,79 @@ Bool RTCharacterRegisterRequestCraftRecipe(
     RTRequestCraftInventorySlotRef InventorySlots
 );
 
+Bool RTCharacterAddRequestCraftFavorite(
+    RTCharacterRef Character,
+    Int32 RequestCode
+);
+
+Bool RTCharacterRemoveRequestCraftFavorite(
+    RTCharacterRef Character,
+    Int32 RequestCode
+);
+
+Bool RTCharacterIsRequestCraftRecipeFavorited(
+    RTCharacterRef Character, 
+    Int32 RequestCode
+);
+
+Bool RTCharacterHasRequiredItemsForRecipe(
+    RTCharacterRef Character,
+    RTRuntimeDataContextRef Context,
+    RTRuntimeRef Runtime,
+    Int32 RequestCode,
+    Int32 InventorySlotCount,
+    struct _RTRequestCraftInventorySlot* InventoryItemIndexes
+);
+
+Bool RTCharacterIsRequestSlotActive(
+    RTCharacterRef Character,
+    Int SlotIndex
+);
+
+Bool RTCharacterHasOpenRequestSlot(
+    RTCharacterRef Character
+);
+
+Void RTCharacterSetRequestSlotActive(
+    RTCharacterRef Character,
+    RTRuntimeDataContextRef Context,
+    RTRuntimeRef Runtime,
+    Int SlotIndex,
+    Int ArrayIndex,
+    Int32 RequestCode,
+    Int32 InventorySlotCount,
+    struct _RTRequestCraftInventorySlot* InventoryItemIndexes
+);
+
+Bool RTCharacterClaimCraftSlot(
+    RTCharacterRef Character,
+    RTRuntimeDataContextRef Context,
+    RTRuntimeRef Runtime,
+    UInt32 SlotIndex,
+    Int32 RequestCode,
+    Int32 InventorySlotIndex
+);
+
+UInt8 RTCharacterGetRequestStatus(
+    RTCharacterRef Character,
+    UInt32 SlotIndex
+);
+
+Bool RTCharacterClearRequestSlot(
+    RTCharacterRef Character,
+    UInt32 SlotIndex
+);
+
+Bool RTCharacterHasAmityForRequest(
+    RTCharacterRef Character,
+    RTRuntimeDataContextRef Context,
+    Int32 RequestCode
+);
+
+Int32 RTRequestGetArrayIndex(
+    RTRuntimeRef Runtime,
+    RTCharacterRequestCraftInfoRef Requests,
+    Int32 SlotIndex
+);
+
 EXTERN_C_END

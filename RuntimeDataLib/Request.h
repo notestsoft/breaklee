@@ -12,6 +12,7 @@ RUNTIME_DATA_TYPE_BEGIN(RequestCraftRecipe, "cabal_request_system.request_recipe
 	RUNTIME_DATA_PROPERTY(Int32, RequestLevel, "request_level")
 	RUNTIME_DATA_PROPERTY(Int32, RegisterExp, "register_exp")
 	RUNTIME_DATA_PROPERTY(Int32, RegisterCost, "register_cost")
+	RUNTIME_DATA_PROPERTY(Int32, SuccessRate, "success_rate")
 	RUNTIME_DATA_PROPERTY_ARRAY(Int32, RegisterItem, "register_item", 2, ':')
 	RUNTIME_DATA_PROPERTY_ARRAY(Int32, ResultItem, "result_item", 3, ':')
 	RUNTIME_DATA_PROPERTY(Int32, ResultExp, "result_exp")

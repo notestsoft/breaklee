@@ -5,6 +5,8 @@
 
 EXTERN_C_BEGIN
 
+Timestamp RequestSyncTimestamp;
+
 Void ServerSyncCharacter(
     ServerRef Server,
     ServerContextRef Context,
@@ -33,6 +35,21 @@ ClientContextRef ServerGetClientByIndex(
     ServerContextRef Context,
     UInt32 CharacterIndex,
     CString CharacterName
+);
+
+Void ServerRequestCountdownCharacter(
+    ServerRef Server,
+    ServerContextRef Context,
+    RTRuntimeRef Runtime,
+    ClientContextRef Client,
+    SocketRef Socket,
+    RTCharacterRef Character
+);
+
+Void ServerRequestCountdown(
+    ServerRef Server,
+    ServerContextRef Context,
+    RTRuntimeRef Runtime
 );
 
 EXTERN_C_END

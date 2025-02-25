@@ -28,6 +28,7 @@ CONFIG_PARAMETER_ARRAY(Char, PLATFORM_PATH_MAX, ScriptDataPath, "WorldSvr.Script
 CONFIG_PARAMETER(UInt32, MinRollDiceValue, "WorldSvr.MinRollDiceValue", 0)
 CONFIG_PARAMETER(UInt32, MaxRollDiceValue, "WorldSvr.MaxRollDiceValue", 999)
 CONFIG_PARAMETER(UInt64, DBSyncTimer, "WorldSvr.DBSyncTimer", 1000)
+CONFIG_PARAMETER(UInt64, RequestCountdownTimer, "WorldSvr.RequestCountdownTimer", 1000)
 CONFIG_PARAMETER(UInt64, UserListBroadcastInterval, "WorldSvr.UserListBroadcastInterval", 1000)
 CONFIG_PARAMETER(UInt64, WorldItemDespawnInterval, "WorldSvr.WorldItemDespawnInterval", 30000)
 CONFIG_PARAMETER(UInt64, CooldownErrorTolerance, "WorldSvr.CooldownErrorTolerance", 1000)

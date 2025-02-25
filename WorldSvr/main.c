@@ -131,6 +131,7 @@ Void ServerOnUpdate(
     ServerContextRef Context = (ServerContextRef)ServerContext;
     RTRuntimeUpdate(Context->Runtime);
     ServerSyncDB(Server, Context, false);
+    ServerRequestCountdown(Server, Context, Context->Runtime);
 
     Timestamp CurrentTimestamp = GetTimestampMs();
     if (Context->UserListBroadcastTimestamp < CurrentTimestamp) {
@@ -284,6 +285,7 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     ServerLoadRuntimeData(Config, &ServerContext);
     ServerLoadScriptData(Config, &ServerContext);
     ServerRun(Server);
+    RequestSyncTimestamp = GetTimestampMs();
 
     DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(ServerContext.ItemScriptRegistry);
     while (Iterator.Key) {

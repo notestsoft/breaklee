@@ -845,13 +845,13 @@ UInt16 InventorySlotIndex[0];
 
 IPC_PROTOCOL(D2W, AUCTION_BUY_ITEM,
 	UInt8 Result;
-UInt64 ItemID;
-UInt64 ItemOptions;
-UInt32 ItemOptionExtended;
-UInt8 ItemPriceType;
-Int64 ItemPrice;
-UInt16 InventorySlotCount;
-UInt16 InventorySlotIndex[0];
+	UInt64 ItemID;
+	UInt64 ItemOptions;
+	UInt32 ItemOptionExtended;
+	UInt8 ItemPriceType;
+	Int64 ItemPrice;
+	UInt16 InventorySlotCount;
+	UInt16 InventorySlotIndex[0];
 )
 
 IPC_PROTOCOL(W2D, AUCTION_PROCEED_ITEM,
