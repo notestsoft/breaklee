@@ -7,8 +7,9 @@ BEGIN
         Characters.Level AS 'Level',
         CASE
         WHEN (Style & 0x0F) >= 10 THEN (Style & 0x0F) - 8
+        WHEN SUBSTRING(HEX(Style), 3, 1) = 4 THEN (Style & 0x0F) - 8
         ELSE (Style & 0x0F)
-	    END AS 'Style',
+		END AS 'Style',
         Settings.OptionsDataLength,
         Equipment.EquipmentSlotCount,
         Equipment.EquipmentSlotData,
