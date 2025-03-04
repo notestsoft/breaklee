@@ -2,7 +2,7 @@
 
 #include "Base.h"
 #include "Constants.h"
-
+#include "Timer.h"
 #include "Item.h"
 
 EXTERN_C_BEGIN
@@ -128,6 +128,22 @@ Int32 RTRequestGetArrayIndex(
     RTRuntimeRef Runtime,
     RTCharacterRequestCraftInfoRef Requests,
     Int32 SlotIndex
+);
+
+Void RTCharacterInitializeRequestTimer(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
+);
+
+Void RTCharacterUpdateRequestTimer(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+    Bool ForceUpdate
+);
+
+Void RTRequestCraftCountdownCharacter(
+    RTRuntimeRef Runtime,
+    RTCharacterRef Character
 );
 
 EXTERN_C_END

@@ -131,7 +131,6 @@ Void ServerOnUpdate(
     ServerContextRef Context = (ServerContextRef)ServerContext;
     RTRuntimeUpdate(Context->Runtime);
     ServerSyncDB(Server, Context, false);
-    ServerRequestCountdown(Server, Context, Context->Runtime);
 
     Timestamp CurrentTimestamp = GetTimestampMs();
     if (Context->UserListBroadcastTimestamp < CurrentTimestamp) {
@@ -187,6 +186,7 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     ServerContext.Runtime->Config.DailyResetTimeMinute = Config.WorldSvr.DailyResetTimeMinute;
     ServerContext.Runtime->Config.UpgradePointDuration = Config.WorldSvr.UpgradePointDuration;
     ServerContext.Runtime->Config.SecretShopResetInterval = Config.WorldSvr.SecretShopResetInterval;
+    ServerContext.Runtime->Config.RequestCountdownTimer = Config.WorldSvr.RequestCountdownTimer;
     ServerContext.ItemScriptRegistry = IndexDictionaryCreate(Allocator, 8);
 
     ConvertLocalToUtcAt(
@@ -285,7 +285,6 @@ Int32 main(Int32 ArgumentCount, CString* Arguments) {
     ServerLoadRuntimeData(Config, &ServerContext);
     ServerLoadScriptData(Config, &ServerContext);
     ServerRun(Server);
-    RequestSyncTimestamp = GetTimestampMs();
 
     DictionaryKeyIterator Iterator = DictionaryGetKeyIterator(ServerContext.ItemScriptRegistry);
     while (Iterator.Key) {
