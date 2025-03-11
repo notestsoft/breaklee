@@ -1,5 +1,7 @@
 #include "RequestCraft.h"
 #include "Runtime.h"
+#include "NotificationProtocol.h"
+#include "NotificationManager.h"
 
 enum {
 	REQUEST_CRAFT_STATUS_INACTIVE,
@@ -400,4 +402,75 @@ Int32 RTRequestGetArrayIndex(
 	}
 
 	return -1;
+}
+
+Void RTCharacterInitializeRequestTimer(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+	RTTimerInitialize(&Character->RequestCraftSyncTimer, Runtime->Config.RequestCountdownTimer);
+}
+
+Void RTCharacterUpdateRequestTimer(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character,
+	Bool ForceUpdate
+) {
+	if (!Character) return;
+
+	if (!RTTimerUpdate(&Character->RequestCraftSyncTimer, ForceUpdate)) return;
+
+	RTRequestCraftCountdownCharacter(Runtime, Character);
+}
+
+Void RTRequestCraftCountdownCharacter(
+	RTRuntimeRef Runtime,
+	RTCharacterRef Character
+) {
+
+	for (Int Index = 0; Index < Character->Data.RequestCraftInfo.Info.SlotCount; Index++)
+	{
+		if (Character->Data.RequestCraftInfo.Slots[Index].Result == 1) {
+			RTDataRequestCraftRecipeRef RecipeData = RTRuntimeDataRequestCraftRecipeGet(Runtime->Context, Character->Data.RequestCraftInfo.Slots[Index].RequestCode);
+			Character->Data.RequestCraftInfo.Slots[Index].Timestamp -= (Runtime->Config.RequestCountdownTimer / 1000.0f);
+			if (Character->Data.RequestCraftInfo.Slots[Index].Timestamp <= 0) {
+				Character->Data.RequestCraftInfo.Slots[Index].Timestamp = 0;
+
+				// RNG calculation
+				Float32 WorkingRate = RecipeData->SuccessRate / 10.0f;
+
+				if (WorkingRate < 0.0f) WorkingRate = 0.0f;
+				if (WorkingRate > 100.0f) WorkingRate = 100.0f;
+
+				Int Roll = rand() % 100;
+				Bool Result = Roll < (Int)WorkingRate;
+
+				if (Result) {
+					Character->Data.RequestCraftInfo.Slots[Index].Result = REQUEST_CRAFT_STATUS_SUCCESS;
+					Character->Data.RequestCraftInfo.Info.Exp += RecipeData->ResultExp;
+				}
+				else {
+					Character->Data.RequestCraftInfo.Slots[Index].Result = REQUEST_CRAFT_STATUS_FAIL;
+				}
+
+				// send update packet back
+				NOTIFICATION_DATA_REQUEST_CRAFT_UPDATE* Response = RTNotificationInit(REQUEST_CRAFT_UPDATE);
+				
+				if (Character->Data.RequestCraftInfo.Slots[Index].Result == REQUEST_CRAFT_STATUS_SUCCESS)
+				{
+					Response->Success = 1;
+				}
+				else {
+					Response->Success = 0;
+				}
+				Response->ItemID = Character->CharacterIndex;
+				Response->RequestSlotIndex = Character->Data.RequestCraftInfo.Slots[Index].SlotIndex;
+				Response->RequestCode = Character->Data.RequestCraftInfo.Slots[Index].RequestCode;
+				Response->RequestCraftExp = RecipeData->ResultExp;
+
+				RTNotificationDispatchToCharacter(Response, Character);
+			}
+			Character->SyncMask.RequestCraftInfo = true;
+		}
+	}
 }

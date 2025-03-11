@@ -228,6 +228,8 @@ struct _RTCharacter {
     Timestamp GiftBoxUpdateTimestamps[RUNTIME_CHARACTER_MAX_GIFT_BOX_SLOT_COUNT];
     Int32 MobPatternWarpX;
     Int32 MobPatternWarpY;
+
+    struct _RTTimer RequestCraftSyncTimer;
 };
 
 #pragma pack(pop)

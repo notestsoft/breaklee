@@ -748,6 +748,14 @@ NOTIFICATION_PROTOCOL(DUNGEON_POINTS, 2174,
     Int64 ResetTime;
 )
 
+NOTIFICATION_PROTOCOL(REQUEST_CRAFT_UPDATE, 2252,
+    UInt32 ItemID;
+    UInt8 RequestSlotIndex;
+    UInt32 RequestCode;
+    UInt32 RequestCraftExp;
+    UInt8 Success;
+)
+
 NOTIFICATION_PROTOCOL(DUNGEON_TIMER, 2542,
     UInt32 TimerType;
     UInt32 Interval;

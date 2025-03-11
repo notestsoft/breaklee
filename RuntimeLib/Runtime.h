@@ -50,6 +50,7 @@ struct _RTRuntimeConfig {
     Int32 DailyResetTimeMinute;
     Timestamp UpgradePointDuration;
     Timestamp SecretShopResetInterval;
+    Timestamp RequestCountdownTimer;
 };
 
 struct _RTRuntime {

@@ -586,6 +586,7 @@ Void RTCharacterInitialize(
 	RTCharacterInitializeCooldowns(Runtime, Character);
 	RTCharacterInitializeSecretShop(Runtime, Character);
 	RTCharacterUpdateGiftBox(Runtime, Character);
+	RTCharacterInitializeRequestTimer(Runtime, Character);
 }
 
 Void RTCharacterUpdate(
@@ -638,6 +639,7 @@ Void RTCharacterUpdate(
 	RTCharacterUpdateBuffs(Runtime, Character, false);
 	RTCharacterUpdateCooldowns(Runtime, Character, false);
 	RTCharacterUpdateSecretShop(Runtime, Character, false);
+	RTCharacterUpdateRequestTimer(Runtime, Character, false);
 }
 
 Bool RTCharacterIsAlive(
