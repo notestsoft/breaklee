@@ -172,7 +172,8 @@ Bool RTCharacterAnimaMasteryResetSlot(
         Character->SyncMask.InventoryInfo = true;
     }
     else {
-        // TODO: Consume force gem!
+        bool ConsumeForceGem = RTCharacterConsumeForceGem(Runtime, Character, Price);
+        if (!ConsumeForceGem) return false;
     }
 
     RTAnimaMasteryCategoryDataRef CategoryData = RTCharacterAnimaMasteryGetCategoryData(Runtime, Character, StorageIndex, CategoryIndex);
